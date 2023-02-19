@@ -59,7 +59,7 @@ public:
 	u16							disable_count												;
 	float						m_gravity													;
 								CPHWorld						()							;
-	virtual						~CPHWorld						(){}						;
+	virtual ~CPHWorld();
 
 //IC	dSpaceID					GetSpace						()			{return Space;}	;
 IC	bool						Exist							()			{return b_exist ;}

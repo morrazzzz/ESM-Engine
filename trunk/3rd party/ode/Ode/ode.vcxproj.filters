@@ -1,0 +1,684 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{AE129310-DAC9-7E42-94C2-CBA6763C5D7F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\ode">
+      <UniqueIdentifier>{2D0F2D90-AF9F-1A42-8DC2-B54D958CFD10}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OPCODE">
+      <UniqueIdentifier>{2C1F470F-7CA0-C141-B48E-8C3F38092C06}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OPCODE\Ice">
+      <UniqueIdentifier>{A51783B4-351B-214D-9296-646327DAB8E5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{ae7bb22e-a936-41e6-ac10-bbee4d681678}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\joints">
+      <UniqueIdentifier>{6097d7db-d7a6-4df6-8a92-3273dec7f50b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="OPCODE\Ice\IceContainer.cpp">
+      <Filter>OPCODE\Ice</Filter>
+    </ClCompile>
+    <ClCompile Include="OPCODE\Ice\IceHPoint.cpp">
+      <Filter>OPCODE\Ice</Filter>
+    </ClCompile>
+    <ClCompile Include="OPCODE\Ice\IceIndexedTriangle.cpp">
+      <Filter>OPCODE\Ice</Filter>
+    </ClCompile>
+    <ClCompile Include="OPCODE\Ice\IceMatrix3x3.cpp">
+      <Filter>OPCODE\Ice</Filter>
+    </ClCompile>
+    <ClCompile Include="OPCODE\Ice\IceMatrix4x4.cpp">
+      <Filter>OPCODE\Ice</Filter>
+    </ClCompile>
+    <ClCompile Include="OPCODE\Ice\IceOBB.cpp">
+      <Filter>OPCODE\Ice</Filter>
+    </ClCompile>
+    <ClCompile Include="OPCODE\Ice\IcePlane.cpp">
+      <Filter>OPCODE\Ice</Filter>
+    </ClCompile>
+    <ClCompile Include="OPCODE\Ice\IcePoint.cpp">
+      <Filter>OPCODE\Ice</Filter>
+    </ClCompile>
+    <ClCompile Include="OPCODE\Ice\IceRandom.cpp">
+      <Filter>OPCODE\Ice</Filter>
+    </ClCompile>
+    <ClCompile Include="OPCODE\Ice\IceRay.cpp">
+      <Filter>OPCODE\Ice</Filter>
+    </ClCompile>
+    <ClCompile Include="OPCODE\Ice\IceRevisitedRadix.cpp">
+      <Filter>OPCODE\Ice</Filter>
+    </ClCompile>
+    <ClCompile Include="OPCODE\Ice\IceSegment.cpp">
+      <Filter>OPCODE\Ice</Filter>
+    </ClCompile>
+    <ClCompile Include="OPCODE\Ice\IceTriangle.cpp">
+      <Filter>OPCODE\Ice</Filter>
+    </ClCompile>
+    <ClCompile Include="OPCODE\Ice\IceUtils.cpp">
+      <Filter>OPCODE\Ice</Filter>
+    </ClCompile>
+    <ClCompile Include="OPCODE\Ice\IceAABB.cpp">
+      <Filter>OPCODE\Ice</Filter>
+    </ClCompile>
+    <ClCompile Include="OPCODE\OPC_SphereCollider.cpp">
+      <Filter>OPCODE</Filter>
+    </ClCompile>
+    <ClCompile Include="OPCODE\OPC_TreeBuilders.cpp">
+      <Filter>OPCODE</Filter>
+    </ClCompile>
+    <ClCompile Include="OPCODE\OPC_TreeCollider.cpp">
+      <Filter>OPCODE</Filter>
+    </ClCompile>
+    <ClCompile Include="OPCODE\OPC_VolumeCollider.cpp">
+      <Filter>OPCODE</Filter>
+    </ClCompile>
+    <ClCompile Include="OPCODE\Opcode.cpp">
+      <Filter>OPCODE</Filter>
+    </ClCompile>
+    <ClCompile Include="OPCODE\OPC_AABBCollider.cpp">
+      <Filter>OPCODE</Filter>
+    </ClCompile>
+    <ClCompile Include="OPCODE\OPC_AABBTree.cpp">
+      <Filter>OPCODE</Filter>
+    </ClCompile>
+    <ClCompile Include="OPCODE\OPC_BaseModel.cpp">
+      <Filter>OPCODE</Filter>
+    </ClCompile>
+    <ClCompile Include="OPCODE\OPC_Collider.cpp">
+      <Filter>OPCODE</Filter>
+    </ClCompile>
+    <ClCompile Include="OPCODE\OPC_Common.cpp">
+      <Filter>OPCODE</Filter>
+    </ClCompile>
+    <ClCompile Include="OPCODE\OPC_HybridModel.cpp">
+      <Filter>OPCODE</Filter>
+    </ClCompile>
+    <ClCompile Include="OPCODE\OPC_LSSCollider.cpp">
+      <Filter>OPCODE</Filter>
+    </ClCompile>
+    <ClCompile Include="OPCODE\OPC_MeshInterface.cpp">
+      <Filter>OPCODE</Filter>
+    </ClCompile>
+    <ClCompile Include="OPCODE\OPC_Model.cpp">
+      <Filter>OPCODE</Filter>
+    </ClCompile>
+    <ClCompile Include="OPCODE\OPC_OBBCollider.cpp">
+      <Filter>OPCODE</Filter>
+    </ClCompile>
+    <ClCompile Include="OPCODE\OPC_OptimizedTree.cpp">
+      <Filter>OPCODE</Filter>
+    </ClCompile>
+    <ClCompile Include="OPCODE\OPC_Picking.cpp">
+      <Filter>OPCODE</Filter>
+    </ClCompile>
+    <ClCompile Include="OPCODE\OPC_PlanesCollider.cpp">
+      <Filter>OPCODE</Filter>
+    </ClCompile>
+    <ClCompile Include="OPCODE\OPC_RayCollider.cpp">
+      <Filter>OPCODE</Filter>
+    </ClCompile>
+    <ClCompile Include="joints\ball.cpp">
+      <Filter>src\joints</Filter>
+    </ClCompile>
+    <ClCompile Include="joints\contact.cpp">
+      <Filter>src\joints</Filter>
+    </ClCompile>
+    <ClCompile Include="joints\fixed.cpp">
+      <Filter>src\joints</Filter>
+    </ClCompile>
+    <ClCompile Include="joints\hinge.cpp">
+      <Filter>src\joints</Filter>
+    </ClCompile>
+    <ClCompile Include="joints\hinge2.cpp">
+      <Filter>src\joints</Filter>
+    </ClCompile>
+    <ClCompile Include="joints\joint.cpp">
+      <Filter>src\joints</Filter>
+    </ClCompile>
+    <ClCompile Include="joints\lmotor.cpp">
+      <Filter>src\joints</Filter>
+    </ClCompile>
+    <ClCompile Include="joints\null.cpp">
+      <Filter>src\joints</Filter>
+    </ClCompile>
+    <ClCompile Include="joints\piston.cpp">
+      <Filter>src\joints</Filter>
+    </ClCompile>
+    <ClCompile Include="joints\plane2d.cpp">
+      <Filter>src\joints</Filter>
+    </ClCompile>
+    <ClCompile Include="joints\pr.cpp">
+      <Filter>src\joints</Filter>
+    </ClCompile>
+    <ClCompile Include="joints\pu.cpp">
+      <Filter>src\joints</Filter>
+    </ClCompile>
+    <ClCompile Include="joints\slider.cpp">
+      <Filter>src\joints</Filter>
+    </ClCompile>
+    <ClCompile Include="joints\universal.cpp">
+      <Filter>src\joints</Filter>
+    </ClCompile>
+    <ClCompile Include="joints\amotor.cpp">
+      <Filter>src\joints</Filter>
+    </ClCompile>
+    <ClCompile Include="odemath.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="odeou.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="odetls.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="plane.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="quickstep.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="ray.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="rotation.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="sphere.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="step.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="stepfast.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="testing.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="timer.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="util.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="array.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="box.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="capsule.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="collision_cylinder_box.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="collision_cylinder_plane.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="collision_cylinder_sphere.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="collision_cylinder_trimesh.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="collision_kernel.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="collision_quadtreespace.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="collision_sapspace.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="collision_space.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="collision_transform.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="collision_trimesh_box.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="collision_trimesh_ccylinder.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="collision_trimesh_disabled.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="collision_trimesh_distance.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="collision_trimesh_gimpact.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="collision_trimesh_opcode.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="collision_trimesh_plane.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="collision_trimesh_ray.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="collision_trimesh_sphere.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="collision_trimesh_trimesh.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="collision_trimesh_trimesh_new.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="collision_util.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="convex.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="cylinder.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="error.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="export-dif.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="fastdot.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="fastldlt.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="fastlsolve.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="fastltsolve.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="heightfield.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="lcp.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="mass.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="mat.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="matrix.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="memory.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="misc.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="obstack.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="ode.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="odeinit.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="OPCODE\Ice\IceBoundingSphere.h">
+      <Filter>OPCODE\Ice</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\Ice\IceContainer.h">
+      <Filter>OPCODE\Ice</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\Ice\IceFPU.h">
+      <Filter>OPCODE\Ice</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\Ice\IceHPoint.h">
+      <Filter>OPCODE\Ice</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\Ice\IceIndexedTriangle.h">
+      <Filter>OPCODE\Ice</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\Ice\IceLSS.h">
+      <Filter>OPCODE\Ice</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\Ice\IceMatrix3x3.h">
+      <Filter>OPCODE\Ice</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\Ice\IceMatrix4x4.h">
+      <Filter>OPCODE\Ice</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\Ice\IceMemoryMacros.h">
+      <Filter>OPCODE\Ice</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\Ice\IceOBB.h">
+      <Filter>OPCODE\Ice</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\Ice\IcePairs.h">
+      <Filter>OPCODE\Ice</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\Ice\IcePlane.h">
+      <Filter>OPCODE\Ice</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\Ice\IcePoint.h">
+      <Filter>OPCODE\Ice</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\Ice\IcePreprocessor.h">
+      <Filter>OPCODE\Ice</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\Ice\IceRandom.h">
+      <Filter>OPCODE\Ice</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\Ice\IceRay.h">
+      <Filter>OPCODE\Ice</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\Ice\IceRevisitedRadix.h">
+      <Filter>OPCODE\Ice</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\Ice\IceSegment.h">
+      <Filter>OPCODE\Ice</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\Ice\IceTriangle.h">
+      <Filter>OPCODE\Ice</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\Ice\IceTriList.h">
+      <Filter>OPCODE\Ice</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\Ice\IceTypes.h">
+      <Filter>OPCODE\Ice</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\Ice\IceUtils.h">
+      <Filter>OPCODE\Ice</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\Ice\IceAABB.h">
+      <Filter>OPCODE\Ice</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\Ice\IceAxes.h">
+      <Filter>OPCODE\Ice</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\OPC_SphereCollider.h">
+      <Filter>OPCODE</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\OPC_SphereTriOverlap.h">
+      <Filter>OPCODE</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\OPC_TreeBuilders.h">
+      <Filter>OPCODE</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\OPC_TreeCollider.h">
+      <Filter>OPCODE</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\OPC_TriBoxOverlap.h">
+      <Filter>OPCODE</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\OPC_TriTriOverlap.h">
+      <Filter>OPCODE</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\OPC_VolumeCollider.h">
+      <Filter>OPCODE</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\Opcode.h">
+      <Filter>OPCODE</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\Stdafx.h">
+      <Filter>OPCODE</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\OPC_AABBCollider.h">
+      <Filter>OPCODE</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\OPC_AABBTree.h">
+      <Filter>OPCODE</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\OPC_BaseModel.h">
+      <Filter>OPCODE</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\OPC_BoxBoxOverlap.h">
+      <Filter>OPCODE</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\OPC_Collider.h">
+      <Filter>OPCODE</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\OPC_Common.h">
+      <Filter>OPCODE</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\OPC_HybridModel.h">
+      <Filter>OPCODE</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\OPC_IceHook.h">
+      <Filter>OPCODE</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\OPC_LSSAABBOverlap.h">
+      <Filter>OPCODE</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\OPC_LSSCollider.h">
+      <Filter>OPCODE</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\OPC_LSSTriOverlap.h">
+      <Filter>OPCODE</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\OPC_MeshInterface.h">
+      <Filter>OPCODE</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\OPC_Model.h">
+      <Filter>OPCODE</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\OPC_OBBCollider.h">
+      <Filter>OPCODE</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\OPC_OptimizedTree.h">
+      <Filter>OPCODE</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\OPC_Picking.h">
+      <Filter>OPCODE</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\OPC_PlanesAABBOverlap.h">
+      <Filter>OPCODE</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\OPC_PlanesCollider.h">
+      <Filter>OPCODE</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\OPC_PlanesTriOverlap.h">
+      <Filter>OPCODE</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\OPC_RayAABBOverlap.h">
+      <Filter>OPCODE</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\OPC_RayCollider.h">
+      <Filter>OPCODE</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\OPC_RayTriOverlap.h">
+      <Filter>OPCODE</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\OPC_Settings.h">
+      <Filter>OPCODE</Filter>
+    </ClInclude>
+    <ClInclude Include="OPCODE\OPC_SphereAABBOverlap.h">
+      <Filter>OPCODE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ode\contact.h">
+      <Filter>include\ode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ode\error.h">
+      <Filter>include\ode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ode\export-dif.h">
+      <Filter>include\ode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ode\mass.h">
+      <Filter>include\ode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ode\matrix.h">
+      <Filter>include\ode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ode\memory.h">
+      <Filter>include\ode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ode\misc.h">
+      <Filter>include\ode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ode\objects.h">
+      <Filter>include\ode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ode\ode.h">
+      <Filter>include\ode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ode\odeconfig.h">
+      <Filter>include\ode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ode\odecpp.h">
+      <Filter>include\ode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ode\odecpp_collision.h">
+      <Filter>include\ode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ode\odeinit.h">
+      <Filter>include\ode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ode\odemath.h">
+      <Filter>include\ode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ode\rotation.h">
+      <Filter>include\ode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ode\timer.h">
+      <Filter>include\ode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ode\collision.h">
+      <Filter>include\ode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ode\collision_space.h">
+      <Filter>include\ode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ode\collision_trimesh.h">
+      <Filter>include\ode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ode\common.h">
+      <Filter>include\ode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ode\compatibility.h">
+      <Filter>include\ode</Filter>
+    </ClInclude>
+    <ClInclude Include="joints\ball.h">
+      <Filter>src\joints</Filter>
+    </ClInclude>
+    <ClInclude Include="joints\contact.h">
+      <Filter>src\joints</Filter>
+    </ClInclude>
+    <ClInclude Include="joints\fixed.h">
+      <Filter>src\joints</Filter>
+    </ClInclude>
+    <ClInclude Include="joints\hinge.h">
+      <Filter>src\joints</Filter>
+    </ClInclude>
+    <ClInclude Include="joints\hinge2.h">
+      <Filter>src\joints</Filter>
+    </ClInclude>
+    <ClInclude Include="joints\joint.h">
+      <Filter>src\joints</Filter>
+    </ClInclude>
+    <ClInclude Include="joints\joint_internal.h">
+      <Filter>src\joints</Filter>
+    </ClInclude>
+    <ClInclude Include="joints\joints.h">
+      <Filter>src\joints</Filter>
+    </ClInclude>
+    <ClInclude Include="joints\lmotor.h">
+      <Filter>src\joints</Filter>
+    </ClInclude>
+    <ClInclude Include="joints\null.h">
+      <Filter>src\joints</Filter>
+    </ClInclude>
+    <ClInclude Include="joints\piston.h">
+      <Filter>src\joints</Filter>
+    </ClInclude>
+    <ClInclude Include="joints\plane2d.h">
+      <Filter>src\joints</Filter>
+    </ClInclude>
+    <ClInclude Include="joints\pr.h">
+      <Filter>src\joints</Filter>
+    </ClInclude>
+    <ClInclude Include="joints\pu.h">
+      <Filter>src\joints</Filter>
+    </ClInclude>
+    <ClInclude Include="joints\slider.h">
+      <Filter>src\joints</Filter>
+    </ClInclude>
+    <ClInclude Include="joints\universal.h">
+      <Filter>src\joints</Filter>
+    </ClInclude>
+    <ClInclude Include="joints\amotor.h">
+      <Filter>src\joints</Filter>
+    </ClInclude>
+    <ClInclude Include="odeou.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="odetls.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="quickstep.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="step.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="testing.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="util.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="array.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="collision_kernel.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="collision_space_internal.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="collision_std.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="collision_transform.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="collision_trimesh_colliders.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="collision_trimesh_internal.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="collision_util.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="config.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="heightfield.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="lcp.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="mat.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="objects.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="obstack.h">
+      <Filter>src</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
