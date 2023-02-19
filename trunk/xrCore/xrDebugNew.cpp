@@ -398,17 +398,11 @@ void CALLBACK PreErrorHandler	(INT_PTR)
 }
 
 #ifdef USE_BUG_TRAP
-void SetupExceptionHandler	(const bool &dedicated)
+void SetupExceptionHandler()
 {
 	BT_InstallSehFilter		();
-#ifndef USE_OWN_ERROR_MESSAGE_WINDOW
-	if (!dedicated && !strstr(GetCommandLine(),"-silent_error_mode"))
-		BT_SetActivityType	(BTA_SHOWUI);
-	else
-		BT_SetActivityType	(BTA_SAVEREPORT);
-#else // USE_OWN_ERROR_MESSAGE_WINDOW
-	BT_SetActivityType		(BTA_SAVEREPORT);
-#endif // USE_OWN_ERROR_MESSAGE_WINDOW
+
+	BT_SetActivityType	(BTA_SAVEREPORT);
 
 	BT_SetDialogMessage				(
 		BTDM_INTRO2,
@@ -885,7 +879,7 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 #endif
 
 #ifdef USE_BUG_TRAP
-		SetupExceptionHandler			(dedicated);
+		SetupExceptionHandler();
 #endif // USE_BUG_TRAP
 		previous_filter					= ::SetUnhandledExceptionFilter(UnhandledFilter);	// exception handler to all "unhandled" exceptions
 

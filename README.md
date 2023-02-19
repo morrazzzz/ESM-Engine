@@ -1,6 +1,6 @@
 # ESM-Engine
 <p align="center">
-  <a href="https://github.com/morrazzzz/ESM-Engine/releases"><img src="https://img.shields.io/github/v/release/morrazzzz/ESM-Engine?label=Release&style=flat-square" alt="GitHub release"></a>
+  <a href="https://github.com/morrazzzz/ESM-Engine/releases"><img src="https://img.shields.io/github/v/release/morrazzzz/ESM-Engine?style=flat-square" alt="GitHub release"></a>
   <a href="https://github.com/morrazzzz/ESM-Engine/blob/main/LICENSE"><img src="https://img.shields.io/github/license/morrazzzz/ESM-Engine?style=flat-square" alt="License"></a>
   <a href="https://github.com/morrazzzz/ESM-Engine/releases"><img src="https://img.shields.io/github/downloads/morrazzzz/ESM-Engine/total?style=flat-square" alt="Downloads"></a>
   <a href="https://github.com/morrazzzz/ESM-Engine"><img src="https://img.shields.io/github/repo-size/morrazzzz/ESM-Engine?style=flat-square" alt="Size"></a>
