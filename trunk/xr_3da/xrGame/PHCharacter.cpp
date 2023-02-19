@@ -6,7 +6,7 @@
 #include "ExtendedGeom.h"
 #include "../cl_intersect.h"
 #include "tri-colliderKNoOPC\__aabb_tri.h"
-#include "../../3rd party/ode/Ode/util.h"
+#include "../../xrODE/ode/src/util.h"
 
 CPHCharacter::CPHCharacter(void):
   CPHDisablingTranslational()

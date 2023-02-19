@@ -10,7 +10,7 @@
 #include "GameMtlLib.h"
 #include "Level.h"
 #include "PHWorld.h"
-#include "../../3rd party/ode/ode/util.h"
+#include "../../xrODE/ode/src/util.h"
 
 #ifdef DEBUG
 #	include "PHDebug.h"

@@ -69,18 +69,7 @@ CPHWorld::CPHWorld()
 	b_processing=false;
 	m_gravity	=default_world_gravity;
 	b_exist=false;
-
-	dInitODE();
 }
-
-CPHWorld::~CPHWorld()
-{
-	ODE_API extern unsigned int g_uiODEInitCounter;
-	if (g_uiODEInitCounter != 0)
-		dCloseODE();
-}
-
-
 void CPHWorld::SetStep(dReal s)
 {
 	fixed_step											=	s;

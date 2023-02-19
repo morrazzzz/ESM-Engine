@@ -9,7 +9,7 @@
 #include "game_object_space.h"
 //#include "../skeletoncustom.h"
 #include "../skeletonanimated.h"
-#include "../../3rd party/ode/Ode/util.h"
+#include <../../xrODE/ode/src/util.h>
 #ifdef DEBUG
 #include	"PHDebug.h"
 #endif
@@ -18,7 +18,7 @@
 #pragma warning(disable:4995)
 #pragma warning(disable:4267)
 
-#include "../../3rd party/ode/Ode/collision_kernel.h"
+#include "../../xrODE/ode/src/collision_kernel.h"
 
 
 #pragma warning(default:4267)

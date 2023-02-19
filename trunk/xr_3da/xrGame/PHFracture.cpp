@@ -7,8 +7,7 @@
 
 #pragma warning(disable:4995)
 #pragma warning(disable:4267)
-#include "../../3rd party/ode/Ode/joints/joint.h"
-#include "../../3rd party/ode/Ode/joints/contact.h"
+#include "../../xrODE/ode/src/joint.h"
 #pragma warning(default:4995)
 #pragma warning(default:4267)
 extern	class CPHWorld	*ph_world;
@@ -475,15 +474,14 @@ bool CPHFracture::Update(CPHElement* element)
 	dMatrix3 glI1,glI2,glInvI,tmp;	
 
 	// compute inertia tensors in global frame
-	dMULTIPLY2_333(tmp, body->invI, body->posr.R);
-	dMULTIPLY0_333(glInvI, body->posr.R, tmp);
+	dMULTIPLY2_333 (tmp,body->invI,body->R);
+	dMULTIPLY0_333 (glInvI,body->R,tmp);
 
-	dMULTIPLY2_333(tmp, m_firstM.I, body->posr.R);
-	dMULTIPLY0_333(glI1, body->posr.R, tmp);
+	dMULTIPLY2_333 (tmp,m_firstM.I,body->R);
+	dMULTIPLY0_333 (glI1,body->R,tmp);
 
-	dMULTIPLY2_333(tmp, m_secondM.I, body->posr.R);
-	dMULTIPLY0_333(glI2, body->posr.R, tmp);
-
+	dMULTIPLY2_333 (tmp,m_secondM.I,body->R);
+	dMULTIPLY0_333 (glI2,body->R,tmp);
 	//both parts have eqiual start angular vel same as have body so we ignore it
 
 	//compute breaking torque
