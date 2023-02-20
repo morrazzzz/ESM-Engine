@@ -179,11 +179,11 @@ void CSE_ALifeInventoryItem::UPDATE_Read	(NET_Packet &tNetPacket)
 
 void CSE_ALifeInventoryItem::FillProps		(LPCSTR pref, PropItemVec& values)
 {
-	PHelper().CreateFloat			(values, PrepareKey(pref, *base()->s_name, "Item condition"), 		&m_fCondition, 			0.f, 1.f);
+//	PHelper().CreateFloat			(values, PrepareKey(pref, *base()->s_name, "Item condition"), 		&m_fCondition, 			0.f, 1.f);
 	CSE_ALifeObject					*alife_object = smart_cast<CSE_ALifeObject*>(base());
-	R_ASSERT						(alife_object);
+/*	R_ASSERT(alife_object);
 	PHelper().CreateFlag32			(values, PrepareKey(pref, *base()->s_name,"ALife\\Useful for AI"),	&alife_object->m_flags,	CSE_ALifeObject::flUsefulForAI);
-	PHelper().CreateFlag32			(values, PrepareKey(pref, *base()->s_name,"ALife\\Visible for AI"),	&alife_object->m_flags,	CSE_ALifeObject::flVisibleForAI);
+	PHelper().CreateFlag32			(values, PrepareKey(pref, *base()->s_name,"ALife\\Visible for AI"),	&alife_object->m_flags,	CSE_ALifeObject::flVisibleForAI);*/
 }
 
 bool CSE_ALifeInventoryItem::bfUseful		()
@@ -263,7 +263,7 @@ void CSE_ALifeItem::UPDATE_Read				(NET_Packet &tNetPacket)
 void CSE_ALifeItem::FillProps				(LPCSTR pref, PropItemVec& values)
 {
 	inherited1::FillProps		(pref,	 values);
-	inherited2::FillProps		(pref,	 values);
+//	inherited2::FillProps		(pref,	 values);
 }
 
 BOOL CSE_ALifeItem::Net_Relevant			()
@@ -497,7 +497,7 @@ BOOL CSE_ALifeItemWeapon::Net_Relevant()
 void CSE_ALifeItemWeapon::FillProps			(LPCSTR pref, PropItemVec& items)
 {
 	inherited::FillProps			(pref, items);
-	PHelper().CreateU8			(items,PrepareKey(pref,*s_name,"Ammo type:"), &ammo_type,0,255,1);
+/*	PHelper().CreateU8(items, PrepareKey(pref, *s_name, "Ammo type:"), &ammo_type, 0, 255, 1);
 	PHelper().CreateU16			(items,PrepareKey(pref,*s_name,"Ammo: in magazine"),	&a_elapsed,0,30,1);
 	
 
@@ -508,7 +508,7 @@ void CSE_ALifeItemWeapon::FillProps			(LPCSTR pref, PropItemVec& items)
         PHelper().CreateFlag8	(items,PrepareKey(pref,*s_name,"Addons\\Silencer"), 	&m_addon_flags, eWeaponAddonSilencer);
 
 	if (m_grenade_launcher_status == eAddonAttachable)
-        PHelper().CreateFlag8	(items,PrepareKey(pref,*s_name,"Addons\\Podstvolnik"),&m_addon_flags,eWeaponAddonGrenadeLauncher);
+        PHelper().CreateFlag8	(items,PrepareKey(pref,*s_name,"Addons\\Podstvolnik"),&m_addon_flags,eWeaponAddonGrenadeLauncher);*/
 }
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeItemWeaponShotGun
@@ -675,7 +675,7 @@ void CSE_ALifeItemAmmo::UPDATE_Write		(NET_Packet	&tNetPacket)
 
 void CSE_ALifeItemAmmo::FillProps			(LPCSTR pref, PropItemVec& values) {
   	inherited::FillProps			(pref,values);
-	PHelper().CreateU16			(values, PrepareKey(pref, *s_name, "Ammo: left"), &a_elapsed, 0, m_boxSize, m_boxSize);
+//	PHelper().CreateU16			(values, PrepareKey(pref, *s_name, "Ammo: left"), &a_elapsed, 0, m_boxSize, m_boxSize);
 }
 
 bool CSE_ALifeItemAmmo::can_switch_online	() const
@@ -766,7 +766,7 @@ void CSE_ALifeItemArtefact::UPDATE_Write	(NET_Packet	&tNetPacket)
 void CSE_ALifeItemArtefact::FillProps		(LPCSTR pref, PropItemVec& items)
 {
 	inherited::FillProps			(pref,items);
-	PHelper().CreateFloat			(items, PrepareKey(pref, *s_name, "Anomaly value:"), &m_fAnomalyValue, 0.f, 200.f);
+//	PHelper().CreateFloat			(items, PrepareKey(pref, *s_name, "Anomaly value:"), &m_fAnomalyValue, 0.f, 200.f);
 }
 
 BOOL CSE_ALifeItemArtefact::Net_Relevant	()
@@ -887,7 +887,7 @@ void CSE_ALifeItemDocument::FillProps		(LPCSTR pref, PropItemVec& items)
 {
 	inherited::FillProps			(pref,items);
 //	PHelper().CreateU16			(items, PrepareKey(pref, *s_name, "Document index :"), &m_wDocIndex, 0, 65535);
-	PHelper().CreateRText		(items, PrepareKey(pref, *s_name, "Info portion :"), &m_wDoc);
+//	PHelper().CreateRText		(items, PrepareKey(pref, *s_name, "Info portion :"), &m_wDoc);
 }
 
 ////////////////////////////////////////////////////////////////////////////
