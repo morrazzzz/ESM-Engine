@@ -36,7 +36,7 @@ extern bool shared_str_initialized;
 #include <dbghelp.h>						// MiniDump flags
 
 #ifdef USE_BUG_TRAP
-#	include "../bugtrap/bugtrap.h"						// for BugTrap functionality
+#	include "../3rd party/BugTrap/BugTrap/BugTrap.h"						// for BugTrap functionality
     #ifndef __BORLANDC__
         #	pragma comment(lib,"BugTrap.lib")		// Link to ANSI DLL
     #else
