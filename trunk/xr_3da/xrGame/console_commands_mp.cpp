@@ -270,8 +270,8 @@ public:
 		xr_strlwr			(PlayerName);
 
 		Level().Server->clients_Lock();
-		u32	cnt					= Level().Server->game->get_players_count();
-		for(u32 it=0; it<cnt; it++)	
+		u32	cnt					= Level().Server->game->get_players_count(), it = 0;
+		for(; it<cnt; it++)	
 		{
 			xrClientData *l_pC = (xrClientData*)	Level().Server->client_Get	(it);
 			if (l_pC)
@@ -349,8 +349,8 @@ public:
 		xr_strlwr			(PlayerName);
 
 		Level().Server->clients_Lock();
-		u32	cnt					= Level().Server->game->get_players_count();
-		for(u32 it=0; it<cnt; it++)	
+		u32	cnt					= Level().Server->game->get_players_count(), it = 0;
+		for(; it<cnt; it++)	
 		{
 			xrClientData *l_pC = (xrClientData*)	Level().Server->client_Get	(it);
 			if (l_pC)

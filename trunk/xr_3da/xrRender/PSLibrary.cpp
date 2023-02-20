@@ -24,16 +24,18 @@ void CPSLibrary::OnCreate()
     }else{
     	Msg("Can't find file: '%s'",fn);
     }
+
 	for (PS::PEDIt e_it = m_PEDs.begin(); e_it!=m_PEDs.end(); e_it++)
     	(*e_it)->CreateShader();
 }
  
 void CPSLibrary::OnDestroy()
 {
+	
 	for (PS::PEDIt e_it = m_PEDs.begin(); e_it!=m_PEDs.end(); e_it++)
     	(*e_it)->DestroyShader();
 
-	for (e_it = m_PEDs.begin(); e_it!=m_PEDs.end(); e_it++)
+	for (auto e_it = m_PEDs.begin(); e_it!=m_PEDs.end(); e_it++)
 		xr_delete	(*e_it);
 	m_PEDs.clear	();
 
