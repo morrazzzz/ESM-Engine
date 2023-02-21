@@ -35,6 +35,7 @@
     <OutDir Condition="'$(ConfigurationType)'=='Application'"   >$(xrBinDir)</OutDir>
     <OutDir Condition="'$(ConfigurationType)'=='DynamicLibrary'">$(xrBinDir)</OutDir>
     <OutDir Condition="'$(ConfigurationType)'=='StaticLibrary'" >$(xrLibDir)</OutDir>
+    <OutDir Condition="'$(ConfigurationType)'=='Makefile'"      >$(xrLibDir)</OutDir>
 
     <IntDir>$(xrIntDir)$(ProjectName)\</IntDir>
   </PropertyGroup>
