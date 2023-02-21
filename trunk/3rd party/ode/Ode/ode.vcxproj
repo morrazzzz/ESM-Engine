@@ -319,6 +319,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <ExceptionHandling>Sync</ExceptionHandling>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_MT;NDEBUG;dNODEBUG;dIDEDOUBLE;CCD_IDEDOUBLE;WIN32;_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;_OU_NAMESPACE=odeou;_OU_FEATURE_SET=_OU_FEATURE_SET_ATOMICS;dLIBCCD_ENABLED;dLIBCCD_INTERNAL;dLIBCCD_BOX_CYL;dLIBCCD_CYL_CYL;dLIBCCD_CAP_CYL;dLIBCCD_CONVEX_BOX;dLIBCCD_CONVEX_CAP;dLIBCCD_CONVEX_CYL;dLIBCCD_CONVEX_SPHERE;dLIBCCD_CONVEX_CONVEX;ODE_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>

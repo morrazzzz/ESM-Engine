@@ -237,6 +237,7 @@
         $(xrSdkDir)dxSDK/Include;
 ..\3rd party\ode\Public\;        %(AdditionalIncludeDirectories)
       </AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
