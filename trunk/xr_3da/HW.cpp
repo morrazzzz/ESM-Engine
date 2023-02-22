@@ -9,6 +9,7 @@
 #pragma warning(default:4995)
 #include "HW.h"
 #include "xr_IOconsole.h"
+#include "IGame_Persistent.h"
 
 #ifndef _EDITOR
 	void	fill_vid_mode_list			(CHW* _hw);
@@ -172,188 +173,204 @@ void	CHW::selectResolution	(u32 &dwWidth, u32 &dwHeight, BOOL bWindowed)
 
 }
 
-void		CHW::CreateDevice		(HWND m_hWnd)
+void		CHW::CreateDevice(HWND m_hWnd, bool move_window)
 {
-	CreateD3D				();
+	m_move_window = move_window;
+	CreateD3D();
 
 	// General - select adapter and device
-#ifdef DEDICATED_SERVER
-	BOOL  bWindowed			= TRUE;
+//#ifdef DEDICATED_SERVER
+//	BOOL  bWindowed			= TRUE;
+//#else
+//	BOOL  bWindowed			= !psDeviceFlags.is(rsFullscreen);
+//#endif
+
+	BOOL  bWindowed = TRUE;
+
+#ifndef _EDITOR
+	if (!g_dedicated_server)
+		bWindowed = !psDeviceFlags.is(rsFullscreen);
 #else
-	BOOL  bWindowed			= !psDeviceFlags.is(rsFullscreen);
-#endif
+	bWindowed = 1;
+#endif        
 
-	DevAdapter				= D3DADAPTER_DEFAULT;
-	DevT					= Caps.bForceGPU_REF?D3DDEVTYPE_REF:D3DDEVTYPE_HAL;
+	DevAdapter = D3DADAPTER_DEFAULT;
+	DevT = Caps.bForceGPU_REF ? D3DDEVTYPE_REF : D3DDEVTYPE_HAL;
 
-//. #ifdef DEBUG
+#ifndef	MASTER_GOLD
 	// Look for 'NVIDIA NVPerfHUD' adapter
 	// If it is present, override default settings
-	for (UINT Adapter=0;Adapter<pD3D->GetAdapterCount();Adapter++)	{
+	for (UINT Adapter = 0; Adapter < pD3D->GetAdapterCount(); Adapter++) {
 		D3DADAPTER_IDENTIFIER9 Identifier;
-		HRESULT Res=pD3D->GetAdapterIdentifier(Adapter,0,&Identifier);
-		if (SUCCEEDED(Res) && (xr_strcmp(Identifier.Description,"NVIDIA NVPerfHUD")==0))
+		HRESULT Res = pD3D->GetAdapterIdentifier(Adapter, 0, &Identifier);
+		if (SUCCEEDED(Res) && (xr_strcmp(Identifier.Description, "NVIDIA PerfHUD") == 0))
 		{
-			DevAdapter	=Adapter;
-			DevT		=D3DDEVTYPE_REF;
+			DevAdapter = Adapter;
+			DevT = D3DDEVTYPE_REF;
 			break;
 		}
 	}
-//. #endif
+#endif	//	MASTER_GOLD
 
 
 	// Display the name of video board
 	D3DADAPTER_IDENTIFIER9	adapterID;
-	R_CHK	(pD3D->GetAdapterIdentifier(DevAdapter,0,&adapterID));
-	Msg		("* GPU [vendor:%X]-[device:%X]: %s",adapterID.VendorId,adapterID.DeviceId,adapterID.Description);
+	R_CHK(pD3D->GetAdapterIdentifier(DevAdapter, 0, &adapterID));
+	Msg("* GPU [vendor:%X]-[device:%X]: %s", adapterID.VendorId, adapterID.DeviceId, adapterID.Description);
 
-	u16	drv_Product		= HIWORD(adapterID.DriverVersion.HighPart);
-	u16	drv_Version		= LOWORD(adapterID.DriverVersion.HighPart);
-	u16	drv_SubVersion	= HIWORD(adapterID.DriverVersion.LowPart);
-	u16	drv_Build		= LOWORD(adapterID.DriverVersion.LowPart);
-	Msg		("* GPU driver: %d.%d.%d.%d",u32(drv_Product),u32(drv_Version),u32(drv_SubVersion), u32(drv_Build));
+	u16	drv_Product = HIWORD(adapterID.DriverVersion.HighPart);
+	u16	drv_Version = LOWORD(adapterID.DriverVersion.HighPart);
+	u16	drv_SubVersion = HIWORD(adapterID.DriverVersion.LowPart);
+	u16	drv_Build = LOWORD(adapterID.DriverVersion.LowPart);
+	Msg("* GPU driver: %d.%d.%d.%d", u32(drv_Product), u32(drv_Version), u32(drv_SubVersion), u32(drv_Build));
 
-	Caps.id_vendor	= adapterID.VendorId;
-	Caps.id_device	= adapterID.DeviceId;
+	Caps.id_vendor = adapterID.VendorId;
+	Caps.id_device = adapterID.DeviceId;
 
 	// Retreive windowed mode
 	D3DDISPLAYMODE mWindowed;
 	R_CHK(pD3D->GetAdapterDisplayMode(DevAdapter, &mWindowed));
 
 	// Select back-buffer & depth-stencil format
-	D3DFORMAT&	fTarget	= Caps.fTarget;
-	D3DFORMAT&	fDepth	= Caps.fDepth;
+	D3DFORMAT& fTarget = Caps.fTarget;
+	D3DFORMAT& fDepth = Caps.fDepth;
 	if (bWindowed)
 	{
 		fTarget = mWindowed.Format;
-		R_CHK(pD3D->CheckDeviceType	(DevAdapter,DevT,fTarget,fTarget,TRUE));
-		fDepth  = selectDepthStencil(fTarget);
-	} else {
+		R_CHK(pD3D->CheckDeviceType(DevAdapter, DevT, fTarget, fTarget, TRUE));
+		fDepth = selectDepthStencil(fTarget);
+	}
+	else {
 		switch (psCurrentBPP) {
 		case 32:
 			fTarget = D3DFMT_X8R8G8B8;
-			if (SUCCEEDED(pD3D->CheckDeviceType(DevAdapter,DevT,fTarget,fTarget,FALSE)))
+			if (SUCCEEDED(pD3D->CheckDeviceType(DevAdapter, DevT, fTarget, fTarget, FALSE)))
 				break;
 			fTarget = D3DFMT_A8R8G8B8;
-			if (SUCCEEDED(pD3D->CheckDeviceType(DevAdapter,DevT,fTarget,fTarget,FALSE)))
+			if (SUCCEEDED(pD3D->CheckDeviceType(DevAdapter, DevT, fTarget, fTarget, FALSE)))
 				break;
 			fTarget = D3DFMT_R8G8B8;
-			if (SUCCEEDED(pD3D->CheckDeviceType(DevAdapter,DevT,fTarget,fTarget,FALSE)))
+			if (SUCCEEDED(pD3D->CheckDeviceType(DevAdapter, DevT, fTarget, fTarget, FALSE)))
 				break;
 			fTarget = D3DFMT_UNKNOWN;
 			break;
 		case 16:
 		default:
 			fTarget = D3DFMT_R5G6B5;
-			if (SUCCEEDED(pD3D->CheckDeviceType(DevAdapter,DevT,fTarget,fTarget,FALSE)))
+			if (SUCCEEDED(pD3D->CheckDeviceType(DevAdapter, DevT, fTarget, fTarget, FALSE)))
 				break;
 			fTarget = D3DFMT_X1R5G5B5;
-			if (SUCCEEDED(pD3D->CheckDeviceType(DevAdapter,DevT,fTarget,fTarget,FALSE)))
+			if (SUCCEEDED(pD3D->CheckDeviceType(DevAdapter, DevT, fTarget, fTarget, FALSE)))
 				break;
 			fTarget = D3DFMT_X4R4G4B4;
-			if (SUCCEEDED(pD3D->CheckDeviceType(DevAdapter,DevT,fTarget,fTarget,FALSE)))
+			if (SUCCEEDED(pD3D->CheckDeviceType(DevAdapter, DevT, fTarget, fTarget, FALSE)))
 				break;
 			fTarget = D3DFMT_UNKNOWN;
 			break;
 		}
-		fDepth  = selectDepthStencil(fTarget);
+		fDepth = selectDepthStencil(fTarget);
 	}
 
-	if ((D3DFMT_UNKNOWN==fTarget) || (D3DFMT_UNKNOWN==fTarget))	{
-		Msg					("Failed to initialize graphics hardware.\nPlease try to restart the game.");
-		FlushLog			();
-		MessageBox			(NULL,"Failed to initialize graphics hardware.\nPlease try to restart the game.","Error!",MB_OK|MB_ICONERROR);
-		TerminateProcess	(GetCurrentProcess(),0);
+	if ((D3DFMT_UNKNOWN == fTarget) || (D3DFMT_UNKNOWN == fTarget)) {
+		Msg("Failed to initialize graphics hardware.\n"
+			"Please try to restart the game.\n"
+			"Can not find matching format for back buffer."
+		);
+		FlushLog();
+		MessageBox(NULL, "Failed to initialize graphics hardware.\nPlease try to restart the game.", "Error!", MB_OK | MB_ICONERROR);
+		TerminateProcess(GetCurrentProcess(), 0);
 	}
 
 
-    // Set up the presentation parameters
-	D3DPRESENT_PARAMETERS&	P	= DevPP;
-    ZeroMemory				( &P, sizeof(P) );
+	// Set up the presentation parameters
+	D3DPRESENT_PARAMETERS& P = DevPP;
+	ZeroMemory(&P, sizeof(P));
 
 #ifndef _EDITOR
-	selectResolution	(P.BackBufferWidth, P.BackBufferHeight, bWindowed);
+	selectResolution(P.BackBufferWidth, P.BackBufferHeight, bWindowed);
 #endif
-// Back buffer
-//.	P.BackBufferWidth		= dwWidth;
-//. P.BackBufferHeight		= dwHeight;
-	P.BackBufferFormat		= fTarget;
-	P.BackBufferCount		= 1;
+	// Back buffer
+	//.	P.BackBufferWidth		= dwWidth;
+	//. P.BackBufferHeight		= dwHeight;
+	P.BackBufferFormat = fTarget;
+	P.BackBufferCount = 1;
 
 	// Multisample
-    P.MultiSampleType		= D3DMULTISAMPLE_NONE;
-	P.MultiSampleQuality	= 0;
+	P.MultiSampleType = D3DMULTISAMPLE_NONE;
+	P.MultiSampleQuality = 0;
 
 	// Windoze
-    P.SwapEffect			= bWindowed?D3DSWAPEFFECT_COPY:D3DSWAPEFFECT_DISCARD;
-	P.hDeviceWindow			= m_hWnd;
-    P.Windowed				= bWindowed;
+	P.SwapEffect = bWindowed ? D3DSWAPEFFECT_COPY : D3DSWAPEFFECT_DISCARD;
+	P.hDeviceWindow = m_hWnd;
+	P.Windowed = bWindowed;
 
 	// Depth/stencil
-	P.EnableAutoDepthStencil= TRUE;
-    P.AutoDepthStencilFormat= fDepth;
-	P.Flags					= 0;	//. D3DPRESENTFLAG_DISCARD_DEPTHSTENCIL;
+	P.EnableAutoDepthStencil = TRUE;
+	P.AutoDepthStencilFormat = fDepth;
+	P.Flags = 0;	//. D3DPRESENTFLAG_DISCARD_DEPTHSTENCIL;
 
 	// Refresh rate
-	P.PresentationInterval	= D3DPRESENT_INTERVAL_IMMEDIATE;
-    if( !bWindowed )		P.FullScreen_RefreshRateInHz	= selectRefresh	(P.BackBufferWidth, P.BackBufferHeight,fTarget);
-    else					P.FullScreen_RefreshRateInHz	= D3DPRESENT_RATE_DEFAULT;
+	P.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
+	if (!bWindowed)		P.FullScreen_RefreshRateInHz = selectRefresh(P.BackBufferWidth, P.BackBufferHeight, fTarget);
+	else					P.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT;
 
-    // Create the device
-	u32 GPU		= selectGPU();	
-	HRESULT R	= HW.pD3D->CreateDevice(DevAdapter,
-										DevT,
-										m_hWnd,
-										GPU | D3DCREATE_MULTITHREADED,	//. ? locks at present
-										&P,
-										&pDevice );
-	
-	if (FAILED(R))	{
-		R	= HW.pD3D->CreateDevice(	DevAdapter,
-										DevT,
-										m_hWnd,
-										GPU | D3DCREATE_MULTITHREADED,	//. ? locks at present
-										&P,
-										&pDevice );
+	// Create the device
+	u32 GPU = selectGPU();
+	HRESULT R = HW.pD3D->CreateDevice(DevAdapter,
+		DevT,
+		m_hWnd,
+		GPU | D3DCREATE_MULTITHREADED,	//. ? locks at present
+		&P,
+		&pDevice);
+
+	if (FAILED(R)) {
+		R = HW.pD3D->CreateDevice(DevAdapter,
+			DevT,
+			m_hWnd,
+			GPU | D3DCREATE_MULTITHREADED,	//. ? locks at present
+			&P,
+			&pDevice);
 	}
-	if (D3DERR_DEVICELOST==R)	{
+	if (D3DERR_DEVICELOST == R) {
 		// Fatal error! Cannot create rendering device AT STARTUP !!!
-		Msg					("Failed to initialize graphics hardware.\nPlease try to restart the game.");
-		FlushLog			();
-		MessageBox			(NULL,"Failed to initialize graphics hardware.\nPlease try to restart the game.","Error!",MB_OK|MB_ICONERROR);
-		TerminateProcess	(GetCurrentProcess(),0);
+		Msg("Failed to initialize graphics hardware.\n"
+			"Please try to restart the game.\n"
+			"CreateDevice returned 0x%08x(D3DERR_DEVICELOST)", R);
+		FlushLog();
+		MessageBox(NULL, "Failed to initialize graphics hardware.\nPlease try to restart the game.", "Error!", MB_OK | MB_ICONERROR);
+		TerminateProcess(GetCurrentProcess(), 0);
 	};
-	R_CHK		(R);
+	R_CHK(R);
 
-	_SHOW_REF	("* CREATE: DeviceREF:",HW.pDevice);
+	_SHOW_REF("* CREATE: DeviceREF:", HW.pDevice);
 	switch (GPU)
 	{
 	case D3DCREATE_SOFTWARE_VERTEXPROCESSING:
-		Log	("* Vertex Processor: SOFTWARE");
+		Log("* Vertex Processor: SOFTWARE");
 		break;
 	case D3DCREATE_MIXED_VERTEXPROCESSING:
-		Log	("* Vertex Processor: MIXED");
+		Log("* Vertex Processor: MIXED");
 		break;
 	case D3DCREATE_HARDWARE_VERTEXPROCESSING:
-		Log	("* Vertex Processor: HARDWARE");
+		Log("* Vertex Processor: HARDWARE");
 		break;
-	case D3DCREATE_HARDWARE_VERTEXPROCESSING|D3DCREATE_PUREDEVICE:
-		Log	("* Vertex Processor: PURE HARDWARE");
+	case D3DCREATE_HARDWARE_VERTEXPROCESSING | D3DCREATE_PUREDEVICE:
+		Log("* Vertex Processor: PURE HARDWARE");
 		break;
 	}
 
 	// Capture misc data
 #ifdef DEBUG
-	R_CHK	(pDevice->CreateStateBlock			(D3DSBT_ALL,&dwDebugSB));
+	R_CHK(pDevice->CreateStateBlock(D3DSBT_ALL, &dwDebugSB));
 #endif
-	R_CHK	(pDevice->GetRenderTarget			(0,&pBaseRT));
-	R_CHK	(pDevice->GetDepthStencilSurface	(&pBaseZB));
-	u32	memory									= pDevice->GetAvailableTextureMem	();
-	Msg		("*     Texture memory: %d M",		memory/(1024*1024));
-	Msg		("*          DDI-level: %2.1f",		float(D3DXGetDriverLevel(pDevice))/100.f);
+	R_CHK(pDevice->GetRenderTarget(0, &pBaseRT));
+	R_CHK(pDevice->GetDepthStencilSurface(&pBaseZB));
+	u32	memory = pDevice->GetAvailableTextureMem();
+	Msg("*     Texture memory: %d M", memory / (1024 * 1024));
+	Msg("*          DDI-level: %2.1f", float(D3DXGetDriverLevel(pDevice)) / 100.f);
 #ifndef _EDITOR
-	updateWindowProps							(m_hWnd);
-	fill_vid_mode_list							(this);
+	updateWindowProps(m_hWnd);
+	fill_vid_mode_list(this);
 #endif
 }
 

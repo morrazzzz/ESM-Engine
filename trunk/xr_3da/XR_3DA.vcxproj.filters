@@ -139,6 +139,9 @@
     <Filter Include="Engine\Noise">
       <UniqueIdentifier>{37a4cc23-0703-43ab-8d78-3d16ebeba5a1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="CoP">
+      <UniqueIdentifier>{65fc8b5d-3278-4ce5-b5ff-b4b6d91ea7cd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="_d3d_extensions.h">
@@ -354,15 +357,6 @@
     <ClInclude Include="WaveForm.h">
       <Filter>Render\Execution &amp; 3D\Shaders</Filter>
     </ClInclude>
-    <ClInclude Include="Blenders\Blender.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
-    </ClInclude>
-    <ClInclude Include="Blenders\Blender_CLSID.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
-    </ClInclude>
-    <ClInclude Include="Blenders\Blender_Recorder.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
-    </ClInclude>
     <ClInclude Include="tss.h">
       <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
     </ClInclude>
@@ -503,6 +497,12 @@
     </ClInclude>
     <ClInclude Include="perlin.h">
       <Filter>Engine\Noise</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\xrRender\Blenders\Blender.h" />
+    <ClInclude Include="..\xrRender\xrRender\Blenders\Blender_CLSID.h" />
+    <ClInclude Include="..\xrRender\xrRender\Blenders\Blender_Recorder.h" />
+    <ClInclude Include="..\xrRender\xrRender\dxRenderDeviceRender.h">
+      <Filter>CoP</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -722,15 +722,6 @@
     <ClCompile Include="xr_effgamma.cpp">
       <Filter>Render\Execution &amp; 3D\Gamma</Filter>
     </ClCompile>
-    <ClCompile Include="Blenders\Blender.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
-    </ClCompile>
-    <ClCompile Include="Blenders\Blender_Palette.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
-    </ClCompile>
-    <ClCompile Include="Blenders\Blender_Recorder.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
-    </ClCompile>
     <ClCompile Include="Blender_Recorder_R2.cpp">
       <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
     </ClCompile>
@@ -877,6 +868,12 @@
     </ClCompile>
     <ClCompile Include="perlin.cpp">
       <Filter>Engine\Noise</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\xrRender\Blenders\Blender.cpp" />
+    <ClCompile Include="..\xrRender\xrRender\Blenders\Blender_Palette.cpp" />
+    <ClCompile Include="..\xrRender\xrRender\Blenders\Blender_Recorder.cpp" />
+    <ClCompile Include="..\xrRender\xrRender\dxRenderDeviceRender.cpp">
+      <Filter>CoP</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

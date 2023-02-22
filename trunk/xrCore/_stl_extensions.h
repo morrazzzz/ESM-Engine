@@ -79,7 +79,7 @@ public:
 	template<class _Other>	xalloc<T>&				operator=		(const xalloc<_Other>&)					{	return (*this);	}
 							pointer					allocate		(size_type n, const void* p=0) const	{	return xr_alloc<T>((u32)n);	}
 							char*					_charalloc		(size_type n)							{	return (char*)allocate(n); }
-							void					deallocate		(pointer p, size_type n) const			{	xr_free	(p);				}
+					        void					deallocate		(pointer p, size_type n) const			{	xr_free	(p);				} // Is it crash?????
 							void					deallocate		(void* p, size_type n) const			{	xr_free	(p);				}
 							template<class T>
 							void construct(T* p, const T& _Val) { new(p)T(_Val); }

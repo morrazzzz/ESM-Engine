@@ -40,12 +40,12 @@ public:
 		cs.Leave		();
 		return			E;
 	}
-	ICF void			destroy			(void* &P)
+	ICF void			destroy(void*& P)
 	{
-		cs.Enter		();
-		*access(P)		= list;
-		list			= (u8*)P;
-		cs.Leave		();
-	}
+		cs.Enter();
+		*access(P) = list;
+		list = (u8*)P;
+		cs.Leave();
+	} 
 };
 #endif

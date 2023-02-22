@@ -2,6 +2,7 @@
 #include "dxRenderDeviceRender.h"
 
 #include "..\..\xr_3da\ResourceManager.h"
+#include "..\..\xr_3da\IGame_Persistent.h"
 #include "..\xr_3da\Render.h"
 
 dxRenderDeviceRender::dxRenderDeviceRender()
@@ -145,7 +146,7 @@ void dxRenderDeviceRender::OnDeviceCreate(LPCSTR shName)
 		m_WireShader.create			("editor\\wire");
 		m_SelectionShader.create	("editor\\selection");
 
-		DUImpl.OnDeviceCreate			();
+		DU.OnDeviceCreate			(); //PLEASE THEN CHANGE TO DUImpl!!!! DoAsyncScreenshot
 	}
 //#endif
 }
@@ -162,7 +163,8 @@ void dxRenderDeviceRender::Create( HWND hWnd, u32 &dwWidth, u32 &dwHeight, float
 #endif	//	USE_DX10
 	fWidth_2			= float(dwWidth/2)			;
 	fHeight_2			= float(dwHeight/2)			;
-	Resources			= xr_new<CResourceManager>		();
+//	Resources			= xr_new<CResourceManager>		();
+	Device.Resources = Resources = xr_new<CResourceManager>(); //morrazzzz: So that the game does not crash when loading the menu!!! Then return it!!!
 }
 
 void dxRenderDeviceRender::SetupGPU( BOOL bForceGPU_SW, BOOL bForceGPU_NonPure, BOOL bForceGPU_REF)
@@ -327,7 +329,7 @@ void dxRenderDeviceRender::Clear()
 #endif	//	USE_DX10
 }
 
-void DoAsyncScreenshot();
+//void DoAsyncScreenshot(); //morrazzzz: We need to think about whether to leave it or not
 
 void dxRenderDeviceRender::End()
 {
@@ -338,7 +340,7 @@ void dxRenderDeviceRender::End()
 	RCache.OnFrameEnd	();
 	Memory.dbg_check		();
 
-	DoAsyncScreenshot();
+//	DoAsyncScreenshot();
 
 #if defined(USE_DX10) || defined(USE_DX11)
 	HW.m_pSwapChain->Present( 0, 0 );

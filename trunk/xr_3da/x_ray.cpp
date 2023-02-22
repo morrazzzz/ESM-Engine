@@ -226,7 +226,7 @@ void CheckPrivilegySlowdown		( )
 #endif // DEBUG
 }
 
-void Startup					( )
+void Startup					()
 {
 	execUserScript	();
 //.	InitInput		();

@@ -175,7 +175,7 @@ void gather_info		(const char *expression, const char *description, const char *
 			prefix		= "";
 		}
 	}
-
+	OutputDebugString(buffer);
 #ifdef USE_MEMORY_MONITOR
 	memory_monitor::flush_each_time	(true);
 	memory_monitor::flush_each_time	(false);
