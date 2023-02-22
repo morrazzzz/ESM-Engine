@@ -3,10 +3,11 @@
 #include "ResourceManager.h"
 #include "render.h"
 #include "IGame_Persistent.h"
+#include "..\include\xrRender\RenderFactory.h"
 
 void CRenderDevice::_Destroy	(BOOL bKeepTextures)
 {
-	DU.OnDeviceDestroy	();
+	DUImpl.OnDeviceDestroy	();
 
 	// before destroy
 	b_is_Ready					= FALSE;
@@ -42,7 +43,7 @@ void CRenderDevice::Destroy	(void) {
 	seqDeviceReset.R.clear		();
 	seqParallel.clear			();
 
-	delete m_pRender; //RenderFactory->DestroyRenderDeviceRender(m_pRender);
+	RenderFactory->DestroyRenderDeviceRender(m_pRender);
 	m_pRender = 0;
 	xr_delete					(Statistic);
 }

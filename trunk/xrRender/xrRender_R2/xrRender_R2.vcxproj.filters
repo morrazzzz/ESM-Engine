@@ -49,6 +49,18 @@
     <Filter Include="Core_Target">
       <UniqueIdentifier>{2e2cfc75-6bec-4885-aa87-9b62aecb84dd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Interface implementations">
+      <UniqueIdentifier>{001e0873-2088-4a3a-a3a2-5874696715d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interface implementations\RenderFactory">
+      <UniqueIdentifier>{b0e5fed7-5260-4720-bdab-d7fedca694dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interface implementations\FactoryPtr">
+      <UniqueIdentifier>{a0f4f73a-b22b-4578-9cb4-5abc173d13f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interface implementations\RenderDeviceRender">
+      <UniqueIdentifier>{c31e2284-b5db-47b3-8941-a7839e63ec6f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cl_intersect.h">
@@ -242,6 +254,18 @@
     </ClInclude>
     <ClInclude Include="r2_rendertarget_wallmarks.h">
       <Filter>Core_Target</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\FactoryPtr.h">
+      <Filter>Interface implementations\FactoryPtr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxRenderDeviceRender.h">
+      <Filter>Interface implementations\RenderDeviceRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxRenderFactory.h">
+      <Filter>Interface implementations\RenderFactory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\RenderFactory.h">
+      <Filter>Interface implementations\RenderFactory</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -538,6 +562,12 @@
     </ClCompile>
     <ClCompile Include="r2_rendertarget_phase_smap_S.cpp">
       <Filter>Core_Target</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxRenderDeviceRender.cpp">
+      <Filter>Interface implementations\RenderDeviceRender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxRenderFactory.cpp">
+      <Filter>Interface implementations\RenderFactory</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

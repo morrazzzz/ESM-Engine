@@ -1,6 +1,6 @@
 #include "stdafx.h"
-
 #include "render.h"
+#include "..\include\xrRender\RenderFactory.h"
 
 void SetupGPU(IRenderDeviceRender* pRender)
 {
@@ -56,14 +56,13 @@ void CRenderDevice::_Create	(LPCSTR shName)
 	dwFrame						= 0;
 }
 
-#include "..\xrRender\xrRender\dxRenderDeviceRender.h"
 
 void CRenderDevice::Create	() 
 {
 	if (b_is_Ready)		return;		// prevent double call
 	Statistic			= xr_new<CStats>();
 	if (!m_pRender)
-		m_pRender = new dxRenderDeviceRender(); // RenderFactory->CreateRenderDeviceRender();
+		m_pRender = RenderFactory->CreateRenderDeviceRender();
 
 	SetupGPU(m_pRender);
 	Log					("Starting RENDER device...");
@@ -81,8 +80,6 @@ void CRenderDevice::Create	()
 	string_path			fname; 
 	FS.update_path		(fname,"$game_data$","shaders.xr");
 
-	//////////////////////////////////////////////////////////////////////////
 	_Create				(fname);
-
 	PreCache			(0);
 }

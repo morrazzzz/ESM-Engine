@@ -139,8 +139,20 @@
     <Filter Include="Engine\Noise">
       <UniqueIdentifier>{37a4cc23-0703-43ab-8d78-3d16ebeba5a1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="CoP">
-      <UniqueIdentifier>{65fc8b5d-3278-4ce5-b5ff-b4b6d91ea7cd}</UniqueIdentifier>
+    <Filter Include="RenderRef">
+      <UniqueIdentifier>{9922d784-6a6f-4674-93ac-1e08d06fdf56}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RenderRef\Execution &amp; 3D">
+      <UniqueIdentifier>{6f226e31-abeb-4346-a371-51f145a243f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RenderRef\Execution &amp; 3D\Device">
+      <UniqueIdentifier>{21143d86-cc94-41d6-a80e-6bf78157b3b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RenderRef\Execution &amp; 3D\Visuals">
+      <UniqueIdentifier>{09656867-c315-4392-9993-6cef11870e01}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RenderRef\Execution &amp; 3D\Visuals\Skeleton">
+      <UniqueIdentifier>{0dbd8594-e41b-4a6d-910c-605fd7998238}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -294,9 +306,6 @@
     <ClInclude Include="FHierrarhyVisual.h">
       <Filter>Render\Visuals</Filter>
     </ClInclude>
-    <ClInclude Include="Fmesh.h">
-      <Filter>Render\Visuals</Filter>
-    </ClInclude>
     <ClInclude Include="ParticleCustom.h">
       <Filter>Render\Visuals</Filter>
     </ClInclude>
@@ -307,9 +316,6 @@
       <Filter>Render\Visuals\Skeleton</Filter>
     </ClInclude>
     <ClInclude Include="SkeletonCustom.h">
-      <Filter>Render\Visuals\Skeleton</Filter>
-    </ClInclude>
-    <ClInclude Include="SkeletonMotions.h">
       <Filter>Render\Visuals\Skeleton</Filter>
     </ClInclude>
     <ClInclude Include="SkeletonX.h">
@@ -332,15 +338,6 @@
     </ClInclude>
     <ClInclude Include="MbHelpers.h">
       <Filter>Render\Font output</Filter>
-    </ClInclude>
-    <ClInclude Include="device.h">
-      <Filter>Render\Execution &amp; 3D</Filter>
-    </ClInclude>
-    <ClInclude Include="StatGraph.h">
-      <Filter>Render\Execution &amp; 3D</Filter>
-    </ClInclude>
-    <ClInclude Include="Stats.h">
-      <Filter>Render\Execution &amp; 3D</Filter>
     </ClInclude>
     <ClInclude Include="HW.h">
       <Filter>Render\Execution &amp; 3D\HW</Filter>
@@ -501,8 +498,20 @@
     <ClInclude Include="..\xrRender\xrRender\Blenders\Blender.h" />
     <ClInclude Include="..\xrRender\xrRender\Blenders\Blender_CLSID.h" />
     <ClInclude Include="..\xrRender\xrRender\Blenders\Blender_Recorder.h" />
-    <ClInclude Include="..\xrRender\xrRender\dxRenderDeviceRender.h">
-      <Filter>CoP</Filter>
+    <ClInclude Include="device.h">
+      <Filter>RenderRef\Execution &amp; 3D\Device</Filter>
+    </ClInclude>
+    <ClInclude Include="StatGraph.h">
+      <Filter>RenderRef\Execution &amp; 3D\Device</Filter>
+    </ClInclude>
+    <ClInclude Include="Stats.h">
+      <Filter>RenderRef\Execution &amp; 3D\Device</Filter>
+    </ClInclude>
+    <ClInclude Include="Fmesh.h">
+      <Filter>RenderRef\Execution &amp; 3D\Visuals</Filter>
+    </ClInclude>
+    <ClInclude Include="SkeletonMotions.h">
+      <Filter>RenderRef\Execution &amp; 3D\Visuals\Skeleton</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -650,9 +659,6 @@
     <ClCompile Include="FHierrarhyVisual.cpp">
       <Filter>Render\Visuals</Filter>
     </ClCompile>
-    <ClCompile Include="fmesh.cpp">
-      <Filter>Render\Visuals</Filter>
-    </ClCompile>
     <ClCompile Include="ParticleCustom.cpp">
       <Filter>Render\Visuals</Filter>
     </ClCompile>
@@ -660,9 +666,6 @@
       <Filter>Render\Visuals\Skeleton</Filter>
     </ClCompile>
     <ClCompile Include="SkeletonCustom.cpp">
-      <Filter>Render\Visuals\Skeleton</Filter>
-    </ClCompile>
-    <ClCompile Include="SkeletonMotions.cpp">
       <Filter>Render\Visuals\Skeleton</Filter>
     </ClCompile>
     <ClCompile Include="SkeletonRigid.cpp">
@@ -685,33 +688,6 @@
     </ClCompile>
     <ClCompile Include="MbHelpers.cpp">
       <Filter>Render\Font output</Filter>
-    </ClCompile>
-    <ClCompile Include="device.cpp">
-      <Filter>Render\Execution &amp; 3D</Filter>
-    </ClCompile>
-    <ClCompile Include="Device_create.cpp">
-      <Filter>Render\Execution &amp; 3D</Filter>
-    </ClCompile>
-    <ClCompile Include="Device_destroy.cpp">
-      <Filter>Render\Execution &amp; 3D</Filter>
-    </ClCompile>
-    <ClCompile Include="Device_Initialize.cpp">
-      <Filter>Render\Execution &amp; 3D</Filter>
-    </ClCompile>
-    <ClCompile Include="Device_Misc.cpp">
-      <Filter>Render\Execution &amp; 3D</Filter>
-    </ClCompile>
-    <ClCompile Include="Device_overdraw.cpp">
-      <Filter>Render\Execution &amp; 3D</Filter>
-    </ClCompile>
-    <ClCompile Include="Device_wndproc.cpp">
-      <Filter>Render\Execution &amp; 3D</Filter>
-    </ClCompile>
-    <ClCompile Include="StatGraph.cpp">
-      <Filter>Render\Execution &amp; 3D</Filter>
-    </ClCompile>
-    <ClCompile Include="Stats.cpp">
-      <Filter>Render\Execution &amp; 3D</Filter>
     </ClCompile>
     <ClCompile Include="HW.cpp">
       <Filter>Render\Execution &amp; 3D\HW</Filter>
@@ -872,8 +848,38 @@
     <ClCompile Include="..\xrRender\xrRender\Blenders\Blender.cpp" />
     <ClCompile Include="..\xrRender\xrRender\Blenders\Blender_Palette.cpp" />
     <ClCompile Include="..\xrRender\xrRender\Blenders\Blender_Recorder.cpp" />
-    <ClCompile Include="..\xrRender\xrRender\dxRenderDeviceRender.cpp">
-      <Filter>CoP</Filter>
+    <ClCompile Include="device.cpp">
+      <Filter>RenderRef\Execution &amp; 3D\Device</Filter>
+    </ClCompile>
+    <ClCompile Include="Device_create.cpp">
+      <Filter>RenderRef\Execution &amp; 3D\Device</Filter>
+    </ClCompile>
+    <ClCompile Include="Device_destroy.cpp">
+      <Filter>RenderRef\Execution &amp; 3D\Device</Filter>
+    </ClCompile>
+    <ClCompile Include="Device_Initialize.cpp">
+      <Filter>RenderRef\Execution &amp; 3D\Device</Filter>
+    </ClCompile>
+    <ClCompile Include="Device_Misc.cpp">
+      <Filter>RenderRef\Execution &amp; 3D\Device</Filter>
+    </ClCompile>
+    <ClCompile Include="Device_overdraw.cpp">
+      <Filter>RenderRef\Execution &amp; 3D\Device</Filter>
+    </ClCompile>
+    <ClCompile Include="Device_wndproc.cpp">
+      <Filter>RenderRef\Execution &amp; 3D\Device</Filter>
+    </ClCompile>
+    <ClCompile Include="StatGraph.cpp">
+      <Filter>RenderRef\Execution &amp; 3D\Device</Filter>
+    </ClCompile>
+    <ClCompile Include="Stats.cpp">
+      <Filter>RenderRef\Execution &amp; 3D\Device</Filter>
+    </ClCompile>
+    <ClCompile Include="fmesh.cpp">
+      <Filter>RenderRef\Execution &amp; 3D\Visuals</Filter>
+    </ClCompile>
+    <ClCompile Include="SkeletonMotions.cpp">
+      <Filter>RenderRef\Execution &amp; 3D\Visuals\Skeleton</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

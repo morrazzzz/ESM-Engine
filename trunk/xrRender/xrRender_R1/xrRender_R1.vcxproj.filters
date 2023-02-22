@@ -43,6 +43,18 @@
     <Filter Include="Lights">
       <UniqueIdentifier>{3e186e57-4741-46c6-aebb-7d9cbe9960c6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Interface implementations">
+      <UniqueIdentifier>{129243bc-2d7e-4ab9-9aa6-c625bcc28226}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interface implementations\RenderFactory">
+      <UniqueIdentifier>{0877e868-8ce2-4178-9c10-61e30cda936e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interface implementations\RenderDeviceRender">
+      <UniqueIdentifier>{90ca4b47-7885-47c8-ad07-c7311aaf3944}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interface implementations\FactoryPtr">
+      <UniqueIdentifier>{2d833e1a-e56d-4048-8759-a9aa4e691d3b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\xrRender\cl_intersect.h">
@@ -209,6 +221,18 @@
     </ClInclude>
     <ClInclude Include="..\xrRender\LightTrack.h">
       <Filter>Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxRenderFactory.h">
+      <Filter>Interface implementations\RenderFactory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxRenderDeviceRender.h">
+      <Filter>Interface implementations\RenderDeviceRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\RenderFactory.h">
+      <Filter>Interface implementations\RenderFactory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\FactoryPtr.h">
+      <Filter>Interface implementations\FactoryPtr</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -412,6 +436,12 @@
     </ClCompile>
     <ClCompile Include="..\xrRender\LightTrack.cpp">
       <Filter>Lights</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxRenderFactory.cpp">
+      <Filter>Interface implementations\RenderFactory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxRenderDeviceRender.cpp">
+      <Filter>Interface implementations\RenderDeviceRender</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

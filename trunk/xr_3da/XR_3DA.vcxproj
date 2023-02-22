@@ -383,7 +383,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\xrRender\xrRender\dxRenderDeviceRender.h" />
     <ClInclude Include="_d3d_extensions.h" />
     <ClInclude Include="CopyProtection.h" />
     <ClInclude Include="defines.h" />
@@ -507,7 +506,6 @@
     <ClInclude Include="perlin.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\xrRender\xrRender\dxRenderDeviceRender.cpp" />
     <ClCompile Include="defines.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_Dedicated|Win32'">Create</PrecompiledHeader>

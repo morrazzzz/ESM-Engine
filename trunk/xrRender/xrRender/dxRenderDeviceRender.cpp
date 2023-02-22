@@ -146,7 +146,7 @@ void dxRenderDeviceRender::OnDeviceCreate(LPCSTR shName)
 		m_WireShader.create			("editor\\wire");
 		m_SelectionShader.create	("editor\\selection");
 
-		DU.OnDeviceCreate			(); //PLEASE THEN CHANGE TO DUImpl!!!! DoAsyncScreenshot
+		DUImpl.OnDeviceCreate			();
 	}
 //#endif
 }
