@@ -117,8 +117,6 @@ void	string_tupples::error_process () const
 
 using namespace xray::core::detail;
 
-//morrazzzz: While #if 0 because of the error 
-#if 0
 // dest = S1+S2
 LPSTR						strconcat				( int dest_sz, char* dest, const char* S1, const char* S2)
 {
@@ -314,4 +312,3 @@ LPSTR						strconcat				( int dest_sz, char* dest, const char* S1, const char* S
 	return			(dest);
 }
 
-#endif

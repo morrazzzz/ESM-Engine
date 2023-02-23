@@ -4,15 +4,11 @@
 
 //morrazzzz: While #if 0 because of the error 
 #ifndef _EDITOR
-
-#if 0
 LPSTR	XRCORE_API				strconcat				( int dest_sz, char* dest, const char* S1, const char* S2);
 LPSTR	XRCORE_API				strconcat				( int dest_sz, char* dest, const char* S1, const char* S2, const char* S3);
 LPSTR	XRCORE_API				strconcat				( int dest_sz, char* dest, const char* S1, const char* S2, const char* S3, const char* S4);
 LPSTR	XRCORE_API				strconcat				( int dest_sz, char* dest, const char* S1, const char* S2, const char* S3, const char* S4, const char* S5);
 LPSTR	XRCORE_API				strconcat				( int dest_sz, char* dest, const char* S1, const char* S2, const char* S3, const char* S4, const char* S5, const char* S6);
-#endif
-
 #else // _EDITOR
 // obsolete: should be deleted as soon borland work correctly with new strconcats
 IC char*						strconcat				( int dest_sz,  char* dest, const char* S1, const char* S2)
