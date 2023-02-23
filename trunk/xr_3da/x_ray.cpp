@@ -4,7 +4,7 @@
 // Programmers:
 //	Oles		- Oles Shishkovtsov
 //	AlexMX		- Alexander Maksimchuk
-//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------    
 #include "stdafx.h"
 #include "igame_level.h"
 #include "igame_persistent.h"
@@ -597,8 +597,6 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 #else // DEDICATED_SERVER
 	g_dedicated_server			= true;
 #endif // DEDICATED_SERVER
-
-	SetThreadAffinityMask		(GetCurrentThread(),1);
 
 	// Title window
 	logoWindow					= CreateDialog(GetModuleHandle(NULL),	MAKEINTRESOURCE(IDD_STARTUP), 0, logDlgProc );
