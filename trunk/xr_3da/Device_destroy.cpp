@@ -28,7 +28,7 @@ void CRenderDevice::Destroy	(void) {
 
 	_Destroy					(FALSE);
 
-	xr_delete					(Resources);
+//	xr_delete					(Resources); //morrazzzz: How will this help crash???
 
 	// real destroy
 	m_pRender->DestroyHW();
