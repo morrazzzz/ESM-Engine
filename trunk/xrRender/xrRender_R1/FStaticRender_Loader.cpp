@@ -22,7 +22,8 @@ void CRender::level_Load(IReader *fs)
 	IReader*						chunk;
 
 	// Shaders
-	g_pGamePersistent->LoadTitle		("st_loading_shaders");
+//	g_pGamePersistent->LoadTitle		("st_loading_shaders");
+	g_pGamePersistent->LoadTitle();
 	{
 		chunk = fs->open_chunk		(fsL_SHADERS);
 		R_ASSERT2					(chunk,"Level doesn't builded correctly.");
@@ -59,25 +60,29 @@ void CRender::level_Load(IReader *fs)
 
 	if	(!g_dedicated_server)	{
 		// VB,IB,SWI
-		g_pGamePersistent->LoadTitle("st_loading_geometry");
+//		g_pGamePersistent->LoadTitle("st_loading_geometry");
+		g_pGamePersistent->LoadTitle();
 		CStreamReader				*geom = FS.rs_open	("$level$","level.geom");
 		LoadBuffers					(geom);
 		LoadSWIs					(geom);
 		FS.r_close					(geom);
 
 		// Visuals
-		g_pGamePersistent->LoadTitle("st_loading_spatial_db");
+//		g_pGamePersistent->LoadTitle("st_loading_spatial_db");
+		g_pGamePersistent->LoadTitle();
 		chunk						= fs->open_chunk(fsL_VISUALS);
 		LoadVisuals					(chunk);
 		chunk->close				();
 
 		// Details
-		g_pGamePersistent->LoadTitle("st_loading_details");
+//		g_pGamePersistent->LoadTitle("st_loading_details");
+		g_pGamePersistent->LoadTitle();
 		Details->Load				();
 	}
 	
 	// Sectors
-	g_pGamePersistent->LoadTitle("st_loading_sectors_portals");
+//	g_pGamePersistent->LoadTitle("st_loading_sectors_portals");
+	g_pGamePersistent->LoadTitle();
 	LoadSectors					(fs);
 
 	// HOM

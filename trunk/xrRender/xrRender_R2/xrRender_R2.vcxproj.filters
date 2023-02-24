@@ -61,6 +61,9 @@
     <Filter Include="Interface implementations\RenderDeviceRender">
       <UniqueIdentifier>{c31e2284-b5db-47b3-8941-a7839e63ec6f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Interface implementations\ApplicationRender">
+      <UniqueIdentifier>{90f7997b-f7c4-41aa-985d-1c82bdc25ad4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cl_intersect.h">
@@ -266,6 +269,12 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\xrRender\RenderFactory.h">
       <Filter>Interface implementations\RenderFactory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\ApplicationRender.h">
+      <Filter>Interface implementations\ApplicationRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxApplicationRender.h">
+      <Filter>Interface implementations\ApplicationRender</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -568,6 +577,9 @@
     </ClCompile>
     <ClCompile Include="..\xrRender\dxRenderFactory.cpp">
       <Filter>Interface implementations\RenderFactory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxApplicationRender.cpp">
+      <Filter>Interface implementations\ApplicationRender</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

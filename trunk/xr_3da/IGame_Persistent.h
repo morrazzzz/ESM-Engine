@@ -107,7 +107,7 @@ public:
 #else
 	{}
 #endif
-	virtual	void					LoadTitle			(LPCSTR str){}
+	virtual	void					LoadTitle(bool change_tip = false, shared_str map_name = "") {}
 	virtual bool					CanBePaused			()		{ return true;}
 };
 

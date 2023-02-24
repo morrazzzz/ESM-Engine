@@ -182,6 +182,31 @@ IC int							xr_strcmp				( const char* S1, const char* S2 )
 {	return (int)strcmp(S1,S2);  }
 #endif
 
+inline errno_t xr_strcpy(LPSTR destination, size_t const destination_size, LPCSTR source)
+{
+	return						strcpy_s(destination, destination_size, source);
+}
+template <int count>
+inline errno_t xr_strcpy(char(&destination)[count], LPCSTR source)
+{
+	return						xr_strcpy(destination, count, source);
+}
+
+inline int __cdecl xr_sprintf(LPSTR destination, size_t const buffer_size, LPCSTR format_string, ...)
+{
+	va_list args;
+	va_start(args, format_string);
+	return						vsprintf_s(destination, buffer_size, format_string, args);
+}
+
+template <int count>
+inline int __cdecl xr_sprintf(char(&destination)[count], LPCSTR format_string, ...)
+{
+	va_list args;
+	va_start(args, format_string);
+	return						vsprintf_s(destination, count, format_string, args);
+}
+
 XRCORE_API	char*				timestamp				(string64& dest);
 
 extern XRCORE_API u32			crc32					(const void* P, u32 len);

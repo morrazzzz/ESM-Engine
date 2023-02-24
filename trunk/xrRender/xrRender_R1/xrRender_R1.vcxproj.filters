@@ -55,6 +55,9 @@
     <Filter Include="Interface implementations\FactoryPtr">
       <UniqueIdentifier>{2d833e1a-e56d-4048-8759-a9aa4e691d3b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Interface implementations\ApplicationRender">
+      <UniqueIdentifier>{7451b0cf-d1bf-477c-a4e0-11037c22f5ce}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\xrRender\cl_intersect.h">
@@ -233,6 +236,12 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\xrRender\FactoryPtr.h">
       <Filter>Interface implementations\FactoryPtr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\ApplicationRender.h">
+      <Filter>Interface implementations\ApplicationRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxApplicationRender.h">
+      <Filter>Interface implementations\ApplicationRender</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -442,6 +451,9 @@
     </ClCompile>
     <ClCompile Include="..\xrRender\dxRenderDeviceRender.cpp">
       <Filter>Interface implementations\RenderDeviceRender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxApplicationRender.cpp">
+      <Filter>Interface implementations\ApplicationRender</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
