@@ -158,6 +158,7 @@
     <ClInclude Include="..\xrRender\dxApplicationRender.h" />
     <ClInclude Include="..\xrRender\dxRenderDeviceRender.h" />
     <ClInclude Include="..\xrRender\dxRenderFactory.h" />
+    <ClInclude Include="..\xrRender\xrD3DDefs.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="..\xrRender\xrRender_console.h" />
     <ClInclude Include="FStaticRender.h" />

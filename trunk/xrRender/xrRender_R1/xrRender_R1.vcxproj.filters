@@ -243,6 +243,9 @@
     <ClInclude Include="..\xrRender\dxApplicationRender.h">
       <Filter>Interface implementations\ApplicationRender</Filter>
     </ClInclude>
+    <ClInclude Include="..\xrRender\xrD3DDefs.h">
+      <Filter>Kernel</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

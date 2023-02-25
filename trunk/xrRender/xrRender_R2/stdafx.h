@@ -14,6 +14,8 @@
 #pragma warning( 4 : 4244 )
 #pragma warning(disable:4237)
 
+#include "../xrRender/xrD3DDefs.h"
+
 #define		R_R1	1
 #define		R_R2	2
 #define		RENDER	R_R2
