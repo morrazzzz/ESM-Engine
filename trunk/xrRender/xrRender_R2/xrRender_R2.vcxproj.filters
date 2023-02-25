@@ -64,6 +64,9 @@
     <Filter Include="Interface implementations\ApplicationRender">
       <UniqueIdentifier>{90f7997b-f7c4-41aa-985d-1c82bdc25ad4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Interface implementations\FontRender">
+      <UniqueIdentifier>{c7342863-af6c-459b-8d55-dd2c6b255003}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cl_intersect.h">
@@ -278,6 +281,12 @@
     </ClInclude>
     <ClInclude Include="..\xrRender\xrD3DDefs.h">
       <Filter>Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\FontRender.h">
+      <Filter>Interface implementations\FontRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxFontRender.h">
+      <Filter>Interface implementations\FontRender</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -583,6 +592,9 @@
     </ClCompile>
     <ClCompile Include="..\xrRender\dxApplicationRender.cpp">
       <Filter>Interface implementations\ApplicationRender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxFontRender.cpp">
+      <Filter>Interface implementations\FontRender</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

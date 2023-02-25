@@ -9,7 +9,7 @@
 //#include "dxEnvironmentRender.h"
 #include "dxRenderDeviceRender.h"
 //#include "dxObjectSpaceRender.h"
-//#include "dxFontRender.h"
+#include "dxFontRender.h"
 #include "dxApplicationRender.h"
  //#include "dxWallMarkArray.h"
 //#include "dxStatsRender.h"
@@ -49,4 +49,4 @@ dxRenderFactory RenderFactoryImpl;
 //    RENDER_FACTORY_IMPLEMENT(EnvDescriptorMixerRender)
 //    RENDER_FACTORY_IMPLEMENT(EnvDescriptorRender)
 //    RENDER_FACTORY_IMPLEMENT(FlareRender)
-//RENDER_FACTORY_IMPLEMENT(FontRender)
+    RENDER_FACTORY_IMPLEMENT(FontRender)
