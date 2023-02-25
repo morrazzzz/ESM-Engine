@@ -171,12 +171,20 @@ void CUIInventoryWnd::ActivatePropertiesBox()
 	{
 		_action					= "st_use";
 	}
+	else if (pBottleItem)
+	{
+		_action = "st_drink";
+	}
 	else if(pEatableItem)
 	{
-		if(pBottleItem)
-			_action					= "st_drink";
-		else
-			_action					= "st_eat";
+		CObject* pObj = smart_cast<CObject*>		(CurrentIItem());
+		shared_str	section_name = pObj->cNameSect();
+		// Lex Addon (correct by Suhar_) 19.06.2015		(begin)
+	    // Выводим корректные названия в контекстные меню по нажатии правой кнопкой мыши на бустер
+	    // edit 16.07.2016
+	     // Читаем из секции параметр, ссылающийся на название строки
+		_action = READ_IF_EXISTS(pSettings, r_string, section_name, "use_caption", "st_use");
+		// Lex Addon (correct by Suhar_) 19.06.2015		(end)
 	}
 
 	if(_action){
