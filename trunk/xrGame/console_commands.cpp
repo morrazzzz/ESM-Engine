@@ -311,7 +311,6 @@ public:
 	}
 };
 
-#ifndef MASTER_GOLD
 class CCC_TimeFactor : public IConsole_Command {
 public:
 					CCC_TimeFactor	(LPCSTR N) : IConsole_Command(N) {}
@@ -322,7 +321,6 @@ public:
 		Device.time_factor	(time_factor);
 	}
 };
-#endif // MASTER_GOLD
 
 //-----------------------------------------------------------------------
 class CCC_DemoRecord : public IConsole_Command
@@ -627,7 +625,6 @@ public:
 };
 
 
-#ifndef MASTER_GOLD
 class CCC_Script : public IConsole_Command {
 public:
 	CCC_Script(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
@@ -656,30 +653,11 @@ public:
 		if (!xr_strlen(args))
 			Log("* Specify string to run!");
 		else {
-#if 1
 			if (ai().script_engine().script_process(ScriptEngine::eScriptProcessorLevel))
 				ai().script_engine().script_process(ScriptEngine::eScriptProcessorLevel)->add_script(args,true,true);
-#else
-			string4096		S;
-			shared_str		m_script_name = "console command";
-			sprintf_s			(S,"%s\n",args);
-			int				l_iErrorCode = luaL_loadbuffer(ai().script_engine().lua(),S,xr_strlen(S),"@console_command");
-			if (!l_iErrorCode) {
-				l_iErrorCode = lua_pcall(ai().script_engine().lua(),0,0,0);
-				if (l_iErrorCode) {
-					ai().script_engine().print_output(ai().script_engine().lua(),*m_script_name,l_iErrorCode);
-					return;
-				}
-			}
-			else {
-				ai().script_engine().print_output(ai().script_engine().lua(),*m_script_name,l_iErrorCode);
-				return;
-			}
-#endif
 		}
 	}
 };
-#endif // MASTER_GOLD
 
 #ifdef DEBUG
 
@@ -1003,7 +981,6 @@ struct CCC_ClearSmartCastStats : public IConsole_Command {
 };
 #endif
 
-#ifndef MASTER_GOLD
 #	include "game_graph.h"
 struct CCC_JumpToLevel : public IConsole_Command {
 	CCC_JumpToLevel(LPCSTR N) : IConsole_Command(N)  {};
@@ -1026,7 +1003,6 @@ struct CCC_JumpToLevel : public IConsole_Command {
 		Msg							("! There is no level \"%s\" in the game graph!",level);
 	}
 };
-#endif // MASTER_GOLD
 
 #include "GamePersistent.h"
 
@@ -1397,10 +1373,8 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask,				"hud_crosshair",		&psHUD_Flags,	HUD_CROSSHAIR);
 	CMD3(CCC_Mask,				"hud_crosshair_dist",	&psHUD_Flags,	HUD_CROSSHAIR_DIST);
 
-#ifdef DEBUG
 	CMD4(CCC_Float,				"hud_fov",				&psHUD_FOV,		0.1f,	1.0f);
 	CMD4(CCC_Float,				"fov",					&g_fov,			5.0f,	180.0f);
-#endif // DEBUG
 
 	// Demo
 	CMD1(CCC_DemoPlay,			"demo_play"				);
@@ -1499,16 +1473,12 @@ void CCC_RegisterCommands()
 	CMD4(CCC_FloatBlock,		"ph_tri_query_ex_aabb_rate",	&ph_tri_query_ex_aabb_rate	,			1.01f	,3.f			);
 #endif // DEBUG
 
-
-#ifndef MASTER_GOLD
 	CMD1(CCC_JumpToLevel,	"jump_to_level"		);
 	CMD3(CCC_Mask,			"g_god",			&psActorFlags,	AF_GODMODE	);
 	CMD3(CCC_Mask,			"g_unlimitedammo",	&psActorFlags,	AF_UNLIMITEDAMMO);
 	CMD1(CCC_Script,		"run_script");
 	CMD1(CCC_ScriptCommand,	"run_string");
 	CMD1(CCC_TimeFactor,	"time_factor");		
-#endif // MASTER_GOLD
-
 	CMD3(CCC_Mask,		"g_autopickup",			&psActorFlags,	AF_AUTOPICKUP);
 
 
