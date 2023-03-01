@@ -604,7 +604,8 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 		*pExceptionInfo->ContextRecord = save;
 
 		if (shared_str_initialized)
-			Msg				("stack trace:\n");
+			Msg				("ExceptionCode is [%x]\nstack trace:\n", pExceptionInfo->ExceptionRecord->ExceptionCode);
+
 		copy_to_clipboard	("stack trace:\r\n\r\n");
 
 		string4096			buffer;
