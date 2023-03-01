@@ -5,13 +5,13 @@
   </ImportGroup>
   
   <PropertyGroup Label="UserMacros" Condition="'$(Platform)'=='Win32'">
-    <xrPlatform>Win32</xrPlatform>
+    <xrPlatform>x86</xrPlatform>
   </PropertyGroup>
   <PropertyGroup Label="UserMacros" Condition="'$(Platform)'=='x86'">
-    <xrPlatform>Win32</xrPlatform>
+    <xrPlatform>x86</xrPlatform>
   </PropertyGroup>
   <PropertyGroup Label="UserMacros" Condition="'$(Platform)'=='x64'">
-    <xrPlatform>Win64</xrPlatform>
+    <xrPlatform>x64</xrPlatform>
   </PropertyGroup>
   <PropertyGroup Label="UserMacros" Condition="'$(xrPlatform)'==''">
     <xrPlatform>$(Platform)</xrPlatform>
