@@ -1,6 +1,6 @@
 /*
  * This is a part of the BugTrap package.
- * Copyright (c) 2005-2007 IntelleSoft.
+ * Copyright (c) 2005-2009 IntelleSoft.
  * All rights reserved.
  *
  * Description: BugTrap main dialog.
@@ -124,7 +124,11 @@ static void InitReg(HWND hwnd)
 	_ASSERTE(g_pResManager != NULL);
 	if (g_pResManager->m_hFixedFont)
 		SetWindowFont(hwndReg, g_pResManager->m_hFixedFont, FALSE);
+#if defined _WIN64
+	TCHAR szRegString[512];
+#elif defined _WIN32
 	TCHAR szRegString[256];
+#endif
 	g_pSymEngine->GetRegistersString(szRegString, countof(szRegString));
 	SetWindowText(hwndReg, szRegString);
 }
@@ -275,13 +279,10 @@ static void MainDlg_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
 		DialogBox(g_hInstance, MAKEINTRESOURCE(IDD_PREVIEW_DLG), hwnd, PreviewDlgProc);
 		break;
 	case IDC_MAILTO:
-		SendReport(hwnd);
+		MailTempReportEx(hwnd);
 		break;
 	case IDC_SUBMIT_BUG:
-		if (*g_szSupportHost && g_nSupportPort)
-			SubmitReport(hwnd);
-		else if (*g_szSupportEMail)
-			SendReport(hwnd);
+		SubmitTempReport(hwnd);
 		break;
 	case IDC_SAVE_REPORT:
 		SaveReport(hwnd);

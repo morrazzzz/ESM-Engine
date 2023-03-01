@@ -1,6 +1,6 @@
 /*
  * This is a part of the BugTrap package.
- * Copyright (c) 2005-2007 IntelleSoft.
+ * Copyright (c) 2005-2009 IntelleSoft.
  * All rights reserved.
  *
  * Description: Image view control class.
@@ -45,9 +45,9 @@ void CImageView::InitVars(void)
 
 /**
  * @param hdc - drawing conImage.
- * @param prcPaint - the rectangle in which the painting is requested.
+ * @param prcPaint - the rectangle where the painting is requested.
  */
-void CImageView::DrawImageView(HDC hdc, RECT* prcPaint)
+void CImageView::DrawImageView(HDC hdc, const RECT* prcPaint)
 {
 	_ASSERTE(g_pResManager != NULL);
 	RECT rcClient;
@@ -238,9 +238,9 @@ LRESULT CALLBACK CImageView::ImageViewWndProc(HWND hwnd, UINT uMsg, WPARAM wPara
 	PAINTSTRUCT ps;
 	HDC hdc;
 	int zDelta, zTotal, nScrollCode, nScrollBarType;
-	LONG lWindowStyle;
+	LONG_PTR lWindowStyle;
 
-	CImageView* _this  = (CImageView*)GetWindowLongPtr(hwnd, GWL_USERDATA);
+	CImageView* _this  = (CImageView*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
 	_ASSERTE(_this != NULL);
 	switch(uMsg)
 	{
@@ -334,7 +334,7 @@ LRESULT CALLBACK CImageView::ImageViewWndProc(HWND hwnd, UINT uMsg, WPARAM wPara
 		zTotal = abs(zDelta) / WHEEL_DELTA;
 		if (_this->m_nWheelLines != WHEEL_PAGESCROLL)
 			zTotal *= _this->m_nWheelLines;
-		lWindowStyle = GetWindowLong(hwnd, GWL_STYLE);
+		lWindowStyle = GetWindowLongPtr(hwnd, GWL_STYLE);
 
 		if (lWindowStyle & WS_VSCROLL)
 			nScrollBarType = SB_VERT;
@@ -373,9 +373,9 @@ void CImageView::Attach(HWND hwnd)
 
 	m_hwnd = hwnd;
 	m_pfnOldImageViewWndProc = SubclassWindow(hwnd, ImageViewWndProc);
-	SetWindowLongPtr(hwnd, GWL_USERDATA, (LONG_PTR)this);
+	SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)this);
 	// Preserve original window styles that could be modified by SetScrollInfo().
-	m_lOldStyle = GetWindowLong(hwnd, GWL_STYLE);
+	m_lOldStyle = GetWindowLongPtr(hwnd, GWL_STYLE);
 	ResizeImageView(TRUE);
 }
 
@@ -384,7 +384,7 @@ void CImageView::Detach(void)
 	if (m_pfnOldImageViewWndProc)
 	{
 		SubclassWindow(m_hwnd, m_pfnOldImageViewWndProc);
-		SetWindowLongPtr(m_hwnd, GWL_USERDATA, NULL);
+		SetWindowLongPtr(m_hwnd, GWLP_USERDATA, NULL);
 
 		SCROLLINFO sinfo;
 		ZeroMemory(&sinfo, sizeof(sinfo));
@@ -392,7 +392,7 @@ void CImageView::Detach(void)
 		sinfo.fMask = SIF_POS | SIF_PAGE | SIF_RANGE;
 		SetScrollInfo(m_hwnd, SB_HORZ, &sinfo, FALSE);
 		SetScrollInfo(m_hwnd, SB_VERT, &sinfo, FALSE);
-		SetWindowLong(m_hwnd, GWL_STYLE, m_lOldStyle);
+		SetWindowLongPtr(m_hwnd, GWL_STYLE, m_lOldStyle);
 
 		InvalidateRect(m_hwnd, NULL, TRUE);
 		InitVars();

@@ -1,6 +1,6 @@
 /*
  * This is a part of the BugTrap package.
- * Copyright (c) 2005-2007 IntelleSoft.
+ * Copyright (c) 2005-2009 IntelleSoft.
  * All rights reserved.
  *
  * Description: Hex view control class.
@@ -45,14 +45,14 @@ void CHexView::InitVars(void)
 
 /**
  * @param hdc - drawing conHex.
- * @param prcPaint - the rectangle in which the painting is requested.
+ * @param prcPaint - the rectangle where the painting is requested.
  */
-void CHexView::DrawHexView(HDC hdc, RECT* prcPaint)
+void CHexView::DrawHexView(HDC hdc, const RECT* prcPaint)
 {
 	_ASSERTE(g_pResManager != NULL);
+	RECT rcClient;
 	if (prcPaint == NULL)
 	{
-		RECT rcClient;
 		GetClientRect(m_hwnd, &rcClient);
 		prcPaint = &rcClient;
 	}
@@ -334,9 +334,9 @@ LRESULT CALLBACK CHexView::HexViewWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, L
 	PAINTSTRUCT ps;
 	HDC hdc;
 	int zDelta, zTotal, nScrollCode, nScrollBarType;
-	LONG lWindowStyle;
+	LONG_PTR lWindowStyle;
 
-	CHexView* _this  = (CHexView*)GetWindowLongPtr(hwnd, GWL_USERDATA);
+	CHexView* _this  = (CHexView*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
 	_ASSERTE(_this != NULL);
 	switch(uMsg)
 	{
@@ -416,7 +416,7 @@ LRESULT CALLBACK CHexView::HexViewWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, L
 		zTotal = abs(zDelta) / WHEEL_DELTA;
 		if (_this->m_nWheelLines != WHEEL_PAGESCROLL)
 			zTotal *= _this->m_nWheelLines;
-		lWindowStyle = GetWindowLong(hwnd, GWL_STYLE);
+		lWindowStyle = GetWindowLongPtr(hwnd, GWL_STYLE);
 
 		if (lWindowStyle & WS_VSCROLL)
 			nScrollBarType = SB_VERT;
@@ -455,9 +455,9 @@ void CHexView::Attach(HWND hwnd)
 
 	m_hwnd = hwnd;
 	m_pfnOldHexViewWndProc = SubclassWindow(hwnd, HexViewWndProc);
-	SetWindowLongPtr(hwnd, GWL_USERDATA, (LONG_PTR)this);
+	SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)this);
 	// Preserve original window styles that could be modified by SetScrollInfo().
-	m_lOldStyle = GetWindowLong(hwnd, GWL_STYLE);
+	m_lOldStyle = GetWindowLongPtr(hwnd, GWL_STYLE);
 	ResizeHexView(TRUE);
 	InvalidateRect(m_hwnd, NULL, FALSE);
 }
@@ -467,7 +467,7 @@ void CHexView::Detach(void)
 	if (m_pfnOldHexViewWndProc)
 	{
 		SubclassWindow(m_hwnd, m_pfnOldHexViewWndProc);
-		SetWindowLongPtr(m_hwnd, GWL_USERDATA, NULL);
+		SetWindowLongPtr(m_hwnd, GWLP_USERDATA, NULL);
 
 		SCROLLINFO sinfo;
 		ZeroMemory(&sinfo, sizeof(sinfo));
@@ -475,7 +475,7 @@ void CHexView::Detach(void)
 		sinfo.fMask = SIF_POS | SIF_PAGE | SIF_RANGE;
 		SetScrollInfo(m_hwnd, SB_HORZ, &sinfo, FALSE);
 		SetScrollInfo(m_hwnd, SB_VERT, &sinfo, FALSE);
-		SetWindowLong(m_hwnd, GWL_STYLE, m_lOldStyle);
+		SetWindowLongPtr(m_hwnd, GWL_STYLE, m_lOldStyle);
 
 		InvalidateRect(m_hwnd, NULL, TRUE);
 		InitVars();

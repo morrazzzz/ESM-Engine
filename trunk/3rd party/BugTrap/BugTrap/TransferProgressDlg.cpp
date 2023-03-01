@@ -1,6 +1,6 @@
 /*
  * This is a part of the BugTrap package.
- * Copyright (c) 2005-2007 IntelleSoft.
+ * Copyright (c) 2005-2009 IntelleSoft.
  * All rights reserved.
  *
  * Description: Transfer Progress dialog.
@@ -63,9 +63,9 @@ static BOOL TransferStatusPane_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM /*
 		LoadString(g_hInstance, IDS_ERROR_TRANSFERFAILED, szMessageText, countof(szMessageText));
 		Stream << szMessageText << _T('\n');
 		PCTSTR pszErrorMessage = g_pTransferThreadParams->GetErrorMessage();
+		TCHAR szErrorMessageTemplate[256];
 		if (pszErrorMessage == NULL)
 		{
-			TCHAR szErrorMessageTemplate[256];
 			LoadString(g_hInstance, IDS_UNDEFINED_ERROR_EX, szErrorMessageTemplate, countof(szErrorMessageTemplate));
 			TCHAR szErrorMessage[256];
 			_stprintf_s(szErrorMessage, countof(szErrorMessage), szErrorMessageTemplate, dwErrorCode);
@@ -99,7 +99,8 @@ static void TransferStatusPane_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT c
 	{
 	case IDCANCEL:
 		HWND hwndParent = GetParent(hwnd);
-		EndDialog(hwndParent, IDCANCEL);
+		int nResult = g_pTransferThreadParams->GetErrorCode() == ERROR_SUCCESS;
+		EndDialog(hwndParent, nResult);
 		break;
 	}
 }
@@ -242,9 +243,9 @@ static HWND CreateDialogPane(HWND hwndParent, UINT uDialogID, DLGPROC pfnDlgProc
 	HWND hwndPane = CreateDialogParam(g_hInstance, MAKEINTRESOURCE(uDialogID), hwndParent, pfnDlgProc, lParam);
 	if (hwndPane)
 	{
-		SetWindowLong(hwndPane, GWL_ID, IDC_DIALOG_PANE);
-		DWORD dwStyleEx = GetWindowLong(hwndPane, GWL_EXSTYLE);
-		SetWindowLong(hwndPane, GWL_EXSTYLE, dwStyleEx | WS_EX_STATICEDGE);
+		SetWindowLongPtr(hwndPane, GWL_ID, IDC_DIALOG_PANE);
+		LONG_PTR dwStyleEx = GetWindowLongPtr(hwndPane, GWL_EXSTYLE);
+		SetWindowLongPtr(hwndPane, GWL_EXSTYLE, dwStyleEx | WS_EX_STATICEDGE);
 		RECT rcClient;
 		GetClientRect(hwndParent, &rcClient);
 		RECT rcPane;
@@ -339,12 +340,12 @@ INT_PTR CALLBACK TransferProgressDlgProc(HWND hwndDlg, UINT uMsg, WPARAM wParam,
 			// on Windows 98 this causes an access violation in user32.dll
 			// why does it crash? - because this is Windows 98
 			//DestroyWindow(hwndPane);
-			// rather then destroy the window, let's hide it
+			// rather than destroying the window, let's hide it
 			ShowWindow(hwndPane, SW_HIDE);
 			// stop progress animation
 			StopProgressAnimation(hwndPane);
 			// and of course panel ID should be changed to avoid conflicts
-			SetWindowLong(hwndPane, GWL_ID, -1);
+			SetWindowLongPtr(hwndPane, GWL_ID, -1);
 			// finally we can create a new panel
 			hwndPane = CreateDialogPane(hwndDlg, IDD_TRANSFERSTATUS_PANE, TransferStatusPaneProc, wParam);
 			if (hwndPane)
@@ -353,7 +354,7 @@ INT_PTR CALLBACK TransferProgressDlgProc(HWND hwndDlg, UINT uMsg, WPARAM wParam,
 				SendMessage(hwndPane, DM_SETDEFID, IDCANCEL, 0);
 			}
 			else
-				EndDialog(hwndDlg, IDCANCEL);
+				EndDialog(hwndDlg, FALSE);
 		}
 		return TRUE;
 	default:

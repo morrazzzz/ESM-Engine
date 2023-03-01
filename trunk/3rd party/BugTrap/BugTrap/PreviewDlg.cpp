@@ -1,6 +1,6 @@
 /*
  * This is a part of the BugTrap package.
- * Copyright (c) 2005-2007 IntelleSoft.
+ * Copyright (c) 2005-2009 IntelleSoft.
  * All rights reserved.
  *
  * Description: Preview dialog.
@@ -327,7 +327,7 @@ static void AddFileItem(HWND hwndFileList, PCTSTR pszFilePath)
 	HIMAGELIST hFileImages = (HIMAGELIST)SHGetFileInfo(pszFilePath, 0, &sfi, sizeof(sfi), SHGFI_SYSICONINDEX | SHGFI_SMALLICON | SHGFI_TYPENAME);
 	if (nItemPos == 0)
 	{
-		_ASSERTE((GetWindowLong(hwndFileList, GWL_STYLE) & LVS_SHAREIMAGELISTS) != 0);
+		_ASSERTE((GetWindowLongPtr(hwndFileList, GWL_STYLE) & LVS_SHAREIMAGELISTS) != 0);
 		ListView_SetImageList(hwndFileList, hFileImages, LVSIL_SMALL);
 	}
 
@@ -354,7 +354,7 @@ static void AddFileItem(HWND hwndFileList, PCTSTR pszFilePath)
 		dwFileSize = 0;
 	}
 
-	DWORD dwFilePathSize = _tcslen(pszFilePath) + 1;
+	DWORD dwFilePathSize = (DWORD)_tcslen(pszFilePath) + 1;
 	FILE_ITEM_INFO* pFileItemInfo = (FILE_ITEM_INFO*)new BYTE[sizeof(FILE_ITEM_INFO) + dwFilePathSize * sizeof(TCHAR)];
 	if (pFileItemInfo != NULL)
 	{
@@ -400,9 +400,9 @@ static BOOL OpenImageFile(HWND hwnd, PCTSTR pszFileName)
 {
 	_ASSERTE(g_hBitmap == NULL);
 	static const TCHAR szBmpFileExt[] = _T(".bmp");
-	DWORD dwFileNameLength = _tcslen(pszFileName);
-	const DWORD dwBmpFileExtLength = countof(szBmpFileExt) - 1;
-	if (dwFileNameLength >= dwBmpFileExtLength && _tcsicmp(pszFileName + dwFileNameLength - dwBmpFileExtLength, szBmpFileExt) == 0 &&
+	size_t nFileNameLength = _tcslen(pszFileName);
+	const size_t nBmpFileExtLength = countof(szBmpFileExt) - 1;
+	if (nFileNameLength >= nBmpFileExtLength && _tcsicmp(pszFileName + nFileNameLength - nBmpFileExtLength, szBmpFileExt) == 0 &&
 		(g_hBitmap = (HBITMAP)LoadImage(NULL, pszFileName, IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR | LR_LOADFROMFILE)) != NULL)
 	{
 		g_eFileViewType = FVT_IMAGEVIEW;
@@ -422,7 +422,7 @@ static BOOL OpenImageFile(HWND hwnd, PCTSTR pszFileName)
 static BOOL OpenRegularFile(HWND hwnd, PCTSTR pszFileName)
 {
 	_ASSERTE(g_hFile == INVALID_HANDLE_VALUE);
-	g_hFile = CreateFile(pszFileName, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	g_hFile = CreateFile(pszFileName, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (g_hFile != INVALID_HANDLE_VALUE)
 	{
 		g_dwSignatureSize = DetectFileFormat(pszFileName, g_hFile, g_bTextFile, g_eEncoding);
@@ -554,8 +554,8 @@ static BOOL PreviewDlg_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 
 	g_hImageList = ImageList_LoadBitmap(g_hInstance, MAKEINTRESOURCE(IDB_IMAGETOOLBAR), 16, 0, RGB(0xC0, 0xC0, 0xC0));
 	HWND hwndImgToolbar = GetDlgItem(hwnd, IDC_IMAGE_COMMANDS);
-	LONG lStyle = GetWindowLong(hwndImgToolbar, GWL_STYLE);
-	SetWindowLong(hwndImgToolbar, GWL_STYLE, lStyle | CCS_NODIVIDER | CCS_NOPARENTALIGN | CCS_NORESIZE | TBSTYLE_FLAT | TBSTYLE_TOOLTIPS);
+	LONG_PTR lStyle = GetWindowLongPtr(hwndImgToolbar, GWL_STYLE);
+	SetWindowLongPtr(hwndImgToolbar, GWL_STYLE, lStyle | CCS_NODIVIDER | CCS_NOPARENTALIGN | CCS_NORESIZE | TBSTYLE_FLAT | TBSTYLE_TOOLTIPS);
 	SendMessage(hwndImgToolbar, TB_SETIMAGELIST, 0, (LPARAM)g_hImageList);
 	SendMessage(hwndImgToolbar, TB_ADDBUTTONS, countof(g_arrButtons), (LPARAM)g_arrButtons);
 
@@ -613,8 +613,8 @@ static BOOL PreviewDlg_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 	else
 		AddFileItem(hwndFileList, g_szInternalReportFilePath);
 
-	int nFileCount = g_arrLogLinks.GetCount();
-	for (int nFilePos = 0; nFilePos < nFileCount; ++nFilePos)
+	size_t nFileCount = g_arrLogLinks.GetCount();
+	for (size_t nFilePos = 0; nFilePos < nFileCount; ++nFilePos)
 	{
 		CLogLink* pLogLink = g_arrLogLinks[nFilePos];
 		_ASSERTE(pLogLink != NULL);
