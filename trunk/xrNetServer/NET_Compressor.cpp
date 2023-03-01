@@ -484,17 +484,18 @@ u16 NET_Compressor::Decompress	(BYTE* dest, const u32 &dest_size, BYTE* src, con
 
 #else
 	
-	if( *src != NET_TAG_COMPRESSED ) 
+	if(*src != NET_TAG_COMPRESSED) 
 	{
-		if (count) {
-			CopyMemory	( dest, src+1, count-1 );
-			return		( u16(count-1) );
+		if (count) 
+		{
+			CopyMemory(dest, src + 1, (count - 1 <= dest_size) ? (count - 1) : dest_size);
+			return(u16(count - 1));
 		}
 
-		return			( 0 );
+		return 0;
 	}
 
-	u32					offset = 1;
+	u32	offset = 1;
 	
     #if NET_USE_COMPRESSION_CRC
     offset += sizeof(u32);

@@ -163,7 +163,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xrLua.lib;msacm32.lib;vfw32.lib;ogg_static_d.lib;theora_static_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xrLua.lib;msacm32.lib;vfw32.lib;ogg_static_d.lib;theora_static_d.lib;dinput8.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ShowProgress>NotSet</ShowProgress>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>libcmtd;libc;libcd;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
