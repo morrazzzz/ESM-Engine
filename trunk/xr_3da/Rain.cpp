@@ -68,10 +68,10 @@ void	CEffect_Rain::Born		(Item& dest, float radius)
 	Fvector		axis;	
     axis.set			(0,-1,0);
 	float gust			= g_pGamePersistent->Environment().wind_strength_factor/10.f;
-	float k				= g_pGamePersistent->Environment().CurrentEnv.wind_velocity*gust/drop_max_wind_vel;
+	float k				= g_pGamePersistent->Environment().CurrentEnv->wind_velocity*gust/drop_max_wind_vel;
 	clamp				(k,0.f,1.f);
 	float	pitch		= drop_max_angle*k-PI_DIV_2;
-    axis.setHP			(g_pGamePersistent->Environment().CurrentEnv.wind_direction,pitch);
+    axis.setHP			(g_pGamePersistent->Environment().CurrentEnv->wind_direction,pitch);
     
 	Fvector&	view	= Device.vCameraPosition;
 	float		angle	= ::Random.randF	(0,PI_MUL_2);
@@ -121,7 +121,7 @@ void	CEffect_Rain::OnFrame	()
 	if (!g_pGameLevel)			return;
 #endif
 	// Parse states
-	float	factor				= g_pGamePersistent->Environment().CurrentEnv.rain_density;
+	float	factor				= g_pGamePersistent->Environment().CurrentEnv->rain_density;
 	float	hemi_factor			= 1.f;
 #ifndef _EDITOR
 	CObject* E 					= g_pGameLevel->CurrentViewEntity();
@@ -161,13 +161,13 @@ void	CEffect_Rain::Render	()
 #ifndef _EDITOR
 	if (!g_pGameLevel)			return;
 #endif
-	float	factor				= g_pGamePersistent->Environment().CurrentEnv.rain_density;
+	float	factor				= g_pGamePersistent->Environment().CurrentEnv->rain_density;
 	if (factor<EPS_L)			return;
 
 	u32 desired_items			= iFloor	(0.5f*(1.f+factor)*float(max_desired_items));
 	// visual
 	float		factor_visual	= factor/2.f+.5f;
-	Fvector3	f_rain_color	= g_pGamePersistent->Environment().CurrentEnv.rain_color;
+	Fvector3	f_rain_color	= g_pGamePersistent->Environment().CurrentEnv->rain_color;
 	u32			u_rain_color	= color_rgba_f(f_rain_color.x,f_rain_color.y,f_rain_color.z,factor_visual);
 
 	// born _new_ if needed

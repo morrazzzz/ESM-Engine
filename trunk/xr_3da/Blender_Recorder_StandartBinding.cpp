@@ -43,8 +43,8 @@ class cl_fog_plane	: public R_constant_setup {
 			plane.mul		(denom);
 
 			// Near/Far
-			float A			= g_pGamePersistent->Environment().CurrentEnv.fog_near;
-			float B			= 1/(g_pGamePersistent->Environment().CurrentEnv.fog_far - A);
+			float A			= g_pGamePersistent->Environment().CurrentEnv->fog_near;
+			float B			= 1/(g_pGamePersistent->Environment().CurrentEnv->fog_far - A);
 
 			result.set		(-plane.x*B, -plane.y*B, -plane.z*B, 1 - (plane.w-A)*B	);								// view-plane
 		}
@@ -62,8 +62,8 @@ class cl_fog_params	: public R_constant_setup {
 		if (marker!=Device.dwFrame)
 		{
 			// Near/Far
-			float	n		= g_pGamePersistent->Environment().CurrentEnv.fog_near	;
-			float	f		= g_pGamePersistent->Environment().CurrentEnv.fog_far		;
+			float	n		= g_pGamePersistent->Environment().CurrentEnv->fog_near	;
+			float	f		= g_pGamePersistent->Environment().CurrentEnv->fog_far		;
 			float	r		= 1/(f-n);
 			result.set		(-n*r, r, r, r);
 		}
@@ -77,7 +77,7 @@ class cl_fog_color	: public R_constant_setup {
 	Fvector4	result;
 	virtual void setup	(R_constant* C)	{
 		if (marker!=Device.dwFrame)	{
-			CEnvDescriptor&	desc	= g_pGamePersistent->Environment().CurrentEnv;
+			CEnvDescriptor&	desc	= *g_pGamePersistent->Environment().CurrentEnv;
 			result.set				(desc.fog_color.x,	desc.fog_color.y, desc.fog_color.z,	0);
 		}
 		RCache.set_c	(C,result);
@@ -130,7 +130,7 @@ class cl_sun0_color	: public R_constant_setup {
 	Fvector4	result;
 	virtual void setup	(R_constant* C)	{
 		if (marker!=Device.dwFrame)	{
-			CEnvDescriptor&	desc	= g_pGamePersistent->Environment().CurrentEnv;
+			CEnvDescriptor&	desc	= *g_pGamePersistent->Environment().CurrentEnv;
 			result.set				(desc.sun_color.x,	desc.sun_color.y, desc.sun_color.z,	0);
 		}
 		RCache.set_c	(C,result);
@@ -141,7 +141,7 @@ class cl_sun0_dir_w	: public R_constant_setup {
 	Fvector4	result;
 	virtual void setup	(R_constant* C)	{
 		if (marker!=Device.dwFrame)	{
-			CEnvDescriptor&	desc	= g_pGamePersistent->Environment().CurrentEnv;
+			CEnvDescriptor&	desc	= *g_pGamePersistent->Environment().CurrentEnv;
 			result.set				(desc.sun_dir.x,	desc.sun_dir.y, desc.sun_dir.z,	0);
 		}
 		RCache.set_c	(C,result);
@@ -153,7 +153,7 @@ class cl_sun0_dir_e	: public R_constant_setup {
 	virtual void setup	(R_constant* C)	{
 		if (marker!=Device.dwFrame)	{
 			Fvector D;
-			CEnvDescriptor&	desc		= g_pGamePersistent->Environment().CurrentEnv;
+			CEnvDescriptor&	desc		= *g_pGamePersistent->Environment().CurrentEnv;
 			Device.mView.transform_dir	(D,desc.sun_dir);
 			D.normalize					();
 			result.set					(D.x,D.y,D.z,0);
@@ -168,7 +168,7 @@ class cl_amb_color	: public R_constant_setup {
 	Fvector4	result;
 	virtual void setup	(R_constant* C)	{
 		if (marker!=Device.dwFrame)	{
-			CEnvDescriptorMixer&	desc	= g_pGamePersistent->Environment().CurrentEnv;
+			CEnvDescriptorMixer&	desc	= *g_pGamePersistent->Environment().CurrentEnv;
 			result.set				(desc.ambient.x, desc.ambient.y, desc.ambient.z, desc.weight);
 		}
 		RCache.set_c	(C,result);
@@ -179,7 +179,7 @@ class cl_hemi_color	: public R_constant_setup {
 	Fvector4	result;
 	virtual void setup	(R_constant* C)	{
 		if (marker!=Device.dwFrame)	{
-			CEnvDescriptor&	desc	= g_pGamePersistent->Environment().CurrentEnv;
+			CEnvDescriptor&	desc	= *g_pGamePersistent->Environment().CurrentEnv;
 			result.set				(desc.hemi_color.x, desc.hemi_color.y, desc.hemi_color.z, desc.hemi_color.w);
 		}
 		RCache.set_c	(C,result);

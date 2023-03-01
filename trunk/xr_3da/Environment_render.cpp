@@ -112,11 +112,11 @@ void CEnvironment::RenderSky		()
 
 	// draw sky box
 	Fmatrix						mSky;
-	mSky.rotateY				(CurrentEnv.sky_rotation);
+	mSky.rotateY				(CurrentEnv->sky_rotation);
 	mSky.translate_over			(Device.vCameraPosition);
 
 	u32		i_offset,v_offset;
-	u32		C					= color_rgba(iFloor(CurrentEnv.sky_color.x*255.f), iFloor(CurrentEnv.sky_color.y*255.f), iFloor(CurrentEnv.sky_color.z*255.f), iFloor(CurrentEnv.weight*255.f));
+	u32		C					= color_rgba(iFloor(CurrentEnv->sky_color.x*255.f), iFloor(CurrentEnv->sky_color.y*255.f), iFloor(CurrentEnv->sky_color.z*255.f), iFloor(CurrentEnv->weight*255.f));
 
 	// Fill index buffer
 	u16*	pib					= RCache.Index.Lock	(20*3,i_offset);
@@ -132,7 +132,7 @@ void CEnvironment::RenderSky		()
 	RCache.set_xform_world		(mSky);
 	RCache.set_Geometry			(sh_2geom);
 	RCache.set_Shader			(sh_2sky);
-	RCache.set_Textures			(&CurrentEnv.sky_r_textures);
+	RCache.set_Textures			(&CurrentEnv->sky_r_textures);
 	RCache.Render				(D3DPT_TRIANGLELIST,v_offset,0,12,i_offset,20);
 
 	// Sun
@@ -146,13 +146,13 @@ void CEnvironment::RenderClouds			()
 	if (0==g_pGameLevel)		return	;
 #endif
 	// draw clouds
-	if (fis_zero(CurrentEnv.clouds_color.w,EPS_L))	return;
+	if (fis_zero(CurrentEnv->clouds_color.w,EPS_L))	return;
 
 	::Render->rmFar				();
 
 	Fmatrix						mXFORM, mScale;
 	mScale.scale				(10,0.4f,10);
-	mXFORM.rotateY				(CurrentEnv.sky_rotation);
+	mXFORM.rotateY				(CurrentEnv->sky_rotation);
 	mXFORM.mulB_43				(mScale);
 	mXFORM.translate_over		(Device.vCameraPosition);
 
@@ -163,7 +163,7 @@ void CEnvironment::RenderClouds			()
 	wind_dir.set				(wd0.x,wd0.z,wd1.x,wd1.z).mul(0.5f).add(0.5f).mul(255.f);
 	u32		i_offset,v_offset;
 	u32		C0					= color_rgba(iFloor(wind_dir.x),iFloor(wind_dir.y),iFloor(wind_dir.w),iFloor(wind_dir.z));
-	u32		C1					= color_rgba(iFloor(CurrentEnv.clouds_color.x*255.f),iFloor(CurrentEnv.clouds_color.y*255.f),iFloor(CurrentEnv.clouds_color.z*255.f),iFloor(CurrentEnv.clouds_color.w*255.f));
+	u32		C1					= color_rgba(iFloor(CurrentEnv->clouds_color.x*255.f),iFloor(CurrentEnv->clouds_color.y*255.f),iFloor(CurrentEnv->clouds_color.z*255.f),iFloor(CurrentEnv->clouds_color.w*255.f));
 
 	// Fill index buffer
 	u16*	pib					= RCache.Index.Lock	(CloudsIndices.size(),i_offset);
@@ -180,7 +180,7 @@ void CEnvironment::RenderClouds			()
 	RCache.set_xform_world		(mXFORM);
 	RCache.set_Geometry			(clouds_geom);
 	RCache.set_Shader			(clouds_sh);
-	RCache.set_Textures			(&CurrentEnv.clouds_r_textures);
+	RCache.set_Textures			(&CurrentEnv->clouds_r_textures);
 	RCache.Render				(D3DPT_TRIANGLELIST,v_offset,0,CloudsVerts.size(),i_offset,CloudsIndices.size()/3);
 
 	::Render->rmNormal			();
@@ -264,7 +264,7 @@ void CEnvironment::OnDeviceDestroy()
 			for (EnvIt it=_I->second.begin(); it!=_I->second.end(); it++)
 				(*it)->on_device_destroy();
 	}
-	CurrentEnv.destroy();
+	CurrentEnv->destroy();
 
 }
 

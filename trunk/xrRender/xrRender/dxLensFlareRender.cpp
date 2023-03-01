@@ -4,7 +4,7 @@
 #include "../../xr_3da/iGame_persistent.h"
 #define MAX_Flares	24
 
-#define FAR_DIST g_pGamePersistent->Environment().CurrentEnv.far_plane
+#define FAR_DIST g_pGamePersistent->Environment().CurrentEnv->far_plane
 
 void dxFlareRender::Copy(IFlareRender &_in)
 {

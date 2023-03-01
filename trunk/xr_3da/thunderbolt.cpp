@@ -141,8 +141,7 @@ BOOL CEffect_Thunderbolt::RayPick(const Fvector& s, const Fvector& d, float& dis
 #endif
     return bRes;
 }
-#define FAR_DIST g_pGamePersistent->Environment().CurrentEnv.far_plane
-
+#define FAR_DIST g_pGamePersistent->Environment().CurrentEnv->far_plane
 void CEffect_Thunderbolt::Bolt(int id, float period, float lt)
 {
 	VERIFY					(id>=0 && id<(int)collection.size());
@@ -154,7 +153,7 @@ void CEffect_Thunderbolt::Bolt(int id, float period, float lt)
     Fmatrix XF,S;
     Fvector pos,dev;
     float sun_h, sun_p; 
-    g_pGamePersistent->Environment().CurrentEnv.sun_dir.getHP			(sun_h,sun_p);
+    g_pGamePersistent->Environment().CurrentEnv->sun_dir.getHP			(sun_h,sun_p);
     float alt	            = Random.randF(p_var_alt.x,p_var_alt.y);
     float lng	            = Random.randF(sun_h-p_var_long+PI,sun_h+p_var_long+PI); 
     float dist	            = Random.randF(FAR_DIST*p_min_dist,FAR_DIST*MAX_DIST_FACTOR);
@@ -209,12 +208,12 @@ void CEffect_Thunderbolt::OnFrame(int id, float period, float duration)
         lightning_phase	= 1.5f*(current_time/life_time);
         clamp			(lightning_phase,0.f,1.f);
 
-        g_pGamePersistent->Environment().CurrentEnv.sky_color.mad(fClr,p_sky_color);
-        g_pGamePersistent->Environment().CurrentEnv.sun_color.mad(fClr,p_sun_color);
-		g_pGamePersistent->Environment().CurrentEnv.fog_color.mad(fClr,p_fog_color);
+        g_pGamePersistent->Environment().CurrentEnv->sky_color.mad(fClr,p_sky_color);
+        g_pGamePersistent->Environment().CurrentEnv->sun_color.mad(fClr,p_sun_color);
+		g_pGamePersistent->Environment().CurrentEnv->fog_color.mad(fClr,p_fog_color);
 
 		if (::Render->get_generation()==IRender_interface::GENERATION_R2)	{
-			g_pGamePersistent->Environment().CurrentEnv.sun_dir = current_direction;
+			g_pGamePersistent->Environment().CurrentEnv->sun_dir = current_direction;
 			VERIFY2(g_pGamePersistent->Environment().CurrentEnv.sun_dir.y<0,"Invalid sun direction settings while CEffect_Thunderbolt");
 
 		} 

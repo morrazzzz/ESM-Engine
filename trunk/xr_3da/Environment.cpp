@@ -36,7 +36,7 @@ static const float			MAX_NOISE_FREQ	= 0.03f;
 
 //////////////////////////////////////////////////////////////////////////
 // environment
-CEnvironment::CEnvironment	()
+CEnvironment::CEnvironment	(): CurrentEnv(0)
 {
 	bWFX					= false;
 	Current[0]				= 0;
@@ -77,6 +77,7 @@ CEnvironment::~CEnvironment	()
 {
 	xr_delete				(PerlinNoise1D);
 	OnDeviceDestroy			();
+	destroy_mixer();
 }
 
 void CEnvironment::Invalidate()
@@ -326,10 +327,10 @@ void CEnvironment::OnFrame()
 		mpower				+= EM.sum(*mit,view);
 
 	// final lerp
-	CurrentEnv.lerp				(this,*Current[0],*Current[1],current_weight,EM,mpower);
-	if(CurrentEnv.sun_dir.y>0)
+	CurrentEnv->lerp				(this,*Current[0],*Current[1],current_weight,EM,mpower);
+	if(CurrentEnv->sun_dir.y>0)
 	{
-		Log("CurrentEnv.sun_dir", CurrentEnv.sun_dir);
+		Log("CurrentEnv.sun_dir", CurrentEnv->sun_dir);
 		Log("current_weight", current_weight);
 		Log("mpower", mpower);
 
@@ -343,21 +344,21 @@ void CEnvironment::OnFrame()
 		//. very very ugly hack
 		if (HW.Caps.raster_major >= 3 && HW.Caps.geometry.bVTF){
 			// tonemapping in VS
-			CurrentEnv.sky_r_textures.push_back		(mk_pair(u32(D3DVERTEXTEXTURESAMPLER0),tonemap));	//. hack
-			CurrentEnv.sky_r_textures_env.push_back	(mk_pair(u32(D3DVERTEXTEXTURESAMPLER0),tonemap));	//. hack
-			CurrentEnv.clouds_r_textures.push_back	(mk_pair(u32(D3DVERTEXTEXTURESAMPLER0),tonemap));	//. hack
+			CurrentEnv->sky_r_textures.push_back		(mk_pair(u32(D3DVERTEXTEXTURESAMPLER0),tonemap));	//. hack
+			CurrentEnv->sky_r_textures_env.push_back	(mk_pair(u32(D3DVERTEXTEXTURESAMPLER0),tonemap));	//. hack
+			CurrentEnv->clouds_r_textures.push_back	(mk_pair(u32(D3DVERTEXTEXTURESAMPLER0),tonemap));	//. hack
 		} else {
 			// tonemapping in PS
-			CurrentEnv.sky_r_textures.push_back		(mk_pair(2,tonemap));								//. hack
-			CurrentEnv.sky_r_textures_env.push_back	(mk_pair(2,tonemap));								//. hack
-			CurrentEnv.clouds_r_textures.push_back	(mk_pair(2,tonemap));								//. hack
+			CurrentEnv->sky_r_textures.push_back		(mk_pair(2,tonemap));								//. hack
+			CurrentEnv->sky_r_textures_env.push_back	(mk_pair(2,tonemap));								//. hack
+			CurrentEnv->clouds_r_textures.push_back	(mk_pair(2,tonemap));								//. hack
 		}
 		
 	}
 
 	//. Setup skybox textures, somewhat ugly
-	IDirect3DBaseTexture9*	e0	= CurrentEnv.sky_r_textures[0].second->surface_get();
-	IDirect3DBaseTexture9*	e1	= CurrentEnv.sky_r_textures[1].second->surface_get();
+	IDirect3DBaseTexture9*	e0	= CurrentEnv->sky_r_textures[0].second->surface_get();
+	IDirect3DBaseTexture9*	e1	= CurrentEnv->sky_r_textures[1].second->surface_get();
 	
 	tsky0->surface_set		(e0);	_RELEASE(e0);
 	tsky1->surface_set		(e1);	_RELEASE(e1);
@@ -368,12 +369,22 @@ void CEnvironment::OnFrame()
     int l_id							=	(current_weight<0.5f)?Current[0]->lens_flare_id:Current[1]->lens_flare_id;
 	eff_LensFlare->OnFrame				(l_id);
 	int t_id							=	(current_weight<0.5f)?Current[0]->tb_id:Current[1]->tb_id;
-    eff_Thunderbolt->OnFrame			(t_id,CurrentEnv.bolt_period,CurrentEnv.bolt_duration);
+    eff_Thunderbolt->OnFrame			(t_id,CurrentEnv->bolt_period,CurrentEnv->bolt_duration);
 	eff_Rain->OnFrame					();
 
 	// ******************** Environment params (setting)
-	CHK_DX(HW.pDevice->SetRenderState( D3DRS_FOGCOLOR,	color_rgba_f(CurrentEnv.fog_color.x,CurrentEnv.fog_color.y,CurrentEnv.fog_color.z,0) )); 
-	CHK_DX(HW.pDevice->SetRenderState( D3DRS_FOGSTART,	*(u32 *)(&CurrentEnv.fog_near)	));
-	CHK_DX(HW.pDevice->SetRenderState( D3DRS_FOGEND,	*(u32 *)(&CurrentEnv.fog_far)	));
+	CHK_DX(HW.pDevice->SetRenderState( D3DRS_FOGCOLOR,	color_rgba_f(CurrentEnv->fog_color.x,CurrentEnv->fog_color.y,CurrentEnv->fog_color.z,0) )); 
+	CHK_DX(HW.pDevice->SetRenderState( D3DRS_FOGSTART,	*(u32 *)(&CurrentEnv->fog_near)	));
+	CHK_DX(HW.pDevice->SetRenderState( D3DRS_FOGEND,	*(u32 *)(&CurrentEnv->fog_far)	));
 }
 
+void CEnvironment::create_mixer()
+{
+	VERIFY(!CurrentEnv);
+	CurrentEnv = xr_new<CEnvDescriptorMixer>();
+}
+
+void CEnvironment::destroy_mixer()
+{
+	xr_delete(CurrentEnv);
+}

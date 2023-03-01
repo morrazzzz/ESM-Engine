@@ -307,6 +307,9 @@ void	CEnvironment::mods_unload		()
 
 void CEnvironment::load		()
 {
+	if (!CurrentEnv)
+		create_mixer();
+
 	tonemap					= Device.Resources->_CreateTexture("$user$tonemap");	//. hack
 	if (!eff_Rain)    		eff_Rain 		= xr_new<CEffect_Rain>();
 	if (!eff_LensFlare)		eff_LensFlare 	= xr_new<CLensFlare>();
@@ -407,7 +410,7 @@ void CEnvironment::unload	()
 	xr_delete			(eff_Thunderbolt);
 	CurrentWeather		= 0;
 	CurrentWeatherName	= 0;
-	CurrentEnv.clear	();
+	CurrentEnv->clear	();
 	Invalidate			();
 	tonemap				= 0;
 }

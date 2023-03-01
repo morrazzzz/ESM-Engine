@@ -159,7 +159,7 @@ float cover_in_direction(u32 level_vertex_id, const Fvector &direction)
 
 float rain_factor()
 {
-	return			(g_pGamePersistent->Environment().CurrentEnv.rain_density);
+	return			(g_pGamePersistent->Environment().CurrentEnv->rain_density);
 }
 
 u32	vertex_in_direction(u32 level_vertex_id, Fvector direction, float max_distance)
@@ -345,7 +345,7 @@ CEnvironment *environment()
 
 CEnvDescriptor *current_environment(CEnvironment *self)
 {
-	return		(&self->CurrentEnv);
+	return		(self->CurrentEnv);
 }
 extern bool g_bDisableAllInput;
 void disable_input()

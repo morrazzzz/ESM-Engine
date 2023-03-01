@@ -192,7 +192,7 @@ public:
 	float					wind_strength_factor;	
 	float					wind_gust_factor;
 	// Environments
-	CEnvDescriptorMixer		CurrentEnv;
+	CEnvDescriptorMixer*	CurrentEnv;
 	CEnvDescriptor*			Current[2];
 
 	bool					bWFX;
@@ -255,6 +255,9 @@ public:
 	void					OnDeviceDestroy		();
 
 	// editor-related
+protected:
+	void create_mixer();
+	void destroy_mixer();
 #ifdef _EDITOR
 public:
 	float					ed_from_time		;

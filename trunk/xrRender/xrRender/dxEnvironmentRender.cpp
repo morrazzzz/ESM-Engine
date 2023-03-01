@@ -3,11 +3,10 @@
 
 #include "dxRenderDeviceRender.h"
 
-#include "xrD3DDefs.h"
-#include "../../xr_3da/environment.h"
-#include "../../xr_3da/ResourceManager.h"
+#include "../../xrEngine/environment.h"
+#include "../../Layers/xrRender/ResourceManager.h"
 
-#include "../../xr_3da/xr_efflensflare.h"
+#include "../../xrEngine/xr_efflensflare.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -280,11 +279,10 @@ void dxEnvironmentRender::RenderSky(CEnvironment &env)
 	// The state may be not set by RCache if the state is changed using API SetRenderState() function before 
 	// and the RCache flag will remain unchanged to it's old value. 
 	// 
-//morrazzzz: I'll include the code below! When I finish DX9
-//	RCache.set_Z(FALSE);
-//	RCache.set_Z(TRUE);
+	RCache.set_Z(FALSE);
+	RCache.set_Z(TRUE);
  	env.eff_LensFlare->Render		(TRUE,FALSE,FALSE);
-//	RCache.set_Z(FALSE);
+	RCache.set_Z(FALSE);
 #else
 	env.eff_LensFlare->Render		(TRUE,FALSE,FALSE);
 #endif

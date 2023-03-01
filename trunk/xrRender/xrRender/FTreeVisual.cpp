@@ -132,7 +132,7 @@ void FTreeVisual::Render	(float LOD)
 	RCache.set_c			(c_c_scale,	s*c_scale.rgb.x,	s*c_scale.rgb.y,	s*c_scale.rgb.z,	s*c_scale.hemi);	// scale
 	RCache.set_c			(c_c_bias,	s*c_bias.rgb.x,		s*c_bias.rgb.y,		s*c_bias.rgb.z,		s*c_bias.hemi);		// bias
 #else
-	CEnvDescriptor&	desc	= g_pGamePersistent->Environment().CurrentEnv;
+	CEnvDescriptor&	desc	= *g_pGamePersistent->Environment().CurrentEnv;
 	RCache.set_c			(c_c_scale,	s*c_scale.rgb.x,					s*c_scale.rgb.y,					s*c_scale.rgb.z,				s*c_scale.hemi);	// scale
 	RCache.set_c			(c_c_bias,	s*c_bias.rgb.x + desc.ambient.x,	s*c_bias.rgb.y + desc.ambient.y,	s*c_bias.rgb.z+desc.ambient.z,	s*c_bias.hemi);		// bias
 #endif
