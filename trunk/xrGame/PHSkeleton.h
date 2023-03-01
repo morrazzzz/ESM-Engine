@@ -33,6 +33,7 @@ private:
 	//Autoremove
 	bool	ReadyForRemove		()																				;
 	void	RecursiveBonesCheck	(u16 id)																		;
+	void ClearSavedBones();
 
 protected:
 	void			LoadNetState		(NET_Packet& P)															;

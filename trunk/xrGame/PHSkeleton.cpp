@@ -251,6 +251,12 @@ void CPHSkeleton::RestoreNetState(CSE_PHSkeleton* po)
 	m_flags.set(CSE_PHSkeleton::flSavedData,FALSE);
 }
 
+void CPHSkeleton::ClearSavedBones()
+{
+	NET_Packet P;
+	CGameObject::u_EventGen(P, GE_CLEAR_SAVED_BONES, CPhysicsShellHolder().ID());
+	CGameObject::u_EventSend(P);
+}
 
 void CPHSkeleton::ClearUnsplited()
 {
