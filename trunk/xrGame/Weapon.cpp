@@ -48,7 +48,7 @@ CWeapon::CWeapon(LPCSTR name)
 	iAmmoElapsed			= -1;
 	iMagazineSize			= -1;
 	m_ammoType				= 0;
-	m_ammoName				= NULL;
+	m_ammoName				= nullptr;
 
 	eHandDependence			= hdNone;
 
@@ -56,23 +56,23 @@ CWeapon::CWeapon(LPCSTR name)
 	m_fZoomRotationFactor	= 0.f;
 
 
-	m_pAmmo					= NULL;
+	m_pAmmo					= nullptr;
 
 
-	m_pFlameParticles2		= NULL;
-	m_sFlameParticles2		= NULL;
+	m_pFlameParticles2		= nullptr;
+	m_sFlameParticles2		= nullptr;
 
 
 	m_fCurrentCartirdgeDisp = 1.f;
 
-	m_strap_bone0			= 0;
-	m_strap_bone1			= 0;
+	m_strap_bone0		    = nullptr;
+	m_strap_bone1			= nullptr;
 	m_StrapOffset.identity	();
 	m_strapped_mode			= false;
 	m_can_be_strapped		= false;
 	m_ef_main_weapon_type	= u32(-1);
 	m_ef_weapon_type		= u32(-1);
-	m_UIScope				= NULL;
+	m_UIScope				= nullptr;
 	m_set_next_ammoType_on_reload = u32(-1);
 }
 
@@ -100,7 +100,8 @@ void CWeapon::UpdateXForm	()
 	{
 		dwXF_Frame = Device.dwFrame;
 
-		if (0==H_Parent())	return;
+		if (!H_Parent())	
+			return;
 
 		// Get access to entity and its visual
 		CEntityAlive*	E		= smart_cast<CEntityAlive*>(H_Parent());
@@ -166,7 +167,7 @@ void CWeapon::UpdateFireDependencies_internal()
 
 		UpdateXForm			();
 
-		if (GetHUDmode() && (0!=H_Parent()) )
+		if (GetHUDmode() && H_Parent())
 		{
 			// 1st person view - skeletoned
 			CKinematics* V			= smart_cast<CKinematics*>(m_pHUD->Visual());
@@ -222,8 +223,7 @@ void CWeapon::ForceUpdateFireParticles()
 
 		if (!H_Parent())		return;
 
-		CInventoryOwner* io		= smart_cast<CInventoryOwner*>(H_Parent());
-		if(NULL == io->inventory().ActiveItem())
+		if(CInventoryOwner* io = smart_cast<CInventoryOwner*>(H_Parent()); !io->inventory().ActiveItem())
 		{
 				Log("current_state", GetState() );
 				Log("next_state", GetNextState());
@@ -818,14 +818,8 @@ bool CWeapon::Action(s32 cmd, u32 flags)
 
 					if(l_newType != m_ammoType) 
 					{
-						m_set_next_ammoType_on_reload = l_newType;						
-/*						m_ammoType = l_newType;
-						m_pAmmo = NULL;
-						if (unlimited_ammo())
-						{
-							m_DefaultCartridge.Load(*m_ammoTypes[m_ammoType], u8(m_ammoType));
-						};							
-*/
+						m_set_next_ammoType_on_reload = l_newType;
+
 						if(OnServer()) Reload();
 					}
 				}
@@ -1052,7 +1046,7 @@ void CWeapon::UpdateHUDAddonsVisibility()
 
 	CKinematics* pHudVisual									= smart_cast<CKinematics*>(m_pHUD->Visual());
 	VERIFY(pHudVisual);
-	if (H_Parent() != Level().CurrentEntity()) pHudVisual	= NULL;
+	if (H_Parent() != Level().CurrentEntity()) pHudVisual	= nullptr;
 
 
 	if (!pHudVisual)return;
@@ -1226,7 +1220,7 @@ CUIStaticItem* CWeapon::ZoomTexture()
 	if (UseScopeTexture())
 		return m_UIScope;
 	else
-		return NULL;
+		return nullptr;
 }
 
 void CWeapon::SwitchState(u32 S)
