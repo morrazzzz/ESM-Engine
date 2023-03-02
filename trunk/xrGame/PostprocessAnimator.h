@@ -1,5 +1,3 @@
-#ifndef __ppanimator_included__
-#define __ppanimator_included__
 #pragma once
 
 #ifndef _PP_EDITOR_
@@ -208,5 +206,3 @@ public:
 };
 
 #endif
-
-#endif /*__ppanimator_included__*/

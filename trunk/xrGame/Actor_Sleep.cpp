@@ -1,4 +1,7 @@
 #include "stdafx.h"
+
+//morrazzzz: Restore or delete!
+
 /*
 #include "actor.h"
 #include "SleepEffector.h"

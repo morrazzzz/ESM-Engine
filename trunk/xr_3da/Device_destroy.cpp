@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#include "ResourceManager.h"
 #include "render.h"
 #include "IGame_Persistent.h"
 #include "..\include\xrRender\RenderFactory.h"

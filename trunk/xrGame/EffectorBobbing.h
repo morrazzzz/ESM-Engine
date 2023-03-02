@@ -1,5 +1,3 @@
-#ifndef _EFFECTOR_BOBBING_H
-#define _EFFECTOR_BOBBING_H
 #pragma once
 
 #include "CameraEffector.h"
@@ -31,5 +29,3 @@ public:
 	virtual	BOOL	Process		(Fvector &delta_p, Fvector &delta_d, Fvector &delta_n, float& fFov, float& fFar, float& fAspect);
 	void	SetState			(u32 st, bool limping, bool ZoomMode);
 };
-
-#endif //_EFFECTOR_BOBBING_H

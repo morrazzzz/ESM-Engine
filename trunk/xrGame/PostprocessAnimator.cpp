@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "postprocessanimator.h"
-#ifndef _PP_EDITOR_
 #include "ActorEffector.h"	
-#endif
 
 // postprocess value LOAD method implementation
 void CPostProcessValue::load (IReader &pReader)
@@ -40,10 +38,8 @@ CPostprocessAnimator::CPostprocessAnimator()
 }
 
 CPostprocessAnimator::CPostprocessAnimator(int id, bool cyclic)
-#ifndef _PP_EDITOR_
 :CEffectorPP((EEffectorPPType)id, 100000, true),
 m_bCyclic(cyclic)
-#endif
 {
     Create				();
 }
@@ -69,15 +65,11 @@ void        CPostprocessAnimator::Clear                           ()
 void        CPostprocessAnimator::Load                            (LPCSTR name)
 {
     m_Name = name;
-#ifndef _PP_EDITOR_
+
     string_path full_path;
     if (!FS.exist (full_path, "$level$", name))
        if (!FS.exist (full_path, "$game_anims$", name))
           Debug.fatal (DEBUG_INFO,"Can't find motion file '%s'.", name);
-#else /*_PP_EDITOR_*/
-    string_path full_path;
-    strcpy (full_path, name);
-#endif /*_PP_EDITOR_*/
 
     LPCSTR  ext = strext(full_path);
     if (ext)

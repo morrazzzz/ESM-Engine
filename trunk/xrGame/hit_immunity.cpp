@@ -5,7 +5,6 @@
 #include "stdafx.h"
 #include "hit_immunity.h"
 
-
 CHitImmunity::CHitImmunity()
 {
 	m_HitTypeK.resize(ALife::eHitTypeMax);

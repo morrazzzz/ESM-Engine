@@ -1,5 +1,3 @@
-#ifndef GamePersistentH
-#define GamePersistentH
 #pragma once
 
 #include "../xr_3da/IGame_Persistent.h"
@@ -73,6 +71,3 @@ public:
 };
 
 IC CGamePersistent&		GamePersistent()		{ return *((CGamePersistent*) g_pGamePersistent);			}
-
-#endif //GamePersistentH
-

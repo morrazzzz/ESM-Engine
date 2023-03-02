@@ -22,7 +22,6 @@
 #include "PHCommander.h"
 #include "PHScriptCall.h"
 #include "HUDManager.h"
-#include "script_engine.h"
 #include "game_cl_single.h"
 
 #include "map_manager.h"
@@ -457,8 +456,6 @@ extern void add_human_to_top_list		(u16 id);
 extern void remove_human_from_top_list	(u16 id);
 
 
-
-#include "ActorEffector.h"
 void add_complex_effector(LPCSTR section, int id)
 {
 	AddEffector(Actor(),id, section);

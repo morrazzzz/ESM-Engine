@@ -3,7 +3,6 @@
 
 #include "actor.h"
 #include "WeaponMounted.h"
-#include "../xr_3da/CameraBase.h"
 #include "ActorEffector.h"
 #include "CharacterPhysicsSupport.h"
 bool CActor::use_MountedWeapon(CHolderCustom* object)

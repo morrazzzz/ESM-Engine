@@ -2,8 +2,6 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_LEVEL_H__38F63863_DB0C_494B_AFAB_C495876EC671__INCLUDED_)
-#define AFX_LEVEL_H__38F63863_DB0C_494B_AFAB_C495876EC671__INCLUDED_
 #pragma once
 
 #include "../xr_3da/igame_level.h"
@@ -414,6 +412,3 @@ IC bool					OnClient()	{ return Level().IsClient();}
 class  CPHWorld;
 extern CPHWorld*				ph_world;
 extern BOOL						g_bDebugEvents;
-
-
-#endif // !defined(AFX_LEVEL_H__38F63863_DB0C_494B_AFAB_C495876EC671__INCLUDED_)

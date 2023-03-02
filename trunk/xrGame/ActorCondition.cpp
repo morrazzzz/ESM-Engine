@@ -6,13 +6,7 @@
 #include "level.h"
 #include "sleepeffector.h"
 #include "game_base_space.h"
-#include "autosave_manager.h"
-#include "xrserver.h"
 #include "ai_space.h"
-#include "script_callback_ex.h"
-#include "script_game_object.h"
-#include "game_object_space.h"
-#include "ui\UIVideoPlayerWnd.h"
 #include "script_callback_ex.h"
 #include "object_broker.h"
 #include "weapon.h"
@@ -100,7 +94,6 @@ void CActorCondition::LoadCondition(LPCSTR entity_section)
 
 //вычисление параметров с ходом времени
 #include "UI.h"
-#include "HUDManager.h"
 
 void CActorCondition::UpdateCondition()
 {

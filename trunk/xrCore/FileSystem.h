@@ -2,8 +2,7 @@
 // file: FileSystem.h
 //----------------------------------------------------
 
-#ifndef FileSystemH
-#define FileSystemH
+#pragma once
 
 #define BACKUP_FILE_LEVEL 5
 
@@ -48,6 +47,3 @@ public:
 };
 extern XRCORE_API	EFS_Utils*	xr_EFS;
 #define EFS (*xr_EFS)
-
-#endif /*_INCDEF_FileSystem_H_*/
-

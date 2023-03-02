@@ -4,22 +4,17 @@
 #ifdef DEBUG
 #include "PHDebug.h"
 #endif
-#include "hit.h"
-#include "PHDestroyable.h"
 #include "Car.h"
 
 #include "Weapon.h"
-#include "Inventory.h"
 
 #include "SleepEffector.h"
-#include "ActorEffector.h"
 #include "level.h"
 #include "../xr_3da/cl_intersect.h"
 #include "gamemtllib.h"
 #include "elevatorstate.h"
 #include "CharacterPhysicsSupport.h"
 #include "EffectorShot.h"
-#include "phcollidevalidator.h"
 #include "PHShell.h"
 void CActor::cam_Set	(EActorCameras style)
 {
@@ -127,7 +122,6 @@ ICF BOOL test_point(xrXRC& xrc, const Fmatrix& xform, const Fmatrix33& mat, cons
 }
 
 #include "physics.h"
-#include "PHActivationShape.h"
 #include "debug_renderer.h"
 void CActor::cam_Update(float dt, float fFOV)
 {

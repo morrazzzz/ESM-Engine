@@ -1,5 +1,4 @@
-#ifndef ACTOR_MP_CLIENT_H
-#define ACTOR_MP_CLIENT_H
+#pragma once
 
 #include "actor.h"
 #include "actor_mp_state.h"
@@ -25,5 +24,3 @@ public:
 	virtual void			OnEvent				(NET_Packet		&packet, u16 type);
 	virtual void			Die					(CObject		*killer);
 };
-
-#endif // ACTOR_MP_CLIENT_H

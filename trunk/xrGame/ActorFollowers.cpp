@@ -1,4 +1,7 @@
 #include "stdafx.h"
+
+//morrazzzz: please delete this file!!
+
 /*
 #include "ActorFollowers.h"
 #include "ui/xrxmlparser.h"

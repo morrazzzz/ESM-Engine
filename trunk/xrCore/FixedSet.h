@@ -1,5 +1,3 @@
-#ifndef _FIXEDSET_H
-#define _FIXEDSET_H
 #pragma once
 
 template<class K, class allocator = xr_allocator>
@@ -169,4 +167,3 @@ public:
 			CB(nodes+i);
 	}
 };
-#endif

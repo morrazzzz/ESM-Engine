@@ -3,23 +3,17 @@
 #include "Actor_Flags.h"
 #include "inventory.h"
 #include "xrserver_objects_alife_monsters.h"
-#include "xrServer.h"
 
-#include "CameraLook.h"
 #include "CameraFirstEye.h"
 
 #include "ActorEffector.h"
 
 #include "PHWorld.h"
 #include "level.h"
-#include "xr_level_controller.h"
 #include "game_cl_base.h"
-#include "infoportion.h"
 #include "alife_registry_wrappers.h"
 #include "../xr_3da/skeletonanimated.h"
 #include "client_spawn_manager.h"
-#include "hit.h"
-#include "PHDestroyable.h"
 #include "CharacterPhysicsSupport.h"
 #include "Grenade.h"
 #include "WeaponMagazined.h"
@@ -38,7 +32,6 @@
 #include "holder_custom.h"
 #include "actor_memory.h"
 #include "actor_statistic_mgr.h"
-#include "characterphysicssupport.h"
 #include "game_cl_base_weapon_usage_statistic.h"
 #include "clsid_game.h"
 

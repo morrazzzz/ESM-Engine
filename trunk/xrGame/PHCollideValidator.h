@@ -1,5 +1,4 @@
-#ifndef PH_COLLIDE_VALIDATOR
-#define PH_COLLIDE_VALIDATOR
+#pragma once
 
 typedef u32	CGID;
 typedef u32	CLClassBits;
@@ -107,6 +106,3 @@ static		_flags<CLClassBits>		ClassFlags;
 static		_flags<CLClassBits>		ClassNCFlags;
 static		_flags<CLClassBits>		NonTypeFlags;
 };
-
-
-#endif

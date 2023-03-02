@@ -9,9 +9,6 @@
 #ifdef DEBUG
 #include "PHDebug.h"
 #endif
-#include "alife_space.h"
-#include "hit.h"
-#include "PHDestroyable.h"
 #include "Car.h"
 #include "../xr_3da/skeletonanimated.h"
 #include "PHShellSplitter.h"

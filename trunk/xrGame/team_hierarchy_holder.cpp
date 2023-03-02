@@ -10,7 +10,6 @@
 #include "team_hierarchy_holder.h"
 #include "squad_hierarchy_holder.h"
 #include "object_broker.h"
-#include "seniority_hierarchy_space.h"
 
 CTeamHierarchyHolder::~CTeamHierarchyHolder			()
 {

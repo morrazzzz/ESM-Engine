@@ -8,8 +8,6 @@
 
 #pragma once
 
-//#define SQUAD_HIERARCHY_HOLDER_USE_LEADER
-
 namespace SeniorityHierarchy {
 	IC	shared_str to_string		(u32 number)
 	{

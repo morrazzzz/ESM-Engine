@@ -1,5 +1,4 @@
-#ifndef ACTOR_MP_SERVER_H
-#define ACTOR_MP_SERVER_H
+#pragma once
 
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "actor_mp_state.h"
@@ -27,5 +26,3 @@ public:
 	virtual	void			on_death				(CSE_Abstract *killer);	
 #endif
 };
-
-#endif // ACTOR_MP_SERVER_H

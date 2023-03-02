@@ -2,8 +2,6 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_DYNAMICHEIGHTMAP_H__5A5BD0B8_1FC7_4067_A5A4_D40422E8B6D1__INCLUDED_)
-#define AFX_DYNAMICHEIGHTMAP_H__5A5BD0B8_1FC7_4067_A5A4_D40422E8B6D1__INCLUDED_
 #pragma once
 
 const int	dhm_line		= 4;
@@ -71,5 +69,3 @@ public:
 	float						Query		(float x, float z);				// 2D query
 	Fvector						Query		(Fvector& pos, Fvector& dir);	// 3D ray-query
 };
-
-#endif // !defined(AFX_DYNAMICHEIGHTMAP_H__5A5BD0B8_1FC7_4067_A5A4_D40422E8B6D1__INCLUDED_)

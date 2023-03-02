@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "render.h"
 #include "..\include\xrRender\RenderFactory.h"
 
 void SetupGPU(IRenderDeviceRender* pRender)

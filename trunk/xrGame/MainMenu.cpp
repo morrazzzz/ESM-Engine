@@ -15,7 +15,6 @@
 #include "gamespy/GameSpy_HTTP.h"
 #include "gamespy/GameSpy_Available.h"
 #include "gamespy/CdkeyDecode/cdkeydecode.h"
-#include "string_table.h"
 
 #include "object_broker.h"
 

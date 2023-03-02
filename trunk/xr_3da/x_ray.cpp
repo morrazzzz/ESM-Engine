@@ -18,7 +18,6 @@
 #include "LightAnimLibrary.h"
 #include "ispatial.h"
 #include "CopyProtection.h"
-#include "Text_Console.h"
 #include <process.h>
 
 //---------------------------------------------------------------------

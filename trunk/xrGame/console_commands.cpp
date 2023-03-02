@@ -7,39 +7,28 @@
 #include "xrMessages.h"
 #include "xrserver.h"
 #include "level.h"
-#include "script_debugger.h"
 #include "ai_debug.h"
 #include "alife_simulator.h"
 #include "game_cl_base.h"
 #include "game_cl_single.h"
 #include "game_sv_single.h"
-#include "hit.h"
-#include "PHDestroyable.h"
 #include "actor.h"
 #include "Actor_Flags.h"
-#include "customzone.h"
 #include "script_engine.h"
 #include "script_engine_space.h"
 #include "script_process.h"
-#include "xrServer_Objects.h"
 #include "ui/UIMainIngameWnd.h"
-#include "PhysicsGamePars.h"
 #include "phworld.h"
 #include "string_table.h"
-#include "autosave_manager.h"
 #include "ai_space.h"
 #include "ai/monsters/BaseMonster/base_monster.h"
 #include "date_time.h"
 #include "mt_config.h"
 #include "ui/UIOptConCom.h"
-#include "zone_effector.h"
 #include "GameTask.h"
 #include "MainMenu.h"
 #include "saved_game_wrapper.h"
-#include "level_graph.h"
 #include "../xr_3da/resourcemanager.h"
-#include "doug_lea_memory_allocator.h"
-#include "cameralook.h"
 
 #include "GameSpy/GameSpy_Full.h"
 #include "GameSpy/GameSpy_Patching.h"
@@ -395,7 +384,7 @@ bool valid_file_name(LPCSTR file_name)
 
 
 #include "UIGameCustom.h"
-#include "HUDManager.h"
+
 class CCC_ALifeSave : public IConsole_Command {
 public:
 	CCC_ALifeSave(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };

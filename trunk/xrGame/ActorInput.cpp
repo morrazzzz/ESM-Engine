@@ -2,13 +2,10 @@
 #include <dinput.h>
 #include "Actor.h"
 #include "Torch.h"
-#include "trade.h"
 #include "../xr_3da/CameraBase.h"
 #ifdef DEBUG
 #include "PHDebug.h"
 #endif
-#include "hit.h"
-#include "PHDestroyable.h"
 #include "Car.h"
 #include "HudManager.h"
 #include "UIGameSP.h"

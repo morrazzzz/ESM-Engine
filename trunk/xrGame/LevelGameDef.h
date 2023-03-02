@@ -1,6 +1,5 @@
 //---------------------------------------------------------------------------
-#ifndef LevelGameDefH
-#define LevelGameDefH
+#pragma once
 
 #define RPOINT_CHOOSE_NAME 		"$rpoint"
 #define ENVMOD_CHOOSE_NAME 		"$env_mod"
@@ -119,9 +118,6 @@ class CCustomGamePoint {
 public:
 	virtual void Save		(IReader&)							= 0;
 	virtual void Load		(IWriter&)							= 0;
-#ifdef _EDITOR
-	virtual void FillProp	(LPCSTR pref, PropItemVec& values)	= 0;
-#endif
 };
 
 class CNPC_Point : public CCustomGamePoint {
@@ -182,11 +178,4 @@ public:
 		fs.r_stringZ				(tmp_caRouteGraphPoints,sizeof(tmp_caRouteGraphPoints));
 		caRouteGraphPoints			= tmp_caRouteGraphPoints;
 	}
-#ifdef _EDITOR
-	virtual void FillProp	(LPCSTR pref, PropItemVec& values);
-#endif
 };
-
-//---------------------------------------------------------------------------
-#endif //LevelGameDefH
-

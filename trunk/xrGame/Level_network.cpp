@@ -12,7 +12,6 @@
 #include "script_engine.h"
 #include "stalker_animation_data_storage.h"
 #include "client_spawn_manager.h"
-#include "seniority_hierarchy_holder.h"
 
 ENGINE_API bool g_dedicated_server;
 

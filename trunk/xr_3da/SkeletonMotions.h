@@ -1,6 +1,5 @@
 //---------------------------------------------------------------------------
-#ifndef SkeletonMotionsH
-#define SkeletonMotionsH
+#pragma once
 
 #include		"skeletoncustom.h"
 
@@ -223,5 +222,3 @@ public:
 	const shared_str	&id				() const					{	VERIFY(p_); return p_->m_id;					}
 
 };
-//---------------------------------------------------------------------------
-#endif

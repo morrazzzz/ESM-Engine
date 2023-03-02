@@ -1,7 +1,4 @@
 //---------------------------------------------------------------------------
-#ifndef GameMtlLibH
-#define GameMtlLibH
-//---------------------------------------------------------------------------
 #pragma once
 
 #define GAMEMTL_CURRENT_VERSION			0x0001
@@ -332,5 +329,3 @@ public:
 	}
 
 extern ECORE_API CGameMtlLibrary GMLib;
-#endif
-

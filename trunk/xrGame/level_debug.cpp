@@ -1,8 +1,10 @@
 #include "stdafx.h"
 #include "level_debug.h"
+#ifdef DEBUG
 #include "../xr_3da/xr_object.h"
 #include "level.h"
 #include "HUDManager.h"
+#endif
 
 #ifdef DEBUG
 #	include "debug_renderer.h"

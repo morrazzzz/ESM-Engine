@@ -1,7 +1,5 @@
-//---------------------------------------------------------------------------
-#ifndef StatGraphH
-#define StatGraphH
-//---------------------------------------------------------------------------
+#pragma once
+
 class ENGINE_API CStatGraph	: public pureRender
 {
 public:
@@ -157,4 +155,3 @@ public:
 		m_Markers.erase(m_Markers.begin()+ID);
 	}
 };
-#endif

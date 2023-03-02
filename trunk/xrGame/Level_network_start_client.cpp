@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "../xr_3da/resourcemanager.h"
 #include "HUDmanager.h"
-#include "PHdynamicdata.h"
 #include "Physics.h"
 #include "level.h"
 #include "../xr_3da/x_ray.h"
@@ -15,7 +14,7 @@ BOOL CLevel::net_Start_client	( LPCSTR options )
 {
 	return FALSE;
 }
-#include "string_table.h"
+
 bool	CLevel::net_start_client1				()
 {
 	pApp->LoadBegin	();

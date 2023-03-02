@@ -3,23 +3,16 @@
 #include "customdetector.h"
 #include "uigamesp.h"
 #include "hudmanager.h"
-#include "weapon.h"
 #include "artifact.h"
-#include "scope.h"
-#include "silencer.h"
-#include "grenadelauncher.h"
 #include "inventory.h"
 #include "level.h"
 #include "xr_level_controller.h"
 #include "FoodItem.h"
 #include "ActorCondition.h"
-#include "Grenade.h"
 
-#include "CameraLook.h"
 #include "CameraFirstEye.h"
 #include "holder_custom.h"
 #include "ui/uiinventoryWnd.h"
-#include "game_base_space.h"
 #ifdef DEBUG
 #include "PHDebug.h"
 #endif

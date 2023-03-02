@@ -9,13 +9,11 @@
 #include "HUDManager.h"
 #include "WeaponHUD.h"
 #include "entity_alive.h"
-#include "inventory_item_impl.h"
 
 #include "inventory.h"
 #include "xrserver_objects_alife_items.h"
 
 #include "actor.h"
-#include "actoreffector.h"
 #include "level.h"
 
 #include "xr_level_controller.h"
@@ -23,7 +21,6 @@
 #include "../xr_3da/skeletoncustom.h"
 #include "ai_object_location.h"
 #include "clsid_game.h"
-#include "mathutils.h"
 #include "object_broker.h"
 #include "../xr_3da/igame_persistent.h"
 

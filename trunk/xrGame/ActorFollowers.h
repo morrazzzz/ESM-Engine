@@ -1,4 +1,7 @@
 #pragma once
+
+//morrazzzz: please delete this file!!
+
 /*
 class CUIFollowerPanel;
 class CInventoryOwner;

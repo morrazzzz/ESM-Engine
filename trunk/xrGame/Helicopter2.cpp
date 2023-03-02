@@ -10,7 +10,6 @@
 #include "script_callback_ex.h"
 #include "ai/stalker/ai_stalker.h"
 #include "CustomZone.h"
-#include "MathUtils.h"
 
 bool CHelicopter::isObjectVisible			(CObject* O)
 {
@@ -249,11 +248,6 @@ void CHelicopter::PHHit(float P,Fvector &dir, CObject *who,s16 element,Fvector p
 	if(!g_Alive())inherited::PHHit(P,dir,who,element,p_in_object_space,impulse,hit_type);
 }
 
-
-#include "group_hierarchy_holder.h"
-#include "seniority_hierarchy_holder.h"
-#include "team_hierarchy_holder.h"
-#include "squad_hierarchy_holder.h"
 
 #include "extendedgeom.h"
 void CollisionCallbackDead(bool& do_colide,bool bo1,dContact& c,SGameMtl* material_1,SGameMtl* material_2)

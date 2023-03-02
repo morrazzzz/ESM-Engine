@@ -1,5 +1,4 @@
-#ifndef ACTOR_MP_STATE_H
-#define ACTOR_MP_STATE_H
+#pragma once
 
 //#define USE_DIFFERENCES
 
@@ -47,5 +46,3 @@ public:
 };
 
 #include "actor_mp_state_inline.h"
-
-#endif // ACTOR_MP_STATE_H

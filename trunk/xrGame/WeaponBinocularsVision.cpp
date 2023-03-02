@@ -9,7 +9,6 @@
 #include "relation_registry.h"
 #include "object_broker.h"
 
-#include "game_base_space.h"
 #include "Level.h"
 #include "game_cl_base.h"
 #include "AI/Monsters/BaseMonster/base_monster.h"

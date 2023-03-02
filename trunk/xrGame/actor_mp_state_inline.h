@@ -1,5 +1,4 @@
-#ifndef ACTOR_MP_STATE_INLINE_H
-#define ACTOR_MP_STATE_INLINE_H
+#pragma once
 
 IC actor_mp_state_holder::actor_mp_state_holder			()
 {
@@ -11,5 +10,3 @@ IC const actor_mp_state &actor_mp_state_holder::state	() const
 {
 	return							(m_state);
 }
-
-#endif // ACTOR_MP_STATE_INLINE_H
