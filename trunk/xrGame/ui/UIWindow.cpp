@@ -102,12 +102,12 @@ void CUIWindow::ResetPPMode()
 CUIWindow::CUIWindow()
 {
 //.	m_dbg_flag.zero			();
-	m_pFont					= NULL;
-	m_pParentWnd			= NULL;
-	m_pMouseCapturer		= NULL;
-	m_pOrignMouseCapturer	= NULL;
-	m_pMessageTarget		= NULL;
-	m_pKeyboardCapturer		=  NULL;
+	m_pFont					= nullptr;
+	m_pParentWnd			= nullptr;
+	m_pMouseCapturer        = nullptr;
+	m_pOrignMouseCapturer	= nullptr;
+	m_pMessageTarget		= nullptr;
+	m_pKeyboardCapturer		= nullptr;
 	SetWndRect				(0,0,0,0);
 	m_bAutoDelete			= false;
     Show					(true);
@@ -229,14 +229,14 @@ void CUIWindow::AttachChild(CUIWindow* pChild)
 
 void CUIWindow::DetachChild(CUIWindow* pChild)
 {
-	if(NULL==pChild)
+	if(!pChild)
 		return;
 	
 	if(m_pMouseCapturer == pChild)
 		SetCapture(pChild, false);
 
 	SafeRemoveChild(pChild);
-	pChild->SetParent(NULL);
+	pChild->SetParent(nullptr);
 
 	if(pChild->IsAutoDelete())
 		xr_delete(pChild);
@@ -253,7 +253,7 @@ void CUIWindow::GetAbsoluteRect(Frect& r)
 {
 //.	Frect rect;
 
-	if(GetParent() == NULL){
+	if(!GetParent()){
 		GetWndRect		(r);
 		return;
 	}
@@ -297,7 +297,7 @@ bool CUIWindow::OnMouse(float x, float y, EUIMessages mouse_action)
 		m_dwLastClickTime = dwCurTime;
 	}
 
-	if(GetParent()== NULL)
+	if(!GetParent())
 	{
 		if(!wndRect.in(cursor_pos))
             return false;
@@ -419,23 +419,23 @@ void CUIWindow::OnFocusLost()
 //ему в независимости от того где мышь
 void CUIWindow::SetCapture(CUIWindow *pChildWindow, bool capture_status)
 {
-	if(NULL != GetParent())
+	if(GetParent())
 	{
-		if(m_pOrignMouseCapturer == NULL || m_pOrignMouseCapturer == pChildWindow)
+		if(m_pOrignMouseCapturer == nullptr || m_pOrignMouseCapturer == pChildWindow)
 			GetParent()->SetCapture(this, capture_status);
 	}
 
 	if(capture_status)
 	{
 		//оповестить дочернее окно о потере фокуса мыши
-		if(NULL!=m_pMouseCapturer)
+		if(m_pMouseCapturer)
 			m_pMouseCapturer->SendMessage(this, WINDOW_MOUSE_CAPTURE_LOST);
 
 		m_pMouseCapturer = pChildWindow;
 	}
 	else
 	{
-			m_pMouseCapturer = NULL;
+			m_pMouseCapturer = nullptr;
 	}
 }
 
@@ -447,7 +447,7 @@ bool CUIWindow::OnKeyboard(int dik, EUIMessages keyboard_action)
 
 	//если есть дочернее окно,захватившее клавиатуру, то
 	//сообщение направляем ему сразу
-	if(NULL!=m_pKeyboardCapturer)
+	if(m_pKeyboardCapturer)
 	{
 		result = m_pKeyboardCapturer->OnKeyboard(dik, keyboard_action);
 		
@@ -472,7 +472,7 @@ bool CUIWindow::OnKeyboardHold(int dik)
 {
 	bool result;
 
-	if(NULL!=m_pKeyboardCapturer)
+	if(m_pKeyboardCapturer)
 	{
 		result = m_pKeyboardCapturer->OnKeyboardHold(dik);
 		
@@ -496,19 +496,19 @@ bool CUIWindow::OnKeyboardHold(int dik)
 
 void CUIWindow::SetKeyboardCapture(CUIWindow* pChildWindow, bool capture_status)
 {
-	if(NULL != GetParent())
+	if(GetParent())
 		GetParent()->SetKeyboardCapture(this, capture_status);
 
 	if(capture_status)
 	{
 		//оповестить дочернее окно о потере фокуса клавиатуры
-		if(NULL!=m_pKeyboardCapturer)
+		if(m_pKeyboardCapturer)
 			m_pKeyboardCapturer->SendMessage(this, WINDOW_KEYBOARD_CAPTURE_LOST);
 			
 		m_pKeyboardCapturer = pChildWindow;
 	}
 	else
-		m_pKeyboardCapturer = NULL;
+		m_pKeyboardCapturer = nullptr;
 }
 
 
@@ -575,7 +575,7 @@ bool CUIWindow::BringToTop(CUIWindow* pChild)
 //поднять на вершину списка всех родителей окна и его самого
 void CUIWindow::BringAllToTop()
 {
-	if(GetParent() == NULL)
+	if(!GetParent())
 			return;
 	else
 	{
@@ -587,7 +587,7 @@ void CUIWindow::BringAllToTop()
 //для перевода окна и потомков в исходное состояние
 void CUIWindow::Reset()
 {
-	m_pOrignMouseCapturer = m_pMouseCapturer = NULL;
+	m_pOrignMouseCapturer = m_pMouseCapturer = nullptr;
 }
 void CUIWindow::ResetAll()
 {
@@ -620,13 +620,12 @@ CUIWindow*	CUIWindow::FindChild(const shared_str name)
 	WINDOW_LIST::const_iterator it = m_ChildWndList.begin();
 	WINDOW_LIST::const_iterator it_e = m_ChildWndList.end();
 	for(;it!=it_e;++it){
-		CUIWindow* pRes = (*it)->FindChild(name);
-		if(pRes != NULL)
+		if(CUIWindow* pRes = (*it)->FindChild(name))
 			return pRes;
 	}
 
 //.	m_dbg_flag.set(256,FALSE);
-	return NULL;
+	return nullptr;
 }
 
 void CUIWindow::SetParent(CUIWindow* pNewParent) 
