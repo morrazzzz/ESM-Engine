@@ -168,7 +168,7 @@ void CRenderDevice::Run			()
 	thread_spawn				(mt_Thread,"X-RAY Secondary thread",0,0);
 
 	// Message cycle
-    PeekMessage					( &msg, NULL, 0U, 0U, PM_NOREMOVE );
+    PeekMessage					( &msg, nullptr, 0U, 0U, PM_NOREMOVE );
 
 	seqAppStart.Process			(rp_AppStart);
 
@@ -176,7 +176,7 @@ void CRenderDevice::Run			()
 
 	while( WM_QUIT != msg.message  )
     {
-        bGotMsg = PeekMessage( &msg, NULL, 0U, 0U, PM_REMOVE );
+		bGotMsg = PeekMessage(&msg, nullptr, 0U, 0U, PM_REMOVE);
         if( bGotMsg )
         {
               TranslateMessage	( &msg );
@@ -233,7 +233,7 @@ void CRenderDevice::Run			()
 					if (Begin()) {
 
 						seqRender.Process(rp_Render);
-						if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || Statistic->errors.size())
+						if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || psDeviceFlags.test(rsDrawFPS) || psDeviceFlags.test(rsDrawMemory)||  Statistic->errors.size())
 							Statistic->Show();
 						End();
 					}

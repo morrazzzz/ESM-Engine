@@ -548,6 +548,10 @@ void CCC_Register()
 	CMD3(CCC_Mask,		"rs_render_dynamics",	&psDeviceFlags,		rsDrawDynamic			);
 #endif
 
+	// Counters
+	CMD3(CCC_Mask, "rs_draw_fps", &psDeviceFlags, rsDrawFPS);
+	CMD3(CCC_Mask, "rs_draw_memory", &psDeviceFlags, rsDrawMemory);
+
 	// Render device states
 	CMD4(CCC_Integer,	"r__supersample",		&ps_r__Supersample,			1,		4		);
 

@@ -65,8 +65,17 @@ void _draw_cam_pos(CGameFont* pFont)
 {
 	float sz		= pFont->GetHeight();
 	pFont->SetHeightI(0.02f);
-	pFont->SetColor	(0xffffffff);
-	pFont->Out		(10, 600, "CAMERA POSITION:  [%3.2f,%3.2f,%3.2f]",VPUSH(Device.vCameraPosition));
+	pFont->SetColor(color_rgba(255, 255, 0, 250));
+	pFont->Out(10, 230, "CAMERA POSITION:  [%3.2f,%3.2f,%3.2f]", VPUSH(Device.vCameraPosition));
+	pFont->SetHeight(sz);
+	pFont->OnRender();
+}
+void draw_fps(CGameFont* pFont)
+{
+	float sz = pFont->GetHeight();
+	pFont->SetHeightI(0.025f);
+	pFont->SetColor(color_rgba(0, 255, 0, 250));
+	pFont->Out(720, 10, "FPS: %1.0f", 1.0f / Device.fTimeDelta);
 	pFont->SetHeight(sz);
 	pFont->OnRender	();
 }
@@ -153,6 +162,9 @@ void CStats::Show()
 	////////////////////////////////////////////////
 	if (g_dedicated_server) return;
 	////////////////////////////////////////////////
+
+	
+
 	int frm = 2000;
 	div_t ddd = div(Device.dwFrame,frm);
 	if( ddd.rem < frm/2.0f ){
@@ -164,6 +176,15 @@ void CStats::Show()
 		pFont->OnRender	();
 	}
 
+    if (psDeviceFlags.test(rsDrawMemory))
+	{
+		float sz = pFont->GetHeight();
+		pFont->SetHeightI(0.02f);
+		pFont->SetColor(color_rgba(0, 255, 0, 250));
+		pFont->Out(720, 30, "Memory: %3.0f", fMem_calls);
+		pFont->SetHeight(sz);
+		pFont->OnRender();
+	}
 	CGameFont& F = *pFont;
 	float		f_base_size	= 0.01f;
 				F.SetHeightI	(f_base_size);
@@ -314,6 +335,12 @@ void CStats::Show()
 	if( psDeviceFlags.test(rsStatistic) || psDeviceFlags.test(rsCameraPos) ){
 		_draw_cam_pos					(pFont);
 		pFont->OnRender					();
+	};
+
+	if (psDeviceFlags.test(rsDrawFPS))
+	{
+		draw_fps(pFont);
+		pFont->OnRender();
 	};
 #ifdef DEBUG
 	//////////////////////////////////////////////////////////////////////////
