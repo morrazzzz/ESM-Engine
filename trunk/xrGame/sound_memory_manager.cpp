@@ -8,6 +8,9 @@
 
 #include "pch_script.h"
 #include "sound_memory_manager.h"
+
+#include <complex.h>
+
 #include "memory_manager.h"
 #include "hit_memory_manager.h"
 #include "visual_memory_manager.h"
@@ -24,6 +27,7 @@
 #include "client_spawn_manager.h"
 #include "memory_manager.h"
 #include "../xr_3da/IGame_Persistent.h"
+#include "tri-colliderknoopc/dTriColliderCommon.h"
 
 #ifndef MASTER_GOLD
 #	include "clsid_game.h"
@@ -451,17 +455,17 @@ void CSoundMemoryManager::load	(IReader &packet)
 #ifdef USE_LEVEL_TIME
 		VERIFY						(Device.dwTimeGlobal >= object.m_level_time);
 		object.m_level_time			= packet.r_u32();
-		object.m_level_time			+= Device.dwTimeGlobal;
+		object.m_level_time			+= Device.dwTimeGlobal - object.m_level_time;
 #endif // USE_LEVEL_TIME
 #ifdef USE_LAST_LEVEL_TIME
 		VERIFY						(Device.dwTimeGlobal >= object.m_last_level_time);
 		object.m_last_level_time	= packet.r_u32();
-		object.m_last_level_time	+= Device.dwTimeGlobal;
+		object.m_last_level_time	+= Device.dwTimeGlobal - object.m_last_level_time;
 #endif // USE_LAST_LEVEL_TIME
 #ifdef USE_FIRST_LEVEL_TIME
 		VERIFY						(Device.dwTimeGlobal >= (*I).m_first_level_time);
 		object.m_first_level_time	= packet.r_u32();
-		object.m_first_level_time	+= Device.dwTimeGlobal;
+		object.m_first_level_time	+= Device.dwTimeGlobal - (*I).m_first_level_time;
 #endif // USE_FIRST_LEVEL_TIME
 		object.m_sound_type			= (ESoundTypes)packet.r_u32();
 		object.m_power				= packet.r_float();
