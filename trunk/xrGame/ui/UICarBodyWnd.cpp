@@ -25,6 +25,7 @@
 #include "../script_callback_ex.h"
 #include "../script_game_object.h"
 #include "../BottleItem.h"
+#include <dinput.h>
 
 #define				CAR_BODY_XML		"carbody_new.xml"
 #define				CARBODY_ITEM_XML	"carbody_item.xml"
@@ -392,10 +393,18 @@ bool CUICarBodyWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 {
 	if( inherited::OnKeyboard(dik,keyboard_action) )return true;
 
-	if(keyboard_action==WINDOW_KEY_PRESSED && is_binded(kUSE, dik)) 
+	if(keyboard_action==WINDOW_KEY_PRESSED)
 	{
-			GetHolder()->StartStopMenu(this,true);
+		if (is_binded(kUSE, dik))
+		{
+			GetHolder()->StartStopMenu(this, true);
 			return true;
+		}
+		if(DIK_LSHIFT == dik)
+		{
+			TakeAll();
+			return true;
+		}
 	}
 	return false;
 }
