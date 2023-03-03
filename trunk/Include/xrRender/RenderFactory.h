@@ -50,7 +50,7 @@ public:
 #	endif // DEBUG
 	RENDER_FACTORY_INTERFACE(ApplicationRender)
 //	RENDER_FACTORY_INTERFACE(WallMarkArray)
-//	RENDER_FACTORY_INTERFACE(StatsRender)
+	RENDER_FACTORY_INTERFACE(StatsRender)
 
 	RENDER_FACTORY_INTERFACE(EnvironmentRender)
 	RENDER_FACTORY_INTERFACE(EnvDescriptorMixerRender)

@@ -5,6 +5,9 @@
 
 class ENGINE_API CGameFont;
 
+#include "../Include/xrRender/FactoryPtr.h"
+#include "../Include/xrRender/StatsRender.h"
+
 DECLARE_MESSAGE(Stats);
 
 class ENGINE_API CStats: public pureRender
@@ -95,6 +98,8 @@ public:
 					~CStats			();
 
 	IC CGameFont*	Font			(){return pFont;}
+private:
+	FactoryPtr<IStatsRender> m_pRender;
 };
 
 enum{
