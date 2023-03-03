@@ -6,8 +6,7 @@
 //	Description : Server objects
 ////////////////////////////////////////////////////////////////////////////
 
-#ifndef xrServer_Objects_AbstractH
-#define xrServer_Objects_AbstractH
+#pragma once
 
 #pragma pack(push,4)
 #include "xrServer_Space.h"
@@ -28,7 +27,6 @@ class CDUInterface;
 #endif
 
 #include "xrEProps.h"
-#include "DrawUtils.h"
 
 #pragma warning(push)
 #pragma warning(disable:4005)
@@ -121,4 +119,3 @@ public:
 #pragma warning(pop)
 
 #pragma pack(pop)
-#endif // xrServer_Objects_AbstractH

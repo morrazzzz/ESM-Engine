@@ -1838,7 +1838,6 @@
     <ClInclude Include="xr_Server_BattlEye.h" />
     <ClInclude Include="xrServer.h" />
     <ClInclude Include="xrServer_Space.h" />
-    <ClInclude Include="DrawUtils.h" />
     <ClInclude Include="FastDelegate.h" />
     <ClInclude Include="ItemListTypes.h" />
     <ClInclude Include="PropertiesListHelper.h" />

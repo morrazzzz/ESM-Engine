@@ -5562,9 +5562,6 @@
     <ClInclude Include="xrServer_Space.h">
       <Filter>Core\Server</Filter>
     </ClInclude>
-    <ClInclude Include="DrawUtils.h">
-      <Filter>Core\Server\Editor</Filter>
-    </ClInclude>
     <ClInclude Include="FastDelegate.h">
       <Filter>Core\Server\Editor</Filter>
     </ClInclude>

@@ -67,6 +67,9 @@
     <Filter Include="Interface implementations\EnvironmentRender">
       <UniqueIdentifier>{65dcf819-ff77-41fe-842d-cf0dd4348e5d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Interface implementations\RainRender">
+      <UniqueIdentifier>{23180df5-998d-438c-ab3e-e3dd573d30f5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\xrRender\cl_intersect.h">
@@ -275,6 +278,12 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\xrRender\RenderDeviceRender.h">
       <Filter>Interface implementations\RenderDeviceRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxRainRender.h">
+      <Filter>Interface implementations\RainRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\RainRender.h">
+      <Filter>Interface implementations\RainRender</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -496,6 +505,9 @@
     </ClCompile>
     <ClCompile Include="..\xrRender\dxEnvironmentRender.cpp">
       <Filter>Interface implementations\EnvironmentRender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxRainRender.cpp">
+      <Filter>Interface implementations\RainRender</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
