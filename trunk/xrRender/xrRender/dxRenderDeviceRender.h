@@ -1,5 +1,3 @@
-#ifndef dxRenderDeviceRender_included
-#define dxRenderDeviceRender_included
 #pragma once
 
 #ifndef _EDITOR
@@ -79,6 +77,3 @@ private:
 };
 
 #endif //ifndef _EDITOR
-
-
-#endif	//	RenderDeviceRender_included

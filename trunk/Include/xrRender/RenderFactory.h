@@ -1,5 +1,3 @@
-#ifndef RenderFactory_included
-#define RenderFactory_included
 #pragma once
 
 class IWallMarkArray;
@@ -54,9 +52,9 @@ public:
 //	RENDER_FACTORY_INTERFACE(WallMarkArray)
 //	RENDER_FACTORY_INTERFACE(StatsRender)
 
-//	RENDER_FACTORY_INTERFACE(EnvironmentRender)
-//	RENDER_FACTORY_INTERFACE(EnvDescriptorMixerRender)
-//	RENDER_FACTORY_INTERFACE(EnvDescriptorRender)
+	RENDER_FACTORY_INTERFACE(EnvironmentRender)
+	RENDER_FACTORY_INTERFACE(EnvDescriptorMixerRender)
+	RENDER_FACTORY_INTERFACE(EnvDescriptorRender)
 //	RENDER_FACTORY_INTERFACE(RainRender)
 	RENDER_FACTORY_INTERFACE(LensFlareRender)
 //	RENDER_FACTORY_INTERFACE(ThunderboltRender)
@@ -67,5 +65,3 @@ protected:
 	//virtual IEnvDescriptorRender *CreateEnvDescriptorRender() = 0;
 	//virtual void DestroyEnvDescriptorRender(IEnvDescriptorRender *pObject) = 0;
 };
-
-#endif	//	RenderFactory_included

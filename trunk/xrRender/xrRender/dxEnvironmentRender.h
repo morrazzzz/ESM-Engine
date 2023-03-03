@@ -1,5 +1,3 @@
-#ifndef dxEnvironmentRender_included
-#define dxEnvironmentRender_included
 #pragma once
 
 #include "..\..\Include\xrRender\EnvironmentRender.h"
@@ -89,5 +87,3 @@ private:
 	ref_texture				tonemap;
 	ref_texture				tsky0,tsky1;
 };
-
-#endif	//	EnvironmentRender_included

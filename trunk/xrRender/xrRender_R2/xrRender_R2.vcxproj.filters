@@ -70,6 +70,9 @@
     <Filter Include="Interface implementations\LensFlare">
       <UniqueIdentifier>{c8feb4eb-535b-46a1-a954-1fbda2410913}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Interface implementations\EnvironmentRender">
+      <UniqueIdentifier>{6b513ea8-d1a3-4534-84a9-03e761015aaf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cl_intersect.h">
@@ -296,6 +299,15 @@
     </ClInclude>
     <ClInclude Include="..\xrRender\dxLensFlareRender.h">
       <Filter>Interface implementations\LensFlare</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\RenderDeviceRender.h">
+      <Filter>Interface implementations\RenderDeviceRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\EnvironmentRender.h">
+      <Filter>Interface implementations\EnvironmentRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxEnvironmentRender.h">
+      <Filter>Interface implementations\EnvironmentRender</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -607,6 +619,9 @@
     </ClCompile>
     <ClCompile Include="..\xrRender\dxLensFlareRender.cpp">
       <Filter>Interface implementations\LensFlare</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxEnvironmentRender.cpp">
+      <Filter>Interface implementations\EnvironmentRender</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

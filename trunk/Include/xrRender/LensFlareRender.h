@@ -1,5 +1,3 @@
-#ifndef LensFlareRender_included
-#define LensFlareRender_included
 #pragma once
 
 class IFlareRender
@@ -24,5 +22,3 @@ public:
 	virtual void OnDeviceCreate() = 0;
 	virtual void OnDeviceDestroy() = 0;
 };
-
-#endif	//	LensFlareRender_included

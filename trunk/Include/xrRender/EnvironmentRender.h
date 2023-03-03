@@ -1,5 +1,3 @@
-#ifndef EnvironmentRender_included
-#define EnvironmentRender_included
 #pragma once
 
 namespace particles_systems {
@@ -44,5 +42,3 @@ public:
 	virtual void OnDeviceDestroy() = 0;
 	virtual particles_systems::library_interface const& particles_systems_library	() = 0;
 };
-
-#endif	//	EnvironmentRender_included

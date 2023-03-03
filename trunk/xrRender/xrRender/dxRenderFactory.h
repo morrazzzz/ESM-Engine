@@ -1,5 +1,3 @@
-#ifndef dxRenderFactory_included
-#define dxRenderFactory_included
 #pragma once
 
 #include "..\..\Include\xrRender\RenderFactory.h"
@@ -26,12 +24,10 @@ class dxRenderFactory : public IRenderFactory
 //	RENDER_FACTORY_DECLARE(ThunderboltDescRender)
 //	RENDER_FACTORY_DECLARE(RainRender)
 	RENDER_FACTORY_DECLARE(LensFlareRender)
-//	RENDER_FACTORY_DECLARE(EnvironmentRender)
-//	RENDER_FACTORY_DECLARE(EnvDescriptorMixerRender)
-//	RENDER_FACTORY_DECLARE(EnvDescriptorRender)
+	RENDER_FACTORY_DECLARE(EnvironmentRender)
+	RENDER_FACTORY_DECLARE(EnvDescriptorMixerRender)
+	RENDER_FACTORY_DECLARE(EnvDescriptorRender)
 	RENDER_FACTORY_DECLARE(FontRender)
 };
 
 extern	dxRenderFactory RenderFactoryImpl;
-
-#endif	//	RenderFactory_included

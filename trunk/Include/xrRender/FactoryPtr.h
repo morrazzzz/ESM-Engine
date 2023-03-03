@@ -1,5 +1,3 @@
-#ifndef	FactoryPtr_included
-#define FactoryPtr_included
 #pragma once
 
 #include "RenderFactory.h"
@@ -69,10 +67,10 @@ private:
 //    FACTORY_PTR_INSTANCIATE(ThunderboltDescRender)
       FACTORY_PTR_INSTANCIATE(LensFlareRender)
 //    FACTORY_PTR_INSTANCIATE(RainRender)
-//    FACTORY_PTR_INSTANCIATE(EnvironmentRender)
-//    FACTORY_PTR_INSTANCIATE(EnvDescriptorRender)
-//    FACTORY_PTR_INSTANCIATE(EnvDescriptorMixerRender)
-	FACTORY_PTR_INSTANCIATE(FontRender)
+    FACTORY_PTR_INSTANCIATE(EnvironmentRender)
+    FACTORY_PTR_INSTANCIATE(EnvDescriptorRender)
+    FACTORY_PTR_INSTANCIATE(EnvDescriptorMixerRender)
+    FACTORY_PTR_INSTANCIATE(FontRender)
 /*
 void FactoryPtr<IStatsRender>::CreateObject(void)
 {
@@ -85,6 +83,3 @@ void FactoryPtr<IStatsRender>::DestroyObject(void)
 	m_pObject = NULL;
 }
 */
-
-
-#endif	//	FactoryPtr_included
