@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "../xrRender/xrRender_console.h"
 #include "../xrRender/dxRenderFactory.h"
+#include "../xrRender/dxUIRender.h"
 
 #pragma comment(lib,"xr_3DA")
 
@@ -17,6 +18,7 @@ BOOL APIENTRY DllMain( HANDLE hModule,
 	case DLL_PROCESS_ATTACH:
 		::Render							= &RImplementation;
 		::RenderFactory = &RenderFactoryImpl;
+		UIRender = &UIRenderImpl;
 		xrRender_initconsole				();
 		break;
 	case DLL_THREAD_ATTACH:

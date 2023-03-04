@@ -85,6 +85,18 @@
     <Filter Include="Interface implementations\ThunderboltRender">
       <UniqueIdentifier>{b99433ad-e825-4cf9-9422-978c5f24f5f0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Interface implementations\UI">
+      <UniqueIdentifier>{91a6a3f9-2e85-4873-8951-e050b5f3f326}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interface implementations\UI\UIRender">
+      <UniqueIdentifier>{1b943de7-cedb-4479-bdd3-b32d5c220906}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interface implementations\Debug">
+      <UniqueIdentifier>{14a703b0-3997-4937-ad74-7f4b39cc278f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interface implementations\UI\UIShader">
+      <UniqueIdentifier>{9d17367b-ea0d-4221-99b4-28acd4037824}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cl_intersect.h">
@@ -344,6 +356,21 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\xrRender\ThunderboltRender.h">
       <Filter>Interface implementations\ThunderboltRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxUIRender.h">
+      <Filter>Interface implementations\UI\UIRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\UIRender.h">
+      <Filter>Interface implementations\UI\UIRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\DebugShader.h">
+      <Filter>Interface implementations\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\UIShader.h">
+      <Filter>Interface implementations\UI\UIShader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxUIShader.h">
+      <Filter>Interface implementations\UI\UIShader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -670,6 +697,12 @@
     </ClCompile>
     <ClCompile Include="..\xrRender\dxThunderboltRender.cpp">
       <Filter>Interface implementations\ThunderboltRender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxUIRender.cpp">
+      <Filter>Interface implementations\UI\UIRender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxUIShader.cpp">
+      <Filter>Interface implementations\UI\UIShader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
