@@ -20,8 +20,8 @@ class dxRenderFactory : public IRenderFactory
 	RENDER_FACTORY_DECLARE(StatsRender)
 	
 	RENDER_FACTORY_DECLARE(FlareRender)
-//	RENDER_FACTORY_DECLARE(ThunderboltRender)
-//	RENDER_FACTORY_DECLARE(ThunderboltDescRender)
+	RENDER_FACTORY_DECLARE(ThunderboltRender)
+	RENDER_FACTORY_DECLARE(ThunderboltDescRender)
 	RENDER_FACTORY_DECLARE(RainRender)
 	RENDER_FACTORY_DECLARE(LensFlareRender)
 	RENDER_FACTORY_DECLARE(EnvironmentRender)

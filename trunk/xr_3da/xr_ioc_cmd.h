@@ -12,6 +12,7 @@ public		:
 	friend class	CConsole;
 	typedef char	TInfo	[256];
 	typedef char	TStatus	[256];
+	typedef xr_vector<shared_str> vecTips;
 protected	:
 	LPCSTR			cName;
 	bool			bEnabled;

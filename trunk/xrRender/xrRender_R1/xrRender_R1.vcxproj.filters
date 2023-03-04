@@ -73,6 +73,12 @@
     <Filter Include="Interface implementations\StatsRender">
       <UniqueIdentifier>{245e3926-8e5f-4479-9ee5-a601e1be6b1d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Interface implementations\ThunderboltDescRender">
+      <UniqueIdentifier>{fa5f1518-ff46-4cc8-9bea-005e454e630a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interface implementations\ThunderboltRender">
+      <UniqueIdentifier>{6a4b56d6-a304-4676-8d1d-196946bdc522}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\xrRender\cl_intersect.h">
@@ -293,6 +299,18 @@
     </ClInclude>
     <ClInclude Include="..\xrRender\dxStatsRender.h">
       <Filter>Interface implementations\StatsRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxThunderboltDescRender.h">
+      <Filter>Interface implementations\ThunderboltDescRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\ThunderboltDescRender.h">
+      <Filter>Interface implementations\ThunderboltDescRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxThunderboltRender.h">
+      <Filter>Interface implementations\ThunderboltRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\ThunderboltRender.h">
+      <Filter>Interface implementations\ThunderboltRender</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -520,6 +538,12 @@
     </ClCompile>
     <ClCompile Include="..\xrRender\dxStatsRender.cpp">
       <Filter>Interface implementations\StatsRender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxThunderboltDescRender.cpp">
+      <Filter>Interface implementations\ThunderboltDescRender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxThunderboltRender.cpp">
+      <Filter>Interface implementations\ThunderboltRender</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
