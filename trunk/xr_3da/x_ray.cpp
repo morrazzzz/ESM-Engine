@@ -231,6 +231,30 @@ void Startup					()
 //.	InitInput		();
 	InitSound		();
 
+	const char* preset{};
+	if (strstr(Core.Params, "-minimum"))
+		preset = "_preset Minimum";
+	if (strstr(Core.Params, "-low"))
+		preset = "_preset Low";
+	if (strstr(Core.Params, "-middle"))
+		preset = "_preset Default";
+	if (strstr(Core.Params, "-high"))
+		preset = "_preset High";
+	if (strstr(Core.Params, "-maximum"))
+		preset = "_preset Extreme";
+	if (preset)
+		Console->Execute(preset);
+
+	const char* render{};
+	if (strstr(Core.Params, "-r1"))
+		render = "renderer renderer_r1";
+	if (strstr(Core.Params, "-r2a"))
+		render = "renderer renderer_r2a";
+	if (strstr(Core.Params, "-r2"))
+		render = "renderer renderer_r2";
+	if (render)
+		Console->Execute(render);
+
 	// ...command line for auto start
 	{
 		LPCSTR	pStartup			= strstr				(Core.Params,"-start ");
