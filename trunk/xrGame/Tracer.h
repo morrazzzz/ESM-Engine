@@ -6,16 +6,17 @@
 
 class CBulletManager;
 
+#include "ui_defs.h"
+
 class CTracer
 {
 	friend CBulletManager;
 protected:
-	ref_shader			sh_Tracer;
-	ref_geom			sh_Geom;
+	ui_shader sh_Tracer;
 	xr_vector<u32>		m_aColors;			
 public:
 						CTracer		();
 						~CTracer	();
 
-	void				Render		(FVF::LIT*&verts, const Fvector& pos, const Fvector& center, const Fvector& dir, float length, float width, u8 colorID);
+						void Render(const Fvector& pos, const Fvector& center, const Fvector& dir, float length, float width, u8 colorID);
 };

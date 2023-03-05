@@ -11,6 +11,7 @@
 #include "InventoryOwner.h"
 #include "../xr_3da/StatGraph.h"
 #include "PhraseDialogManager.h"
+#include "ui_defs.h"
 
 #include "step_manager.h"
 
@@ -635,7 +636,7 @@ public:
 	virtual void			ChangeVisual			( shared_str NewVisual );
 	virtual void			OnChangeVisual			();
 
-	virtual void			RenderIndicator			(Fvector dpos, float r1, float r2, ref_shader IndShader);
+	virtual void			RenderIndicator			(Fvector dpos, float r1, float r2, const ui_shader& IndShader);
 	virtual void			RenderText				(LPCSTR Text, Fvector dpos, float* pdup, u32 color);
 
 	//////////////////////////////////////////////////////////////////////////

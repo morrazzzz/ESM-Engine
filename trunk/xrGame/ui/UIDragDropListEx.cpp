@@ -4,13 +4,16 @@
 #include "../object_broker.h"
 #include "UICellItem.h"
 
-CUIDragItem* CUIDragDropListEx::m_drag_item = NULL;
+#include "../Include/xrRender/UIRender.h"
+#include "../Include/xrRender/UIShader.h"
+
+CUIDragItem* CUIDragDropListEx::m_drag_item = nullptr;
 
 void CUICell::Clear()
 {
 	m_bMainItem = false;
-	if(m_item)	m_item->SetOwnerList(NULL);
-	m_item		= NULL; 
+	if(m_item)	m_item->SetOwnerList(nullptr);
+	m_item		= nullptr; 
 }
 
 CUIDragDropListEx::CUIDragDropListEx()
@@ -253,7 +256,7 @@ void CUIDragDropListEx::Update()
 	if( m_drag_item ){
 		Frect	wndRect;
 		GetAbsoluteRect(wndRect);
-		Fvector2 cp			= GetUICursor()->GetCursorPosition();
+		Fvector2 cp			= GetUICursor()->GetCursorPosition(); 
 		if(wndRect.in(cp)){
 			if(NULL==m_drag_item->BackList())
 				m_drag_item->SetBackList(this);
@@ -371,7 +374,7 @@ bool CUIDragDropListEx::CanSetItem(CUICellItem* itm){
 CUICellItem* CUIDragDropListEx::RemoveItem(CUICellItem* itm, bool force_root)
 {
 	CUICellItem* i				= m_container->RemoveItem		(itm, force_root);
-	i->SetOwnerList				((CUIDragDropListEx*)NULL);
+	i->SetOwnerList				((CUIDragDropListEx*)nullptr);
 	return						i;
 }
 
@@ -395,8 +398,7 @@ CUICellItem* CUIDragDropListEx::GetItemIdx(u32 idx)
 CUICellContainer::CUICellContainer(CUIDragDropListEx* parent)
 {
 	m_pParentDragDropList		= parent;
-	hShader.create				("hud\\fog_of_war","ui\\ui_grid");
-	hGeom.create				(FVF::F_TL, RCache.Vertex.Buffer(), 0);
+	hShader->create("hud\\fog_of_war", "ui\\ui_grid");
 }
 
 CUICellContainer::~CUICellContainer()
@@ -698,34 +700,37 @@ void CUICellContainer::Draw()
 	Fvector2 f_len;
 	UI()->ClientToScreenScaled(f_len, float(cell_sz.x), float(cell_sz.y) );
 
+	GetCellsInRange(tgt_cells, m_cells_to_draw);
+
 	// fill cell buffer
-	u32 vOffset					= 0;
-	FVF::TL* start_pv			= (FVF::TL*)RCache.Vertex.Lock	((tgt_cells.width()+1)*(tgt_cells.height()+1)*6,hGeom.stride(),vOffset);
-	FVF::TL* pv					= start_pv;
-	for (int x=0; x<=tgt_cells.width(); ++x){
-		for (int y=0; y<=tgt_cells.height(); ++y){
+	u32 max_prim_cnt = ((tgt_cells.width() + 1) * (tgt_cells.height() + 1) * 6);
+	UIRender->StartPrimitive(max_prim_cnt, IUIRender::ptTriList, IUIRender::ePointType::pttTL);
+
+	for (int x=0; x<=tgt_cells.width(); ++x)
+	{
+		for (int y=0; y<=tgt_cells.height(); ++y)
+		{
+			Fvector2 rect_offset;
+			rect_offset.set((drawLT.x + f_len.x * x), (drawLT.y + f_len.y * y));
+
 			Fvector2			tp;
 			GetTexUVLT			(tp,tgt_cells.x1+x,tgt_cells.y1+y);
-			for (u32 k=0; k<6; ++k,++pv){
+			for (u32 k=0; k<6; ++k)
+			{
 				const Fvector2& p	= pts[k];
 				const Fvector2& uv	= uvs[k];
-				pv->set			(iFloor(drawLT.x + p.x*(f_len.x) + f_len.x*x)-0.5f, 
-								 iFloor(drawLT.y + p.y*(f_len.y) + f_len.y*y)-0.5f, 
-								 0xFFFFFFFF,tp.x+uv.x,tp.y+uv.y);
+				float x = iFloor(rect_offset.x + p.x * (f_len.x)) - 0.5f;
+				float y = iFloor(rect_offset.y + p.y * (f_len.y)) - 0.5f;
+
+				UIRender->PushPoint(x, y, 0, 0xFFFFFFFF, tp.x + uv.x, tp.y + uv.y);
 			}
 		}
 	}
-	std::ptrdiff_t p_cnt		= (pv-start_pv)/3;
-	RCache.Vertex.Unlock		(u32(pv-start_pv),hGeom.stride());
 
 	UI()->PushScissor					(clientArea);
 
-	if (p_cnt!=0){
-		// draw grid
-		RCache.set_Shader		(hShader);
-		RCache.set_Geometry		(hGeom);
-		RCache.Render			(D3DPT_TRIANGLELIST,vOffset,u32(p_cnt));
-	}
+	UIRender->SetShader(*hShader);
+	UIRender->FlushPrimitive();
 
 	//draw shown items in range
 	if( GetCellsInRange(tgt_cells,m_cells_to_draw) ){

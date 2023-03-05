@@ -745,6 +745,7 @@
     <ClInclude Include="damage_manager.h" />
     <ClInclude Include="damage_manager_inline.h" />
     <ClInclude Include="DamageSource.h" />
+    <ClInclude Include="ui_defs.h" />
     <ClInclude Include="wrapper_abstract.h" />
     <ClInclude Include="wrapper_abstract_inline.h" />
     <ClInclude Include="action_management_config.h" />

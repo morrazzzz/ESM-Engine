@@ -6555,6 +6555,9 @@
     <ClInclude Include="ui\UIGameTutorial.h">
       <Filter>UI\Tutorial</Filter>
     </ClInclude>
+    <ClInclude Include="ui_defs.h">
+      <Filter>UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">

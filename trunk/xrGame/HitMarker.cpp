@@ -5,6 +5,8 @@
 #include "../xr_3da/LightAnimLibrary.h"
 #include "UIStaticItem.h"
 
+#include "../Include/xrRender/UIShader.h"
+
 static Fvector2			as_PC[5];
 static Fvector2			as_TC[5];
 const static u32		as_id[4*3] = {0,1,4,  1,2,4,  2,3,4,  3,0,4};
@@ -18,7 +20,7 @@ CHitMarker::CHitMarker()
 
 void CHitMarker::InitShader	(LPCSTR tex_name)
 {
-	hShader2.create	("hud\\default", tex_name);
+	hShader2->create	("hud\\default", tex_name);
 }
 
 //--------------------------------------------------------------------
@@ -59,7 +61,7 @@ void CHitMarker::Hit(int id, const Fvector& dir){
 
 
 
-SHitMark::SHitMark		(const ref_shader& sh, const Fvector& dir)
+SHitMark::SHitMark		(const ui_shader& sh, const Fvector& dir)
 {
 	m_StartTime							= Device.fTimeGlobal;
 	m_lanim								= LALib.FindItem("hud_hit_mark");
