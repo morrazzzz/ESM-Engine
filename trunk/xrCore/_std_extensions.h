@@ -192,6 +192,16 @@ inline errno_t xr_strcpy(char(&destination)[count], LPCSTR source)
 	return						xr_strcpy(destination, count, source);
 }
 
+IC char* xr_strcat(char* strDestination, size_t sizeInBytes, const char* strSource)
+{
+	return strncat(strDestination, strSource, sizeInBytes);
+}
+
+IC char* xr_strcat(char* strDestination, const char* strSource)
+{
+	return strcat(strDestination, strSource);
+}
+
 inline int __cdecl xr_sprintf(LPSTR destination, size_t const buffer_size, LPCSTR format_string, ...)
 {
 	va_list args;

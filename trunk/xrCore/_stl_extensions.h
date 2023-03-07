@@ -4,6 +4,7 @@
 using std::swap;
 
 #include <type_traits>
+#include "buffer_vector.h"
 
 #ifdef	__BORLANDC__
 #define M_NOSTDCONTAINERS_EXT
