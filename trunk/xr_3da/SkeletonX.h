@@ -1,9 +1,6 @@
 // SkeletonX.h: interface for the CSkeletonX class.
 //
 //////////////////////////////////////////////////////////////////////
-
-#ifndef SkeletonXH
-#define SkeletonXH
 #pragma once
 
 #include "SkeletonCustom.h"
@@ -98,5 +95,3 @@ public:
 	virtual BOOL			PickBone		(Fvector& normal, float& dist, const Fvector& start, const Fvector& dir, u16 bone_id)=0;
 	virtual void			FillVertices	(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, u16 bone_id)=0;
 };
-
-#endif // SkeletonXH

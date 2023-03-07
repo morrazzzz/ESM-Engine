@@ -9,13 +9,12 @@
 #include <d3dx9.h>
 #pragma warning(default:4995)
 
-#ifndef _EDITOR
-    #include	"Render.h"
-#endif
+
+#include "Render.h"
 #include "SkeletonX.h"
 #include "SkeletonCustom.h"
 #include "fmesh.h"
-#include "xrCPU_Pipe.h"
+#include "..\xrCPU_Pipe\xrCPU_Pipe.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
