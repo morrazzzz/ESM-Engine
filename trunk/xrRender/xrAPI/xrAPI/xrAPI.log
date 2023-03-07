@@ -1,1 +1,0 @@
-﻿E:\Stalker_E\trunk\xrRender\xrAPI\xrAPI.vcxproj(55,5): error MSB4019: импортированный проект "E:\Stalker_E\Common.props" не найден. Проверьте правильность выражения в объявлении Import "..\..\..\Common.props" и наличие файла на диске.
