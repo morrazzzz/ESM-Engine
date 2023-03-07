@@ -4842,9 +4842,6 @@
     <ClInclude Include="ActorCondition.h">
       <Filter>Core\Client\Objects\actor\base</Filter>
     </ClInclude>
-    <ClInclude Include="ActorFollowers.h">
-      <Filter>Core\Client\Objects\actor\base</Filter>
-    </ClInclude>
     <ClInclude Include="actor_memory.h">
       <Filter>Core\Client\Objects\actor\base\memory</Filter>
     </ClInclude>
@@ -8001,9 +7998,6 @@
       <Filter>Core\Client\Objects\actor\base</Filter>
     </ClCompile>
     <ClCompile Include="ActorCondition.cpp">
-      <Filter>Core\Client\Objects\actor\base</Filter>
-    </ClCompile>
-    <ClCompile Include="ActorFollowers.cpp">
       <Filter>Core\Client\Objects\actor\base</Filter>
     </ClCompile>
     <ClCompile Include="ActorInput.cpp">

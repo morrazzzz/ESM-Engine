@@ -1593,7 +1593,6 @@
     <ClInclude Include="actor_input_handler.h" />
     <ClInclude Include="ActorAnimation.h" />
     <ClInclude Include="ActorCondition.h" />
-    <ClInclude Include="ActorFollowers.h" />
     <ClInclude Include="actor_memory.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="entity_alive.h" />
@@ -6630,7 +6629,6 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="ActorFollowers.cpp" />
     <ClCompile Include="ActorInput.cpp" />
     <ClCompile Include="ActorMountedWeapon.cpp" />
     <ClCompile Include="ActorVehicle.cpp" />
