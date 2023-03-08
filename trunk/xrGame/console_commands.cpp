@@ -1330,7 +1330,7 @@ public:
 		g_pGamePersistent->Environment().SetWeather(args, true);
 	}
 
-	void fill_tips(vecTips& tips, u32 mode) /*override*/
+	void fill_tips(vecTips& tips, u32 mode) override
 	{
 		if (!g_pGameLevel)
 			return;

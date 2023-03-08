@@ -202,14 +202,13 @@ bool CInput::get_dik_name(int dik, LPSTR dest_str, int dest_sz)
 	if(0==wcslen(wct))
 		return					false;
 
-	size_t cnt					= wcstombs(dest_str, wct, dest_sz);
-//.	Msg("dik_name for[%d], is w[%S] ch[%s]", dik, wct, dest_str);
-	if(cnt==-1)
+	int cnt = WideCharToMultiByte(CP_ACP, 0, keyname.wsz, -1, dest_str, dest_sz, nullptr, nullptr);
+	if (cnt == -1)
 	{
-		Msg("! cant convert dik_name for dik[%d], prop=[%S]", dik, wct);
+		Msg("! cant convert dik_name for dik[%d], prop=[%S]", dik, keyname.wsz);
 		return					false;
 	}
-	return						(cnt!=-1);
+	return						(cnt != -1);
 }
 
 BOOL CInput::iGetAsyncKeyState( int dik )
