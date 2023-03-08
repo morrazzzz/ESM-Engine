@@ -184,7 +184,8 @@ void destroySettings()
 }
 void destroyConsole	()
 {
-	Console->Destroy			( );
+	Console->Execute("cfg_save");
+	Console->Destroy			();
 	xr_delete					(Console);
 }
 void destroyEngine	()
@@ -304,7 +305,7 @@ Memory.mem_usage();
 	if(!g_bBenchmark)
 		destroyConsole();
 	else
-		Console->Reset();
+		Console->Destroy();
 
 	destroyEngine();
 }
@@ -664,6 +665,9 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 
 		FPU::m24r				();
 		InitEngine				();
+
+		InitInput();
+
 		InitConsole				();
 
 		LPCSTR benchName = "-batch_benchmark ";
@@ -696,8 +700,6 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 			xr_delete					(pTmp);
 		}
 
-
-		InitInput					( );
 		Engine.External.Initialize	( );
 		Console->Execute			("stat_memory");
 		Startup	 					( );

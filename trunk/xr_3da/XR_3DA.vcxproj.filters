@@ -154,6 +154,18 @@
     <Filter Include="RenderRef\Execution &amp; 3D\Visuals\Skeleton">
       <UniqueIdentifier>{0dbd8594-e41b-4a6d-910c-605fd7998238}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\text_editor">
+      <UniqueIdentifier>{053cede9-b2d9-41a9-8e3f-d2ef56ba571c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\text_editor\line_editor">
+      <UniqueIdentifier>{083ff76f-ec74-4ac2-89fb-f483212a3ee0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\text_editor\line_editor_control">
+      <UniqueIdentifier>{341b2ec0-14a0-4308-bb61-fd4eca00adcb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\text_editor\edit_actions">
+      <UniqueIdentifier>{65d062cb-33ed-4318-a147-7c2c90eb386a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="_d3d_extensions.h">
@@ -509,6 +521,15 @@
     </ClInclude>
     <ClInclude Include="SkeletonMotions.h">
       <Filter>RenderRef\Execution &amp; 3D\Visuals\Skeleton</Filter>
+    </ClInclude>
+    <ClInclude Include="line_editor.h">
+      <Filter>Engine\text_editor\line_editor</Filter>
+    </ClInclude>
+    <ClInclude Include="line_edit_control.h">
+      <Filter>Engine\text_editor\line_editor_control</Filter>
+    </ClInclude>
+    <ClInclude Include="edit_actions.h">
+      <Filter>Engine\text_editor\edit_actions</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -877,6 +898,24 @@
     </ClCompile>
     <ClCompile Include="SkeletonMotions.cpp">
       <Filter>RenderRef\Execution &amp; 3D\Visuals\Skeleton</Filter>
+    </ClCompile>
+    <ClCompile Include="XR_IOConsole_get.cpp">
+      <Filter>Engine\Console</Filter>
+    </ClCompile>
+    <ClCompile Include="XR_IOConsole_control.cpp">
+      <Filter>Engine\Console</Filter>
+    </ClCompile>
+    <ClCompile Include="XR_IOConsole_callback.cpp">
+      <Filter>Engine\Console</Filter>
+    </ClCompile>
+    <ClCompile Include="line_editor.cpp">
+      <Filter>Engine\text_editor\line_editor</Filter>
+    </ClCompile>
+    <ClCompile Include="line_edit_control.cpp">
+      <Filter>Engine\text_editor\line_editor_control</Filter>
+    </ClCompile>
+    <ClCompile Include="edit_actions.cpp">
+      <Filter>Engine\text_editor\edit_actions</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
