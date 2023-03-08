@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "dxRenderFactory.h"
-//#include "dxStatGraphRender.h"
+#include "dxStatGraphRender.h"
 #include "dxThunderboltRender.h"
 #include "dxThunderboltDescRender.h"
 #include "dxRainRender.h"
@@ -31,7 +31,7 @@ dxRenderFactory RenderFactoryImpl;
 
 	RENDER_FACTORY_IMPLEMENT(UISequenceVideoItem)
 	RENDER_FACTORY_IMPLEMENT(UIShader)
-//	RENDER_FACTORY_IMPLEMENT(StatGraphRender)
+	RENDER_FACTORY_IMPLEMENT(StatGraphRender)
 	RENDER_FACTORY_IMPLEMENT(RenderDeviceRender)
 #	ifdef DEBUG
 		RENDER_FACTORY_IMPLEMENT(ObjectSpaceRender)

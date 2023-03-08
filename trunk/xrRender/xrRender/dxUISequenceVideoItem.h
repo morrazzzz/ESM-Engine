@@ -1,5 +1,3 @@
-#ifndef	dxUISequenceVideoItem_included
-#define	dxUISequenceVideoItem_included
 #pragma once
 
 #include "..\..\Include\xrRender\UISequenceVideoItem.h"
@@ -20,5 +18,3 @@ public:
 private:
 	CTexture*				m_texture;
 };
-
-#endif	//	dxUISequenceVideoItem_included
