@@ -532,28 +532,28 @@ void CWeapon::net_Export(NET_Packet& P)
 
 void CWeapon::net_Import(NET_Packet& P)
 {
-	inherited::net_Import (P);
+	inherited::net_Import(P);
 
-	P.r_float_q8			(m_fCondition,0.0f,1.0f);
+	P.r_float_q8(m_fCondition,0.0f,1.0f);
 
-	u8 flags				= 0;
-	P.r_u8					(flags);
+	u8 flags = 0;
+	P.r_u8(flags);
 
 	u16 ammo_elapsed = 0;
-	P.r_u16					(ammo_elapsed);
+	P.r_u16(ammo_elapsed);
 
-	u8						NewAddonState;
-	P.r_u8					(NewAddonState);
+	u8 NewAddonState;
+	P.r_u8(NewAddonState);
 
-	m_flagsAddOnState		= NewAddonState;
-	UpdateAddonsVisibility	();
+	m_flagsAddOnState = NewAddonState;
+	UpdateAddonsVisibility();
 
 	u8 ammoType, wstate;
-	P.r_u8					(ammoType);
-	P.r_u8					(wstate);
+	P.r_u8(ammoType);
+	P.r_u8(wstate);
 
 	u8 Zoom;
-	P.r_u8					((u8)Zoom);
+	P.r_u8(Zoom);
 
 	if (H_Parent() && H_Parent()->Remote())
 	{
