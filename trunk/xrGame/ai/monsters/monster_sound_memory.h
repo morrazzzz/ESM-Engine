@@ -53,8 +53,8 @@ typedef struct tagSoundElement
 	bool operator < (const tagSoundElement &s) const  { 
 		return (value < s.value);
 	}
-	IC void SetConvert(const CObject* who, int eType, const Fvector &position, float power, TTime time) {
-		this->who = who; type = ConvertSoundType((ESoundTypes)eType); this->position = position; this->power = power; this->time = time;
+	IC void SetConvert(const CObject* whoObject, int eTypeTwo, const Fvector &positionfvector, float powerfloat, TTime timetime) {
+		this->who = whoObject; type = ConvertSoundType((ESoundTypes)eTypeTwo); this->position = positionfvector; this->power = powerfloat; this->time = timetime;
 	}
 	TSoundDangerValue ConvertSoundType(ESoundTypes stype);
 

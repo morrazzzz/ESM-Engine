@@ -30,9 +30,8 @@ template<class T>
 			u16				size								;
 	
 		public:
-		
-		class iterator;
-		typedef  class iterator
+
+	    class iterator
 			{
 				
 						T		*my_ptr;
