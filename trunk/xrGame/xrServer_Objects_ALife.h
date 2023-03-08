@@ -426,7 +426,7 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeObjectHangingLamp,CSE_ALifeDynamicObjectVi
 	virtual bool					used_ai_locations			() const;
 	virtual bool					match_configuration			() const;
 	virtual bool		__stdcall	validate					();
-	virtual void 		__stdcall	on_render					(CDUInterface* du, ISE_AbstractLEOwner* owner, bool bSelected, const Fmatrix& parent,int priority, bool strictB2F);
+	virtual void 		__stdcall	on_render					(CDUInterface* du, ISE_AbstractLEOwner* owner_on_render, bool bSelected, const Fmatrix& parent,int priority, bool strictB2F) override;
 	virtual CSE_Abstract			*cast_abstract			() {return this;}
 SERVER_ENTITY_DECLARE_END
 add_to_type_list(CSE_ALifeObjectHangingLamp)
