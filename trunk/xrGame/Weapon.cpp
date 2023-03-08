@@ -446,21 +446,6 @@ void CWeapon::LoadZoomOffset (LPCSTR section, LPCSTR prefix)
 	if(pSettings->line_exist(hud_sect, "zoom_rotate_time"))
 		m_fZoomRotateTime = pSettings->r_float(hud_sect,"zoom_rotate_time");
 }
-/*
-void CWeapon::animGet	(MotionSVec& lst, LPCSTR prefix)
-{
-	const MotionID		&M = m_pHUD->animGet(prefix);
-	if (M)				lst.push_back(M);
-	for (int i=0; i<MAX_ANIM_COUNT; ++i)
-	{
-		string128		sh_anim;
-		sprintf_s			(sh_anim,"%s%d",prefix,i);
-		const MotionID	&M = m_pHUD->animGet(sh_anim);
-		if (M)			lst.push_back(M);
-	}
-	R_ASSERT2			(!lst.empty(),prefix);
-}
-*/
 
 BOOL CWeapon::net_Spawn		(CSE_Abstract* DC)
 {
@@ -475,7 +460,7 @@ BOOL CWeapon::net_Spawn		(CSE_Abstract* DC)
 	SetState						(E->wpn_state);
 	SetNextState					(E->wpn_state);
 	
-	m_DefaultCartridge.Load(*m_ammoTypes[m_ammoType], u8(m_ammoType));	
+	m_DefaultCartridge.Load(*m_ammoTypes[m_ammoType], static_cast<u8>(m_ammoType));	
 	if(iAmmoElapsed) 
 	{
 		m_fCurrentCartirdgeDisp = m_DefaultCartridge.m_kDisp;
@@ -506,7 +491,8 @@ void CWeapon::net_Destroy	()
 	StopLight			();
 	Light_Destroy		();
 
-	while (m_magazine.size()) m_magazine.pop_back();
+	while (m_magazine.size()) 
+		m_magazine.pop_back();
 }
 
 BOOL CWeapon::IsUpdating()
@@ -523,11 +509,11 @@ void CWeapon::net_Export(NET_Packet& P)
 
 	u8 need_upd				= IsUpdating() ? 1 : 0;
 	P.w_u8					(need_upd);
-	P.w_u16					(u16(iAmmoElapsed));
+	P.w_u16					(static_cast<u16>(iAmmoElapsed));
 	P.w_u8					(m_flagsAddOnState);
-	P.w_u8					((u8)m_ammoType);
-	P.w_u8					((u8)GetState());
-	P.w_u8					((u8)m_bZoomMode);
+	P.w_u8					(static_cast<u8>(m_ammoType));
+	P.w_u8					(static_cast<u8>(GetState()));
+	P.w_u8					(m_bZoomMode);
 }
 
 void CWeapon::net_Import(NET_Packet& P)
@@ -626,13 +612,14 @@ void CWeapon::OnEvent(NET_Packet& P, u16 type)
 				P.r_u8();
 			u8 AmmoElapsed = P.r_u8();
 			u8 NextAmmo = P.r_u8();
-			if (NextAmmo == u8(-1))
-				m_set_next_ammoType_on_reload = u32(-1);
+			if (NextAmmo == static_cast<u8>(-1))
+				m_set_next_ammoType_on_reload = static_cast<u32>(-1);
 			else
-				m_set_next_ammoType_on_reload = u8(NextAmmo);
+				m_set_next_ammoType_on_reload = NextAmmo;
 
-			if (OnClient()) SetAmmoElapsed(int(AmmoElapsed));			
-			OnStateSwitch	(u32(state));
+			if (OnClient()) 
+				SetAmmoElapsed(static_cast<int>(AmmoElapsed));			
+			OnStateSwitch	(static_cast<u32>(state));
 		}
 		break;
 	default:
