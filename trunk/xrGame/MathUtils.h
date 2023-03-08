@@ -243,7 +243,8 @@ IC	void twoq_2w(const Fquaternion& q1,const Fquaternion& q2,float dt,Fvector& w)
 	w.sub(v2);
 	w.add(v1);
 	float sinus_2=1.f-cosinus*cosinus,k=2.f/dt;
-	if(sinus_2>EPS)	k*=acos(cosinus)/_sqrt(sinus_2);
+	if(sinus_2>EPS)	
+		k*=static_cast<float>(acos(static_cast<double>(cosinus)/ static_cast<double>(_sqrt(sinus_2))));
 	w.mul(k);
 }
 

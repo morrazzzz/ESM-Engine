@@ -91,7 +91,7 @@ float CActor::CameraHeight()
 
 IC float viewport_near(float& w, float& h)
 {
-	w = 2.f*VIEWPORT_NEAR*tan(deg2rad(Device.fFOV)/2.f);
+	w = 2.f*VIEWPORT_NEAR*static_cast<float>(tan(static_cast<double>(deg2rad(Device.fFOV)/2.f)));
 	h = w*Device.fASPECT;
 	float	c	= _sqrt					(w*w + h*h);
 	return	_max(_max(VIEWPORT_NEAR,_max(w,h)),c);
