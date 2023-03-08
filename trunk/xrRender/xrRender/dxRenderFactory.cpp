@@ -12,7 +12,7 @@
 #include "dxApplicationRender.h"
  //#include "dxWallMarkArray.h"
 #include "dxStatsRender.h"
-//#include "dxUISequenceVideoItem.h"
+#include "dxUISequenceVideoItem.h"
 #include "dxUIShader.h"
 
 dxRenderFactory RenderFactoryImpl;
@@ -29,7 +29,7 @@ dxRenderFactory RenderFactoryImpl;
 	xr_delete((dx##Class*&)pObject); \
 } \
 
-//	RENDER_FACTORY_IMPLEMENT(UISequenceVideoItem)
+	RENDER_FACTORY_IMPLEMENT(UISequenceVideoItem)
 	RENDER_FACTORY_IMPLEMENT(UIShader)
 //	RENDER_FACTORY_IMPLEMENT(StatGraphRender)
 	RENDER_FACTORY_IMPLEMENT(RenderDeviceRender)
