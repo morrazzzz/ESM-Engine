@@ -316,14 +316,14 @@ namespace boost {
       if (this->empty())
         boost::throw_exception(bad_function_call());
 
-      internal_result_type result = invoker(function_base::functor
+      internal_result_type resultNew = invoker(function_base::functor
                                             BOOST_FUNCTION_COMMA
                                             BOOST_FUNCTION_ARGS);
 
 #ifndef BOOST_NO_VOID_RETURNS
-      return static_cast<result_type>(result);
+      return static_cast<result_type>(resultNew);
 #else
-      return result;
+      return resultNew;
 #endif // BOOST_NO_VOID_RETURNS
     }
 
@@ -443,9 +443,9 @@ namespace boost {
                            R BOOST_FUNCTION_COMMA
                            BOOST_FUNCTION_TEMPLATE_ARGS
                          >::type
-          invoker_type;
+          invoker_typePtr;
 
-        invoker = &invoker_type::invoke;
+        invoker = &invoker_typePtr::invoke;
         function_base::manager =
           &detail::function::functor_manager<FunctionPtr, Allocator>::manage;
         function_base::functor =
@@ -476,16 +476,16 @@ namespace boost {
                                        R BOOST_FUNCTION_COMMA
                                        BOOST_FUNCTION_TEMPLATE_ARGS
                                      >::type
-          invoker_type;
+          invoker_typeOld;
 
-        invoker = &invoker_type::invoke;
+        invoker = &invoker_typeOld::invoke;
         function_base::manager = &detail::function::functor_manager<
                                     FunctionObj, Allocator>::manage;
 #ifndef BOOST_NO_STD_ALLOCATOR
         typedef typename Allocator::template rebind<FunctionObj>::other
-          allocator_type;
-        typedef typename allocator_type::pointer pointer_type;
-        allocator_type allocator;
+          allocator_typeOld;
+        typedef typename allocator_typeOld::pointer pointer_type;
+        allocator_typeOld allocator;
         pointer_type copy = allocator.allocate(1);
         allocator.construct(copy, f);
 
@@ -510,9 +510,9 @@ namespace boost {
                                        R BOOST_FUNCTION_COMMA
                                        BOOST_FUNCTION_TEMPLATE_ARGS
                                      >::type
-          invoker_type;
+          invoker_typeNew;
 
-        invoker = &invoker_type::invoke;
+        invoker = &invoker_typeNew::invoke;
         function_base::manager = &detail::function::trivial_manager;
         function_base::functor =
           function_base::manager(

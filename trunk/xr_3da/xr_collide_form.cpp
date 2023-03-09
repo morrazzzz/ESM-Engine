@@ -138,8 +138,8 @@ void CCF_Skeleton::BuildState()
 				if (!b)	{
 					Msg						("! ERROR: invalid bone xform (Slipch?). Bone disabled.");
 					Msg						("! ERROR: bone_id=[%d], world_pos[%f,%f,%f]",I->elem_id,VPUSH(TW.c));
-					Msg						("visual name %s",owner->cNameVisual());
-					Msg						("object name %s",owner->cName());
+					Msg						("visual name %s", *owner->cNameVisual());
+					Msg						("object name %s", *owner->cName());
 					I->elem_id				= u16(-1);				//. hack - disable invalid bone
 				}
 								   }break;
@@ -205,21 +205,21 @@ BOOL CCF_Skeleton::_RayQuery( const collide::ray_defs& Q, collide::rq_results& R
 	BOOL bHIT			= FALSE;
 	for (ElementVecIt I=elements.begin(); I!=elements.end(); I++){
 		if (!I->valid())continue;
-		bool res		= false;
+		bool result		= false;
 		float range		= Q.range;
 		switch (I->type){
 		case SBoneShape::stBox:
-			res			= RAYvsOBB		(I->b_IM,I->b_hsize,Q.start,Q.dir,range,Q.flags&CDB::OPT_CULL);
+			result			= RAYvsOBB		(I->b_IM,I->b_hsize,Q.start,Q.dir,range,Q.flags&CDB::OPT_CULL);
 		break;
 		case SBoneShape::stSphere: 
-			res			= RAYvsSPHERE	(I->s_sphere,Q.start,Q.dir,range,Q.flags&CDB::OPT_CULL);
+			result			= RAYvsSPHERE	(I->s_sphere,Q.start,Q.dir,range,Q.flags&CDB::OPT_CULL);
 
 		break;
 		case SBoneShape::stCylinder: 
-			res			= RAYvsCYLINDER	(I->c_cylinder,Q.start,Q.dir,range,Q.flags&CDB::OPT_CULL);
+			result			= RAYvsCYLINDER	(I->c_cylinder,Q.start,Q.dir,range,Q.flags&CDB::OPT_CULL);
 		break;
 		}
-		if (res){
+		if (result){
 			bHIT		= TRUE;
 			R.append_result				(owner,range,I->elem_id,Q.flags&CDB::OPT_ONLYNEAREST);
 			if (Q.flags&CDB::OPT_ONLYFIRST) break;

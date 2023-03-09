@@ -115,16 +115,16 @@ namespace Feel {
 		// B-A = objects, that become visible
 		if (!seen.empty()) 
 		{
-			xr_vector<CObject*>::iterator E		= std::remove(seen.begin(),seen.end(),parent);
+			auto E		= std::remove(seen.begin(),seen.end(),parent);
 			seen.resize			(E-seen.begin());
 
 			{
 				diff.resize	(_max(seen.size(),query.size()));
-				xr_vector<CObject*>::iterator	E = std::set_difference(
+				auto	ENew = std::set_difference(
 					seen.begin(), seen.end(),
 					query.begin(),query.end(),
 					diff.begin() );
-				diff.resize(E-diff.begin());
+				diff.resize(ENew-diff.begin());
 				for (u32 i=0; i<diff.size(); i++)
 					o_new(diff[i]);
 			}

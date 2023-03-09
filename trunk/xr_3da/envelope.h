@@ -111,7 +111,7 @@ class CExporter;
 class ENGINE_API CEnvelope {
 public:
 	KeyVec		keys;
-	int			behavior[2];
+	int		    behavior[2];
 public:
 				CEnvelope	(){behavior[0]=1;behavior[1]=1;}
 				CEnvelope	(CEnvelope* source);

@@ -287,11 +287,11 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR name)
 		if (strstr(data,"main_ps_2_0"))			{ c_target = "ps_2_0"; c_entry = "main_ps_2_0";	}
 
 		// Compile
-		LPD3DXBUFFER				pShaderBuf	= NULL;
-		LPD3DXBUFFER				pErrorBuf	= NULL;
-		LPD3DXSHADER_CONSTANTTABLE	pConstants	= NULL;
+		LPD3DXBUFFER				pShaderBuf = nullptr;
+		LPD3DXBUFFER				pErrorBuf  = nullptr;
+		LPD3DXSHADER_CONSTANTTABLE	pConstants	= nullptr;
 		HRESULT						_hr			= S_OK;
-		_hr = ::Render->shader_compile	(name,data,size, NULL, &Includer, c_entry, c_target, D3DXSHADER_DEBUG | D3DXSHADER_PACKMATRIX_ROWMAJOR /*| D3DXSHADER_PREFER_FLOW_CONTROL*/, &pShaderBuf, &pErrorBuf, NULL);
+		_hr = ::Render->shader_compile	(name,data,size, nullptr, &Includer, c_entry, c_target, D3DXSHADER_DEBUG | D3DXSHADER_PACKMATRIX_ROWMAJOR /*| D3DXSHADER_PREFER_FLOW_CONTROL*/, &pShaderBuf, &pErrorBuf, NULL);
 		//_hr = D3DXCompileShader		(text,text_size, NULL, &Includer, c_entry, c_target, D3DXSHADER_DEBUG | D3DXSHADER_PACKMATRIX_ROWMAJOR, &pShaderBuf, &pErrorBuf, NULL);
 		xr_free						(data);
 
@@ -301,11 +301,11 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR name)
 			{
 				_hr = HW.pDevice->CreatePixelShader	((DWORD*)pShaderBuf->GetBufferPointer(), &_ps->ps);
 				if (SUCCEEDED(_hr))	{
-					LPCVOID			data		= NULL;
-					_hr	= D3DXFindShaderComment	((DWORD*)pShaderBuf->GetBufferPointer(),MAKEFOURCC('C','T','A','B'),&data,NULL);
-					if (SUCCEEDED(_hr) && data)
+					LPCVOID			dataLPCVoid		= nullptr;
+					_hr	= D3DXFindShaderComment	((DWORD*)pShaderBuf->GetBufferPointer(),MAKEFOURCC('C','T','A','B'),&dataLPCVoid,nullptr);
+					if (SUCCEEDED(_hr) && dataLPCVoid)
 					{
-						pConstants				= LPD3DXSHADER_CONSTANTTABLE(data);
+						pConstants				= LPD3DXSHADER_CONSTANTTABLE(dataLPCVoid);
 						_ps->constants.parse	(pConstants,0x1);
 					} else	_hr = E_FAIL;
 				}

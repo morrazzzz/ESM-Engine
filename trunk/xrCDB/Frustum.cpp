@@ -257,7 +257,7 @@ void CFrustum::CreateOccluder(Fvector* p, int count, Fvector& vBase, CFrustum& c
 		for (int j = 0; j<count; j++) cls[j]=_abs(P.classify(p[j]));
 
 		// test edges to see which lies directly on plane
-		for (u32 j=0; j<count; j++) {
+		for (int j=0; j<count; j++) {
 			if (cls[j]<EPS_L)
 			{
 				int next = j+1; if (next>=count) next=0;
@@ -272,7 +272,7 @@ void CFrustum::CreateOccluder(Fvector* p, int count, Fvector& vBase, CFrustum& c
 	// here we have all edges marked accordenly to 'open' / 'closed' classification
 	_clear	();
 	_add	(p[0],p[1],p[2]);		// main plane
-	for (u32 i=0; i<count; i++)
+	for (int i=0; i<count; i++)
 	{
 		if (!edge[i]) {
 			int next = i+1; if (next>=count) next=0;
@@ -299,7 +299,7 @@ sPoly*	CFrustum::ClipPoly(sPoly& S, sPoly& D) const
 		// clip everything to this plane
 		cls[src->size()] = cls[0];
 		src->push_back((*src)[0]);
-		Fvector D; float denum,t;
+		Fvector DNew; float denum,t;
 		for (u32 j=0; j<src->size()-1; j++)
 		{
 			if ((*src)[j].similar((*src)[j+1],EPS_S)) continue;
@@ -310,11 +310,11 @@ sPoly*	CFrustum::ClipPoly(sPoly& S, sPoly& D) const
 				if (positive(cls[j+1]))
 				{
 					// segment intersects plane
-					D.sub((*src)[j+1],(*src)[j]);
-					denum = P.n.dotproduct(D);
+					DNew.sub((*src)[j+1],(*src)[j]);
+					denum = P.n.dotproduct(DNew);
 					if (denum!=0) {
 						t = -cls[j]/denum; //VERIFY(t<=1.f && t>=0);
-						dest->last().mad((*src)[j],D,t);
+						dest->last().mad((*src)[j],DNew,t);
 						dest->inc();
 					}
 				}
@@ -324,11 +324,11 @@ sPoly*	CFrustum::ClipPoly(sPoly& S, sPoly& D) const
 				{
 					// J+1  - inside
 					// segment intersects plane
-					D.sub((*src)[j+1],(*src)[j]);
-					denum = P.n.dotproduct(D);
+					DNew.sub((*src)[j+1],(*src)[j]);
+					denum = P.n.dotproduct(DNew);
 					if (denum!=0) {
 						t = -cls[j]/denum; //VERIFY(t<=1.f && t>=0);
-						dest->last().mad((*src)[j],D,t);
+						dest->last().mad((*src)[j],DNew,t);
 						dest->inc();
 					}
 				}

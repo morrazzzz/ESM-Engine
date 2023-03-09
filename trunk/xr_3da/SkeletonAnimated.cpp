@@ -718,8 +718,8 @@ IC void Dequantize(CKey& K,const CBlend& BD,const CMotion& M)
 	u32				count	=	M.get_count();
 	// rotation
 	if (M.test_flag(flRKeyAbsent)){
-		const CKeyQR *		K		=	&M._keysR[0];
-		QR2Quat(*K,D->Q);
+		const CKeyQR *		KeyQR		=	&M._keysR[0];
+		QR2Quat(*KeyQR,D->Q);
 	}else{
 		const CKeyQR*		K1r		=	&M._keysR[(frame+0)%count];
 		const CKeyQR*		K2r		=	&M._keysR[(frame+1)%count];

@@ -259,14 +259,14 @@ void	imf_Process	(u32* dstI, u32 dstW, u32 dstH, u32* srcI, u32 srcW, u32 srcH, 
 			for(i = 0; i < dst.xsize; ++i)
 			{
 				contrib[i].n	= 0;
-				contrib[i].p	= (CONTRIB *)xr_malloc((int) (width * 2 + 1)*sizeof(CONTRIB));
-				ZeroMemory(contrib[i].p,(int) (width * 2 + 1)*sizeof(CONTRIB));
-				center			= float(i) / xscale;
-				left			= ceil	(center - width);
-				right			= floor	(center + width);
-				for(j = int(left); j <= int(right); ++j)
+				contrib[i].p	= static_cast<CONTRIB*>(xr_malloc(static_cast<int>(width * 2 + 1)*sizeof(CONTRIB)));
+				ZeroMemory(contrib[i].p, static_cast<int>(width * 2 + 1)*sizeof(CONTRIB));
+				center			= static_cast<float>(i) / xscale;
+				left			= static_cast<float>(ceil(static_cast<double>(center - width)));
+				right			= static_cast<float>(floor(static_cast<double>(center + width)));
+				for(j = static_cast<int>(left); j <= static_cast<int>(right); ++j)
 				{
-					weight	= center - float(j);
+					weight	= center - static_cast<float>(j);
 					weight	= filterf(weight / fscale) / fscale;
 					if(j < 0) {
 						n = -j;
@@ -288,14 +288,14 @@ void	imf_Process	(u32* dstI, u32 dstW, u32 dstH, u32* srcI, u32 srcW, u32 srcH, 
 			for(i = 0; i < dst.xsize; ++i)
 			{
 				contrib[i].n	= 0;
-				contrib[i].p	= (CONTRIB *)xr_malloc((int) (fwidth * 2 + 1)*sizeof(CONTRIB));
-				ZeroMemory(contrib[i].p,(int) (fwidth * 2 + 1)*sizeof(CONTRIB));
-				center			= float(i) / xscale;
-				left			= ceil	(center - fwidth);
-				right			= floor	(center + fwidth);
-				for(j = int(left); j <= int(right); ++j)
+				contrib[i].p	= static_cast<CONTRIB*>(xr_malloc(static_cast<int>(fwidth * 2 + 1)*sizeof(CONTRIB)));
+				ZeroMemory(contrib[i].p,static_cast<int>(fwidth * 2 + 1)*sizeof(CONTRIB));
+				center			= static_cast<float>(i) / xscale;
+				left			= static_cast<float>(ceil(static_cast<double>(center - fwidth)));
+				right			= static_cast<float>(floor(static_cast<double>(center + fwidth)));
+				for(j = static_cast<int>(left); j <= static_cast<int>(right); ++j)
 				{
-					weight	= center - (float) j;
+					weight	= center - static_cast<float>(j);
 					weight	= (*filterf)(weight);
 					if(j < 0) {
 						n = -j;
@@ -360,14 +360,14 @@ void	imf_Process	(u32* dstI, u32 dstW, u32 dstH, u32* srcI, u32 srcW, u32 srcH, 
 			for	(i = 0; i < dst.ysize; ++i)
 			{
 				contrib[i].n	= 0;
-				contrib[i].p	= (CONTRIB *)xr_malloc((int) (width * 2 + 1)*sizeof(CONTRIB));
-				ZeroMemory(contrib[i].p,(int) (width * 2 + 1)*sizeof(CONTRIB));
-				center			= (float) i / yscale;
-				left			= ceil	(center - width);
-				right			= floor	(center + width);
-				for(j = int(left); j <= int(right); ++j)
+				contrib[i].p	= static_cast<CONTRIB*>(xr_malloc(static_cast<int>(width * 2 + 1)*sizeof(CONTRIB)));
+				ZeroMemory(contrib[i].p, static_cast<int>(width * 2 + 1)*sizeof(CONTRIB));
+				center			= static_cast<float>(i) / yscale;
+				left			= static_cast<float>(ceil(static_cast<double>(center - width)));
+				right			= static_cast<float>(floor(static_cast<double>(center + width)));
+				for(j = static_cast<int>(left); j <= static_cast<int>(right); ++j)
 				{
-					weight	= center - (float) j;
+					weight	= center - static_cast<float>(j);
 					weight	= filterf(weight / fscale) / fscale;
 					if(j < 0) {
 						n = -j;
@@ -387,13 +387,13 @@ void	imf_Process	(u32* dstI, u32 dstW, u32 dstH, u32* srcI, u32 srcW, u32 srcH, 
 			for(i = 0; i < dst.ysize; ++i)
 			{
 				contrib[i].n	= 0;
-				contrib[i].p	= (CONTRIB *)xr_malloc((int) (fwidth * 2 + 1)*sizeof(CONTRIB));
-				ZeroMemory(contrib[i].p,(int) (fwidth * 2 + 1)*sizeof(CONTRIB));
-				center			= (float) i / yscale;
-				left			= ceil	(center - fwidth);
-				right			= floor	(center + fwidth);
-				for(j = int(left); j <= int(right); ++j) {
-					weight = center - (float) j;
+				contrib[i].p	= static_cast<CONTRIB*>(xr_malloc(static_cast<int>(fwidth * 2 + 1)*sizeof(CONTRIB)));
+				ZeroMemory(contrib[i].p, static_cast<int>(fwidth * 2 + 1)*sizeof(CONTRIB));
+				center			= static_cast<float>(i) / yscale;
+				left			= static_cast<float>(ceil(static_cast<double>(center - fwidth)));
+				right			= static_cast<float>(floor(static_cast<double>(center + fwidth)));
+				for(j = static_cast<int>(left); j <= static_cast<int>(right); ++j) {
+					weight = center - static_cast<float>(j);
 					weight = (*filterf)(weight);
 					if(j < 0) {
 						n = -j;

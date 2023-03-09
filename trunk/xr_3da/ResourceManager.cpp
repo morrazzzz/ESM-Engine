@@ -8,6 +8,7 @@
 #pragma warning(disable:4995)
 #include <d3dx9.h>
 #pragma warning(default:4995)
+#pragma warning(disable:4244)
 
 #include "ResourceManager.h"
 #include "tss.h"

@@ -1,10 +1,11 @@
 #include "stdafx.h"
 #pragma hdrstop
 
+#include <stddef.h>
 #include "xr_input.h"
 #include "IInputReceiver.h"
 
-CInput *	pInput	= NULL;
+CInput *	pInput	= nullptr;
 IInputReceiver		dummyController;
 
 ENGINE_API float	psMouseSens			= 1.f;
@@ -245,9 +246,18 @@ void CInput::MouseUpdate( )
 	offs[0] = offs[1] = offs[2] = 0;
 	for (u32 i = 0; i < dwElements; i++){
 		switch (od[i].dwOfs){
-		case DIMOFS_X:	offs[0]	+= od[i].dwData; timeStamp[0] = od[i].dwTimeStamp;	break;
-		case DIMOFS_Y:	offs[1]	+= od[i].dwData; timeStamp[1] = od[i].dwTimeStamp;	break;
-		case DIMOFS_Z:	offs[2]	+= od[i].dwData; timeStamp[2] = od[i].dwTimeStamp;	break;
+		case offsetof(DIMOUSESTATE, lX):
+			offs[0]	+= od[i].dwData;
+			timeStamp[0] = od[i].dwTimeStamp;
+			break;
+		case offsetof(DIMOUSESTATE, lY):	
+			offs[1]	+= od[i].dwData;
+			timeStamp[1] = od[i].dwTimeStamp;
+			break;
+		case offsetof(DIMOUSESTATE, lZ):	
+			offs[2]	+= od[i].dwData;
+			timeStamp[2] = od[i].dwTimeStamp;
+			break;
 		case DIMOFS_BUTTON0:
 			if ( od[i].dwData & 0x80 )	
 			{ mouseState[0] = TRUE;				cbStack.back()->IR_OnMousePress(0);		}
