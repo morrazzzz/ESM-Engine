@@ -455,10 +455,10 @@ public:
 	CCartridge				m_DefaultCartridge;
 	float					m_fCurrentCartirdgeDisp;
 
-		bool				unlimited_ammo				();
+		bool				unlimited_ammo				() const;
 	IC	bool				can_be_strapped				() const {return m_can_be_strapped;};
 
-	LPCSTR					GetCurrentAmmo_ShortName	();
+	LPCSTR					GetCurrentAmmo_ShortName() const;
 
 protected:
 	u32						m_ef_main_weapon_type;

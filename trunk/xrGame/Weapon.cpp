@@ -485,8 +485,7 @@ void CWeapon::net_Destroy	()
 	StopLight			();
 	Light_Destroy		();
 
-	while (!m_magazine.empty()) 
-		m_magazine.pop_back();
+	m_magazine.clear();
 }
 
 BOOL CWeapon::IsUpdating()
@@ -1418,9 +1417,8 @@ void	CWeapon::SetAmmoElapsed	(int ammo_count)
 {
 	iAmmoElapsed				= ammo_count;
 
-	u32 uAmmo					= u32(iAmmoElapsed);
-
-	if (uAmmo != m_magazine.size())
+	
+	if (const u32 uAmmo	= static_cast<u32>(iAmmoElapsed); uAmmo != m_magazine.size())
 	{
 		if (uAmmo > m_magazine.size())
 		{
@@ -1433,8 +1431,8 @@ void	CWeapon::SetAmmoElapsed	(int ammo_count)
 		{
 			while (uAmmo < m_magazine.size())
 				m_magazine.pop_back();
-		};
-	};
+		}
+	}
 }
 
 u32	CWeapon::ef_main_weapon_type	() const
@@ -1471,13 +1469,11 @@ void CWeapon::OnDrawUI()
 			ZoomTexture()->SetPos	(0,0);
 			ZoomTexture()->SetRect	(0,0,UI_BASE_WIDTH, UI_BASE_HEIGHT);
 			ZoomTexture()->Render	();
-
-//			m_UILens.Draw();
 		}
 	}
 }
 
-bool CWeapon::unlimited_ammo() 
+bool CWeapon::unlimited_ammo() const
 { 
 	if (GameID() == GAME_SINGLE	)
 		return psActorFlags.test(AF_UNLIMITEDAMMO) && 
@@ -1488,10 +1484,11 @@ bool CWeapon::unlimited_ammo()
 			
 };
 
-LPCSTR	CWeapon::GetCurrentAmmo_ShortName	()
+LPCSTR	CWeapon::GetCurrentAmmo_ShortName() const
 {
-	if (m_magazine.empty()) return ("");
-	CCartridge &l_cartridge = m_magazine.back();
+	if (m_magazine.empty()) 
+		return ("");
+	const CCartridge &l_cartridge = m_magazine.back();
 	return *(l_cartridge.m_InvShortName);
 }
 
@@ -1510,10 +1507,10 @@ float CWeapon::Weight()
 	
 	if(iAmmoElapsed)
 	{
-		float w		= pSettings->r_float(*m_ammoTypes[m_ammoType],"inv_weight");
-		float bs	= pSettings->r_float(*m_ammoTypes[m_ammoType],"box_size");
+		const float w		= pSettings->r_float(*m_ammoTypes[m_ammoType],"inv_weight");
+		const float bs	= pSettings->r_float(*m_ammoTypes[m_ammoType],"box_size");
 
-		res			+= w*(iAmmoElapsed/bs);
+		res			+= w*(static_cast<float>(iAmmoElapsed)/bs);
 	}
 	return res;
 }
@@ -1544,24 +1541,24 @@ bool CWeapon::show_indicators()
 
 float CWeapon::GetConditionToShow	() const
 {
-	return	(GetCondition());//powf(GetCondition(),4.0f));
+	return	(GetCondition());
 }
 
 BOOL CWeapon::ParentMayHaveAimBullet	()
 {
 	CObject* O=H_Parent();
-	CEntityAlive* EA=smart_cast<CEntityAlive*>(O);
-	return EA->cast_actor()!=0;
+	auto* EA=smart_cast<CEntityAlive*>(O);
+	return EA->cast_actor() != nullptr;
 }
 
 BOOL CWeapon::ParentIsActor	()
 {
-	CObject* O=H_Parent();
-	CEntityAlive* EA=smart_cast<CEntityAlive*>(O);
-	return EA->cast_actor()!=0;
+	CObject* O = H_Parent();
+	auto* EA=smart_cast<CEntityAlive*>(O);
+	return EA->cast_actor() != nullptr;
 }
 
-const float &CWeapon::hit_probability	() const
+const float &CWeapon::hit_probability() const
 {
 	VERIFY					((g_SingleGameDifficulty >= egdNovice) && (g_SingleGameDifficulty <= egdMaster)); 
 	return					(m_hit_probability[egdNovice]);

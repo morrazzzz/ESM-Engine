@@ -29,6 +29,7 @@
 #include "MainMenu.h"
 #include "saved_game_wrapper.h"
 #include "../xr_3da/resourcemanager.h"
+#include "../xrCore/xr_ini.h"
 
 #include "GameSpy/GameSpy_Full.h"
 #include "GameSpy/GameSpy_Patching.h"
@@ -39,7 +40,9 @@
 #	include "game_graph.h"
 #endif // DEBUG
 
+#include "ai_object_location.h"
 #include "hudmanager.h"
+#include "xrServer_Object_Base.h"
 
 string_path		g_last_saved_game;
 
@@ -993,8 +996,120 @@ struct CCC_JumpToLevel : public IConsole_Command {
 	}
 };
 
-#include "GamePersistent.h"
+class CCC_Spawn : public IConsole_Command
+{
+public:
+	CCC_Spawn(LPCSTR N) : IConsole_Command(N) {}
 
+	void Execute(LPCSTR args)
+	{
+		if (!g_pGameLevel)
+			return;
+
+		if (!pSettings->section_exist(args))
+		{
+			Msg("! Can't find section: %s", args);
+			return;
+		}
+
+		if (auto tpGame = smart_cast<game_sv_Single*>(Level().Server->game))
+			tpGame->alife().spawn_item(args, Actor()->Position(), Actor()->ai_location().level_vertex_id(), Actor()->ai_location().game_vertex_id(), ALife::_OBJECT_ID(-1));
+	}
+
+#pragma todo("Починить потом!")
+	/*virtual void fill_tips(vecTips& tips, u32 mode)
+	{
+		if (!ai().get_alife())
+		{
+			Msg("! ALife simulator is needed to perform specified command!");
+			return;
+		}
+
+		for (const auto& it = CInifile::Item();;)
+		{
+
+			auto& section = it.first;
+
+			if (pSettings->line_exist(section, "class"))
+			{
+				tips.push_back(section);
+			}
+		}
+
+		std::sort(tips.begin(), tips.end());
+
+		// tips.push_back((*itb).second.name());
+	}
+	*/
+};
+//#endif // MASTER_GOLD
+
+class CCC_SpawnToInventory : public IConsole_Command
+{
+public:
+	CCC_SpawnToInventory(LPCSTR N) : IConsole_Command(N) {}
+
+	void Execute(LPCSTR args)
+	{
+		if (!g_pGameLevel)
+			return;
+
+		if (!pSettings->section_exist(args))
+		{
+			Msg("! Can't find section: %s", args);
+			return;
+		}
+
+		if (auto tpGame = smart_cast<game_sv_Single*>(Level().Server->game))
+		{
+			NET_Packet packet;
+			packet.w_begin(M_SPAWN);
+			packet.w_stringZ(args);
+
+			CSE_Abstract* item =
+				tpGame->alife().spawn_item(args, Actor()->Position(), Actor()->ai_location().level_vertex_id(), Actor()->ai_location().game_vertex_id(), 0, false);
+			item->Spawn_Write(packet, FALSE);
+			tpGame->alife().server().FreeID(item->ID, 0);
+			F_entity_Destroy(item);
+
+			ClientID clientID;
+			clientID.set(0xffff);
+
+			u16 dummy;
+			packet.r_begin(dummy);
+			VERIFY(dummy == M_SPAWN);
+			tpGame->alife().server().Process_spawn(packet, clientID);
+		}
+	}
+
+#pragma todo("Починить потом!")
+	/*
+	virtual void fill_tips(vecTips& tips, u32 mode)
+	{
+		if (!ai().get_alife())
+		{
+			Msg("! ALife simulator is needed to perform specified command!");
+			return;
+		}
+
+		for (const auto& it = CInifile::Item();;)
+		{
+			auto& section = it.first;
+
+			if (pSettings->line_exist(section, "class"))
+			{
+				tips.push_back(section);
+			}
+		}
+
+		std::sort(tips.begin(), tips.end());
+
+		// tips.push_back((*itb).second.name());
+	}
+	*/
+};
+
+#include "GamePersistent.h"
 
 class CCC_MainMenu : public IConsole_Command {
 public:
@@ -1347,11 +1462,11 @@ void CCC_RegisterCommands()
 	// options
 	g_OptConCom.Init();
 
-	CMD1(CCC_MemStats,			"stat_memory"			);
+	CMD1(CCC_MemStats,			"stat_memory"			)
 	// game
 	psActorFlags.set(AF_ALWAYSRUN, true);
 	CMD3(CCC_Mask,				"g_always_run",			&psActorFlags,	AF_ALWAYSRUN);
-	CMD1(CCC_GameDifficulty,	"g_game_difficulty"		);
+	CMD1(CCC_GameDifficulty,	"g_game_difficulty"		)
 
 	CMD3(CCC_Mask,				"g_backrun",			&psActorFlags,	AF_RUN_BACKWARD);
 
@@ -1360,12 +1475,12 @@ void CCC_RegisterCommands()
 	CMD1(CCC_ALifePath,			"al_path"				);		// build path
 #endif // DEBUG
 	
-	CMD1(CCC_ALifeSave,			"save"					);		// save game
-	CMD1(CCC_ALifeLoadFrom,		"load"					);		// load game from ...
-	CMD1(CCC_LoadLastSave,		"load_last_save"		);		// load last saved game from ...
+	CMD1(CCC_ALifeSave,			"save"					)		// save game
+	CMD1(CCC_ALifeLoadFrom,		"load"					)		// load game from ...
+	CMD1(CCC_LoadLastSave,		"load_last_save"		)		// load last saved game from ...
 
-	CMD1(CCC_FlushLog,			"flush"					);		// flush log
-	CMD1(CCC_ClearLog,			"clear_log"					);
+	CMD1(CCC_FlushLog,			"flush"					)		// flush log
+	CMD1(CCC_ClearLog,			"clear_log"					)
 
 #ifndef MASTER_GOLD
 	CMD1(CCC_ALifeTimeFactor,		"al_time_factor"		);		// set time factor
@@ -1376,8 +1491,8 @@ void CCC_RegisterCommands()
 #endif // MASTER_GOLD
 
 
-	CMD3(CCC_Mask,				"hud_weapon",			&psHUD_Flags,	HUD_WEAPON);
-	CMD3(CCC_Mask,				"hud_info",				&psHUD_Flags,	HUD_INFO);
+	CMD3(CCC_Mask,				"hud_weapon",			&psHUD_Flags,	HUD_WEAPON)
+	CMD3(CCC_Mask,				"hud_info",				&psHUD_Flags,	HUD_INFO)
 
 #ifndef MASTER_GOLD
 	CMD3(CCC_Mask,				"hud_draw",				&psHUD_Flags,	HUD_DRAW);
@@ -1388,15 +1503,15 @@ void CCC_RegisterCommands()
 	psHUD_Flags.set(HUD_DRAW,			true);
 	psHUD_Flags.set(HUD_INFO,			true);
 
-	CMD3(CCC_Mask,				"hud_crosshair",		&psHUD_Flags,	HUD_CROSSHAIR);
-	CMD3(CCC_Mask,				"hud_crosshair_dist",	&psHUD_Flags,	HUD_CROSSHAIR_DIST);
+	CMD3(CCC_Mask,				"hud_crosshair",		&psHUD_Flags,	HUD_CROSSHAIR)
+	CMD3(CCC_Mask,				"hud_crosshair_dist",	&psHUD_Flags,	HUD_CROSSHAIR_DIST)
 
-	CMD4(CCC_Float,				"hud_fov",				&psHUD_FOV,		0.1f,	1.0f);
-	CMD4(CCC_Float,				"fov",					&g_fov,			5.0f,	180.0f);
+	CMD4(CCC_Float,				"hud_fov",				&psHUD_FOV,		0.1f,	1.0f)
+	CMD4(CCC_Float,				"fov",					&g_fov,			5.0f,	180.0f)
 
 	// Demo
-	CMD1(CCC_DemoPlay,			"demo_play"				);
-	CMD1(CCC_DemoRecord,		"demo_record"			);
+	CMD1(CCC_DemoPlay,			"demo_play"				)
+	CMD1(CCC_DemoRecord,		"demo_record"			)
 
 #ifndef MASTER_GOLD
 	// ai
@@ -1491,14 +1606,16 @@ void CCC_RegisterCommands()
 	CMD4(CCC_FloatBlock,		"ph_tri_query_ex_aabb_rate",	&ph_tri_query_ex_aabb_rate	,			1.01f	,3.f			);
 #endif // DEBUG
 
-	CMD1(CCC_JumpToLevel,	"jump_to_level"		);
-	CMD3(CCC_Mask,			"g_god",			&psActorFlags,	AF_GODMODE	);
-	CMD3(CCC_Mask,			"g_unlimitedammo",	&psActorFlags,	AF_UNLIMITEDAMMO);
-	CMD1(CCC_Script,		"run_script");
-	CMD1(CCC_ScriptCommand,	"run_string");
-	CMD1(CCC_TimeFactor,	"time_factor");
-	CMD1(CCC_SetWeather, "set_weather");
-	CMD3(CCC_Mask,		"g_autopickup",			&psActorFlags,	AF_AUTOPICKUP);
+	CMD1(CCC_JumpToLevel,	"jump_to_level"		)
+	CMD1(CCC_Spawn, "g_spawn");
+	CMD1(CCC_SpawnToInventory, "g_spawn_to_inventory");
+	CMD3(CCC_Mask,			"g_god",			&psActorFlags,	AF_GODMODE	)
+	CMD3(CCC_Mask,			"g_unlimitedammo",	&psActorFlags,	AF_UNLIMITEDAMMO)
+	CMD1(CCC_Script,		"run_script")
+	CMD1(CCC_ScriptCommand,	"run_string")
+	CMD1(CCC_TimeFactor,	"time_factor")
+	CMD1(CCC_SetWeather, "set_weather")
+	CMD3(CCC_Mask,		"g_autopickup",	&psActorFlags,	AF_AUTOPICKUP)
 
 
 #ifdef DEBUG
