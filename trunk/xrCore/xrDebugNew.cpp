@@ -568,10 +568,10 @@ void save_mini_dump			(_EXCEPTION_POINTERS *pExceptionInfo)
 }
 #endif // USE_OWN_MINI_DUMP
 
-void format_message	(LPSTR buffer, const u32 &buffer_size)
+void format_message(LPSTR buffer, const u32& buffer_size)
 {
-    LPVOID		message;
-    DWORD		error_code = GetLastError(); 
+	char*	message{};
+	DWORD		error_code = GetLastError();
 
 	if (!error_code) {
 		*buffer	= 0;

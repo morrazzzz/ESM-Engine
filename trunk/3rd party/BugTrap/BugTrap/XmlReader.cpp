@@ -1579,15 +1579,15 @@ CXmlReader::XML_RESULT CXmlReader::CXmlParser::DtdEntityHandler(CXmlNode& /*rXml
 			CStrStream strEntityValue(128);
 			for (;;)
 			{
-				TCHAR arrChar[2];
-				size_t nCharSize = decInputStream.ReadChar(arrChar);
-				if (nCharSize == 0 || nCharSize == MAXSIZE_T)
+				TCHAR arrCharTChar[2];
+				size_t nCharSizeT = decInputStream.ReadChar(arrCharTChar);
+				if (nCharSizeT == 0 || nCharSizeT == MAXSIZE_T)
 					break;
-				PutCharToStream(strEntityValue, arrChar, nCharSize);
+				PutCharToStream(strEntityValue, arrCharTChar, nCharSizeT);
 			}
-			decInputStream.SetInputStream(NULL);
+			decInputStream.SetInputStream(nullptr);
 			delete pInputStream;
-			pInputStream = NULL;
+			pInputStream = nullptr;
 			CHash<CStrStream, CStrStream>& rMapEntities = bDtdEntity ? m_rReader.m_mapDtdEntities : m_rReader.m_mapXmlEntities;
 			rMapEntities.SetAt(strEntityName, strEntityValue);
 		}
