@@ -812,8 +812,11 @@ bool CWeapon::Action(s32 cmd, u32 flags)
 				{
 					return false;
 				}
-									
-				if(flags&CMD_START) 
+
+				if (Core.Features.test(xrCore::Feature::lock_reload_in_sprint) && ParentIsActor() && g_actor->get_state() & mcSprint)
+					return true;
+
+				if(flags & CMD_START) 
 				{
 					u32 l_newType = m_ammoType;
 					bool b1,b2;

@@ -275,7 +275,7 @@ public:
 	Flags64 Features{};
 	struct Feature
 	{
-		static constexpr u64 autoreload_wpn = 1ull << 0;
+		static constexpr u64 autoreload_wpn = 1ull << 0, lock_reload_in_sprint = 1ull << 1;
 	};
 public:
 	void		_initialize	(LPCSTR ApplicationName, LogCallback cb=0, BOOL init_fs=TRUE, LPCSTR fs_fname=0);

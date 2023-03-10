@@ -192,19 +192,13 @@ bool CWeaponMagazined::TryReload()
 		m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAny(*m_ammoTypes[m_ammoType] ));
 
 		
-		if(IsMisfire() && iAmmoElapsed)
+		if(m_pAmmo || unlimited_ammo() || (IsMisfire() && iAmmoElapsed))
 		{
 			m_bPending = true;
 			SwitchState(eReload); 
 			return true;
 		}
 
-		if(m_pAmmo || unlimited_ammo())  
-		{
-			m_bPending = true;
-			SwitchState(eReload); 
-			return true;
-		} 
 		else for(u32 i = 0; i < m_ammoTypes.size(); ++i) 
 		{
 			m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAny( *m_ammoTypes[i] ));
@@ -731,7 +725,8 @@ bool CWeaponMagazined::Action(s32 cmd, u32 flags)
 	{
 	case kWPN_RELOAD:
 		{
-			if(flags&CMD_START) 
+		if (!Core.Features.test(xrCore::Feature::lock_reload_in_sprint) || (!ParentIsActor() || !(g_actor->get_state() & mcSprint)))
+			if(flags & CMD_START) 
 				if(iAmmoElapsed < iMagazineSize || IsMisfire()) 
 					Reload();
 		} 

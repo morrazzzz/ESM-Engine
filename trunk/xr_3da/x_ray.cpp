@@ -157,6 +157,7 @@ void InitConsole	()
 	}
 
 	CORE_FEATURE_SET(autoreload_wpn, "weapon_options");
+	CORE_FEATURE_SET(lock_reload_in_sprint, "weapon_options");
 }
 
 void InitInput		()
