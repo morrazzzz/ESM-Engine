@@ -88,8 +88,9 @@ void CScriptGameObject::script_register(lua_State *L)
 				value("script_animation",			int(GameObject::eScriptAnimation)),
 				value("task_state",					int(GameObject::eTaskStateChange)),
 				value("take_item_from_box",			int(GameObject::eInvBoxItemTake)),
-				value("map_location_added",			int(GameObject::eMapLocationAdded))
-			],
+				value("map_location_added",			int(GameObject::eMapLocationAdded)),
+
+				value("select_pda_contact", int(GameObject::eSelectPdaContact))],
 
 		def("buy_condition",				(void (*)(CScriptIniFile*,LPCSTR))(&::buy_condition)),
 		def("buy_condition",				(void (*)(float,float))(&::buy_condition)),

@@ -10,6 +10,7 @@
 #include "UIScrollView.h"
 #include "../actor.h"
 #include "../string_table.h"
+#include "xrGame/game_object_space.h"
 
 #define PDA_CONTACT_HEIGHT 70
 
@@ -161,7 +162,10 @@ void CUIPdaContactItem::SetSelected	(bool b)
 		CSE_ALifeTraderAbstract*	T = ch_info_get_from_id(UIInfo->OwnerID());
 		chInfo.Init					(T);
 
-//.		ADD_TEXT_TO_VIEW2( *(chInfo.Bio()), m_cw->UIDetailsWnd);
+		ADD_TEXT_TO_VIEW2( *(chInfo.Bio()), m_cw->UIDetailsWnd);
+
+		//Перенести!
+//.		g_actor->callback(GameObject::eSelectPdaContact)(UIInfo->OwnerID());
 	}
 }
 
