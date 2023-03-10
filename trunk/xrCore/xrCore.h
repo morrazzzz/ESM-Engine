@@ -272,6 +272,11 @@ public:
 	string64	CompName;
 	string512	Params;
 
+	Flags64 Features{};
+	struct Feature
+	{
+		static constexpr u64 autoreload_wpn = 1ull << 0;
+	};
 public:
 	void		_initialize	(LPCSTR ApplicationName, LogCallback cb=0, BOOL init_fs=TRUE, LPCSTR fs_fname=0);
 	void		_destroy	();

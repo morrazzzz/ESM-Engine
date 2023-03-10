@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "hudmanager.h"
 #include "WeaponHUD.h"
+#include "WeaponMagazinedWGrenade.h"
 #include "WeaponMagazined.h"
 #include "entity.h"
 #include "actor.h"
@@ -151,7 +152,17 @@ void CWeaponMagazined::FireStart		()
 	} 
 	else 
 	{
-		if(eReload!=GetState() && eMisfire!=GetState()) OnMagazineEmpty();
+		if (eReload != GetState() && eMisfire != GetState())
+		{
+			OnMagazineEmpty();
+
+			const auto* WGrenade = smart_cast<CWeaponMagazinedWGrenade*>(this);
+
+			if (WGrenade && !WGrenade->m_bGrenadeMode && !IsMisfire())
+				HUD().GetUI()->AddInfoMessage("gun_empty");
+			else if (WGrenade && WGrenade->m_bGrenadeMode && !IsMisfire())
+				HUD().GetUI()->AddInfoMessage("gun_empty_grenade");
+		}
 	}
 }
 
@@ -159,9 +170,12 @@ void CWeaponMagazined::FireEnd()
 {
 	inherited::FireEnd();
 
-	CActor	*actor = smart_cast<CActor*>(H_Parent());
-	if(!iAmmoElapsed && actor && GetState()!=eReload) 
-		Reload();
+	if (Core.Features.test(xrCore::Feature::autoreload_wpn))
+	{
+		CActor* actor = smart_cast<CActor*>(H_Parent());
+		if (!iAmmoElapsed && actor && GetState() != eReload)
+			Reload();
+	}
 }
 
 void CWeaponMagazined::Reload() 
@@ -385,6 +399,11 @@ void CWeaponMagazined::OnStateSwitch	(u32 S)
 		break;
 	case eMagEmpty:
 		switch2_Empty	();
+
+		if (GetNextState() != eReload)
+		{
+			SwitchState(eIdle);
+		}
 		break;
 	case eReload:
 		switch2_Reload	();
@@ -538,6 +557,10 @@ void CWeaponMagazined::SetDefaults	()
 
 void CWeaponMagazined::OnShot		()
 {
+	// Если актор бежит - останавливаем его
+	if (ParentIsActor())
+		Actor()->set_state_wishful(Actor()->get_state_wishful() & (~mcSprint));
+
 	// Sound
 	PlaySound			(*m_pSndShotCurrent,get_LastFP());
 
@@ -636,6 +659,12 @@ void CWeaponMagazined::switch2_Fire	()
 }
 void CWeaponMagazined::switch2_Empty()
 {
+	if (!Core.Features.test(xrCore::Feature::autoreload_wpn) && smart_cast<CActor*>(H_Parent()))
+	{
+		OnEmptyClick();
+		return;
+	}
+
 	OnZoomOut();
 	
 	if(!TryReload())

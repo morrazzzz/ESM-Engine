@@ -34,6 +34,8 @@
 	#define DLL_API
 #endif // NO_ENGINE_API
 
+#define READ_IF_EXISTS(ltx, method, section, name, default_value) ((ltx->line_exist(section, name)) ? (ltx->method(section, name)) : (default_value))
+
 #define ECORE_API
 
 // Our headers

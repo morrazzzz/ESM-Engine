@@ -128,6 +128,8 @@ public:
 		eSubstateReloadBegin		=0,
 		eSubstateReloadInProcess,
 		eSubstateReloadEnd,
+		eSubstateIdleMoving,
+		eSubstateIdleSprint,
 	};
 
 	virtual bool			IsHidden			()	const		{	return GetState() == eHidden;}						// Does weapon is in hidden state
@@ -467,12 +469,15 @@ protected:
 public:
 	virtual u32				ef_main_weapon_type	() const;
 	virtual u32				ef_weapon_type		() const;
+	u8 idle_state();
 
 protected:
 	// This is because when scope is attached we can't ask scope for these params
 	// therefore we should hold them by ourself :-((
 	float					m_addon_holder_range_modifier;
 	float					m_addon_holder_fov_modifier;
+
+	u8 m_idle_state;
 public:
 	virtual	void			modify_holder_params		(float &range, float &fov) const;
 	virtual bool			use_crosshair				()	const {return true;}

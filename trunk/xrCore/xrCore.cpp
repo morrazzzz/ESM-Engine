@@ -52,9 +52,7 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
         GetModuleFileName(GetModuleHandle(MODULE_NAME),fn,sizeof(fn));
         _splitpath		(fn,dr,di,0,0);
         strconcat		(sizeof(ApplicationPath),ApplicationPath,dr,di);
-#ifndef _EDITOR
 		strcpy_s		(g_application_path,sizeof(g_application_path),ApplicationPath);
-#endif
 
 		// working path
         if( strstr(Params,"-wf") )
@@ -150,13 +148,7 @@ void xrCore::_destroy		()
 }
 
 #ifndef XRCORE_STATIC
-
-//. why ??? 
-#ifdef _EDITOR
-	BOOL WINAPI DllEntryPoint(HINSTANCE hinstDLL, DWORD ul_reason_for_call, LPVOID lpvReserved)
-#else
 	BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD ul_reason_for_call, LPVOID lpvReserved)
-#endif
 {
 	switch (ul_reason_for_call)
 	{

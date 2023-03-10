@@ -1,4 +1,6 @@
 #include "stdafx.h"
+
+#include "Actor.h"
 #include "weaponmagazinedwgrenade.h"
 #include "WeaponHUD.h"
 #include "entity.h"
@@ -477,7 +479,10 @@ void CWeaponMagazinedWGrenade::OnAnimationEnd(u32 state)
 	case eFire:
 	{
 		if (m_bGrenadeMode)
-			Reload();
+			if (Core.Features.test(xrCore::Feature::autoreload_wpn))
+				Reload();
+			else
+				SwitchState(eIdle);
 	}
 	break;
 }

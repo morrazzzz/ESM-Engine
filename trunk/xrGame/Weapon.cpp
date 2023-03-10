@@ -37,6 +37,7 @@ CWeapon::CWeapon(LPCSTR name)
 	SetNextState			(eHidden);
 	m_sub_state				= eSubstateReloadBegin;
 	m_bTriStateReload		= false;
+	m_idle_state = eIdle;
 	SetDefaults				();
 
 	m_Offset.identity		();
@@ -691,6 +692,21 @@ void CWeapon::OnH_B_Chield		()
 	m_set_next_ammoType_on_reload	= static_cast<u32>(-1);
 }
 
+u8 CWeapon::idle_state()
+{
+	auto* actor = smart_cast<CActor*>(H_Parent());
+
+	if (actor)
+	{
+		u32 st = actor->get_state();
+		if (st & mcSprint)
+			return eSubstateIdleSprint;
+		else if (st & mcAnyAction && !(st & mcJump) && !(st & mcFall))
+			return eSubstateIdleMoving;
+	}
+
+	return eIdle;
+}
 
 void CWeapon::UpdateCL		()
 {
@@ -707,6 +723,20 @@ void CWeapon::UpdateCL		()
 		make_Interpolation		();
 	
 	VERIFY(smart_cast<CKinematics*>(Visual()));
+
+
+	if (GetState() == eIdle) {
+		auto state = idle_state();
+		if (m_idle_state != state) {
+			m_idle_state = state;
+			if (GetNextState() != eMagEmpty && GetNextState() != eReload)
+			{
+				SwitchState(eIdle);
+			}
+		}
+	}
+	else
+		m_idle_state = eIdle;
 }
 
 

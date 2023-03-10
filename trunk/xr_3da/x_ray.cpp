@@ -20,6 +20,8 @@
 #include "CopyProtection.h"
 #include <process.h>
 
+#define CORE_FEATURE_SET(feature, section) Core.Features.set(xrCore::Feature::feature, READ_IF_EXISTS(pSettings, r_bool, section, #feature, false))
+
 //---------------------------------------------------------------------
 ENGINE_API CInifile* pGameIni		= NULL;
 BOOL	g_bIntroFinished			= FALSE;
@@ -153,6 +155,8 @@ void InitConsole	()
 		sscanf					(strstr(Core.Params,"-ltx ")+5,"%[^ ] ",c_name);
 		strcpy_s					(Console->ConfigFile,c_name);
 	}
+
+	CORE_FEATURE_SET(autoreload_wpn, "weapon_options");
 }
 
 void InitInput		()
