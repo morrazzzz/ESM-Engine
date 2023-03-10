@@ -1464,11 +1464,18 @@ void CCC_RegisterCommands()
 
 	CMD1(CCC_MemStats,			"stat_memory"			)
 	// game
+    psActorFlags.set(AF_CROUCH_TOGGLE, false);
+	psActorFlags.set(AF_WALK_TOGGLE, false);
+	psActorFlags.set(AF_SPRINT_TOGGLE, true);
 	psActorFlags.set(AF_ALWAYSRUN, true);
-	CMD3(CCC_Mask,				"g_always_run",			&psActorFlags,	AF_ALWAYSRUN);
+
+	CMD3(CCC_Mask, "g_crouch_toggle", &psActorFlags, AF_CROUCH_TOGGLE)
+	CMD3(CCC_Mask, "g_walk_toggle", &psActorFlags, AF_WALK_TOGGLE)
+	CMD3(CCC_Mask, "g_sprint_toggle", &psActorFlags, AF_SPRINT_TOGGLE)
+	CMD3(CCC_Mask,				"g_always_run",			&psActorFlags,	AF_ALWAYSRUN)
 	CMD1(CCC_GameDifficulty,	"g_game_difficulty"		)
 
-	CMD3(CCC_Mask,				"g_backrun",			&psActorFlags,	AF_RUN_BACKWARD);
+	CMD3(CCC_Mask,				"g_backrun",			&psActorFlags,	AF_RUN_BACKWARD)
 
 	// alife
 #ifdef DEBUG

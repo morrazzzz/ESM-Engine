@@ -1019,18 +1019,20 @@ void CActor::shedule_Update	(u32 DT)
 			f_DropPower			= 0.f;
 		}
 		if (!Level().IsDemoPlay())
-		{		
+		{
+			if (!psActorFlags.test(AF_CROUCH_TOGGLE))
+				mstate_wishful &= ~mcCrouch;
+			if (!psActorFlags.test(AF_WALK_TOGGLE))
+				mstate_wishful &= ~mcAccel;
+			if (!psActorFlags.test(AF_SPRINT_TOGGLE))
+				mstate_wishful &= ~mcSprint;
 		//-----------------------------------------------------
-		mstate_wishful &=~mcAccel;
 		mstate_wishful &=~mcLStrafe;
 		mstate_wishful &=~mcRStrafe;
 		mstate_wishful &=~mcLLookout;
 		mstate_wishful &=~mcRLookout;
 		mstate_wishful &=~mcFwd;
 		mstate_wishful &=~mcBack;
-		extern bool g_bAutoClearCrouch;
-		if (g_bAutoClearCrouch)
-			mstate_wishful &=~mcCrouch;
 		//-----------------------------------------------------
 		}
 	}

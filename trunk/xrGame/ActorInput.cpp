@@ -16,13 +16,12 @@
 #include "UsableScriptObject.h"
 #include "clsid_game.h"
 #include "actorcondition.h"
+#include "Actor_Flags.h"
 #include "actor_input_handler.h"
 #include "string_table.h"
 #include "UI/UIStatic.h"
 #include "CharacterPhysicsSupport.h"
 #include "InventoryBox.h"
-
-bool g_bAutoClearCrouch = true;
 
 void CActor::IR_OnKeyboardPress(int cmd)
 {
@@ -51,7 +50,8 @@ void CActor::IR_OnKeyboardPress(int cmd)
 		}break;
 	}
 
-	if (!g_Alive()) return;
+	if (!g_Alive()) 
+		return;
 
 	if(m_holder && kUSE != cmd)
 	{
@@ -71,20 +71,29 @@ void CActor::IR_OnKeyboardPress(int cmd)
 //				u_EventSend(P);
 			}
 		}break;
-	case kCROUCH_TOGGLE:
-		{
-			g_bAutoClearCrouch = !g_bAutoClearCrouch;
-			if (!g_bAutoClearCrouch)
-				mstate_wishful |= mcCrouch;
-
-		}break;
 	case kSPRINT_TOGGLE:	
 		{
-			if (mstate_wishful & mcSprint)
-				mstate_wishful &=~mcSprint;
-			else
-				mstate_wishful |= mcSprint;					
-		}break;
+		if (psActorFlags.test(AF_SPRINT_TOGGLE))
+		{
+
+			if (psActorFlags.test(AF_WALK_TOGGLE)) mstate_wishful &= ~mcAccel;
+			if (psActorFlags.test(AF_CROUCH_TOGGLE)) mstate_wishful &= ~mcCrouch;
+			mstate_wishful ^= mcSprint;
+		}
+		}
+		break;
+	case kCROUCH:
+	{
+		if (psActorFlags.test(AF_CROUCH_TOGGLE))
+			mstate_wishful ^= mcCrouch;
+	}
+	break;
+	case kACCEL:
+	{
+		if (psActorFlags.test(AF_WALK_TOGGLE))
+			mstate_wishful ^= mcAccel;
+	}
+	break;
 	case kCAM_1:	cam_Set			(eacFirstEye);				break;
 	case kCAM_2:	cam_Set			(eacLookAt);				break;
 	case kCAM_3:	cam_Set			(eacFreeLook);				break;
@@ -194,7 +203,6 @@ void CActor::IR_OnKeyboardRelease(int cmd)
 		{
 		case kJUMP:		mstate_wishful &=~mcJump;		break;
 		case kDROP:		if(GAME_PHASE_INPROGRESS == Game().Phase()) g_PerformDrop();				break;
-		case kCROUCH:	g_bAutoClearCrouch = true;
 		}
 	}
 }
@@ -225,16 +233,34 @@ void CActor::IR_OnKeyboardHold(int cmd)
 	case kRIGHT:
 		if (eacFreeLook!=cam_active) cam_Active()->Move(cmd, 0, LookFactor);	break;
 
-	case kACCEL:	mstate_wishful |= mcAccel;									break;
 	case kL_STRAFE:	mstate_wishful |= mcLStrafe;								break;
 	case kR_STRAFE:	mstate_wishful |= mcRStrafe;								break;
 	case kL_LOOKOUT:mstate_wishful |= mcLLookout;								break;
 	case kR_LOOKOUT:mstate_wishful |= mcRLookout;								break;
 	case kFWD:		mstate_wishful |= mcFwd;									break;
 	case kBACK:		mstate_wishful |= mcBack;									break;
-	case kCROUCH:	mstate_wishful |= mcCrouch;									break;
-
-
+	case kCROUCH:
+	{
+		if (!psActorFlags.test(AF_CROUCH_TOGGLE))
+			mstate_wishful |= mcCrouch;
+	}
+	break;
+	case kACCEL:
+	{
+		if (!psActorFlags.test(AF_WALK_TOGGLE))
+			mstate_wishful |= mcAccel;
+	}
+	break;
+	case kSPRINT_TOGGLE:
+	{
+		if (!psActorFlags.test(AF_SPRINT_TOGGLE))
+		{
+			if (psActorFlags.test(AF_WALK_TOGGLE)) mstate_wishful &= ~mcAccel;
+			if (psActorFlags.test(AF_CROUCH_TOGGLE)) mstate_wishful &= ~mcCrouch;
+			mstate_wishful |= mcSprint;
+		}
+	}
+	break;
 	}
 }
 

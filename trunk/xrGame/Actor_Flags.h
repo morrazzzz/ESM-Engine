@@ -8,6 +8,9 @@ enum{
 		AF_RUN_BACKWARD		=(1<<4),
 		AF_AUTOPICKUP		=(1<<5),
 		AF_PSP				=(1<<6),
+		AF_CROUCH_TOGGLE    =(1<<7),
+		AF_WALK_TOGGLE      =(1<<8),
+		AF_SPRINT_TOGGLE    =(1<<9),
 };
 
 extern Flags32 psActorFlags;
