@@ -1,20 +1,26 @@
 #include "stdafx.h"
+
+#include "Actor.h"
+#include "ai_sounds.h"
 #include "bolt.h"
-#include "ParticlesObject.h"
 #include "PhysicsShell.h"
-#include "xr_level_controller.h"
 
 CBolt::CBolt(void) 
 {
 	m_weight					= .1f;
 	m_slot						= BOLT_SLOT;
-	m_flags.set					(Fruck, FALSE);
-	m_thrower_id				=u16(-1);
+	m_flags.set					(Fruck, false);
+	m_thrower_id				= static_cast<u16>(-1);
 }
 
-CBolt::~CBolt(void) 
-{
+CBolt::~CBolt(void) {}
+
+void CBolt::Load(LPCSTR section) {
+	inherited::Load(section);
+	if(pSettings->line_exist(section, "snd_throw"))
+		HUD_SOUND::LoadSound(section, "snd_throw", m_ThrowSnd, SOUND_TYPE_WEAPON_SHOOTING);
 }
+
 
 void CBolt::OnH_A_Chield() 
 {
@@ -42,9 +48,12 @@ void CBolt::Deactivate()
 
 void CBolt::Throw() 
 {
-	CMissile					*l_pBolt = smart_cast<CMissile*>(m_fake_missile);
+	if (const auto actor = smart_cast<CActor*>(H_Parent()))
+		PlaySound(m_ThrowSnd, actor->Position());
+
+	auto					*l_pBolt = smart_cast<CMissile*>(m_fake_missile);
 	if(!l_pBolt)				return;
-	l_pBolt->set_destroy_time	(u32(m_dwDestroyTimeMax/phTimefactor));
+	l_pBolt->set_destroy_time	(m_dwDestroyTimeMax/static_cast<u32>(phTimefactor));
 	inherited::Throw			();
 	spawn_fake_missile			();
 }
@@ -56,27 +65,7 @@ bool CBolt::Useful() const
 
 bool CBolt::Action(s32 cmd, u32 flags) 
 {
-	if(inherited::Action(cmd, flags)) return true;
-/*
-	switch(cmd) 
-	{
-	case kDROP:
-		{
-			if(flags&CMD_START) 
-			{
-				m_throw = false;
-				if(State() == MS_IDLE) State(MS_THREATEN);
-			} 
-			else if(State() == MS_READY || State() == MS_THREATEN) 
-			{
-				m_throw = true; 
-				if(State() == MS_READY) State(MS_THROW);
-			}
-		} 
-		return true;
-	}
-*/
-	return false;
+	return inherited::Action(cmd, flags);
 }
 
 void CBolt::Destroy()

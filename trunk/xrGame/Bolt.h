@@ -5,12 +5,14 @@ class CBolt :
 	public CMissile,
 	public IDamageSource
 {
-	typedef CMissile inherited;
+	using inherited = CMissile;
 	u16	m_thrower_id;
+	HUD_SOUND m_ThrowSnd{};
 public:
 	CBolt(void);
 	virtual ~CBolt(void);
 
+	virtual void Load(LPCSTR section) override;
 	virtual void OnH_A_Chield();
 	virtual void OnEvent(NET_Packet& P, u16 type);
 	
