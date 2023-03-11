@@ -1171,3 +1171,9 @@ void CPHMovementControl::SetPathDir( const Fvector& v)
 	VERIFY2				( _abs(_vPathDir.x)<1000," incorrect SetPathDir ");
 
 }
+
+void CPHMovementControl::update_last_material()
+{
+	VERIFY(m_character);
+	m_character->update_last_material();
+}
