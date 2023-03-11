@@ -356,6 +356,7 @@ protected:
 	CCameraBase*			cameras[eacMaxCam];
 	EActorCameras			cam_active;
 	float					fPrevCamPos;
+	float					current_ik_cam_shift;
 	Fvector					vPrevCamDir;
 	float					fCurAVelocity;
 	CEffectorBobbing*		pCamBobbing;
@@ -406,7 +407,7 @@ protected:
 	shared_str				m_sInventoryItemUseAction;
 	shared_str				m_sInventoryBoxUseAction;
 
-	//режим подбирания предметов
+	//режим подбирания предметов 			 	 
 	bool					m_bPickupMode;
 	//расстояние подсветки предметов
 	float					m_fPickupInfoRadius;
@@ -437,6 +438,10 @@ public:
 	bool					CanJump					();
 	bool					CanMove					();
 	float					CameraHeight			();
+
+	// Alex ADD: for smooth crouch fix
+	float CurrentHeight;
+
 	bool					CanSprint				();
 	bool					CanRun					();
 	void					StopAnyMove				();

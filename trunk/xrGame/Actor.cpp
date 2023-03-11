@@ -79,7 +79,7 @@ Flags32			psActorFlags={0};
 
 
 
-CActor::CActor() : CEntityAlive()
+CActor::CActor() : CEntityAlive(), current_ik_cam_shift(0)
 {
 	encyclopedia_registry	= xr_new<CEncyclopediaRegistryWrapper	>();
 	game_news_registry		= xr_new<CGameNewsRegistryWrapper		>();
@@ -184,6 +184,9 @@ CActor::CActor() : CEntityAlive()
 	m_dwILastUpdateTime		= 0;
 
 	m_location_manager		= xr_new<CLocationManager>(this);
+
+	// Alex ADD: for smooth crouch fix
+	CurrentHeight = 0.f;
 }
 
 
@@ -401,7 +404,10 @@ if(!g_dedicated_server)
 	m_sInventoryItemUseAction		= "inventory_item_use";
 	m_sInventoryBoxUseAction		= "inventory_box_use";
 	//---------------------------------------------------------------------
-	m_sHeadShotParticle	= READ_IF_EXISTS(pSettings,r_string,section,"HeadShotParticle",0);
+	m_sHeadShotParticle	= READ_IF_EXISTS(pSettings,r_string,section,"HeadShotParticle",nullptr);
+
+	// Alex ADD: for smooth crouch fix	
+	CurrentHeight = CameraHeight();
 
 }
 
