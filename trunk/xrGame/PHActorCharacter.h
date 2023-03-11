@@ -109,7 +109,8 @@ public:
 virtual		void		ChooseRestrictionType				(ERestrictionType my_type,float my_depth,CPHCharacter *ch);
 						CPHActorCharacter					();
 	virtual				~CPHActorCharacter					(void);
-	virtual	void update_last_material() override final {}; //костыль, дл€ первого времени! ѕотом переделать!
+private:
+	virtual	void		update_last_material();
 private:
 		void			ClearRestrictors					();
 		RESTRICTOR_I	Restrictor							(CPHCharacter::ERestrictionType rtype);

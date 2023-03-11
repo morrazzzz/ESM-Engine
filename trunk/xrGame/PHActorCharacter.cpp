@@ -314,3 +314,9 @@ default:NODEFAULT;
 }
 
 }
+
+void		CPHActorCharacter::update_last_material()
+{
+	if (ignore_material(*p_lastMaterialIDX))
+		inherited::update_last_material();
+}
