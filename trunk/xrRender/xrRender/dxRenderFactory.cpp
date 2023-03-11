@@ -7,7 +7,7 @@
 #include "dxLensFlareRender.h"
 #include "dxEnvironmentRender.h"
 #include "dxRenderDeviceRender.h"
-//#include "dxObjectSpaceRender.h"
+#include "dxObjectSpaceRender.h"
 #include "dxFontRender.h"
 #include "dxApplicationRender.h"
  //#include "dxWallMarkArray.h"

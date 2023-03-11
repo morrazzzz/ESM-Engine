@@ -97,6 +97,9 @@
     <Filter Include="Interface implementations\StatGraphRender">
       <UniqueIdentifier>{180ffe87-2def-4667-bab5-4a09cf451f0e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Interface implementations\ObjectSpaceRender">
+      <UniqueIdentifier>{9dff84ad-3d2a-4f83-934d-11e675de3a62}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\xrRender\cl_intersect.h">
@@ -357,6 +360,12 @@
     <ClInclude Include="..\..\Include\xrRender\StatGraphRender.h">
       <Filter>Interface implementations\StatGraphRender</Filter>
     </ClInclude>
+    <ClInclude Include="..\xrRender\dxObjectSpaceRender.h">
+      <Filter>Interface implementations\ObjectSpaceRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\ObjectSpaceRender.h">
+      <Filter>Interface implementations\ObjectSpaceRender</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -601,6 +610,9 @@
     </ClCompile>
     <ClCompile Include="..\xrRender\dxStatGraphRender.cpp">
       <Filter>Interface implementations\StatGraphRender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxObjectSpaceRender.cpp">
+      <Filter>Interface implementations\ObjectSpaceRender</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
