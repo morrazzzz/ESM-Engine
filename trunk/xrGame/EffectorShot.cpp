@@ -185,15 +185,15 @@ CCameraShotEffector::~CCameraShotEffector()
 BOOL CCameraShotEffector::Process	(Fvector &p, Fvector &d, Fvector &n, float& fFov, float& fFar, float& fAspect)
 {
 	if (bActive){
-		float		h,p;
-		d.getHP		(h,p);
+		float		h,p_float;
+		d.getHP		(h,p_float);
 		if (bSingleShoot)
 		{
 			if (bSSActive)
-				d.setHP		(h+fLastDeltaHorz,p+fLastDeltaVert);
+				d.setHP		(h+fLastDeltaHorz,p_float+fLastDeltaVert);
 		}
 		else
-			d.setHP		(h+fAngleHorz,p+fAngleVert);
+			d.setHP		(h+fAngleHorz,p_float+fAngleVert);
 
 		Update		();
 	}

@@ -150,16 +150,16 @@ void euler_extract(const EulerTableEntry &E,
 	    // Family1 cos(v) > 0
 
 	    *t[0] = asin1(v);
-	    *t[1] = angle_normalize(atan2(y[0],x[0]));
-	    *t[2] = angle_normalize(atan2(y[1],x[1]));
+	    *t[1] = angle_normalize(static_cast<float>(atan2( static_cast<double>(y[0]),static_cast<double>(x[0]))));
+	    *t[2] = angle_normalize(static_cast<float>(atan2(static_cast<double>(y[1]), static_cast<double>(x[1]))));
 	}
 	else
 	{
 	    // Family2 cos(v) < 0
 
 	    *t[0] = asin2(v);
-	    *t[1] = angle_normalize(atan2(-y[0],-x[0]));
-	    *t[2] = angle_normalize(atan2(-y[1],-x[1]));
+	    *t[1] = angle_normalize(static_cast<float>(atan2(static_cast<double>(- y[0]), static_cast<double>(- x[0]))));
+	    *t[2] = angle_normalize(static_cast<float>(atan2(static_cast<double>(- y[1]), static_cast<double>(- x[1]))));
 	}
     }
     else
@@ -208,8 +208,8 @@ void euler_extract2(const EulerTableEntry &E,
 	// Family1 cos(v) > 0
 
 	*t1[0] = asin1(v);
-	*t1[1] = angle_normalize(atan2(y[0],x[0]));
-	*t1[2] = angle_normalize(atan2(y[1],x[1]));
+	*t1[1] = angle_normalize(static_cast<float>(atan2(static_cast<double>(y[0]), static_cast<double>(x[0]))));
+	*t1[2] = angle_normalize(static_cast<float>(atan2(static_cast<double>(y[1]), static_cast<double>(x[1]))));
 
 	*t2[0] = angle_normalize( M_PI - *t1[0] );
 	*t2[1] = angle_normalize( *t1[1] + M_PI );
