@@ -40,6 +40,11 @@ void					SetAirControlParam(float param){fAirControlParam=param;}
 void					SetActorRestrictorRadius(CPHCharacter::ERestrictionType rt, float r);
 void					SetRestrictionType(CPHCharacter::ERestrictionType rt){if(m_character)m_character->SetRestrictionType(rt);}
 void					SetActorMovable(bool v){if(m_character)m_character->SetActorMovable(v);}
+void update_last_material()
+{
+	VERIFY(m_character);
+	m_character->update_last_material();
+}
 void					SetForcedPhysicsControl(bool v){if(m_character)m_character->SetForcedPhysicsControl(v);}
 bool					ForcedPhysicsControl(){return m_character&&m_character->ForcedPhysicsControl();}
 void					UpdateObjectBox(CPHCharacter *ach);

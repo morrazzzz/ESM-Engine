@@ -125,23 +125,25 @@ bool test_sides(const Fvector &center,const Fvector &side_dir,const Fvector &fv_
 ///////////////////////////////////class//CPHSimpleCharacter////////////////////
 CPHSimpleCharacter::CPHSimpleCharacter()
 {
+	m_last_picked_material = GAMEMTL_NONE_IDX;
+	m_last_env_update_pos = Fvector().set(-FLT_MAX, -FLT_MAX, -FLT_MAX);
 
-	m_object_contact_callback=NULL;
+	m_object_contact_callback=nullptr;
 
-	m_geom_shell=NULL;
-	m_wheel=NULL;
+	m_geom_shell=nullptr;
+	m_wheel=nullptr;
 
-	m_space=NULL;
-	m_wheel_transform=NULL;
-	m_shell_transform=NULL;
+	m_space=nullptr;
+	m_wheel_transform=nullptr;
+	m_shell_transform=nullptr;
 
-	m_hat=NULL;
-	m_hat_transform=NULL;
+	m_hat=nullptr;
+	m_hat_transform=nullptr;
 	m_acceleration.set(0,0,0);
 	b_external_impulse=false;
 	m_ext_impuls_stop_step=u64(-1);
 	m_ext_imulse.set(0,0,0);
-	m_phys_ref_object=NULL;
+	m_phys_ref_object=nullptr;
 	b_on_object=false;
 	m_friction_factor=1.f;
 	dVectorSetZero(m_control_force);
@@ -170,9 +172,9 @@ CPHSimpleCharacter::CPHSimpleCharacter()
 	b_death_pos=false;
 	jump_up_velocity=6.f;
 	m_air_control_factor=0;
-	m_capture_joint=NULL;
-	m_cap=NULL;
-	m_cap_transform=NULL;
+	m_capture_joint=nullptr;
+	m_cap=nullptr;
+	m_cap_transform=nullptr;
 	dVectorSetZero(m_safe_velocity);
 	m_collision_damage_factor=1.f;
 	b_collision_restrictor_touch=false;
@@ -332,6 +334,9 @@ void CPHSimpleCharacter::Create(dVector3 sizes){
 	m_last_move.set(0,0,0)	;
 	CPHCollideValidator::SetCharacterClass(*this);
 	m_collision_damage_info.Construct();
+
+	m_last_picked_material = GAMEMTL_NONE_IDX;
+	m_last_env_update_pos = Fvector().set(-FLT_MAX, -FLT_MAX, -FLT_MAX);
 }
 void CPHSimpleCharacter::SwitchOFFInitContact()
 {
@@ -1595,6 +1600,81 @@ void CPHSimpleCharacter::GroundNormal(Fvector &norm)
 		norm.set(*((Fvector*)m_ground_contact_normal));
 	}
 }
+
+IC bool valide_res(u16& res_material_idx, const collide::rq_result& R)
+{
+	if (!R.O)
+	{
+		CDB::TRI* tri = Level().ObjectSpace.GetStaticTris() + R.element;
+		VERIFY(tri);
+		res_material_idx = tri->material;
+		return !ignore_material(res_material_idx);
+	}
+
+	IRender_Visual* V = R.O->Visual();
+	if (!V)
+		return false;
+
+	CKinematics* K = V->dcast_PKinematics();
+	CBoneData& bd = K->LL_GetData((u16)R.element);
+	res_material_idx = bd.game_mtl_idx;
+	return true;
+}
+
+bool PickMaterial(u16& res_material_idx, const Fvector& pos_, const Fvector& dir_, float range_, CObject* ignore_object)
+{
+	Fvector dir = dir_;
+	Fvector pos = pos_;
+	pos.y += EPS_L;
+
+	float range = range_;
+	collide::rq_result	R;
+	res_material_idx = GAMEMTL_NONE_IDX;
+
+	while (Level().ObjectSpace.RayPick(pos, dir, range, collide::rqtBoth, R, ignore_object))
+	{
+		float r_range = R.range + EPS_L;
+		Fvector next_pos = pos.mad(dir, r_range);
+		float next_range = range - r_range;
+
+		if (valide_res(res_material_idx, R))
+			return true;
+
+		range = next_range;
+		pos = next_pos;
+
+		if (range < EPS_L)
+			return false;
+	}
+
+	return false;
+}
+
+const float material_pick_dist = 0.5f;
+const float material_pick_upset = 0.5f;
+const float material_update_tolerance = 0.1f;
+
+void CPHSimpleCharacter::update_last_material()
+{
+	Fvector pos; GetPosition(pos); pos.y += material_pick_upset;
+
+	if (m_last_picked_material != GAMEMTL_NONE_IDX && pos.similar(m_last_env_update_pos, material_update_tolerance))
+	{
+		*p_lastMaterialIDX = m_last_picked_material;
+		return;
+	}
+
+	u16 new_material;
+	VERIFY(!PhysicsRefObject() || smart_cast<CObject*>(PhysicsRefObject()));
+
+	if (PickMaterial(new_material, pos, Fvector().set(0, -1, 0), material_pick_dist + material_pick_upset, smart_cast<CObject*>(PhysicsRefObject())))
+	{
+		m_last_picked_material = new_material;
+		*p_lastMaterialIDX = new_material;
+		m_last_env_update_pos = pos;
+	}
+}
+
 u16 CPHSimpleCharacter::ContactBone()
 {
 	return RetriveContactBone();

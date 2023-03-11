@@ -142,6 +142,7 @@ virtual		void		SetCollisionDamageFactor			(float f)													=0 ;
 virtual		float		Mass								()															=0 ;
 virtual		void		SetPhysicsRefObject					(CPhysicsShellHolder* ref_object)							=0 ;
 virtual		CPhysicsShellHolder* PhysicsRefObject					()									{return m_phys_ref_object;}
+virtual	void update_last_material() = 0;
 
 //AICharacter
 virtual		void		GetDesiredPosition					(Fvector& /**dpos/**/)										{}

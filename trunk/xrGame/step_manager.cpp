@@ -102,8 +102,8 @@ void CStepManager::update()
 {
 	START_PROFILE("Step Manager")
 
-	if (m_step_info.disable)	return;
-	if (!m_blend)				return;
+	if (m_step_info.disable || !m_blend)
+	    return;
 
 	SGameMtlPair* mtl_pair		= m_object->material().get_current_pair();
 	if (!mtl_pair)				return;
@@ -125,13 +125,8 @@ void CStepManager::update()
 		u32 offset_time = m_time_anim_started + u32(1000 * (cycle_anim_time * (m_step_info.cur_cycle-1) + cycle_anim_time * step.step[i].time));
 		if (offset_time <= cur_time){
 
-			// Играть звук
-			if (!mtl_pair->StepSounds.empty() && is_on_ground() ) 
-			{
-				Fvector sound_pos = m_object->Position();
-				sound_pos.y += 0.5;
-				GET_RANDOM(mtl_pair->StepSounds).play_no_feedback(m_object,0,0,&sound_pos,&m_step_info.params.step[i].power);
-			}
+			if (is_on_ground())
+				m_step_sound.play_next(mtl_pair, m_object, m_step_info.params.step[i].power);
 
 			// Играть партиклы
 			if (!mtl_pair->CollideParticles.empty())	{
@@ -188,7 +183,7 @@ Fvector	CStepManager::get_foot_position(ELegType leg_type)
 {
 	R_ASSERT2(m_foot_bones[leg_type] != BI_NONE, "foot bone had not been set");
 
-	CKinematics *pK					= smart_cast<CKinematics*>(m_object->Visual());
+	auto* pK = smart_cast<CKinematics*>(m_object->Visual());
 	const Fmatrix& bone_transform = pK->LL_GetBoneInstance(m_foot_bones[leg_type]).mTransform;	
 
 	Fmatrix					global_transform;
@@ -215,10 +210,10 @@ void CStepManager::load_foot_bones	(CInifile::Sect &data)
 void CStepManager::reload_foot_bones()
 {
 	CInifile* ini = smart_cast<CKinematics*>(m_object->Visual())->LL_UserData();
-	if(ini&&ini->section_exist("foot_bones")){
+	if (ini && ini->section_exist("foot_bones"))
 		load_foot_bones(ini->r_section("foot_bones"));
-	}
-	else {
+	else 
+	{
 		if (!pSettings->line_exist(*m_object->cNameSect(),"foot_bones"))
 			R_ASSERT2(false,"section [foot_bones] not found in monster user_data");
 		load_foot_bones(pSettings->r_section(pSettings->r_string(*m_object->cNameSect(),"foot_bones")));
@@ -235,4 +230,26 @@ void CStepManager::reload_foot_bones()
 float CStepManager::get_blend_time()
 {
 	return 	(m_blend->timeTotal / m_blend->speed);
+}
+
+void CStepManager::material_sound::play_next(SGameMtlPair* mtl_pair, CEntityAlive* object, float volume)
+{
+	if (mtl_pair->StepSounds.empty())
+		return;
+
+	Fvector sound_pos = object->Position();
+	sound_pos.y += 0.5;
+
+	if (last_mtl_pair != mtl_pair || m_last_step_sound_played == u8(-1))
+	{
+		m_last_step_sound_played = u8(Random.randI(mtl_pair->StepSounds.size()));
+		last_mtl_pair = mtl_pair;
+	}
+	else
+	{
+		u8 new_played = u8((m_last_step_sound_played + 1 + Random.randI(mtl_pair->StepSounds.size() - 1)) % mtl_pair->StepSounds.size());
+		m_last_step_sound_played = new_played;
+	}
+
+	mtl_pair->StepSounds[m_last_step_sound_played].play_no_feedback(object, 0, 0, &sound_pos, &volume);
 }
