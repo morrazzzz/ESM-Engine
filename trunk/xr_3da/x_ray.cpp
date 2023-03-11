@@ -831,20 +831,22 @@ void _InitializeFont(CGameFont*& F, LPCSTR section, u32 flags)
 CApplication::CApplication()
 {
 	ll_dwReference	= 0;
+
 	max_load_stage = 0;
 
 	// events
-	eQuit						= Engine.Event.Handler_Attach("KERNEL:quit",this);
-	eStart						= Engine.Event.Handler_Attach("KERNEL:start",this);
-	eStartLoad					= Engine.Event.Handler_Attach("KERNEL:load",this);
-	eDisconnect					= Engine.Event.Handler_Attach("KERNEL:disconnect",this);
+	eQuit = Engine.Event.Handler_Attach("KERNEL:quit",this);
+	eStart = Engine.Event.Handler_Attach("KERNEL:start",this);
+	eStartLoad	= Engine.Event.Handler_Attach("KERNEL:load",this);
+	eDisconnect	= Engine.Event.Handler_Attach("KERNEL:disconnect",this);
+	eConsole = Engine.Event.Handler_Attach("KERNEL:console", this);
 
 	// levels
 	Level_Current				= 0;
 	Level_Scan					( );
 
 	// Font
-	pFontSystem					= NULL;
+	pFontSystem					= nullptr;
 
 	// Register us
 	Device.seqFrame.Add			(this, REG_PRIORITY_HIGH+1000);
@@ -875,10 +877,11 @@ CApplication::~CApplication()
 
 
 	// events
-	Engine.Event.Handler_Detach	(eDisconnect,this);
-	Engine.Event.Handler_Detach	(eStartLoad,this);
-	Engine.Event.Handler_Detach	(eStart,this);
-	Engine.Event.Handler_Detach	(eQuit,this);
+	Engine.Event.Handler_Detach(eConsole, this);
+	Engine.Event.Handler_Detach(eDisconnect,this);
+	Engine.Event.Handler_Detach(eStartLoad,this);
+	Engine.Event.Handler_Detach(eStart,this);
+	Engine.Event.Handler_Detach(eQuit,this);
 }
 
 extern CRenderDevice Device;
@@ -947,6 +950,12 @@ void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
 		}
 		R_ASSERT			(0!=g_pGamePersistent);
 		g_pGamePersistent->Disconnect();
+	}
+	else if (E == eConsole)
+	{
+		auto command = (LPSTR)P1;
+		Console->ExecuteCommand(command, false);
+		xr_free(command);
 	}
 }
 

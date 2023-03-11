@@ -12,7 +12,6 @@
 #include "object_factory_impl.h"
 
 // server entities includes
-#include "xrServer_Objects_ALife_All.h"
 #include "clsid_game.h"
 
 // client entities includes
@@ -53,8 +52,6 @@
 #		include "PHDebug.h"
 #	endif // DEBUG
 
-#	include "hit.h"
-#	include "PHDestroyable.h"
 #	include "car.h"
 
 #	include "helicopter.h"
@@ -107,7 +104,6 @@
 #	include "explosiveitem.h"
 
 #	include "infodocument.h"
-#	include "attachable_item.h"
 
 #	include "ScientificOutfit.h"
 #	include "StalkerOutfit.h"
@@ -124,13 +120,11 @@
 #	include "customzone.h"
 #	include "mosquitobald.h"
 #	include "mincer.h"
-#	include "gravizone.h"
 #	include "radioactivezone.h"
 #	include "level_changer.h"
 #	include "script_zone.h"
 #	include "team_base_zone.h"
 #	include "torridZone.h"
-#	include "ZoneVisual.h"
 #	include "hairszone.h"
 #	include "amebazone.h"
 #	include "nogravityzone.h"

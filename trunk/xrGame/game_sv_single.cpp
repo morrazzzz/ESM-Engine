@@ -324,9 +324,12 @@ void game_sv_Single::restart_simulator			(LPCSTR saved_game_name)
 	delete_data				(m_alife_simulator);
 	server().clear_ids		();
 
-	strcpy					(g_pGamePersistent->m_game_params.m_game_or_spawn,saved_game_name);
-	strcpy					(g_pGamePersistent->m_game_params.m_new_or_load,"load");
+	xr_strcpy					(g_pGamePersistent->m_game_params.m_game_or_spawn,saved_game_name);
+	xr_strcpy					(g_pGamePersistent->m_game_params.m_new_or_load,"load");
 
+	pApp->ls_header[0] = '\0';
+	pApp->ls_tip_number[0] = '\0';
+	pApp->ls_tip[0] = '\0';
 	pApp->LoadBegin			();
 	m_alife_simulator		= xr_new<CALifeSimulator>(&server(),&options);
 //	g_pGamePersistent->LoadTitle		("st_client_synchronising");
