@@ -1,6 +1,5 @@
 //---------------------------------------------------------------------------
-#ifndef SkeletonAnimatedH
-#define SkeletonAnimatedH
+#pragma once
 
 #include		"skeletoncustom.h"
 #include		"skeletonmotions.h"
@@ -17,42 +16,8 @@ class   ENGINE_API CBoneInstanceAnimated;
 struct	ENGINE_API CKey;
 class	ENGINE_API CInifile;
 
-#include "../Include/xrRender/animation_motion.h"
+#include "../include/xrRender/animation_blend.h"
 
-//*** Run-time Blend definition *******************************************************************
-class ENGINE_API CBlend {
-public:
-	enum ECurvature
-	{
-		eFREE_SLOT=0,
-//		eFixed,
-		eAccrue,
-		eFalloff,
-		eFORCEDWORD = u32(-1)
-	};
-public:
-	float			blendAmount;
-	float			timeCurrent;
-	float			timeTotal;
-    MotionID		motionID;
-	u16				bone_or_part;	// startup parameters
-	u8				channel;
-	ECurvature		blend;
-	float			blendAccrue;	// increasing
-	float			blendFalloff;	// decreasing
-	float			blendPower;			
-	float			speed;
-
-	BOOL			playing;
-	BOOL			stop_at_end;
-	BOOL			fall_at_end;
-	PlayCallback	Callback;
-	void*			CallbackParam;
-	
-	u32				dwFrame;
-
-	u32				mem_usage			(){ return sizeof(*this); }
-};
 typedef svector<CBlend*,MAX_BLENDED*MAX_CHANNELS>	BlendSVec;//*MAX_CHANNELS
 typedef BlendSVec::iterator							BlendSVecIt;
 typedef BlendSVec::const_iterator					BlendSVecCIt;
@@ -176,6 +141,8 @@ public:
 	                                                                
 	// Main functionality
 	void						UpdateTracks	();								// Update motions
+	void LL_UpdateTracks(float dt, bool b_force, bool leave_blends); // Update motions
+	void LL_UpdateFxTracks(float dt);
 	void						DestroyCycle	(CBlend &B);
 
 	// cycles
@@ -213,4 +180,3 @@ public:
 };
 IC CKinematicsAnimated* PKinematicsAnimated(IRender_Visual* V) { return V?V->dcast_PKinematicsAnimated():0; }
 //---------------------------------------------------------------------------
-#endif
