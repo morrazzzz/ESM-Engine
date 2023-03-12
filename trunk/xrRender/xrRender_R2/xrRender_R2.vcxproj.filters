@@ -109,6 +109,9 @@
     <Filter Include="Interface implementations\Debug\DebugRender">
       <UniqueIdentifier>{86df8b07-f57d-4259-8f4a-32c6c209336a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Interface implementations\WallMarkArray">
+      <UniqueIdentifier>{bdd4f416-3bcf-47f0-8226-5bba9f9e6d73}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cl_intersect.h">
@@ -407,6 +410,12 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\xrRender\DebugRender.h">
       <Filter>Interface implementations\Debug\DebugRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxWallMarkArray.h">
+      <Filter>Interface implementations\WallMarkArray</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\WallMarkArray.h">
+      <Filter>Interface implementations\WallMarkArray</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -751,6 +760,9 @@
     </ClCompile>
     <ClCompile Include="..\xrRender\dxDebugRender.cpp">
       <Filter>Interface implementations\Debug\DebugRender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxWallMarkArray.cpp">
+      <Filter>Interface implementations\WallMarkArray</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -1,12 +1,14 @@
 #include "stdafx.h"
 #include "r2.h"
-#include "..\..\xr_3da\fbasicvisual.h"
-#include "..\..\xr_3da\xr_object.h"
-#include "..\..\xr_3da\CustomHUD.h"
-#include "..\..\xr_3da\igame_persistent.h"
-#include "..\..\xr_3da\environment.h"
-#include "..\..\xr_3da\SkeletonCustom.h"
-#include "..\xrRender\LightTrack.h"
+#include "../../xr_3da/fbasicvisual.h"
+#include "../../xr_3da/xr_object.h"
+#include "../../xr_3da/CustomHUD.h"
+#include "../../xr_3da/igame_persistent.h"
+#include "../../xr_3da/environment.h"
+#include "../../xr_3da/SkeletonCustom.h"
+#include "../xrRender/LightTrack.h"
+#include "../xrRender/dxWallMarkArray.h"
+#include "../xrRender/dxUIShader.h"
 
 CRender										RImplementation;
 
@@ -372,6 +374,18 @@ void					CRender::add_StaticWallmark		(ref_shader& S, const Fvector& P, float s,
 	Wallmarks->AddStaticWallmark	(T,verts,P,&*S,s);
 }
 
+void CRender::add_StaticWallmark(IWallMarkArray* pArray, const Fvector& P, float s, CDB::TRI* T, Fvector* V)
+{
+	dxWallMarkArray* pWMA = (dxWallMarkArray*)pArray;
+
+	if (ref_shader* pShader = pWMA->dxGenerateWallmark())
+		add_StaticWallmark(*pShader, P, s, T, V);
+}
+void CRender::add_StaticWallmark(const wm_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V)
+{
+	dxUIShader* pShader = (dxUIShader*)&*S;
+	add_StaticWallmark(pShader->hShader, P, s, T, V);
+}
 void					CRender::clear_static_wallmarks	()
 {
 	Wallmarks->clear				();
@@ -384,6 +398,13 @@ void					CRender::add_SkeletonWallmark	(intrusive_ptr<CSkeletonWallmark> wm)
 void					CRender::add_SkeletonWallmark	(const Fmatrix* xf, CKinematics* obj, ref_shader& sh, const Fvector& start, const Fvector& dir, float size)
 {
 	Wallmarks->AddSkeletonWallmark				(xf, obj, sh, start, dir, size);
+}
+void CRender::add_SkeletonWallmark(const Fmatrix* xf, CKinematics* obj, IWallMarkArray* pArray, const Fvector& start, const Fvector& dir, float size)
+{
+	dxWallMarkArray* pWMA = (dxWallMarkArray*)pArray;
+
+	if (ref_shader* pShader = pWMA->dxGenerateWallmark())
+		add_SkeletonWallmark(xf, (CKinematics*)obj, *pShader, start, dir, size);
 }
 void					CRender::add_Occluder			(Fbox2&	bb_screenspace	)
 {
@@ -423,7 +444,7 @@ CRender::~CRender()
 {
 }
 
-#include "..\..\xr_3da\GameFont.h"
+#include "../../xr_3da/GameFont.h"
 void	CRender::Statistics	(CGameFont* _F)
 {
 	CGameFont&	F	= *_F;

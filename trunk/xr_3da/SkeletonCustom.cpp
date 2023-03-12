@@ -687,7 +687,7 @@ void CKinematics::CalculateWallmarks()
 			if (w<1.f){
 				// append wm to WallmarkEngine
 				if (::Render->ViewBase.testSphere_dirty(wm->m_Bounds.P,wm->m_Bounds.R))
-					::Render->add_SkeletonWallmark	(wm);
+					::Render->add_SkeletonWallmark(wm);
 			}else{
 				// remove wallmark				
 				need_remove							= true;
