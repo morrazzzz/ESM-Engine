@@ -106,6 +106,18 @@
     <Filter Include="Interface implementations\WallMarkArray">
       <UniqueIdentifier>{5fd78acf-5124-4a19-8ca6-d92dc191f473}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Refactored">
+      <UniqueIdentifier>{a5f4ea2e-f5e8-440e-a90d-24ac31511706}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Refactored\Execution &amp; 3D">
+      <UniqueIdentifier>{b2869bcb-0a0b-457f-a0a1-fb2d6d6a6a2e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Refactored\Execution &amp; 3D\Visuals">
+      <UniqueIdentifier>{1dd7e0b3-9364-4a9e-8357-a7bf8529f183}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Refactored\Execution &amp; 3D\Visuals\Skeleton">
+      <UniqueIdentifier>{7aec6858-4dc7-4bde-beac-b1920d1886cf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\xrRender\cl_intersect.h">
@@ -383,6 +395,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\xrRender\WallMarkArray.h">
       <Filter>Interface implementations\WallMarkArray</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\animation_motion.h">
+      <Filter>Refactored\Execution &amp; 3D\Visuals\Skeleton</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

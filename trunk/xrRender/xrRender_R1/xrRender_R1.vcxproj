@@ -283,6 +283,7 @@
     <ClCompile />
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Include\xrRender\animation_motion.h" />
     <ClInclude Include="..\..\Include\xrRender\ApplicationRender.h" />
     <ClInclude Include="..\..\Include\xrRender\DebugRender.h" />
     <ClInclude Include="..\..\Include\xrRender\DebugShader.h" />
