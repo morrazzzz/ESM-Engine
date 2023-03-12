@@ -106,6 +106,9 @@
     <Filter Include="Interface implementations\ObjectSpaceRender">
       <UniqueIdentifier>{03c796d6-c4b3-472c-b0bb-bfda3136a5b2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Interface implementations\Debug\DebugRender">
+      <UniqueIdentifier>{86df8b07-f57d-4259-8f4a-32c6c209336a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cl_intersect.h">
@@ -398,6 +401,12 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\xrRender\ObjectSpaceRender.h">
       <Filter>Interface implementations\ObjectSpaceRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxDebugRender.h">
+      <Filter>Interface implementations\Debug\DebugRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\DebugRender.h">
+      <Filter>Interface implementations\Debug\DebugRender</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -739,6 +748,9 @@
     </ClCompile>
     <ClCompile Include="..\xrRender\dxObjectSpaceRender.cpp">
       <Filter>Interface implementations\ObjectSpaceRender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxDebugRender.cpp">
+      <Filter>Interface implementations\Debug\DebugRender</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -121,7 +121,7 @@ void CActor::net_Export	(NET_Packet& P)					// export to server
 	{
 		SPHNetState	State;
 
-		CPHSynchronize* pSyncObj = NULL;
+		CPHSynchronize* pSyncObj = nullptr;
 		pSyncObj = PHGetSyncItem(0);
 		pSyncObj->get_State(State);
 
@@ -1360,10 +1360,10 @@ void dbg_draw_piramid (Fvector pos, Fvector dir, float size, float xdir, u32 col
 	
 	if (!Double)
 	{
-		RCache.dbg_DrawTRI(t, p0, p1, p4, color);
-		RCache.dbg_DrawTRI(t, p1, p2, p4, color);
-		RCache.dbg_DrawTRI(t, p2, p3, p4, color);
-		RCache.dbg_DrawTRI(t, p3, p0, p4, color);
+		DRender->dbg_DrawTRI(t, p0, p1, p4, color);
+		DRender->dbg_DrawTRI(t, p1, p2, p4, color);
+		DRender->dbg_DrawTRI(t, p2, p3, p4, color);
+		DRender->dbg_DrawTRI(t, p3, p0, p4, color);
 	}
 	else
 	{

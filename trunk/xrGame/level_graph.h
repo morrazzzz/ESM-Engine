@@ -18,6 +18,8 @@
 #include "level_graph_space.h"
 #include "game_graph_space.h"
 
+#include "../Include/xrRender/DebugShader.h"
+
 namespace LevelGraph {
 	class	CHeader;
 	class	CVertex;
@@ -205,9 +207,8 @@ public:
 			bool	neighbour_in_direction		(const Fvector &direction, u32 start_vertex_id) const;
 
 #ifdef DEBUG
-#	ifndef AI_COMPILER
 private:
-	ref_shader			sh_debug;
+	debug_shader sh_debug;
 
 private:
 	int					m_current_level_id;
@@ -237,7 +238,6 @@ private:
 public:
 			void		render					();
 #	endif
-#endif
 };
 
 IC	bool operator<		(const CLevelGraph::CVertex &vertex, const u32 &vertex_xz);

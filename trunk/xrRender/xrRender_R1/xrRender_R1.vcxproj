@@ -284,6 +284,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\xrRender\ApplicationRender.h" />
+    <ClInclude Include="..\..\Include\xrRender\DebugRender.h" />
     <ClInclude Include="..\..\Include\xrRender\DebugShader.h" />
     <ClInclude Include="..\..\Include\xrRender\EnvironmentRender.h" />
     <ClInclude Include="..\..\Include\xrRender\FactoryPtr.h" />
@@ -302,6 +303,7 @@
     <ClInclude Include="..\..\Include\xrRender\UIShader.h" />
     <ClInclude Include="..\xrRender\cl_intersect.h" />
     <ClInclude Include="..\xrRender\dxApplicationRender.h" />
+    <ClInclude Include="..\xrRender\dxDebugRender.h" />
     <ClInclude Include="..\xrRender\dxEnvironmentRender.h" />
     <ClInclude Include="..\xrRender\dxFontRender.h" />
     <ClInclude Include="..\xrRender\dxLensFlareRender.h" />
@@ -374,6 +376,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\xrRender\dxApplicationRender.cpp" />
+    <ClCompile Include="..\xrRender\dxDebugRender.cpp" />
     <ClCompile Include="..\xrRender\dxEnvironmentRender.cpp" />
     <ClCompile Include="..\xrRender\dxFontRender.cpp" />
     <ClCompile Include="..\xrRender\dxLensFlareRender.cpp" />

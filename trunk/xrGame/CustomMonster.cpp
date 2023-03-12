@@ -7,15 +7,9 @@
 #include "CustomMonster.h"
 #include "hudmanager.h"
 #include "ai_space.h"
-#include "ai/monsters/BaseMonster/base_monster.h"
 #include "xrserver_objects_alife_monsters.h"
 #include "xrserver.h"
-#include "seniority_hierarchy_holder.h"
-#include "team_hierarchy_holder.h"
-#include "squad_hierarchy_holder.h"
-#include "group_hierarchy_holder.h"
 #include "customzone.h"
-#include "clsid_game.h"
 #include "../xr_3da/skeletonanimated.h"
 #include "detail_path_manager.h"
 #include "memory_manager.h"
@@ -39,11 +33,9 @@
 #include "profiler.h"
 #include "date_time.h"
 #include "characterphysicssupport.h"
-#include "ai/monsters/snork/snork.h"
 #include "ai/monsters/burer/burer.h"
 #include "GamePersistent.h"
 #include "actor.h"
-#include "alife_simulator.h"
 #include "alife_object_registry.h"
 #include "client_spawn_manager.h"
 
@@ -1055,7 +1047,7 @@ void draw_visiblity_rays	(CCustomMonster *self, const CObject *object, collide::
 
 void CCustomMonster::OnRender()
 {
-	RCache.OnFrameEnd				();
+	DRender->OnFrameEnd();
 
 	for (int i=0; i<1; ++i) {
 		const xr_vector<CDetailPathManager::STravelPoint>		&keys	= !i ? movement().detail().m_key_points					: movement().detail().m_key_points;

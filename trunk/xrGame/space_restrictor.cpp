@@ -210,14 +210,14 @@ void CSpaceRestrictor::OnRender	()
 {
 	if(!bDebug) return;
 	if (!(dbg_net_Draw_Flags.is_any((1<<2)))) return;
-	RCache.OnFrameEnd();
+	DRender->OnFrameEnd();
 	Fvector l_half; l_half.set(.5f, .5f, .5f);
 	Fmatrix l_ball, l_box;
 	xr_vector<CCF_Shape::shape_def> &l_shapes = ((CCF_Shape*)CFORM())->Shapes();
 	xr_vector<CCF_Shape::shape_def>::iterator l_pShape;
 	
 	u32 Color = 0;
-	CCustomZone	*custom_zone = smart_cast<CCustomZone*>(this);
+	auto* custom_zone = smart_cast<CCustomZone*>(this);
 	if (custom_zone && custom_zone->IsEnabled())
 		Color = D3DCOLOR_XRGB(0,255,255);
 	else

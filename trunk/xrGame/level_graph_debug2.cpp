@@ -9,33 +9,19 @@
 #include "pch_script.h"
 
 #ifdef DEBUG
-#ifndef AI_COMPILER
 
 #include "level_graph.h"
-#include "../customhud.h"
 #include "ai_space.h"
 #include "hudmanager.h"
 #include "game_graph.h"
-#include "game_sv_single.h"
 #include "custommonster.h"
-#include "ai/stalker/ai_stalker.h"
-#include "xrserver_objects_alife_monsters.h"
 #include "cover_point.h"
 #include "cover_manager.h"
-#include "cover_evaluators.h"
 #include "team_base_zone.h"
-#include "alife_simulator.h"
-#include "alife_graph_registry.h"
-#include "alife_object_registry.h"
-#include "game_cl_base.h"
 #include "space_restriction_manager.h"
 #include "space_restriction.h"
-#include "space_restrictor.h"
 #include "space_restriction_base.h"
 #include "detail_path_manager.h"
-#include "memory_manager.h"
-#include "enemy_manager.h"
-#include "memory_space.h"
 #include "level.h"
 #include "ai_object_location.h"
 #include "movement_manager.h"
@@ -78,7 +64,7 @@ void CLevelGraph::draw_nodes	()
 
 	Fvector	DUP;		DUP.set(0,1,0);
 
-	RCache.set_Shader	(sh_debug);
+	DRender->SetShader(sh_debug);
 	F->SetColor			(color_rgba(255,255,255,255));
 
 	// если включён ai_dbg_frustum раскрасить ноды по light
@@ -147,8 +133,8 @@ void CLevelGraph::draw_nodes	()
 			v.set(PC.x-st,PC.y,PC.z+st);	PL.intersectRayPoint(v,DUP,v4);	v4.mad(v4,PL.n,tt);	// minX,maxZ
 
 			// render quad
-			RCache.dbg_DrawTRI	(Fidentity,v3,v2,v1,CT);
-			RCache.dbg_DrawTRI	(Fidentity,v1,v4,v3,CT);
+			DRender->dbg_DrawTRI(Fidentity, v3, v2, v1, CT);
+			DRender->dbg_DrawTRI(Fidentity, v1, v4, v3, CT);
 
 			// render center
 			Level().debug_renderer().draw_aabb	(PC,sc,sc,sc,CC);
@@ -235,7 +221,8 @@ void CLevelGraph::draw_covers	()
 		Fvector				direction;
 		float				best_value = -1.f;
 
-		for (u32 i=0, j = 0; i<36; ++i) {
+		u32 j = 0;
+		for (u32 i=0; i<36; ++i) {
 			float				value = cover_in_direction(float(10*i)/180.f*PI,v);
 			direction.setHP		(float(10*i)/180.f*PI,0);
 			direction.normalize	();
@@ -325,4 +312,3 @@ void CLevelGraph::draw_debug_node()
 #endif
 
 #endif // AI_COMPILER
-#endif // DEBUG
