@@ -25,9 +25,9 @@
 	#include "IGame_Persistent.h"
 #endif
 
-IRender_Visual*	CModelPool::Instance_Create(u32 type)
+dxRender_Visual*	CModelPool::Instance_Create(u32 type)
 {
-	IRender_Visual *V = NULL;
+	dxRender_Visual *V = NULL;
 
 	// Check types
 	switch (type) {
@@ -78,10 +78,10 @@ IRender_Visual*	CModelPool::Instance_Create(u32 type)
 	return		V;
 }
 
-IRender_Visual*	CModelPool::Instance_Duplicate	(IRender_Visual* V)
+dxRender_Visual*	CModelPool::Instance_Duplicate	(dxRender_Visual* V)
 {
 	R_ASSERT(V);
-	IRender_Visual* N		= Instance_Create(V->Type);
+	dxRender_Visual* N		= Instance_Create(V->Type);
 	N->Copy			(V);
 	N->Spawn		();
     // inc ref counter
@@ -90,9 +90,9 @@ IRender_Visual*	CModelPool::Instance_Duplicate	(IRender_Visual* V)
 	return N;
 }
 
-IRender_Visual*	CModelPool::Instance_Load		(const char* N, BOOL allow_register)
+dxRender_Visual*	CModelPool::Instance_Load		(const char* N, BOOL allow_register)
 {
-	IRender_Visual	*V;
+	dxRender_Visual	*V;
 	string_path		fn;
 	string_path		name;
 
@@ -134,9 +134,9 @@ IRender_Visual*	CModelPool::Instance_Load		(const char* N, BOOL allow_register)
 	return V;
 }
 
-IRender_Visual*	CModelPool::Instance_Load(LPCSTR name, IReader* data, BOOL allow_register)
+dxRender_Visual*	CModelPool::Instance_Load(LPCSTR name, IReader* data, BOOL allow_register)
 {
-	IRender_Visual	*V;
+	dxRender_Visual	*V;
 	
 	ogf_header			H;
 	data->r_chunk_safe	(OGF_HEADER,&H,sizeof(H));
@@ -148,7 +148,7 @@ IRender_Visual*	CModelPool::Instance_Load(LPCSTR name, IReader* data, BOOL allow
 	return V;
 }
 
-void		CModelPool::Instance_Register(LPCSTR N, IRender_Visual* V)
+void		CModelPool::Instance_Register(LPCSTR N, dxRender_Visual* V)
 {
 	// Registration
 	ModelDef			M;
@@ -166,7 +166,7 @@ void CModelPool::Destroy()
 	// Registry
 	while(!Registry.empty()){
 		REGISTRY_IT it	= Registry.begin();
-		IRender_Visual* V=(IRender_Visual*)it->first;
+		dxRender_Visual* V=(dxRender_Visual*)it->first;
 #ifdef _DEBUG
 		Msg				("ModelPool: Destroy object: '%s'",*V->dbg_name);
 #endif
@@ -202,9 +202,9 @@ CModelPool::~CModelPool()
 	xr_delete				(g_pMotionsContainer);
 }
 
-IRender_Visual* CModelPool::Instance_Find(LPCSTR N)
+dxRender_Visual* CModelPool::Instance_Find(LPCSTR N)
 {
-	IRender_Visual*				Model=0;
+	dxRender_Visual*				Model=0;
 	xr_vector<ModelDef>::iterator	I;
 	for (I=Models.begin(); I!=Models.end(); I++)
 	{
@@ -216,7 +216,7 @@ IRender_Visual* CModelPool::Instance_Find(LPCSTR N)
 	return Model;
 }
 
-IRender_Visual* CModelPool::Create(const char* name, IReader* data)
+dxRender_Visual* CModelPool::Create(const char* name, IReader* data)
 {
 #ifdef _EDITOR
 	if (!name||!name[0])	return 0;
@@ -231,13 +231,13 @@ IRender_Visual* CModelPool::Create(const char* name, IReader* data)
 	if (it!=Pool.end())
 	{
 		// 1. Instance found
-        IRender_Visual*		Model	= it->second;
+        dxRender_Visual*		Model	= it->second;
 		Model->Spawn		();
 		Pool.erase			(it);
 		return				Model;
 	} else {
 		// 1. Search for already loaded model (reference, base model)
-		IRender_Visual* Base		= Instance_Find		(low_name);
+		dxRender_Visual* Base		= Instance_Find		(low_name);
 
 		if (0==Base){
 			// 2. If not found
@@ -250,20 +250,20 @@ IRender_Visual* CModelPool::Create(const char* name, IReader* data)
 #endif
 		}
         // 3. If found - return (cloned) reference
-        IRender_Visual*		Model	= Instance_Duplicate(Base);
+        dxRender_Visual*		Model	= Instance_Duplicate(Base);
         Registry.insert		( mk_pair(Model,low_name) );
         return				Model;
 	}
 }
 
-IRender_Visual* CModelPool::CreateChild(LPCSTR name, IReader* data)
+dxRender_Visual* CModelPool::CreateChild(LPCSTR name, IReader* data)
 {
 	string256 low_name;		VERIFY	(xr_strlen(name)<256);
 	strcpy(low_name,name);	strlwr	(low_name);
 	if (strext(low_name))	*strext	(low_name) = 0;
 
 	// 1. Search for already loaded model
-	IRender_Visual* Base	= Instance_Find(low_name);
+	dxRender_Visual* Base	= Instance_Find(low_name);
 //.	if (0==Base) Base	 	= Instance_Load(name,data,FALSE);
 	if(0==Base)
 	{
@@ -271,12 +271,12 @@ IRender_Visual* CModelPool::CreateChild(LPCSTR name, IReader* data)
 		else			Base = Instance_Load	(low_name,FALSE);
 	}
 
-    IRender_Visual* Model	= bAllowChildrenDuplicate?Instance_Duplicate(Base):Base;
+    dxRender_Visual* Model	= bAllowChildrenDuplicate?Instance_Duplicate(Base):Base;
     return					Model;
 }
 
 extern ENGINE_API BOOL				g_bRendering; 
-void	CModelPool::DeleteInternal	(IRender_Visual* &V, BOOL bDiscard)
+void	CModelPool::DeleteInternal	(dxRender_Visual* &V, BOOL bDiscard)
 {
 	VERIFY					(!g_bRendering);
     if (!V)					return;
@@ -298,7 +298,7 @@ void	CModelPool::DeleteInternal	(IRender_Visual* &V, BOOL bDiscard)
 	V	=	NULL;
 }
 
-void	CModelPool::Delete		(IRender_Visual* &V, BOOL bDiscard)
+void	CModelPool::Delete		(dxRender_Visual* &V, BOOL bDiscard)
 {
 	if (NULL==V)				return;
 	if (g_bRendering){
@@ -317,7 +317,7 @@ void	CModelPool::DeleteQueue		()
 	ModelsToDelete.clear			();
 }
 
-void	CModelPool::Discard	(IRender_Visual* &V, BOOL b_complete)
+void	CModelPool::Discard	(dxRender_Visual* &V, BOOL b_complete)
 {
 	//
 	REGISTRY_IT	it		= Registry.find	(V);
@@ -374,7 +374,7 @@ void CModelPool::Prefetch()
 	CInifile::Sect& sect	= pSettings->r_section(section);
 	for (CInifile::SectCIt I=sect.Data.begin(); I!=sect.Data.end(); I++)	{
 		const CInifile::Item& item= *I;
-		IRender_Visual* V	= Create(item.first.c_str());
+		dxRender_Visual* V	= Create(item.first.c_str());
 		Delete				(V,FALSE);
 	}
 	Logging					(TRUE);
@@ -390,14 +390,14 @@ void CModelPool::ClearPool( BOOL b_complete)
 	Pool.clear			();
 }
 
-IRender_Visual* CModelPool::CreatePE	(PS::CPEDef* source)
+dxRender_Visual* CModelPool::CreatePE	(PS::CPEDef* source)
 {
 	PS::CParticleEffect* V	= (PS::CParticleEffect*)Instance_Create(MT_PARTICLE_EFFECT);
 	V->Compile		(source);
 	return V;
 }
 
-IRender_Visual* CModelPool::CreatePG	(PS::CPGDef* source)
+dxRender_Visual* CModelPool::CreatePG	(PS::CPGDef* source)
 {
 	PS::CParticleGroup* V	= (PS::CParticleGroup*)Instance_Create(MT_PARTICLE_GROUP);
 	V->Compile		(source);
@@ -423,7 +423,7 @@ void CModelPool::dump()
 	int free_cnt			= 0;
 	for (REGISTRY_IT it=Registry.begin(); it!=Registry.end(); it++)
 	{
-		CKinematics* K		= PKinematics((IRender_Visual*)it->first);
+		CKinematics* K		= PKinematics((dxRender_Visual*)it->first);
 		VERIFY				(K);
 		if (K){
 			u32 cur			= K->mem_usage	(true);
@@ -438,23 +438,23 @@ void CModelPool::dump()
 }
 
 #ifdef _EDITOR
-IC bool	_IsBoxVisible(IRender_Visual* visual, const Fmatrix& transform)
+IC bool	_IsBoxVisible(dxRender_Visual* visual, const Fmatrix& transform)
 {
     Fbox 		bb; 
     bb.xform	(visual->vis.box,transform);
     return 		::Render->occ_visible(bb);
 }
-IC bool	_IsValidShader(IRender_Visual* visual, u32 priority, bool strictB2F)
+IC bool	_IsValidShader(dxRender_Visual* visual, u32 priority, bool strictB2F)
 {
 	if (visual->shader)
         return (priority==visual->shader->E[0]->flags.iPriority)&&(strictB2F==visual->shader->E[0]->flags.bStrictB2F);
     return false;
 }
 
-void 	CModelPool::Render(IRender_Visual* m_pVisual, const Fmatrix& mTransform, int priority, bool strictB2F, float m_fLOD)
+void 	CModelPool::Render(dxRender_Visual* m_pVisual, const Fmatrix& mTransform, int priority, bool strictB2F, float m_fLOD)
 {
     // render visual
-    xr_vector<IRender_Visual*>::iterator I,E;
+    xr_vector<dxRender_Visual*>::iterator I,E;
     switch (m_pVisual->Type){
     case MT_SKELETON_ANIM:
     case MT_SKELETON_RIGID:{
@@ -499,9 +499,9 @@ void 	CModelPool::Render(IRender_Visual* m_pVisual, const Fmatrix& mTransform, i
         {
             RCache.set_xform_world	  		(mTransform);
             for (PS::CParticleGroup::SItemVecIt i_it=pG->items.begin(); i_it!=pG->items.end(); i_it++){
-                xr_vector<IRender_Visual*>	visuals;
+                xr_vector<dxRender_Visual*>	visuals;
                 i_it->GetVisuals			(visuals);
-                for (xr_vector<IRender_Visual*>::iterator it=visuals.begin(); it!=visuals.end(); it++)
+                for (xr_vector<dxRender_Visual*>::iterator it=visuals.begin(); it!=visuals.end(); it++)
                     Render					(*it,Fidentity,priority,strictB2F,m_fLOD);
             }
         }
@@ -528,7 +528,7 @@ void 	CModelPool::Render(IRender_Visual* m_pVisual, const Fmatrix& mTransform, i
     }
 }
 
-void 	CModelPool::RenderSingle(IRender_Visual* m_pVisual, const Fmatrix& mTransform, float m_fLOD)
+void 	CModelPool::RenderSingle(dxRender_Visual* m_pVisual, const Fmatrix& mTransform, float m_fLOD)
 {
 	for (int p=0; p<4; p++){
     	Render(m_pVisual,mTransform,p,false,m_fLOD);

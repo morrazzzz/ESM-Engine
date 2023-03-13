@@ -90,7 +90,7 @@ CGamePersistent::~CGamePersistent(void)
 	Engine.Event.Handler_Detach	(eQuickLoad,this);
 }
 
-void CGamePersistent::RegisterModel(IRender_Visual* V)
+void CGamePersistent::RegisterModel(dxRender_Visual* V)
 {
 	// Check types
 	switch (V->Type){

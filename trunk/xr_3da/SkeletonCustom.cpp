@@ -186,7 +186,7 @@ void CBoneData::CalculateM2B(const Fmatrix& parent)
 
 CSkeletonX* CKinematics::LL_GetChild	(u32 idx)
 {
-	IRender_Visual*	V	= children[idx];
+	dxRender_Visual*	V	= children[idx];
 	CSkeletonX*		B	= dynamic_cast<CSkeletonX*>(V);
 	return			B	;
 }
@@ -395,7 +395,7 @@ void CKinematics::LL_Validate()
 }
 
 #define PCOPY(a)	a = pFrom->a
-void CKinematics::Copy(IRender_Visual *P) 
+void CKinematics::Copy(dxRender_Visual *P) 
 {
 	inherited::Copy	(P);
 

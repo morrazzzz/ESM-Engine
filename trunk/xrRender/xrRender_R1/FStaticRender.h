@@ -56,7 +56,7 @@ public:
 	xr_vector<VertexDeclarator>									DCL;
 	xr_vector<IDirect3DVertexBuffer9*>							VB;
 	xr_vector<IDirect3DIndexBuffer9*>							IB;
-	xr_vector<IRender_Visual*>									Visuals;
+	xr_vector<dxRender_Visual*>									Visuals;
 	CPSLibrary													PSLibrary;
 
 	CLight_DB*													L_DB;
@@ -86,21 +86,21 @@ private:
 	void								LoadSectors				(IReader *fs);
 	void								LoadSWIs				(CStreamReader	*fs);
 
-	BOOL								add_Dynamic				(IRender_Visual	*pVisual, u32 planes);		// normal processing
-	void								add_Static				(IRender_Visual	*pVisual, u32 planes);
-	void								add_leafs_Dynamic		(IRender_Visual	*pVisual);					// if detected node's full visibility
-	void								add_leafs_Static		(IRender_Visual	*pVisual);					// if detected node's full visibility
+	BOOL								add_Dynamic				(dxRender_Visual	*pVisual, u32 planes);		// normal processing
+	void								add_Static				(dxRender_Visual	*pVisual, u32 planes);
+	void								add_leafs_Dynamic		(dxRender_Visual	*pVisual);					// if detected node's full visibility
+	void								add_leafs_Static		(dxRender_Visual	*pVisual);					// if detected node's full visibility
 
 public:
-	ShaderElement*						rimp_select_sh_static	(IRender_Visual	*pVisual, float cdist_sq);
-	ShaderElement*						rimp_select_sh_dynamic	(IRender_Visual	*pVisual, float cdist_sq);
+	ShaderElement*						rimp_select_sh_static	(dxRender_Visual	*pVisual, float cdist_sq);
+	ShaderElement*						rimp_select_sh_dynamic	(dxRender_Visual	*pVisual, float cdist_sq);
 	D3DVERTEXELEMENT9*					getVB_Format			(int id);
 	IDirect3DVertexBuffer9*				getVB					(int id);
 	IDirect3DIndexBuffer9*				getIB					(int id);
 	FSlideWindowItem*					getSWI					(int id);
 	IRender_Portal*						getPortal				(int id);
 	IRender_Sector*						getSectorActive			();
-	IRender_Visual*						model_CreatePE			(LPCSTR			name);
+	dxRender_Visual*						model_CreatePE			(LPCSTR			name);
 	void								ApplyBlur4				(FVF::TL4uv*	dest, u32 w, u32 h, float k);
 	void								apply_object			(IRenderable*	O);
 	IC void								apply_lmaterial			()				{};
@@ -136,7 +136,7 @@ public:
 	virtual LPCSTR					getShaderPath			()									{ return "r1\\";	}
 	virtual ref_shader				getShader				(int id);
 	virtual IRender_Sector*			getSector				(int id);
-	virtual IRender_Visual*			getVisual				(int id);
+	virtual dxRender_Visual*			getVisual				(int id);
 	virtual IRender_Sector*			detectSector			(const Fvector& P);
 	virtual IRender_Target*			getTarget				();
 	
@@ -144,8 +144,8 @@ public:
 	virtual void					flush					();
 	virtual void					set_Object				(IRenderable*		O	);
 	virtual	void					add_Occluder			(Fbox2&	bb_screenspace	);			// mask screen region as oclluded
-	virtual void					add_Visual				(IRender_Visual*	V	);			// add visual leaf (no culling performed at all)
-	virtual void					add_Geometry			(IRender_Visual*	V	);			// add visual(s)	(all culling performed)
+	virtual void					add_Visual				(dxRender_Visual*	V	);			// add visual leaf (no culling performed at all)
+	virtual void					add_Geometry			(dxRender_Visual*	V	);			// add visual(s)	(all culling performed)
 
 	// wallmarks
 	virtual void					add_StaticWallmark		(ref_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V);
@@ -172,12 +172,12 @@ public:
 	virtual IRender_Glow*			glow_create				();
 	
 	// Models
-	virtual IRender_Visual*			model_CreateParticles	(LPCSTR name);
+	virtual dxRender_Visual*			model_CreateParticles	(LPCSTR name);
 	virtual IRender_DetailModel*	model_CreateDM			(IReader*F);
-	virtual IRender_Visual*			model_Create			(LPCSTR name, IReader*data=0);
-	virtual IRender_Visual*			model_CreateChild		(LPCSTR name, IReader*data);
-	virtual IRender_Visual*			model_Duplicate			(IRender_Visual*	V);
-	virtual void					model_Delete			(IRender_Visual* &	V, BOOL bDiscard);
+	virtual dxRender_Visual*			model_Create			(LPCSTR name, IReader*data=0);
+	virtual dxRender_Visual*			model_CreateChild		(LPCSTR name, IReader*data);
+	virtual dxRender_Visual*			model_Duplicate			(dxRender_Visual*	V);
+	virtual void					model_Delete			(dxRender_Visual* &	V, BOOL bDiscard);
 	virtual void 					model_Delete			(IRender_DetailModel* & F);
 	virtual void					model_Logging			(BOOL bEnable)				{ Models->Logging(bEnable);	}
 	virtual void					models_Prefetch			();

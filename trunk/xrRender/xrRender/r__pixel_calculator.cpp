@@ -28,7 +28,7 @@ void	r_pixel_calculator::end		()
 static Fvector cmNorm[6]	= {{0.f,1.f,0.f}, {0.f,1.f,0.f}, {0.f,0.f,-1.f},{0.f,0.f,1.f}, {0.f,1.f,0.f}, {0.f,1.f,0.f}};
 static Fvector cmDir[6]		= {{1.f,0.f,0.f}, {-1.f,0.f,0.f},{0.f,1.f,0.f}, {0.f,-1.f,0.f},{0.f,0.f,1.f}, {0.f,0.f,-1.f}};
 
-r_aabb_ssa		r_pixel_calculator::calculate	(IRender_Visual* V)	{
+r_aabb_ssa		r_pixel_calculator::calculate	(dxRender_Visual* V)	{
 	r_aabb_ssa	result			= {0};
 	float		area			= float(_sqr(rt_dimensions));
 

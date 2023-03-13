@@ -40,7 +40,7 @@ public:
 	virtual					~CSkeletonX_ST	()	{}
 	virtual void			Render			(float LOD);
 	virtual void			Load			(const char* N, IReader *data, u32 dwFlags);
-	virtual void			Copy			(IRender_Visual *pFrom);
+	virtual void			Copy			(dxRender_Visual *pFrom);
 	virtual void			Release			();
 	virtual void			AfterLoad		(CKinematics* parent, u16 child_idx);
 	virtual void			EnumBoneVertices(SEnumVerticesCallback &C, u16 bone_id);
@@ -61,7 +61,7 @@ public:
 	virtual					~CSkeletonX_PM	()	{}
 	virtual void			Render			(float LOD);
 	virtual void			Load			(const char* N, IReader *data, u32 dwFlags);
-	virtual void			Copy			(IRender_Visual *pFrom);
+	virtual void			Copy			(dxRender_Visual *pFrom);
 	virtual void			Release			();
 	virtual void			AfterLoad		(CKinematics* parent, u16 child_idx);
 	virtual void			EnumBoneVertices(SEnumVerticesCallback &C, u16 bone_id);

@@ -150,13 +150,13 @@ void CObjectScript::script_register		(lua_State *L)
 	];
 }
 
-void IRender_VisualScript::script_register		(lua_State *L)
+void dxRender_VisualScript::script_register		(lua_State *L)
 {
 	module(L)
 	[
-		class_<IRender_Visual>("IRender_Visual")
+		class_<dxRender_Visual>("dxRender_Visual")
 			.def(constructor<>())
-			.def("dcast_PKinematicsAnimated",&IRender_Visual::dcast_PKinematicsAnimated)
+			.def("dcast_PKinematicsAnimated",&dxRender_Visual::dcast_PKinematicsAnimated)
 	];
 }
 
@@ -197,7 +197,7 @@ void FHierrarhyVisualScript::script_register		(lua_State *L)
 {
 	module(L)
 		[
-			class_<FHierrarhyVisual, IRender_Visual>("FHierrarhyVisual")
+			class_<FHierrarhyVisual, dxRender_Visual>("FHierrarhyVisual")
 			//			.def(constructor<>())
 		];
 }

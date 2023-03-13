@@ -46,7 +46,7 @@ namespace PS
 
 		u32					RenderTO			();
 		virtual void		Render				(float LOD);
-		virtual void		Copy				(IRender_Visual* pFrom);
+		virtual void		Copy				(dxRender_Visual* pFrom);
 
 		virtual void 		OnDeviceCreate		();
 		virtual void 		OnDeviceDestroy		();

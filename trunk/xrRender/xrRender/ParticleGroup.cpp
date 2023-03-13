@@ -145,7 +145,7 @@ void CPGDef::Save(IWriter& F)
 //------------------------------------------------------------------------------
 // Particle Group item
 //------------------------------------------------------------------------------
-void CParticleGroup::SItem::Set(IRender_Visual* e)
+void CParticleGroup::SItem::Set(dxRender_Visual* e)
 {
 	_effect=e;
 }
@@ -175,7 +175,7 @@ void CParticleGroup::SItem::StartRelatedChild(CParticleEffect* emitter, LPCSTR e
 void CParticleGroup::SItem::StopRelatedChild(u32 idx)
 {
 	VERIFY(idx<_children_related.size());
-    IRender_Visual*& V 			= _children_related[idx];
+    dxRender_Visual*& V 			= _children_related[idx];
     ((CParticleEffect*)V)->Stop	(TRUE);
     _children_free.push_back	(V);
     _children_related[idx]		= _children_related.back();
@@ -267,7 +267,7 @@ void OnGroupParticleDead(void* owner, u32 param, PAPI::Particle& m, u32 idx)
 }
 //------------------------------------------------------------------------------
 struct zero_vis_pred {
-	bool operator()(const IRender_Visual* x){ return x==0; }
+	bool operator()(const dxRender_Visual* x){ return x==0; }
 };
 void CParticleGroup::SItem::OnFrame(u32 u_dt, const CPGDef::SEffect& def, Fbox& box, bool& bPlaying)
 {

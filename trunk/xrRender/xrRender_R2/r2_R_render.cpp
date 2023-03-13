@@ -75,7 +75,7 @@ void CRender::render_main	(Fmatrix&	m_ViewProjection, bool _fportals)
 		for (u32 s_it=0; s_it<PortalTraverser.r_sectors.size(); s_it++)
 		{
 			CSector*	sector		= (CSector*)PortalTraverser.r_sectors[s_it];
-			IRender_Visual*	root	= sector->root();
+			dxRender_Visual*	root	= sector->root();
 			for (u32 v_it=0; v_it<sector->r_frustums.size(); v_it++)	{
 				set_Frustum			(&(sector->r_frustums[v_it]));
 				add_Geometry		(root);

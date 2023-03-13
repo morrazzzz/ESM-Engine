@@ -172,7 +172,7 @@ CPHCapture::CPHCapture(CPHCharacter   *a_character,CPhysicsShellHolder	*a_taget_
 		
 
 
-	IRender_Visual* V=m_taget_object->Visual();
+	dxRender_Visual* V=m_taget_object->Visual();
 
 	if(!V)
 	{

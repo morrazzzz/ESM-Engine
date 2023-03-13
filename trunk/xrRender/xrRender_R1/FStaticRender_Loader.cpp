@@ -244,7 +244,7 @@ void CRender::LoadVisuals(IReader *fs)
 {
 	IReader*		chunk	= 0;
 	u32				index	= 0;
-	IRender_Visual*	V		= 0;
+	dxRender_Visual*	V		= 0;
 	ogf_header		H;
 
 	while ((chunk=fs->open_chunk(index))!=0)

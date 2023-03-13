@@ -107,7 +107,7 @@ void FProgressive::Render	(float LOD)
 }
 
 #define PCOPY(a)	a = pFrom->a
-void	FProgressive::Copy	(IRender_Visual *pSrc)
+void	FProgressive::Copy	(dxRender_Visual *pSrc)
 {
 	Fvisual::Copy	(pSrc);
 	FProgressive	*pFrom = (FProgressive *)pSrc;

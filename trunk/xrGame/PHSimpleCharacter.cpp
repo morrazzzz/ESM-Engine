@@ -1611,7 +1611,7 @@ IC bool valide_res(u16& res_material_idx, const collide::rq_result& R)
 		return !ignore_material(res_material_idx);
 	}
 
-	IRender_Visual* V = R.O->Visual();
+	dxRender_Visual* V = R.O->Visual();
 	if (!V)
 		return false;
 

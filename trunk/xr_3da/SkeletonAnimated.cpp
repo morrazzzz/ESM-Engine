@@ -504,7 +504,7 @@ void	CKinematicsAnimated::IBoneInstances_Destroy()
 }
 
 #define PCOPY(a)	a = pFrom->a
-void CKinematicsAnimated::Copy(IRender_Visual *P) 
+void CKinematicsAnimated::Copy(dxRender_Visual *P) 
 {
 	inherited::Copy	(P);
 

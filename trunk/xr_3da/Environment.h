@@ -1,7 +1,7 @@
 #pragma once
 
 // refs
-class ENGINE_API	IRender_Visual;
+class ENGINE_API	dxRender_Visual;
 class ENGINE_API	CInifile;
 class ENGINE_API 	CEnvironment;
 

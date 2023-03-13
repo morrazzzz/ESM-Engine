@@ -51,7 +51,7 @@ public:
 class	 CSector					: public IRender_Sector
 {
 protected:
-	IRender_Visual*					m_root;			// whole geometry of that sector
+	dxRender_Visual*					m_root;			// whole geometry of that sector
 	xr_vector<CPortal*>				m_portals;
 public:
 	xr_vector<CFrustum>				r_frustums;
@@ -60,7 +60,7 @@ public:
 	u32								r_marker;
 public:
 	// Main interface
-	IRender_Visual*					root			()				{ return m_root; }
+	dxRender_Visual*					root			()				{ return m_root; }
 	void							traverse		(CFrustum& F,	_scissor& R);
 	void							load			(IReader& fs);
 

@@ -35,17 +35,17 @@
 
 #	ifdef XRGAME_EXPORTS
 
-		DECLARE_SPECIALIZATION			(CKinematics,		IRender_Visual,		dcast_PKinematics);
+		DECLARE_SPECIALIZATION			(CKinematics,		dxRender_Visual,		dcast_PKinematics);
 #		undef cast_type_list
-#		define cast_type_list save_cast_list	(CKinematics,		IRender_Visual)
+#		define cast_type_list save_cast_list	(CKinematics,		dxRender_Visual)
 
-		DECLARE_SPECIALIZATION			(CKinematicsAnimated,	IRender_Visual,		dcast_PKinematicsAnimated);
+		DECLARE_SPECIALIZATION			(CKinematicsAnimated,	dxRender_Visual,		dcast_PKinematicsAnimated);
 #		undef cast_type_list
-#		define cast_type_list save_cast_list	(CKinematicsAnimated,	IRender_Visual)
+#		define cast_type_list save_cast_list	(CKinematicsAnimated,	dxRender_Visual)
 
-		DECLARE_SPECIALIZATION			(IParticleCustom,	IRender_Visual,		dcast_ParticleCustom);
+		DECLARE_SPECIALIZATION			(IParticleCustom,	dxRender_Visual,		dcast_ParticleCustom);
 #		undef cast_type_list
-#		define cast_type_list save_cast_list	(IParticleCustom,	IRender_Visual)
+#		define cast_type_list save_cast_list	(IParticleCustom,	dxRender_Visual)
 
 #		ifndef DO_NOT_DECLARE_TYPE_LIST
 			class ENGINE_API ISpatial;

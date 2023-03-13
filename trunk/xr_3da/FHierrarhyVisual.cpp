@@ -15,7 +15,7 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-FHierrarhyVisual::FHierrarhyVisual()  : IRender_Visual()
+FHierrarhyVisual::FHierrarhyVisual()  : dxRender_Visual()
 {
 	bDontDelete	= FALSE;
 }
@@ -39,7 +39,7 @@ void FHierrarhyVisual::Release()
 
 void FHierrarhyVisual::Load(const char* N, IReader *data, u32 dwFlags)
 {
-	IRender_Visual::Load(N,data,dwFlags);
+	dxRender_Visual::Load(N,data,dwFlags);
 	if (data->find_chunk(OGF_CHILDREN_L)) 
 	{
 		// From Link
@@ -83,16 +83,16 @@ void FHierrarhyVisual::Load(const char* N, IReader *data, u32 dwFlags)
 	}
 }
 
-void	FHierrarhyVisual::Copy(IRender_Visual *pSrc)
+void	FHierrarhyVisual::Copy(dxRender_Visual *pSrc)
 {
-	IRender_Visual::Copy	(pSrc);
+	dxRender_Visual::Copy	(pSrc);
 
 	FHierrarhyVisual	*pFrom = (FHierrarhyVisual *)pSrc;
 
 	children.clear	();
 	children.reserve(pFrom->children.size());
 	for (u32 i=0; i<pFrom->children.size(); i++) {
-		IRender_Visual *p = ::Render->model_Duplicate	(pFrom->children[i]);
+		dxRender_Visual *p = ::Render->model_Duplicate	(pFrom->children[i]);
 		children.push_back(p);
 	}
 	bDontDelete = FALSE;

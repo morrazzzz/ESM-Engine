@@ -391,7 +391,7 @@ void CSkeletonX::_Load	(const char* N, IReader *data, u32& dwVertCount)
 
 BOOL	CSkeletonX::has_visible_bones		()
 {
-	//IRender_Visual*	me	= dynamic_cast<IRender_Visual*>	(this);
+	//dxRender_Visual*	me	= dynamic_cast<dxRender_Visual*>	(this);
 	//Msg	("~ has_visible_bones: mode[%d] - count[%d], name=%s",RenderMode,BonesUsed.size(),me->dbg_name.c_str());	//.
 	if	(RM_SINGLE==RenderMode)	{
 	//	Msg	("* has_visible_bones: bone-list: |%d:%s",RMS_boneid,Parent->LL_BoneName_dbg(RMS_boneid));

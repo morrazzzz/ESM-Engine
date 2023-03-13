@@ -2,7 +2,7 @@
 #ifndef ParticleCustomH
 #define ParticleCustomH
 //---------------------------------------------------------------------------
-class ENGINE_API	IParticleCustom		: public IRender_Visual
+class ENGINE_API	IParticleCustom		: public dxRender_Visual
 {
 public:
 	// geometry-format

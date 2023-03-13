@@ -84,7 +84,7 @@ public:
 
 	virtual void					UpdateGameType		() {};
 
-	virtual void					RegisterModel		(IRender_Visual* V)
+	virtual void					RegisterModel		(dxRender_Visual* V)
 #ifndef _EDITOR
      = 0;
 #else

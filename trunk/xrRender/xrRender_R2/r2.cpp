@@ -31,7 +31,7 @@ public:
 
 float		r_dtex_range		= 50.f;
 //////////////////////////////////////////////////////////////////////////
-ShaderElement*			CRender::rimp_select_sh_dynamic	(IRender_Visual	*pVisual, float cdist_sq)
+ShaderElement*			CRender::rimp_select_sh_dynamic	(dxRender_Visual	*pVisual, float cdist_sq)
 {
 	int		id	= SE_R2_SHADOW;
 	if	(CRender::PHASE_NORMAL == RImplementation.phase)
@@ -41,7 +41,7 @@ ShaderElement*			CRender::rimp_select_sh_dynamic	(IRender_Visual	*pVisual, float
 	return pVisual->shader->E[id]._get();
 }
 //////////////////////////////////////////////////////////////////////////
-ShaderElement*			CRender::rimp_select_sh_static	(IRender_Visual	*pVisual, float cdist_sq)
+ShaderElement*			CRender::rimp_select_sh_static	(dxRender_Visual	*pVisual, float cdist_sq)
 {
 	int		id	= SE_R2_SHADOW;
 	if	(CRender::PHASE_NORMAL == RImplementation.phase)
@@ -299,10 +299,10 @@ void CRender::OnFrame()
 // Implementation
 IRender_ObjectSpecific*	CRender::ros_create				(IRenderable* parent)				{ return xr_new<CROS_impl>();			}
 void					CRender::ros_destroy			(IRender_ObjectSpecific* &p)		{ xr_delete(p);							}
-IRender_Visual*			CRender::model_Create			(LPCSTR name, IReader* data)		{ return Models->Create(name,data);		}
-IRender_Visual*			CRender::model_CreateChild		(LPCSTR name, IReader* data)		{ return Models->CreateChild(name,data);}
-IRender_Visual*			CRender::model_Duplicate		(IRender_Visual* V)					{ return Models->Instance_Duplicate(V);	}
-void					CRender::model_Delete			(IRender_Visual* &V, BOOL bDiscard)	{ Models->Delete(V, bDiscard);			}
+dxRender_Visual*			CRender::model_Create			(LPCSTR name, IReader* data)		{ return Models->Create(name,data);		}
+dxRender_Visual*			CRender::model_CreateChild		(LPCSTR name, IReader* data)		{ return Models->CreateChild(name,data);}
+dxRender_Visual*			CRender::model_Duplicate		(dxRender_Visual* V)					{ return Models->Instance_Duplicate(V);	}
+void					CRender::model_Delete			(dxRender_Visual* &V, BOOL bDiscard)	{ Models->Delete(V, bDiscard);			}
 IRender_DetailModel*	CRender::model_CreateDM			(IReader*	F)
 {
 	CDetail*	D		= xr_new<CDetail> ();
@@ -319,12 +319,12 @@ void					CRender::model_Delete			(IRender_DetailModel* & F)
 		F				= NULL;
 	}
 }
-IRender_Visual*			CRender::model_CreatePE			(LPCSTR name)	
+dxRender_Visual*			CRender::model_CreatePE			(LPCSTR name)	
 { 
 	PS::CPEDef*	SE			= PSLibrary.FindPED	(name);		R_ASSERT3(SE,"Particle effect doesn't exist",name);
 	return					Models->CreatePE	(SE);
 }
-IRender_Visual*			CRender::model_CreateParticles	(LPCSTR name)	
+dxRender_Visual*			CRender::model_CreateParticles	(LPCSTR name)	
 { 
 	PS::CPEDef*	SE			= PSLibrary.FindPED	(name);
 	if (SE) return			Models->CreatePE	(SE);
@@ -340,7 +340,7 @@ ref_shader				CRender::getShader				(int id)			{ VERIFY(id<int(Shaders.size()));
 IRender_Portal*			CRender::getPortal				(int id)			{ VERIFY(id<int(Portals.size()));	return Portals[id];	}
 IRender_Sector*			CRender::getSector				(int id)			{ VERIFY(id<int(Sectors.size()));	return Sectors[id];	}
 IRender_Sector*			CRender::getSectorActive		()					{ return pLastSector;									}
-IRender_Visual*			CRender::getVisual				(int id)			{ VERIFY(id<int(Visuals.size()));	return Visuals[id];	}
+dxRender_Visual*			CRender::getVisual				(int id)			{ VERIFY(id<int(Visuals.size()));	return Visuals[id];	}
 D3DVERTEXELEMENT9*		CRender::getVB_Format			(int id, BOOL	_alt)	{ 
 	if (_alt)	{ VERIFY(id<int(xDC.size()));	return xDC[id].begin();	}
 	else		{ VERIFY(id<int(nDC.size()));	return nDC[id].begin(); }
@@ -365,8 +365,8 @@ BOOL					CRender::occ_visible			(vis_data& P)		{ return HOM.visible(P);								}
 BOOL					CRender::occ_visible			(sPoly& P)			{ return HOM.visible(P);								}
 BOOL					CRender::occ_visible			(Fbox& P)			{ return HOM.visible(P);								}
 
-void					CRender::add_Visual				(IRender_Visual*		V )	{ add_leafs_Dynamic(V);								}
-void					CRender::add_Geometry			(IRender_Visual*		V )	{ add_Static(V,View->getMask());					}
+void					CRender::add_Visual				(dxRender_Visual*		V )	{ add_leafs_Dynamic(V);								}
+void					CRender::add_Geometry			(dxRender_Visual*		V )	{ add_Static(V,View->getMask());					}
 void					CRender::add_StaticWallmark		(ref_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* verts)
 {
 	if (T->suppress_wm)	return;

@@ -63,7 +63,7 @@ void FLOD::Load			(LPCSTR N, IReader *data, u32 dwFlags)
 	float Ss			= M_PI*r*r;
 	lod_factor			= Sf/Ss;
 }
-void FLOD::Copy			(IRender_Visual *pFrom	)
+void FLOD::Copy			(dxRender_Visual *pFrom	)
 {
 	inherited::Copy		(pFrom);
 

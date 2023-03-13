@@ -1,4 +1,4 @@
-// IRender_Visual.cpp: implementation of the IRender_Visual class.
+// dxRender_Visual.cpp: implementation of the dxRender_Visual class.
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -21,24 +21,24 @@ IRender_Mesh::~IRender_Mesh()
 	_RELEASE(p_rm_Indices);		
 }
 
-IRender_Visual::IRender_Visual		()
+dxRender_Visual::dxRender_Visual()
 {
 	Type				= 0;
 	shader				= 0;
 	vis.clear			();
 }
 
-IRender_Visual::~IRender_Visual		()
+dxRender_Visual::~dxRender_Visual()
 {
 }
 
-void IRender_Visual::Release		()
+void dxRender_Visual::Release		()
 {
 }
 
 CStatTimer						tscreate;
 
-void IRender_Visual::Load		(const char* N, IReader *data, u32 )
+void dxRender_Visual::Load(const char* N, IReader *data, u32 )
 {
 #ifdef DEBUG
 	dbg_name	= N;
@@ -74,7 +74,7 @@ void IRender_Visual::Load		(const char* N, IReader *data, u32 )
 }
 
 #define PCOPY(a)	a = pFrom->a
-void	IRender_Visual::Copy(IRender_Visual *pFrom)
+void dxRender_Visual::Copy(dxRender_Visual*pFrom)
 {
 	PCOPY(Type);
 	PCOPY(shader);

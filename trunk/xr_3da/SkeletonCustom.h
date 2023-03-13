@@ -184,12 +184,12 @@ public:
 public:
 	typedef xr_vector<std::pair<shared_str,u16> >	accel;
 public:
-	IRender_Visual*				m_lod;
+	dxRender_Visual*				m_lod;
 protected:
 	SkeletonWMVec				wallmarks;
 	u32							wm_frame;
 
-	xr_vector<IRender_Visual*>	children_invisible	;
+	xr_vector<dxRender_Visual*>	children_invisible	;
 
 	// Globals
     CInifile*					pUserData;
@@ -270,7 +270,7 @@ public:
 #endif
 
 	// General "Visual" stuff
-    virtual void				Copy				(IRender_Visual *pFrom);
+    virtual void				Copy				(dxRender_Visual *pFrom);
 	virtual void				Load				(const char* N, IReader *data, u32 dwFlags);
 	virtual void 				Spawn				();
 	virtual void				Depart				();
@@ -290,6 +290,6 @@ public:
 		return sz;
 	}
 };
-IC CKinematics* PKinematics		(IRender_Visual* V)		{ return V?V->dcast_PKinematics():0; }
+IC CKinematics* PKinematics		(dxRender_Visual* V)		{ return V?V->dcast_PKinematics():0; }
 //---------------------------------------------------------------------------
 #endif

@@ -27,12 +27,12 @@ FTreeVisual::~FTreeVisual	(void)
 
 void FTreeVisual::Release	()
 {
-	IRender_Visual::Release	();
+	dxRender_Visual::Release	();
 }
 
 void FTreeVisual::Load		(const char* N, IReader *data, u32 dwFlags)
 {
-	IRender_Visual::Load		(N,data,dwFlags);
+	dxRender_Visual::Load		(N,data,dwFlags);
 
 	D3DVERTEXELEMENT9*	vFormat	= NULL;
 
@@ -140,9 +140,9 @@ void FTreeVisual::Render	(float LOD)
 }
 
 #define PCOPY(a)	a = pFrom->a
-void	FTreeVisual::Copy	(IRender_Visual *pSrc)
+void	FTreeVisual::Copy	(dxRender_Visual *pSrc)
 {
-	IRender_Visual::Copy	(pSrc);
+	dxRender_Visual::Copy	(pSrc);
 
 	FTreeVisual	*pFrom		= dynamic_cast<FTreeVisual*> (pSrc);
 
@@ -188,7 +188,7 @@ void FTreeVisual_ST::Render		(float LOD)
 	RCache.Render				(D3DPT_TRIANGLELIST,vBase,0,vCount,iBase,dwPrimitives);
 	RCache.stat.r.s_flora.add	(vCount);
 }
-void FTreeVisual_ST::Copy		(IRender_Visual *pSrc)
+void FTreeVisual_ST::Copy		(dxRender_Visual *pSrc)
 {
 	inherited::Copy				(pSrc);
 }
@@ -231,7 +231,7 @@ void FTreeVisual_PM::Render		(float LOD)
 	RCache.Render				(D3DPT_TRIANGLELIST,vBase,0,SW.num_verts,iBase+SW.offset,SW.num_tris);
 	RCache.stat.r.s_flora.add	(SW.num_verts);
 }
-void FTreeVisual_PM::Copy		(IRender_Visual *pSrc)
+void FTreeVisual_PM::Copy		(dxRender_Visual *pSrc)
 {
 	inherited::Copy				(pSrc);
 	FTreeVisual_PM	*pFrom		= dynamic_cast<FTreeVisual_PM*> (pSrc);
