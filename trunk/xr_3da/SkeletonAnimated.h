@@ -4,13 +4,9 @@
 #include		"skeletoncustom.h"
 #include		"skeletonmotions.h"
 
-// consts
-const	u32		MAX_BLENDED			=	16;
-const	u32		MAX_BLENDED_POOL	=	(MAX_BLENDED*MAX_PARTS*MAX_CHANNELS);
-const	u32		MAX_ANIM_SLOT		=	4;
+#include "../xrRender/xrRender/KinematicAnimatedDefs.h"
 
 // refs
-class   ENGINE_API CBlend;
 class 	ENGINE_API CKinematicsAnimated;
 class   ENGINE_API CBoneInstanceAnimated;
 struct	ENGINE_API CKey;
@@ -18,9 +14,6 @@ class	ENGINE_API CInifile;
 
 #include "../include/xrRender/animation_blend.h"
 
-typedef svector<CBlend*,MAX_BLENDED*MAX_CHANNELS>	BlendSVec;//*MAX_CHANNELS
-typedef BlendSVec::iterator							BlendSVecIt;
-typedef BlendSVec::const_iterator					BlendSVecCIt;
 //*** Bone Instance *******************************************************************************
 #pragma pack(push,8)
 class ENGINE_API		CBlendInstance	// Bone Instance Blend List (per-bone data)

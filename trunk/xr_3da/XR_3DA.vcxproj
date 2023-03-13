@@ -759,6 +759,7 @@
     <ClInclude Include="edit_actions.h" />
     <ClInclude Include="line_editor.h" />
     <ClInclude Include="line_edit_control.h" />
+    <ClInclude Include="SkeletonMotionDefs.h" />
     <ClInclude Include="_d3d_extensions.h" />
     <ClInclude Include="CopyProtection.h" />
     <ClInclude Include="defines.h" />
