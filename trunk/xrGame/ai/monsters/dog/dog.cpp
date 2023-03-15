@@ -141,7 +141,7 @@ void CAI_Dog::CheckSpecParams(u32 spec_params)
 #ifdef _DEBUG
 void CAI_Dog::debug_on_key(int key)
 {
-	CKinematicsAnimated *skel = smart_cast<CKinematicsAnimated *>(Visual());
+	IKinematicsAnimated *skel = smart_cast<IKinematicsAnimated *>(Visual());
 
 	switch (key){
 	case DIK_1:

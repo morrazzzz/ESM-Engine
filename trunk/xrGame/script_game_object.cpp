@@ -297,12 +297,12 @@ Fvector	CScriptGameObject::bone_position	(LPCSTR bone_name) const
 {
 	u16					bone_id;
 	if (xr_strlen(bone_name))
-		bone_id			= smart_cast<CKinematics*>(object().Visual())->LL_BoneID(bone_name);
+		bone_id			= smart_cast<IKinematics*>(object().Visual())->LL_BoneID(bone_name);
 	else
-		bone_id			= smart_cast<CKinematics*>(object().Visual())->LL_GetBoneRoot();
+		bone_id			= smart_cast<IKinematics*>(object().Visual())->LL_GetBoneRoot();
 
 	Fmatrix				matrix;
-	matrix.mul_43		(object().XFORM(),smart_cast<CKinematics*>(object().Visual())->LL_GetBoneInstance(bone_id).mTransform);
+	matrix.mul_43		(object().XFORM(),smart_cast<IKinematics*>(object().Visual())->LL_GetBoneInstance(bone_id).mTransform);
 	return				(matrix.c);
 }
 

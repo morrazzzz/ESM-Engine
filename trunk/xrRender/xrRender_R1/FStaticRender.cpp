@@ -184,10 +184,10 @@ BOOL					CRender::occ_visible			(vis_data& P)		{ return HOM.visible(P);								}
 BOOL					CRender::occ_visible			(sPoly& P)			{ return HOM.visible(P);								}
 BOOL					CRender::occ_visible			(Fbox& P)			{ return HOM.visible(P);								}
 ENGINE_API	extern BOOL g_bRendering;
-void					CRender::add_Visual				(dxRender_Visual* V )
+void					CRender::add_Visual				(IRenderVisual* V )
 {
 	VERIFY				(g_bRendering);
-	add_leafs_Dynamic	(V);									
+	add_leafs_Dynamic	((dxRender_Visual*)V);
 }
 void					CRender::add_Geometry			(dxRender_Visual* V ){ add_Static(V,View->getMask());						}
 void					CRender::add_StaticWallmark		(ref_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* verts)

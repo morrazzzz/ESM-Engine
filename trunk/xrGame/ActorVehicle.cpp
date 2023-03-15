@@ -26,7 +26,8 @@ void CActor::attach_Vehicle(CHolderCustom* vehicle)
 	PickupModeOff		();
 	m_holder=vehicle;
 
-	CKinematicsAnimated* V		= smart_cast<CKinematicsAnimated*>(Visual()); R_ASSERT(V);
+	IKinematicsAnimated* V		= smart_cast<IKinematicsAnimated*>(Visual());
+	R_ASSERT(V);
 	
 	if(!m_holder->attach_Actor(this)){
 		m_holder=NULL;
@@ -39,8 +40,10 @@ void CActor::attach_Vehicle(CHolderCustom* vehicle)
 	V->PlayCycle					(anims.idles[0],FALSE);
 
 	ResetCallbacks					();
-	u16 head_bone					= V->LL_BoneID("bip01_head");
-	V->LL_GetBoneInstance			(u16(head_bone)).set_callback		(bctPhysics, VehicleHeadCallback,this);
+	IKinematics* K = V->dcast_PKinematics();
+
+	u16 head_bone = K->LL_BoneID("bip01_head");
+	K->LL_GetBoneInstance(u16(head_bone)).set_callback(bctPhysics, VehicleHeadCallback, this);
 
 	character_physics_support		()->movement()->DestroyCharacter();
 	mstate_wishful					= 0;
@@ -74,7 +77,7 @@ void CActor::detach_Vehicle()
 	r_model_yaw_dest=r_model_yaw;
 	m_holder=NULL;
 	SetCallbacks		();
-	CKinematicsAnimated* V= smart_cast<CKinematicsAnimated*>(Visual()); R_ASSERT(V);
+	IKinematicsAnimated* V= smart_cast<IKinematicsAnimated*>(Visual()); R_ASSERT(V);
 	V->PlayCycle		(m_anims->m_normal.legs_idle);
 	V->PlayCycle		(m_anims->m_normal.m_torso_idle);
 	m_holderID=u16(-1);

@@ -93,8 +93,11 @@ IC bool RAYvsCYLINDER(const Fcylinder& c_cylinder, const Fvector &S, const Fvect
 
 CCF_Skeleton::CCF_Skeleton(CObject* O) : ICollisionForm(O,cftObject)
 {
-	CKinematics* K	= PKinematics(O->Visual()); VERIFY3(K,"Can't create skeleton without Kinematics.",*O->cNameVisual());
-	bv_box.set		(K->vis.box);
+	IRenderVisual* pVisual = O->Visual();
+
+	IKinematics* K = PKinematics(pVisual);
+	VERIFY3(K,"Can't create skeleton without Kinematics.",*O->cNameVisual());
+	bv_box.set(pVisual->getVisData().box);
 	bv_box.getsphere(bv_sphere.P,bv_sphere.R);
 	vis_mask		= 0;
 }
@@ -102,14 +105,15 @@ CCF_Skeleton::CCF_Skeleton(CObject* O) : ICollisionForm(O,cftObject)
 void CCF_Skeleton::BuildState()
 {
 	dwFrame				= Device.dwFrame;
-	CKinematics* K		= PKinematics(owner->Visual());
+	IRenderVisual* pVisual = owner->Visual();
+	IKinematics* K = PKinematics(pVisual);
 	K->CalculateBones	();
 	const Fmatrix& L2W	= owner->XFORM();
 	
 	if (vis_mask!=K->LL_GetBonesVisible()){
 		vis_mask		= K->LL_GetBonesVisible();
 		elements.clear_not_free();
-		bv_box.set		(K->vis.box);
+		bv_box.set(pVisual->getVisData().box);
 		bv_box.getsphere(bv_sphere.P,bv_sphere.R);
 		for (u16 i=0; i<K->LL_BoneCount(); i++){
 			if (!K->LL_GetBoneVisible(i))					continue;
@@ -165,13 +169,14 @@ void CCF_Skeleton::BuildState()
 void CCF_Skeleton::BuildTopLevel()
 {
 	dwFrameTL			= Device.dwFrame;
-	dxRender_Visual* K	= owner->Visual();
-	Fbox& B				= K->vis.box;
+	IRenderVisual* K = owner->Visual();
+	vis_data& vis = K->getVisData();
+	Fbox& B = vis.box;
 	bv_box.min.average	(B.min);
 	bv_box.max.average	(B.max);
 	bv_box.grow			(0.05f);
-	bv_sphere.P.average	(K->vis.sphere.P);
-	bv_sphere.R			+= K->vis.sphere.R;
+	bv_sphere.P.average(vis.sphere.P);
+	bv_sphere.R += vis.sphere.R;
 	bv_sphere.R			*= 0.5f;
 	VERIFY(_valid(bv_sphere));
 }
@@ -194,7 +199,7 @@ BOOL CCF_Skeleton::_RayQuery( const collide::ray_defs& Q, collide::rq_results& R
 
 	if (dwFrame != Device.dwFrame)		BuildState	();
 	else{
-		CKinematics* K	= PKinematics	(owner->Visual());
+		IKinematics* K = PKinematics(owner->Visual());
 		if (K->LL_GetBonesVisible()!=vis_mask)	{
 			// Model changed between ray-picks
 			dwFrame		= Device.dwFrame-1	;
@@ -261,9 +266,10 @@ CCF_EventBox::CCF_EventBox( CObject* O ) : ICollisionForm(O,cftShape)
 
 BOOL CCF_EventBox::Contact(CObject* O)
 {
-	dxRender_Visual*	V		= O->Visual();
-	Fvector&		P	= V->vis.sphere.P;
-	float			R	= V->vis.sphere.R;
+	IRenderVisual* V = O->Visual();
+	vis_data& vis = V->getVisData();
+	Fvector& P = vis.sphere.P;
+	float R = vis.sphere.R;
 	
 	Fvector			PT;
 	O->XFORM().transform_tiny(PT,P);

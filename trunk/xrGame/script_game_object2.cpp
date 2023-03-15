@@ -119,7 +119,7 @@ void CScriptGameObject::set_item(MonsterSpace::EObjectAction object_action, CScr
 
 void CScriptGameObject::play_cycle(LPCSTR anim, bool mix_in)
 {
-	CKinematicsAnimated* sa=smart_cast<CKinematicsAnimated*>(object().Visual());
+	IKinematicsAnimated* sa=smart_cast<IKinematicsAnimated*>(object().Visual());
 	if(sa){
 		MotionID m	= sa->ID_Cycle(anim);
 		if (m) sa->PlayCycle(m,(BOOL)mix_in);
@@ -150,7 +150,7 @@ void CScriptGameObject::Hit(CScriptHit *tpLuaHit)
 	HS.weaponID = 0;														//	P.w_u16			(0);
 	HS.dir = tLuaHit.m_tDirection;											//	P.w_dir			(tLuaHit.m_tDirection);
 	HS.power = tLuaHit.m_fPower;											//	P.w_float		(tLuaHit.m_fPower);
-	CKinematics		*V = smart_cast<CKinematics*>(object().Visual());		//	CKinematics		*V = smart_cast<CKinematics*>(object().Visual());
+	IKinematics		*V = smart_cast<IKinematics*>(object().Visual());		//	IKinematics		*V = smart_cast<IKinematics*>(object().Visual());
 	VERIFY			(V);													//	VERIFY			(V);
 	if (xr_strlen	(tLuaHit.m_caBoneName))									//	if (xr_strlen	(tLuaHit.m_caBoneName))
 		HS.boneID = 		(V->LL_BoneID(tLuaHit.m_caBoneName));			//		P.w_s16		(V->LL_BoneID(tLuaHit.m_caBoneName));

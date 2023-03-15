@@ -22,6 +22,10 @@ class ENGINE_API	CSkeletonWallmark;
 class ENGINE_API	CKinematics;
 struct ENGINE_API	FSlideWindowItem;
 
+//	Igor
+class IRenderVisual;
+class IKinematics;
+
 const	float		fLightSmoothFactor = 4.f;
 
 //////////////////////////////////////////////////////////////////////////
@@ -205,7 +209,7 @@ public:
 	virtual void					flush					()											= 0;	
 	virtual void					set_Object				(IRenderable*		O	)					= 0;
 	virtual	void					add_Occluder			(Fbox2&	bb_screenspace	)					= 0;	// mask screen region as oclluded (-1..1, -1..1)
-	virtual void					add_Visual				(dxRender_Visual*	V	)					= 0;	// add visual leaf	(no culling performed at all)
+	virtual void					add_Visual				(IRenderVisual*	V	)					= 0;	// add visual leaf	(no culling performed at all)
 	virtual void					add_Geometry			(dxRender_Visual*	V	)					= 0;	// add visual(s)	(all culling performed)
 	virtual void					add_StaticWallmark(const wm_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V) = 0;
 	//	Prefer this function when possible

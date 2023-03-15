@@ -136,7 +136,7 @@ void CCustomRocket::create_physic_shell	()
 {
 	VERIFY(!m_pPhysicsShell);
 	Fobb								obb;
-	Visual()->vis.box.get_CD			(obb.m_translate,obb.m_halfsize);
+	Visual()->getVisData().box.get_CD(obb.m_translate, obb.m_halfsize);
 	obb.m_rotate.identity				();
 
 	// Physics (Elements)

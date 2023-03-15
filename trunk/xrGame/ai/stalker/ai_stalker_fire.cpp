@@ -244,7 +244,7 @@ void			CAI_Stalker::Hit					(SHit* pHDS)
 				float					power_factor = m_power_fx_factor*pHDS->damage()/100.f;
 				clamp					(power_factor,0.f,1.f);
 
-				CKinematicsAnimated		*tpKinematics = smart_cast<CKinematicsAnimated*>(Visual());
+				IKinematicsAnimated		*tpKinematics = smart_cast<IKinematicsAnimated*>(Visual());
 	#ifdef DEBUG
 				tpKinematics->LL_GetBoneInstance	(pHDS->bone());
 				if (pHDS->bone() >= tpKinematics->LL_BoneCount()) {

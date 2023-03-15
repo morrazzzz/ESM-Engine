@@ -923,7 +923,7 @@ void CInventoryItem::UpdateXForm	()
 		return;
 
 	R_ASSERT		(E);
-	CKinematics*	V		= smart_cast<CKinematics*>	(E->Visual());
+	IKinematics*	V		= smart_cast<IKinematics*>	(E->Visual());
 	VERIFY			(V);
 
 	// Get matrices
@@ -972,7 +972,7 @@ void CInventoryItem::OnRender()
 		if (!(dbg_net_Draw_Flags.is_any((1<<4)))) return;
 
 		Fvector bc,bd; 
-		object().Visual()->vis.box.get_CD	(bc,bd);
+		object().Visual()->getVisData().get_CD(bc, bd);
 		Fmatrix	M = object().XFORM();
 		M.c.add (bc);
 		Level().debug_renderer().draw_obb			(M,bd,color_rgba(0,0,255,255));

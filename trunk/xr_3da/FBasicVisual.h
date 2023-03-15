@@ -3,6 +3,7 @@
 #pragma once
 
 #include "vis_common.h"
+#include "Include/xrRender/RenderVisual.h"
 
 #define VLOAD_NOVERTICES		(1<<0)
 #define VLOAD_NOINDICES			(1<<1)
@@ -37,7 +38,7 @@ private:
 };
 
 // The class itself
-class	ENGINE_API dxRender_Visual
+class	ENGINE_API dxRender_Visual: public IRenderVisual
 {
 public:
 #ifdef _EDITOR
@@ -59,9 +60,12 @@ public:
 	virtual void				Spawn						()				{};
 	virtual void				Depart						()				{};
 
-	virtual	CKinematics*		dcast_PKinematics			()				{ return 0;	}
-	virtual	CKinematicsAnimated*dcast_PKinematicsAnimated	()				{ return 0;	}
+	//virtual	CKinematics*		dcast_PKinematics			()				{ return 0;	}
+	//virtual	CKinematicsAnimated*dcast_PKinematicsAnimated	()				{ return 0;	}
 	virtual IParticleCustom*	dcast_ParticleCustom		()				{ return 0;	}
+
+	virtual vis_data& getVisData() { return vis; }
+	virtual u32	getType() { return Type; }
 
 	dxRender_Visual();
 	virtual ~dxRender_Visual();

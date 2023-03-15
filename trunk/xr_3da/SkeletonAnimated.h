@@ -5,6 +5,7 @@
 #include		"skeletonmotions.h"
 
 #include "../xrRender/xrRender/KinematicAnimatedDefs.h"
+#include "../Include/xrRender/KinematicsAnimated.h"
 
 // refs
 class 	ENGINE_API CKinematicsAnimated;
@@ -43,7 +44,7 @@ IC	BlendSVec			&blend_vector	()	{ return Blend;}
 #pragma pack(pop)
 
 //*** The visual itself ***************************************************************************
-class ENGINE_API	CKinematicsAnimated	: public CKinematics
+class ENGINE_API	CKinematicsAnimated	: public CKinematics, public IKinematicsAnimated
 {
 	typedef CKinematics							inherited;
 	friend class								CBoneData;
@@ -66,6 +67,9 @@ public:
 	virtual void				Bone_Calculate			(CBoneData* bd, Fmatrix* parent);
 			void				Bone_GetAnimPos			(Fmatrix& pos,u16 id, u8 channel_mask, bool ignore_callbacks);
 	virtual void				OnCalculateBones		();
+
+	u32	LL_PartBlendsCount(u32 bone_part_id);
+	CBlend* LL_PartBlend(u32 bone_part_id, u32 n);
 public: 
 #ifdef _EDITOR
 public:
@@ -156,7 +160,9 @@ public:
 	virtual void				Load			(const char* N, IReader *data, u32 dwFlags);
 	virtual void				Release			();
 	virtual void				Spawn			();
-	virtual	CKinematicsAnimated*	dcast_PKinematicsAnimated	()				{ return this;	}
+	virtual	IKinematicsAnimated* dcast_PKinematicsAnimated() { return this; }
+	virtual IRenderVisual* dcast_RenderVisual() { return this; }
+	virtual IKinematics* dcast_PKinematics() { return this; }
 	virtual						~CKinematicsAnimated	();
 
 	virtual u32					mem_usage		(bool bInstance)
@@ -171,5 +177,4 @@ public:
 		return					(blend_cycles[bone_part_id]);
 	}
 };
-IC CKinematicsAnimated* PKinematicsAnimated(dxRender_Visual* V) { return V?V->dcast_PKinematicsAnimated():0; }
-//---------------------------------------------------------------------------
+IC CKinematicsAnimated* PKinematicsAnimated(dxRender_Visual* V) { return V ? (CKinematicsAnimated*)V->dcast_PKinematicsAnimated() : 0; }

@@ -1376,7 +1376,7 @@ u16 CPHSimpleCharacter::RetriveContactBone()
 	}
 	else 
 	{
-		CKinematics* K=smart_cast<CKinematics*>(object->Visual());
+		IKinematics* K=smart_cast<IKinematics*>(object->Visual());
 		u16 count=K->LL_BoneCount();
 		CBoneInstance* bone_instances=&K->LL_GetBoneInstance(0);
 		Fvector pos_in_object;
@@ -1611,11 +1611,11 @@ IC bool valide_res(u16& res_material_idx, const collide::rq_result& R)
 		return !ignore_material(res_material_idx);
 	}
 
-	dxRender_Visual* V = R.O->Visual();
+	IRenderVisual* V = R.O->Visual();
 	if (!V)
 		return false;
 
-	CKinematics* K = V->dcast_PKinematics();
+	IKinematics* K = V->dcast_PKinematics();
 	CBoneData& bd = K->LL_GetData((u16)R.element);
 	res_material_idx = bd.game_mtl_idx;
 	return true;

@@ -2,22 +2,23 @@
 
 class IKinematics;
 class IKinematicsAnimated;
-//class IParticleCustom;
+class IParticleCustom;
+
 struct vis_data;
 
-class IRenderVisual
+class ENGINE_API  IRenderVisual
 {
 public:
-	virtual ~IRenderVisual() {;}
+	virtual ~IRenderVisual() { ; }
 
-	virtual vis_data&	_BCL	getVisData() = 0;
-	virtual u32					getType() = 0;
+	virtual vis_data &getVisData() = 0;
+	virtual u32 getType() = 0;
 
 #ifdef DEBUG
-	virtual shared_str	_BCL	getDebugName() = 0;
+	virtual shared_str getDebugName() = 0;
 #endif
 
-	virtual	IKinematics*	_BCL	dcast_PKinematics			()				{ return 0;	}
-	virtual	IKinematicsAnimated*	dcast_PKinematicsAnimated	()				{ return 0;	}
-//	virtual IParticleCustom*		dcast_ParticleCustom		()				{ return 0;	}
+	virtual IKinematics *dcast_PKinematics() { return nullptr; }
+	virtual IKinematicsAnimated *dcast_PKinematicsAnimated() { return nullptr; }
+	virtual IParticleCustom *dcast_ParticleCustom() { return nullptr; }
 };
