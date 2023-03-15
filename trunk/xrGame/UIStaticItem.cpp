@@ -77,13 +77,12 @@ void CUIStaticItem::Render()
 
 	int tile_x					= fis_zero(iRemX)?iTileX:iTileX+1;
 	int tile_y					= fis_zero(iRemY)?iTileY:iTileY+1;
-	int							x,y;
 	if (!(tile_x&&tile_y))		return;
 	// render
 	UIRender->StartPrimitive(8 * tile_x * tile_y, IUIRender::ptTriList, IUIRender::ePointType::pttTL);
 	for (int x = 0; x < tile_x; ++x) 
 	{
-		for (y=0; y<tile_y; ++y){
+		for (int y = 0; y<tile_y; ++y){
 			pos.set				(bp.x+f_len.x*x,bp.y+f_len.y*y);
 			inherited::Render	(pos,dwColor);
 		}
