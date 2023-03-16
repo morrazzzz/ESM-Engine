@@ -986,6 +986,9 @@ BOOL CWeapon::CheckForMisfire()
 	float mp = GetConditionMisfireProbability();
 	if(rnd < mp)
 	{
+		if (iAmmoElapsed == 0)
+			return false;
+
 		FireEnd();
 
 		bMisfire = true;
