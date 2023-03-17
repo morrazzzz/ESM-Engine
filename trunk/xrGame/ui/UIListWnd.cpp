@@ -231,8 +231,8 @@ void CUIListWnd::UpdateList()
 	   
 
 	//показать текущий список
-	for(u32 i=m_iFirstShownIndex; 
-			i<_min(m_ItemList.size(),m_iFirstShownIndex + m_iRowNum+1);
+	for(int i=m_iFirstShownIndex; 
+			i < _min(m_ItemList.size(),m_iFirstShownIndex + m_iRowNum+1);
 			++i, ++it)
 	{
 		(*it)->SetWndRect((*it)->GetWndRect().left, m_bVertFlip?GetHeight()-(i-m_iFirstShownIndex)* m_iItemHeight-m_iItemHeight:(i-m_iFirstShownIndex)* m_iItemHeight, 

@@ -233,33 +233,34 @@ void CCameraManager::Update(const Fvector& P, const Fvector& D, const Fvector& N
 	fAspect						= fAspect*dst	+ (fASPECT_Dest*aspect)*src;
 
 	// Effector
-	BOOL bOverlapped			= FALSE;
+	BOOL bOverlapped = FALSE;
 	if (m_EffectorsCam.size())
 	{
-		for (int i=m_EffectorsCam.size()-1; i>=0; i--)
+		for (int i = m_EffectorsCam.size() - 1; i >= 0; i--)
 		{
-			CEffectorCam* eff		= m_EffectorsCam[i];
-			if(eff->Valid() && eff->Process(vPosition,vDirection,vNormal,fFov,fFar,fAspect))
+			CEffectorCam* eff = m_EffectorsCam[i];
+			if (eff->Valid() && eff->Process(vPosition, vDirection, vNormal, fFov, fFar, fAspect))
 			{
-				bOverlapped		|= eff->Overlapped();
-			}else
+				bOverlapped |= eff->Overlapped();
+			}
+			else
 			{
-				if(eff->AllowProcessingIfInvalid())
+				if (eff->AllowProcessingIfInvalid())
 				{
-					eff->ProcessIfInvalid(vPosition,vDirection,vNormal,fFov,fFar,fAspect);
-					bOverlapped		|= eff->Overlapped();
+					eff->ProcessIfInvalid(vPosition, vDirection, vNormal, fFov, fFar, fAspect);
+					bOverlapped |= eff->Overlapped();
 				}
 
-				m_EffectorsCam.erase(m_EffectorsCam.begin()+i);
+				m_EffectorsCam.erase(m_EffectorsCam.begin() + i);
 				xr_delete(eff);
 			}
 		}
-		
+
 		// Normalize
-		vDirection.normalize	();
-		vNormal.normalize		();
-		vRight.crossproduct		(vNormal,vDirection);
-		vNormal.crossproduct	(vDirection,vRight);
+		vDirection.normalize();
+		vNormal.normalize();
+		vRight.crossproduct(vNormal, vDirection);
+		vNormal.crossproduct(vDirection, vRight);
 	}
 
 	pp_affected.validate		("before applying pp");

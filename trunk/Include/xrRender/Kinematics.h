@@ -1,6 +1,5 @@
 #pragma once
 
-#pragma todo("morrazzzz: Сделать Кинематику из ЗП! А пока эта(thx @tsmp)")
 #include "RenderVisual.h"
 
 class CBoneData;

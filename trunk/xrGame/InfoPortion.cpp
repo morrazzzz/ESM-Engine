@@ -71,7 +71,7 @@ void CInfoPortion::load_shared	(LPCSTR)
 	//после получения этой порции
 	int disable_num = pXML->GetNodesNum(pNode, "disable");
 	info_data()->m_DisableInfo.clear();
-	for(u32 i=0; i<disable_num; ++i)
+	for(int i=0; i<disable_num; ++i)
 	{
 		shared_str info_id		= pXML->Read(pNode, "disable", i,"");
 		info_data()->m_DisableInfo.push_back(info_id);
@@ -84,7 +84,7 @@ void CInfoPortion::load_shared	(LPCSTR)
 	//индексы статей
 	info_data()->m_Articles.clear();
 	int articles_num	= pXML->GetNodesNum(pNode, "article");
-	for(u32 i=0; i<articles_num; ++i)
+	for(int i=0; i<articles_num; ++i)
 	{
 		LPCSTR article_str_id = pXML->Read(pNode, "article", i, NULL);
 		THROW(article_str_id);
@@ -93,7 +93,7 @@ void CInfoPortion::load_shared	(LPCSTR)
 
 	info_data()->m_ArticlesDisable.clear();
 	articles_num = pXML->GetNodesNum(pNode, "article_disable");
-	for(u32 i=0; i<articles_num; ++i)
+	for(int i=0; i<articles_num; ++i)
 	{
 		LPCSTR article_str_id = pXML->Read(pNode, "article_disable", i, NULL);
 		THROW(article_str_id);
@@ -102,7 +102,7 @@ void CInfoPortion::load_shared	(LPCSTR)
 	
 	info_data()->m_GameTasks.clear();
 	int task_num = pXML->GetNodesNum(pNode, "task");
-	for(u32 i=0; i<task_num; ++i)
+	for(int i=0; i<task_num; ++i)
 	{
 		LPCSTR task_str_id = pXML->Read(pNode, "task", i, NULL);
 		THROW(task_str_id);
@@ -120,8 +120,8 @@ void   CInfoPortion::InitXmlIdToIndex()
 
 void _destroy_item_data_vector_cont(T_VECTOR* vec)
 {
-	T_VECTOR::iterator it		= vec->begin();
-	T_VECTOR::iterator it_e		= vec->end();
+	auto it		= vec->begin();
+	auto it_e		= vec->end();
 
 	xr_vector<CUIXml*>			_tmp;	
 	for(;it!=it_e;++it)

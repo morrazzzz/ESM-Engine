@@ -3,19 +3,16 @@
 #include "bloodsucker.h"
 
 #include "../control_animation_base.h"
-#include "../control_direction_base.h"
-#include "../control_movement_base.h"
 #include "../control_path_builder_base.h"
+#include "../control_direction_base.h"
 
 #include "../states/monster_state_rest.h"
-#include "../states/monster_state_attack.h"
 #include "../states/monster_state_panic.h"
 #include "../states/monster_state_eat.h"
 #include "../states/monster_state_hear_int_sound.h"
 #include "../states/monster_state_hitted.h"
 
 #include "bloodsucker_vampire.h"
-#include "bloodsucker_predator.h"
 
 #include "bloodsucker_attack_state.h"
 
