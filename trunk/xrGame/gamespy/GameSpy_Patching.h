@@ -13,7 +13,6 @@ public:
 	CGameSpy_Patching(HMODULE hGameSpyDLL);
 	~CGameSpy_Patching();
 
-	void CheckForPatch	(bool InformOfNoPatch);
 private:
 	//--------------------- GCD_Client -------------------------------------------	
 	GAMESPY_FN_VAR_DECL(bool, ptCheckForPatch, (

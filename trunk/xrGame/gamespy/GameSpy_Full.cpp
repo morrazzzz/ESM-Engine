@@ -13,7 +13,6 @@
 CGameSpy_Full::CGameSpy_Full()	
 {
 	m_pGSA	= NULL;
-	m_pGS_Patching = NULL;
 	m_pGS_HTTP = NULL;
 	m_pGS_SB = NULL;
 
@@ -27,7 +26,6 @@ CGameSpy_Full::CGameSpy_Full()
 	shared_str resultstr;
 	m_bServicesAlreadyChecked = m_pGSA->CheckAvailableServices(resultstr);
 	//-----------------------------------------------------
-	m_pGS_Patching = xr_new<CGameSpy_Patching>(m_hGameSpyDLL);
 	m_pGS_HTTP  = xr_new<CGameSpy_HTTP>(m_hGameSpyDLL);
 	m_pGS_SB = xr_new<CGameSpy_Browser>(m_hGameSpyDLL);
 }
@@ -35,7 +33,6 @@ CGameSpy_Full::CGameSpy_Full()
 CGameSpy_Full::~CGameSpy_Full()
 {
 	delete_data(m_pGSA);
-	delete_data(m_pGS_Patching);
 	delete_data(m_pGS_HTTP);
 	delete_data(m_pGS_SB);
 

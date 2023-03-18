@@ -48,18 +48,3 @@ void __cdecl GS_ptPatchCallback ( PTBool available, PTBool mandatory, const char
 	Msg("Found NewPatch: %s - %s", versionName, downloadURL);
 	MainMenu()->OnNewPatchFound(versionName, downloadURL);
 };
-
-void	CGameSpy_Patching::CheckForPatch(bool InformOfNoPatch)
-{
-	g_bInformUserThatNoPatchFound = InformOfNoPatch;
-	bool res =  xrGS_ptCheckForPatch(
-		GS_ptPatchCallback,
-		PTFalse,
-		this
-	);	
-	if (!res)
-	{
-		Msg("! Unable to send query for patch!");
-
-	}
-};

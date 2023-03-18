@@ -31,9 +31,6 @@
 #include "../xr_3da/resourcemanager.h"
 #include "../xrCore/xr_ini.h"
 
-#include "GameSpy/GameSpy_Full.h"
-#include "GameSpy/GameSpy_Patching.h"
-
 #ifdef DEBUG
 #	include "PHDebug.h"
 #	include "ui/UIDebugFonts.h" 
@@ -161,14 +158,11 @@ public:
 	virtual void Execute(LPCSTR args) {
 		CCC_Token::Execute(args);
 		if (g_pGameLevel && Level().game){
-//#ifndef	DEBUG
 			if (GameID() != GAME_SINGLE){
 				Msg("For this game type difficulty level is disabled.");
 				return;
-			};
-//#endif
-
-			game_cl_Single* game		= smart_cast<game_cl_Single*>(Level().game); VERIFY(game);
+			}
+			auto* game		= smart_cast<game_cl_Single*>(Level().game); VERIFY(game);
 			game->OnDifficultyChanged	();
 		}
 	}
@@ -214,7 +208,7 @@ public:
 
 class CCC_ALifeTimeFactor : public IConsole_Command {
 public:
-	CCC_ALifeTimeFactor(LPCSTR N) : IConsole_Command(N)  { };
+	CCC_ALifeTimeFactor(LPCSTR N) : IConsole_Command(N)  {}
 	virtual void Execute(LPCSTR args) {
 		float id1 = 0.0f;
 		sscanf(args ,"%f",&id1);
@@ -231,7 +225,7 @@ public:
 
 class CCC_ALifeSwitchDistance : public IConsole_Command {
 public:
-	CCC_ALifeSwitchDistance(LPCSTR N) : IConsole_Command(N)  { };
+	CCC_ALifeSwitchDistance(LPCSTR N) : IConsole_Command(N)  {}
 	virtual void Execute(LPCSTR args) {
 		if ((GameID() == GAME_SINGLE)  &&ai().get_alife()) {
 			float id1 = 0.0f;
@@ -272,7 +266,7 @@ public:
 
 class CCC_ALifeObjectsPerUpdate : public IConsole_Command {
 public:
-	CCC_ALifeObjectsPerUpdate(LPCSTR N) : IConsole_Command(N)  { };
+	CCC_ALifeObjectsPerUpdate(LPCSTR N) : IConsole_Command(N)  {}
 	virtual void Execute(LPCSTR args) {
 		if ((GameID() == GAME_SINGLE)  &&ai().get_alife()) {
 			game_sv_Single	*tpGame = smart_cast<game_sv_Single *>(Level().Server->game);
@@ -288,7 +282,7 @@ public:
 
 class CCC_ALifeSwitchFactor : public IConsole_Command {
 public:
-	CCC_ALifeSwitchFactor(LPCSTR N) : IConsole_Command(N)  { };
+	CCC_ALifeSwitchFactor(LPCSTR N) : IConsole_Command(N)  {}
 	virtual void Execute(LPCSTR args) {
 		if ((GameID() == GAME_SINGLE)  &&ai().get_alife()) {
 			game_sv_Single	*tpGame = smart_cast<game_sv_Single *>(Level().Server->game);
@@ -326,7 +320,7 @@ public:
 		{
 			Msg("For this game type Demo Record is disabled.");
 			return;
-		};
+		}
 		#endif
 		Console->Hide	();
 		string_path		fn_; 
@@ -351,10 +345,12 @@ public:
 			return;
 		};
 		#endif
-		  if (0==g_pGameLevel)
+		  if (!g_pGameLevel)
 		  {
 			  Msg	("! There are no level(s) started");
-		  } else {
+		  }
+	  	else 
+		  {
 			  Console->Hide			();
 			  string_path			fn;
 			  u32		loops	=	0;
@@ -619,7 +615,7 @@ public:
 
 class CCC_Script : public IConsole_Command {
 public:
-	CCC_Script(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
+	CCC_Script(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = true; }
 	virtual void Execute(LPCSTR args) {
 		string256	S;
 		S[0]		= 0;
@@ -993,6 +989,22 @@ struct CCC_JumpToLevel : public IConsole_Command {
 				return;
 			}
 		Msg							("! There is no level \"%s\" in the game graph!",level);
+	}
+
+	virtual void fill_tips(vecTips& tips, u32 mode)
+	{
+		if (!ai().get_alife())
+		{
+			Msg("! ALife simulator is needed to perform specified command!");
+			return;
+		}
+
+		GameGraph::LEVEL_MAP::const_iterator itb = ai().game_graph().header().levels().begin();
+		GameGraph::LEVEL_MAP::const_iterator ite = ai().game_graph().header().levels().end();
+		for (; itb != ite; ++itb)
+		{
+			tips.push_back((*itb).second.name());
+		}
 	}
 };
 
@@ -1381,37 +1393,6 @@ public:
 	}
 };
 
-class CCC_GSCheckForUpdates : public IConsole_Command {
-public:
-	CCC_GSCheckForUpdates(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
-	virtual void Execute(LPCSTR arguments)
-	{
-		if (!MainMenu()) return;
-		/*
-		CGameSpy_Available GSA;
-		shared_str result_string;
-		if (!GSA.CheckAvailableServices(result_string))
-		{
-			Msg(*result_string);
-//			return;
-		};
-		CGameSpy_Patching GameSpyPatching;
-		*/
-		bool InformOfNoPatch = true;
-		if (arguments && *arguments) {
-			int bInfo = 1;
-			sscanf	(arguments,"%d", &bInfo);
-			InformOfNoPatch = (bInfo != 0);
-		}
-		
-//		GameSpyPatching.CheckForPatch(InformOfNoPatch);
-		
-		MainMenu()->GetGS()->m_pGS_Patching->CheckForPatch(InformOfNoPatch);
-	}
-};
-
-
-
 class CCC_Net_SV_GuaranteedPacketMode : public CCC_Integer {
 protected:
 	int		*value_blin;
@@ -1500,10 +1481,7 @@ void CCC_RegisterCommands()
 
 	CMD3(CCC_Mask,				"hud_weapon",			&psHUD_Flags,	HUD_WEAPON)
 	CMD3(CCC_Mask,				"hud_info",				&psHUD_Flags,	HUD_INFO)
-
-#ifndef MASTER_GOLD
 	CMD3(CCC_Mask,				"hud_draw",				&psHUD_Flags,	HUD_DRAW);
-#endif // MASTER_GOLD
 	// hud
 	psHUD_Flags.set(HUD_CROSSHAIR,		true);
 	psHUD_Flags.set(HUD_WEAPON,			true);
@@ -1602,7 +1580,7 @@ void CCC_RegisterCommands()
 
 	// Physics
 	CMD1(CCC_PHFps,				"ph_frequency"																					);
-	CMD1(CCC_PHIterations,		"ph_iterations"																					);
+	CMD1(CCC_PHIterations,		"ph_iterations"																			);
 
 #ifdef DEBUG
 	CMD1(CCC_PHGravity,			"ph_gravity"																					);
@@ -1614,8 +1592,8 @@ void CCC_RegisterCommands()
 #endif // DEBUG
 
 	CMD1(CCC_JumpToLevel,	"jump_to_level"		)
-	CMD1(CCC_Spawn, "g_spawn");
-	CMD1(CCC_SpawnToInventory, "g_spawn_to_inventory");
+	CMD1(CCC_Spawn, "g_spawn")
+	CMD1(CCC_SpawnToInventory, "g_spawn_to_inventory")
 	CMD3(CCC_Mask,			"g_god",			&psActorFlags,	AF_GODMODE	)
 	CMD3(CCC_Mask,			"g_unlimitedammo",	&psActorFlags,	AF_UNLIMITEDAMMO)
 	CMD1(CCC_Script,		"run_script")
@@ -1693,8 +1671,8 @@ void CCC_RegisterCommands()
 
 #endif
 
-	CMD3(CCC_Mask,			"cl_dynamiccrosshair",	&psHUD_Flags,	HUD_CROSSHAIR_DYNAMIC);
-	CMD1(CCC_MainMenu,		"main_menu"				);
+	CMD3(CCC_Mask,			"cl_dynamiccrosshair",	&psHUD_Flags,	HUD_CROSSHAIR_DYNAMIC)
+	CMD1(CCC_MainMenu,		"main_menu"				)
 
 #ifndef MASTER_GOLD
 	CMD1(CCC_StartTimeSingle,	"start_time_single");
@@ -1712,7 +1690,6 @@ void CCC_RegisterCommands()
 	CMD4(CCC_Vector3,		"psp_cam_offset",				&CCameraLook2::m_cam_offset, Fvector().set(-1000,-1000,-1000),Fvector().set(1000,1000,1000));
 #endif // MASTER_GOLD
 
-	CMD1(CCC_GSCheckForUpdates, "check_for_updates");
 #ifdef DEBUG
 	CMD1(CCC_DumpObjects,							"dump_all_objects");
 	CMD3(CCC_String, "stalker_death_anim", dbg_stalker_death_anim, 32);
