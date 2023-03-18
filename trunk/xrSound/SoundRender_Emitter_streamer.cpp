@@ -145,3 +145,9 @@ void	CSoundRender_Emitter::fill_block	(void* ptr, u32 size)
 		position			+= size;
 	}
 }
+
+float CSoundRender_Emitter::get_length_sec() const
+{
+	float res = owner_data->get_length_sec();
+	return res;
+}

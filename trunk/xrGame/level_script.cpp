@@ -91,14 +91,13 @@ LPCSTR get_weather	()
 
 void set_weather	(LPCSTR weather_name, bool forced)
 {
-	return			(g_pGamePersistent->Environment().SetWeather(weather_name,forced));
+	g_pGamePersistent->Environment().SetWeather(weather_name, forced);
 }
 
-bool set_weather_fx	(LPCSTR weather_name)
+bool set_weather_fx(LPCSTR weather_name)
 {
-	return			(g_pGamePersistent->Environment().SetWeatherFX(weather_name));
+	return		(g_pGamePersistent->Environment().SetWeatherFX(weather_name));
 }
-
 bool is_wfx_playing	()
 {
 	return			(g_pGamePersistent->Environment().IsWFXPlaying());

@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding="UTF-8"?>
+<window x="0" y="0" w="640" h="480" r="227" g="121" b="222" texture="1">
+	<!-- CAR_HEALTH -->
+	<car_health_static x="407" y="-17" width="151" height="200">
+		<text font="small" x="20" y="6" width="80" height="20" a="255" r="239" g="154" b="29" align="c">ui_hud_text_vehicle</text>
+		<texture>ui\Another_health</texture>
+	</car_health_static>
+
+	<!-- car health bar -->
+	<car_health_progress_bar x="16" y="23" width="120" height="18" horz="1" min="0" max="100" pos="0">
+		<progress>
+			<texture tile="0" width="120" height="16" length="120" r="229" g="187" b="48">ui\Another_efficiency_full</texture>
+			<background x="0" y="0" width="120" height="16" >ui\Another_efficiency_empty</background>
+		</progress>
+	</car_health_progress_bar>
+
+	<car_fuel_static x="408" y="-64" width="150" height="200">
+		<text font="small" x="20" y="6" width="80" height="20" a="255" r="239" g="154" b="29" align="c">ui_hud_text_fuel</text>
+		<texture>ui\Another_health</texture>
+	</car_fuel_static>
+	
+	<car_fuel_progress_bar x="16" y="23" width="120" height="18" horz="1" min="0" max="100" pos="0">
+		<progress>
+			<texture tile="0" width="120" height="16" length="120" r="210" g="12" b="255">ui\Another_efficiency_full</texture>
+			<background x="0" y="0" width="120" height="16" >ui\Another_efficiency_empty</background>
+		</progress>
+	</car_fuel_progress_bar>
+	
+    <progress_bar_armor x="33" y="10" width="150" height="50" align="rb">
+		<text x="80" y="5" font="small" r="255" g="255" b="255" a="130">Speed</text>
+		<progress>
+		<texture>ui_hud_shk_car</texture>
+        </progress>
+	</progress_bar_armor>
+
+	<tachometer_progress_bar x="33" y="10" width="150" height="50" align="rb">
+		<text x="80" y="5" font="small" r="255" g="255" b="255" a="130">RPM</text>
+		<progress>
+		<texture>ui_hud_shk_car</texture>
+        </progress>
+	</tachometer_progress_bar>
+	
+
+	<speedometer x="-195" y="-24" width="50" height="30">
+		<texture stretch="1">ui\ui_speedometer_30</texture>
+		<pointer arrow="ui\ui_pointer_30" offset_x="-26" offset_y="-28" angle_min="-90" angle_max="90"></pointer>
+	</speedometer>
+
+	<tachometer x="-25" y="-36" width="50" height="30">
+		<texture stretch="1">ui\ui_tachometer_30</texture>
+		<pointer arrow="ui\ui_pointer_30" offset_x="-26" offset_y="-18" angle_min="-90" angle_max="90"></pointer>		
+	</tachometer>
+
+</window>

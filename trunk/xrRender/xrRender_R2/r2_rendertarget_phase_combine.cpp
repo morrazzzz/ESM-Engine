@@ -29,12 +29,16 @@ void	CRenderTarget::phase_combine	()
 	if (ps_r2_ls_flags.test(R2FLAG_EXP_SPLIT_SCENE))	split_the_scene_to_minimize_wait=TRUE;
 
 	// draw skybox
+	// draw skybox
 	if (1)
 	{
-		RCache.set_ColorWriteEnable					();
-		CHK_DX(HW.pDevice->SetRenderState			( D3DRS_ZENABLE,	FALSE				));
-		g_pGamePersistent->Environment().RenderSky	();
-		CHK_DX(HW.pDevice->SetRenderState			( D3DRS_ZENABLE,	TRUE				));
+		RCache.set_ColorWriteEnable();
+		CHK_DX(HW.pDevice->SetRenderState(D3DRS_ZENABLE, FALSE));
+		g_pGamePersistent->Environment().RenderSky();
+		//	Igor: Render clouds before compine without Z-test
+		//	to avoid siluets. HOwever, it's a bit slower process.
+		g_pGamePersistent->Environment().RenderClouds();
+		CHK_DX(HW.pDevice->SetRenderState(D3DRS_ZENABLE, TRUE));
 	}
 
 	// 
@@ -66,12 +70,12 @@ void	CRenderTarget::phase_combine	()
 	{
 		// Compute params
 		Fmatrix		m_v2w;			m_v2w.invert				(Device.mView		);
-		CEnvDescriptorMixer& envdesc= *g_pGamePersistent->Environment().CurrentEnv		;
+		CEnvDescriptorMixer* envdesc= g_pGamePersistent->Environment().CurrentEnv		;
 		const float minamb			= 0.001f;
-		Fvector4	ambclr			= { _max(envdesc.ambient.x*2,minamb),	_max(envdesc.ambient.y*2,minamb),			_max(envdesc.ambient.z*2,minamb),	0	};
+		Fvector4	ambclr			= { _max(envdesc->ambient.x*2,minamb),	_max(envdesc->ambient.y*2,minamb),			_max(envdesc->ambient.z*2,minamb),	0	};
 					ambclr.mul		(ps_r2_sun_lumscale_amb);
-		Fvector4	envclr			= { envdesc.sky_color.x*2+EPS,	envdesc.sky_color.y*2+EPS,	envdesc.sky_color.z*2+EPS,	envdesc.weight					};
-		Fvector4	fogclr			= { envdesc.fog_color.x,	envdesc.fog_color.y,	envdesc.fog_color.z,		0	};
+		Fvector4	envclr = { envdesc->hemi_color.x * 2 + EPS,	envdesc->hemi_color.y * 2 + EPS,	envdesc->hemi_color.z * 2 + EPS,	envdesc->weight };
+		Fvector4	fogclr			= { envdesc->fog_color.x,	envdesc->fog_color.y,	envdesc->fog_color.z,		0	};
 					envclr.x		*= 2*ps_r2_sun_lumscale_hemi; 
 					envclr.y		*= 2*ps_r2_sun_lumscale_hemi; 
 					envclr.z		*= 2*ps_r2_sun_lumscale_hemi;
@@ -104,7 +108,7 @@ void	CRenderTarget::phase_combine	()
 		pv->set						(hclip(_w+EPS,	_w),	hclip(EPS,		_h),	p1.x, p0.y);	pv++;
 		RCache.Vertex.Unlock		(4,g_combine_VP->vb_stride);
 
-		dxEnvDescriptorMixerRender& envdescren = *(dxEnvDescriptorMixerRender*)(&*envdesc.m_pDescriptorMixer);
+		dxEnvDescriptorMixerRender& envdescren = *(dxEnvDescriptorMixerRender*)(&*envdesc->m_pDescriptorMixer);
 
 		// Setup textures
 		IDirect3DBaseTexture9*	e0	= _menu_pp?0:envdescren.sky_r_textures_env[0].second->surface_get();
@@ -133,7 +137,6 @@ void	CRenderTarget::phase_combine	()
 		RCache.set_CullMode				(CULL_CCW);
 		RCache.set_Stencil				(FALSE);
 		RCache.set_ColorWriteEnable		();
-		g_pGamePersistent->Environment().RenderClouds	();
 		RImplementation.render_forward	();
 		if (g_pGamePersistent)	g_pGamePersistent->OnRenderPPUI_main()	;	// PP-UI
 	}
@@ -211,7 +214,7 @@ void	CRenderTarget::phase_combine	()
 	RCache.set_Stencil		(FALSE);
 
 	//	if FP16-BLEND !not! supported - draw flares here, overwise they are already in the bloom target
-	/* if (!RImplementation.o.fp16_blend)*/	g_pGamePersistent->Environment().RenderFlares	();	// lens-flares
+	/* if (!RImplementation.o.fp16_blend)*/	g_pGamePersistent->Environment().RenderFlares();	// lens-flares
 
 	//	PP-if required
 	if (PP_Complex)		{

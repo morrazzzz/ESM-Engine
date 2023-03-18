@@ -533,8 +533,8 @@ void	CRender::Render		()
 	if(Details)Details->Render					();				// grass / details
 	r_dsgraph_render_lods						(true,false);	// lods - FB
 
-	g_pGamePersistent->Environment().RenderSky	();				// sky / sun
-	g_pGamePersistent->Environment().RenderClouds	();				// clouds
+	g_pGamePersistent->Environment().RenderSky();				// sky / sun
+	g_pGamePersistent->Environment().RenderClouds();				// clouds
 
 	r_pmask										(true,false);	// disable priority "1"
 	o.vis_intersect								= TRUE			;

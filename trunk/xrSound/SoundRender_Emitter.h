@@ -36,6 +36,8 @@ public:
 	CSoundRender_Source*		source;
 	ref_sound_data_ptr			owner_data;
 
+	float						get_length_sec() const;
+
 	float						priority_scale;
 	float						smooth_volume;
 	float 						occluder_volume;		// USER

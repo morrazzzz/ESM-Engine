@@ -93,10 +93,12 @@ public:
 	int								g_type;			//!< Sound type, usually for AI
 	CObject*						g_object;		//!< Game object that emitts ref_sound
 	CSound_UserDataPtr				g_userdata;
+	float							fTimeTotal;
 public:
 									ref_sound_data	();
 									ref_sound_data	(LPCSTR fName, esound_type sound_type, int game_type);
 	virtual							~ref_sound_data	();
+	float							get_length_sec() const { return fTimeTotal; };
 };
 typedef resptr_core<ref_sound_data,resptr_base<ref_sound_data> >	ref_sound_data_ptr;
 /*! \class ref_sound
@@ -173,6 +175,7 @@ public:
 
 	IC const CSound_params*	get_params				( );
     IC void					set_params				( CSound_params* p );
+	IC float				get_length_sec() const { return _p ? _p->get_length_sec() : 0.0f; };
 };
 
 /// definition (Sound Source)
