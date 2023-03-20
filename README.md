@@ -14,7 +14,7 @@
 ESM-Engine
 ==========================
 * Движок был основан на [XRay](https://github.com/mortany/xray), а точнее его модификации для новых Visual Studio.
-* Спасибо проектам, чьи наработки были здесь использованы: [XRay OMP X64](https://github.com/xrLil-Batya/xray-omp-x64), [OGSR Engine](https://github.com/OGSR/OGSR-Engine/), [STCOP Engine x64](https://github.com/mortany/stcop-engine), SO-XRay-Engine, [Anomaly Engine](https://github.com/morrazzzz/xray-monolith-152), TSMP Engine
+* Спасибо проектам, чьи наработки были здесь использованы: [XRay OMP X64](https://github.com/xrLil-Batya/xray-omp-x64), [OGSR Engine](https://github.com/OGSR/OGSR-Engine/), [STCOP Engine x64](https://github.com/mortany/stcop-engine), SO-XRay-Engine, [Anomaly Engine](https://github.com/morrazzzz/xray-monolith-152), TSMP Engine, [NSProjectX](https://github.com/Deathman00/NSProjectX), [XRay 1.6(abramcumner)](https://github.com/abramcumner/xray16)
 
 ## Цели проекта:
 * Исправление ошибок оригинального движка
