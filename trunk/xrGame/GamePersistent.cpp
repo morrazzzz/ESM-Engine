@@ -2,7 +2,7 @@
 #include "gamepersistent.h"
 #include "../xr_3da/fmesh.h"
 #include "../xr_3da/xr_ioconsole.h"
-#include "gamemtllib.h"
+#include "../xr_3da/GameMtlLib.h"
 #include "../xr_3da/skeletoncustom.h"
 #include "MainMenu.h"
 #include "UICursor.h"

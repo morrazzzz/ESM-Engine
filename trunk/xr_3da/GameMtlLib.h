@@ -16,6 +16,8 @@
 #define GAMEMTL_CHUNK_FLOTATION   		0x1004
 #define GAMEMTL_CHUNK_DESC				0x1005
 #define GAMEMTL_CHUNK_INJURIOUS			0x1006
+#define GAMEMTL_CHUNK_DENSITY			0x1007
+#define GAMEMTL_CHUNK_FACTORS_MP       	0x1008
 //----------------------------------------------------
 #define GAMEMTLPAIR_CHUNK_PAIR   		0x1000
 //#define GAMEMTLPAIR_CHUNK_FLOTATION   0x1001 - obsolete
@@ -44,22 +46,29 @@
 #define GM_NON_GAME
 #endif
 
+#ifndef	MTL_EXPORT_API
 #ifdef _EDITOR
-#include "ElTree.hpp"
+	#include "ElTree.hpp"
+	#define MTL_EXPORT_API ECORE_API
+#else
+	#define MTL_EXPORT_API ENGINE_API
+#endif
 #endif
 
 #ifdef GM_NON_GAME
 	#define SoundVec	shared_str
 	#define PSVec 		shared_str
 	#define ShaderVec 	shared_str
+//	#define ShaderVec 	shared_str
 #else
 	DEFINE_VECTOR(ref_sound,SoundVec,SoundIt);
 	DEFINE_VECTOR(shared_str,PSVec,PSIt);
-    #include "../Include/xrRender/WallMarkArray.h"
-    #include "../Include/xrRender/RenderFactory.h"
+#include "../Include/xrRender/WallMarkArray.h"
+#include "../Include/xrRender/RenderFactory.h"
+//	DEFINE_VECTOR(ref_shader,ShaderVec,ShaderIt);
 #endif
 
-struct ECORE_API SGameMtl
+struct MTL_EXPORT_API SGameMtl
 {
 	friend class CGameMtlLibrary;
 protected:
@@ -79,7 +88,10 @@ public:
 		flSuppressShadows	= (1ul<<10ul),
 		flSuppressWallmarks	= (1ul<<11ul),
 		flActorObstacle	= (1ul<<12ul),
+		flNoRicoshet	= (1ul<<13ul),
 
+
+		
         flInjurious		= (1ul<<28ul),// flInjurious = fInjuriousSpeed > 0.f
 		flShootable 	= (1ul<<29ul),
         flTransparent	= (1ul<<30ul),
@@ -99,10 +111,12 @@ public:
 	// shoot&bounce&visibility&flotation
     float		    	fFlotationFactor;		// 0.f - 1.f   	(1.f-полностью проходимый)
     float				fShootFactor;			// 0.f - 1.f	(1.f-полностью простреливаемый)
+    float				fShootFactorMP;			// 0.f - 1.f	(1.f-полностью простреливаемый)
     float				fBounceDamageFactor;	// 0.f - 100.f
     float				fInjuriousSpeed; 		// 0.f - ...	(0.f-не отбирает здоровье (скорость уменьшения здоровья))
     float				fVisTransparencyFactor;	// 0.f - 1.f	(1.f-полностью прозрачный)
     float				fSndOcclusionFactor;	// 0.f - 1.f    (1.f-полностью слышен)
+	float				fDensityFactor;
 public:
 	SGameMtl			()
     {
@@ -112,6 +126,7 @@ public:
         // factors
         fFlotationFactor		= 1.f;
         fShootFactor			= 0.f;
+        fShootFactorMP			= 0.f;
         fBounceDamageFactor		= 1.f;
         fInjuriousSpeed 		= 0.f;
         fVisTransparencyFactor	= 0.f;
@@ -122,6 +137,7 @@ public:
         fPHSpring				= 1.f;
         fPHBounceStartVelocity  = 0.f;
         fPHBouncing				= 0.1f;
+		fDensityFactor			= 0.0f;
 	}
     void 				Load			(IReader& fs);
     void 				Save			(IWriter& fs);
@@ -132,7 +148,7 @@ public:
 };
 DEFINE_VECTOR(SGameMtl*,GameMtlVec,GameMtlIt);
 
-struct ECORE_API SGameMtlPair{
+struct MTL_EXPORT_API SGameMtlPair{
 	friend class CGameMtlLibrary;
     CGameMtlLibrary*	m_Owner;
 private:
@@ -157,7 +173,14 @@ public:
     SoundVec			StepSounds;
     SoundVec			CollideSounds;
     PSVec				CollideParticles;
-    FactoryPtr<IWallMarkArray> m_pCollideMarks;
+
+
+#ifdef	GM_NON_GAME
+	#define ShaderVec 	shared_str
+    ShaderVec			CollideMarks;
+#else	//	GM_NON_GAME
+	FactoryPtr<IWallMarkArray> m_pCollideMarks;
+#endif	//	GM_NON_GAME
 #ifdef _EDITOR
     PropValue*			propBreakingSounds;
     PropValue*			propStepSounds;
@@ -168,10 +191,14 @@ public:
 	void __stdcall	 	OnParentClick	(ButtonValue* sender, bool& bModif, bool& bSafe);
 	void __stdcall	 	OnCommandClick	(ButtonValue* sender, bool& bModif, bool& bSafe);
     void __stdcall	 	FillChooseMtl	(ChooseItemVec& items, void* param);
+	void 				CopyFrom		(SGameMtlPair* parent);
 #endif
 public:
 	SGameMtlPair		(CGameMtlLibrary* owner)
     {
+#ifndef	GM_NON_GAME
+		//m_pCollideMarks = RenderFactory->CreateGameMtlPair();
+#endif	//	GM_NON_GAME
     	mtl0			= -1;
     	mtl1			= -1;
         ID				= -1;
@@ -200,7 +227,7 @@ public:
 
 DEFINE_VECTOR(SGameMtlPair*,GameMtlPairVec,GameMtlPairIt);
 
-class ECORE_API CGameMtlLibrary{
+class MTL_EXPORT_API CGameMtlLibrary{
 	int					material_index;
 	int					material_pair_index;
 
@@ -213,14 +240,7 @@ class ECORE_API CGameMtlLibrary{
     GameMtlPairVec		material_pairs_rt;
 #endif
 public:
-	CGameMtlLibrary		()
-	{
-	    material_index 		= 0;
-	    material_pair_index = 0;
-#ifndef _EDITOR
-        material_count	    = 0;
-#endif
-    }
+	CGameMtlLibrary		();
 	~CGameMtlLibrary	()
 	{
 		/*
@@ -282,11 +302,12 @@ public:
 	}
 #else
 	// game
-	IC u16				GetMaterialIdx	(int ID)		{GameMtlIt it=GetMaterialItByID(ID);VERIFY(materials.end() != it); return (u16)(it-materials.begin());}
-	IC u16				GetMaterialIdx	(LPCSTR name)	{GameMtlIt it=GetMaterialIt(name);VERIFY(materials.end() != it); return (u16)(it-materials.begin());}
-	IC SGameMtl*		GetMaterialByIdx(u16 idx)		{VERIFY(idx<materials.size()); return materials[idx];}
 	IC SGameMtl*		GetMaterialByID (s32 id)		{return GetMaterialByIdx(GetMaterialIdx(id));}
 #endif
+	IC u16				GetMaterialIdx	(int ID)		{GameMtlIt it=GetMaterialItByID(ID);VERIFY(materials.end() != it); return (u16)(it-materials.begin());}
+	IC u16				GetMaterialIdx	(LPCSTR name)	{GameMtlIt it=GetMaterialIt(name);VERIFY(materials.end() != it); return (u16)(it-materials.begin());}
+	IC SGameMtl*		GetMaterialByIdx(u16 idx)		{VERIFY(idx<(u16)materials.size()); return materials[idx];}
+
 
 	IC GameMtlIt		FirstMaterial	(){return materials.begin();}
 	IC GameMtlIt		LastMaterial	(){return materials.end();}
@@ -294,6 +315,7 @@ public:
 
 // material pair routine
 #ifdef _EDITOR
+	void 				CopyMtlPairs		(SGameMtl* from, SGameMtl* to);
 	BOOL				UpdateMtlPairs		(SGameMtl* src);
 	BOOL				UpdateMtlPairs		();
 	LPCSTR				MtlPairToName		(int mtl0, int mtl1);
@@ -329,4 +351,6 @@ public:
 	_res_.clone(GET_RANDOM(_mtl_pair_##->_a_vector_),st_Effect,sg_SourceType);\
 	}
 
-extern ECORE_API CGameMtlLibrary GMLib;
+extern MTL_EXPORT_API CGameMtlLibrary		GMLib;
+
+#include "../Include/xrAPI/xrAPI.h"

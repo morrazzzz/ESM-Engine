@@ -11,7 +11,7 @@
 #include "PhysicsGamePars.h"
 #include "MathUtils.h" 
 #include "level.h"
-#include "gamemtllib.h"
+#include "../xr_3da/GameMtlLib.h"
 #include "gameobject.h"
 #include "physicsshellholder.h"
 #include "../xr_3da/skeletoncustom.h"

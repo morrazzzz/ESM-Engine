@@ -7,7 +7,7 @@
 #include "Extendedgeom.h"
 #include "SpaceUtils.h"
 #include "MathUtils.h"
-#include "GameMtlLib.h"
+#include "../xr_3da/GameMtlLib.h"
 #include "Level.h"
 #include "PHWorld.h"
 #include "../../3rd party/ode/ode/util.h"

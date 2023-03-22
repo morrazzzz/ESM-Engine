@@ -5,7 +5,7 @@
 #include "../xr_3da/skeletoncustom.h"
 #include "geometry.h"
 #include "PhysicsShell.h"
-#include "GameMtlLib.h"
+#include "../xr_3da/GameMtlLib.h"
 #include "Physics.h"
 #include "../../xrNetServer/net_utils.h"
 #include "xrMessages.h"

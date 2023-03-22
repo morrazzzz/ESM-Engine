@@ -1,7 +1,7 @@
-#ifndef PH_GEOMETRY_OWNER_H
-#define PH_GEOMETRY_OWNER_H
+#pragma once
+
 #include "Geometry.h"
-#include "gamemtllib.h"
+#include "../xr_3da/GameMtlLib.h"
 
 DEFINE_VECTOR(CODEGeom*,GEOM_STORAGE,GEOM_I)
 
@@ -72,5 +72,3 @@ protected:
 virtual								~CPHGeometryOwner						();
 private:
 };
-
-#endif

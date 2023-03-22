@@ -1282,9 +1282,6 @@
     <Filter Include="Core\Client\Effects\Core">
       <UniqueIdentifier>{53d1fc79-3327-484f-9790-eb25824820cc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\Client\Game Materials">
-      <UniqueIdentifier>{dafe7b20-ee81-44c6-a03a-803c4efbb6f7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core\Client\Game Persistent">
       <UniqueIdentifier>{a76d86d2-8cad-4b6b-8a12-933e11654fef}</UniqueIdentifier>
     </Filter>
@@ -4731,9 +4728,6 @@
     <ClInclude Include="DynamicHeightMap.h">
       <Filter>Core\Client\Effects\Core</Filter>
     </ClInclude>
-    <ClInclude Include="GameMtlLib.h">
-      <Filter>Core\Client\Game Materials</Filter>
-    </ClInclude>
     <ClInclude Include="GamePersistent.h">
       <Filter>Core\Client\Game Persistent</Filter>
     </ClInclude>
@@ -7840,12 +7834,6 @@
     </ClCompile>
     <ClCompile Include="DynamicHeightMap.cpp">
       <Filter>Core\Client\Effects\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GameMtlLib.cpp">
-      <Filter>Core\Client\Game Materials</Filter>
-    </ClCompile>
-    <ClCompile Include="GameMtlLib_Engine.cpp">
-      <Filter>Core\Client\Game Materials</Filter>
     </ClCompile>
     <ClCompile Include="GamePersistent.cpp">
       <Filter>Core\Client\Game Persistent</Filter>

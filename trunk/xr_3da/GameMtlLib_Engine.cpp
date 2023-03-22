@@ -2,36 +2,36 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#include "GameMtlLib.h"
+#include "../xr_3da/GameMtlLib.h"
 
 void DestroySounds(SoundVec& lst)
 {
-	for (SoundIt it = lst.begin(); lst.end() != it; ++it)
+	for (SoundIt it=lst.begin(); lst.end() != it; ++it)	
 		it->destroy();
 }
 
 void DestroyPSs(PSVec& lst)
 {
-//	for (PSIt it=lst.begin(); lst.end() != it; ++it)
-//		Device.Resources->Delete(*it);
 }
 
 void CreateSounds(SoundVec& lst, LPCSTR buf)
 {
 	string128 tmp;
-	int cnt			=	_GetItemCount(buf);	R_ASSERT(cnt<=GAMEMTL_SUBITEM_COUNT);
+	int cnt			=	_GetItemCount(buf);	R_ASSERT(cnt<=GAMEMTL_SUBITEM_COUNT+2);
 	lst.resize		(cnt);
 	for (int k=0; k<cnt; ++k)
 		lst[k].create	(_GetItem(buf,k,tmp),st_Effect,sg_SourceType);
 }
 
-void CreateMarks(IWallMarkArray* pMarks, LPCSTR buf)
+void CreateMarks(IWallMarkArray *pMarks, LPCSTR buf)
 {
 	string256	tmp;
-	int cnt		=_GetItemCount(buf);	R_ASSERT(cnt<=GAMEMTL_SUBITEM_COUNT);
-	for (int k = 0; k < cnt; ++k)
-		pMarks->AppendMark(_GetItem(buf, k, tmp));
+	int cnt		=_GetItemCount(buf);
+	R_ASSERT(cnt<=GAMEMTL_SUBITEM_COUNT);
+	for (int k=0; k<cnt; ++k)
+		pMarks->AppendMark(_GetItem(buf,k,tmp));
 }
+
 
 void CreatePSs(PSVec& lst, LPCSTR buf)
 {
@@ -70,5 +70,6 @@ void SGameMtlPair::Load(IReader& fs)
 	R_ASSERT(fs.find_chunk(GAMEMTLPAIR_CHUNK_COLLIDE));
     fs.r_stringZ			(buf);		CreateSounds		(CollideSounds,*buf);
     fs.r_stringZ			(buf);		CreatePSs			(CollideParticles,*buf);
-    fs.r_stringZ			(buf);		CreateMarks			(&*m_pCollideMarks,*buf);
+    fs.r_stringZ			(buf);		
+	CreateMarks			(&*m_pCollideMarks,*buf);
 }

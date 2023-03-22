@@ -166,6 +166,9 @@
     <Filter Include="Engine\text_editor\edit_actions">
       <UniqueIdentifier>{65d062cb-33ed-4318-a147-7c2c90eb386a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game API\GameMaterials">
+      <UniqueIdentifier>{2e1f3c1b-82b3-46ac-9b1e-3cd5ef4a1c89}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="_d3d_extensions.h">
@@ -530,6 +533,9 @@
     </ClInclude>
     <ClInclude Include="SkeletonMotionDefs.h">
       <Filter>RenderRef\Execution &amp; 3D\Visuals\Skeleton</Filter>
+    </ClInclude>
+    <ClInclude Include="GameMtlLib.h">
+      <Filter>Game API\GameMaterials</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -913,6 +919,12 @@
     </ClCompile>
     <ClCompile Include="edit_actions.cpp">
       <Filter>Engine\text_editor\edit_actions</Filter>
+    </ClCompile>
+    <ClCompile Include="GameMtlLib_Engine.cpp">
+      <Filter>Game API\GameMaterials</Filter>
+    </ClCompile>
+    <ClCompile Include="GameMtlLib.cpp">
+      <Filter>Game API\GameMaterials</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

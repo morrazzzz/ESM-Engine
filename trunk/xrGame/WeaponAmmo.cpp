@@ -4,7 +4,7 @@
 #include "xrserver_objects_alife_items.h"
 #include "inventory.h"
 #include "weapon.h"
-#include "gamemtllib.h"
+#include "../xr_3da/GameMtlLib.h"
 #include "level.h"
 #include "string_table.h"
 

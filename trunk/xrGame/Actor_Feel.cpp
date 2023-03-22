@@ -6,7 +6,7 @@
 #include "hudmanager.h"
 #include "UsableScriptObject.h"
 #include "customzone.h"
-#include "GameMtlLib.h"
+#include "../xr_3da/GameMtlLib.h"
 #include "ui/UIMainIngameWnd.h"
 #include "Grenade.h"
 #include "clsid_game.h"
