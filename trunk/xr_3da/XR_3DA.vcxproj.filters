@@ -207,9 +207,6 @@
     <ClInclude Include="IRenderable.h">
       <Filter>Interfaces\Render</Filter>
     </ClInclude>
-    <ClInclude Include="IRenderDetailModel.h">
-      <Filter>Interfaces\Render</Filter>
-    </ClInclude>
     <ClInclude Include="Render.h">
       <Filter>Interfaces\Render</Filter>
     </ClInclude>

@@ -118,6 +118,9 @@
     <Filter Include="Refactored\Execution &amp; 3D\Visuals\Skeleton">
       <UniqueIdentifier>{7aec6858-4dc7-4bde-beac-b1920d1886cf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Refactored\Interfaces">
+      <UniqueIdentifier>{3731eafa-fac0-4e26-88c2-ecff7facebe1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\xrRender\cl_intersect.h">
@@ -413,6 +416,12 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\xrRender\RenderVisual.h">
       <Filter>Refactored\Execution &amp; 3D\Visuals</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\IRenderDetailModel.h">
+      <Filter>Refactored\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\RenderDetailModel.h">
+      <Filter>Refactored\Interfaces</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

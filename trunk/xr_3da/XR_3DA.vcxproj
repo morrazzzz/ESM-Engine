@@ -773,7 +773,6 @@
     <ClInclude Include="ISheduled.h" />
     <ClInclude Include="xrSheduler.h" />
     <ClInclude Include="IRenderable.h" />
-    <ClInclude Include="IRenderDetailModel.h" />
     <ClInclude Include="Render.h" />
     <ClInclude Include="ISpatial.h" />
     <ClInclude Include="ICollidable.h" />

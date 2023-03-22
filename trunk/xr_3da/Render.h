@@ -3,7 +3,6 @@
 
 #include "frustum.h"
 #include "vis_common.h"
-#include "IRenderDetailModel.h"
 
 #include "../Include/xrAPI/xrAPI.h"
 #include "../Include/xrRender/FactoryPtr.h"
@@ -232,12 +231,12 @@ public:
 
 	// Models
 	virtual dxRender_Visual*			model_CreateParticles	(LPCSTR name)								= 0;
-	virtual IRender_DetailModel*	model_CreateDM			(IReader*	F)								= 0;
+//	virtual IRender_DetailModel*	model_CreateDM			(IReader*	F)								= 0;
 	virtual dxRender_Visual*			model_Create			(LPCSTR name, IReader*	data=0)				= 0;
 	virtual dxRender_Visual*			model_CreateChild		(LPCSTR name, IReader*	data)				= 0;
 	virtual dxRender_Visual*			model_Duplicate			(dxRender_Visual*	V)						= 0;
 	virtual void					model_Delete			(dxRender_Visual* &	V, BOOL bDiscard=FALSE)	= 0;
-	virtual void 					model_Delete			(IRender_DetailModel* & F)					= 0;
+//	virtual void 					model_Delete			(IRender_DetailModel* & F)					= 0;
 	virtual void					model_Logging			(BOOL bEnable)								= 0;
 	virtual void					models_Prefetch			()											= 0;
 	virtual void					models_Clear			(BOOL b_complete)							= 0;

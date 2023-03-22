@@ -271,6 +271,7 @@
     <ClInclude Include="..\..\Include\xrRender\LensFlareRender.h" />
     <ClInclude Include="..\..\Include\xrRender\ObjectSpaceRender.h" />
     <ClInclude Include="..\..\Include\xrRender\RainRender.h" />
+    <ClInclude Include="..\..\Include\xrRender\RenderDetailModel.h" />
     <ClInclude Include="..\..\Include\xrRender\RenderDeviceRender.h" />
     <ClInclude Include="..\..\Include\xrRender\RenderFactory.h" />
     <ClInclude Include="..\..\Include\xrRender\RenderVisual.h" />
@@ -299,6 +300,7 @@
     <ClInclude Include="..\xrRender\dxUISequenceVideoItem.h" />
     <ClInclude Include="..\xrRender\dxUIShader.h" />
     <ClInclude Include="..\xrRender\dxWallMarkArray.h" />
+    <ClInclude Include="..\xrRender\IRenderDetailModel.h" />
     <ClInclude Include="..\xrRender\KinematicAnimatedDefs.h" />
     <ClInclude Include="..\xrRender\xrD3DDefs.h" />
     <ClInclude Include="cl_intersect.h" />
