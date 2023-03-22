@@ -811,7 +811,6 @@
     <ClInclude Include="FBasicVisual.h" />
     <ClInclude Include="FHierrarhyVisual.h" />
     <ClInclude Include="Fmesh.h" />
-    <ClInclude Include="ParticleCustom.h" />
     <ClInclude Include="EnnumerateVertices.h" />
     <ClInclude Include="SkeletonAnimated.h" />
     <ClInclude Include="SkeletonCustom.h" />
@@ -961,7 +960,6 @@
     <ClCompile Include="FBasicVisual.cpp" />
     <ClCompile Include="FHierrarhyVisual.cpp" />
     <ClCompile Include="fmesh.cpp" />
-    <ClCompile Include="ParticleCustom.cpp" />
     <ClCompile Include="SkeletonAnimated.cpp" />
     <ClCompile Include="SkeletonCustom.cpp" />
     <ClCompile Include="SkeletonMotions.cpp" />

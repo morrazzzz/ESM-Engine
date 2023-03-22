@@ -456,6 +456,12 @@
     <ClInclude Include="..\..\Include\xrRender\RenderDetailModel.h">
       <Filter>Refactored\Interfaces</Filter>
     </ClInclude>
+    <ClInclude Include="..\xrRender\dxParticleCustom.h">
+      <Filter>Refactored\Execution &amp; 3D\Visuals</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\xrRender\ParticleCustom.h">
+      <Filter>Refactored\Execution &amp; 3D\Visuals</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -802,6 +808,9 @@
     </ClCompile>
     <ClCompile Include="..\xrRender\dxWallMarkArray.cpp">
       <Filter>Interface implementations\WallMarkArray</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxParticleCustom.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Visuals</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

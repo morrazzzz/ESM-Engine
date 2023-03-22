@@ -1,8 +1,6 @@
-//---------------------------------------------------------------------------
-#ifndef ParticleGroupH
-#define ParticleGroupH
+#pragma once
 
-#include "..\..\xr_3da\ParticleCustom.h"
+#include "../xrRender/dxParticleCustom.h"
 
 namespace PS
 {
@@ -65,7 +63,7 @@ namespace PS
 	};
 	DEFINE_VECTOR(CPGDef*,PGDVec,PGDIt);
 
-	class ECORE_API CParticleGroup: public IParticleCustom
+	class ECORE_API CParticleGroup: public dxParticleCustom
 	{
 		const CPGDef*		m_Def;
 		float				m_CurrentTime;
@@ -149,6 +147,3 @@ namespace PS
 #define PGD_CHUNK_TIME_LIMIT	0x0005
 #define PGD_CHUNK_OWNER			0x0006
 #define PGD_CHUNK_EFFECTS2		0x0007
-
-//---------------------------------------------------------------------------
-#endif

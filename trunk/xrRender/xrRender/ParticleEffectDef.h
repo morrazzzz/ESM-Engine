@@ -1,14 +1,6 @@
-//---------------------------------------------------------------------------
-#ifndef ParticleEffectDefH
-#define ParticleEffectDefH
+#pragma once
 
-#ifdef _EDITOR
-    #include "FBasicVisual.h"
-    #include "ParticleCustom.h"
-#else
-    #include "..\..\xr_3da\FBasicVisual.h"
-    #include "..\..\xr_3da\ParticleCustom.h"
-#endif
+#include "..\..\xr_3da\FBasicVisual.h"
 
 namespace PAPI
 {
@@ -166,4 +158,3 @@ namespace PS
 #define PED_CHUNK_EDATA			0x0024
 #define PED_CHUNK_ALIGN_TO_PATH	0x0025
 //---------------------------------------------------------------------------
-#endif

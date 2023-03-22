@@ -1,5 +1,3 @@
-#ifndef FBasicVisualH
-#define FBasicVisualH
 #pragma once
 
 #include "vis_common.h"
@@ -8,11 +6,6 @@
 #define VLOAD_NOVERTICES		(1<<0)
 #define VLOAD_NOINDICES			(1<<1)
 #define VLOAD_FORCESOFTWARE		(1<<2)
-
-// The class itself
-class	ENGINE_API				CKinematicsAnimated;
-class	ENGINE_API				CKinematics;
-class	ENGINE_API				IParticleCustom;
 
 struct	ENGINE_API				IRender_Mesh	
 {
@@ -60,10 +53,6 @@ public:
 	virtual void				Spawn						()				{};
 	virtual void				Depart						()				{};
 
-	//virtual	CKinematics*		dcast_PKinematics			()				{ return 0;	}
-	//virtual	CKinematicsAnimated*dcast_PKinematicsAnimated	()				{ return 0;	}
-	virtual IParticleCustom*	dcast_ParticleCustom		()				{ return 0;	}
-
 	virtual vis_data& getVisData() { return vis; }
 	virtual u32	getType() { return Type; }
 
@@ -71,4 +60,3 @@ public:
 	virtual ~dxRender_Visual();
 };
 
-#endif // !FBasicVisualH

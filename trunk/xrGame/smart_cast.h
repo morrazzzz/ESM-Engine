@@ -43,9 +43,9 @@ DECLARE_SPECIALIZATION(IKinematicsAnimated, IRenderVisual, dcast_PKinematicsAnim
 #undef cast_type_list
 #define cast_type_list save_cast_list(IKinematicsAnimated, IRenderVisual)
 
-//DECLARE_SPECIALIZATION(IParticleCustom, IRenderVisual, dcast_ParticleCustom);
-//#undef cast_type_list
-//#define cast_type_list save_cast_list(IParticleCustom, IRenderVisual)
+DECLARE_SPECIALIZATION(IParticleCustom, IRenderVisual, dcast_ParticleCustom);
+#undef cast_type_list
+#define cast_type_list save_cast_list(IParticleCustom, IRenderVisual)
 
 DECLARE_SPECIALIZATION(IKinematics, IKinematicsAnimated, dcast_PKinematics);
 #undef cast_type_list

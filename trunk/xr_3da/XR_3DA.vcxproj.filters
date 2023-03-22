@@ -318,9 +318,6 @@
     <ClInclude Include="FHierrarhyVisual.h">
       <Filter>Render\Visuals</Filter>
     </ClInclude>
-    <ClInclude Include="ParticleCustom.h">
-      <Filter>Render\Visuals</Filter>
-    </ClInclude>
     <ClInclude Include="EnnumerateVertices.h">
       <Filter>Render\Visuals\Skeleton</Filter>
     </ClInclude>
@@ -678,9 +675,6 @@
       <Filter>Render\Visuals</Filter>
     </ClCompile>
     <ClCompile Include="FHierrarhyVisual.cpp">
-      <Filter>Render\Visuals</Filter>
-    </ClCompile>
-    <ClCompile Include="ParticleCustom.cpp">
       <Filter>Render\Visuals</Filter>
     </ClCompile>
     <ClCompile Include="SkeletonAnimated.cpp">
