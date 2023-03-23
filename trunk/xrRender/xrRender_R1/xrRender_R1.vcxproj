@@ -288,6 +288,7 @@
     <ClInclude Include="..\..\Include\xrRender\ApplicationRender.h" />
     <ClInclude Include="..\..\Include\xrRender\DebugRender.h" />
     <ClInclude Include="..\..\Include\xrRender\DebugShader.h" />
+    <ClInclude Include="..\..\Include\xrRender\DrawUtils.h" />
     <ClInclude Include="..\..\Include\xrRender\EnvironmentRender.h" />
     <ClInclude Include="..\..\Include\xrRender\FactoryPtr.h" />
     <ClInclude Include="..\..\Include\xrRender\FontRender.h" />
@@ -310,6 +311,12 @@
     <ClInclude Include="..\..\Include\xrRender\UIShader.h" />
     <ClInclude Include="..\..\Include\xrRender\WallMarkArray.h" />
     <ClInclude Include="..\xrRender\cl_intersect.h" />
+    <ClInclude Include="..\xrRender\D3DUtils.h" />
+    <ClInclude Include="..\xrRender\du_box.h" />
+    <ClInclude Include="..\xrRender\du_cone.h" />
+    <ClInclude Include="..\xrRender\du_cylinder.h" />
+    <ClInclude Include="..\xrRender\du_sphere.h" />
+    <ClInclude Include="..\xrRender\du_sphere_part.h" />
     <ClInclude Include="..\xrRender\dxApplicationRender.h" />
     <ClInclude Include="..\xrRender\dxDebugRender.h" />
     <ClInclude Include="..\xrRender\dxEnvironmentRender.h" />
@@ -331,6 +338,7 @@
     <ClInclude Include="..\xrRender\IRenderDetailModel.h" />
     <ClInclude Include="..\xrRender\KinematicAnimatedDefs.h" />
     <ClInclude Include="..\xrRender\xrD3DDefs.h" />
+    <ClInclude Include="..\xrRender\xr_effgamma.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="..\xrRender\xrRender_console.h" />
     <ClInclude Include="FStaticRender.h" />
@@ -387,6 +395,12 @@
     <ClInclude Include="..\xrRender\LightTrack.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\xrRender\D3DUtils.cpp" />
+    <ClCompile Include="..\xrRender\du_box.cpp" />
+    <ClCompile Include="..\xrRender\du_cone.cpp" />
+    <ClCompile Include="..\xrRender\du_cylinder.cpp" />
+    <ClCompile Include="..\xrRender\du_sphere.cpp" />
+    <ClCompile Include="..\xrRender\du_sphere_part.cpp" />
     <ClCompile Include="..\xrRender\dxApplicationRender.cpp" />
     <ClCompile Include="..\xrRender\dxDebugRender.cpp" />
     <ClCompile Include="..\xrRender\dxEnvironmentRender.cpp" />
@@ -405,6 +419,7 @@
     <ClCompile Include="..\xrRender\dxUISequenceVideoItem.cpp" />
     <ClCompile Include="..\xrRender\dxUIShader.cpp" />
     <ClCompile Include="..\xrRender\dxWallMarkArray.cpp" />
+    <ClCompile Include="..\xrRender\xr_effgamma.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

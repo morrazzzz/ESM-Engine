@@ -1,7 +1,5 @@
 #include "stdafx.h"
 
-extern Fvector du_cone_vertices[DU_CONE_NUMVERTEX];
-
 void CRenderTarget::accum_spot	(light* L)
 {
 	phase_accumulator				();

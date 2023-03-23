@@ -55,6 +55,11 @@ void CRenderDevice::_Create	(LPCSTR shName)
 	dwFrame						= 0;
 }
 
+void CRenderDevice::ConnectToRender()
+{
+	if (!m_pRender)
+		m_pRender = RenderFactory->CreateRenderDeviceRender();
+}
 
 void CRenderDevice::Create	() 
 {

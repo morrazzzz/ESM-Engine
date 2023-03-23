@@ -5,13 +5,11 @@
 // ZFar  - always 1.0f
 
 class	ENGINE_API	CResourceManager;
-class	ENGINE_API	CGammaControl;
 
 #include "pure.h"
 #include "hw.h"
 #include "ftimer.h"
 #include "stats.h"
-#include "xr_effgamma.h"
 #include "shader.h"
 #include "R_Backend.h"
 
@@ -52,12 +50,12 @@ public:
 	BOOL									b_is_Active;
 	void									OnWM_Activate(WPARAM wParam, LPARAM lParam);
 public:
-	ref_shader								m_WireShader;
-	ref_shader								m_SelectionShader;
+	
     BOOL									m_bNearer; 
 	//morrazzzz: DELETE THE CODE FROM THE BOTTOM!!!
+    ref_shader								m_WireShader;//DELETE THIS!!!
+	ref_shader								m_SelectionShader;//DELETE THIS!!!
 	CResourceManager*						Resources;	 //DELETE THIS!!!
-	CGammaControl							Gamma;  //DELETE THIS!!!!
 	//morrazzzz: DELETE THE CODE THAT IS ON TOP!!!
     
 	IRenderDeviceRender* m_pRender;
@@ -143,6 +141,7 @@ public:
 	u32	 TimerAsync_MMT						()	{ return TimerMM.GetElapsed_ms() +	Timer_MM_Delta; }
 
 	// Creation & Destroying
+	void ConnectToRender();
 	void Create								(void);
 	void Run								(void);
 	void Destroy							(void);

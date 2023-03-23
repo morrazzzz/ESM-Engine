@@ -70,12 +70,7 @@ public:
 
 	u32	LL_PartBlendsCount(u32 bone_part_id);
 	CBlend* LL_PartBlend(u32 bone_part_id, u32 n);
-public: 
-#ifdef _EDITOR
-public:
-#else
 private:
-#endif
 	u32											Update_LastTime;
 
 	CBlendInstance*								blend_instances;

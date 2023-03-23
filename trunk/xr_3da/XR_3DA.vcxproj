@@ -827,7 +827,6 @@
     <ClInclude Include="Stats.h" />
     <ClInclude Include="HW.h" />
     <ClInclude Include="HWCaps.h" />
-    <ClInclude Include="xr_effgamma.h" />
     <ClInclude Include="Shader_xrLC.h" />
     <ClInclude Include="WaveForm.h" />
     <ClInclude Include="..\xrRender\xrRender\Blenders\Blender.h" />
@@ -853,13 +852,6 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="r_constants_cache.h" />
     <ClInclude Include="Text_Console.h" />
-    <ClInclude Include="D3DUtils.h" />
-    <ClInclude Include="DrawUtils.h" />
-    <ClInclude Include="du_box.h" />
-    <ClInclude Include="du_cone.h" />
-    <ClInclude Include="du_cylinder.h" />
-    <ClInclude Include="du_sphere.h" />
-    <ClInclude Include="du_sphere_part.h" />
     <ClInclude Include="FVF.h" />
     <ClInclude Include="R_Backend.h" />
     <ClInclude Include="R_Backend_Runtime.h" />
@@ -995,7 +987,6 @@
     <ClCompile Include="Stats.cpp" />
     <ClCompile Include="HW.cpp" />
     <ClCompile Include="HWCaps.cpp" />
-    <ClCompile Include="xr_effgamma.cpp" />
     <ClCompile Include="..\xrRender\xrRender\Blenders\Blender.cpp" />
     <ClCompile Include="..\xrRender\xrRender\Blenders\Blender_Palette.cpp" />
     <ClCompile Include="..\xrRender\xrRender\Blenders\Blender_Recorder.cpp" />
@@ -1071,12 +1062,6 @@
     <ClCompile Include="r_constants_cache.cpp" />
     <ClCompile Include="Text_Console.cpp" />
     <ClCompile Include="Text_Console_WndProc.cpp" />
-    <ClCompile Include="D3DUtils.cpp" />
-    <ClCompile Include="du_box.cpp" />
-    <ClCompile Include="du_cone.cpp" />
-    <ClCompile Include="du_cylinder.cpp" />
-    <ClCompile Include="du_sphere.cpp" />
-    <ClCompile Include="du_sphere_part.cpp" />
     <ClCompile Include="R_Backend.cpp" />
     <ClCompile Include="R_Backend_DBG.cpp" />
     <ClCompile Include="R_Backend_Runtime.cpp" />

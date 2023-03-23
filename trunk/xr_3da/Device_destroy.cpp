@@ -2,11 +2,12 @@
 
 #include "render.h"
 #include "IGame_Persistent.h"
-#include "..\include\xrRender\RenderFactory.h"
+#include "../include/xrRender/RenderFactory.h"
+#include "../Include/xrRender/DrawUtils.h"
 
 void CRenderDevice::_Destroy	(BOOL bKeepTextures)
 {
-	DUImpl.OnDeviceDestroy	();
+	DU->OnDeviceDestroy();
 
 	// before destroy
 	b_is_Ready					= FALSE;

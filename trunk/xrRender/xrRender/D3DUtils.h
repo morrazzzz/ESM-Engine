@@ -2,10 +2,9 @@
 // file: D3DUtils.h
 //----------------------------------------------------
 
-#ifndef D3DUtilsH
-#define D3DUtilsH
-#include "DrawUtils.h"
-//----------------------------------------------------
+#pragma once
+
+#include "../../Include/xrRender/DrawUtils.h"
 
 #ifdef _EDITOR
 #	define DU_DRAW_DIP	Device.DIP
@@ -35,7 +34,7 @@ public:
 //----------------------------------------------------
 // Utilities
 //----------------------------------------------------
-class ENGINE_API CDrawUtilities: public CDUInterface, public pureRender{
+class CDrawUtilities: public CDUInterface, public pureRender{
 	SPrimitiveBuffer		m_SolidCone;
 	SPrimitiveBuffer		m_WireCone;
     SPrimitiveBuffer		m_SolidSphere;
@@ -74,7 +73,7 @@ public:
     }
     
     void OnDeviceCreate	();
-    void OnDeviceDestroy();
+    virtual void __stdcall OnDeviceDestroy();
 
 	void UpdateGrid(int number_of_cell, float square_size, int subdiv=10);
 
@@ -148,7 +147,5 @@ public:
 
 	virtual void 			OnRender		();
 };
-extern ENGINE_API CDrawUtilities DUImpl;
-//----------------------------------------------------
-#endif /*_INCDEF_D3DUtils_H_*/
 
+extern ECORE_API CDrawUtilities DUImpl;

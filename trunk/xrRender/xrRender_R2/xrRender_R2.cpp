@@ -19,6 +19,7 @@ BOOL APIENTRY DllMain( HANDLE hModule,
 		if (!xrRender_test_hw())	return FALSE;
 		::Render					= &RImplementation;
 		::RenderFactory = &RenderFactoryImpl;
+		::DU = &DUImpl;
 		UIRender = &UIRenderImpl;
 #ifdef DEBUG
 		DRender = &DebugRenderImpl;

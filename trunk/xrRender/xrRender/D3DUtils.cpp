@@ -3,7 +3,7 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#include "gamefont.h"
+#include "../../xr_3da/gamefont.h"
 #include "d3dutils.h"
 #include "du_box.h"
 #include "du_sphere.h"
@@ -16,7 +16,7 @@
 #include "d3dx9.h"
 #pragma warning(pop)
 
-ENGINE_API CDrawUtilities DUImpl;
+CDrawUtilities DUImpl;
 
 #define LINE_DIVISION  32  // не меньше 6!!!!!
 // for drawing sphere

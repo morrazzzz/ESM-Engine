@@ -88,9 +88,6 @@
     <Filter Include="Render\Execution &amp; 3D\HW">
       <UniqueIdentifier>{715554aa-e14f-47f6-ae6f-3de5e7ed53b4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Render\Execution &amp; 3D\Gamma">
-      <UniqueIdentifier>{b7de958b-ab3a-4a76-8611-dd6334f947e4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Render\Execution &amp; 3D\Shaders">
       <UniqueIdentifier>{3aa70652-6ea7-48a6-87a0-ba05022a483f}</UniqueIdentifier>
     </Filter>
@@ -114,9 +111,6 @@
     </Filter>
     <Filter Include="Render\Execution &amp; 3D\TextConsole">
       <UniqueIdentifier>{a3773fa5-0433-491c-b971-36710cee3676}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Render\Execution &amp; 3D\DebugDraw">
-      <UniqueIdentifier>{78005cd8-32b8-44d8-94ef-ebd1c38fe4a9}</UniqueIdentifier>
     </Filter>
     <Filter Include="Render\Backend">
       <UniqueIdentifier>{090e65bc-8dff-422b-8b92-ce8b15a9a744}</UniqueIdentifier>
@@ -354,9 +348,6 @@
     <ClInclude Include="HWCaps.h">
       <Filter>Render\Execution &amp; 3D\HW</Filter>
     </ClInclude>
-    <ClInclude Include="xr_effgamma.h">
-      <Filter>Render\Execution &amp; 3D\Gamma</Filter>
-    </ClInclude>
     <ClInclude Include="Shader_xrLC.h">
       <Filter>Render\Execution &amp; 3D\Shaders</Filter>
     </ClInclude>
@@ -422,27 +413,6 @@
     </ClInclude>
     <ClInclude Include="Text_Console.h">
       <Filter>Render\Execution &amp; 3D\TextConsole</Filter>
-    </ClInclude>
-    <ClInclude Include="D3DUtils.h">
-      <Filter>Render\Execution &amp; 3D\DebugDraw</Filter>
-    </ClInclude>
-    <ClInclude Include="DrawUtils.h">
-      <Filter>Render\Execution &amp; 3D\DebugDraw</Filter>
-    </ClInclude>
-    <ClInclude Include="du_box.h">
-      <Filter>Render\Execution &amp; 3D\DebugDraw</Filter>
-    </ClInclude>
-    <ClInclude Include="du_cone.h">
-      <Filter>Render\Execution &amp; 3D\DebugDraw</Filter>
-    </ClInclude>
-    <ClInclude Include="du_cylinder.h">
-      <Filter>Render\Execution &amp; 3D\DebugDraw</Filter>
-    </ClInclude>
-    <ClInclude Include="du_sphere.h">
-      <Filter>Render\Execution &amp; 3D\DebugDraw</Filter>
-    </ClInclude>
-    <ClInclude Include="du_sphere_part.h">
-      <Filter>Render\Execution &amp; 3D\DebugDraw</Filter>
     </ClInclude>
     <ClInclude Include="FVF.h">
       <Filter>Render\Backend</Filter>
@@ -710,9 +680,6 @@
     <ClCompile Include="HWCaps.cpp">
       <Filter>Render\Execution &amp; 3D\HW</Filter>
     </ClCompile>
-    <ClCompile Include="xr_effgamma.cpp">
-      <Filter>Render\Execution &amp; 3D\Gamma</Filter>
-    </ClCompile>
     <ClCompile Include="Blender_Recorder_R2.cpp">
       <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
     </ClCompile>
@@ -790,24 +757,6 @@
     </ClCompile>
     <ClCompile Include="Text_Console_WndProc.cpp">
       <Filter>Render\Execution &amp; 3D\TextConsole</Filter>
-    </ClCompile>
-    <ClCompile Include="D3DUtils.cpp">
-      <Filter>Render\Execution &amp; 3D\DebugDraw</Filter>
-    </ClCompile>
-    <ClCompile Include="du_box.cpp">
-      <Filter>Render\Execution &amp; 3D\DebugDraw</Filter>
-    </ClCompile>
-    <ClCompile Include="du_cone.cpp">
-      <Filter>Render\Execution &amp; 3D\DebugDraw</Filter>
-    </ClCompile>
-    <ClCompile Include="du_cylinder.cpp">
-      <Filter>Render\Execution &amp; 3D\DebugDraw</Filter>
-    </ClCompile>
-    <ClCompile Include="du_sphere.cpp">
-      <Filter>Render\Execution &amp; 3D\DebugDraw</Filter>
-    </ClCompile>
-    <ClCompile Include="du_sphere_part.cpp">
-      <Filter>Render\Execution &amp; 3D\DebugDraw</Filter>
     </ClCompile>
     <ClCompile Include="R_Backend.cpp">
       <Filter>Render\Backend</Filter>

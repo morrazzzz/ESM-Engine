@@ -1,10 +1,9 @@
-#ifndef __XR_GAMMA_H__
-#define __XR_GAMMA_H__
+#pragma once
 
 //-----------------------------------------------------------------------------------------------------------
 //Gamma control
 //-----------------------------------------------------------------------------------------------------------
-class	ENGINE_API				CGammaControl
+class CGammaControl
 {
 	float						fGamma;
 	float						fBrightness;
@@ -37,5 +36,3 @@ public:
 
 	void	Update		();
 };
-
-#endif

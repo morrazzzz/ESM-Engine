@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "..\..\xr_3da\xr_effgamma.h"
 #include "..\xrRender\tga.h"
 #include "..\..\xr_3da\xrImage_Resampler.h"
 
@@ -54,21 +53,19 @@ void CRender::Screenshot		(IRender_interface::ScreenshotMode mode, LPCSTR name)
 	// Image processing (gamma-correct)
 	u32* pPixel		= (u32*)D.pBits;
 	u32* pEnd		= pPixel+(Device.dwWidth*Device.dwHeight);
-	D3DGAMMARAMP	G;
-	Device.Gamma.GenLUT	(G);
-	for (int i=0; i<256; i++) {
-		G.red	[i]	/= 256;
-		G.green	[i]	/= 256;
-		G.blue	[i]	/= 256;
-	}
-	for (;pPixel!=pEnd; pPixel++)	{
+	//	IGOR: Remove inverse color correction and kill alpha
+
+	//	Kill alpha
+	for (; pPixel != pEnd; pPixel++)
+	{
 		u32 p = *pPixel;
-		*pPixel = color_xrgb	(
-			G.red	[color_get_R(p)],
-			G.green	[color_get_G(p)],
-			G.blue	[color_get_B(p)]
-			);
+		*pPixel = color_xrgb(
+			color_get_R(p),
+			color_get_G(p),
+			color_get_B(p)
+		);
 	}
+
 	hr					= pFB->UnlockRect();
 	if(hr!=D3D_OK)		goto _end_;
 
