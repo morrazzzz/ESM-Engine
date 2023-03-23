@@ -13,8 +13,6 @@ class   ENGINE_API CBoneInstanceAnimated;
 struct	ENGINE_API CKey;
 class	ENGINE_API CInifile;
 
-#include "../include/xrRender/animation_blend.h"
-
 //*** Bone Instance *******************************************************************************
 #pragma pack(push,8)
 class ENGINE_API		CBlendInstance	// Bone Instance Blend List (per-bone data)
