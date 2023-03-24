@@ -1,11 +1,10 @@
 #include "stdafx.h"
-
 #include "interactive_motion.h"
-
 #include "physicsshell.h"
 #include "PhysicsShellHolder.h"
 #include "MathUtils.h"
-
+#include "..\include\xrRender\Kinematics.h"
+#include "..\include\xrRender\KinematicsAnimated.h"
 
 interactive_motion::interactive_motion()
 {

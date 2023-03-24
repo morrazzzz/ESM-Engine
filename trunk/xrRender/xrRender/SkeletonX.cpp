@@ -10,11 +10,11 @@
 #pragma warning(default:4995)
 
 
-#include "Render.h"
+#include "../../xr_3da/Render.h"
 #include "SkeletonX.h"
 #include "SkeletonCustom.h"
-#include "fmesh.h"
-#include "..\xrCPU_Pipe\xrCPU_Pipe.h"
+#include "../../xr_3da/fmesh.h"
+#include "../xrCPU_Pipe/xrCPU_Pipe.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction

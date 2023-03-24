@@ -808,14 +808,9 @@
     <ClInclude Include="Feel_Vision.h" />
     <ClInclude Include="FDemoPlay.h" />
     <ClInclude Include="FDemoRecord.h" />
-    <ClInclude Include="FBasicVisual.h" />
-    <ClInclude Include="FHierrarhyVisual.h" />
     <ClInclude Include="Fmesh.h" />
     <ClInclude Include="EnnumerateVertices.h" />
-    <ClInclude Include="SkeletonAnimated.h" />
-    <ClInclude Include="SkeletonCustom.h" />
     <ClInclude Include="SkeletonMotions.h" />
-    <ClInclude Include="SkeletonX.h" />
     <ClInclude Include="vis_common.h" />
     <ClInclude Include="Frustum.h" />
     <ClInclude Include="PS_instance.h" />
@@ -873,6 +868,7 @@
     <ClInclude Include="perlin.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="bone.cpp" />
     <ClCompile Include="defines.cpp" />
     <ClCompile Include="edit_actions.cpp" />
     <ClCompile Include="GameMtlLib.cpp" />
@@ -949,23 +945,8 @@
     <ClCompile Include="Feel_Vision.cpp" />
     <ClCompile Include="FDemoPlay.cpp" />
     <ClCompile Include="FDemoRecord.cpp" />
-    <ClCompile Include="FBasicVisual.cpp" />
-    <ClCompile Include="FHierrarhyVisual.cpp" />
     <ClCompile Include="fmesh.cpp" />
-    <ClCompile Include="SkeletonAnimated.cpp" />
-    <ClCompile Include="SkeletonCustom.cpp" />
     <ClCompile Include="SkeletonMotions.cpp" />
-    <ClCompile Include="SkeletonRigid.cpp" />
-    <ClCompile Include="SkeletonX.cpp">
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedicated|Win32'">All</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedicated|x64'">All</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">All</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">All</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release_Dedicated|Win32'">All</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release_Dedicated|x64'">All</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">All</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">All</AssemblerOutput>
-    </ClCompile>
     <ClCompile Include="Frustum.cpp">
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedicated|Win32'">AssemblyAndSourceCode</AssemblerOutput>
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedicated|x64'">AssemblyAndSourceCode</AssemblerOutput>

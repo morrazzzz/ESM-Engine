@@ -7,11 +7,9 @@
 #include "../ai_monster_effector.h"
 #include "../../../hudmanager.h"
 #include "../../../ui.h"
-#include "../../../../xr_3da/skeletonanimated.h"
 #include "../../../level.h"
 #include "../../../sound_player.h"
 #include "../../../ai_monster_space.h"
-//#include "../../../ui/UIMainIngameWnd.h"
 #include "../../../UIGameCustom.h"
 #include "../../../ui/UIStatic.h"
 

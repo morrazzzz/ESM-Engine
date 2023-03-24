@@ -19,7 +19,8 @@
 #include "script_entity_action.h"
 #include "inventory.h"
 #include "xrserver_objects_alife_items.h"
-#include "../xr_3da/skeletonanimated.h"
+#include "..\include\xrRender\Kinematics.h"
+#include "..\include\xrRender\KinematicsAnimated.h"
 #include "level.h"
 #include "ui/UIMainIngameWnd.h"
 #include "CarWeapon.h"
@@ -824,11 +825,12 @@ void CCar::CreateSkeleton(CSE_Abstract	*po)
 {
 
 	if (!Visual()) return;
-	CKinematicsAnimated* K = smart_cast<CKinematicsAnimated*>(Visual());
-	if(K)
+	IKinematicsAnimated* pKA = smart_cast<IKinematicsAnimated*>(Visual());
+	IKinematics* pK = smart_cast<IKinematics*>(Visual());
+	if(pKA)
 	{
-		K->PlayCycle		("idle");
-		K->CalculateBones	();
+		pKA->PlayCycle("idle");
+		pK->CalculateBones();
 	}
 
 #pragma todo(" replace below by P_build_Shell or call inherited")

@@ -2,6 +2,7 @@
 
 #include "control_combase.h"
 #include "ai_monster_defs.h"
+#include "..\xr_3da\SkeletonMotions.h"
 
 struct SEventVelocityBounce : public ControlCom::IEventData {
 	float	m_ratio;

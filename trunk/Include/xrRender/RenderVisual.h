@@ -6,7 +6,7 @@ class IParticleCustom;
 
 struct vis_data;
 
-class ENGINE_API  IRenderVisual
+class IRenderVisual
 {
 public:
 	virtual ~IRenderVisual() { ; }

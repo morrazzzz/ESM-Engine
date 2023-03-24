@@ -9,7 +9,7 @@
 
 #include "HUDManager.h"
 #include "level.h"
-#include "../xr_3da/skeletoncustom.h"
+#include "..\include\xrRender\Kinematics.h"
 #include "../xr_3da/camerabase.h"
 #include "inventory.h"
 #include "game_base_space.h"

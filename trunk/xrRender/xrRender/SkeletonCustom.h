@@ -2,23 +2,16 @@
 #pragma once
 
 #include		"fhierrarhyvisual.h"
-#include		"bone.h"
+#include		"../../xr_3da/bone.h"
 #include "../Include/xrRender/Kinematics.h"
 
 extern	xrCriticalSection	UCalc_Mutex			;
 
 // refs
-class	ENGINE_API CKinematics;
+class	CKinematics;
 class	ENGINE_API CInifile;
-class	ENGINE_API CBoneData;
-class   ENGINE_API CBoneInstance;
+class	CBoneData;
 struct	SEnumVerticesCallback;
-// t-defs
-typedef xr_vector<CBoneData*>		vecBones;
-typedef vecBones::iterator			vecBonesIt;
-
-// callback
-typedef void (* BoneCallback)		(CBoneInstance* P);
 
 // MT-locker
 struct	UCalc_mtlock	{
@@ -26,86 +19,9 @@ struct	UCalc_mtlock	{
 	~UCalc_mtlock()		{ UCalc_Mutex.Leave(); }
 };
 
-//*** Bone Instance *******************************************************************************
-#pragma pack(push,8)
-class ENGINE_API		CBoneInstance
-{
-public:
-	// data
-	Fmatrix				mTransform;							// final x-form matrix (local to model)
-	Fmatrix				mRenderTransform;					// final x-form matrix (model_base -> bone -> model)
-	BoneCallback		Callback;
-	void*				Callback_Param;
-	BOOL				Callback_overwrite;					// performance hint - don't calc anims
-	float				param			[MAX_BONE_PARAMS];	// 
-	u32					Callback_type;						//
-	// methods
-	void				construct		();
-	void				set_callback	(u32 Type, BoneCallback C, void* Param, BOOL overwrite=FALSE);
-	void				reset_callback	();
-	void				set_param		(u32 idx, float data);
-	float				get_param		(u32 idx);
-
-	u32					mem_usage		(){return sizeof(*this);}
-};
-#pragma pack(pop)
-
-//*** Shared Bone Data ****************************************************************************
-class ENGINE_API		CBoneData
-{
-protected:
-	u16					SelfID;
-	u16					ParentID;
-public:
-	shared_str			name;
-
-	vecBones			children;		// bones which are slaves to this
-	Fobb				obb;			
-
-	Fmatrix				bind_transform;
-    Fmatrix				m2b_transform;	// model to bone conversion transform
-    SBoneShape			shape;
-    shared_str			game_mtl_name;
-	u16					game_mtl_idx;
-    SJointIKData		IK_data;
-    float				mass;
-    Fvector				center_of_mass;
-
-	DEFINE_VECTOR		(u16,FacesVec,FacesVecIt);
-	DEFINE_VECTOR		(FacesVec,ChildFacesVec,ChildFacesVecIt);
-	ChildFacesVec		child_faces;	// shared
-public:    
-						CBoneData		(u16 ID):SelfID(ID)	{VERIFY(SelfID!=BI_NONE);}
-	virtual				~CBoneData		()					{}
-#ifdef DEBUG
-	typedef svector<int,128>	BoneDebug;
-	void						DebugQuery		(BoneDebug& L);
-#endif
-	IC void				SetParentID		(u16 id){ParentID=id;}
-	
-	IC u16				GetSelfID		() const {return SelfID;}
-	IC u16				GetParentID		() const {return ParentID;}
-
-	// assign face
-	void				AppendFace		(u16 child_idx, u16 idx)
-	{
-		child_faces[child_idx].push_back(idx);
-	}
-	// Calculation
-	void				CalculateM2B	(const Fmatrix& Parent);
-
-	virtual u32			mem_usage		()
-	{
-		u32 sz			= sizeof(*this)+sizeof(vecBones::value_type)*children.size();
-		for (ChildFacesVecIt c_it=child_faces.begin(); c_it!=child_faces.end(); c_it++)
-			sz			+= c_it->size()*sizeof(FacesVec::value_type)+sizeof(*c_it);
-		return			sz;
-	}
-};
-
 #pragma warning(push)
 #pragma warning(disable:4275)
-class ENGINE_API CSkeletonWallmark : public intrusive_base // 4+4+4+12+4+16+16 = 60 + 4 = 64
+class CSkeletonWallmark : public intrusive_base // 4+4+4+12+4+16+16 = 60 + 4 = 64
 {
 #pragma warning(pop)
 	CKinematics*		m_Parent;		// 4
@@ -166,7 +82,7 @@ DEFINE_VECTOR(intrusive_ptr<CSkeletonWallmark>,SkeletonWMVec,SkeletonWMVecIt);
 #	define _DBG_SINGLE_USE_MARKER
 #endif
 
-class ENGINE_API	CKinematics: public FHierrarhyVisual, public IKinematics
+class CKinematics: public FHierrarhyVisual, public IKinematics
 {
 	typedef FHierrarhyVisual	inherited;
 	friend class				CBoneData;

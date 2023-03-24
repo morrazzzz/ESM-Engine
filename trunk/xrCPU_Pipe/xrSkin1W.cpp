@@ -1,13 +1,9 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#ifdef _EDITOR
-	#include "skeletonX.h"
- 	#include "skeletoncustom.h"
-#else
-#include "..\xr_3da\skeletonX.h"
- 	#include "..\xr_3da\skeletoncustom.h"
-#endif
+
+#include "../xr_3da/bone.h"
+#include "../xrRender/xrRender/SkeletonXVertRender.h"
 
 void __stdcall xrSkin1W_x86(	vertRender*		D,
 								vertBoned1W*	S,

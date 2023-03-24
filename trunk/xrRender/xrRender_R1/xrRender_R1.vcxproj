@@ -186,6 +186,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <AdditionalIncludeDirectories>.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
       <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
@@ -335,8 +336,14 @@
     <ClInclude Include="..\xrRender\dxUISequenceVideoItem.h" />
     <ClInclude Include="..\xrRender\dxUIShader.h" />
     <ClInclude Include="..\xrRender\dxWallMarkArray.h" />
+    <ClInclude Include="..\xrRender\FBasicVisual.h" />
+    <ClInclude Include="..\xrRender\FHierrarhyVisual.h" />
     <ClInclude Include="..\xrRender\IRenderDetailModel.h" />
     <ClInclude Include="..\xrRender\KinematicAnimatedDefs.h" />
+    <ClInclude Include="..\xrRender\SkeletonAnimated.h" />
+    <ClInclude Include="..\xrRender\SkeletonCustom.h" />
+    <ClInclude Include="..\xrRender\SkeletonX.h" />
+    <ClInclude Include="..\xrRender\SkeletonXVertRender.h" />
     <ClInclude Include="..\xrRender\xrD3DDefs.h" />
     <ClInclude Include="..\xrRender\xr_effgamma.h" />
     <ClInclude Include="stdafx.h" />
@@ -419,6 +426,12 @@
     <ClCompile Include="..\xrRender\dxUISequenceVideoItem.cpp" />
     <ClCompile Include="..\xrRender\dxUIShader.cpp" />
     <ClCompile Include="..\xrRender\dxWallMarkArray.cpp" />
+    <ClCompile Include="..\xrRender\FBasicVisual.cpp" />
+    <ClCompile Include="..\xrRender\FHierrarhyVisual.cpp" />
+    <ClCompile Include="..\xrRender\SkeletonAnimated.cpp" />
+    <ClCompile Include="..\xrRender\SkeletonCustom.cpp" />
+    <ClCompile Include="..\xrRender\SkeletonRigid.cpp" />
+    <ClCompile Include="..\xrRender\SkeletonX.cpp" />
     <ClCompile Include="..\xrRender\xr_effgamma.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "..\..\xr_3da\igame_persistent.h"
-#include "..\..\xr_3da\fbasicvisual.h"
+#include "..\xrRender\FBasicVisual.h"
 #include "..\..\xr_3da\customhud.h"
 #include "..\..\xr_3da\xr_object.h"
 
@@ -113,7 +113,7 @@ void CRender::render_main	(Fmatrix&	m_ViewProjection, bool _fportals)
 					VERIFY							(renderable);
 
 					// Occlusion
-					vis_data&		v_orig			= renderable->renderable.visual->vis;
+					vis_data&		v_orig			= renderable->renderable.visual->getVisData();
 					vis_data		v_copy			= v_orig;
 					v_copy.box.xform				(renderable->renderable.xform);
 					BOOL			bVisible		= HOM.visible(v_copy);

@@ -3,7 +3,7 @@
 #include "PhysicsShell.h"
 #include "PhysicsShellHolder.h"
 #include "game_cl_base.h"
-#include "../xr_3da/skeletonanimated.h"
+#include "..\include\xrRender\Kinematics.h"
 #include "inventory.h"
 #include "level.h"
 #include "ai_object_location.h"
@@ -124,7 +124,7 @@ BOOL CArtefact::net_Spawn(CSE_Abstract* DC)
 	m_CarringBoneID = u16(-1);
 	/////////////////////////////////////////
 	IKinematicsAnimated	*K=smart_cast<IKinematicsAnimated*>(Visual());
-	if(K)K->PlayCycle("idle");
+	if (K)K->PlayCycle("idle");
 	
 	o_fastmode					= FALSE	;		// start initially with fast-mode enabled
 	o_render_frame				= 0		;

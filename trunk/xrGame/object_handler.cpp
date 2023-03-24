@@ -16,7 +16,7 @@
 #include "ai/stalker/ai_stalker.h"
 #include "inventory.h"
 #include "torch.h"
-#include "../xr_3da/skeletoncustom.h"
+#include "..\include\xrRender\Kinematics.h"
 #include "enemy_manager.h"
 #include "ai_object_location.h"
 #include "profiler.h"

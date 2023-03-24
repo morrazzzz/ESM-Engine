@@ -64,7 +64,7 @@ public:
 
 	virtual void		UpdateGameType			();
 
-	virtual void		RegisterModel			(dxRender_Visual* V);
+	virtual void		RegisterModel			(IRenderVisual* V);
 	virtual	float		MtlTransparent			(u32 mtl_idx);
 	virtual	void		Statistics				(CGameFont* F);
 

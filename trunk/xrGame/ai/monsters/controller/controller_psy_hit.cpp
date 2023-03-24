@@ -11,6 +11,7 @@
 #include "../../../../xr_3da/CameraBase.h"
 #include "../../../CharacterPhysicsSupport.h"
 #include "../../../level_debug.h"
+#include "..\include\xrRender\animation_motion.h"
 
 void CControllerPsyHit::load(LPCSTR section)
 {

@@ -1,11 +1,11 @@
 #include "stdafx.h"
 #include "r2.h"
-#include "../../xr_3da/fbasicvisual.h"
+#include "..\xrRender\FBasicVisual.h"
 #include "../../xr_3da/xr_object.h"
 #include "../../xr_3da/CustomHUD.h"
 #include "../../xr_3da/igame_persistent.h"
 #include "../../xr_3da/environment.h"
-#include "../../xr_3da/SkeletonCustom.h"
+#include "../xrRender/SkeletonCustom.h"
 #include "../xrRender/LightTrack.h"
 #include "../xrRender/dxWallMarkArray.h"
 #include "../xrRender/dxUIShader.h"
@@ -299,10 +299,15 @@ void CRender::OnFrame()
 // Implementation
 IRender_ObjectSpecific*	CRender::ros_create				(IRenderable* parent)				{ return xr_new<CROS_impl>();			}
 void					CRender::ros_destroy			(IRender_ObjectSpecific* &p)		{ xr_delete(p);							}
-dxRender_Visual*			CRender::model_Create			(LPCSTR name, IReader* data)		{ return Models->Create(name,data);		}
-dxRender_Visual*			CRender::model_CreateChild		(LPCSTR name, IReader* data)		{ return Models->CreateChild(name,data);}
-dxRender_Visual*			CRender::model_Duplicate		(dxRender_Visual* V)					{ return Models->Instance_Duplicate(V);	}
-void					CRender::model_Delete			(dxRender_Visual* &V, BOOL bDiscard)	{ Models->Delete(V, bDiscard);			}
+IRenderVisual* CRender::model_Create(LPCSTR name, IReader* data) { return Models->Create(name, data); }
+IRenderVisual* CRender::model_CreateChild(LPCSTR name, IReader* data) { return Models->CreateChild(name, data); }
+IRenderVisual* CRender::model_Duplicate(IRenderVisual* V) { return Models->Instance_Duplicate((dxRender_Visual*)V); }
+void CRender::model_Delete(IRenderVisual*& V, BOOL bDiscard)
+{
+	dxRender_Visual* pVisual = (dxRender_Visual*)V;
+	Models->Delete(pVisual, bDiscard);
+	V = nullptr;
+}
 IRender_DetailModel*	CRender::model_CreateDM			(IReader*	F)
 {
 	CDetail*	D		= xr_new<CDetail> ();
@@ -319,12 +324,12 @@ void					CRender::model_Delete			(IRender_DetailModel* & F)
 		F				= NULL;
 	}
 }
-dxRender_Visual*			CRender::model_CreatePE			(LPCSTR name)	
+IRenderVisual*			CRender::model_CreatePE			(LPCSTR name)
 { 
 	PS::CPEDef*	SE			= PSLibrary.FindPED	(name);		R_ASSERT3(SE,"Particle effect doesn't exist",name);
 	return					Models->CreatePE	(SE);
 }
-dxRender_Visual*			CRender::model_CreateParticles	(LPCSTR name)	
+IRenderVisual*			CRender::model_CreateParticles	(LPCSTR name)
 { 
 	PS::CPEDef*	SE			= PSLibrary.FindPED	(name);
 	if (SE) return			Models->CreatePE	(SE);
@@ -340,7 +345,7 @@ ref_shader				CRender::getShader				(int id)			{ VERIFY(id<int(Shaders.size()));
 IRender_Portal*			CRender::getPortal				(int id)			{ VERIFY(id<int(Portals.size()));	return Portals[id];	}
 IRender_Sector*			CRender::getSector				(int id)			{ VERIFY(id<int(Sectors.size()));	return Sectors[id];	}
 IRender_Sector*			CRender::getSectorActive		()					{ return pLastSector;									}
-dxRender_Visual*			CRender::getVisual				(int id)			{ VERIFY(id<int(Visuals.size()));	return Visuals[id];	}
+IRenderVisual*			CRender::getVisual				(int id)			{ VERIFY(id<int(Visuals.size()));	return Visuals[id];	}
 D3DVERTEXELEMENT9*		CRender::getVB_Format			(int id, BOOL	_alt)	{ 
 	if (_alt)	{ VERIFY(id<int(xDC.size()));	return xDC[id].begin();	}
 	else		{ VERIFY(id<int(nDC.size()));	return nDC[id].begin(); }
@@ -366,7 +371,7 @@ BOOL					CRender::occ_visible			(sPoly& P)			{ return HOM.visible(P);								}
 BOOL					CRender::occ_visible			(Fbox& P)			{ return HOM.visible(P);								}
 
 void					CRender::add_Visual				(IRenderVisual*		V )	{ add_leafs_Dynamic((dxRender_Visual*)V);								}
-void					CRender::add_Geometry			(dxRender_Visual*		V )	{ add_Static(V,View->getMask());					}
+void					CRender::add_Geometry			(IRenderVisual*		V )	{ add_Static((dxRender_Visual*)V,View->getMask());					}
 void					CRender::add_StaticWallmark		(ref_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* verts)
 {
 	if (T->suppress_wm)	return;
@@ -399,7 +404,7 @@ void					CRender::add_SkeletonWallmark	(const Fmatrix* xf, CKinematics* obj, ref
 {
 	Wallmarks->AddSkeletonWallmark				(xf, obj, sh, start, dir, size);
 }
-void CRender::add_SkeletonWallmark(const Fmatrix* xf, CKinematics* obj, IWallMarkArray* pArray, const Fvector& start, const Fvector& dir, float size)
+void CRender::add_SkeletonWallmark(const Fmatrix* xf, IKinematics* obj, IWallMarkArray* pArray, const Fvector& start, const Fvector& dir, float size)
 {
 	dxWallMarkArray* pWMA = (dxWallMarkArray*)pArray;
 

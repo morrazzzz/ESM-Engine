@@ -3,7 +3,8 @@
 #include "../xr_3da/LightAnimLibrary.h"
 #include "script_entity_action.h"
 #include "xrServer_Objects_ALife.h"
-#include "../xr_3da/skeletoncustom.h"
+#include "..\xr_3da\bone.h"
+#include "..\include\xrRender\Kinematics.h"
 #include "game_object_space.h"
 
 //////////////////////////////////////////////////////////////////////

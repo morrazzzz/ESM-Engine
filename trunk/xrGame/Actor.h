@@ -3,7 +3,7 @@
 #include "../xr_3da/feel_touch.h"
 #include "../xr_3da/feel_sound.h"
 #include "../xr_3da/iinputreceiver.h"
-#include "../xr_3da/SkeletonAnimated.h"
+#include "../include/xrRender/animation_motion.h"
 #include "actor_defs.h"
 #include "entity_alive.h"
 #include "PHMovementControl.h"

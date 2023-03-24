@@ -41,7 +41,7 @@
 #include "string_table.h"
 #include "usablescriptobject.h"
 #include "alife_registry_wrappers.h"
-#include "../xr_3da/skeletonanimated.h"
+#include "../include/xrRender/Kinematics.h"
 #include "artifact.h"
 #include "CharacterPhysicsSupport.h"
 #include "material_manager.h"

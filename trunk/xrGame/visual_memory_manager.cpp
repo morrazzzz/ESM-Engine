@@ -10,7 +10,7 @@
 #include "visual_memory_manager.h"
 #include "ai/stalker/ai_stalker.h"
 #include "memory_space_impl.h"
-#include "../xr_3da/skeletoncustom.h"
+#include "..\include\xrRender\Kinematics.h"
 #include "clsid_game.h"
 #include "ai_object_location.h"
 #include "level_graph.h"

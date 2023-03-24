@@ -11,7 +11,8 @@
 #include "PHDebug.h"
 #endif
 #include "Car.h"
-#include "../xr_3da/skeletonanimated.h"
+#include "../include/xrRender/RenderVisual.h"
+#include "../include/xrRender/KinematicsAnimated.h"
 #include "../xr_3da/motion.h"
 #include "artifact.h"
 
@@ -279,9 +280,9 @@ void CActor::g_SetSprintAnimation( u32 mstate_rl,MotionID &head,MotionID &torso,
 	else if (mstate_rl & mcRStrafe)	legs = sprint.legs_rs;	
 }
 
-CMotion*        FindMotionKeys(MotionID motion_ID,dxRender_Visual* V)
+CMotion*        FindMotionKeys(MotionID motion_ID, IRenderVisual* V)
 {
-	IKinematicsAnimated* VA = PKinematicsAnimated(V);
+	IKinematicsAnimated* VA = smart_cast<IKinematicsAnimated*>(V);
 	return (VA && motion_ID.valid())?VA->LL_GetRootMotion(motion_ID):0;
 }
 

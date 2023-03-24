@@ -1,6 +1,6 @@
 #pragma once
 
-#include "..\..\xr_3da\FBasicVisual.h"
+#include "FBasicVisual.h"
 
 namespace PAPI
 {

@@ -5,10 +5,8 @@
 
 #include "igame_persistent.h"
 #include "Environment.h"
-#include "SkeletonCustom.h"
-//	Instead of SkeletonCustom:
-//#include "bone.h"
-//#include "../Include/xrRender/Kinematics.h"
+#include "bone.h"
+#include "../Include/xrRender/Kinematics.h"
 #include "cl_intersect.h"
 
 #include "../xrGame/object_broker.h"

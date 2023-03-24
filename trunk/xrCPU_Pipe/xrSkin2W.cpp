@@ -1,27 +1,9 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#ifdef _EDITOR
-#include "skeletonX.h"
-#include "skeletoncustom.h"
-#else
-#include "..\xr_3da\skeletonX.h"
-#include "..\xr_3da\skeletoncustom.h"
-#endif
 
-/*
-struct vertBoned2W	// (1+3+3 + 1+3+3 + 2)*4 = 16*4 = 64 bytes
-{
-	u16	matrix0;
-	u16	matrix1;
-	Fvector	P0;
-	Fvector	N0;
-	Fvector	P1;
-	Fvector	N1;
-	float	w;
-	float	u,v;
-};
-*/
+#include "../xr_3da/bone.h"
+#include "../xrRender/xrRender/SkeletonXVertRender.h"
 
 //#pragma optimize("a",on)
 // it means no aliasing inside the function, /Oa compiler option

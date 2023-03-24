@@ -13,6 +13,7 @@
 #include "stalker_movement_manager.h"
 #include "game_object_space.h"
 #include "effectorshot.h"
+#include "..\include\xrRender\Kinematics.h"
 
 #define TEMPLATE_SPECIALIZATION\
 	template <\

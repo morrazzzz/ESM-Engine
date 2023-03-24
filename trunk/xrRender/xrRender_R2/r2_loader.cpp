@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "r2.h"
 #include "../../xr_3da/resourcemanager.h"
-#include "../../xr_3da/fbasicvisual.h"
+#include "..\xrRender\FBasicVisual.h"
 #include "../../xr_3da/fmesh.h"
 #include "../../xr_3da/xrLevel.h"
 #include "../../xr_3da/x_ray.h"

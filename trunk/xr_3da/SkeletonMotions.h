@@ -1,16 +1,15 @@
-//---------------------------------------------------------------------------
 #pragma once
 
-#include		"skeletoncustom.h"
+#include "bone.h"
+#include "SkeletonMotionDefs.h"
 
 // refs
 class CKinematicsAnimated;
 class CBlend;
+class IKinematics;
 
 // callback
 typedef void	( * PlayCallback)		(CBlend*		P);
-
-#include "SkeletonMotionDefs.h"
 
 //*** Key frame definition ************************************************************************
 enum{
@@ -87,31 +86,30 @@ public:
 	bool			pick_mark		(const float& t) const;
 };
 
-
-const float	fQuantizerRangeExt	= 1.5f;
-class ENGINE_API		CMotionDef
+const float	fQuantizerRangeExt = 1.5f;
+class 	ENGINE_API	CMotionDef
 {
 public:
-    u16						bone_or_part;
+	u16						bone_or_part;
 	u16						motion;
 	u16						speed;				// quantized: 0..10
 	u16						power;				// quantized: 0..10
 	u16						accrue;				// quantized: 0..10
 	u16						falloff;			// quantized: 0..10
-    u16						flags;
+	u16						flags;
 	xr_vector<motion_marks>	marks;
 
-	IC float				Dequantize			(u16 V)		{	return  float(V)/655.35f; }
-	IC u16					Quantize			(float V)	{	s32		t = iFloor(V*655.35f); clamp(t,0,65535); return u16(t); }
+	IC float				Dequantize(u16 V)	const { return  float(V) / 655.35f; }
+	IC u16					Quantize(float V) const { s32		t = iFloor(V * 655.35f); clamp(t, 0, 65535); return u16(t); }
 
-	void					Load				(IReader* MP, u32 fl, u16 vers);
-	u32						mem_usage			(){ return sizeof(*this);}
+	void					Load(IReader* MP, u32 fl, u16 vers);
+	u32						mem_usage() { return sizeof(*this); }
 
-    ICF float				Accrue				(){return fQuantizerRangeExt*Dequantize(accrue);}
-    ICF float				Falloff				(){return fQuantizerRangeExt*Dequantize(falloff);}
-    ICF float				Speed				(){return Dequantize(speed);}
-    ICF float				Power				(){return Dequantize(power);}
-    bool					StopAtEnd			();
+	ICF float				Accrue() { return fQuantizerRangeExt * Dequantize(accrue); }
+	ICF float				Falloff() { return fQuantizerRangeExt * Dequantize(falloff); }
+	ICF float				Speed() { return Dequantize(speed); }
+	ICF float				Power() { return Dequantize(power); }
+	bool					StopAtEnd();
 };
 struct accel_str_pred {	
 	IC bool operator()(const shared_str& x, const shared_str& y) const	{	return xr_strcmp(x,y)<0;	}
@@ -143,7 +141,7 @@ public:
 };
 
 // shared motions
-struct ENGINE_API		motions_value
+struct 	ENGINE_API	motions_value
 {
 	accel_map			m_motion_map;		// motion associations
 	accel_map			m_cycle;			// motion data itself	(shared)
@@ -151,21 +149,21 @@ struct ENGINE_API		motions_value
 	CPartition			m_partition;		// partition
 	u32					m_dwReference;
 	BoneMotionMap		m_motions;
-    MotionDefVec		m_mdefs;
+	MotionDefVec		m_mdefs;
 
 	shared_str			m_id;
 
 
-	BOOL				load				(LPCSTR N, IReader *data, vecBones* bones);
-	MotionVec*			bone_motions		(shared_str bone_name);
+	BOOL				load(LPCSTR N, IReader* data, vecBones* bones);
+	MotionVec* bone_motions(shared_str bone_name);
 
-	u32					mem_usage			(){ 
-		u32 sz			=	sizeof(*this)+m_motion_map.size()*6+m_partition.mem_usage();
-        for (MotionDefVecIt it=m_mdefs.begin(); it!=m_mdefs.end(); it++)
-			sz			+=	it->mem_usage();
-		for (BoneMotionMapIt bm_it=m_motions.begin(); bm_it!=m_motions.end(); bm_it++)
-			for (MotionVecIt m_it=bm_it->second.begin(); m_it!=bm_it->second.end(); m_it++)
-				sz		+=	m_it->mem_usage();
+	u32					mem_usage() {
+		u32 sz = sizeof(*this) + m_motion_map.size() * 6 + m_partition.mem_usage();
+		for (MotionDefVecIt it = m_mdefs.begin(); it != m_mdefs.end(); it++)
+			sz += it->mem_usage();
+		for (BoneMotionMapIt bm_it = m_motions.begin(); bm_it != m_motions.end(); bm_it++)
+			for (MotionVecIt m_it = bm_it->second.begin(); m_it != bm_it->second.end(); m_it++)
+				sz += m_it->mem_usage();
 		return sz;
 	}
 };
@@ -183,7 +181,7 @@ public:
 	void				clean				(bool force_destroy);
 };
 
-ENGINE_API extern		motions_container*	g_pMotionsContainer;
+extern ENGINE_API 	motions_container*	g_pMotionsContainer;
 
 class ENGINE_API		shared_motions
 {
@@ -191,10 +189,10 @@ private:
 	motions_value*		p_;
 protected:
 	// ref-counting
-	void				destroy			()							{	if (0==p_) return;	p_->m_dwReference--; 	if (0==p_->m_dwReference)	p_=0;	}
+	void				destroy() { if (0 == p_) return;	p_->m_dwReference--; 	if (0 == p_->m_dwReference)	p_ = 0; }
 public:
-	void				create			(shared_str key, IReader *data, vecBones* bones){	motions_value* v = g_pMotionsContainer->dock(key,data,bones); if (0!=v) v->m_dwReference++; destroy(); p_ = v;	}
-	void				create			(shared_motions const &rhs)	{	motions_value* v = rhs.p_; if (0!=v) v->m_dwReference++; destroy(); p_ = v;	}
+	bool				create(shared_str key, IReader* data, vecBones* bones);
+	bool				create(shared_motions const& rhs);
 public:
 	// construction
 						shared_motions	()							{	p_ = 0;											}
@@ -202,7 +200,7 @@ public:
 						~shared_motions	()							{	destroy();										}
 
 	// assignment & accessors
-	shared_motions&		operator=		(shared_motions const &rhs)	{	create(rhs);return *this;	}
+	shared_motions& operator=		(shared_motions const& rhs) { create(rhs); return *this; }
 	bool				operator==		(shared_motions const &rhs)	const {return (p_ == rhs.p_);}
 
 	// misc func

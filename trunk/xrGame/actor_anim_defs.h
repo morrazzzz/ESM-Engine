@@ -1,7 +1,5 @@
 #pragma once
 
-#include "../xr_3da/SkeletonAnimated.h"
-
 struct SAnimState
 {
 	MotionID	legs_fwd;

@@ -4,7 +4,7 @@
 
 #include 	"SkeletonAnimated.h"
 #include	"SkeletonX.h"
-#include	"fmesh.h"
+#include	"../../xr_3da/fmesh.h"
 
 extern int	psSkeletonUpdate;
 
@@ -225,7 +225,7 @@ void CKinematicsAnimated::IFXBlendSetup(CBlend &B, MotionID motion_ID, float ble
 	B.CallbackParam = 0;
 
 	B.channel		= 0;
-	B.fall_at_end	= FALSE;	
+	B.fall_at_end	= FALSE;
 }
 CBlend*	CKinematicsAnimated::LL_PlayCycle(u16 part, MotionID motion_ID, BOOL  bMixing, float blendAccrue, float blendFalloff, float Speed, BOOL noloop, PlayCallback Callback, LPVOID CallbackParam,u8 channel/*=0*/ )
 {
@@ -259,14 +259,14 @@ CBlend*	CKinematicsAnimated::LL_PlayCycle(u16 part, MotionID motion_ID, BOOL  bM
 	blend_cycles[part].push_back(B);
 	return		B;
 }
-CBlend*	CKinematicsAnimated::LL_PlayCycle		(u16 part, MotionID motion_ID, BOOL bMixIn, PlayCallback Callback, LPVOID CallbackParam, u8 channel /*=0*/)
+CBlend* CKinematicsAnimated::LL_PlayCycle(u16 part, MotionID motion_ID, BOOL bMixIn, PlayCallback Callback, LPVOID CallbackParam, u8 channel /*=0*/)
 {
-	VERIFY					(motion_ID.valid()); 
-    CMotionDef* m_def		= m_Motions[motion_ID.slot].motions.motion_def(motion_ID.idx);
-    VERIFY					(m_def);
-	return LL_PlayCycle		(part,motion_ID,bMixIn, 
-    						 m_def->Accrue(),m_def->Falloff(),m_def->Speed(),m_def->StopAtEnd(), 
-                             Callback,CallbackParam,channel);
+	VERIFY(motion_ID.valid());
+	CMotionDef* m_def = m_Motions[motion_ID.slot].motions.motion_def(motion_ID.idx);
+	VERIFY(m_def);
+	return LL_PlayCycle(part, motion_ID, bMixIn,
+		m_def->Accrue(), m_def->Falloff(), m_def->Speed(), m_def->StopAtEnd(),
+		Callback, CallbackParam, channel);
 }
 CBlend*	CKinematicsAnimated::PlayCycle		(LPCSTR  N, BOOL bMixIn, PlayCallback Callback, LPVOID CallbackParam,u8 channel  /*= 0*/)
 {

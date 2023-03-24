@@ -12,7 +12,7 @@
 #include "level.h"
 #include "game_cl_base.h"
 #include "alife_registry_wrappers.h"
-#include "../xr_3da/skeletonanimated.h"
+#include "..\include\xrRender\Kinematics.h"
 #include "client_spawn_manager.h"
 #include "CharacterPhysicsSupport.h"
 #include "Grenade.h"

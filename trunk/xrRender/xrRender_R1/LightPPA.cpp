@@ -6,7 +6,7 @@
 #include "LightPPA.h"
 #include "..\..\xr_3da\igame_persistent.h"
 #include "..\..\xr_3da\environment.h"
-#include "..\..\xr_3da\fbasicvisual.h"
+#include "..\xrRender\FBasicVisual.h"
 #include "..\..\xr_3da\CustomHUD.h"
 
 const u32	MAX_POLYGONS			=	1024*8;

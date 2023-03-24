@@ -4,10 +4,10 @@
 #include "ModelPool.h"
 
 #ifndef _EDITOR
-	#include "..\..\xr_3da\IGame_Persistent.h"
-    #include "..\..\xr_3da\fmesh.h"
-    #include "..\..\xr_3da\fhierrarhyvisual.h"
-    #include "..\..\xr_3da\SkeletonAnimated.h"
+	#include "../../xr_3da/IGame_Persistent.h"
+    #include "../../xr_3da/fmesh.h"
+    #include "fhierrarhyvisual.h"
+    #include "SkeletonAnimated.h"
 	#include "fvisual.h"
 	#include "fprogressive.h"
 	#include "fskinned.h"
@@ -166,7 +166,7 @@ void CModelPool::Destroy()
 	// Registry
 	while(!Registry.empty()){
 		REGISTRY_IT it	= Registry.begin();
-		dxRender_Visual* V=(dxRender_Visual*)it->first;
+		dxRender_Visual* V = it->first;
 #ifdef _DEBUG
 		Msg				("ModelPool: Destroy object: '%s'",*V->dbg_name);
 #endif

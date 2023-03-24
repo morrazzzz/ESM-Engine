@@ -10,8 +10,8 @@
 #include "base_client_classes.h"
 #include "base_client_classes_wrappers.h"
 #include "../xr_3da/feel_sound.h"
-#include "../xr_3da/fbasicvisual.h"
-#include "../xr_3da/skeletonanimated.h"
+#include "..\Include\xrRender\RenderVisual.h"
+#include "..\include\xrRender\KinematicsAnimated.h"
 #include "ai/stalker/ai_stalker.h"
 #include "../../xrNetServer/net_utils.h"
 
@@ -150,13 +150,13 @@ void CObjectScript::script_register		(lua_State *L)
 	];
 }
 
-void dxRender_VisualScript::script_register		(lua_State *L)
+void IRender_VisualScript::script_register		(lua_State *L)
 {
 	module(L)
 	[
-		class_<dxRender_Visual>("dxRender_Visual")
-			.def(constructor<>())
-			.def("dcast_PKinematicsAnimated",&dxRender_Visual::dcast_PKinematicsAnimated)
+		class_<IRenderVisual>("dxRender_Visual")
+			//.def(constructor<>())
+			.def("dcast_PKinematicsAnimated",&IRenderVisual::dcast_PKinematicsAnimated)
 	];
 }
 

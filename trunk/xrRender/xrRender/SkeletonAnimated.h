@@ -2,20 +2,19 @@
 #pragma once
 
 #include		"skeletoncustom.h"
-#include		"skeletonmotions.h"
+#include		"../../xr_3da/skeletonmotions.h"
 
 #include "../xrRender/xrRender/KinematicAnimatedDefs.h"
 #include "../Include/xrRender/KinematicsAnimated.h"
 
 // refs
-class 	ENGINE_API CKinematicsAnimated;
-class   ENGINE_API CBoneInstanceAnimated;
+class   CKinematicsAnimated;
 struct	ENGINE_API CKey;
 class	ENGINE_API CInifile;
 
 //*** Bone Instance *******************************************************************************
 #pragma pack(push,8)
-class ENGINE_API		CBlendInstance	// Bone Instance Blend List (per-bone data)
+class CBlendInstance	// Bone Instance Blend List (per-bone data)
 {
 public:
 	typedef svector<CBlend*,MAX_BLENDED>	BlendSVec;
@@ -42,7 +41,7 @@ IC	BlendSVec			&blend_vector	()	{ return Blend;}
 #pragma pack(pop)
 
 //*** The visual itself ***************************************************************************
-class ENGINE_API	CKinematicsAnimated	: public CKinematics, public IKinematicsAnimated
+class CKinematicsAnimated	: public CKinematics, public IKinematicsAnimated
 {
 	typedef CKinematics							inherited;
 	friend class								CBoneData;

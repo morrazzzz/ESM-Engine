@@ -3,13 +3,11 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#pragma hdrstop
 
-#ifndef _EDITOR
-    #include "render.h"
-#endif    
+#include "../../xr_3da/render.h"
+   
 #include "fbasicvisual.h"
-#include "fmesh.h"
+#include "../../xr_3da/fmesh.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -35,8 +33,6 @@ dxRender_Visual::~dxRender_Visual()
 void dxRender_Visual::Release		()
 {
 }
-
-CStatTimer						tscreate;
 
 void dxRender_Visual::Load(const char* N, IReader *data, u32 )
 {

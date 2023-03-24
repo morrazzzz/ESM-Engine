@@ -5,7 +5,7 @@
 #pragma once
 
 // refs
-class ENGINE_API dxRender_Visual;
+class dxRender_Visual;
 namespace PS	{ 
 	struct ENGINE_API SEmitter; 
 };

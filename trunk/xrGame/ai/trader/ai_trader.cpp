@@ -23,6 +23,7 @@
 #include "../../game_object_space.h"
 #include "../../clsid_game.h"
 #include "trader_animation.h"
+#include "..\include\xrRender\Kinematics.h"
 
 CAI_Trader::CAI_Trader()
 {

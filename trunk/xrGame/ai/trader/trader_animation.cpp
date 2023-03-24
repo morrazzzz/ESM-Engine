@@ -3,7 +3,8 @@
 #include "ai_trader.h"
 #include "../../script_callback_ex.h"
 #include "../../game_object_space.h"
-
+#include "..\include\xrRender\RenderVisual.h"
+#include "..\include\xrRender\KinematicsAnimated.h"
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // Startup

@@ -14,7 +14,7 @@ protected:
 	const bnon_copy& operator=( const bnon_copy& ){ return *this; }
 };
 #endif
-class ENGINE_API CBlend 
+class CBlend 
 {
 public:
 	enum ECurvature

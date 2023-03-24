@@ -511,10 +511,9 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 	View							= 0;
 }
 
-#include "stdafx.h"
-#include "..\..\xr_3da\fhierrarhyvisual.h"
-#include "..\..\xr_3da\SkeletonCustom.h"
-#include "..\..\xr_3da\fmesh.h"
+#include "fhierrarhyvisual.h"
+#include "SkeletonCustom.h"
+#include "../../xr_3da/fmesh.h"
 #include "flod.h"
 
 void	R_dsgraph_structure::r_dsgraph_render_R1_box	(IRender_Sector* _S, Fbox& BB, int sh)

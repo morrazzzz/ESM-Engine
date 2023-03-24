@@ -28,7 +28,7 @@ struct SKeyTable
 	SKeyTable() { std::fill_n(chanel_blend_conts, MAX_CHANNELS, 0); }
 };
 
-class ENGINE_API IKinematicsAnimated
+class IKinematicsAnimated
 {
 public:
 	virtual ~IKinematicsAnimated() { ; }

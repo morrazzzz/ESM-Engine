@@ -4,12 +4,11 @@
 #include "x_ray.h"
 #include "xr_ioconsole.h"
 #include "xr_ioc_cmd.h"
-#include "fbasicvisual.h"
 #include "cameramanager.h"
 #include "environment.h"
 #include "xr_input.h"
 #include "CustomHUD.h"
-#include "SkeletonAnimated.h"
+#include "../xr_3da/SkeletonMotions.h"
 #include "ResourceManager.h"
 
 #include "xr_object.h"

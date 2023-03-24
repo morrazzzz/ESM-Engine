@@ -1,13 +1,13 @@
 #pragma once
 
-#include "vis_common.h"
-#include "Include/xrRender/RenderVisual.h"
+#include "../../xr_3da/vis_common.h"
+#include "../../Include/xrRender/RenderVisual.h"
 
 #define VLOAD_NOVERTICES		(1<<0)
 #define VLOAD_NOINDICES			(1<<1)
 #define VLOAD_FORCESOFTWARE		(1<<2)
 
-struct	ENGINE_API				IRender_Mesh	
+struct IRender_Mesh	
 {
 	// format
 	ref_geom					rm_geom;
@@ -31,7 +31,7 @@ private:
 };
 
 // The class itself
-class	ENGINE_API dxRender_Visual: public IRenderVisual
+class dxRender_Visual: public IRenderVisual
 {
 public:
 #ifdef _EDITOR

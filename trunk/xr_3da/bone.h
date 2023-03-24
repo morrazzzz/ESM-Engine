@@ -1,6 +1,4 @@
-//----------------------------------------------------
-#ifndef BoneH
-#define BoneH
+#pragma once
 
 #ifdef _LW_EXPORT
 #include <lwrender.h>
@@ -14,6 +12,60 @@ const	u16		BI_NONE				=	u16(-1);
 
 #define OGF_IKDATA_VERSION		0x0001
 #define	MAX_BONE_PARAMS	4
+
+class ENGINE_API CBoneInstance;
+
+// callback
+typedef void (*BoneCallback)(CBoneInstance* P);
+
+//*** Bone Instance *******************************************************************************
+#pragma pack(push, 8)
+class ENGINE_API CBoneInstance
+{
+public:
+    // data
+    Fmatrix mTransform;		  // final x-form matrix (local to model)
+    Fmatrix mRenderTransform; // final x-form matrix (model_base -> bone -> model)
+    BoneCallback Callback;
+    void* Callback_Param;
+    BOOL Callback_overwrite;	  // performance hint - don't calc anims
+    float param[MAX_BONE_PARAMS]; //
+    u32 Callback_type;			  //
+    // methods
+    void construct();
+    void set_callback(u32 Type, BoneCallback C, void* Param, BOOL overwrite = FALSE);
+    void reset_callback();
+    void set_param(u32 idx, float data);
+    float get_param(u32 idx);
+
+    u32 mem_usage() { return sizeof(*this); }
+};
+#pragma pack(pop)
+
+#pragma pack(push, 4)
+struct vertBoned1W // (3+3+3+3+2+1)*4 = 15*4 = 60 bytes
+{
+    Fvector P;
+    Fvector N;
+    Fvector T;
+    Fvector B;
+    float u, v;
+    u32 matrix;
+    void get_pos(Fvector& p) { p.set(P); }
+};
+struct vertBoned2W // (1+3+3 + 1+3+3 + 2)*4 = 16*4 = 64 bytes
+{
+    u16 matrix0;
+    u16 matrix1;
+    Fvector P;
+    Fvector N;
+    Fvector T;
+    Fvector B;
+    float w;
+    float u, v;
+    void get_pos(Fvector& p) { p.set(P); }
+};
+#pragma pack(pop)
 
 #pragma pack( push,1 )
 enum EJointType
@@ -234,25 +286,67 @@ public:
 	void			    LoadData		(IReader& F);
     void			    ResetData		();
     void			    CopyData		(CBone* bone);
-    
-#ifdef _EDITOR
-	void			    ShapeScale		(const Fvector& amount);
-	void			    ShapeRotate		(const Fvector& amount);
-	void			    ShapeMove		(const Fvector& amount);
-	void			    BindRotate		(const Fvector& amount);
-	void			    BindMove		(const Fvector& amount);
-	void			    BoneMove		(const Fvector& amount);
-	void			    BoneRotate		(const Fvector& axis, float angle);
 
-	bool 			    Pick			(float& dist, const Fvector& S, const Fvector& D, const Fmatrix& parent);
-
-    void			    Select			(BOOL flag)	{ flags.set(flSelected,flag); }
-    bool			    Selected		(){return flags.is(flSelected);}
-
-    void			    ClampByLimits	();
-
-    bool 			    ExportOGF		(IWriter& F);
-#endif
 };
 
+//*** Shared Bone Data ****************************************************************************
+class CBoneData;
+// t-defs
+typedef xr_vector<CBoneData*> vecBones;
+typedef vecBones::iterator vecBonesIt;
+
+class ENGINE_API CBoneData
+{
+protected:
+    u16 SelfID;
+    u16 ParentID;
+
+public:
+    shared_str name;
+
+    vecBones children; // bones which are slaves to this
+    Fobb obb;
+
+    Fmatrix bind_transform;
+    Fmatrix m2b_transform; // model to bone conversion transform
+    SBoneShape shape;
+    shared_str game_mtl_name;
+    u16 game_mtl_idx;
+    SJointIKData IK_data;
+    float mass;
+    Fvector center_of_mass;
+
+    DEFINE_VECTOR(u16, FacesVec, FacesVecIt);
+    DEFINE_VECTOR(FacesVec, ChildFacesVec, ChildFacesVecIt);
+    ChildFacesVec child_faces; // shared
+public:
+    CBoneData(u16 ID) : SelfID(ID) { VERIFY(SelfID != BI_NONE); }
+    virtual ~CBoneData() {}
+#ifdef DEBUG
+    typedef svector<int, 128> BoneDebug;
+    void DebugQuery(BoneDebug& L);
 #endif
+    IC void SetParentID(u16 id)
+    {
+        ParentID = id;
+    }
+
+    IC u16 GetSelfID() const { return SelfID; }
+    IC u16 GetParentID() const { return ParentID; }
+
+    // assign face
+    void AppendFace(u16 child_idx, u16 idx)
+    {
+        child_faces[child_idx].push_back(idx);
+    }
+    // Calculation
+    void CalculateM2B(const Fmatrix& Parent);
+
+    virtual u32 mem_usage()
+    {
+        u32 sz = sizeof(*this) + sizeof(vecBones::value_type) * children.size();
+        for (ChildFacesVecIt c_it = child_faces.begin(); c_it != child_faces.end(); c_it++)
+            sz += c_it->size() * sizeof(FacesVec::value_type) + sizeof(*c_it);
+        return sz;
+    }
+};

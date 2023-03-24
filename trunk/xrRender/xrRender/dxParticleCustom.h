@@ -3,7 +3,7 @@
 #define ParticleCustomH
 
 #include "../../Include/xrRender/ParticleCustom.h"
-#include "../xr_3da/FBasicVisual.h"
+#include "FBasicVisual.h"
 //---------------------------------------------------------------------------
 class 	dxParticleCustom		: public dxRender_Visual, public IParticleCustom
 {

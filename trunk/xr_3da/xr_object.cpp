@@ -5,7 +5,7 @@
 #include "xr_area.h"
 #include "render.h"
 #include "xrLevel.h"
-#include "fbasicvisual.h"
+#include "../Include/xrRender/Kinematics.h"
 
 #include "x_ray.h"
 #include "GameFont.h"
@@ -23,7 +23,6 @@ void CObject::cNameSect_set		(shared_str N)
 { 
 	NameSection	=	N; 
 }
-#include "SkeletonCustom.h"
 void CObject::cNameVisual_set	(shared_str N)
 { 
 	// check if equal
@@ -33,7 +32,7 @@ void CObject::cNameVisual_set	(shared_str N)
 	// replace model
 	if (*N && N[0]) 
 	{
-		dxRender_Visual			*old_v = renderable.visual;
+		IRenderVisual			*old_v = renderable.visual;
 		
 		NameVisual				= N;
 		renderable.visual		= Render->model_Create	(*N);
@@ -89,8 +88,8 @@ void CObject::setVisible			(BOOL _visible)
 	}
 }
 
-void	CObject::Center					(Fvector& C)	const	{ VERIFY2(renderable.visual,*cName()); renderable.xform.transform_tiny(C,renderable.visual->vis.sphere.P);	}
-float	CObject::Radius					()				const	{ VERIFY2(renderable.visual,*cName()); return renderable.visual->vis.sphere.R;								}
+void	CObject::Center					(Fvector& C)	const	{ VERIFY2(renderable.visual,*cName()); renderable.xform.transform_tiny(C,renderable.visual->getVisData().sphere.P); }
+float	CObject::Radius					()				const	{ VERIFY2(renderable.visual,*cName()); return renderable.visual->getVisData().sphere.R; }
 const	Fbox&	CObject::BoundingBox	()				const	{ VERIFY2(renderable.visual,*cName()); return renderable.visual->getVisData().box;}
 
 //----------------------------------------------------------------------

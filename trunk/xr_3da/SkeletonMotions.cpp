@@ -3,7 +3,7 @@
 #pragma hdrstop
 
 #include 	"SkeletonMotions.h"
-#include 	"SkeletonAnimated.h"
+#include    "../Include/xrRender/Kinematics.h"
 #include	"fmesh.h"
 #include	"motion.h"
 
@@ -169,14 +169,9 @@ MotionVec* motions_value::bone_motions(shared_str bone_name)
 motions_container::motions_container()
 {
 }
-extern shared_str s_bones_array_const;
 motions_container::~motions_container()
 {
-//	clean	(false);
-//	clean	(true);
-//	dump	();
 	VERIFY	(container.empty());
-	s_bones_array_const = 0;
 }
 
 bool motions_container::has(shared_str key)
@@ -270,6 +265,26 @@ void CMotionDef::Load(IReader* MP, u32 fl, u16 version)
 bool CMotionDef::StopAtEnd()
 {
 	return !!(flags&esmStopAtEnd);
+}
+
+bool shared_motions::create(shared_str key, IReader* data, vecBones* bones)
+{
+	motions_value* v = g_pMotionsContainer->dock(key, data, bones);
+	if (0 != v)
+		v->m_dwReference++;
+	destroy();
+	p_ = v;
+	return (0 != v);
+}
+
+bool shared_motions::create(shared_motions const& rhs)
+{
+	motions_value* v = rhs.p_;
+	if (0 != v)
+		v->m_dwReference++;
+	destroy();
+	p_ = v;
+	return (0 != v);
 }
 
 bool motion_marks::pick_mark(const float& t) const

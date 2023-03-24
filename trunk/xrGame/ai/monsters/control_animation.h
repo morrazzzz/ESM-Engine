@@ -1,7 +1,9 @@
 #pragma once
 
 #include "control_combase.h"
-#include "../../../xr_3da/SkeletonAnimated.h"
+#include "..\include\xrRender\RenderVisual.h"
+#include "..\include\xrRender\KinematicsAnimated.h"
+#include "..\xr_3da\SkeletonMotions.h"
 
 struct SAnimationPart {
 	MotionID		motion;

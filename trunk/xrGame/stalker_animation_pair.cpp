@@ -12,6 +12,9 @@
 #include "ai_debug.h"
 #include "ai/stalker/ai_stalker.h"
 #include "ai/ai_monsters_anims.h"
+#include "..\include\xrRender\KinematicsAnimated.h"
+#include "..\xr_3da\SkeletonMotions.h"
+#include "..\include\xrRender\animation_blend.h"
 
 #pragma warning(push)
 #pragma warning(disable:4995)

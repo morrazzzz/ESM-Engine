@@ -2,6 +2,7 @@
 #include "controller_direction.h"
 #include "controller.h"
 #include "../../../game_object_space.h"
+#include "..\include\xrRender\Kinematics.h"
 
 const float	_pmt_head_bone_limit	= PI_DIV_6;
 const float	_pmt_torso_bone_limit	= PI_DIV_3;

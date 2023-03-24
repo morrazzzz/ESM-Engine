@@ -10,7 +10,7 @@
 
 #ifndef PURE_DYNAMIC_CAST
 #	ifdef XRGAME_EXPORTS
-#		include "../xr_3da/fbasicvisual.h"
+#include "..\Include\xrRender\RenderVisual.h"
 #		include "alife_space.h"
 #		include "hit.h"
 #		include "actor.h"
@@ -20,6 +20,7 @@
 #		include "customzone.h"
 #		include "weapon.h"
 #		include "cameraeffector.h"
+#include "../include/xrRender/Kinematics.h"
 #	endif
 #	include "xrServer_Objects_ALife_Monsters.h"
 #endif

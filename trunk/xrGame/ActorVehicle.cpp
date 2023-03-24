@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ #include "stdafx.h"
 #pragma hdrstop
 
 #include "actor.h"
@@ -10,7 +10,8 @@
 #include "PHDebug.h"
 #endif
 #include "Car.h"
-#include "../xr_3da/skeletonanimated.h"
+#include "../include/xrRender/Kinematics.h"
+#include "../include/xrRender/KinematicsAnimated.h"
 #include "PHShellSplitter.h"
 
 #include "actor_anim_defs.h"

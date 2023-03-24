@@ -15,7 +15,7 @@
 #include "../../../detail_path_manager.h"
 #include "../../../CharacterPhysicsSupport.h"
 #include "../control_path_builder_base.h"
-
+#include "..\include\xrRender\Kinematics.h"
 
 CPseudoGigant::CPseudoGigant()
 {

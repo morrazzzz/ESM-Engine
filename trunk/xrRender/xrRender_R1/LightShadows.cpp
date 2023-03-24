@@ -6,7 +6,7 @@
 #include "LightShadows.h"
 #include "..\xrRender\LightTrack.h"
 #include "..\..\xr_3da\xr_object.h"
-#include "..\..\xr_3da\fbasicvisual.h"
+#include "..\xrRender\FBasicVisual.h"
 #include "..\..\xr_3da\CustomHUD.h"
  
 const	float		S_distance		= 48;
@@ -92,8 +92,8 @@ void CLightShadows::set_object	(IRenderable* O)
 			return;
 		}
 
-		Fvector		C;	O->renderable.xform.transform_tiny		(C,O->renderable.visual->vis.sphere.P);
-		float		R				= O->renderable.visual->vis.sphere.R;
+		Fvector		C;	O->renderable.xform.transform_tiny		(C,O->renderable.visual->getVisData().sphere.P);
+		float		R				= O->renderable.visual->getVisData().sphere.R;
 		float		D				= C.distance_to(Device.vCameraPosition)+R;
 					// D=0 -> P=0; 
 					// R<S_ideal_size -> P=max, R>S_ideal_size -> P=min
@@ -232,7 +232,7 @@ void CLightShadows::calculate	()
 					if (_dist>EPS_L)		break;
 					Lpos.y					+=	.01f;	//. hack to avoid light-in-the-center-of-object
 				}
-				float		_R		=	C.O->renderable.visual->vis.sphere.R+0.1f;
+				float		_R		=	C.O->renderable.visual->getVisData().sphere.R+0.1f;
 				//Msg	("* o-r: %f",_R);
 				if (_dist<_R)		{
 					Fvector			Ldir;
@@ -246,7 +246,7 @@ void CLightShadows::calculate	()
 			// calculate projection-matrix
 			Fmatrix		mProject,mProjectR;
 			float		p_dist	=	C.C.distance_to(Lpos);
-			float		p_R		=	C.O->renderable.visual->vis.sphere.R;
+			float		p_R		=	C.O->renderable.visual->getVisData().sphere.R;
 			float		p_hat	=	p_R/p_dist;
 			float		p_asp	=	1.f;
 			float		p_near	=	p_dist-p_R-eps;									

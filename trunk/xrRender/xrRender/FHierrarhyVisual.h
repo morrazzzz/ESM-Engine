@@ -9,7 +9,7 @@
 
 #include "fbasicvisual.h"
 
-class ENGINE_API FHierrarhyVisual : public dxRender_Visual
+class FHierrarhyVisual : public dxRender_Visual
 {
 public:
 	xr_vector<dxRender_Visual*>		children;

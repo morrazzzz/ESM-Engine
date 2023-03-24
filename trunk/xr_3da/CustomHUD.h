@@ -14,7 +14,6 @@ ENGINE_API extern Flags32		psHUD_Flags;
 #define HUD_CROSSHAIR_RT2		(1<<9)
 #define HUD_DRAW_RT				(1<<10)
 
-class ENGINE_API dxRender_Visual;
 class CUI;
 
 class ENGINE_API CCustomHUD:

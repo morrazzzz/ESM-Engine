@@ -10,7 +10,7 @@
 #include "xrserver_objects_alife_monsters.h"
 #include "xrserver.h"
 #include "customzone.h"
-#include "../xr_3da/skeletonanimated.h"
+#include "..\include\xrRender\Kinematics.h"
 #include "detail_path_manager.h"
 #include "memory_manager.h"
 #include "visual_memory_manager.h"

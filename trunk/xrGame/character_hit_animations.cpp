@@ -1,7 +1,8 @@
 #include "stdafx.h"
 
 #include "character_hit_animations.h"
-
+#include "..\include\xrRender\Kinematics.h"
+#include "..\include\xrRender\KinematicsAnimated.h"
 #include "entity_alive.h"
 #ifdef DEBUG
 #include "phdebug.h"

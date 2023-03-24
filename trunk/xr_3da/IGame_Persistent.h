@@ -3,10 +3,9 @@
 #pragma once
 
 #include "Environment.h"
-#ifndef _EDITOR
-	#include "IGame_ObjectPool.h"
-#endif
+#include "IGame_ObjectPool.h"
 
+class IRenderVisual;
 class IMainMenu;
 class ENGINE_API CPS_Instance;
 //-----------------------------------------------------------------------------------------------------------
@@ -84,7 +83,7 @@ public:
 
 	virtual void					UpdateGameType		() {};
 
-	virtual void					RegisterModel		(dxRender_Visual* V)
+	virtual void					RegisterModel		(IRenderVisual* V)
 #ifndef _EDITOR
      = 0;
 #else

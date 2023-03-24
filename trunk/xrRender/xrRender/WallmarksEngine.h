@@ -7,6 +7,7 @@ namespace WallmarksEngine {
 	struct wm_slot;
 }
 
+class CKinematics;
 
 class CWallmarksEngine
 {

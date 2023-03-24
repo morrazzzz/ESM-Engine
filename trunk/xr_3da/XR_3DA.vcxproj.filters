@@ -306,22 +306,7 @@
     <ClInclude Include="FDemoRecord.h">
       <Filter>Game API\Demo</Filter>
     </ClInclude>
-    <ClInclude Include="FBasicVisual.h">
-      <Filter>Render\Visuals</Filter>
-    </ClInclude>
-    <ClInclude Include="FHierrarhyVisual.h">
-      <Filter>Render\Visuals</Filter>
-    </ClInclude>
     <ClInclude Include="EnnumerateVertices.h">
-      <Filter>Render\Visuals\Skeleton</Filter>
-    </ClInclude>
-    <ClInclude Include="SkeletonAnimated.h">
-      <Filter>Render\Visuals\Skeleton</Filter>
-    </ClInclude>
-    <ClInclude Include="SkeletonCustom.h">
-      <Filter>Render\Visuals\Skeleton</Filter>
-    </ClInclude>
-    <ClInclude Include="SkeletonX.h">
       <Filter>Render\Visuals\Skeleton</Filter>
     </ClInclude>
     <ClInclude Include="vis_common.h">
@@ -641,24 +626,6 @@
     <ClCompile Include="FDemoRecord.cpp">
       <Filter>Game API\Demo</Filter>
     </ClCompile>
-    <ClCompile Include="FBasicVisual.cpp">
-      <Filter>Render\Visuals</Filter>
-    </ClCompile>
-    <ClCompile Include="FHierrarhyVisual.cpp">
-      <Filter>Render\Visuals</Filter>
-    </ClCompile>
-    <ClCompile Include="SkeletonAnimated.cpp">
-      <Filter>Render\Visuals\Skeleton</Filter>
-    </ClCompile>
-    <ClCompile Include="SkeletonCustom.cpp">
-      <Filter>Render\Visuals\Skeleton</Filter>
-    </ClCompile>
-    <ClCompile Include="SkeletonRigid.cpp">
-      <Filter>Render\Visuals\Skeleton</Filter>
-    </ClCompile>
-    <ClCompile Include="SkeletonX.cpp">
-      <Filter>Render\Visuals\Skeleton</Filter>
-    </ClCompile>
     <ClCompile Include="Frustum.cpp">
       <Filter>Render\Visibility\Frustum</Filter>
     </ClCompile>
@@ -868,6 +835,9 @@
     </ClCompile>
     <ClCompile Include="GameMtlLib.cpp">
       <Filter>Game API\GameMaterials</Filter>
+    </ClCompile>
+    <ClCompile Include="bone.cpp">
+      <Filter>Game API\Animator</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

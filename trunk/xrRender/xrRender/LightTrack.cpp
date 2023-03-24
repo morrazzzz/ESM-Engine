@@ -4,6 +4,8 @@
 
 #include "stdafx.h"
 #include "LightTrack.h"
+
+#include "fbasicvisual.h"
 #include "..\..\xr_3da\xr_object.h"
 
 #ifdef _EDITOR
@@ -107,8 +109,8 @@ void	CROS_impl::update	(IRenderable* O)
 	CObject*	_object	= dynamic_cast<CObject*>	(O);
 
 	// select sample, randomize position inside object
-	Fvector	position;	O->renderable.xform.transform_tiny	(position,O->renderable.visual->vis.sphere.P);
-	float	radius;		radius	= O->renderable.visual->vis.sphere.R;
+	Fvector	position;	O->renderable.xform.transform_tiny	(position,O->renderable.visual->getVisData().sphere.P);
+	float	radius;		radius	= O->renderable.visual->getVisData().sphere.R;
 	position.y			+=  .3f * radius;
 	Fvector	direction;	direction.random_dir();
 //.			position.mad(direction,0.25f*radius);
