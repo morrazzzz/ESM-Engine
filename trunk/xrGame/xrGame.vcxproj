@@ -1585,7 +1585,6 @@
     <ClInclude Include="debug_renderer_inline.h" />
     <ClInclude Include="xr_level_controller.h" />
     <ClInclude Include="level_debug.h" />
-    <ClInclude Include="actor_mp_client.h" />
     <ClInclude Include="actor_mp_server.h" />
     <ClInclude Include="actor_mp_state.h" />
     <ClInclude Include="actor_mp_state_inline.h" />
@@ -6511,7 +6510,6 @@
     <ClCompile Include="debug_renderer.cpp" />
     <ClCompile Include="xr_level_controller.cpp" />
     <ClCompile Include="level_debug.cpp" />
-    <ClCompile Include="actor_mp_client.cpp" />
     <ClCompile Include="actor_mp_client_export.cpp" />
     <ClCompile Include="actor_mp_client_import.cpp" />
     <ClCompile Include="actor_mp_server.cpp" />

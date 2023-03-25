@@ -160,7 +160,6 @@
 #	include "InventoryBox.h"
 
 #	include "actor_mp_server.h"
-#	include "actor_mp_client.h"
 #endif // NO_XR_GAME
 
 ENGINE_API	bool g_dedicated_server;
@@ -195,11 +194,10 @@ void CObjectFactory::register_classes	()
 	add<CUIGameDM>												(CLSID_GAME_UI_DEATHMATCH		,"game_ui_deathmatch");
 	add<CUIGameTDM>												(CLSID_GAME_UI_TEAMDEATHMATCH	,"game_ui_team_deathmatch");
 	add<CUIGameAHunt>											(CLSID_GAME_UI_ARTEFACTHUNT		,"game_ui_artefact_hunt");
-
-	ADD_MP(CActor,CActorMP,CSE_ALifeCreatureActor,CSE_ActorMP	,CLSID_OBJECT_ACTOR				,"actor");
-#else // NO_XR_GAME
-	ADD(CActor					,CSE_ALifeCreatureActor			,CLSID_OBJECT_ACTOR				,"actor");
 #endif // NO_XR_GAME
+
+	ADD(CActor					,CSE_ALifeCreatureActor			,CLSID_OBJECT_ACTOR				,"actor");
+
 
 	// server entities
 	add<CSE_ALifeGroupTemplate<CSE_ALifeMonsterBase> >			(CLSID_AI_FLESH_GROUP			,"flesh_group");

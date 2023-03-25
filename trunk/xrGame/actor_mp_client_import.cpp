@@ -1,8 +1,8 @@
 #include "stdafx.h"
-#include "actor_mp_client.h"
 #include "inventory.h"
 #include "../xr_3da/camerabase.h"
 
+/*
 void CActorMP::net_Import	( NET_Packet &P)
 {
 	net_update			N;
@@ -132,3 +132,4 @@ void CActorMP::process_packet		(net_update &N)
 	if (NET.size() > 5)
 		NET.pop_front	();
 }
+*/

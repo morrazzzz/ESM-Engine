@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "actor_mp_client.h"
 #include "CharacterPhysicsSupport.h"
 #include "inventory.h"
 
@@ -35,6 +34,7 @@
 // 3  camera
 // 4  inventory_active_slot,body_state_flags,health,radiation,physics_state_enabled
 
+/*
 void CActorMP::fill_state	(actor_mp_state &state)
 {
 	if (OnClient())
@@ -116,3 +116,4 @@ void CActorMP::net_Export	(NET_Packet &packet)
 	}
 	m_state_holder.write			(packet);
 }
+*/
