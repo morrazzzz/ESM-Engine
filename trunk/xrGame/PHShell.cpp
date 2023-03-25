@@ -314,9 +314,9 @@ void	CPHShell::	applyImpulseTrace		(const Fvector& pos, const Fvector& dir, floa
 	if(!isActive()) return;
 	VERIFY(m_pKinematics);
 	CBoneInstance& instance=m_pKinematics->LL_GetBoneInstance				(id);
-	if(instance.Callback_type!=bctPhysics || !instance.Callback_Param) return;
+	if(instance.callback_type()!=bctPhysics || !instance.callback_param()) return;
 
-	((CPhysicsElement*)instance.Callback_Param)->applyImpulseTrace		( pos,  dir,  val, id);
+	((CPhysicsElement*)instance.callback_param())->applyImpulseTrace		( pos,  dir,  val, id);
 	EnableObject(0);
 }
 
@@ -345,9 +345,9 @@ CPhysicsElement* CPHShell::get_Element(u16 bone_id)
 	if(m_pKinematics&& isActive())
 	{
 		CBoneInstance& instance=m_pKinematics->LL_GetBoneInstance				(bone_id);
-		if(instance.Callback==BonesCallback||instance.Callback==StataticRootBonesCallBack)
+		if(instance.callback()==BonesCallback||instance.callback()==StataticRootBonesCallBack)
 		{
-			return (instance.Callback_type==bctPhysics)?(CPhysicsElement*)instance.Callback_Param:NULL;
+			return (instance.callback_type()==bctPhysics)?(CPhysicsElement*)instance.callback_param():NULL;
 		}
 	}
 
@@ -389,7 +389,7 @@ u16			CPHShell::get_JointsNumber				()
 void  CPHShell:: BonesCallback				(CBoneInstance* B){
 	///CPHElement*	E			= smart_cast<CPHElement*>	(static_cast<CPhysicsBase*>(B->Callback_Param));
 
-	CPHElement*	E			= cast_PHElement(B->Callback_Param);
+	CPHElement*	E			= cast_PHElement(B->callback_param());
 	E->BonesCallBack(B);
 }
 
@@ -397,7 +397,7 @@ void  CPHShell:: BonesCallback				(CBoneInstance* B){
 void  CPHShell::StataticRootBonesCallBack			(CBoneInstance* B){
 	///CPHElement*	E			= smart_cast<CPHElement*>	(static_cast<CPhysicsBase*>(B->Callback_Param));
 
-	CPHElement*	E			= cast_PHElement(B->Callback_Param);
+	CPHElement*	E			= cast_PHElement(B->callback_param());
 	E->StataticRootBonesCallBack(B);
 }
 
@@ -1075,7 +1075,7 @@ void CPHShell::ResetCallbacksRecursive(u16 id,u16 element,Flags64 &mask)
 			R_ASSERT2(element<elements.size(),"Out of elements!!");
 			//if(elements.size()==element)	return;
 			B.set_callback(bctPhysics,BonesCallback,cast_PhysicsElement(elements[element]));
-			B.Callback_overwrite=TRUE;
+			B.set_callback_overwrite(TRUE);
 		}
 	}
 	for (vecBonesIt it=bone_data.children.begin(); it!=bone_data.children.end(); ++it)
@@ -1091,7 +1091,7 @@ void CPHShell::EnabledCallbacks(BOOL val)
 		i=elements.begin(); e=elements.end();
 		for( ;i!=e;++i){
 			CBoneInstance& B	= m_pKinematics->LL_GetBoneInstance((*i)->m_SelfID);
-			B.Callback_overwrite= TRUE;
+			B.set_callback_overwrite(TRUE);
 		}
 	}else		ZeroCallbacks();
 }
@@ -1140,7 +1140,7 @@ void CPHShell::ZeroCallbacksRecursive(u16 id)
 	CBoneInstance& B	= m_pKinematics->LL_GetBoneInstance(u16(id));
 	CBoneData& bone_data= m_pKinematics->LL_GetData(u16(id));
 	B.reset_callback	();
-	B.Callback_overwrite=FALSE;
+	B.set_callback_overwrite(false);
 	for (vecBonesIt it=bone_data.children.begin(); bone_data.children.end() != it; ++it)
 		ZeroCallbacksRecursive		((*it)->GetSelfID());
 

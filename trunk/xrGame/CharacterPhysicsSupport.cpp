@@ -634,7 +634,8 @@ void CCharacterPhysicsSupport::ActivateShell			( CObject* who )
 		anim_mov_blend->playing = false;
 		*/
 		m_EntityAlife.destroy_anim_mov_ctrl( );
-		BR.Callback_overwrite = TRUE;
+		//BR.Callback_overwrite = TRUE;
+		BR.set_callback_overwrite(true);
 	}
 	//
 
@@ -653,8 +654,9 @@ void CCharacterPhysicsSupport::ActivateShell			( CObject* who )
 	for( u16 I = K->LL_BoneCount( )-1; I!=u16(-1); --I )
 				K->LL_GetBoneInstance( I ).reset_callback( );
 
-	if( anim_mov_ctrl )	//we do not whant to move by long animation in root 
-			BR.Callback_overwrite = TRUE;
+	if (anim_mov_ctrl)	//we do not whant to move by long animation in root 
+		//			BR.Callback_overwrite = TRUE;
+		BR.set_callback_overwrite(true);
 
 	K->CalculateBones_Invalidate();
 	K->CalculateBones	();
@@ -681,8 +683,9 @@ void CCharacterPhysicsSupport::ActivateShell			( CObject* who )
 	m_pPhysicsShell->SetCallbacks(m_pPhysicsShell->GetBonesCallback());
 	//
 
-	if(anim_mov_ctrl) //we do not whant to move by long animation in root 
-			BR.Callback_overwrite = TRUE;
+	if (anim_mov_ctrl) //we do not whant to move by long animation in root 
+		//			BR.Callback_overwrite = TRUE; 
+		BR.set_callback_overwrite(true);
 
 	//set shell params
 	if(!smart_cast<CCustomZone*>(who))

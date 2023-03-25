@@ -18,7 +18,7 @@
 
 void CWeaponMounted::BoneCallbackX(CBoneInstance *B)
 {
-	CWeaponMounted	*P = static_cast<CWeaponMounted*>(B->Callback_Param);
+	CWeaponMounted	*P = static_cast<CWeaponMounted*>(B->callback_param());
 
 	if (P->Owner()){
 		Fmatrix rX;		rX.rotateX		(P->camera->pitch+P->m_dAngle.y);
@@ -28,7 +28,7 @@ void CWeaponMounted::BoneCallbackX(CBoneInstance *B)
 
 void CWeaponMounted::BoneCallbackY(CBoneInstance *B)
 {
-	CWeaponMounted	*P = static_cast<CWeaponMounted*>(B->Callback_Param);
+	CWeaponMounted	*P = static_cast<CWeaponMounted*>(B->callback_param());
 
 	if (P->Owner()){
 		Fmatrix rY;		rY.rotateY		(P->camera->yaw+P->m_dAngle.x);

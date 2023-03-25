@@ -1029,8 +1029,8 @@ void CKinematicsAnimated::CLBone(const CBoneData* bd,CBoneInstance& BONE_INST,co
 {
 	u16 SelfID		= bd->GetSelfID();
 	if (LL_GetBoneVisible(SelfID)){
-		if (BONE_INST.Callback_overwrite){
-			if (BONE_INST.Callback)	BONE_INST.Callback(&BONE_INST);
+		if (BONE_INST.callback_overwrite()){
+			if (BONE_INST.callback())	BONE_INST.callback()(&BONE_INST);
 		} else {
 
 			CKey				R[MAX_CHANNELS][MAX_BLENDED];	//all keys 
@@ -1162,7 +1162,7 @@ void CKinematicsAnimated::CLBone(const CBoneData* bd,CBoneInstance& BONE_INST,co
 			VERIFY(0);
 			}
 			*/
-			if (BONE_INST.Callback)		BONE_INST.Callback(&BONE_INST);
+			if (BONE_INST.callback())		BONE_INST.callback()(&BONE_INST);
 		}
 		BONE_INST.mRenderTransform.mul_43(BONE_INST.mTransform,bd->m2b_transform);
 	}
@@ -1191,20 +1191,18 @@ void	CKinematicsAnimated::BoneChain_Calculate		(const CBoneData* bd, CBoneInstan
 	CBlendInstance& BLEND_INST	= LL_GetBlendInstance(SelfID);
 	CBlendInstance::BlendSVec &Blend = BLEND_INST.blend_vector();
 //ignore callbacks
-	BoneCallback bc = bi.Callback;
-	BOOL		 ow = bi.Callback_overwrite;
+	BoneCallback bc = bi.callback();
+	BOOL		 ow = bi.callback_overwrite();
 	if(ignore_callbacks)
 	{
-		bi.Callback	= 0;
-		bi.Callback_overwrite =0;
+		bi.set_callback(bi.callback_type(), 0, bi.callback_param(), 0);
 	}
 //
 	if(SelfID==LL_GetBoneRoot())
 	{
 		CLBone(bd, bi, &Fidentity, Blend, mask_channel);
 //restore callback	
-		bi.Callback	= bc;
-		bi.Callback_overwrite =ow;
+		bi.set_callback(bi.callback_type(), bc, bi.callback_param(), ow);
 //
 		return;
 	}
@@ -1214,8 +1212,7 @@ void	CKinematicsAnimated::BoneChain_Calculate		(const CBoneData* bd, CBoneInstan
 	BoneChain_Calculate(ParrentDT, parrent_bi, mask_channel, ignore_callbacks);
 	CLBone(bd, bi, &parrent_bi.mTransform, Blend, mask_channel);
 //restore callback	
-	bi.Callback	= bc;
-	bi.Callback_overwrite =ow;
+	bi.set_callback(bi.callback_type(), bc, bi.callback_param(), ow);
 //
 }
 void CKinematicsAnimated::OnCalculateBones		()

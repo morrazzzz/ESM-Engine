@@ -123,12 +123,12 @@ void CKinematics::Bone_Calculate	(CBoneData* bd, Fmatrix *parent)
 	u16 SelfID						= bd->GetSelfID();
     if (LL_GetBoneVisible(SelfID)){
 		CBoneInstance& INST			= LL_GetBoneInstance(SelfID);
-        if (INST.Callback_overwrite){
-			if (INST.Callback)		INST.Callback(&INST);
+        if (INST.callback_overwrite()){
+			if (INST.callback())		INST.callback()(&INST);
         } else {
             // Build matrix
             INST.mTransform.mul_43	(*parent,bd->bind_transform);
-            if (INST.Callback)		INST.Callback(&INST);
+            if (INST.callback())		INST.callback()(&INST);
         }
         INST.mRenderTransform.mul_43(INST.mTransform,bd->m2b_transform);
 

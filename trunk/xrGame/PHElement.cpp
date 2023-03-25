@@ -763,7 +763,7 @@ void CPHElement::StataticRootBonesCallBack(CBoneInstance* B)
 			m_shell->m_object_in_root.invert();
 			m_shell->SetNotActivating();
 		}
-		B->Callback_overwrite=TRUE;
+		B->set_callback_overwrite(TRUE);
 		//VERIFY2(fsimilar(DET(B->mTransform),1.f,DET_CHECK_EPS),"Bones callback returns 0 matrix");
 		VERIFY_RMATRIX(B->mTransform);
 		VERIFY(valid_pos(B->mTransform.c,phBoundaries));
@@ -813,7 +813,7 @@ void CPHElement::GetAnimBonePos(Fmatrix &bp)
 	IKinematicsAnimated *ak = m_shell->PKinematics()->dcast_PKinematicsAnimated();
 	VERIFY(ak);
 	CBoneInstance* BI = &ak->dcast_PKinematics()->LL_GetBoneInstance(m_SelfID);
-	if(!BI->Callback)//.
+	if(!BI->callback())//.
 	{
 		bp.set(BI->mTransform);
 		return;
@@ -902,7 +902,7 @@ void	CPHElement::SetBoneCallbackOverwrite				(bool v)
 {
 	VERIFY(m_shell);
 	VERIFY(m_shell->PKinematics());
-	m_shell->PKinematics()->LL_GetBoneInstance(m_SelfID).Callback_overwrite = v;
+	m_shell->PKinematics()->LL_GetBoneInstance(m_SelfID).set_callback_overwrite(v);
 }
 void CPHElement::BonesCallBack(CBoneInstance* B)
 {
@@ -922,7 +922,7 @@ void CPHElement::BonesCallBack(CBoneInstance* B)
 			m_shell->m_object_in_root.invert();
 			m_shell->SetNotActivating();
 		}
-		B->Callback_overwrite=TRUE;
+		B->set_callback_overwrite(TRUE);
 		//VERIFY2(fsimilar(DET(B->mTransform),1.f,DET_CHECK_EPS),"Bones callback returns 0 matrix");
 		VERIFY_RMATRIX(B->mTransform);
 		VERIFY(valid_pos(B->mTransform.c,phBoundaries));

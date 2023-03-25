@@ -10,14 +10,14 @@
 
 void CCarWeapon::BoneCallbackX		(CBoneInstance *B)
 {
-	CCarWeapon	*P = static_cast<CCarWeapon*>(B->Callback_Param);
+	CCarWeapon	*P = static_cast<CCarWeapon*>(B->callback_param());
 	Fmatrix rX;		rX.rotateX		(P->m_cur_x_rot);
 	B->mTransform.mulB_43			(rX);
 }
 
 void CCarWeapon::BoneCallbackY		(CBoneInstance *B)
 {
-	CCarWeapon	*P = static_cast<CCarWeapon*>(B->Callback_Param);
+	CCarWeapon	*P = static_cast<CCarWeapon*>(B->callback_param());
 	Fmatrix rY;		rY.rotateY		(P->m_cur_y_rot);
 	B->mTransform.mulB_43			(rY);
 }

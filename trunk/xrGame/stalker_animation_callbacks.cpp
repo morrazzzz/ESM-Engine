@@ -43,7 +43,7 @@ typedef detail	<  50, 100,   0,   0>	head;
 TEMPLATE_SPECIALIZATION
 void _detail::callback		(CBoneInstance *B)
 {
-	CAI_Stalker*			A = static_cast<CAI_Stalker*>(B->Callback_Param);
+	auto* A = static_cast<CAI_Stalker*>(B->callback_param());
 	VERIFY					(_valid(B->mTransform));
 	Fvector c				= B->mTransform.c;
 	Fmatrix					spin;

@@ -55,10 +55,3 @@ namespace GameObject {
 		eDummy = static_cast<u32>(-1),
 	};
 };
-
-enum EBoneCallbackType{
-	bctDummy			= static_cast<u32>(0),	// 0 - required!!!
-	bctPhysics,
-	bctCustom,
-	bctForceU32			= static_cast<u32>(-1),
-};
