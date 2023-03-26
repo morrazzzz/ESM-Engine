@@ -10,6 +10,9 @@
     <Filter Include="Generic x86">
       <UniqueIdentifier>{145880cb-cfbf-47eb-99b1-3caf6f926839}</UniqueIdentifier>
     </Filter>
+    <Filter Include="TTAPI">
+      <UniqueIdentifier>{34bbe16a-ae21-498f-97a2-5c875b7854ff}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StdAfx.cpp">
@@ -45,6 +48,12 @@
     <ClCompile Include="xrTransfer.cpp">
       <Filter>Generic x86</Filter>
     </ClCompile>
+    <ClCompile Include="ttapi.cpp">
+      <Filter>TTAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="xrSkin2W_thread.cpp">
+      <Filter>Generic x86</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdAfx.h">
@@ -52,6 +61,9 @@
     </ClInclude>
     <ClInclude Include="xrCPU_Pipe.h">
       <Filter>Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="ttapi.h">
+      <Filter>TTAPI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
