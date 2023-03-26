@@ -51,8 +51,6 @@ typedef void	__stdcall	xrTransfer		(LPVOID vDest, LPVOID vSrc, u32 vCount, u32 v
 // Memory routines
 typedef void	__stdcall	xrMemFill_32b	(LPVOID ptr,  u32 count, u32 value);
 typedef void	__stdcall	xrMemFill_8b	(LPVOID ptr,  u32 count, u32 value);
-typedef void	__stdcall	xrMemCopy_8b	(LPVOID dest, const void* src,  u32 count);
-
 #pragma pack(push,8)
 struct xrDispatchTable
 {
@@ -63,7 +61,6 @@ struct xrDispatchTable
 //	xrBoneLerp*			blerp;
 	xrM44_Mul*			m44_mul;
 	xrTransfer*			transfer;
-	xrMemCopy_8b*		memCopy;
 	xrMemFill_8b*		memFill;
 	xrMemFill_32b*		memFill32;
 };

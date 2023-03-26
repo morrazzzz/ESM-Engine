@@ -34,7 +34,6 @@ int		max_load_stage = 0;
 XRCORE_API	LPCSTR	build_date;
 XRCORE_API	u32		build_id;
 
-//#define NO_SINGLE
 #define NO_MULTI_INSTANCES
 
 static LPSTR month_id[12] = {
@@ -103,10 +102,9 @@ struct _SoundProcessor	: public pureFrame
 
 //////////////////////////////////////////////////////////////////////////
 // global variables
-ENGINE_API	CApplication*	pApp			= NULL;
-static		HWND			logoWindow		= NULL;
+ENGINE_API	CApplication*	pApp			= nullptr;
+static		HWND			logoWindow		= nullptr;
 
-			int				doLauncher		();
 			void			doBenchmark		(LPCSTR name);
 ENGINE_API	bool			g_bBenchmark	= false;
 string512	g_sBenchmarkName;
@@ -211,11 +209,16 @@ void slowdownthread	( void* )
 //	Sleep		(30*1000);
 	for (;;)	{
 		if (Device.Statistic->fFPS<30) Sleep(1);
-		if (Device.mt_bMustExit)	return;
-		if (0==pSettings)			return;
-		if (0==Console)				return;
-		if (0==pInput)				return;
-		if (0==pApp)				return;
+		if (Device.mt_bMustExit)	
+			return;
+		if (!pSettings)			
+			return;
+		if (!Console)				
+			return;
+		if (!pInput)				
+			return;
+		if (!pApp)				
+			return;
 	}
 }
 void CheckPrivilegySlowdown		( )
@@ -332,73 +335,7 @@ static BOOL CALLBACK logDlgProc( HWND hw, UINT msg, WPARAM wp, LPARAM lp )
 	}
 	return TRUE;
 }
-/*
-void	test_rtc	()
-{
-	CStatTimer		tMc,tM,tC,tD;
-	u32				bytes=0;
-	tMc.FrameStart	();
-	tM.FrameStart	();
-	tC.FrameStart	();
-	tD.FrameStart	();
-	::Random.seed	(0x12071980);
-	for		(u32 test=0; test<10000; test++)
-	{
-		u32			in_size			= ::Random.randI(1024,256*1024);
-		u32			out_size_max	= rtc_csize		(in_size);
-		u8*			p_in			= xr_alloc<u8>	(in_size);
-		u8*			p_in_tst		= xr_alloc<u8>	(in_size);
-		u8*			p_out			= xr_alloc<u8>	(out_size_max);
-		for (u32 git=0; git<in_size; git++)			p_in[git] = (u8)::Random.randI	(8);	// garbage
-		bytes		+= in_size;
 
-		tMc.Begin	();
-		memcpy		(p_in_tst,p_in,in_size);
-		tMc.End		();
-
-		tM.Begin	();
-		CopyMemory(p_in_tst,p_in,in_size);
-		tM.End		();
-
-		tC.Begin	();
-		u32			out_size		= rtc_compress	(p_out,out_size_max,p_in,in_size);
-		tC.End		();
-
-		tD.Begin	();
-		u32			in_size_tst		= rtc_decompress(p_in_tst,in_size,p_out,out_size);
-		tD.End		();
-
-		// sanity check
-		R_ASSERT	(in_size == in_size_tst);
-		for (u32 tit=0; tit<in_size; tit++)			R_ASSERT(p_in[tit] == p_in_tst[tit]);	// garbage
-
-		xr_free		(p_out);
-		xr_free		(p_in_tst);
-		xr_free		(p_in);
-	}
-	tMc.FrameEnd	();	float rMc		= 1000.f*(float(bytes)/tMc.result)/(1024.f*1024.f);
-	tM.FrameEnd		(); float rM		= 1000.f*(float(bytes)/tM.result)/(1024.f*1024.f);
-	tC.FrameEnd		(); float rC		= 1000.f*(float(bytes)/tC.result)/(1024.f*1024.f);
-	tD.FrameEnd		(); float rD		= 1000.f*(float(bytes)/tD.result)/(1024.f*1024.f);
-	Msg				("* memcpy:        %5.2f M/s (%3.1f%%)",rMc,100.f*rMc/rMc);
-	Msg				("* mm-memcpy:     %5.2f M/s (%3.1f%%)",rM,100.f*rM/rMc);
-	Msg				("* compression:   %5.2f M/s (%3.1f%%)",rC,100.f*rC/rMc);
-	Msg				("* decompression: %5.2f M/s (%3.1f%%)",rD,100.f*rD/rMc);
-}
-*/
-extern void	testbed	(void);
-
-// video
-/*
-static	HINSTANCE	g_hInstance		;
-static	HINSTANCE	g_hPrevInstance	;
-static	int			g_nCmdShow		;
-void	__cdecl		intro_dshow_x	(void*)
-{
-	IntroDSHOW_wnd		(g_hInstance,g_hPrevInstance,"GameData\\Stalker_Intro.avi",g_nCmdShow);
-	g_bIntroFinished	= TRUE	;
-}
-*/
 #define dwStickyKeysStructSize sizeof( STICKYKEYS )
 #define dwFilterKeysStructSize sizeof( FILTERKEYS )
 #define dwToggleKeysStructSize sizeof( TOGGLEKEYS )
@@ -500,16 +437,11 @@ struct damn_keys_filter {
 #undef dwFilterKeysStructSize
 #undef dwToggleKeysStructSize
 
-// ѕриблудина дл€ SecuROM-а
-#include "securom_api.h"
-
 // ‘унци€ дл€ тупых требований THQ и тупых американских пользователей
 BOOL IsOutOfVirtualMemory()
 {
 #define VIRT_ERROR_SIZE 256
 #define VIRT_MESSAGE_SIZE 512
-
-	SECUROM_MARKER_HIGH_SECURITY_ON(1)
 
 	MEMORYSTATUSEX statex;
 	DWORD dwPageFileInMB = 0;
@@ -541,8 +473,6 @@ BOOL IsOutOfVirtualMemory()
 
 	MessageBox( NULL , pszMessage , pszError , MB_OK | MB_ICONHAND );
 
-	SECUROM_MARKER_HIGH_SECURITY_OFF(1)
-
 	return 1;
 }
 
@@ -555,40 +485,6 @@ XRCORE_API DUMMY_STUFF	*g_temporary_stuff;
 #include "trivial_encryptor.h"
 
 //#define RUSSIAN_BUILD
-
-#if 0
-void foo	()
-{
-	typedef std::map<int,int>	TEST_MAP;
-	TEST_MAP					temp;
-	temp.insert					(std::make_pair(0,0));
-	TEST_MAP::const_iterator	I = temp.upper_bound(2);
-	if (I == temp.end())
-		OutputDebugString		("end() returned\r\n");
-	else
-		OutputDebugString		("last element returned\r\n");
-
-	typedef void*	pvoid;
-
-	LPCSTR			path = "d:\\network\\stalker_net2";
-	FILE			*f = fopen(path,"rb");
-	int				file_handle = _fileno(f);
-	u32				buffer_size = _filelength(file_handle);
-	pvoid			buffer = xr_malloc(buffer_size);
-	size_t			result = fread(buffer,buffer_size,1,f);
-	R_ASSERT3		(!buffer_size || (result && (buffer_size >= result)),"Cannot read from file",path);
-	fclose			(f);
-
-	u32				compressed_buffer_size = rtc_csize(buffer_size);
-	pvoid			compressed_buffer = xr_malloc(compressed_buffer_size);
-	u32				compressed_size = rtc_compress(compressed_buffer,compressed_buffer_size,buffer,buffer_size);
-
-	LPCSTR			compressed_path = "d:\\network\\stalker_net2.rtc";
-	FILE			*f1 = fopen(compressed_path,"wb");
-	fwrite			(compressed_buffer,compressed_size,1,f1);
-	fclose			(f1);
-}
-#endif // 0
 
 ENGINE_API	bool g_dedicated_server	= false;
 
@@ -684,14 +580,6 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 			doBenchmark				(b_name);
 			return 0;
 		}
-
-		if (strstr(lpCmdLine,"-launcher")) 
-		{
-			int l_res = doLauncher();
-			if (l_res != 0)
-				return 0;
-		};
-		
 
 		if(strstr(Core.Params,"-r2a"))	
 			Console->Execute			("renderer renderer_r2a");
@@ -905,14 +793,6 @@ void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
 		R_ASSERT	(0==g_pGameLevel);
 		R_ASSERT	(0!=g_pGamePersistent);
 
-#ifdef NO_SINGLE
-		Console->Execute("main_menu on");
-		if (	op_server == NULL					||
-				strstr(op_server, "/deathmatch")	||
-				strstr(op_server, "/teamdeathmatch")||
-				strstr(op_server, "/artefacthunt")
-			)
-#endif	
 		{		
 			Console->Execute("main_menu off");
 			Console->Hide();
@@ -969,11 +849,10 @@ void CApplication::LoadBegin	()
 
 		g_appLoaded			= FALSE;
 
-#ifndef DEDICATED_SERVER
 		_InitializeFont		(pFontSystem,"ui_font_graffiti19_russian",0);
 
 		m_pRender->LoadBegin();
-#endif
+
 		phase_timer.Start	();
 		load_stage			= 0;
 
@@ -1123,60 +1002,6 @@ int CApplication::Level_ID(LPCSTR name)
 		if (0==stricmp(buffer,Levels[I].folder))	return int(I);
 	}
 	return -1;
-}
-
-
-//launcher stuff----------------------------
-extern "C"{
-	typedef int	 __cdecl LauncherFunc	(int);
-}
-HMODULE			hLauncher		= NULL;
-LauncherFunc*	pLauncher		= NULL;
-
-void InitLauncher(){
-	if(hLauncher)
-		return;
-	hLauncher	= LoadLibrary	("xrLauncher.dll");
-	if (0==hLauncher)	R_CHK	(GetLastError());
-	R_ASSERT2		(hLauncher,"xrLauncher DLL raised exception during loading or there is no xrLauncher.dll at all");
-
-	pLauncher = (LauncherFunc*)GetProcAddress(hLauncher,"RunXRLauncher");
-	R_ASSERT2		(pLauncher,"Cannot obtain RunXRLauncher function from xrLauncher.dll");
-};
-
-void FreeLauncher(){
-	if (hLauncher)	{ 
-		FreeLibrary(hLauncher); 
-		hLauncher = NULL; pLauncher = NULL; };
-}
-
-int doLauncher()
-{
-/*
-	execUserScript();
-	InitLauncher();
-	int res = pLauncher(0);
-	FreeLauncher();
-	if(res == 1) // do benchmark
-		g_bBenchmark = true;
-
-	if(g_bBenchmark){ //perform benchmark cycle
-		doBenchmark();
-	
-		// InitLauncher	();
-		// pLauncher	(2);	//show results
-		// FreeLauncher	();
-
-		Core._destroy			();
-		return					(1);
-
-	};
-	if(res==8){//Quit
-		Core._destroy			();
-		return					(1);
-	}
-*/
-	return 0;
 }
 
 void doBenchmark(LPCSTR name)

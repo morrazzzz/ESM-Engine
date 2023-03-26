@@ -43,6 +43,8 @@ typedef tv_sshort tv_sshort_tables[ 256 ][ 4 ];
 		}
 */
 
+#ifndef _WIN64
+
 lp_tv_uchar tv_yuv2argb(
 						lp_tv_uchar			argb_plane ,
 						tv_slong			argb_width ,
@@ -280,5 +282,7 @@ _tb_loop:
 
 	return argb_plane;
 } // tv_yuv2argb
+
+#endif
 
 #pragma warning( default : 4731 )
