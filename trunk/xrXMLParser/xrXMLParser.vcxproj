@@ -162,7 +162,7 @@
       </ExceptionHandling>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
       <AssemblerOutput>
       </AssemblerOutput>
