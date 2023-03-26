@@ -54,7 +54,7 @@ public:
 	virtual void				Spawn						()				{};
 	virtual void				Depart						()				{};
 
-	virtual vis_data& getVisData() { return vis; }
+	virtual vis_data& _BCL getVisData() { return vis; }
 	virtual u32	getType() { return Type; }
 
 	dxRender_Visual();

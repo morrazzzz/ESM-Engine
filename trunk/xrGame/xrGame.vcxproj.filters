@@ -6546,6 +6546,12 @@
     <ClInclude Include="ui_defs.h">
       <Filter>UI</Filter>
     </ClInclude>
+    <ClInclude Include="IKFoot.h">
+      <Filter>Physics\IK</Filter>
+    </ClInclude>
+    <ClInclude Include="IKFoot_inl.h">
+      <Filter>Physics\IK</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -9682,6 +9688,9 @@
     </ClCompile>
     <ClCompile Include="ui\UIGameTutorialVideoItem.cpp">
       <Filter>UI\Tutorial</Filter>
+    </ClCompile>
+    <ClCompile Include="IKFoot.cpp">
+      <Filter>Physics\IK</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

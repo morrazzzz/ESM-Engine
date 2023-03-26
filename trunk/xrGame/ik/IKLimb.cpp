@@ -599,14 +599,17 @@ void CIKLimb::ApplyContext( SCalculateData &cd )
 	SetNewGoal(cld,cd);
 }
 
-void	CIKLimb::	AnimGoal			( Fmatrix &gl, IKinematicsAnimated&K )
+void	CIKLimb::	AnimGoal			( Fmatrix &gl)
 {
-	K.Bone_GetAnimPos( gl, m_bones[2], 1<<0, false );
+	Kinematics()->Bone_GetAnimPos( gl, m_bones[2], 1<<0, false );
 }
 
 void	CIKLimb::SetAnimGoal			(SCalculateData& cd)
 {
-	AnimGoal( cd.goal, *cd.m_K );
+	AnimGoal(cd.state.anim_pos);
+//	cd.state.goal.set(Fmatrix().mul_43(*cd.m_obj, cd.state.anim_pos), ik_goal_matrix::cl_undefined);
+//	cd.state.anim_pos = cd.state.goal.get();
+//	cd.state.blend_to = cd.state.goal;
 	cd.apply = true;
 }
 
@@ -614,11 +617,11 @@ void	CIKLimb::Update( CGameObject *O, const	CBlend *b, u16 interval )
 {
 	if(!m_collide)
 				return;
-	Fmatrix foot;
+	Fmatrix anim_foot;
 	IKinematicsAnimated*K = O->Visual( )->dcast_PKinematicsAnimated( );
-	AnimGoal( foot,  *K );
+	AnimGoal(anim_foot);
 	anim_state.update( K, b, interval );
-	Collide( collide_data, O, foot, anim_state.step() );
+	Collide( collide_data, O, anim_foot, anim_state.step() );
 }
 
 struct ssaved_callback :
@@ -677,7 +680,8 @@ void CIKLimb::Collide( SIKCollideData &cld, CGameObject *O, const Fmatrix &foot,
 				if (IKinematics* K = V->dcast_PKinematics())
 				{
 					float dist = l_pick_dist;
-					if( K->PickBone(R.O->XFORM(), cld.m_plane.n, dist,  pos, pick_v,(u16) R.element))
+					IKinematics::pick_result res;
+					if( K->PickBone(R.O->XFORM(), res, dist,  pos, pick_v,(u16) R.element))
 					{
 						cld.collided = true;
 						Fvector point; point.add( pos, Fvector( ).mul( pick_v, dist ) );

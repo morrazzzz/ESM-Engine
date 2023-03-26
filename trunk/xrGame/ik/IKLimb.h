@@ -3,6 +3,7 @@
 
 #include "limb.h"
 #include "../ik_anim_state.h"
+#include "../ikfoot.h"
 class	IKinematics	;
 class	CDB::TRI	;
 struct SCalculateData;
@@ -54,6 +55,7 @@ public:
 				void		Calculate			( SCalculateData& cd );
 				void		Update				( CGameObject *O, const	CBlend *b, u16 interval );
 IC				u16			get_id				()	{ return m_id; }
+IC		IKinematics* Kinematics()									const { return m_foot.Kinematics(); }
 private:
 				void		Invalidate			();
 				void		GetFootStepMatrix	( Fmatrix	&m, const Fmatrix &gl_anim, const  SIKCollideData &cld, bool collide );
@@ -62,7 +64,7 @@ IC				void		make_shift			(Fmatrix &xm, const Fplane &p,const Fvector &pick_dir )
 				void		ApplyContext		( SCalculateData& cd );
 				void		Solve				( SCalculateData& cd );
 				void		Collide				( SIKCollideData &cld, CGameObject *O, const Fmatrix &foot, bool foot_step );
-IC				void		AnimGoal			( Fmatrix &gl, IKinematicsAnimated	&K );
+IC				void		AnimGoal			( Fmatrix &gl);
 				void		SetAnimGoal			( SCalculateData& cd );
 				void		SetNewGoal			( const SIKCollideData &cld, SCalculateData& cd );
 				void		CalculateBones		(SCalculateData& cd);
@@ -79,6 +81,7 @@ private:
 
 private:
 	Limb		m_limb;
+	CIKFoot     m_foot;
 	Fvector		m_toe_position;
 	u16			m_bones[4];	
 	u16			m_id;
@@ -99,6 +102,7 @@ struct SCalculateData : private boost::noncopyable {
 	IKinematicsAnimated	*m_K				;
 	CIKLimb				&m_limb				;
 	Fmatrix	const		&m_obj				;
+	calculate_state		state;
 
 	bool				do_collide  		;
 

@@ -6,6 +6,8 @@
 struct	ENGINE_API	vertRender;
 struct	ENGINE_API	vertBoned1W;
 struct	ENGINE_API	vertBoned2W;
+struct	ENGINE_API	vertBoned3W;
+struct	ENGINE_API	vertBoned4W;
 class	ENGINE_API	CBoneInstance;
 struct	ENGINE_API	CKey;
 struct	ENGINE_API	CKeyQR;
@@ -25,6 +27,8 @@ template<class T>	struct _matrix;
 // Bones: SysMem	64b aligned
 typedef void	__stdcall	xrSkin1W		(vertRender* D, vertBoned1W* S, u32 vCount, CBoneInstance* Bones);
 typedef void	__stdcall	xrSkin2W		(vertRender* D, vertBoned2W* S, u32 vCount, CBoneInstance* Bones);
+typedef void	__stdcall	xrSkin3W(vertRender* D, vertBoned3W* S, u32 vCount, CBoneInstance* Bones);
+typedef void	__stdcall	xrSkin4W(vertRender* D, vertBoned4W* S, u32 vCount, CBoneInstance* Bones);
 
 // Spherical-linear interpolation of quaternion
 // NOTE: Quaternions may be non-aligned in memory
@@ -54,6 +58,8 @@ struct xrDispatchTable
 {
 	xrSkin1W*			skin1W;
 	xrSkin2W*			skin2W;
+	xrSkin3W* skin3W;
+	xrSkin4W* skin4W;
 //	xrBoneLerp*			blerp;
 	xrM44_Mul*			m44_mul;
 	xrTransfer*			transfer;

@@ -1,16 +1,18 @@
 //---------------------------------------------------------------------------
-#pragma once
+#ifndef SkeletonCustomH
+#define SkeletonCustomH
 
 #include		"fhierrarhyvisual.h"
 #include		"../../xr_3da/bone.h"
-#include "../Include/xrRender/Kinematics.h"
+#include		"../../Include/xrRender/Kinematics.h"
 
+// consts
 extern	xrCriticalSection	UCalc_Mutex			;
 
 // refs
-class	CKinematics;
-class	ENGINE_API CInifile;
-class	CBoneData;
+class	 CKinematics;
+class	 CInifile;
+class	 CBoneData;
 struct	SEnumVerticesCallback;
 
 // MT-locker
@@ -21,7 +23,7 @@ struct	UCalc_mtlock	{
 
 #pragma warning(push)
 #pragma warning(disable:4275)
-class CSkeletonWallmark : public intrusive_base // 4+4+4+12+4+16+16 = 60 + 4 = 64
+class  CSkeletonWallmark : public intrusive_base // 4+4+4+12+4+16+16 = 60 + 4 = 64
 {
 #pragma warning(pop)
 	CKinematics*		m_Parent;		// 4
@@ -82,7 +84,7 @@ DEFINE_VECTOR(intrusive_ptr<CSkeletonWallmark>,SkeletonWMVec,SkeletonWMVecIt);
 #	define _DBG_SINGLE_USE_MARKER
 #endif
 
-class CKinematics: public FHierrarhyVisual, public IKinematics
+class 	CKinematics: public FHierrarhyVisual, public IKinematics
 {
 	typedef FHierrarhyVisual	inherited;
 	friend class				CBoneData;
@@ -91,10 +93,16 @@ public:
 #ifdef DEBUG
 	BOOL						dbg_single_use_marker;
 #endif
-	virtual void				Bone_Calculate		(CBoneData* bd, Fmatrix* parent);
+			void				Bone_Calculate		(CBoneData* bd, Fmatrix* parent);
+			void				CLBone				(const CBoneData* bd, CBoneInstance &bi, const Fmatrix *parent, u8 mask_channel = (1<<0));
+
+			void				BoneChain_Calculate	(const CBoneData* bd, CBoneInstance &bi,u8 channel_mask, bool ignore_callbacks);
+			void				Bone_GetAnimPos		(Fmatrix& pos,u16 id, u8 channel_mask, bool ignore_callbacks);
+
+
+	virtual	void				BuildBoneMatrix		( const CBoneData* bd, CBoneInstance &bi, const Fmatrix *parent, u8 mask_channel = (1<<0) );
 	virtual void				OnCalculateBones	(){}
-public:
-	typedef xr_vector<std::pair<shared_str,u16> >	accel;
+	
 public:
 	dxRender_Visual*				m_lod;
 protected:
@@ -134,72 +142,103 @@ public:
 	void*						Update_Callback_Param;
 public:
 	// wallmarks
-	void						AddWallmark			(const Fmatrix* parent, const Fvector3& start, const Fvector3& dir, ref_shader shader_new_shader, float size);
+	void						AddWallmark			(const Fmatrix* parent, const Fvector3& start, const Fvector3& dir, ref_shader shader, float size);
 	void						CalculateWallmarks	();
 	void						RenderWallmark		(intrusive_ptr<CSkeletonWallmark> wm, FVF::LIT* &verts);
 	void						ClearWallmarks		();
 public:
 				
-				bool			PickBone			(const Fmatrix &parent_xform, Fvector& normal, float& dist, const Fvector& start, const Fvector& dir, u16 bone_id);
+				bool			PickBone			(const Fmatrix &parent_xform, IKinematics::pick_result &r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id);
 	virtual		void			EnumBoneVertices	(SEnumVerticesCallback &C, u16 bone_id);
 public:
 								CKinematics			();
 	virtual						~CKinematics		();
 
 	// Low level interface
-	u16							LL_BoneID		(LPCSTR  B);
-	u16							LL_BoneID		(const shared_str& B);
-	LPCSTR						LL_BoneName_dbg	(u16 ID);
+				u16				_BCL	LL_BoneID			(LPCSTR  B);
+				u16				_BCL	LL_BoneID			(const shared_str& B);
+				LPCSTR			_BCL	LL_BoneName_dbg		(u16 ID);
 
-    CInifile*					LL_UserData			(){return pUserData;}
-	accel*						LL_Bones			(){return bone_map_N;}
-	ICF CBoneInstance&			LL_GetBoneInstance	(u16 bone_id)		{	VERIFY(bone_id<LL_BoneCount()); VERIFY(bone_instances); return bone_instances[bone_id];	}
-	CBoneData&					LL_GetData			(u16 bone_id)		{	VERIFY(bone_id<LL_BoneCount()); VERIFY(bones);			return *((*bones)[bone_id]);	}
-	u16							LL_BoneCount		()					{	return u16(bones->size());										}
-	u16							LL_VisibleBoneCount	()					{	u64 F=visimask.flags&((u64(1)<<u64(LL_BoneCount()))-1); return (u16)btwCount1(F); }
-	ICF Fmatrix&				LL_GetTransform		(u16 bone_id)		{	return LL_GetBoneInstance(bone_id).mTransform;					}
-	ICF Fmatrix&				LL_GetTransform_R	(u16 bone_id)		{	return LL_GetBoneInstance(bone_id).mRenderTransform;			}	// rendering only
-	Fobb&						LL_GetBox			(u16 bone_id)		{	VERIFY(bone_id<LL_BoneCount());	return (*bones)[bone_id]->obb;	}
-	void						LL_GetBindTransform (xr_vector<Fmatrix>& matrices);
-    int 						LL_GetBoneGroups 	(xr_vector<xr_vector<u16> >& groups);
+				CInifile*		_BCL	LL_UserData			()						{return pUserData;}
+				accel*					LL_Bones			()						{return bone_map_N;}
+	ICF			CBoneInstance&	_BCL	LL_GetBoneInstance	(u16 bone_id)			{	VERIFY(bone_id<LL_BoneCount()); VERIFY(bone_instances); return bone_instances[bone_id];	}
+	ICF const	CBoneInstance&	_BCL	LL_GetBoneInstance	(u16 bone_id) const		{	VERIFY(bone_id<LL_BoneCount()); VERIFY(bone_instances); return bone_instances[bone_id];	}
+	CBoneData&					_BCL	LL_GetData			(u16 bone_id)
+    {
+    	VERIFY(bone_id<LL_BoneCount());
+        VERIFY(bones);
+        CBoneData& bd =  *((*bones)[bone_id]) ;
+        return bd;
+    }
 
-	u16							LL_GetBoneRoot		()					{	return iRoot;													}
-	void						LL_SetBoneRoot		(u16 bone_id)		{	VERIFY(bone_id<LL_BoneCount());	iRoot=bone_id;					}
+	virtual	const IBoneData&_BCL	GetBoneData(u16 bone_id) const
+	{
+		VERIFY(bone_id<LL_BoneCount());
+        VERIFY(bones);
+        CBoneData& bd =  *((*bones)[bone_id]) ;
+        return bd;
+	}
+	CBoneData*	_BCL	LL_GetBoneData		(u16 bone_id)
+	{
+		
+		VERIFY(bone_id<LL_BoneCount());
+        VERIFY(bones);
+		u32	sz = sizeof(vecBones);
+		u32	sz1=  sizeof(((*bones)[bone_id])->children);
+		Msg("sz: %d",sz);
+		Msg("sz1: %d",sz1);
+        CBoneData* bd =  ((*bones)[bone_id]) ;
+        return bd;
+	}
+	u16						_BCL	LL_BoneCount		()	const			{	return u16(bones->size());										}
+	u16								LL_VisibleBoneCount	()					{	u64 F=visimask.flags&((u64(1)<<u64(LL_BoneCount()))-1); return (u16)btwCount1(F); }
+	ICF Fmatrix&			_BCL	LL_GetTransform		(u16 bone_id)		{	return LL_GetBoneInstance(bone_id).mTransform;					}
+	ICF const Fmatrix&		_BCL	LL_GetTransform		(u16 bone_id) const	{	return LL_GetBoneInstance(bone_id).mTransform;					}
+	ICF Fmatrix&					LL_GetTransform_R	(u16 bone_id)		{	return LL_GetBoneInstance(bone_id).mRenderTransform;			}	// rendering only
+	Fobb&							LL_GetBox			(u16 bone_id)		{	VERIFY(bone_id<LL_BoneCount());	return (*bones)[bone_id]->obb;	}
+	const Fbox&				_BCL	GetBox				()const				{	return vis.box ;}
+	void							LL_GetBindTransform (xr_vector<Fmatrix>& matrices);
+    int 							LL_GetBoneGroups 	(xr_vector<xr_vector<u16> >& groups);
 
-    BOOL						LL_GetBoneVisible	(u16 bone_id)		{	VERIFY(bone_id<LL_BoneCount()); return visimask.is(u64(1)<<bone_id);	}
-	void						LL_SetBoneVisible	(u16 bone_id, BOOL val, BOOL bRecursive);
-	u64							LL_GetBonesVisible	()					{	return visimask.get();	}
-	void						LL_SetBonesVisible	(u64 mask);
+	u16						_BCL	LL_GetBoneRoot		()					{	return iRoot;													}
+	void							LL_SetBoneRoot		(u16 bone_id)		{	VERIFY(bone_id<LL_BoneCount());	iRoot=bone_id;					}
+
+    BOOL					_BCL	LL_GetBoneVisible	(u16 bone_id)		{	VERIFY(bone_id<LL_BoneCount()); return visimask.is(u64(1)<<bone_id);	}
+	void							LL_SetBoneVisible	(u16 bone_id, BOOL val, BOOL bRecursive);
+	u64						_BCL	LL_GetBonesVisible	()					{	return visimask.get();	}
+	void							LL_SetBonesVisible	(u64 mask);
 
 	// Main functionality
-	virtual void				CalculateBones				(BOOL bForceExact	=	FALSE);		// Recalculate skeleton
-	void						CalculateBones_Invalidate	();
-	void						Callback					(UpdateCallback C, void* Param)		{	Update_Callback	= C; Update_Callback_Param	= Param;	}
+	virtual void					CalculateBones				(BOOL bForceExact	=	FALSE);		// Recalculate skeleton
+	void							CalculateBones_Invalidate	();
+	void							Callback					(UpdateCallback C, void* Param)		{	Update_Callback	= C; Update_Callback_Param	= Param;	}
 
-	u16 LL_GetBoneRoot() const { return iRoot; }
+	//	Callback: data manipulation
+	virtual void					SetUpdateCallback(UpdateCallback pCallback) {Update_Callback = pCallback;}
+	virtual void					SetUpdateCallbackParam(void* pCallbackParam) {Update_Callback_Param = pCallbackParam;}
 
-	// Callback: data manipulation
-	virtual void SetUpdateCallback(UpdateCallback pCallback) { Update_Callback = pCallback; }
-	virtual void SetUpdateCallbackParam(void* pCallbackParam) { Update_Callback_Param = pCallbackParam; }
-
-	virtual UpdateCallback GetUpdateCallback() { return Update_Callback; }
-	virtual void* GetUpdateCallbackParam() { return Update_Callback_Param; }
+	virtual UpdateCallback			GetUpdateCallback() { return Update_Callback;}
+	virtual void*					GetUpdateCallbackParam() { return Update_Callback_Param;}
 
 	// debug
 #ifdef DEBUG
-	void						DebugRender			(Fmatrix& XFORM);
+	void							DebugRender			(Fmatrix& XFORM);
+protected:
+	virtual shared_str		_BCL	getDebugName()	{ return dbg_name; }
+public:
 #endif
 
 	// General "Visual" stuff
-    virtual void				Copy				(dxRender_Visual *pFrom);
-	virtual void				Load				(const char* N, IReader *data, u32 dwFlags);
-	virtual void 				Spawn				();
-	virtual void				Depart				();
-    virtual void 				Release				();
+    virtual void					Copy				(dxRender_Visual *pFrom);
+	virtual void					Load				(const char* N, IReader *data, u32 dwFlags);
+	virtual void 					Spawn				();
+	virtual void					Depart				();
+    virtual void 					Release				();
 
-	virtual	IKinematicsAnimated* dcast_PKinematicsAnimated() { return 0; }
-	virtual IRenderVisual* dcast_RenderVisual() { return this; }
-	virtual IKinematics* dcast_PKinematics() { return this; }
+	virtual	IKinematicsAnimated*dcast_PKinematicsAnimated() { return 0;	}
+	virtual IRenderVisual*	_BCL dcast_RenderVisual() { return this; }
+	virtual IKinematics*	_BCL dcast_PKinematics()  { return this; }
+//	virtual	CKinematics*		dcast_PKinematics	()				{ return this;	}
 
 	virtual u32					mem_usage			(bool bInstance)
 	{
@@ -212,5 +251,10 @@ public:
 		}
 		return sz;
 	}
+private:
+	bool						m_is_original_lod;
+
 };
-IC CKinematics* PCKinematics(dxRender_Visual* V) { return V ? (CKinematics*)V->dcast_PKinematics() : 0; }
+IC CKinematics* PCKinematics		(dxRender_Visual* V)		{ return V?(CKinematics*)V->dcast_PKinematics():0; }
+//---------------------------------------------------------------------------
+#endif

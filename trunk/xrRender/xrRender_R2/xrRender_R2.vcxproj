@@ -286,6 +286,8 @@
     <ClInclude Include="..\..\Include\xrRender\UISequenceVideoItem.h" />
     <ClInclude Include="..\..\Include\xrRender\UIShader.h" />
     <ClInclude Include="..\..\Include\xrRender\WallMarkArray.h" />
+    <ClInclude Include="..\xrRender\Animation.h" />
+    <ClInclude Include="..\xrRender\AnimationKeyCalculate.h" />
     <ClInclude Include="..\xrRender\D3DUtils.h" />
     <ClInclude Include="..\xrRender\du_box.h" />
     <ClInclude Include="..\xrRender\du_cone.h" />
@@ -385,6 +387,7 @@
     <ClInclude Include="r2_rendertarget_wallmarks.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\xrRender\Animation.cpp" />
     <ClCompile Include="..\xrRender\D3DUtils.cpp" />
     <ClCompile Include="..\xrRender\du_box.cpp" />
     <ClCompile Include="..\xrRender\du_cone.cpp" />

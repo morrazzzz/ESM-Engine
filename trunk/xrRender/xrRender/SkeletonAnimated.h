@@ -1,20 +1,16 @@
 //---------------------------------------------------------------------------
-#pragma once
+#ifndef SkeletonAnimatedH
+#define SkeletonAnimatedH
 
 #include		"skeletoncustom.h"
-#include		"../../xr_3da/skeletonmotions.h"
+#include		"animation.h"
+#include		"../../xr_3da/SkeletonMotions.h"
 
-#include "../xrRender/xrRender/KinematicAnimatedDefs.h"
-#include "../Include/xrRender/KinematicsAnimated.h"
-
-// refs
-class   CKinematicsAnimated;
-struct	ENGINE_API CKey;
-class	ENGINE_API CInifile;
+#include		"../../Include/xrRender/KinematicsAnimated.h"
 
 //*** Bone Instance *******************************************************************************
 #pragma pack(push,8)
-class CBlendInstance	// Bone Instance Blend List (per-bone data)
+class 		CBlendInstance	// Bone Instance Blend List (per-bone data)
 {
 public:
 	typedef svector<CBlend*,MAX_BLENDED>	BlendSVec;
@@ -40,8 +36,12 @@ IC	BlendSVec			&blend_vector	()	{ return Blend;}
 };
 #pragma pack(pop)
 
+
+
+//typedef void	( * MotionMarkCallback)		(CBlend*		P);
+
 //*** The visual itself ***************************************************************************
-class CKinematicsAnimated	: public CKinematics, public IKinematicsAnimated
+class  ECORE_API	CKinematicsAnimated	: public CKinematics, public IKinematicsAnimated
 {
 	typedef CKinematics							inherited;
 	friend class								CBoneData;
@@ -58,16 +58,19 @@ private:
 public: 
 	// Calculation
 private:
-			void				BoneChain_Calculate		(const CBoneData* bd, CBoneInstance &bi,u8 channel_mask, bool ignore_callbacks);
-			void				CLBone					(const CBoneData* bd, CBoneInstance &bi, const Fmatrix *parent,const CBlendInstance::BlendSVec &Blend, u8 mask_channel = (1<<0));
+	
+	void						LL_BuldBoneMatrixDequatize	( const CBoneData* bd, u8 channel_mask,  SKeyTable& keys );
+	void						LL_BoneMatrixBuild			( CBoneInstance &bi, const Fmatrix *parent, const SKeyTable& keys );
+virtual	void					BuildBoneMatrix				( const CBoneData* bd, CBoneInstance &bi, const Fmatrix *parent, u8 mask_channel = (1<<0) );
 public:
-	virtual void				Bone_Calculate			(CBoneData* bd, Fmatrix* parent);
-			void				Bone_GetAnimPos			(Fmatrix& pos,u16 id, u8 channel_mask, bool ignore_callbacks);
-	virtual void				OnCalculateBones		();
 
-	u32	LL_PartBlendsCount(u32 bone_part_id);
-	CBlend* LL_PartBlend(u32 bone_part_id, u32 n);
+	virtual void				OnCalculateBones		();
+public: 
+#ifdef _EDITOR
+public:
+#else
 private:
+#endif
 	u32											Update_LastTime;
 
 	CBlendInstance*								blend_instances;
@@ -80,12 +83,14 @@ private:
 	MotionsSlotVec								m_Motions;
 
     CPartition*									m_Partition;
-
+	
+	IBlendDestroyCallback						*m_blend_destroy_callback;
+	IUpdateTracksCallback						*m_update_tracks_callback;
 	// Blending
 	svector<CBlend, MAX_BLENDED_POOL>			blend_pool;
 	BlendSVec									blend_cycles[MAX_PARTS];
 	BlendSVec									blend_fx;
-	float										channel_factors[MAX_CHANNELS];
+	animation::channels							channels;
 protected:
 	// internal functions
 	virtual void				IBoneInstances_Create	();
@@ -99,10 +104,18 @@ private:
 	void						IFXBlendSetup			(CBlend &B, MotionID motion_ID, float blendAccrue, float blendFalloff,float Power ,float Speed,u16 bone);
 //.	bool						LoadMotions				(LPCSTR N, IReader *data);
 public:
-#ifdef DEBUG
+#if (defined DEBUG || defined _EDITOR)
 	std::pair<LPCSTR,LPCSTR>	LL_MotionDefName_dbg	(MotionID	ID);
-//	LPCSTR						LL_MotionDefName_dbg	(LPVOID		ptr);
+	void						LL_DumpBlends_dbg		( );
 #endif
+	u32							LL_PartBlendsCount			( u32 bone_part_id );
+	CBlend						*LL_PartBlend				( u32 bone_part_id, u32 n );
+	void						LL_IterateBlends			( IterateBlendsCallback &callback );
+
+	void						SetUpdateTracksCalback		( IUpdateTracksCallback	*callback );
+	IUpdateTracksCallback		*GetUpdateTracksCalback		( ){ return m_update_tracks_callback; }
+//	LPCSTR						LL_MotionDefName_dbg	(LPVOID		ptr);
+
 #ifdef _EDITOR
     u32							LL_CycleCount	(){u32 cnt=0; for (u32 k=0; k<m_Motions.size(); k++) cnt+=m_Motions[k].motions.cycle()->size(); return cnt;}
     u32							LL_FXCount		(){u32 cnt=0; for (u32 k=0; k<m_Motions.size(); k++) cnt+=m_Motions[k].motions.fx()->size(); return cnt;}
@@ -116,6 +129,8 @@ public:
 	IC CMotion*					LL_GetRootMotion(MotionID id){return &m_Motions[id.slot].bone_motions[iRoot]->at(id.idx);}
 	IC CMotion*					LL_GetMotion	(MotionID id, u16 bone_id){return &m_Motions[id.slot].bone_motions[bone_id]->at(id.idx);}
 
+	virtual IBlendDestroyCallback	*GetBlendDestroyCallback	( );
+	virtual void					SetBlendDestroyCallback		( IBlendDestroyCallback	*cb );
 	// Low level interface
 	MotionID					LL_MotionID		(LPCSTR B);
 	u16							LL_PartID		(LPCSTR B);
@@ -130,8 +145,8 @@ public:
 	                                                                
 	// Main functionality
 	void						UpdateTracks	();								// Update motions
-	void LL_UpdateTracks(float dt, bool b_force, bool leave_blends); // Update motions
-	void LL_UpdateFxTracks(float dt);
+	void						LL_UpdateTracks	( float dt, bool b_force, bool leave_blends );						// Update motions
+	void						LL_UpdateFxTracks( float dt );
 	void						DestroyCycle	(CBlend &B);
 
 	// cycles
@@ -141,21 +156,26 @@ public:
 	MotionID					ID_Cycle_Safe	(shared_str  N);
 	CBlend*						PlayCycle		(LPCSTR  N,  BOOL bMixIn=TRUE, PlayCallback Callback=0, LPVOID CallbackParam=0, u8 channel = 0);
 	CBlend*						PlayCycle		(MotionID M, BOOL bMixIn=TRUE, PlayCallback Callback=0, LPVOID CallbackParam=0, u8 channel = 0);
+	CBlend*						PlayCycle		(u16 partition, MotionID M, BOOL bMixIn=TRUE, PlayCallback Callback=0, LPVOID CallbackParam=0, u8 channel = 0);
 	// fx'es
 	MotionID					ID_FX			(LPCSTR  N);
 	MotionID					ID_FX_Safe		(LPCSTR  N);
 	CBlend*						PlayFX			(LPCSTR  N, float power_scale);
 	CBlend*						PlayFX			(MotionID M, float power_scale);
+	
+	const CPartition&			partitions		() const {return *m_Partition;};
 
 	// General "Visual" stuff
 	virtual void				Copy			(dxRender_Visual *pFrom);
 	virtual void				Load			(const char* N, IReader *data, u32 dwFlags);
 	virtual void				Release			();
 	virtual void				Spawn			();
-	virtual	IKinematicsAnimated* dcast_PKinematicsAnimated() { return this; }
-	virtual IRenderVisual* dcast_RenderVisual() { return this; }
-	virtual IKinematics* dcast_PKinematics() { return this; }
+	virtual	IKinematicsAnimated*dcast_PKinematicsAnimated() { return this;	}
+	virtual IRenderVisual*	_BCL	dcast_RenderVisual		() { return this; }
+	virtual IKinematics*	_BCL 	dcast_PKinematics		()  { return this; }
+
 	virtual						~CKinematicsAnimated	();
+								CKinematicsAnimated		();
 
 	virtual u32					mem_usage		(bool bInstance)
 	{
@@ -168,5 +188,10 @@ public:
 		VERIFY					(bone_part_id < MAX_PARTS);
 		return					(blend_cycles[bone_part_id]);
 	}
+
+	virtual float				get_animation_length (MotionID motion_ID);
 };
-IC CKinematicsAnimated* PKinematicsAnimated(dxRender_Visual* V) { return V ? (CKinematicsAnimated*)V->dcast_PKinematicsAnimated() : 0; }
+//IC CKinematicsAnimated* PKinematicsAnimated(IRender_Visual* V) { return V?V->dcast_PKinematicsAnimated():0; }
+IC CKinematicsAnimated* PKinematicsAnimated(IRenderVisual* V) { return V?(CKinematicsAnimated*)V->dcast_PKinematicsAnimated():0; }
+//---------------------------------------------------------------------------
+#endif
