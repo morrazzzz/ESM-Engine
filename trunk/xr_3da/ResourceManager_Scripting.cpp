@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #pragma hdrstop
 
 #include	"render.h"
@@ -106,7 +106,9 @@ void LuaError(lua_State* L)
 #	endif // DEBUG_MEMORY_MANAGER
 	}
 #else // USE_DL_ALLOCATOR
-#	include "doug_lea_memory_allocator.h"
+#include "doug_lea_memory_allocator.h"
+#include <Luabind/luabind/luabind_memory.h>
+#include <Luabind/luabind/luabind_delete.h>
 
 	static void *lua_alloc_dl	(void *ud, void *ptr, size_t osize, size_t nsize) {
 	(void)ud;
@@ -121,9 +123,30 @@ void LuaError(lua_State* L)
 	}
 #endif // USE_DL_ALLOCATOR
 
+using namespace luabind;
+
+static void* __cdecl luabind_allocator(luabind::memory_allocation_function_parameter, const void* pointer, size_t const size) //Ðàíüøå âñåãî èíèòèòñÿ çäåñü, ïîýòîìó ïóñòü çäåñü è áóäåò
+{
+	if (!size)
+	{
+		void* non_const_pointer = const_cast<LPVOID>(pointer);
+		xr_free(non_const_pointer);
+		return nullptr;
+	}
+
+	if (!pointer)
+		return Memory.mem_alloc(size);
+
+	void* non_const_pointer = const_cast<LPVOID>(pointer);
+	return Memory.mem_realloc(non_const_pointer, size);
+}
+
 // export
 void	CResourceManager::LS_Load			()
 {
+	luabind::allocator = &luabind_allocator; //Àëëîêàòîð èíèòèòñÿ òîëüêî çäåñü è òîëüêî îäèí ðàç!
+	luabind::allocator_parameter = nullptr;
+
 #ifndef USE_DL_ALLOCATOR
 	LSVM			= lua_newstate(lua_alloc_xr, NULL);
 #else // USE_XR_ALLOCAOR
@@ -135,13 +158,7 @@ void	CResourceManager::LS_Load			()
 	}
 
 	// initialize lua standard library functions 
-	luaopen_base	(LSVM); 
-	luaopen_table	(LSVM);
-	luaopen_string	(LSVM);
-	luaopen_math	(LSVM);
-#ifdef USE_JIT
-	luaopen_jit		(LSVM);
-#endif
+	luaL_openlibs(LSVM);
 
 	luabind::open						(LSVM);
 #if !XRAY_EXCEPTIONS
@@ -155,38 +172,38 @@ void	CResourceManager::LS_Load			()
 	[
 		class_<adopt_sampler>("_sampler")
 			.def(								constructor<const adopt_sampler&>())
-			.def("texture",						&adopt_sampler::_texture		,return_reference_to(_1))
-			.def("project",						&adopt_sampler::_projective		,return_reference_to(_1))
-			.def("clamp",						&adopt_sampler::_clamp			,return_reference_to(_1))
-			.def("wrap",						&adopt_sampler::_wrap			,return_reference_to(_1))
-			.def("mirror",						&adopt_sampler::_mirror			,return_reference_to(_1))
-			.def("f_anisotropic",				&adopt_sampler::_f_anisotropic	,return_reference_to(_1))
-			.def("f_trilinear",					&adopt_sampler::_f_trilinear	,return_reference_to(_1))
-			.def("f_bilinear",					&adopt_sampler::_f_bilinear		,return_reference_to(_1))
-			.def("f_linear",					&adopt_sampler::_f_linear		,return_reference_to(_1))
-			.def("f_none",						&adopt_sampler::_f_none			,return_reference_to(_1))
-			.def("fmin_none",					&adopt_sampler::_fmin_none		,return_reference_to(_1))
-			.def("fmin_point",					&adopt_sampler::_fmin_point		,return_reference_to(_1))
-			.def("fmin_linear",					&adopt_sampler::_fmin_linear	,return_reference_to(_1))
-			.def("fmin_aniso",					&adopt_sampler::_fmin_aniso		,return_reference_to(_1))
-			.def("fmip_none",					&adopt_sampler::_fmip_none		,return_reference_to(_1))
-			.def("fmip_point",					&adopt_sampler::_fmip_point		,return_reference_to(_1))
-			.def("fmip_linear",					&adopt_sampler::_fmip_linear	,return_reference_to(_1))
-			.def("fmag_none",					&adopt_sampler::_fmag_none		,return_reference_to(_1))
-			.def("fmag_point",					&adopt_sampler::_fmag_point		,return_reference_to(_1))
-			.def("fmag_linear",					&adopt_sampler::_fmag_linear	,return_reference_to(_1)),
+			 .def("texture", &adopt_sampler::_texture, return_reference_to<1>())
+			 .def("project", &adopt_sampler::_projective, return_reference_to<1>())
+			 .def("clamp", &adopt_sampler::_clamp, return_reference_to<1>())
+			 .def("wrap", &adopt_sampler::_wrap, return_reference_to<1>())
+			 .def("mirror", &adopt_sampler::_mirror, return_reference_to<1>())
+			 .def("f_anisotropic", &adopt_sampler::_f_anisotropic, return_reference_to<1>())
+			 .def("f_trilinear", &adopt_sampler::_f_trilinear, return_reference_to<1>())
+			 .def("f_bilinear", &adopt_sampler::_f_bilinear, return_reference_to<1>())
+			 .def("f_linear", &adopt_sampler::_f_linear, return_reference_to<1>())
+			 .def("f_none", &adopt_sampler::_f_none, return_reference_to<1>())
+			 .def("fmin_none", &adopt_sampler::_fmin_none, return_reference_to<1>())
+			 .def("fmin_point", &adopt_sampler::_fmin_point, return_reference_to<1>())
+			 .def("fmin_linear", &adopt_sampler::_fmin_linear, return_reference_to<1>())
+			 .def("fmin_aniso", &adopt_sampler::_fmin_aniso, return_reference_to<1>())
+			 .def("fmip_none", &adopt_sampler::_fmip_none, return_reference_to<1>())
+			 .def("fmip_point", &adopt_sampler::_fmip_point, return_reference_to<1>())
+			 .def("fmip_linear", &adopt_sampler::_fmip_linear, return_reference_to<1>())
+			 .def("fmag_none", &adopt_sampler::_fmag_none, return_reference_to<1>())
+			 .def("fmag_point", &adopt_sampler::_fmag_point, return_reference_to<1>())
+			 .def("fmag_linear", &adopt_sampler::_fmag_linear, return_reference_to<1>()),
 
 		class_<adopt_compiler>("_compiler")
 			.def(								constructor<const adopt_compiler&>())
-			.def("begin",						&adopt_compiler::_pass			,return_reference_to(_1))
-			.def("sorting",						&adopt_compiler::_options		,return_reference_to(_1))
-			.def("emissive",					&adopt_compiler::_o_emissive	,return_reference_to(_1))
-			.def("distort",						&adopt_compiler::_o_distort		,return_reference_to(_1))
-			.def("wmark",						&adopt_compiler::_o_wmark		,return_reference_to(_1))
-			.def("fog",							&adopt_compiler::_fog			,return_reference_to(_1))
-			.def("zb",							&adopt_compiler::_ZB			,return_reference_to(_1))
-			.def("blend",						&adopt_compiler::_blend			,return_reference_to(_1))
-			.def("aref",						&adopt_compiler::_aref			,return_reference_to(_1))
+		    .def("begin", &adopt_compiler::_pass, return_reference_to<1>())
+		    .def("sorting", &adopt_compiler::_options, return_reference_to<1>())
+		    .def("emissive", &adopt_compiler::_o_emissive, return_reference_to<1>())
+		    .def("distort", &adopt_compiler::_o_distort, return_reference_to<1>())
+		    .def("wmark", &adopt_compiler::_o_wmark, return_reference_to<1>())
+		    .def("fog", &adopt_compiler::_fog, return_reference_to<1>())
+		    .def("zb", &adopt_compiler::_ZB, return_reference_to<1>())
+		    .def("blend", &adopt_compiler::_blend, return_reference_to<1>())
+		    .def("aref", &adopt_compiler::_aref, return_reference_to<1>())
 			.def("sampler",						&adopt_compiler::_sampler		),	// returns sampler-object
 
 		class_<adopt_blend>("blend")

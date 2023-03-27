@@ -19,8 +19,7 @@
 // ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
-
-#include <luabind/lua_include.hpp>
+#include "stdafx.h"
 
 #include <luabind/luabind.hpp>
 
@@ -67,15 +66,20 @@ namespace luabind { namespace detail
 		assert((crep != 0) && "internal error, please report");
 		assert((is_class_rep(L, lua_upvalueindex(1))) && "internal error, please report");
 
-	#ifndef LUABIND_NO_ERROR_CHECKING
 
 		if (!is_class_rep(L, 1))
 		{
-			lua_pushstring(L, "expected class to derive from or a newline");
+			// Added class name to error info
+			string_class err_line("expected class [");
+			err_line += crep->name();
+			err_line += "] to derive from or a newline";
+			Log(err_line.c_str());
+	#ifndef LUABIND_NO_ERROR_CHECKING
+			lua_pushstring(L, err_line.c_str());
 			lua_error(L);
+	#endif
 		}
 
-	#endif
 
 		class_rep* base = static_cast<class_rep*>(lua_touserdata(L, 1));
 		class_rep::base_info binfo;
@@ -124,7 +128,7 @@ namespace luabind { namespace detail
 
 		const char* name = lua_tostring(L, 1);
 
-		int stack_level = lua_gettop(L);
+//		int stack_level = lua_gettop(L);
 		//////////////////////////////////////////////////////////////////////////
 		// Here we are trying to add the class to the namespace in the local variable "this" if exist
 		//////////////////////////////////////////////////////////////////////////
@@ -164,7 +168,7 @@ namespace luabind { namespace detail
 		// also add it to the closure as return value
 		lua_pushcclosure(L, &stage2, 1);
 
-		int stack_level2 = lua_gettop(L);
+//		int stack_level2 = lua_gettop(L);
 		return 1;
 	}
 

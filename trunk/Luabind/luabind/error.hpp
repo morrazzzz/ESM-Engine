@@ -20,12 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef LUABIND_ERROR_HPP_INCLUDED
-#define LUABIND_ERROR_HPP_INCLUDED
+#pragma once
 
-#include <luabind/prefix.hpp>
-#include <exception>
 #include <luabind/config.hpp>
+
+#ifndef LUABIND_NO_EXCEPTIONS
+#    include <exception>
+#endif
 
 struct lua_State;
 
@@ -46,8 +47,8 @@ namespace luabind
 	{
 	public:
 		error(lua_State* L): m_L(L) {}
-		lua_State* state() const throw() { return m_L; }
-		virtual const char* what() const throw()
+		lua_State* state() const noexcept { return m_L; }
+		virtual const char* what() const noexcept
 		{
 			return "lua runtime error";
 		}
@@ -62,9 +63,9 @@ namespace luabind
 	{
 	public:
 		cast_failed(lua_State* L, LUABIND_TYPE_INFO i): m_L(L), m_info(i) {}
-		lua_State* state() const throw() { return m_L; }
-		LUABIND_TYPE_INFO info() const throw() { return m_info; }
-		virtual const char* what() const throw() { return "unable to make cast"; }
+		lua_State* state() const noexcept { return m_L; }
+		LUABIND_TYPE_INFO info() const noexcept { return m_info; }
+		virtual const char* what() const noexcept { return "unable to make cast"; }
 	private:
 		lua_State* m_L;
 		LUABIND_TYPE_INFO m_info;
@@ -82,11 +83,11 @@ namespace luabind
 
 #endif
 
-	typedef int	(*pcall_callback_fun)	(lua_State*);
-	void				LUABIND_API set_pcall_callback(pcall_callback_fun e);
-	pcall_callback_fun	LUABIND_API get_pcall_callback();
+	typedef int(*pcall_callback_fun)(lua_State*);
+	LUABIND_API void set_pcall_callback(pcall_callback_fun e);
+	LUABIND_API pcall_callback_fun get_pcall_callback();
 
+	typedef void(*pregister_callback_fun)(lua_State*,bool);
+	LUABIND_API void set_pregister_callback(pregister_callback_fun e);
+	LUABIND_API pregister_callback_fun get_pregister_callback();
 }
-
-#endif // LUABIND_ERROR_HPP_INCLUDED
-

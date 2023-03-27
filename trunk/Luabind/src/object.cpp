@@ -19,8 +19,7 @@
 // ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
-
-#include <luabind/lua_include.hpp>
+#include "stdafx.h"
 
 #include <luabind/luabind.hpp>
 #include <luabind/detail/implicit_cast.hpp>
@@ -83,8 +82,6 @@ LUABIND_PROXY_ASSIGNMENT_OPERATOR(proxy_array_object)
 
 		// *************************************
 		// PROXY ARRAY OBJECT
-
-
 
 #define LUABIND_ARRAY_PROXY_ASSIGNMENT_OPERATOR(rhs)\
 		proxy_array_object& proxy_array_object::operator=(const rhs& p) \

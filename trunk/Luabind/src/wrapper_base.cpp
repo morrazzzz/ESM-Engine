@@ -19,12 +19,12 @@
 // ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
+#include "stdafx.h"
 
-#include <luabind/config.hpp>
-#include <luabind/lua_include.hpp>
 #include <luabind/detail/object_rep.hpp>
 #include <luabind/detail/class_rep.hpp>
 #include <luabind/detail/stack_utils.hpp>
+
 
 namespace luabind { namespace detail
 {

@@ -121,6 +121,7 @@ void CScriptStorage::reinit	()
 		return;
 	}
 
+	// initialize lua standard library functions
 	luaL_openlibs(m_virtual_machine);
 
 	if (strstr(Core.Params,"-_g"))

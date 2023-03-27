@@ -19,12 +19,8 @@
 // ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
+#include "stdafx.h"
 
-#include <algorithm>
-
-#include <luabind/lua_include.hpp>
-
-#include <luabind/config.hpp>
 #include <luabind/weak_ref.hpp>
 #include <cassert>
 
@@ -109,7 +105,7 @@ namespace luabind {
                 lua_rawgeti(s, -1, count_ref);
                 ref = (int)lua_tonumber(s, -1) + 1;
                 lua_pop(s, 1);
-                lua_pushnumber(s, ref);
+                lua_pushnumber(s, (lua_Number)ref);
                 lua_rawseti(s, -2, count_ref);
             }
             else
@@ -128,7 +124,7 @@ namespace luabind {
             get_weak_table(state);
             lua_rawgeti(state, -1, freelist_ref);
             lua_rawseti(state, -2, ref);
-            lua_pushnumber(state, ref);
+            lua_pushnumber(state, (lua_Number)ref);
             lua_rawseti(state, -2, freelist_ref);
             lua_pop(state, 1);
         }
@@ -144,7 +140,7 @@ namespace luabind {
     }
     
     weak_ref::weak_ref(lua_State* L, int index)
-        : m_impl(new impl(L, index))
+        : m_impl(luabind_new<impl>(L, index))
     {
         m_impl->count = 1;
     }
@@ -159,7 +155,7 @@ namespace luabind {
     {
         if (m_impl && --m_impl->count == 0)
         {
-            delete m_impl;
+            luabind_delete	(m_impl);
         }
     }
 

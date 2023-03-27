@@ -19,8 +19,7 @@
 // ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
-
-#include <luabind/lua_include.hpp>
+#include "stdafx.h"
 
 #include <luabind/luabind.hpp>
 #include <luabind/detail/class_registry.hpp>
@@ -240,14 +239,17 @@ namespace luabind { namespace detail {
     void class_registry::add_class(LUABIND_TYPE_INFO info, class_rep* crep)
     {
         // class is already registered
-        assert((m_classes.find(info) == m_classes.end()) 
+		if (m_classes.find(info) != m_classes.end())
+			Msg("!![LUABIND] you are trying to register a class twice [%s]", crep->name()); //To XRay Log
+		//
+		assert((m_classes.find(info) == m_classes.end())
             && "you are trying to register a class twice");
         m_classes[info] = crep;
     }
 
     class_rep* class_registry::find_class(LUABIND_TYPE_INFO info) const
     {
-        std::map<LUABIND_TYPE_INFO, class_rep*, cmp>::const_iterator i(
+        map_class<LUABIND_TYPE_INFO, class_rep*, cmp>::const_iterator i(
             m_classes.find(info));
 
         if (i == m_classes.end()) return 0; // the type is not registered
