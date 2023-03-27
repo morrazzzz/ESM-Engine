@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #pragma hdrstop
 
+#include "os_clipboard.h"
 #include "xrdebug.h"
 
 #include "dxerr9.h"
@@ -56,59 +57,6 @@ extern bool shared_str_initialized;
 XRCORE_API	xrDebug		Debug;
 
 static bool	error_after_dialog = false;
-
-extern void copy_to_clipboard	(const char *string);
-
-void copy_to_clipboard	(const char *string)
-{
-	if (IsDebuggerPresent())
-		return;
-
-	if (!OpenClipboard(0))
-		return;
-
-	HGLOBAL				handle = GlobalAlloc(GHND | GMEM_DDESHARE,(strlen(string) + 1)*sizeof(char));
-	if (!handle) {
-		CloseClipboard	();
-		return;
-	}
-
-	char				*memory = (char*)GlobalLock(handle);
-	strcpy				(memory,string);
-	GlobalUnlock		(handle);
-	EmptyClipboard		();
-	SetClipboardData	(CF_TEXT,handle);
-	CloseClipboard		();
-}
-
-void update_clipboard	(const char *string)
-{
-#ifdef DEBUG
-	if (IsDebuggerPresent())
-		return;
-
-	if (!OpenClipboard(0))
-		return;
-
-	HGLOBAL				handle = GetClipboardData(CF_TEXT);
-	if (!handle) {
-		CloseClipboard		();
-		copy_to_clipboard	(string);
-		return;
-	}
-
-	LPSTR				memory = (char*)GlobalLock(handle);
-	u32					memory_length = xr_strlen(memory);
-	u32					string_length = xr_strlen(string);
-	LPSTR				buffer = (LPSTR)_alloca((memory_length + string_length + 1)*sizeof(char));
-	strcpy				(buffer,memory);
-	GlobalUnlock		(handle);
-
-	strcat				(buffer,string);
-	CloseClipboard		();
-	copy_to_clipboard	(buffer);
-#endif // DEBUG
-}
 
 extern void BuildStackTrace();
 extern char g_stackTrace[100][4096];
@@ -203,7 +151,7 @@ void gather_info		(const char *expression, const char *description, const char *
 		if (shared_str_initialized)
 			FlushLog	();
 
-		copy_to_clipboard	(assertion_info);
+		os_clipboard::copy_to_clipboard	  (assertion_info);
 	}
 }
 
@@ -606,22 +554,26 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 		if (shared_str_initialized)
 			Msg				("ExceptionCode is [%x]\nstack trace:\n", pExceptionInfo->ExceptionRecord->ExceptionCode);
 
-		copy_to_clipboard	("stack trace:\r\n\r\n");
+		os_clipboard::copy_to_clipboard	("stack trace:\r\n\r\n");
 
 		string4096			buffer;
 		for (int i=0; i<g_stackTraceCount; ++i) {
 			if (shared_str_initialized)
 				Msg			("%s",g_stackTrace[i]);
-			sprintf			(buffer,"%s\r\n",g_stackTrace[i]);
-			update_clipboard(buffer);
+			xr_sprintf(buffer, sizeof(buffer), "%s\r\n", g_stackTrace[i]);
+#ifdef DEBUG
+			os_clipboard::update_clipboard(buffer);
+#endif
 		}
 
 		if (*error_message) {
 			if (shared_str_initialized)
 				Msg			("\n%s",error_message);
 
-			strcat			(error_message,"\r\n");
-			update_clipboard(error_message);
+			xr_strcat			(error_message,sizeof(error_message),"\r\n");
+#ifdef DEBUG
+			os_clipboard::update_clipboard(error_message);
+#endif
 		}
 	}
 
