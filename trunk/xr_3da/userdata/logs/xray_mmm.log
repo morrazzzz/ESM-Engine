@@ -1,9 +1,0 @@
-* Detected CPU: GenuineIntel Pentium-II, F6/M5/S3, 3602.00 mhz, 24-clk 'rdtsc'
-* CPU Features: RDTSC, MMX, SSE, SSE2
-
-Initializing File System...
-using fs-ltx fsgame.ltx
-FS: 28864 files cached, 5055Kb memory used.
-Init FileSystem 0.398427 sec
-'xrCore' build 8811, Mar 23 2023
-
