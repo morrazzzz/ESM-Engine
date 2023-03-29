@@ -14,7 +14,17 @@
 ESM-Engine
 ==========================
 * Движок был основан на [XRay](https://github.com/mortany/xray), а точнее его модификации для новых Visual Studio.
-* Спасибо проектам, чьи наработки были здесь использованы: [XRay OMP X64](https://github.com/xrLil-Batya/xray-omp-x64), [OGSR Engine](https://github.com/OGSR/OGSR-Engine/), [STCOP Engine x64](https://github.com/mortany/stcop-engine), SO-XRay-Engine, [Anomaly Engine](https://github.com/morrazzzz/xray-monolith-152), TSMP Engine, [NSProjectX](https://github.com/Deathman00/NSProjectX), [XRay 1.6(abramcumner)](https://github.com/abramcumner/xray16)
+* Спасибо проектам, чьи наработки были здесь использованы: [XRay OMP X64](https://github.com/xrLil-Batya/xray-omp-x64), [OGSR Engine](https://github.com/OGSR/OGSR-Engine/), [STCOP Engine x64](https://github.com/mortany), SO-XRay-Engine, [Anomaly Engine](https://github.com/morrazzzz/xray-monolith-152), TSMP Engine, [NSProjectX](https://github.com/Deathman00/NSProjectX), [XRay 1.6(abramcumner)](https://github.com/abramcumner/xray16), [XRay 1.5(abramcumner)](https://github.com/abramcumner/xray15), [SoC-DX10](https://github.com/morrey/STALKER-SOC-DX10)
+
+## Разная информация:
+* О проблемах можно сообщать [сюда](https://github.com/morrazzzz/ESM-Engine/issues)
+* [Авторы/Contributors](https://github.com/morrazzzz/ESM-Engine/graphs/contributors) проекта
+* [Описание изменённого(Wiki, пока там пусто! Там что то будет когда будет первый релиз)](https://github.com/morrazzzz/ESM-Engine/wiki)
+
+## Инструкция по сборке:
+* Требуется актуальная версия Visual Studio 2022(Не важен тип Visual Studio, можно любой, например Community)
+* Открываете ESM Engine.sln, которых находится в папке trunk
+* Выбираете Release(остальное пока не работает) и строго Win32(x86, x64 ещё не поддерживается). Далее нажимаете на кнопку собрать
 
 ## Цели проекта:
 * Исправление ошибок оригинального движка
@@ -33,6 +43,9 @@ ESM-Engine
 * Некоторые фишки из Anomaly 
 * Консоль из Зова Припяти
 * Исправление предупреждений при сборке
+* Поддержка моделей из Зова Припяти и SDK 0.7
+* Фиксы утечек памяти
 
 ## Известные проблемы:
 * Вылет при выходе из игры(ведётся наблюдение)
+* Резкая смена погоды(на дин. погоде, на статич. такой проблемы нету)
