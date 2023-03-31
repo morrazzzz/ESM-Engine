@@ -135,9 +135,9 @@ XRCORE_API	char* 	xr_strdup	(const char* string);
 #	endif
 #else // DEBUG_MEMORY_NAME
 #	if !(defined(__BORLANDC__) || defined(NO_XRNEW))
-[[nodiscard]] IC void*	operator new		(size_t size)		{	return Memory.mem_alloc(size?size:1);				}
+    IC void*	operator new		(size_t size)		{	return Memory.mem_alloc(size?size:1);				}
 	IC void		operator delete		(void *p) noexcept {	xr_free(p);											}
-[[nodiscard]] IC void*	operator new[]		(size_t size)		{	return Memory.mem_alloc(size?size:1);				}
+    IC void*	operator new[]		(size_t size)		{	return Memory.mem_alloc(size?size:1);				}
 	IC void		operator delete[]	(void* p) noexcept {	xr_free(p);											}
 #	endif
 #endif // DEBUG_MEMORY_MANAGER

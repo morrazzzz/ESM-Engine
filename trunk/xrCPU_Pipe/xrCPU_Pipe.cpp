@@ -32,7 +32,7 @@ extern xrM44_Mul		xrM44_Mul_x86;
 extern xrM44_Mul		xrM44_Mul_3DNow;
 extern xrM44_Mul		xrM44_Mul_SSE;
 extern xrTransfer		xrTransfer_x86;
-extern xrMemFill_32b	xrMemFill32_MMX;
+//extern xrMemFill_32b	xrMemFill32_MMX;
 
 
 extern "C" {
@@ -48,10 +48,10 @@ extern "C" {
 		T->skin2W	= xrSkin2W_x86;
 		skin4W_func = xrSkin4W_x86;
 		// T->blerp	= xrBoneLerp_x86;
-		T->m44_mul	= xrM44_Mul_x86;
+//		T->m44_mul	= xrM44_Mul_x86;
 		T->transfer = xrTransfer_x86;
 		T->memFill	= NULL;
-		T->memFill32= xrMemFill32_MMX;
+//		T->memFill32= xrMemFill32_MMX;
 
 		// Init helper threads
 		ttapi_Init();

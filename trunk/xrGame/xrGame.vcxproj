@@ -206,7 +206,7 @@
     <IncludePath>$(xrSdkDir)dxSDK\Include;$(WindowsSDK_IncludePath);$(VC_IncludePath);$(xrSdkDir)loki;$(xrSdkDir)boost_1_30_0;$(SolutionDir)Luabind\;$(SolutionDir)LuaJIT\src;$(SolutionDir)xrCore</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(xrSdkDir)dxSDK\Include;$(WindowsSDK_IncludePath);$(VC_IncludePath);$(xrSdkDir)loki;$(xrSdkDir)boost_1_30_0;$(SolutionDir)Luabind\;$(SolutionDir)LuaJIT\src;$(SolutionDir)xrCore</IncludePath>
+    <IncludePath>$(WindowsSDK_IncludePath);$(VC_IncludePath);$(xrSdkDir)loki;$(xrSdkDir)boost_1_30_0;$(SolutionDir)Luabind\;$(SolutionDir)LuaJIT\src;$(SolutionDir)xrCore</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Priquel|Win32'">
     <ExtensionsToDeleteOnClean>*.idb%3b*.obj%3b*.ilk%3b*.pdb%3b*.tlb%3b*.tli%3b*.tlh%3b*.tmp%3b*.rsp%3b*.bat%3b$(TargetPath)</ExtensionsToDeleteOnClean>
@@ -422,9 +422,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4237;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <PreprocessToFile>false</PreprocessToFile>
-      <AdditionalIncludeDirectories>
-        $(SolutionDir);
-        $(xrSdkDir)dxSDK/Include;
+      <AdditionalIncludeDirectories>$(SolutionDir);../3rd party/DX9SDK/Include;
 ..\3rd party\ode\Public\;        %(AdditionalIncludeDirectories)
       </AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -444,6 +442,9 @@
       <MapFileName />
       <LinkTimeCodeGeneration>
       </LinkTimeCodeGeneration>
+      <AdditionalLibraryDirectories>$(xrLibDir);;../3rd party/DX9SDK/Lib_win32
+;%(AdditionalLibraryDirectories)
+      </AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -477,9 +478,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4237;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <PreprocessToFile>false</PreprocessToFile>
-      <AdditionalIncludeDirectories>
-        $(SolutionDir);
-        $(xrSdkDir)dxSDK/Include;
+      <AdditionalIncludeDirectories>$(SolutionDir);../3rd party/DX9SDK/Include;
 ..\3rd party\ode\Public\;        %(AdditionalIncludeDirectories)
       </AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -491,12 +490,16 @@
       <Culture>0x0419</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalOptions>/MACHINE:I386  %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>%(AdditionalOptions)</AdditionalOptions>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
       <GenerateMapFile>false</GenerateMapFile>
       <MapFileName>
       </MapFileName>
+      <AdditionalLibraryDirectories>$(xrLibDir);
+../3rd party/DX9SDK/Lib_x64;%(AdditionalLibraryDirectories)
+      </AdditionalLibraryDirectories>
+      <LinkTimeCodeGeneration />
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Priquel|Win32'">

@@ -109,8 +109,8 @@
     <LibraryPath>$(xrSdkDir)eax\;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(xrSdkDir)OpenAL\Include;$(xrSdkDir)Xiph\include;$(xrSdkDir)eax\include;$(xrSdkDir)OpenAL\libs;$(SolutionDir)xrCore;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
-    <LibraryPath>$(xrSdkDir)eax\;$(xrSdkDir)Xiph\Libs;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86)</LibraryPath>
+    <IncludePath>$(xrSdkDir)OpenAL\Include;$(xrSdkDir)eax\include;$(xrSdkDir)OpenAL\libs;$(SolutionDir)xrCore;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <LibraryPath>$(xrSdkDir)eax\;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">
     <IncludePath>$(xrSdkDir)OpenAL\Include;$(xrSdkDir)Xiph\include;$(xrSdkDir)eax\include;$(xrSdkDir)OpenAL\libs;$(SolutionDir)xrCore;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
@@ -201,8 +201,8 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>$(SolutionDir);../3rd party/libogg/include;
-../3rd party/libvorbis/include;$(xrSdkDir)dxSDK/Include;
-        %(AdditionalIncludeDirectories)
+../3rd party/libvorbis/include;
+%(AdditionalIncludeDirectories)
       </AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -212,6 +212,8 @@
       <GenerateMapFile>false</GenerateMapFile>
       <MapFileName />
       <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalLibraryDirectories>$(xrLibDir);%(AdditionalLibraryDirectories)
+      </AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -235,13 +237,16 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir);../3rd party/libogg/include;
+../3rd party/libvorbis/include;$(xrSdkDir)dxSDK/Include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>vorbisfile_static.lib;ogg_static.lib;OpenAL32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libvorbis_static.lib;libogg_static.lib;libvorbisfile_static.lib;OpenAL32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
       <GenerateMapFile>false</GenerateMapFile>
       <MapFileName>
       </MapFileName>
+      <IgnoreSpecificDefaultLibraries>libcmt</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">
@@ -299,12 +304,10 @@
     <ClInclude Include="SoundRender_Core.h" />
     <ClInclude Include="OpenALDeviceList.h" />
     <ClInclude Include="SoundRender_CoreA.h" />
-    <ClInclude Include="SoundRender_CoreD.h" />
     <ClInclude Include="SoundRender_Emitter.h" />
     <ClInclude Include="SoundRender_Source.h" />
     <ClInclude Include="SoundRender_Target.h" />
     <ClInclude Include="SoundRender_TargetA.h" />
-    <ClInclude Include="SoundRender_TargetD.h" />
     <ClInclude Include="SoundRender_Environment.h" />
     <ClInclude Include="MusicStream.h" />
     <ClInclude Include="xr_cda.h" />
@@ -341,7 +344,6 @@
     <ClCompile Include="SoundRender_Core_StartStop.cpp" />
     <ClCompile Include="OpenALDeviceList.cpp" />
     <ClCompile Include="SoundRender_CoreA.cpp" />
-    <ClCompile Include="SoundRender_CoreD.cpp" />
     <ClCompile Include="SoundRender_Emitter.cpp" />
     <ClCompile Include="SoundRender_Emitter_FSM.cpp" />
     <ClCompile Include="SoundRender_Emitter_StartStop.cpp" />
@@ -355,7 +357,6 @@
     <ClCompile Include="SoundRender_Source_loader.cpp" />
     <ClCompile Include="SoundRender_Target.cpp" />
     <ClCompile Include="SoundRender_TargetA.cpp" />
-    <ClCompile Include="SoundRender_TargetD.cpp" />
     <ClCompile Include="SoundRender_Environment.cpp" />
     <ClCompile Include="MusicStream.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>

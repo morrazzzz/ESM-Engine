@@ -86,7 +86,8 @@ void	MODEL::build			(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc,
 	{
 		BTHREAD_params				P = { this, V, Vcnt, T, Tcnt, bc, bcp };
 		thread_spawn				(build_thread,"CDB-construction",0,&P);
-		while						(S_INIT	== status)	Sleep	(5);
+		while						(S_INIT	== status)	
+			Sleep	(5);
 	}
 #endif
 }
@@ -96,7 +97,7 @@ void	MODEL::build_internal	(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callba
 	// verts
 	verts_count	= Vcnt;
 	verts		= xr_alloc<Fvector>	(verts_count);
-	CopyMemory	(verts,V,verts_count*sizeof(Fvector));
+	std::memcpy	(verts,V,verts_count*sizeof(Fvector));
 	
 	// tris
 	tris_count	= Tcnt;
