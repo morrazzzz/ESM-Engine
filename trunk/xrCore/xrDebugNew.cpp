@@ -34,7 +34,10 @@ extern bool shared_str_initialized;
 #	endif
 #endif
 
-#include <dbghelp.h>						// MiniDump flags
+#include <new.h>
+#include <dbghelp.h>
+#include <signal.h>
+#include <Shlwapi.h>
 
 #ifdef USE_BUG_TRAP
 #	include "../3rd party/BugTrap/BugTrap/BugTrap.h"						// for BugTrap functionality
@@ -45,8 +48,8 @@ extern bool shared_str_initialized;
     #endif
 #endif // USE_BUG_TRAP
 
-#include <new.h>							// for _set_new_mode
-#include <signal.h>							// for signals
+#pragma comment(lib, "shlwapi")
+#pragma comment(lib, "dbghelp")
 
 #if 0//def DEBUG
 #	define USE_OWN_ERROR_MESSAGE_WINDOW
@@ -57,22 +60,176 @@ extern bool shared_str_initialized;
 XRCORE_API	xrDebug		Debug;
 
 static bool	error_after_dialog = false;
+bool g_SymEngineInitialized = false;
+const u32 MaxFramesCountDefault = 512;
 
-extern void BuildStackTrace();
-extern char g_stackTrace[100][4096];
-extern int	g_stackTraceCount;
+#ifdef _WIN64
+#define MACHINE_TYPE IMAGE_FILE_MACHINE_AMD64
+#else	
+#define MACHINE_TYPE IMAGE_FILE_MACHINE_I386
+#endif
 
-void LogStackTrace	(LPCSTR header)
+bool GetNextStackFrameString(LPSTACKFRAME stackFrame, PCONTEXT threadCtx, xr_string& frameStr)
 {
-	if (!shared_str_initialized)
+	BOOL result = StackWalk(
+		MACHINE_TYPE,
+		GetCurrentProcess(),
+		GetCurrentThread(),
+		stackFrame,
+		threadCtx,
+		nullptr,
+		SymFunctionTableAccess,
+		SymGetModuleBase,
+		nullptr
+	);
+
+	if (!result || !stackFrame->AddrPC.Offset)
+		return false;
+
+	frameStr.clear();
+	HINSTANCE hModule = reinterpret_cast<HINSTANCE>(SymGetModuleBase(GetCurrentProcess(), stackFrame->AddrPC.Offset));
+
+	string512 formatBuff;
+	if (hModule && GetModuleFileName(hModule, formatBuff, _countof(formatBuff)))
+		frameStr.append(PathFindFileName(formatBuff));
+
+	sprintf_s(formatBuff, _countof(formatBuff), " at %p", reinterpret_cast<void*>(stackFrame->AddrPC.Offset));
+	frameStr.append(formatBuff);
+
+	BYTE arrSymBuffer[512];
+	ZeroMemory(arrSymBuffer, sizeof(arrSymBuffer));
+
+	PIMAGEHLP_SYMBOL functionInfo = reinterpret_cast<PIMAGEHLP_SYMBOL>(arrSymBuffer);
+	functionInfo->SizeOfStruct = sizeof(*functionInfo);
+	functionInfo->MaxNameLength = sizeof(arrSymBuffer) - sizeof(*functionInfo) + 1;
+	DWORD_PTR dwFunctionOffset;
+
+	result = SymGetSymFromAddr(
+		GetCurrentProcess(),
+		stackFrame->AddrPC.Offset,
+		&dwFunctionOffset,
+		functionInfo);
+
+	if (result)
+	{
+		if (dwFunctionOffset)
+			sprintf_s(formatBuff, _countof(formatBuff), " %s() + %Iu byte(s)", functionInfo->Name, dwFunctionOffset);
+		else
+			sprintf_s(formatBuff, _countof(formatBuff), " %s()", functionInfo->Name);
+
+		frameStr.append(formatBuff);
+	}
+
+	DWORD dwLineOffset;
+	IMAGEHLP_LINE sourceInfo = { 0 };
+	sourceInfo.SizeOfStruct = sizeof(sourceInfo);
+
+	result = SymGetLineFromAddr(
+		GetCurrentProcess(),
+		stackFrame->AddrPC.Offset,
+		&dwLineOffset,
+		&sourceInfo);
+
+	if (result)
+	{
+		if (dwLineOffset)
+		{
+			sprintf_s(
+				formatBuff,
+				_countof(formatBuff),
+				" in %s line %u + %u byte(s)",
+				sourceInfo.FileName,
+				sourceInfo.LineNumber,
+				dwLineOffset);
+		}
+		else
+			sprintf_s(formatBuff, _countof(formatBuff), " in %s line %u", sourceInfo.FileName, sourceInfo.LineNumber);
+
+		frameStr.append(formatBuff);
+	}
+
+	return true;
+}
+
+bool InitializeSymbolEngine()
+{
+	if (g_SymEngineInitialized)
+		return true;
+
+	DWORD dwOptions = SymGetOptions();
+	SymSetOptions(dwOptions | SYMOPT_DEFERRED_LOADS | SYMOPT_LOAD_LINES | SYMOPT_UNDNAME);
+
+	if (SymInitialize(GetCurrentProcess(), nullptr, TRUE))
+		g_SymEngineInitialized = true;
+
+	return g_SymEngineInitialized;
+}
+
+void DeinitializeSymbolEngine()
+{
+	if (!g_SymEngineInitialized)
 		return;
 
-	BuildStackTrace	();		
+	SymCleanup(GetCurrentProcess());
+	g_SymEngineInitialized = false;
+}
+
+xr_vector<xr_string> BuildStackTrace(PCONTEXT threadCtx, u32 maxFramesCount = MaxFramesCountDefault)
+{
+	static xrCriticalSection DbgHelpCS;
+	DbgHelpCS.Enter();
+
+	SStringVec traceResult;
+	STACKFRAME stackFrame = { 0 };
+	xr_string frameStr;
+
+	if (!InitializeSymbolEngine())
+	{
+		Msg("! BuildStackTrace InitializeSymbolEngine failed with error: %d", GetLastError());
+		DbgHelpCS.Leave();
+		return traceResult;
+	}
+
+	traceResult.reserve(maxFramesCount);
+
+	stackFrame.AddrPC.Mode = AddrModeFlat;
+	stackFrame.AddrStack.Mode = AddrModeFlat;
+	stackFrame.AddrFrame.Mode = AddrModeFlat;
+
+#ifdef _WIN64
+	stackFrame.AddrPC.Offset = threadCtx->Rip;
+	stackFrame.AddrStack.Offset = threadCtx->Rsp;
+	stackFrame.AddrFrame.Offset = threadCtx->Rbp;
+#else	
+	stackFrame.AddrPC.Offset = threadCtx->Eip;
+	stackFrame.AddrStack.Offset = threadCtx->Esp;
+	stackFrame.AddrFrame.Offset = threadCtx->Ebp;
+#endif	
+
+	while (GetNextStackFrameString(&stackFrame, threadCtx, frameStr) && traceResult.size() <= maxFramesCount)
+		traceResult.push_back(frameStr);
+
+	DeinitializeSymbolEngine();
+	DbgHelpCS.Leave();
+	return traceResult;
+}
+
+SStringVec BuildStackTrace(u32 maxFramesCount = MaxFramesCountDefault)
+{
+	CONTEXT currentThreadCtx = { 0 };
+	RtlCaptureContext(&currentThreadCtx);
+	currentThreadCtx.ContextFlags = CONTEXT_FULL;
+	return BuildStackTrace(&currentThreadCtx, maxFramesCount);
+}
+
+void LogStackTrace(LPCSTR header)
+{
+	SStringVec stackTrace = BuildStackTrace();
 
 	Msg				("%s",header);
 
-	for (int i=1; i<g_stackTraceCount; ++i)
-		Msg			("%s",g_stackTrace[i]);
+	for (const auto& frame : stackTrace)
+		Msg("%s", frame.c_str());
 }
 
 void gather_info		(const char *expression, const char *description, const char *argument0, const char *argument1, const char *file, int line, const char *function, LPSTR assertion_info)
@@ -133,26 +290,22 @@ void gather_info		(const char *expression, const char *description, const char *
 		if (shared_str_initialized)
 			Msg			("stack trace:\n");
 
-#ifdef USE_OWN_ERROR_MESSAGE_WINDOW
-		buffer			+= sprintf(buffer,"stack trace:%s%s",endline,endline);
-#endif // USE_OWN_ERROR_MESSAGE_WINDOW
-
-		BuildStackTrace	();		
-
-		for (int i=2; i<g_stackTraceCount; ++i) {
+		xr_vector<xr_string> stackTrace = BuildStackTrace();
+		for (size_t i = 2; i < stackTrace.size(); i++)
+		{
 			if (shared_str_initialized)
-				Msg		("%s",g_stackTrace[i]);
+				Msg("%s", stackTrace[i].c_str());
+		}
 
 #ifdef USE_OWN_ERROR_MESSAGE_WINDOW
 			buffer		+= sprintf(buffer,"%s%s",g_stackTrace[i],endline);
 #endif // USE_OWN_ERROR_MESSAGE_WINDOW
 		}
-
+	
 		if (shared_str_initialized)
 			FlushLog	();
 
 		os_clipboard::copy_to_clipboard	  (assertion_info);
-	}
 }
 
 void xrDebug::do_exit	(const std::string &message)
@@ -548,7 +701,7 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 
 	if (!error_after_dialog && !strstr(GetCommandLine(),"-no_call_stack_assert")) {
 		CONTEXT				save = *pExceptionInfo->ContextRecord;
-		BuildStackTrace		(pExceptionInfo);
+		xr_vector<xr_string> stackTrace = BuildStackTrace(pExceptionInfo->ContextRecord, 1024);
 		*pExceptionInfo->ContextRecord = save;
 
 		if (shared_str_initialized)
@@ -557,13 +710,12 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 		os_clipboard::copy_to_clipboard	("stack trace:\r\n\r\n");
 
 		string4096			buffer;
-		for (int i=0; i<g_stackTraceCount; ++i) {
+		for (xr_string& str : stackTrace) 
+		{
 			if (shared_str_initialized)
-				Msg			("%s",g_stackTrace[i]);
-			xr_sprintf(buffer, sizeof(buffer), "%s\r\n", g_stackTrace[i]);
-#ifdef DEBUG
+				Msg("%s", str.c_str());
+			sprintf(buffer, "%s\r\n", str.c_str());
 			os_clipboard::update_clipboard(buffer);
-#endif
 		}
 
 		if (*error_message) {
@@ -571,9 +723,7 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 				Msg			("\n%s",error_message);
 
 			xr_strcat			(error_message,sizeof(error_message),"\r\n");
-#ifdef DEBUG
 			os_clipboard::update_clipboard(error_message);
-#endif
 		}
 	}
 

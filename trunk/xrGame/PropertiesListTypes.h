@@ -62,7 +62,10 @@ public:
 	typedef fastdelegate::FastDelegate1<PropValue*> TOnChange;
     TOnChange			OnChangeEvent;
 public:
-						PropValue		():tag(0),m_Owner(0),OnChangeEvent(0){;}
+						PropValue		():tag(0),m_Owner(0)
+						{
+							this->OnChangeEvent = 0;
+						}
 	virtual				~PropValue		(){}
     virtual xr_string	GetDrawText		(TOnDrawTextEvent OnDrawText)=0;
     virtual void		ResetValue		()=0;
@@ -149,7 +152,13 @@ public:
     };
     Flags32				m_Flags;
 public:
-						PropItem		(EPropType _type):type(_type),prop_color(0),val_color(0),item(0),key(0),OnClickEvent(0),OnDrawTextEvent(0),OnItemFocused(0){m_Flags.zero();}
+    PropItem(EPropType _type) :type(_type), prop_color(0), val_color(0), item(0), key(0)
+    {
+        this->OnClickEvent = 0;
+        this->OnDrawTextEvent = 0;
+    	this->OnItemFocused = 0;
+    	m_Flags.zero();
+    }
 	virtual 			~PropItem		()
     {
     	for (PropValueIt it=values.begin(); values.end() != it; ++it)
@@ -368,10 +377,11 @@ public:
 public:
 	int					lim;
 public:
-						CTextValue		(LPSTR val, int _lim):value(val),init_value(val),lim(_lim)
+						CTextValue		(LPSTR val, int _lim):value(val),lim(_lim)
     {
-    	OnBeforeEditEvent 	= 0;
-        OnAfterEditEvent	= 0;
+		this->init_value = val;
+		this->OnBeforeEditEvent 	= 0;
+        this->OnAfterEditEvent	= 0;
     };
     virtual xr_string	GetDrawText		(TOnDrawTextEvent OnDrawText)
     {

@@ -32,7 +32,12 @@ public:
     };
     Flags32				m_Flags;
 public:
-						ListItem		(int _type):type(_type),prop_color(0),item(0),key(0),tag(0),icon_index(-1),OnDrawThumbnail(0),OnItemFocused(0),m_Object(0){m_Flags.zero();}
+						ListItem		(int _type):type(_type),prop_color(0),item(0),key(0),tag(0),icon_index(-1),m_Object(0)
+						{
+                            this->OnItemFocused = 0;
+                            this->OnDrawThumbnail = 0;
+							m_Flags.zero();
+						}
 	virtual 			~ListItem		(){};
     void				SetName			(LPCSTR _key){key=_key;}
 

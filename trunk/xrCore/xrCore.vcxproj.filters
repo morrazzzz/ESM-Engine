@@ -31,9 +31,6 @@
     <Filter Include="Debug core">
       <UniqueIdentifier>{6652d6d5-72c3-495a-b8ea-9fdcd57d7886}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Debug core\BlackBox">
-      <UniqueIdentifier>{b6e82f7d-accb-49c9-b2d6-27e29cdc9338}</UniqueIdentifier>
-    </Filter>
     <Filter Include="shared memory/string library">
       <UniqueIdentifier>{b5ffd60a-2cb8-4ebc-9150-52c849048c0b}</UniqueIdentifier>
     </Filter>
@@ -176,33 +173,6 @@
     </ClCompile>
     <ClCompile Include="xrDebugNew.cpp">
       <Filter>Debug core</Filter>
-    </ClCompile>
-    <ClCompile Include="blackbox\BlackBoxUI.cpp">
-      <Filter>Debug core\BlackBox</Filter>
-    </ClCompile>
-    <ClCompile Include="blackbox\BSUFunctions.cpp">
-      <Filter>Debug core\BlackBox</Filter>
-    </ClCompile>
-    <ClCompile Include="blackbox\CrashHandler.cpp">
-      <Filter>Debug core\BlackBox</Filter>
-    </ClCompile>
-    <ClCompile Include="blackbox\DiagAssert.cpp">
-      <Filter>Debug core\BlackBox</Filter>
-    </ClCompile>
-    <ClCompile Include="blackbox\GetLoadedModules.cpp">
-      <Filter>Debug core\BlackBox</Filter>
-    </ClCompile>
-    <ClCompile Include="blackbox\IsNT.cpp">
-      <Filter>Debug core\BlackBox</Filter>
-    </ClCompile>
-    <ClCompile Include="blackbox\NT4ProcessInfo.cpp">
-      <Filter>Debug core\BlackBox</Filter>
-    </ClCompile>
-    <ClCompile Include="blackbox\stdafx_.cpp">
-      <Filter>Debug core\BlackBox</Filter>
-    </ClCompile>
-    <ClCompile Include="blackbox\TLHELPProcessInfo.cpp">
-      <Filter>Debug core\BlackBox</Filter>
     </ClCompile>
     <ClCompile Include="crc32.cpp">
       <Filter>shared memory/string library</Filter>
@@ -425,30 +395,6 @@
     </ClInclude>
     <ClInclude Include="xrDebug_macros.h">
       <Filter>Debug core</Filter>
-    </ClInclude>
-    <ClInclude Include="blackbox\BugslayerUtil.h">
-      <Filter>Debug core\BlackBox</Filter>
-    </ClInclude>
-    <ClInclude Include="blackbox\CrashHandler.h">
-      <Filter>Debug core\BlackBox</Filter>
-    </ClInclude>
-    <ClInclude Include="blackbox\DiagAssert.h">
-      <Filter>Debug core\BlackBox</Filter>
-    </ClInclude>
-    <ClInclude Include="blackbox\Internal.h">
-      <Filter>Debug core\BlackBox</Filter>
-    </ClInclude>
-    <ClInclude Include="blackbox\stdafx_.h">
-      <Filter>Debug core\BlackBox</Filter>
-    </ClInclude>
-    <ClInclude Include="blackbox\SymbolEngine.h">
-      <Filter>Debug core\BlackBox</Filter>
-    </ClInclude>
-    <ClInclude Include="blackbox\WarningsOff.h">
-      <Filter>Debug core\BlackBox</Filter>
-    </ClInclude>
-    <ClInclude Include="blackbox\WarningsOn.h">
-      <Filter>Debug core\BlackBox</Filter>
     </ClInclude>
     <ClInclude Include="xr_resource.h">
       <Filter>shared memory/string library</Filter>
