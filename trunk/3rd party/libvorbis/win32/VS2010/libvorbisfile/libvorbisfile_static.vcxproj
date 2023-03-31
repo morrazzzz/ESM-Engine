@@ -131,6 +131,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CallingConvention>Cdecl</CallingConvention>
+      <DisableSpecificWarnings>4244;4996;</DisableSpecificWarnings>
     </ClCompile>
     <Lib>
       <OutputFile>$(xrLibDir)$(TargetName).lib</OutputFile>
