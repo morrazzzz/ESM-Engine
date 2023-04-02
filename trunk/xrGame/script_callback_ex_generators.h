@@ -10,7 +10,7 @@
 #define SCRIPT_CALLBACK_EX_GENERATORS
 
 #define param_generator0(a,b,c) 
-function_body(,,param_generator0(left_comment,right_comment,typename _),param_generator0(_,,__),,param_generator0(left_comment,right_comment,__))
+function_body(, , param_generator0(left_comment, right_comment, typename _), param_generator0(_, , __), , param_generator0(left_comment, right_comment, __))
 
 #define param_generator1(a,b,c)								 param_generator(a,1,b,c)
 function_body(template <,>,param_generator1(left_comment,right_comment,typename _),param_generator1(_,,__),comma,param_generator1(left_comment,right_comment,__))

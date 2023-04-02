@@ -11,7 +11,11 @@
 #include "saved_game_wrapper.h"
 
 #ifdef DEBUG
-#	include "ai/monsters/BaseMonster/base_monster.h"
+#include "Actor.h"
+#include "Inventory.h"
+#include "HudItem.h"
+#include "clsid_game.h"
+#include "ai/monsters/BaseMonster/base_monster.h"
 #endif
 
 #ifdef DEBUG

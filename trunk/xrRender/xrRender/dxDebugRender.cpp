@@ -77,8 +77,8 @@ void dxDebugRender::NextSceneMode()
 
 void dxDebugRender::ZEnable(bool bEnable)
 {
-	//CHK_DX(HW.pDevice->SetRenderState(D3DRS_ZENABLE,bEnable));
-	RCache.set_Z(bEnable);
+	CHK_DX(HW.pDevice->SetRenderState(D3DRS_ZENABLE,bEnable));
+//	RCache.set_Z(bEnable);
 }
 
 void dxDebugRender::OnFrameEnd()

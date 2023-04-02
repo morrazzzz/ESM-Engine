@@ -1,5 +1,8 @@
 #pragma once
 
+#include "../Include/xrRender/KinematicsAnimated.h"
+
+
 struct SAnimState
 {
 	MotionID	legs_fwd;

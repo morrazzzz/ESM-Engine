@@ -25,7 +25,7 @@ IC	bool compare_safe(const luabind::object &o1 , const luabind::object &o2)
 #define right_comment				concatenizer(*,/)
 #define param_generator(a,b,c,d)	a##b##c d##b
 
-#if XRAY_EXCEPTIONS
+#if defined(XRAY_EXCEPTIONS) && !defined(LUABIND_NO_EXCEPTIONS)
 #	define process_error \
 		catch(luabind::error &e) {\
 			if (e.state())\

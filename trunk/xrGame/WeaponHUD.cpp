@@ -8,6 +8,10 @@
 #include "../xr_3da/Motion.h"
 #include "..\include\xrRender\Kinematics.h"
 #include "level.h"
+
+#ifdef DEBUG
+#include "MathUtils.h"
+#endif
 weapon_hud_container* g_pWeaponHUDContainer=0;
 
 BOOL weapon_hud_value::load(const shared_str& section, CHudItem* owner)

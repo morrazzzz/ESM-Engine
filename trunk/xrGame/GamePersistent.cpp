@@ -18,6 +18,11 @@
 #include "ai_space.h"
 #include "script_engine.h"
 
+#ifdef DEBUG
+#include "profiler.h"
+#endif
+
+
 #ifndef MASTER_GOLD
 #	include "custommonster.h"
 #endif // MASTER_GOLD

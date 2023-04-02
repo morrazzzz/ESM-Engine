@@ -542,7 +542,7 @@ public:
 //-----------------------------------------------------------------------
 ENGINE_API float	psHUD_FOV=0.45f;
 
-extern int			psSkeletonUpdate;
+//extern int			psSkeletonUpdate;
 extern int			rsDVB_Size;
 extern int			rsDIB_Size;
 extern int			psNET_ClientUpdate;
@@ -625,7 +625,7 @@ void CCC_Register()
 	CMD3(CCC_Mask,		"rs_cam_pos",			&psDeviceFlags,		rsCameraPos				);
 	CMD3(CCC_Mask,		"rs_occ_draw",			&psDeviceFlags,		rsOcclusionDraw			);
 	CMD3(CCC_Mask,		"rs_occ_stats",			&psDeviceFlags,		rsOcclusionStats		);
-	CMD4(CCC_Integer,	"rs_skeleton_update",	&psSkeletonUpdate,	2,		128	);
+//	CMD4(CCC_Integer,	"rs_skeleton_update",	&psSkeletonUpdate,	2,		128	);
 #endif // DEBUG
 
 	CMD2(CCC_Gamma,		"rs_c_gamma"			,&ps_gamma			);

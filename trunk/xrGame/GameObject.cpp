@@ -24,6 +24,7 @@
 #include "animation_movement_controller.h"
 
 #ifdef DEBUG
+#include "MathUtils.h"
 #	include "debug_renderer.h"
 #	include "PHDebug.h"
 #endif

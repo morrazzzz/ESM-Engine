@@ -30,15 +30,19 @@
 #include "saved_game_wrapper.h"
 #include "../xr_3da/resourcemanager.h"
 #include "../xrCore/xr_ini.h"
+#include "level_graph.h"
 
 #ifdef DEBUG
 #	include "PHDebug.h"
 #	include "ui/UIDebugFonts.h" 
 #	include "game_graph.h"
+#include "../include/xrRender/Kinematics.h"
 #endif // DEBUG
 
 #include "ai_object_location.h"
+#include "CameraLook.h"
 #include "hudmanager.h"
+#include "script_debugger.h"
 #include "xrServer_Object_Base.h"
 
 string_path		g_last_saved_game;

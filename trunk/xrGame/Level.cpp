@@ -35,11 +35,17 @@
 
 #include <functional>
 
+
+
 #ifdef DEBUG
-#	include "level_debug.h"
-#	include "ai/stalker/ai_stalker.h"
-#	include "debug_renderer.h"
-#	include "physicobject.h"
+#include "space_restrictor.h"
+#include "level_debug.h"
+#include "ai/stalker/ai_stalker.h"
+#include "debug_renderer.h"
+#include "physicobject.h"
+#include "ClimableObject.h"
+#include "level_graph.h"
+#include "../xr_3da/xr_object.h"
 #endif
 
 ENGINE_API bool g_dedicated_server;

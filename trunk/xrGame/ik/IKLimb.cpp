@@ -209,7 +209,7 @@ void	CIKLimb::Solve(SCalculateData& cd)
 		if( ph_dbg_draw_mask.test( phDbgDrawIKGoal ) )
 		{
 			Fvector dbg_pos;
-			cd.m_K->LL_GetBoneInstance(m_bones[2]).mTransform.transform_tiny( dbg_pos, m_toe_position );
+			Kinematics()->LL_GetBoneInstance(m_bones[2]).mTransform.transform_tiny(dbg_pos, m_toe_position);
 			cd.m_obj.transform_tiny( dbg_pos );
 			DBG_DrawPoint( dbg_pos, 0.02f, D3DCOLOR_XRGB( 255, 255 , 0 ) );
 		}

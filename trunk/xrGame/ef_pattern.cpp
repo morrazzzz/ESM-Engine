@@ -132,7 +132,7 @@ float CPatternFunction::ffGetValue()
 		
 		int j = sprintf_s(caString,sizeof(caString),"%32s (",m_caName);
 		
-		for ( i=0; i<m_dwVariableCount; ++i)
+		for (u32 i=0; i<m_dwVariableCount; ++i)
 			j += sprintf_s(caString + j, sizeof(caString)-j, " %3d",m_dwaVariableValues[i] + 1);
 		
 		sprintf_s	(caString + j,sizeof(caString)-j, ") = %7.2f",value);

@@ -8,6 +8,8 @@
 
 #include "pch_script.h"
 
+#include "include/xrRender/RenderVisual.h"
+
 #ifdef DEBUG
 #include "ai_stalker.h"
 #include "../../hudmanager.h"
@@ -42,7 +44,7 @@
 #include "../../agent_corpse_manager.h"
 #include "../../agent_location_manager.h"
 #include "../../cover_point.h"
-#include "../../../camerabase.h"
+#include "../../../xr_3da/camerabase.h"
 #include "../../clsid_game.h"
 #include "../../mt_config.h"
 #include "../../weaponmagazined.h"
@@ -857,7 +859,9 @@ void CAI_Stalker::OnRender			()
 			Fvector						direction;
 			float						best_value = -1.f;
 
-			for (u32 i=0, j = 0; i<36; ++i) {
+			u32 j = 0;
+
+			for (u32 i=0; i<36; ++i) {
 				float				value = ai().level_graph().cover_in_direction(float(10*i)/180.f*PI,v);
 				direction.setHP		(float(10*i)/180.f*PI,0);
 				direction.normalize	();

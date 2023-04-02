@@ -171,7 +171,7 @@ void CLightProjector::calculate	()
 		IRenderable*	O		= receivers	[tid];
 		CROS_impl*	LT		= (CROS_impl*)O->renderable_ROS();
 		VERIFY2			(_valid(O->renderable.xform),"Invalid object transformation");
-		VERIFY2			(_valid(O->renderable.visual->vis.sphere.P),"Invalid object's visual sphere");
+		VERIFY2			(_valid(O->renderable.visual->getVisData().sphere.P),"Invalid object's visual sphere");
 
 		Fvector			C;		O->renderable.xform.transform_tiny		(C,O->renderable.visual->getVisData().sphere.P);
 		R.O						= O;
@@ -213,7 +213,7 @@ void CLightProjector::calculate	()
 			OO->Center(cc);
 			Log("center=",cc);
 
-			Log("visual_center=",OO->Visual()->vis.sphere.P);
+			Log("visual_center=",OO->Visual()->getVisData().sphere.P);
 			
 			Log("full_matrix=",OO->XFORM());
 

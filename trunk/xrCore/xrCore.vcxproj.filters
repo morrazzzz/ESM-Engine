@@ -229,6 +229,9 @@
     <ClCompile Include="os_clipboard.cpp">
       <Filter>Clipboard</Filter>
     </ClCompile>
+    <ClCompile Include="dump_string.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FTimer.h">
@@ -486,6 +489,9 @@
     </ClInclude>
     <ClInclude Include="buffer_vector.h">
       <Filter>Math\Extensions\buffer_vector</Filter>
+    </ClInclude>
+    <ClInclude Include="dump_string.h">
+      <Filter>Math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

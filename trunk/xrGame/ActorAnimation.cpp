@@ -15,6 +15,7 @@
 #include "../include/xrRender/KinematicsAnimated.h"
 #include "../xr_3da/motion.h"
 #include "artifact.h"
+#include "HUDManager.h"
 
 static const float y_spin0_factor		= 0.0f;
 static const float y_spin1_factor		= 0.4f;
