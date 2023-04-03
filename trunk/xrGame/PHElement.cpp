@@ -7,7 +7,7 @@
 #include "MathUtils.h"
 #include "PhysicsShellHolder.h"
 #include "game_object_space.h"
-#include "../../3rd party/ode/Ode/util.h"
+#include "../../3rd party/ode/ode/src/util.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "../Include/xrRender/KinematicsAnimated.h"
 #ifdef DEBUG
@@ -18,7 +18,7 @@
 #pragma warning(disable:4995)
 #pragma warning(disable:4267)
 
-#include "../../3rd party/ode/Ode/collision_kernel.h"
+#include "../../3rd party/ode/ode/src/collision_kernel.h"
 
 
 #pragma warning(default:4267)

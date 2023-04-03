@@ -198,12 +198,12 @@ void CSoundRender_Core::set_geometry_som(IReader* I)
 	while (!geom->eof()){
 		SOM_poly				P;
 		geom->r					(&P,sizeof(P));
-		CL.add_face_packed_D	(P.v1,P.v2,P.v3,*(u32*)&P.occ,0.01f);
+		CL.add_face_packed_D	(P.v1,P.v2,P.v3,*(size_t*)&P.occ,0.01f);
 		if (P.b2sided)
-			CL.add_face_packed_D(P.v3,P.v2,P.v1,*(u32*)&P.occ,0.01f);
+			CL.add_face_packed_D(P.v3,P.v2,P.v1,*(size_t*)&P.occ,0.01f);
 	}
 	geom_SOM			= xr_new<CDB::MODEL> ();
-	geom_SOM->build		(CL.getV(),int(CL.getVS()),CL.getT(),int(CL.getTS()));
+	geom_SOM->build(CL.getV(), int(CL.getVS()), CL.getT(), int(CL.getTS()), nullptr, nullptr, false);
 #endif
 }
 
@@ -214,8 +214,8 @@ void CSoundRender_Core::set_geometry_env(IReader* I)
 #else
 	xr_delete				(geom_ENV);
 #endif
-	if (0==I)				return;
-	if (0==s_environment)	return;
+	if (!I)				return;
+	if (!s_environment)	return;
 
 	// Assosiate names
 	xr_vector<u16>			ids;
@@ -239,11 +239,13 @@ void CSoundRender_Core::set_geometry_env(IReader* I)
 
 	IReader* geom		= xr_new<IReader>(_data, geom_ch->length(), 0);
 	
-	hdrCFORM			H;
-	geom->r				(&H,sizeof(hdrCFORM));
-	Fvector*	verts	= (Fvector*)geom->pointer();
-	CDB::TRI*	tris	= (CDB::TRI*)(verts+H.vertcount);
-	for (u32 it=0; it<H.facecount; it++)
+	hdrCFORM realCform;
+	geom->r(&realCform, sizeof(hdrCFORM));
+	R_ASSERT(realCform.version == CFORM_CURRENT_VERSION);
+	auto verts = (Fvector*)geom->pointer();
+	auto tris = (CDB::TRI*)(verts + realCform.vertcount);
+#ifndef _M_X64
+	for (u32 it = 0; it < realCform.facecount; it++)
 	{
 		CDB::TRI*	T	= tris+it;
 		u16		id_front= (u16)((T->dummy&0x0000ffff)>>0);		//	front face
@@ -252,12 +254,13 @@ void CSoundRender_Core::set_geometry_env(IReader* I)
 		R_ASSERT		(id_back<(u16)ids.size());
 		T->dummy		= u32(ids[id_back]<<16) | u32(ids[id_front]);
 	}
+#endif
 #ifdef _EDITOR    
 	geom_ENV			= ETOOLS::create_model(verts, H.vertcount, tris, H.facecount);
 	env_apply			();
 #else
 	geom_ENV			= xr_new<CDB::MODEL> ();
-	geom_ENV->build		(verts, H.vertcount, tris, H.facecount);
+	geom_ENV->build(verts, realCform.vertcount, tris, realCform.facecount);
 #endif
 	geom_ch->close			();
 	geom->close				();

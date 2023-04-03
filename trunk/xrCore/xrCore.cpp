@@ -150,6 +150,7 @@ void xrCore::_destroy		()
 	case DLL_PROCESS_ATTACH:
 		{
 			_clear87		();
+
 #ifdef _M_IX86
 			_control87		( _PC_53,   MCW_PC );
 #endif

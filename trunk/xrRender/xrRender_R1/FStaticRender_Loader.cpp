@@ -331,16 +331,18 @@ void CRender::LoadSectors(IReader* fs)
 
 		// build portal model
 		rmPortals = xr_new	<CDB::MODEL> ();
-		rmPortals->build	(CL.getV(),int(CL.getVS()),CL.getT(),int(CL.getTS()));
-	} else {
-		rmPortals = 0;
+		rmPortals->build(CL.getV(), int(CL.getVS()), CL.getT(), int(CL.getTS()), nullptr, nullptr, false);
+	}
+	else 
+	{
+		rmPortals = nullptr;
 	}
 
 	// debug
 	//	for (int d=0; d<Sectors.size(); d++)
 	//		Sectors[d]->DebugDump	();
 
-	pLastSector = 0;
+	pLastSector = nullptr;
 }
 
 void CRender::LoadSWIs(CStreamReader* base_fs)

@@ -9,10 +9,9 @@
 ///////////////////////////////////////////////////////////////
 #pragma warning(disable:4995)
 #pragma warning(disable:4267)
-#include "../../3rd party/ode/Ode/collision_kernel.h"
-#include "../../3rd party/ode/Ode/joints/joint.h"
-#include "../../3rd party/ode/Ode/joints/contact.h"
-#include "../../3rd party/ode/Ode/objects.h"
+#include "../../3rd party/ode/ode/src/collision_kernel.h"
+#include "../../3rd party/ode/ode/src/joint.h"
+#include "../../3rd party/ode/ode/src/objects.h"
 #pragma warning(default:4267)
 #pragma warning(default:4995)
 
@@ -254,8 +253,13 @@ IC static int CollideIntoGroup(dGeomID o1, dGeomID o2,dJointGroupID jointGroup,C
 		}
 
 
-		if	(pushing_neg)
-			surface.mu=dInfinity;
+		if (pushing_neg)
+#ifdef _WIN64
+			surface.mu = FLT_MAX;
+#else
+			surface.mu = dInfinity;
+#endif
+
 		if	(do_collide && collided_contacts<MAX_CONTACTS)
 		{
 			++collided_contacts;
@@ -432,12 +436,12 @@ void BodyCutForce(dBodyID body,float l_limit,float w_limit)
 	dMatrix3 tmp,invI,I;
 
 	// compute inertia tensor in global frame
-	dMULTIPLY2_333(tmp, m.I, body->posr.R);
-	dMULTIPLY0_333(I, body->posr.R, tmp);
+	dMULTIPLY2_333(tmp, m.I, body->R);
+	dMULTIPLY0_333(I, body->R, tmp);
 
 	// compute inverse inertia tensor in global frame
-	dMULTIPLY2_333(tmp, body->invI, body->posr.R);
-	dMULTIPLY0_333(invI, body->posr.R, tmp);
+	dMULTIPLY2_333(tmp, body->invI, body->R);
+	dMULTIPLY0_333(invI, body->R, tmp);
 
 	//angular accel
 	dVector3 wa;
