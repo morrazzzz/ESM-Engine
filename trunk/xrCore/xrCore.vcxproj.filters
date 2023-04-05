@@ -222,7 +222,6 @@
     <ClCompile Include="rt_lzo_init.cpp">
       <Filter>Compression\lzo</Filter>
     </ClCompile>
-    <ClCompile Include="xrSyncronize.cpp" />
     <ClCompile Include="string_concatenations.cpp">
       <Filter>Math\Extensions</Filter>
     </ClCompile>
