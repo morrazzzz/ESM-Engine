@@ -44,6 +44,8 @@ public:
 	void				Initialize	();
 	void				Destroy		();
 
+	void				CreateRendererList();
+
 	CEngineAPI	();
 	~CEngineAPI	();
 };

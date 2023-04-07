@@ -6,6 +6,7 @@
 #include "EngineAPI.h"
 #include "xrXRC.h"
 
+extern xr_token* vid_quality_token;
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -25,6 +26,16 @@ CEngineAPI::CEngineAPI	()
 
 CEngineAPI::~CEngineAPI()
 {
+	// destroy quality token here
+	if (vid_quality_token)
+	{
+		for (int i = 0; vid_quality_token[i].name; i++)
+		{
+			xr_free(vid_quality_token[i].name);
+		}
+		xr_free(vid_quality_token);
+		vid_quality_token = NULL;
+	}
 }
 extern u32 renderer_value; //con cmd
 
@@ -94,4 +105,83 @@ void CEngineAPI::Destroy	(void)
 	pDestroy				= 0;
 	Engine.Event._destroy	();
 	XRC.r_clear_compact		();
+}
+
+extern "C" {
+	typedef bool __cdecl SupportsAdvancedRendering(void);
+};
+
+void CEngineAPI::CreateRendererList()
+{
+	if (vid_quality_token != NULL)
+		return;
+
+	bool bSupports_r2 = false;
+
+	LPCSTR			r2_name = "xrRender_R2.dll";
+
+	if (strstr(Core.Params, "-perfhud_hack"))
+	{
+		bSupports_r2 = true;
+	}
+	else
+	{
+		// try to initialize R2
+		Log("Loading DLL:", r2_name);
+		hRender = LoadLibrary(r2_name);
+		if (hRender)
+		{
+			bSupports_r2 = true;
+			SupportsAdvancedRendering* test_rendering = (SupportsAdvancedRendering*)GetProcAddress(hRender, "SupportsAdvancedRendering");
+			R_ASSERT(test_rendering);
+			FreeLibrary(hRender);
+		}
+	}
+
+	hRender = 0;
+
+	xr_vector<LPCSTR>			_tmp;
+	u32 i = 0;
+	bool bBreakLoop = false;
+	for (; i < 3; ++i)
+	{
+		switch (i)
+		{
+		case 1:
+			if (!bSupports_r2)
+				bBreakLoop = true;
+			break;
+		default:;
+		}
+
+		if (bBreakLoop) break;
+		_tmp.push_back(NULL);
+		LPCSTR val = NULL;
+		switch (i)
+		{
+		case 0: val = "renderer_r1";			break;
+		case 1: val = "renderer_r2a";		break;
+		case 2: val = "renderer_r2";			break;
+		}
+		if (bBreakLoop) break;
+		_tmp.back() = xr_strdup(val);
+		u32 _cnt = _tmp.size() + 1;
+		vid_quality_token = xr_alloc<xr_token>(_cnt);
+
+		vid_quality_token[_cnt - 1].id = -1;
+		vid_quality_token[_cnt - 1].name = NULL;
+
+//#ifdef DEBUG
+		Msg("Available render modes[%d]:", _tmp.size());
+//#endif // DEBUG
+		for (u32 i = 0; i < _tmp.size(); ++i)
+		{
+			vid_quality_token[i].id = i;
+			vid_quality_token[i].name = _tmp[i];
+#ifdef DEBUG
+			Msg("[%s]", _tmp[i]);
+#endif // DEBUG
+		}
+}
+
 }

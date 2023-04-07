@@ -571,6 +571,8 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 
 		InitConsole				();
 
+		Engine.External.CreateRendererList();
+
 		LPCSTR benchName = "-batch_benchmark ";
 		if(strstr(lpCmdLine, benchName))
 		{

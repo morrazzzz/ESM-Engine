@@ -28,12 +28,7 @@ xr_token							snd_model_token							[ ]={
 
 extern xr_token*							vid_mode_token;
 
-xr_token							vid_quality_token							[ ]={
-	{ "renderer_r1",				0											},
-	{ "renderer_r2a",				1											},
-	{ "renderer_r2",				2											},
-	{ 0,							0											}
-};
+xr_token* vid_quality_token = NULL;
 
 xr_token							vid_bpp_token							[ ]={
 	{ "16",							16											},
@@ -507,20 +502,18 @@ public:
 
 ENGINE_API BOOL r2_sun_static = TRUE;
 
-u32				renderer_value=0;
+u32	renderer_value = 3;
 class CCC_r2 : public CCC_Token
 {
 	typedef CCC_Token inherited;
 public:
-	CCC_r2(LPCSTR N) : inherited(N, &renderer_value, vid_quality_token){renderer_value=0;};
+	CCC_r2(LPCSTR N) : inherited(N, &renderer_value, NULL){ renderer_value = 3;};
 
 	virtual void	Execute	(LPCSTR args)
 	{
-#ifdef DEDICATED_SERVER
-		inherited::Execute	("renderer_r1");
-#else
-		inherited::Execute	(args);
-#endif // DEDICATED_SERVER
+		tokens = vid_quality_token;
+
+		inherited::Execute(args);
 
 		psDeviceFlags.set	(rsR2, (renderer_value>0) );
 		r2_sun_static =		(renderer_value!=2);
