@@ -106,7 +106,6 @@ public:
 	void						SoundEvent_Dispatch		( );
 
 	// Loader interface
-	ref_shader					LL_CreateShader			(int S, int T, int M, int C);
 	void						LL_CheckTextures		();
 };
 

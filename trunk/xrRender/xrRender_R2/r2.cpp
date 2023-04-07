@@ -9,6 +9,7 @@
 #include "../xrRender/LightTrack.h"
 #include "../xrRender/dxWallMarkArray.h"
 #include "../xrRender/dxUIShader.h"
+#include "../xrRender/dxRenderDeviceRender.h"
 
 CRender										RImplementation;
 
@@ -206,7 +207,7 @@ void					CRender::create					()
 	o.forceskinw		= (strstr(Core.Params,"-skinw"))?		TRUE	:FALSE	;
 
 	// constants
-	::Device.Resources->RegisterConstantSetup	("parallax",	&binder_parallax);
+	::DEV->RegisterConstantSetup	("parallax",	&binder_parallax);
 
 	c_lmaterial					= "L_material";
 	c_sbase						= "s_base";

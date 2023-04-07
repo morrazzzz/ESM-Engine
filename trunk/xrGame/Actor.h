@@ -612,7 +612,7 @@ virtual	bool				can_validate_position_on_spawn	(){return false;}
 	//---------------------------------------------
 #endif
 
-	ref_geom 				hFriendlyIndicator;
+//	ref_geom 				hFriendlyIndicator;
 	//////////////////////////////////////////////////////////////////////////
 	// Actor physics
 	//////////////////////////////////////////////////////////////////////////

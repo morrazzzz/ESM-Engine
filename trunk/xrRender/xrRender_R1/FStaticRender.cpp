@@ -14,6 +14,7 @@
 
 #include "../xrRender/dxWallMarkArray.h"
 #include "../xrRender/dxUIShader.h"
+#include "../xrRender/dxRenderDeviceRender.h"
 
 using	namespace		R_dsgraph;
 
@@ -56,9 +57,9 @@ void					CRender::create					()
 	Device.seqFrame.Add	(this,REG_PRIORITY_HIGH+0x12345678);
 
 	// c-setup
-	::Device.Resources->RegisterConstantSetup("L_dynamic_pos",		&r1_dlight_binder_PR);
-	::Device.Resources->RegisterConstantSetup("L_dynamic_color",	&r1_dlight_binder_color);
-	::Device.Resources->RegisterConstantSetup("L_dynamic_xform",	&r1_dlight_binder_xform);
+	::DEV->RegisterConstantSetup("L_dynamic_pos",		&r1_dlight_binder_PR);
+	::DEV->RegisterConstantSetup("L_dynamic_color",	&r1_dlight_binder_color);
+	::DEV->RegisterConstantSetup("L_dynamic_xform",	&r1_dlight_binder_xform);
 
 	// distortion
 	u32		v_dev	= CAP_VERSION(HW.Caps.raster_major, HW.Caps.raster_minor);

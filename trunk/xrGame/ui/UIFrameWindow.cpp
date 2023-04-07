@@ -84,7 +84,6 @@ void CUIFrameWindow::FrameClip(const Frect parentAbsR)
 
 	Frect		ourAbsR;
 	GetAbsoluteRect(ourAbsR);
-	CTexture	*T;
 	Fvector2	ts;
 	int			tile_x, tile_y;
 	float		rem_x, rem_y;

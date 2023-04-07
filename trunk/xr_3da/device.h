@@ -4,14 +4,12 @@
 // ZNear - always 0.0f
 // ZFar  - always 1.0f
 
-class	ENGINE_API	CResourceManager;
-
 #include "pure.h"
-#include "hw.h"
+//#include "hw.h"
 #include "ftimer.h"
 #include "stats.h"
-#include "shader.h"
-#include "R_Backend.h"
+//#include "shader.h"
+//#include "R_Backend.h"
 
 #define VIEWPORT_NEAR  0.2f
 
@@ -52,11 +50,6 @@ public:
 public:
 	
     BOOL									m_bNearer; 
-	//morrazzzz: DELETE THE CODE FROM THE BOTTOM!!!
-    ref_shader								m_WireShader;//DELETE THIS!!!
-	ref_shader								m_SelectionShader;//DELETE THIS!!!
-	CResourceManager*						Resources;	 //DELETE THIS!!!
-	//morrazzzz: DELETE THE CODE THAT IS ON TOP!!!
     
 	IRenderDeviceRender* m_pRender;
 
@@ -71,6 +64,8 @@ public:
 		}
 		m_pRender->SetCacheXform(mView, mProject);
 	}
+
+	void DumpResourcesMemoryUsage() { m_pRender->ResourcesDumpMemoryUsage(); }
 public:
 	// Registrators
 	CRegistrator	<pureRender			>			seqRender;
@@ -186,4 +181,4 @@ extern		ENGINE_API		bool				g_bBenchmark;
 typedef fastdelegate::FastDelegate0<bool>		LOADING_EVENT;
 extern	ENGINE_API xr_list<LOADING_EVENT>		g_loading_events;
 
-#include	"R_Backend_Runtime.h"
+//#include	"R_Backend_Runtime.h"

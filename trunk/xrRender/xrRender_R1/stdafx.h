@@ -15,11 +15,16 @@
 
 #include "../xrRender/xrD3DDefs.h"
 
+#include "../xrRender/HW.h"
+#include "../xrRender/Shader.h"
+#include "../xrRender/R_Backend.h"
+#include "../xrRender/R_Backend_Runtime.h"
+
 #define		R_R1	1
 #define		R_R2	2
 #define		RENDER	R_R1
 
-#include "..\..\xr_3da\resourcemanager.h"
+#include "..\xrRender\resourcemanager.h"
 #include "..\..\xr_3da\vis_common.h"
 #include "..\..\xr_3da\render.h"
 #include "..\..\xr_3da\igame_level.h"

@@ -138,11 +138,12 @@ void CHUDTarget::Render()
 	// Render cursor
 	u32 C				= C_DEFAULT;
 	
-	FVF::TL				PT;
-	Fvector				p2;
+	Fvector	p2;
 	p2.mad				(p1,dir,RQ.range);
-	PT.transform		(p2,Device.mFullTransform);
-	float				di_size = C_SIZE/powf(PT.p.w,.2f);
+	Fvector4 pt;
+	Device.mFullTransform.transform(pt, p2);
+	pt.y = -pt.y;
+	float di_size = C_SIZE / powf(pt.w, .2f);
 
 	CGameFont* F		= HUD().Font().pFontGraffiti19Russian;
 	F->SetAligment		(CGameFont::alCenter);
@@ -251,8 +252,8 @@ void CHUDTarget::Render()
 		float			h_2		= scr_size.y/2.0f;
 
 		// Convert to screen coords
-		float cx		    = (PT.p.x+1)*w_2;
-		float cy		    = (PT.p.y+1)*h_2;
+		float cx		    = (pt.x+1)*w_2;
+		float cy		    = (pt.y+1)*h_2;
 
 		//	TODO: return code back to indexed rendering since we use quads
 		// Tri 1

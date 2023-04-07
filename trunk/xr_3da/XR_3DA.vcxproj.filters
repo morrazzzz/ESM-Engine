@@ -85,35 +85,14 @@
     <Filter Include="Render\Execution &amp; 3D">
       <UniqueIdentifier>{8482ec45-286b-4cbc-ab68-6539512d6350}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Render\Execution &amp; 3D\HW">
-      <UniqueIdentifier>{715554aa-e14f-47f6-ae6f-3de5e7ed53b4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Render\Execution &amp; 3D\Shaders">
       <UniqueIdentifier>{3aa70652-6ea7-48a6-87a0-ba05022a483f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Render\Execution &amp; 3D\Shaders\Blender">
-      <UniqueIdentifier>{dc1f83b1-1cd5-4819-aec9-d259b406ed0c}</UniqueIdentifier>
     </Filter>
     <Filter Include="Render\Execution &amp; 3D\Shaders\Textures">
       <UniqueIdentifier>{5d8826db-b270-49f3-95e6-e3a340b39edb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Render\Execution &amp; 3D\Shaders\ShaderManager">
-      <UniqueIdentifier>{1d9897fd-c033-4e9b-8698-d2ba620800eb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Render\Execution &amp; 3D\Shaders\ShaderManager\doug_lea_memory_allocator">
-      <UniqueIdentifier>{c877d372-a7bb-42d6-8e49-12f99ea7f3c4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Render\Execution &amp; 3D\Shaders\Resources">
-      <UniqueIdentifier>{23dec5cc-ff59-46bc-8658-c8aa0bb1aaa1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Render\Execution &amp; 3D\Shaders\Resources\dx9_R_shader">
-      <UniqueIdentifier>{e84b358d-fecd-4696-941d-73db46f92a31}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Render\Execution &amp; 3D\TextConsole">
       <UniqueIdentifier>{a3773fa5-0433-491c-b971-36710cee3676}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Render\Backend">
-      <UniqueIdentifier>{090e65bc-8dff-422b-8b92-ce8b15a9a744}</UniqueIdentifier>
     </Filter>
     <Filter Include="Engine">
       <UniqueIdentifier>{ebe30143-0871-4d1d-84ee-ef8294db8229}</UniqueIdentifier>
@@ -162,6 +141,9 @@
     </Filter>
     <Filter Include="Game API\GameMaterials">
       <UniqueIdentifier>{2e1f3c1b-82b3-46ac-9b1e-3cd5ef4a1c89}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RenderRef\doug_lea_memory_allocator">
+      <UniqueIdentifier>{c877d372-a7bb-42d6-8e49-12f99ea7f3c4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -327,23 +309,11 @@
     <ClInclude Include="MbHelpers.h">
       <Filter>Render\Font output</Filter>
     </ClInclude>
-    <ClInclude Include="HW.h">
-      <Filter>Render\Execution &amp; 3D\HW</Filter>
-    </ClInclude>
-    <ClInclude Include="HWCaps.h">
-      <Filter>Render\Execution &amp; 3D\HW</Filter>
-    </ClInclude>
     <ClInclude Include="Shader_xrLC.h">
       <Filter>Render\Execution &amp; 3D\Shaders</Filter>
     </ClInclude>
     <ClInclude Include="WaveForm.h">
       <Filter>Render\Execution &amp; 3D\Shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="tss.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
-    </ClInclude>
-    <ClInclude Include="tss_def.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
     </ClInclude>
     <ClInclude Include="tntQAVI.h">
       <Filter>Render\Execution &amp; 3D\Shaders\Textures</Filter>
@@ -360,59 +330,11 @@
     <ClInclude Include="xrTheora_Surface_mmx.h">
       <Filter>Render\Execution &amp; 3D\Shaders\Textures</Filter>
     </ClInclude>
-    <ClInclude Include="ETextureParams.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
-    </ClInclude>
-    <ClInclude Include="ResourceManager.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
-    </ClInclude>
-    <ClInclude Include="TextureDescrManager.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
-    </ClInclude>
     <ClInclude Include="doug_lea_memory_allocator.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\ShaderManager\doug_lea_memory_allocator</Filter>
-    </ClInclude>
-    <ClInclude Include="r_constants.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="SH_Atomic.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="SH_Constant.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="SH_Matrix.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="SH_RT.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="SH_Texture.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="Shader.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="r_constants_cache.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\Resources\dx9_R_shader</Filter>
+      <Filter>RenderRef\doug_lea_memory_allocator</Filter>
     </ClInclude>
     <ClInclude Include="Text_Console.h">
       <Filter>Render\Execution &amp; 3D\TextConsole</Filter>
-    </ClInclude>
-    <ClInclude Include="FVF.h">
-      <Filter>Render\Backend</Filter>
-    </ClInclude>
-    <ClInclude Include="R_Backend.h">
-      <Filter>Render\Backend</Filter>
-    </ClInclude>
-    <ClInclude Include="R_Backend_Runtime.h">
-      <Filter>Render\Backend</Filter>
-    </ClInclude>
-    <ClInclude Include="R_Backend_xform.h">
-      <Filter>Render\Backend</Filter>
-    </ClInclude>
-    <ClInclude Include="R_DStreams.h">
-      <Filter>Render\Backend</Filter>
     </ClInclude>
     <ClInclude Include="Properties.h">
       <Filter>Engine</Filter>
@@ -456,9 +378,6 @@
     <ClInclude Include="perlin.h">
       <Filter>Engine\Noise</Filter>
     </ClInclude>
-    <ClInclude Include="..\xrRender\xrRender\Blenders\Blender.h" />
-    <ClInclude Include="..\xrRender\xrRender\Blenders\Blender_CLSID.h" />
-    <ClInclude Include="..\xrRender\xrRender\Blenders\Blender_Recorder.h" />
     <ClInclude Include="device.h">
       <Filter>RenderRef\Execution &amp; 3D\Device</Filter>
     </ClInclude>
@@ -641,21 +560,6 @@
     <ClCompile Include="MbHelpers.cpp">
       <Filter>Render\Font output</Filter>
     </ClCompile>
-    <ClCompile Include="HW.cpp">
-      <Filter>Render\Execution &amp; 3D\HW</Filter>
-    </ClCompile>
-    <ClCompile Include="HWCaps.cpp">
-      <Filter>Render\Execution &amp; 3D\HW</Filter>
-    </ClCompile>
-    <ClCompile Include="Blender_Recorder_R2.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
-    </ClCompile>
-    <ClCompile Include="Blender_Recorder_StandartBinding.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
-    </ClCompile>
-    <ClCompile Include="tss_def.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
-    </ClCompile>
     <ClCompile Include="tntQAVI.cpp">
       <Filter>Render\Execution &amp; 3D\Shaders\Textures</Filter>
     </ClCompile>
@@ -671,74 +575,14 @@
     <ClCompile Include="xrTheora_Surface_mmx.cpp">
       <Filter>Render\Execution &amp; 3D\Shaders\Textures</Filter>
     </ClCompile>
-    <ClCompile Include="ETextureParams.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
-    </ClCompile>
-    <ClCompile Include="ResourceManager.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
-    </ClCompile>
-    <ClCompile Include="ResourceManager_Loader.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
-    </ClCompile>
-    <ClCompile Include="ResourceManager_Reset.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
-    </ClCompile>
-    <ClCompile Include="ResourceManager_Resources.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
-    </ClCompile>
-    <ClCompile Include="ResourceManager_Scripting.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
-    </ClCompile>
-    <ClCompile Include="TextureDescrManager.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
-    </ClCompile>
     <ClCompile Include="doug_lea_memory_allocator.c">
-      <Filter>Render\Execution &amp; 3D\Shaders\ShaderManager\doug_lea_memory_allocator</Filter>
-    </ClCompile>
-    <ClCompile Include="r_constants.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="SH_Atomic.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="SH_Constant.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="SH_Matrix.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="SH_RT.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="SH_Texture.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="Shader.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="r_constants_cache.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\Resources\dx9_R_shader</Filter>
+      <Filter>RenderRef\doug_lea_memory_allocator</Filter>
     </ClCompile>
     <ClCompile Include="Text_Console.cpp">
       <Filter>Render\Execution &amp; 3D\TextConsole</Filter>
     </ClCompile>
     <ClCompile Include="Text_Console_WndProc.cpp">
       <Filter>Render\Execution &amp; 3D\TextConsole</Filter>
-    </ClCompile>
-    <ClCompile Include="R_Backend.cpp">
-      <Filter>Render\Backend</Filter>
-    </ClCompile>
-    <ClCompile Include="R_Backend_DBG.cpp">
-      <Filter>Render\Backend</Filter>
-    </ClCompile>
-    <ClCompile Include="R_Backend_Runtime.cpp">
-      <Filter>Render\Backend</Filter>
-    </ClCompile>
-    <ClCompile Include="R_Backend_xform.cpp">
-      <Filter>Render\Backend</Filter>
-    </ClCompile>
-    <ClCompile Include="R_DStreams.cpp">
-      <Filter>Render\Backend</Filter>
     </ClCompile>
     <ClCompile Include="pure.cpp">
       <Filter>Engine</Filter>
@@ -776,9 +620,6 @@
     <ClCompile Include="perlin.cpp">
       <Filter>Engine\Noise</Filter>
     </ClCompile>
-    <ClCompile Include="..\xrRender\xrRender\Blenders\Blender.cpp" />
-    <ClCompile Include="..\xrRender\xrRender\Blenders\Blender_Palette.cpp" />
-    <ClCompile Include="..\xrRender\xrRender\Blenders\Blender_Recorder.cpp" />
     <ClCompile Include="device.cpp">
       <Filter>RenderRef\Execution &amp; 3D\Device</Filter>
     </ClCompile>

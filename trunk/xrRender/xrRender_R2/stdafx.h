@@ -20,7 +20,13 @@
 #define		R_R2	2
 #define		RENDER	R_R2
 
-#include "..\..\xr_3da\resourcemanager.h"
+#include "../xrRender/HW.h"
+#include "../xrRender/Shader.h"
+#include "../xrRender/R_Backend.h"
+#include "../xrRender/R_Backend_Runtime.h"
+
+#include "../xrRender/ResourceManager.h"
+
 #include "..\..\xr_3da\vis_common.h"
 #include "..\..\xr_3da\render.h"
 #include "..\..\xr_3da\_d3d_extensions.h"
