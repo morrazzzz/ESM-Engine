@@ -3,6 +3,7 @@
 #include "..\xr_3da\SkeletonMotions.h"
 #include "..\include\xrRender\animation_motion.h"
 #include "..\include\xrRender\animation_blend.h"
+#include "..\include\xrRender\Kinematics.h"
 
 class CAI_Trader;
 
@@ -15,7 +16,8 @@ class CTraderAnimation {
 
 	LPCSTR				m_anim_global;
 	LPCSTR				m_anim_head;
-	
+	int m_head;
+
 	MotionID			m_motion_head;	
 	MotionID			m_motion_global;
 
@@ -43,7 +45,7 @@ public:
 
 private:
 	void			remove_sound			();	
-
+	Fvector sound_position();
 
 };
 
