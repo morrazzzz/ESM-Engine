@@ -77,7 +77,8 @@ float		ps_r2_ls_bloom_kernel_scale	= 1.0f;				// r2-only	// gauss
 float		ps_r2_ls_dsm_kernel			= .7f;				// r2-only
 float		ps_r2_ls_psm_kernel			= .7f;				// r2-only
 float		ps_r2_ls_ssm_kernel			= .7f;				// r2-only
-float		ps_r2_ls_bloom_threshold	= .00001f;;			// r2-only
+//float		ps_r2_ls_bloom_threshold	= .00001f;;			// r2-only
+float		ps_r2_ls_bloom_threshold = 1.f;			// r2-only
 Fvector		ps_r2_aa_barier				= { .8f, .1f, 0};	// r2-only
 Fvector		ps_r2_aa_weight				= { .25f,.25f,0};	// r2-only
 float		ps_r2_aa_kernel				= .5f;				// r2-only
@@ -112,7 +113,8 @@ float		ps_r2_slight_fade			= 1.f;				// 1.f
 
 
 //- Mad Max
-float		ps_r2_gloss_factor = 4.0f;
+//float		ps_r2_gloss_factor = 4.0f;
+float		ps_r2_gloss_factor = 1.0f;
 //- Mad Max
 #ifndef _EDITOR
 #include	"..\..\xr_3da\xr_ioconsole.h"
