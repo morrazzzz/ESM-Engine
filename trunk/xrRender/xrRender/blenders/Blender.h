@@ -8,7 +8,7 @@
 #include "Blender_Recorder.h"
 
 #pragma pack(push,4)
-class	CBlender_DESC
+class ENGINE_API	CBlender_DESC
 {
 public:
 	CLASS_ID					CLS;
@@ -29,7 +29,7 @@ public:
 	void						Setup	(LPCSTR N);
 };
 
-class IBlender	: public CPropertyBase
+class ENGINE_API IBlender	: public CPropertyBase
 {
 	friend class				CBlender_Compile;
 protected:

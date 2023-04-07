@@ -23,10 +23,13 @@ IGame_Level::IGame_Level	()
 	pHUD						= NULL;
 }
 
+#include "resourcemanager.h"
+
 IGame_Level::~IGame_Level	()
 {
 	if(strstr(Core.Params,"-nes_texture_storing") )
-		Device.m_pRender->ResourcesStoreNecessaryTextures();
+		Device.Resources->StoreNecessaryTextures();
+//.	DEL_INSTANCE				( pHUD			);
 	xr_delete					( pLevel		);
 
 	// Render-level unload

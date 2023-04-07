@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _RENDER_H_
+#define _RENDER_H_
 
 #include "frustum.h"
 #include "vis_common.h"
@@ -14,6 +15,7 @@ typedef FactoryPtr<IUIShader> wm_shader;
 
 // refs
 class ENGINE_API	IRenderable;
+class ENGINE_API	IBlender;
 class CSkeletonWallmark;
 struct ENGINE_API	FSlideWindowItem;
 
@@ -189,6 +191,7 @@ public:
 	virtual	void					Statistics				(CGameFont* F	)							{};
 
 	virtual LPCSTR					getShaderPath			()											= 0;
+	virtual ref_shader				getShader				(int id)									= 0;
 	virtual IRender_Sector*			getSector				(int id)									= 0;
 	virtual IRenderVisual*			getVisual				(int id)									= 0;
 	virtual IRender_Sector*			detectSector			(const Fvector& P)							= 0;
@@ -211,6 +214,9 @@ public:
 	virtual void					clear_static_wallmarks	()=0;
 	virtual void add_SkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm) = 0; //REMOVE ME!!!
 	virtual void					add_SkeletonWallmark(const Fmatrix* xf, IKinematics* obj, IWallMarkArray* pArray, const Fvector& start, const Fvector& dir, float size) = 0;
+
+	virtual IBlender*				blender_create			(CLASS_ID cls)								= 0;
+	virtual void					blender_destroy			(IBlender* &)								= 0;
 
 	virtual IRender_ObjectSpecific*	ros_create				(IRenderable* parent)						= 0;
 	virtual void					ros_destroy				(IRender_ObjectSpecific* &)					= 0;
@@ -254,3 +260,5 @@ public:
 };
 
 extern ENGINE_API	IRender_interface*	Render;
+
+#endif

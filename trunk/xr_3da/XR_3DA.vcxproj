@@ -516,7 +516,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>%(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>d3dx9.lib;libvorbis_static.lib;libvorbisfile_static.lib;libogg_static.lib;libtheora_static.lib;msacm32.lib;vfw32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libvorbis_static.lib;libvorbisfile_static.lib;libogg_static.lib;libtheora_static.lib;msacm32.lib;vfw32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
@@ -853,15 +853,38 @@
     <ClInclude Include="device.h" />
     <ClInclude Include="StatGraph.h" />
     <ClInclude Include="Stats.h" />
+    <ClInclude Include="HW.h" />
+    <ClInclude Include="HWCaps.h" />
     <ClInclude Include="Shader_xrLC.h" />
     <ClInclude Include="WaveForm.h" />
+    <ClInclude Include="..\xrRender\xrRender\Blenders\Blender.h" />
+    <ClInclude Include="..\xrRender\xrRender\Blenders\Blender_CLSID.h" />
+    <ClInclude Include="..\xrRender\xrRender\Blenders\Blender_Recorder.h" />
+    <ClInclude Include="tss.h" />
+    <ClInclude Include="tss_def.h" />
     <ClInclude Include="tntQAVI.h" />
     <ClInclude Include="xrImage_Resampler.h" />
     <ClInclude Include="xrTheora_Stream.h" />
     <ClInclude Include="xrTheora_Surface.h" />
     <ClInclude Include="xrTheora_Surface_mmx.h" />
+    <ClInclude Include="ETextureParams.h" />
+    <ClInclude Include="ResourceManager.h" />
+    <ClInclude Include="TextureDescrManager.h" />
     <ClInclude Include="doug_lea_memory_allocator.h" />
+    <ClInclude Include="r_constants.h" />
+    <ClInclude Include="SH_Atomic.h" />
+    <ClInclude Include="SH_Constant.h" />
+    <ClInclude Include="SH_Matrix.h" />
+    <ClInclude Include="SH_RT.h" />
+    <ClInclude Include="SH_Texture.h" />
+    <ClInclude Include="Shader.h" />
+    <ClInclude Include="r_constants_cache.h" />
     <ClInclude Include="Text_Console.h" />
+    <ClInclude Include="FVF.h" />
+    <ClInclude Include="R_Backend.h" />
+    <ClInclude Include="R_Backend_Runtime.h" />
+    <ClInclude Include="R_Backend_xform.h" />
+    <ClInclude Include="R_DStreams.h" />
     <ClInclude Include="Properties.h" />
     <ClInclude Include="pure.h" />
     <ClInclude Include="std_classes.h" />
@@ -976,11 +999,26 @@
     <ClCompile Include="Device_wndproc.cpp" />
     <ClCompile Include="StatGraph.cpp" />
     <ClCompile Include="Stats.cpp" />
+    <ClCompile Include="HW.cpp" />
+    <ClCompile Include="HWCaps.cpp" />
+    <ClCompile Include="..\xrRender\xrRender\Blenders\Blender.cpp" />
+    <ClCompile Include="..\xrRender\xrRender\Blenders\Blender_Palette.cpp" />
+    <ClCompile Include="..\xrRender\xrRender\Blenders\Blender_Recorder.cpp" />
+    <ClCompile Include="Blender_Recorder_R2.cpp" />
+    <ClCompile Include="Blender_Recorder_StandartBinding.cpp" />
+    <ClCompile Include="tss_def.cpp" />
     <ClCompile Include="tntQAVI.cpp" />
     <ClCompile Include="xrImage_Resampler.cpp" />
     <ClCompile Include="xrTheora_Stream.cpp" />
     <ClCompile Include="xrTheora_Surface.cpp" />
     <ClCompile Include="xrTheora_Surface_mmx.cpp" />
+    <ClCompile Include="ETextureParams.cpp" />
+    <ClCompile Include="ResourceManager.cpp" />
+    <ClCompile Include="ResourceManager_Loader.cpp" />
+    <ClCompile Include="ResourceManager_Reset.cpp" />
+    <ClCompile Include="ResourceManager_Resources.cpp" />
+    <ClCompile Include="ResourceManager_Scripting.cpp" />
+    <ClCompile Include="TextureDescrManager.cpp" />
     <ClCompile Include="doug_lea_memory_allocator.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_Dedicated|Win32'">
       </PrecompiledHeader>
@@ -1019,8 +1057,39 @@
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Level2</WarningLevel>
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level2</WarningLevel>
     </ClCompile>
+    <ClCompile Include="r_constants.cpp" />
+    <ClCompile Include="SH_Atomic.cpp" />
+    <ClCompile Include="SH_Constant.cpp">
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug_Dedicated|Win32'">AssemblyAndSourceCode</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug_Dedicated|x64'">AssemblyAndSourceCode</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AssemblyAndSourceCode</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">AssemblyAndSourceCode</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedicated|Win32'">AssemblyAndSourceCode</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedicated|x64'">AssemblyAndSourceCode</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">AssemblyAndSourceCode</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">AssemblyAndSourceCode</AssemblerOutput>
+    </ClCompile>
+    <ClCompile Include="SH_Matrix.cpp" />
+    <ClCompile Include="SH_RT.cpp" />
+    <ClCompile Include="SH_Texture.cpp" />
+    <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="r_constants_cache.cpp" />
     <ClCompile Include="Text_Console.cpp" />
     <ClCompile Include="Text_Console_WndProc.cpp" />
+    <ClCompile Include="R_Backend.cpp" />
+    <ClCompile Include="R_Backend_DBG.cpp" />
+    <ClCompile Include="R_Backend_Runtime.cpp" />
+    <ClCompile Include="R_Backend_xform.cpp">
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug_Dedicated|Win32'">AssemblyAndSourceCode</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug_Dedicated|x64'">AssemblyAndSourceCode</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AssemblyAndSourceCode</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">AssemblyAndSourceCode</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedicated|Win32'">AssemblyAndSourceCode</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedicated|x64'">AssemblyAndSourceCode</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">AssemblyAndSourceCode</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">AssemblyAndSourceCode</AssemblerOutput>
+    </ClCompile>
+    <ClCompile Include="R_DStreams.cpp" />
     <ClCompile Include="pure.cpp" />
     <ClCompile Include="xrXRC.cpp" />
     <ClCompile Include="xr_ioc_cmd.cpp" />
@@ -1067,9 +1136,6 @@
     <ProjectReference Include="..\xrParticles\xrParticles.vcxproj">
       <Project>{94a1c366-3d19-48e6-8170-4adc2e70df97}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
-    <ProjectReference Include="..\xrRender\xrAPI\xrAPI.vcxproj">
-      <Project>{1daec516-e52c-4a3c-a4da-ae3553e6e0f8}</Project>
     </ProjectReference>
     <ProjectReference Include="..\xrSound\xrSound.vcxproj">
       <Project>{ccca7859-eb86-493e-9b53-c4235f45b3c5}</Project>

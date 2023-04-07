@@ -65,11 +65,11 @@ void		IBlender::CreatePalette(xr_vector<IBlender*> &palette)
 #include "..\..\..\xr_3da\render.h"
 IBlender*	IBlender::Create	(CLASS_ID cls)
 {
-	return ::RImplementation.blender_create	(cls);
+	return ::Render->blender_create	(cls);
 }
 void		IBlender::Destroy	(IBlender*& B)
 {
-	::RImplementation.blender_destroy		(B);
+	::Render->blender_destroy		(B);
 }
 #else
 

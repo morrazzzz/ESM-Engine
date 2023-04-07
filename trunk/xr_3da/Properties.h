@@ -83,7 +83,7 @@ struct	xrP_Template
 };
 
 // Base class
-class	CPropertyBase
+class ENGINE_API	CPropertyBase
 {
 protected:
 

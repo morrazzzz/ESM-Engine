@@ -150,8 +150,7 @@ void CStats::Show()
 		fFPS = fInv*fFPS + fOne*fps;
 
 		if (RenderTOTAL.result>EPS_S) {
-			u32 renderedPolys = Device.m_pRender->GetCacheStatPolys();
-			fTPS = fInv*fTPS + fOne*float(renderedPolys)/(RenderTOTAL.result*1000.f);
+			fTPS = fInv*fTPS + fOne*float(RCache.stat.polys)/(RenderTOTAL.result*1000.f);
 			fRFPS= fInv*fRFPS+ fOne*1000.f/RenderTOTAL.result;
 		}
 	}

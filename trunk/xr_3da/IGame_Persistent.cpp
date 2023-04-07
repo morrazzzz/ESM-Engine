@@ -3,12 +3,15 @@
 
 #include "IGame_Persistent.h"
 #include "environment.h"
-#include "x_ray.h"
-#include "IGame_Level.h"
-#include "XR_IOConsole.h"
-#include "Render.h"
-#include "ps_instance.h"
-#include "CustomHUD.h"
+#ifndef _EDITOR
+#	include "x_ray.h"
+#	include "IGame_Level.h"
+#	include "XR_IOConsole.h"
+#	include "resourcemanager.h"
+#	include "Render.h"
+#	include "ps_instance.h"
+#	include "CustomHUD.h"
+#endif
 
 #ifdef _EDITOR
 	bool g_dedicated_server	= false;
@@ -122,7 +125,7 @@ void IGame_Persistent::OnGameStart()
 	ObjectPool.prefetch					();
 	Log				("Loading models...");
 	Render->models_Prefetch				();
-	Device.m_pRender->ResourcesDeferredUpload();
+	Device.Resources->DeferredUpload	();
 
 	p_time				=			1000.f*Device.GetTimerGlobal()->GetElapsed_sec() - p_time;
 	u32		p_mem		=			Memory.mem_usage() - mem_0	;

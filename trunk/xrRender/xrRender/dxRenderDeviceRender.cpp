@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "dxRenderDeviceRender.h"
 
-#include "ResourceManager.h"
+#include "..\..\xr_3da\ResourceManager.h"
 #include "..\..\xr_3da\IGame_Persistent.h"
 #include "..\xr_3da\Render.h"
 
@@ -163,7 +163,8 @@ void dxRenderDeviceRender::Create( HWND hWnd, u32 &dwWidth, u32 &dwHeight, float
 #endif	//	USE_DX10
 	fWidth_2			= float(dwWidth/2)			;
 	fHeight_2			= float(dwHeight/2)			;
-	Resources			= xr_new<CResourceManager>		();
+//	Resources			= xr_new<CResourceManager>		();
+	Device.Resources = Resources = xr_new<CResourceManager>(); //morrazzzz: So that the game does not crash when loading the menu!!! Then return it!!!
 }
 
 void dxRenderDeviceRender::SetupGPU( BOOL bForceGPU_SW, BOOL bForceGPU_NonPure, BOOL bForceGPU_REF)

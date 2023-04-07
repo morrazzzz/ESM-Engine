@@ -1023,9 +1023,7 @@ void doBenchmark(LPCSTR name)
 		
 		InitInput					();
 		if(i){
-//			ZeroMemory(&HW,sizeof(CHW));
-			//	TODO: KILL HW here!
-			//  pApp->m_pRender->KillHW();
+			ZeroMemory(&HW,sizeof(CHW));
 			InitEngine();
 		}
 

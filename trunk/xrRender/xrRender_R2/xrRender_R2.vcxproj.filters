@@ -130,29 +130,8 @@
     <Filter Include="Refactored\Execution &amp; 3D\DebugDraw">
       <UniqueIdentifier>{6245e832-7fb5-4fe3-a98b-5e559b217ed8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Refactored\Backend">
-      <UniqueIdentifier>{a231cee7-200d-4d46-8a8f-1916c454b6b8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Refactored\Execution &amp; 3D\Shaders">
-      <UniqueIdentifier>{efa3246f-b95c-4a19-922d-bfd225d29a29}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Refactored\Execution &amp; 3D\Gamma">
+    <Filter Include="Refactored\Gamma">
       <UniqueIdentifier>{65ea234c-448a-421b-9b0b-6e8edb035052}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Refactored\Execution &amp; 3D\Shaders\Blender">
-      <UniqueIdentifier>{f7677e06-bcc5-4c70-9be2-098e9598ceba}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Refactored\Execution &amp; 3D\Shaders\Resources">
-      <UniqueIdentifier>{10174b17-9f62-4120-be1e-12ac92bfc50c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Refactored\Execution &amp; 3D\Shaders\Resources\dx9_R_shader">
-      <UniqueIdentifier>{83c86641-1aa6-485a-b205-37d8167f39f8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Refactored\Execution &amp; 3D\Shaders\ShaderManager">
-      <UniqueIdentifier>{36bca2d1-85ff-44b3-90b7-a95337bb860a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Refactored\HW">
-      <UniqueIdentifier>{b2f5daee-c0a2-4374-b98a-2a5af810ef3a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -508,7 +487,7 @@
       <Filter>Refactored\Execution &amp; 3D\DebugDraw</Filter>
     </ClInclude>
     <ClInclude Include="..\xrRender\xr_effgamma.h">
-      <Filter>Refactored\Execution &amp; 3D\Gamma</Filter>
+      <Filter>Refactored\Gamma</Filter>
     </ClInclude>
     <ClInclude Include="..\xrRender\SkeletonAnimated.h">
       <Filter>Refactored\Execution &amp; 3D\Visuals\Skeleton</Filter>
@@ -533,75 +512,6 @@
     </ClInclude>
     <ClInclude Include="..\xrRender\AnimationKeyCalculate.h">
       <Filter>Refactored\Execution &amp; 3D\Visuals\Skeleton</Filter>
-    </ClInclude>
-    <ClInclude Include="..\xrRender\FVF.h">
-      <Filter>Refactored\Backend</Filter>
-    </ClInclude>
-    <ClInclude Include="..\xrRender\R_Backend.h">
-      <Filter>Refactored\Backend</Filter>
-    </ClInclude>
-    <ClInclude Include="..\xrRender\R_Backend_Runtime.h">
-      <Filter>Refactored\Backend</Filter>
-    </ClInclude>
-    <ClInclude Include="..\xrRender\R_Backend_xform.h">
-      <Filter>Refactored\Backend</Filter>
-    </ClInclude>
-    <ClInclude Include="..\xrRender\R_DStreams.h">
-      <Filter>Refactored\Backend</Filter>
-    </ClInclude>
-    <ClInclude Include="..\xrRender\blenders\Blender.h">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\Blender</Filter>
-    </ClInclude>
-    <ClInclude Include="..\xrRender\blenders\Blender_CLSID.h">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\Blender</Filter>
-    </ClInclude>
-    <ClInclude Include="..\xrRender\blenders\Blender_Recorder.h">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\Blender</Filter>
-    </ClInclude>
-    <ClInclude Include="..\xrRender\tss_def.h">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\Blender</Filter>
-    </ClInclude>
-    <ClInclude Include="..\xrRender\tss.h">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\Blender</Filter>
-    </ClInclude>
-    <ClInclude Include="..\xrRender\r_constants_cache.h">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources\dx9_R_shader</Filter>
-    </ClInclude>
-    <ClInclude Include="..\xrRender\r_constants.h">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\xrRender\Shader.h">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\xrRender\SH_Texture.h">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\xrRender\SH_RT.h">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\xrRender\SH_Matrix.h">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\xrRender\SH_Constant.h">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\xrRender\SH_Atomic.h">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\xrRender\ETextureParams.h">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\ShaderManager</Filter>
-    </ClInclude>
-    <ClInclude Include="..\xrRender\ResourceManager.h">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\ShaderManager</Filter>
-    </ClInclude>
-    <ClInclude Include="..\xrRender\TextureDescrManager.h">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\ShaderManager</Filter>
-    </ClInclude>
-    <ClInclude Include="..\xrRender\HWCaps.h">
-      <Filter>Refactored\HW</Filter>
-    </ClInclude>
-    <ClInclude Include="..\xrRender\HW.h">
-      <Filter>Refactored\HW</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -969,7 +879,7 @@
       <Filter>Refactored\Execution &amp; 3D\DebugDraw</Filter>
     </ClCompile>
     <ClCompile Include="..\xrRender\xr_effgamma.cpp">
-      <Filter>Refactored\Execution &amp; 3D\Gamma</Filter>
+      <Filter>Refactored\Gamma</Filter>
     </ClCompile>
     <ClCompile Include="..\xrRender\SkeletonAnimated.cpp">
       <Filter>Refactored\Execution &amp; 3D\Visuals\Skeleton</Filter>
@@ -991,96 +901,6 @@
     </ClCompile>
     <ClCompile Include="..\xrRender\Animation.cpp">
       <Filter>Refactored\Execution &amp; 3D\Visuals\Skeleton</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrRender\R_Backend.cpp">
-      <Filter>Refactored\Backend</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrRender\R_Backend_DBG.cpp">
-      <Filter>Refactored\Backend</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrRender\R_Backend_Runtime.cpp">
-      <Filter>Refactored\Backend</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrRender\R_Backend_xform.cpp">
-      <Filter>Refactored\Backend</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrRender\R_DStreams.cpp">
-      <Filter>Refactored\Backend</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrRender\blenders\Blender.cpp">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\Blender</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrRender\blenders\Blender_Palette.cpp">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\Blender</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrRender\blenders\Blender_Recorder.cpp">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\Blender</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrRender\Blender_Recorder_R2.cpp">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\Blender</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrRender\Blender_Recorder_StandartBinding.cpp">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\Blender</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrRender\tss_def.cpp">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\Blender</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrRender\r_constants_cache.cpp">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources\dx9_R_shader</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrRender\r_constants.cpp">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrRender\Shader.cpp">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrRender\SH_Texture.cpp">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrRender\SH_RT.cpp">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrRender\SH_Matrix.cpp">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrRender\SH_Constant.cpp">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrRender\SH_Atomic.cpp">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrRender\ETextureParams.cpp">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\ShaderManager</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrRender\ResourceManager_Scripting.cpp">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\ShaderManager</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrRender\ResourceManager_Resources.cpp">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\ShaderManager</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrRender\ResourceManager_Reset.cpp">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\ShaderManager</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrRender\ResourceManager_Loader.cpp">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\ShaderManager</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrRender\ResourceManager.cpp">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\ShaderManager</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrRender\TextureDescrManager.cpp">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\ShaderManager</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrRender\HWCaps.cpp">
-      <Filter>Refactored\HW</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrRender\HW.cpp">
-      <Filter>Refactored\HW</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\xr_3da\ai_script_lua_debug.cpp">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\ShaderManager</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\xr_3da\ai_script_lua_extension.cpp">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\ShaderManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

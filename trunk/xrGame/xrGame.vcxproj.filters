@@ -2164,6 +2164,9 @@
     <Filter Include="UI\UIWindows\Lines">
       <UniqueIdentifier>{52d31396-37bb-44e2-9554-7cb68bb590e0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="UI\UIWindows\VideoPlayer">
+      <UniqueIdentifier>{c54f9d1a-b7d2-45a2-8548-f232a5559d0b}</UniqueIdentifier>
+    </Filter>
     <Filter Include="UI\UIWindows\DragDrop2">
       <UniqueIdentifier>{5131f114-969c-4854-a93e-9c8de6d8471c}</UniqueIdentifier>
     </Filter>
@@ -6333,6 +6336,9 @@
     <ClInclude Include="ui\UISubLine.h">
       <Filter>UI\UIWindows\Lines</Filter>
     </ClInclude>
+    <ClInclude Include="ui\UIVideoPlayerWnd.h">
+      <Filter>UI\UIWindows\VideoPlayer</Filter>
+    </ClInclude>
     <ClInclude Include="ui\UICellCustomItems.h">
       <Filter>UI\UIWindows\DragDrop2</Filter>
     </ClInclude>
@@ -8582,6 +8588,9 @@
     <ClCompile Include="Spectator.cpp">
       <Filter>Core\Client\Spectator</Filter>
     </ClCompile>
+    <ClCompile Include="r2_test_hw.cpp">
+      <Filter>Core\Common</Filter>
+    </ClCompile>
     <ClCompile Include="xrGame.cpp">
       <Filter>Core\Common</Filter>
     </ClCompile>
@@ -9448,6 +9457,9 @@
     </ClCompile>
     <ClCompile Include="ui\UISubLine.cpp">
       <Filter>UI\UIWindows\Lines</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\UIVideoPlayerWnd.cpp">
+      <Filter>UI\UIWindows\VideoPlayer</Filter>
     </ClCompile>
     <ClCompile Include="ui\UICellCustomItems.cpp">
       <Filter>UI\UIWindows\DragDrop2</Filter>

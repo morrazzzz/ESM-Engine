@@ -29,6 +29,8 @@
 #endif
 
 xr_vector<Frect> g_wnds_rects;
+ref_shader  dbg_draw_sh =0;
+ref_geom	dbg_draw_gm =0;
 
 BOOL g_show_wnd_rect = FALSE;
 BOOL g_show_wnd_rect2 = FALSE;

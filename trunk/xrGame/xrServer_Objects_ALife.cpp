@@ -13,7 +13,6 @@
 #include "game_base_space.h"
 #include "object_broker.h"
 #include "restriction_space.h"
-#include "..\Include\xrRender\DrawUtils.h"
 
 #ifndef AI_COMPILER
 #	include "character_info.h"

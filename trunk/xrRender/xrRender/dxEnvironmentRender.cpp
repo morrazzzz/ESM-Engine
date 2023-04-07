@@ -4,7 +4,7 @@
 #include "dxRenderDeviceRender.h"
 
 #include "../../xr_3da/environment.h"
-#include "ResourceManager.h"
+#include "../../xr_3da/ResourceManager.h"
 
 #include "../../xr_3da/xr_efflensflare.h"
 

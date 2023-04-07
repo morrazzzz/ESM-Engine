@@ -6,8 +6,6 @@
 #include "../../xr_3da/IGame_Persistent.h"
 #include "../xrCore/stream_reader.h"
 
-#include "..\xrRender\dxRenderDeviceRender.h"
-
 #pragma warning(push)
 #pragma warning(disable:4995)
 #include <malloc.h>
@@ -20,7 +18,7 @@ void CRender::level_Load(IReader *fs)
 
 	// Begin
 	pApp->LoadBegin					();
-	DEV->DeferredLoad	(TRUE);
+	Device.Resources->DeferredLoad	(TRUE);
 	IReader*						chunk;
 
 	// Shaders
@@ -41,7 +39,7 @@ void CRender::level_Load(IReader *fs)
 			LPSTR			delim	= strchr(n_sh,'/');
 			*delim					= 0;
 			strcpy					(n_tlist,delim+1);
-			Shaders[i]				= DEV->Create(n_sh,n_tlist);
+			Shaders[i]				= Device.Resources->Create(n_sh,n_tlist);
 		}
 		chunk->close();
 	}
@@ -170,7 +168,7 @@ void CRender::level_Unload		()
 
 void CRender::LoadBuffers	(CStreamReader *base_fs)
 {
-	DEV->Evict	();
+	Device.Resources->Evict	();
 	u32	dwUsage				= D3DUSAGE_WRITEONLY | (HW.Caps.geometry.bSoftware?D3DUSAGE_SOFTWAREPROCESSING:0);
 
 	// Vertex buffers

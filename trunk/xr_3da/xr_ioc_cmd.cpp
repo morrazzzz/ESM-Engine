@@ -9,6 +9,8 @@
 #include "xr_input.h"
 #include "CustomHUD.h"
 #include "../xr_3da/SkeletonMotions.h"
+#include "ResourceManager.h"
+
 #include "xr_object.h"
 
 xr_token							snd_freq_token							[ ]={
@@ -23,6 +25,8 @@ xr_token							snd_model_token							[ ]={
 	{ "High",						3											},
 	{ 0,							0											}
 };
+
+extern xr_token*							vid_mode_token;
 
 xr_token							vid_quality_token							[ ]={
 	{ "renderer_r1",				0											},
@@ -130,7 +134,7 @@ class CCC_TexturesStat : public IConsole_Command
 public:
 	CCC_TexturesStat(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = TRUE; };
 	virtual void Execute(LPCSTR args) {
-		Device.DumpResourcesMemoryUsage();
+		Device.Resources->_DumpMemoryUsage();
 	}
 };
 //-----------------------------------------------------------------------
@@ -214,6 +218,15 @@ public:
 	CCC_Crash(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
 	virtual void Execute(LPCSTR args) {
 		thread_spawn	(crashthread,"crash",0,0);
+	}
+};
+
+class CCC_DumpResources : public IConsole_Command
+{
+public:
+	CCC_DumpResources(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+	virtual void Execute(LPCSTR args) {
+		Device.Resources->Dump(args!=NULL);
 	}
 };
 
@@ -682,6 +695,7 @@ if(strstr(Core.Params,"designer"))
 	CMD4(CCC_DR_UsePoints,		"demo_record_4step",		&g_bDR_LM_4Steps, 0, 1);
 	CMD4(CCC_DR_UsePoints,		"demo_record_step",			&g_iDR_LM_Step, 0, 3);
 }
+	CMD1(CCC_DumpResources,		"dump_resources");
 	CMD1(CCC_DumpOpenFiles,		"dump_open_files");
 //#endif
 

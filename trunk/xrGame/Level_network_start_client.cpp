@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "../xr_3da/resourcemanager.h"
 #include "HUDmanager.h"
 #include "Physics.h"
 #include "level.h"
@@ -146,8 +147,8 @@ bool	CLevel::net_start_client5				()
 			pHUD->Load							();
 //			g_pGamePersistent->LoadTitle				("st_loading_textures");
 			g_pGamePersistent->LoadTitle();
-			Device.m_pRender->DeferredLoad(FALSE);
-			Device.m_pRender->ResourcesDeferredUpload();
+			Device.Resources->DeferredLoad		(FALSE);
+			Device.Resources->DeferredUpload	();
 			LL_CheckTextures					();
 		}
 	}

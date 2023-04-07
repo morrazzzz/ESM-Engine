@@ -4,11 +4,11 @@
 
 #pragma once
 
-#include "..\tss.h"
+#include "..\..\..\xr_3da\tss.h"
 
 #pragma pack(push,4)
 
-class CBlender_Compile  
+class ENGINE_API CBlender_Compile  
 {
 public:
 	sh_list				L_textures;
