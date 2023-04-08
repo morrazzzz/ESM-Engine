@@ -9,6 +9,8 @@
 #include <d3dx9.h>
 #pragma warning(default:4995)
 
+#include "dxRenderDeviceRender.h"
+
 // #include "std_classes.h"
 // #include "xr_avi.h"
 
@@ -423,7 +425,7 @@ _BUMP:
 		// 
 		string256			fnameB;
 		strconcat			(fnameB,"$user$",fname,"X");
-		ref_texture			t_temp		= Device.Resources->_CreateTexture	(fnameB);
+		ref_texture			t_temp		= DEV->_CreateTexture	(fnameB);
 		t_temp->surface_set	(T_normal_2C	);
 		_RELEASE			(T_normal_2C	);	// texture should keep reference to it by itself
 #endif
@@ -511,7 +513,7 @@ _BUMP_from_base:
 		// 
 		string256			fnameB;
 		strconcat			(sizeof(fnameB),fnameB,"$user$",fname,"_bumpX");
-		ref_texture			t_temp			= Device.Resources->_CreateTexture	(fnameB);
+		ref_texture			t_temp			= DEV->_CreateTexture	(fnameB);
 		t_temp->surface_set	(T_normal_2C	);
 		_RELEASE			(T_normal_2C	);	// texture should keep reference to it by itself
 #endif

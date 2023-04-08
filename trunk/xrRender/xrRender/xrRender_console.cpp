@@ -241,11 +241,23 @@ public:
 	}
 };
 #endif
+
+class CCC_DumpResources : public IConsole_Command
+{
+public:
+	CCC_DumpResources(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+	virtual void Execute(LPCSTR args) {
+		RImplementation.Models->dump();
+	}
+};
 //-----------------------------------------------------------------------
 void		xrRender_initconsole	()
 {
 	CMD3(CCC_Preset,	"_preset",				&ps_Preset,	qpreset_token	);
 
+#ifdef	DEBUG
+	CMD1(CCC_DumpResources, "dump_resources");
+#endif	// DEBUG
 // Common
 	CMD1(CCC_Screenshot,"screenshot"			);
 #ifdef DEBUG

@@ -130,52 +130,52 @@ public		:
 
 class ENGINE_API	CCC_Token : public IConsole_Command
 {
-protected	:
-	u32*			value;
-	xr_token*		tokens;
-public		:
+protected:
+	u32* value;
+	xr_token* tokens;
+public:
 	CCC_Token(LPCSTR N, u32* V, xr_token* T) :
-	  IConsole_Command(N),
-	  value(V),
-	  tokens(T)
+		IConsole_Command(N),
+		value(V),
+		tokens(T)
 	{};
 
-	virtual void	Execute	(LPCSTR args)
+	virtual void	Execute(LPCSTR args)
 	{
 		xr_token* tok = tokens;
 		while (tok->name) {
-			if (stricmp(tok->name,args)==0) {
-				*value=tok->id;
+			if (stricmp(tok->name, args) == 0) {
+				*value = tok->id;
 				break;
 			}
 			tok++;
 		}
 		if (!tok->name) InvalidSyntax();
 	}
-	virtual void	Status	(TStatus& S)
+	virtual void	Status(TStatus& S)
 	{
-		xr_token *tok = tokens;
+		xr_token* tok = tokens;
 		while (tok->name) {
-			if (tok->id==(int)(*value)) {
-				strcpy_s(S,tok->name);
+			if (tok->id == (int)(*value)) {
+				xr_strcpy(S, tok->name);
 				return;
 			}
 			tok++;
 		}
-		strcpy_s(S,"?");
+		xr_strcpy(S, "?");
 		return;
 	}
-	virtual void	Info	(TInfo& I)
-	{	
-		I[0]=0;
-		xr_token *tok = tokens;
+	virtual void	Info(TInfo& I)
+	{
+		I[0] = 0;
+		xr_token* tok = tokens;
 		while (tok->name) {
-			if (I[0]) strcat(I,"/");
-			strcat(I,tok->name);
+			if (I[0]) xr_strcat(I, "/");
+			xr_strcat(I, tok->name);
 			tok++;
 		}
 	}
-	virtual xr_token* GetToken(){return tokens;}
+	virtual xr_token* GetToken() { return tokens; }
 
 	virtual void	fill_tips(vecTips& tips, u32 mode)
 	{
@@ -186,7 +186,7 @@ public		:
 		{
 			if (tok->id == (int)(*value))
 			{
-				sprintf_s(str, sizeof(str), "%s  (current)", tok->name);
+				xr_sprintf(str, sizeof(str), "%s  (current)", tok->name);
 				tips.push_back(str);
 				res = true;
 			}
@@ -203,6 +203,7 @@ public		:
 			tok++;
 		}
 	}
+
 };
 
 class ENGINE_API	CCC_Float : public IConsole_Command

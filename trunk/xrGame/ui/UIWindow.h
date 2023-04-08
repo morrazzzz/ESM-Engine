@@ -35,7 +35,7 @@ public:
 	virtual void			DetachChild			(CUIWindow* pChild);
 	virtual bool			IsChild				(CUIWindow* pChild) const;
 	virtual void			DetachAll			();
-	int						GetChildNum			()								{return m_ChildWndList.size();} 
+	size_t					GetChildNum			()								{return m_ChildWndList.size();} 
 
 	void					SetParent			(CUIWindow* pNewParent);
 	CUIWindow*				GetParent			()	const							{return m_pParentWnd;}

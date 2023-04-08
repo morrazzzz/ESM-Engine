@@ -155,8 +155,8 @@ void	CSoundRender_TargetA::fill_parameters()
 
 void	CSoundRender_TargetA::fill_block	(ALuint BufferID)
 {
-#pragma todo("check why pEmitter is NULL")
-	if (0==pEmitter)	return;
+	if (!pEmitter)	
+        return;
 
 	pEmitter->fill_block(&g_target_temp_data.front(),buf_block);
 

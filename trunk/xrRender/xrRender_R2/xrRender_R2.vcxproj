@@ -211,7 +211,7 @@
       <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>.;../../3rd party/DX9SDK/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;../../Luabind;../../LuaJIT/src;../../3rd party/DX9SDK/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -300,6 +300,9 @@
     <ClInclude Include="..\..\Include\xrRender\WallMarkArray.h" />
     <ClInclude Include="..\xrRender\Animation.h" />
     <ClInclude Include="..\xrRender\AnimationKeyCalculate.h" />
+    <ClInclude Include="..\xrRender\blenders\Blender.h" />
+    <ClInclude Include="..\xrRender\blenders\Blender_CLSID.h" />
+    <ClInclude Include="..\xrRender\blenders\Blender_Recorder.h" />
     <ClInclude Include="..\xrRender\D3DUtils.h" />
     <ClInclude Include="..\xrRender\du_box.h" />
     <ClInclude Include="..\xrRender\du_cone.h" />
@@ -324,14 +327,34 @@
     <ClInclude Include="..\xrRender\dxUISequenceVideoItem.h" />
     <ClInclude Include="..\xrRender\dxUIShader.h" />
     <ClInclude Include="..\xrRender\dxWallMarkArray.h" />
+    <ClInclude Include="..\xrRender\ETextureParams.h" />
     <ClInclude Include="..\xrRender\FBasicVisual.h" />
     <ClInclude Include="..\xrRender\FHierrarhyVisual.h" />
+    <ClInclude Include="..\xrRender\FVF.h" />
+    <ClInclude Include="..\xrRender\HW.h" />
+    <ClInclude Include="..\xrRender\HWCaps.h" />
     <ClInclude Include="..\xrRender\IRenderDetailModel.h" />
     <ClInclude Include="..\xrRender\KinematicAnimatedDefs.h" />
+    <ClInclude Include="..\xrRender\ResourceManager.h" />
+    <ClInclude Include="..\xrRender\R_Backend.h" />
+    <ClInclude Include="..\xrRender\R_Backend_Runtime.h" />
+    <ClInclude Include="..\xrRender\R_Backend_xform.h" />
+    <ClInclude Include="..\xrRender\r_constants.h" />
+    <ClInclude Include="..\xrRender\r_constants_cache.h" />
+    <ClInclude Include="..\xrRender\R_DStreams.h" />
+    <ClInclude Include="..\xrRender\Shader.h" />
+    <ClInclude Include="..\xrRender\SH_Atomic.h" />
+    <ClInclude Include="..\xrRender\SH_Constant.h" />
+    <ClInclude Include="..\xrRender\SH_Matrix.h" />
+    <ClInclude Include="..\xrRender\SH_RT.h" />
+    <ClInclude Include="..\xrRender\SH_Texture.h" />
     <ClInclude Include="..\xrRender\SkeletonAnimated.h" />
     <ClInclude Include="..\xrRender\SkeletonCustom.h" />
     <ClInclude Include="..\xrRender\SkeletonX.h" />
     <ClInclude Include="..\xrRender\SkeletonXVertRender.h" />
+    <ClInclude Include="..\xrRender\TextureDescrManager.h" />
+    <ClInclude Include="..\xrRender\tss.h" />
+    <ClInclude Include="..\xrRender\tss_def.h" />
     <ClInclude Include="..\xrRender\xrD3DDefs.h" />
     <ClInclude Include="..\xrRender\xr_effgamma.h" />
     <ClInclude Include="cl_intersect.h" />
@@ -399,7 +422,14 @@
     <ClInclude Include="r2_rendertarget_wallmarks.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\xr_3da\ai_script_lua_debug.cpp" />
+    <ClCompile Include="..\..\xr_3da\ai_script_lua_extension.cpp" />
     <ClCompile Include="..\xrRender\Animation.cpp" />
+    <ClCompile Include="..\xrRender\blenders\Blender.cpp" />
+    <ClCompile Include="..\xrRender\blenders\Blender_Palette.cpp" />
+    <ClCompile Include="..\xrRender\blenders\Blender_Recorder.cpp" />
+    <ClCompile Include="..\xrRender\Blender_Recorder_R2.cpp" />
+    <ClCompile Include="..\xrRender\Blender_Recorder_StandartBinding.cpp" />
     <ClCompile Include="..\xrRender\D3DUtils.cpp" />
     <ClCompile Include="..\xrRender\du_box.cpp" />
     <ClCompile Include="..\xrRender\du_cone.cpp" />
@@ -424,12 +454,35 @@
     <ClCompile Include="..\xrRender\dxUISequenceVideoItem.cpp" />
     <ClCompile Include="..\xrRender\dxUIShader.cpp" />
     <ClCompile Include="..\xrRender\dxWallMarkArray.cpp" />
+    <ClCompile Include="..\xrRender\ETextureParams.cpp" />
     <ClCompile Include="..\xrRender\FBasicVisual.cpp" />
     <ClCompile Include="..\xrRender\FHierrarhyVisual.cpp" />
+    <ClCompile Include="..\xrRender\HW.cpp" />
+    <ClCompile Include="..\xrRender\HWCaps.cpp" />
+    <ClCompile Include="..\xrRender\ResourceManager.cpp" />
+    <ClCompile Include="..\xrRender\ResourceManager_Loader.cpp" />
+    <ClCompile Include="..\xrRender\ResourceManager_Reset.cpp" />
+    <ClCompile Include="..\xrRender\ResourceManager_Resources.cpp" />
+    <ClCompile Include="..\xrRender\ResourceManager_Scripting.cpp" />
+    <ClCompile Include="..\xrRender\R_Backend.cpp" />
+    <ClCompile Include="..\xrRender\R_Backend_DBG.cpp" />
+    <ClCompile Include="..\xrRender\R_Backend_Runtime.cpp" />
+    <ClCompile Include="..\xrRender\R_Backend_xform.cpp" />
+    <ClCompile Include="..\xrRender\r_constants.cpp" />
+    <ClCompile Include="..\xrRender\r_constants_cache.cpp" />
+    <ClCompile Include="..\xrRender\R_DStreams.cpp" />
+    <ClCompile Include="..\xrRender\Shader.cpp" />
+    <ClCompile Include="..\xrRender\SH_Atomic.cpp" />
+    <ClCompile Include="..\xrRender\SH_Constant.cpp" />
+    <ClCompile Include="..\xrRender\SH_Matrix.cpp" />
+    <ClCompile Include="..\xrRender\SH_RT.cpp" />
+    <ClCompile Include="..\xrRender\SH_Texture.cpp" />
     <ClCompile Include="..\xrRender\SkeletonAnimated.cpp" />
     <ClCompile Include="..\xrRender\SkeletonCustom.cpp" />
     <ClCompile Include="..\xrRender\SkeletonRigid.cpp" />
     <ClCompile Include="..\xrRender\SkeletonX.cpp" />
+    <ClCompile Include="..\xrRender\TextureDescrManager.cpp" />
+    <ClCompile Include="..\xrRender\tss_def.cpp" />
     <ClCompile Include="..\xrRender\xr_effgamma.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

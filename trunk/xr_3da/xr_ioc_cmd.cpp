@@ -9,24 +9,8 @@
 #include "xr_input.h"
 #include "CustomHUD.h"
 #include "../xr_3da/SkeletonMotions.h"
-#include "ResourceManager.h"
 
 #include "xr_object.h"
-
-xr_token							snd_freq_token							[ ]={
-	{ "22khz",						sf_22K										},
-	{ "44khz",						sf_44K										},
-	{ 0,							0											}
-};
-xr_token							snd_model_token							[ ]={
-	{ "Default",					0											},
-	{ "Normal",						1											},
-	{ "Light",						2											},
-	{ "High",						3											},
-	{ 0,							0											}
-};
-
-extern xr_token*							vid_mode_token;
 
 xr_token* vid_quality_token = NULL;
 
@@ -129,7 +113,7 @@ class CCC_TexturesStat : public IConsole_Command
 public:
 	CCC_TexturesStat(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = TRUE; };
 	virtual void Execute(LPCSTR args) {
-		Device.Resources->_DumpMemoryUsage();
+		Device.m_pRender->ResourcesDumpMemoryUsage();
 	}
 };
 //-----------------------------------------------------------------------
@@ -213,15 +197,6 @@ public:
 	CCC_Crash(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
 	virtual void Execute(LPCSTR args) {
 		thread_spawn	(crashthread,"crash",0,0);
-	}
-};
-
-class CCC_DumpResources : public IConsole_Command
-{
-public:
-	CCC_DumpResources(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
-	virtual void Execute(LPCSTR args) {
-		Device.Resources->Dump(args!=NULL);
 	}
 };
 
@@ -373,27 +348,28 @@ public:
 class CCC_VidMode : public CCC_Token
 {
 	u32		_dummy;
-public :
-					CCC_VidMode(LPCSTR N) : CCC_Token(N, &_dummy, NULL) { bEmptyArgsHandled = FALSE; };
-	virtual void	Execute(LPCSTR args){
+public:
+	CCC_VidMode(LPCSTR N) : CCC_Token(N, &_dummy, NULL) { bEmptyArgsHandled = FALSE; };
+	virtual void	Execute(LPCSTR args) {
 		u32 _w, _h;
-		int cnt = sscanf		(args,"%dx%d",&_w,&_h);
-		if(cnt==2){
+		int cnt = sscanf(args, "%dx%d", &_w, &_h);
+		if (cnt == 2) {
 			psCurrentVidMode[0] = _w;
 			psCurrentVidMode[1] = _h;
-		}else{
+		}
+		else {
 			Msg("! Wrong video mode [%s]", args);
 			return;
 		}
 	}
-	virtual void	Status	(TStatus& S)	
-	{ 
-		sprintf_s(S,sizeof(S),"%dx%d",psCurrentVidMode[0],psCurrentVidMode[1]); 
+	virtual void	Status(TStatus& S)
+	{
+		xr_sprintf(S, sizeof(S), "%dx%d", psCurrentVidMode[0], psCurrentVidMode[1]);
 	}
-	virtual xr_token* GetToken()				{return vid_mode_token;}
-	virtual void	Info	(TInfo& I)
-	{	
-		strcpy_s(I,sizeof(I),"change screen resolution WxH");
+	virtual xr_token* GetToken() { return vid_mode_token; }
+	virtual void	Info(TInfo& I)
+	{
+		xr_strcpy(I, sizeof(I), "change screen resolution WxH");
 	}
 
 	virtual void	fill_tips(vecTips& tips, u32 mode)
@@ -407,7 +383,7 @@ public :
 		{
 			if (!xr_strcmp(tok->name, cur))
 			{
-				sprintf_s(str, sizeof(str), "%s  (current)", tok->name);
+				xr_sprintf(str, sizeof(str), "%s  (current)", tok->name);
 				tips.push_back(str);
 				res = true;
 			}
@@ -424,6 +400,7 @@ public :
 			tok++;
 		}
 	}
+
 };
 //-----------------------------------------------------------------------
 class CCC_SND_Restart : public IConsole_Command
@@ -643,8 +620,6 @@ void CCC_Register()
 	// Sound
 	CMD2(CCC_Float,		"snd_volume_eff",		&psSoundVEffects);
 	CMD2(CCC_Float,		"snd_volume_music",		&psSoundVMusic);
-//.	CMD3(CCC_Token,		"snd_freq",				&psSoundFreq,		snd_freq_token			);
-//.	CMD3(CCC_Token,		"snd_model",			&psSoundModel,		snd_model_token			);
 	CMD1(CCC_SND_Restart,"snd_restart"			);
 	CMD3(CCC_Mask,		"snd_acceleration",		&psSoundFlags,		ss_Hardware	);
 	CMD3(CCC_Mask,		"snd_efx",				&psSoundFlags,		ss_EAX		);
@@ -688,7 +663,6 @@ if(strstr(Core.Params,"designer"))
 	CMD4(CCC_DR_UsePoints,		"demo_record_4step",		&g_bDR_LM_4Steps, 0, 1);
 	CMD4(CCC_DR_UsePoints,		"demo_record_step",			&g_iDR_LM_Step, 0, 3);
 }
-	CMD1(CCC_DumpResources,		"dump_resources");
 	CMD1(CCC_DumpOpenFiles,		"dump_open_files");
 //#endif
 

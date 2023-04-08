@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "..\..\xr_3da\resourcemanager.h"
+#include "../xrRender/ResourceManager.h"
 #include "blender_light_occq.h"
 #include "blender_light_mask.h"
 #include "blender_light_direct.h"
@@ -9,6 +9,7 @@
 #include "blender_combine.h"
 #include "blender_bloom_build.h"
 #include "blender_luminance.h"
+#include "../xrRender/dxRenderDeviceRender.h"
 
 void	CRenderTarget::u_setrt			(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, IDirect3DSurface9* zb)
 {
@@ -192,7 +193,7 @@ CRenderTarget::CRenderTarget		()
 	param_color_add		= color_rgba(0,0,0,			0);
 
 	dwAccumulatorClearMark			= 0;
-	Device.Resources->Evict			();
+	dxRenderDeviceRender::Instance().Resources->Evict			();
 
 	// Blenders
 	b_occq							= xr_new<CBlender_light_occq>			();
@@ -356,7 +357,7 @@ CRenderTarget::CRenderTarget		()
 		{
 			// Surface
 			R_CHK						(D3DXCreateVolumeTexture(HW.pDevice,TEX_material_LdotN,TEX_material_LdotH,4,1,0,D3DFMT_A8L8,D3DPOOL_MANAGED,&t_material_surf));
-			t_material					= Device.Resources->_CreateTexture(r2_material);
+			t_material					= dxRenderDeviceRender::Instance().Resources->_CreateTexture(r2_material);
 			t_material->surface_set		(t_material_surf);
 
 			// Fill it (addr: x=dot(L,N),y=dot(L,H))
@@ -422,7 +423,7 @@ CRenderTarget::CRenderTarget		()
 				string_path					name;
 				sprintf						(name,"%s%d",r2_jitter,it);
 				R_CHK	(D3DXCreateTexture	(HW.pDevice,TEX_jitter,TEX_jitter,1,0,D3DFMT_Q8W8V8U8,D3DPOOL_MANAGED,&t_noise_surf[it]));
-				t_noise[it]					= Device.Resources->_CreateTexture	(name);
+				t_noise[it]					= dxRenderDeviceRender::Instance().Resources->_CreateTexture	(name);
 				t_noise[it]->surface_set	(t_noise_surf[it]);
 				R_CHK						(t_noise_surf[it]->LockRect	(0,&R[it],0,0));
 			}

@@ -5,9 +5,10 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#include "..\..\..\xr_3da\ResourceManager.h"
+#include "..\ResourceManager.h"
 #include "Blender_Recorder.h"
 #include "Blender.h"
+#include "..\dxRenderDeviceRender.h"
 
 static int ParseName(LPCSTR N)
 {
@@ -22,10 +23,6 @@ static int ParseName(LPCSTR N)
 	if (0==xr_strcmp(N,"$base7"))	return	7;
 	return -1;
 }
-
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
 
 CBlender_Compile::CBlender_Compile		()
 {
@@ -53,7 +50,7 @@ void	CBlender_Compile::_cpp_Compile	(ShaderElement* _SH)
 			base	=	*lst [id];
 		}
 //.		if (!Device.Resources->_GetDetailTexture(base,detail_texture,detail_scaler))	bDetail	= FALSE;
-		if (!Device.Resources->m_textures_description.GetDetailTexture(base,detail_texture,detail_scaler))	bDetail	= FALSE;
+		if (!DEV->m_textures_description.GetDetailTexture(base,detail_texture,detail_scaler))	bDetail	= FALSE;
 	} else 
 	{
 		bDetail	= FALSE;
@@ -63,7 +60,7 @@ void	CBlender_Compile::_cpp_Compile	(ShaderElement* _SH)
 	bDetail_Diffuse	= FALSE;
 	bDetail_Bump	= FALSE;
 	if(bDetail)
-		Device.Resources->m_textures_description.GetTextureUsage(base, bDetail_Diffuse, bDetail_Bump);
+		DEV->m_textures_description.GetTextureUsage(base, bDetail_Diffuse, bDetail_Bump);
 /*
 	if (bDetail && Device.Resources->m_description->line_exist("association",base))	
 	{
@@ -125,18 +122,18 @@ void	CBlender_Compile::PassEnd			()
 	RS.SetTSS				(Stage(),D3DTSS_ALPHAOP,D3DTOP_DISABLE);
 
 	// Create pass
-	ref_state	state		= Device.Resources->_CreateState		(RS.GetContainer());
-	ref_ps		ps			= Device.Resources->_CreatePS			(pass_ps);
-	ref_vs		vs			= Device.Resources->_CreateVS			(pass_vs);
+	ref_state	state		= DEV->_CreateState		(RS.GetContainer());
+	ref_ps		ps			= DEV->_CreatePS			(pass_ps);
+	ref_vs		vs			= DEV->_CreateVS			(pass_vs);
 	ctable.merge			(&ps->constants);
 	ctable.merge			(&vs->constants);
 	SetMapping				();
-	ref_ctable			ct	= Device.Resources->_CreateConstantTable(ctable);
-	ref_texture_list	T 	= Device.Resources->_CreateTextureList	(passTextures);
-	ref_matrix_list		M	= Device.Resources->_CreateMatrixList	(passMatrices);
-	ref_constant_list	C	= Device.Resources->_CreateConstantList	(passConstants);
+	ref_ctable			ct	= DEV->_CreateConstantTable(ctable);
+	ref_texture_list	T 	= DEV->_CreateTextureList	(passTextures);
+	ref_matrix_list		M	= DEV->_CreateMatrixList	(passMatrices);
+	ref_constant_list	C	= DEV->_CreateConstantList	(passConstants);
 
-	ref_pass	_pass_		= Device.Resources->_CreatePass			(state,ps,vs,ct,T,M,C);
+	ref_pass	_pass_		= DEV->_CreatePass			(state,ps,vs,ct,T,M,C);
 	SH->passes.push_back	(_pass_);
 }
 
@@ -250,7 +247,7 @@ void	CBlender_Compile::Stage_Texture	(LPCSTR name, u32 ,	u32	 fmin, u32 fmip, u3
 		if (id>=int(lst.size()))	Debug.fatal(DEBUG_INFO,"Not enought textures for shader. Base texture: '%s'.",*lst[0]);
 		N = *lst [id];
 	}
-	passTextures.push_back	(mk_pair( Stage(),ref_texture( Device.Resources->_CreateTexture(N))));
+	passTextures.push_back	(mk_pair( Stage(),ref_texture(DEV->_CreateTexture(N))));
 //	i_Address				(Stage(),address);
 	i_Filter				(Stage(),fmin,fmip,fmag);
 }
@@ -258,7 +255,7 @@ void	CBlender_Compile::Stage_Matrix		(LPCSTR name, int iChannel)
 {
 	sh_list& lst	= L_matrices; 
 	int id			= ParseName(name);
-	CMatrix*	M	= Device.Resources->_CreateMatrix	((id>=0)?*lst[id]:name);
+	CMatrix*	M	= DEV->_CreateMatrix	((id>=0)?*lst[id]:name);
 	passMatrices.push_back(M);
 
 	// Setup transform pipeline
@@ -281,5 +278,5 @@ void	CBlender_Compile::Stage_Constant	(LPCSTR name)
 {
 	sh_list& lst= L_constants;
 	int id		= ParseName(name);
-	passConstants.push_back	(Device.Resources->_CreateConstant((id>=0)?*lst[id]:name));
+	passConstants.push_back	(DEV->_CreateConstant((id>=0)?*lst[id]:name));
 }

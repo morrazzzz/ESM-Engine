@@ -39,9 +39,8 @@ void dxStatsRender::OutData4 (CGameFont &F)
 	F.OutNext	("  dynamic_inst:%3.1f/%d",	RCache.stat.r.s_dynamic_inst.verts/1024.f,	RCache.stat.r.s_dynamic_inst.dips );
 	F.OutNext	("  dynamic_1B:  %3.1f/%d",	RCache.stat.r.s_dynamic_1B.verts/1024.f,	RCache.stat.r.s_dynamic_1B.dips );
 	F.OutNext	("  dynamic_2B:  %3.1f/%d",	RCache.stat.r.s_dynamic_2B.verts/1024.f,	RCache.stat.r.s_dynamic_2B.dips );
-//morrazzzz: Then uncomment!
-//	F.OutNext	("  dynamic_3B:  %3.1f/%d",	RCache.stat.r.s_dynamic_3B.verts/1024.f,	RCache.stat.r.s_dynamic_3B.dips );
-//	F.OutNext	("  dynamic_4B:  %3.1f/%d",	RCache.stat.r.s_dynamic_4B.verts/1024.f,	RCache.stat.r.s_dynamic_4B.dips );
+	F.OutNext	("  dynamic_3B:  %3.1f/%d",	RCache.stat.r.s_dynamic_3B.verts/1024.f,	RCache.stat.r.s_dynamic_3B.dips );
+	F.OutNext	("  dynamic_4B:  %3.1f/%d",	RCache.stat.r.s_dynamic_4B.verts/1024.f,	RCache.stat.r.s_dynamic_4B.dips );
 	F.OutNext	("details:       %3.1f/%d",	RCache.stat.r.s_details.verts/1024.f,		RCache.stat.r.s_details.dips );
 }
 

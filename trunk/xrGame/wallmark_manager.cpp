@@ -152,7 +152,6 @@ void CWalmarkManager::Load (LPCSTR section)
 
 	int cnt		=_GetItemCount(wallmarks_name);
 	VERIFY		(cnt);
-	ref_shader	s;
 	for (int k=0; k<cnt; ++k)
         m_wallmarks->AppendMark(_GetItem(wallmarks_name, k, tmp));
 }

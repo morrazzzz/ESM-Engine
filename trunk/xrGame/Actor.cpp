@@ -163,7 +163,7 @@ CActor::CActor() : CEntityAlive(), current_ik_cam_shift(0)
 
 	m_fSprintFactor			= 4.f;
 
-	hFriendlyIndicator.create(FVF::F_LIT,RCache.Vertex.Buffer(),RCache.QuadIB);
+//Igor	hFriendlyIndicator.create(FVF::F_LIT,RCache.Vertex.Buffer(),RCache.QuadIB);
 
 	m_pUsableObject			= NULL;
 
@@ -211,7 +211,7 @@ CActor::~CActor()
 
 	xr_delete				(m_pSleepEffector);
 
-	hFriendlyIndicator.destroy();
+//Igor	hFriendlyIndicator.destroy();
 
 	xr_delete				(m_pPhysics_support);
 
