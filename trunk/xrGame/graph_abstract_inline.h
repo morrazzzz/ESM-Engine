@@ -44,7 +44,7 @@ IC	void CAbstractGraph::remove_vertex		(const _vertex_id_type &vertex_id)
 {
 	vertex_iterator				I = m_vertices.find(vertex_id);
 	VERIFY						(m_vertices.end() != I);
-	VERTICES::value_type		v = *I;
+	auto		v = *I;
 	delete_data					(v);
 	m_vertices.erase			(I);
 }
@@ -213,12 +213,12 @@ TEMPLATE_SPECIALIZATION
 IC	void CAbstractGraph::save			(IWriter &stream)
 {
 	stream.open_chunk			(0);
-	stream.w_u32				((u32)vertices().size());
+	stream.w_u32				((u32)CAbstractGraph::vertices().size());
 	stream.close_chunk			();
 	
 	stream.open_chunk			(1);
-	const_vertex_iterator		I = vertices().begin();
-	const_vertex_iterator		E = vertices().end();
+	auto		I = vertices().cbegin();
+	auto		E = vertices().cend();
 	for (int i=0; I != E; ++I, ++i) {
 		stream.open_chunk		(i);
 		{
@@ -236,8 +236,8 @@ IC	void CAbstractGraph::save			(IWriter &stream)
 
 	stream.open_chunk			(2);
 	{
-		const_vertex_iterator	i_const_vect = vertices().begin();
-		const_vertex_iterator	e_const_vect = vertices().end();
+		auto	i_const_vect = vertices().cbegin();
+		auto	e_const_vect = vertices().cend();
 		for ( ; i_const_vect != e_const_vect; ++i_const_vect) {
 			if ((*i_const_vect).second->edges().empty())
 				continue;
@@ -245,8 +245,8 @@ IC	void CAbstractGraph::save			(IWriter &stream)
 			save_data			((*i_const_vect).second->vertex_id(),stream);
 
 			stream.w_u32		((u32)(*i_const_vect).second->edges().size());
-			const_iterator		i = (*i_const_vect).second->edges().begin();
-			const_iterator		e = (*i_const_vect).second->edges().end();
+			auto		i = (*i_const_vect).second->edges().begin();
+			auto		e = (*i_const_vect).second->edges().end();
 			for ( ; i != e; ++i) {
 				save_data		((*i).vertex_id(),stream);
 				save_data		((*i).weight(),stream);
@@ -259,7 +259,7 @@ IC	void CAbstractGraph::save			(IWriter &stream)
 TEMPLATE_SPECIALIZATION
 IC	void CAbstractGraph::load			(IReader &stream)
 {
-	clear						();
+	clear();
 
 	u32							id;
 	_data_type					data;

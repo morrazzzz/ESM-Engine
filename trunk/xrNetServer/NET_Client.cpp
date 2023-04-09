@@ -771,7 +771,7 @@ HRESULT	IPureClient::net_Handler(u32 dwMessageType, PVOID pMessage)
 	default:
 		{
 #if	1
-			LPSTR	msg = "";	
+			const char*	msg = "";	
 			switch (dwMessageType)
 			{
 			case DPN_MSGID_ADD_PLAYER_TO_GROUP:			msg = "DPN_MSGID_ADD_PLAYER_TO_GROUP"; break;

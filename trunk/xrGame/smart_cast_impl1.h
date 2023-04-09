@@ -483,8 +483,8 @@ IC	T1	smart_cast(T2* p)
 {
 #ifdef PURE_DYNAMIC_CAST_COMPATIBILITY_CHECK
 	STATIC_CHECK				(object_type_traits::is_pointer<T1>::value,Invalid_target_type_for_Dynamic_Cast);
-	STATIC_CHECK				(object_type_traits::is_void<object_type_traits::remove_pointer<T1>::type>::value || std::is_polymorphic<object_type_traits::remove_pointer<T1>::type>::value, Invalid_target_type_for_Dynamic_Cast);
-	STATIC_CHECK				(std::is_polymorphic<T2>::value, Invalid_source_type_for_Dynamic_Cast);
+	static_assert				(object_type_traits::is_void<typename object_type_traits::remove_pointer<T1>::type>::value || std::is_polymorphic_v<typename object_type_traits::remove_pointer<T1>::type>, "Invalid_target_type_for_Dynamic_Cast");
+	static_assert				(std::is_polymorphic_v<T2>, "Invalid_source_type_for_Dynamic_Cast");
 #endif
 #ifdef SMART_CAST_STATS_ALL
 	add_smart_cast_stats_all	(typeid(T2*).name(),typeid(T1).name());
@@ -499,7 +499,7 @@ IC	T1	smart_cast(T2& p)
 {
 #ifdef PURE_DYNAMIC_CAST_COMPATIBILITY_CHECK
 	STATIC_CHECK				(object_type_traits::is_reference<T1>::value,Invalid_target_type_for_Dynamic_Cast);
-	STATIC_CHECK				(std::is_polymorphic<object_type_traits::remove_reference<T1>::type>::value, Invalid_target_type_for_Dynamic_Cast);
+	static_assert				(std::is_polymorphic_v<typename object_type_traits::remove_reference<T1>::type>, "Invalid_target_type_for_Dynamic_Cast");
 	STATIC_CHECK				(std::is_polymorphic<T2>::value, Invalid_source_type_for_Dynamic_Cast);
 #endif
 #ifdef SMART_CAST_STATS_ALL

@@ -47,7 +47,7 @@ inline float asin1(float x)
 //	printf("Domain error in asin1 %lf\n", x);
 	x = (x > 0.f) ? 1.0f : -1.0f;
     }
-    return angle_normalize(asin(x));
+    return angle_normalize(static_cast<float>(asin(static_cast<double>(x))));
 }
 
 //  Pi/2 to -Pi/2 (quadrants II,III)
@@ -58,7 +58,7 @@ inline float asin2(float x)
 //	printf("Domain error in asin2 %lf\n", x);
 	x = (x > 0) ? 1.0f : -1.0f;
     }
-    return angle_normalize(M_PI - asin(x));
+    return angle_normalize(static_cast<float>(M_PI - asin(static_cast<double>((x)))));
 }
 
 
@@ -70,7 +70,7 @@ inline float acos1(float x)
 //	printf("Domain error in acos1 %lf\n", x);
 	x = (x > 0) ? 1.0f : -1.0f;
     }
-    return angle_normalize(acos(x));
+    return angle_normalize(static_cast<float>(acos(static_cast<double>(x))));
 }
 
 //  Pi to 2Pi (quadrants III,IV)
@@ -81,7 +81,7 @@ inline float acos2(float x)
 //	printf("Domain error in acos2 %lf\n", x);
 	x = (x > 0) ? 1.0f : -1.0f;
     }
-    return angle_normalize(- acos(x));
+    return angle_normalize(static_cast<float>(- acos(static_cast<double>(x))));
 }
 
 

@@ -34,11 +34,11 @@ protected:
 					SSubGraph(EStyle s)
 		{
 			style = s;
-		};
+		}
 					void SetStyle (EStyle s)
 		{
 			style = s;
-		};
+		}
 	};
 	DEFINE_VECTOR	(SSubGraph,SubGraphVec,SubGraphVecIt);
 	SubGraphVec		subgraphs;

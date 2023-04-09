@@ -352,7 +352,7 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <AdditionalIncludeDirectories>$(ProjectDir)..\zlib\include</AdditionalIncludeDirectories>
-      <DisableSpecificWarnings>4996;</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4996;4302;4313;4312;4311</DisableSpecificWarnings>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <ResourceCompile>

@@ -509,6 +509,7 @@
 ../3rd party/libvorbis/include;
 ../3rd party/libtheora/include;../3rd party/DX9SDK/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4315</DisableSpecificWarnings>
+      <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>

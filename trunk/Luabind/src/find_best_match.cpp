@@ -22,13 +22,14 @@
 #include "stdafx.h"
 
 #include <luabind/luabind.hpp>
+#include <luabind/detail/find_best_match.hpp>
 
 using namespace luabind::detail;
 
 bool luabind::detail::find_best_match(
     lua_State* L
   , const overload_rep_base* start
-  , int num_overloads
+  , size_t num_overloads
   , size_t orep_size
   , bool& ambiguous
   , int& min_match
@@ -64,7 +65,7 @@ bool luabind::detail::find_best_match(
 void luabind::detail::find_exact_match(
     lua_State* L
   , const overload_rep_base* start
-  , int num_overloads
+  , size_t num_overloads
   , size_t orep_size
   , int cmp_match
   , int num_params

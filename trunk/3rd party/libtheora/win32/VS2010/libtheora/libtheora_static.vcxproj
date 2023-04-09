@@ -159,6 +159,8 @@
       </DebugInformationFormat>
       <CompileAs>CompileAsC</CompileAs>
       <DisableSpecificWarnings>4244;4267;4057;4100;4245;4324;4018;4113;4028;4101;4405;4456;4389;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <ConformanceMode>true</ConformanceMode>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>

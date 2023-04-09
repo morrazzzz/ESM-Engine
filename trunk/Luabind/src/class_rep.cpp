@@ -23,6 +23,7 @@
 
 #include <luabind/detail/stack_utils.hpp>
 #include <luabind/luabind.hpp>
+#include <luabind/detail/find_best_match.hpp>
 
 using namespace luabind::detail;
 
@@ -153,13 +154,8 @@ luabind::detail::class_rep::class_rep(lua_State* L, const char* name)
 	m_instance_metatable = r->lua_instance();
 }
 
-luabind::detail::class_rep::~class_rep()
-{
-}
-
 // leaves object on lua stack
-std::pair<void*,void*> 
-luabind::detail::class_rep::allocate(lua_State* L) const
+std::pair<void*, void*> luabind::detail::class_rep::allocate(lua_State* L) const
 {
 	const int overlap = sizeof(object_rep)&(m_holder_alignment-1);
 	const int padding = overlap==0?0:m_holder_alignment-overlap;
@@ -437,7 +433,7 @@ int luabind::detail::class_rep::constructor_dispatcher(lua_State* L)
 #endif
 
 		int num_params = lua_gettop(L) - 1;
-		found = find_best_match(L, &rep->overloads.front(), int(rep->overloads.size()), sizeof(construct_rep::overload_t), ambiguous, min_match, match_index, num_params);
+		found = find_best_match(L, &rep->overloads.front(), rep->overloads.size(), sizeof(construct_rep::overload_t), ambiguous, min_match, match_index, num_params);
 
 #ifdef LUABIND_NO_ERROR_CHECKING
 	}
@@ -585,7 +581,7 @@ int luabind::detail::class_rep::function_dispatcher(lua_State* L)
 #endif
 
 		int num_params = lua_gettop(L) /*- 1*/;
-		found = find_best_match(L, &rep->overloads().front(), int(rep->overloads().size()), sizeof(overload_rep), ambiguous, min_match, match_index, num_params);
+		found = find_best_match(L, &rep->overloads().front(), rep->overloads().size(), sizeof(overload_rep), ambiguous, min_match, match_index, num_params);
 
 #ifdef LUABIND_NO_ERROR_CHECKING
 
@@ -800,7 +796,7 @@ int luabind::detail::class_rep::super_callback(lua_State* L)
 #endif
 
 			int num_params = lua_gettop(L) - 1;
-			found = find_best_match(L, &rep->overloads.front(), int(rep->overloads.size()), sizeof(construct_rep::overload_t), ambiguous, min_match, match_index, num_params);
+			found = find_best_match(L, &rep->overloads.front(), rep->overloads.size(), sizeof(construct_rep::overload_t), ambiguous, min_match, match_index, num_params);
 
 #ifdef LUABIND_NO_ERROR_CHECKING
 

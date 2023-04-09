@@ -193,22 +193,15 @@ void CScriptEngine::script_register(lua_State *L)
 //			.def(tostring(self))
 			.def("start",&profile_timer_script::start)
 			.def("stop",&profile_timer_script::stop)
-			.def("time",&profile_timer_script::time)
-	];
+			.def("time",&profile_timer_script::time),
+			//morrazzzz: Приколы с удалением log из движка, это же полный бред!
+			def("log", &LuaLog), //morrazzzz: Решил вкинуть это опять в движок, не понимаю зачем в OGSR его удалили
+			def("prefetch", [](const char* file_name) { ai().script_engine().process_file(file_name); }), def("editor", [] { return false; }),
 
-	function	(L,	"log",							LuaLog);
-	function	(L,	"error_log",					ErrorLog);
-	function	(L,	"flush",						FlushLogs);
-	function	(L,	"prefetch",						prefetch_module);
-	function	(L,	"verify_if_thread_is_running",	verify_if_thread_is_running);
-	function	(L,	"editor",						editor);
-	function	(L,	"bit_and",						bit_and);
-	function	(L,	"bit_or",						bit_or);
-	function	(L,	"bit_xor",						bit_xor);
-	function	(L,	"bit_not",						bit_not);
-	function	(L, "user_name",					user_name);
-	function	(L, "time_global",					script_time_global);
-#ifdef XRGAME_EXPORTS
-	function	(L,	"device",						get_device);
-#endif
+			def("bit_and", [](const int i, const int j) { return i & j; }), def("bit_or", [](const int i, const int j) { return i | j; }),
+			def("bit_xor", [](const int i, const int j) { return i ^ j; }), def("bit_not", [](const int i) { return ~i; }),
+
+			def("user_name", [] { return Core.UserName; }), def("time_global", [] { return Device.dwTimeGlobal; }),
+
+			def("device", [] { return &Device; })];
 }

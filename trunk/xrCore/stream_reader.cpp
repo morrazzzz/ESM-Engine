@@ -83,15 +83,15 @@ void CStreamReader::r						(void *_buffer, u32 buffer_size)
 	VERIFY						(m_current_pointer >= m_start_pointer);
 	VERIFY						(u32(m_current_pointer - m_start_pointer) <= m_current_window_size);
 
-	int							offset_inside_window = int(m_current_pointer - m_start_pointer);
+	int	offset_inside_window = static_cast<int>(m_current_pointer - m_start_pointer);
 	if (offset_inside_window + buffer_size < m_current_window_size) {
 		Memory.mem_copy			(_buffer,m_current_pointer,buffer_size);
 		m_current_pointer		+= buffer_size;
 		return;
 	}
 
-	u8							*buffer = (u8*)_buffer;
-	u32							elapsed_in_window = m_current_window_size - (m_current_pointer - m_start_pointer);
+	u8							*buffer = static_cast<u8*>(_buffer);
+	u32							elapsed_in_window = m_current_window_size - static_cast<u32>(m_current_pointer - m_start_pointer);
 
 	do {
 		Memory.mem_copy			(buffer,m_current_pointer,elapsed_in_window);

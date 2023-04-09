@@ -151,6 +151,8 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CallingConvention>Cdecl</CallingConvention>
       <DisableSpecificWarnings>4244;4996;</DisableSpecificWarnings>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Lib>
       <OutputFile>$(xrLibDir)$(TargetName).lib</OutputFile>

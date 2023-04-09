@@ -157,6 +157,8 @@
       <CompileAs>CompileAsC</CompileAs>
       <DisableSpecificWarnings>4244;4456;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <CallingConvention>Cdecl</CallingConvention>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <ConformanceMode>true</ConformanceMode>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>

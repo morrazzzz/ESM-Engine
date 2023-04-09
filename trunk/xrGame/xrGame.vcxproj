@@ -486,6 +486,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <Optimization>Full</Optimization>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
+      <ConformanceMode>false</ConformanceMode>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>

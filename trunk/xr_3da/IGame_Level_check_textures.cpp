@@ -3,8 +3,7 @@
 
 void IGame_Level::LL_CheckTextures()
 {
-//	u32	m_base = 0, c_base = 0, m_lmaps = 0, c_lmaps = 0;
-	u32	m_base, c_base, m_lmaps, c_lmaps;
+	u32	m_base = 0, c_base = 0, m_lmaps = 0, c_lmaps = 0;
 	Device.m_pRender->ResourcesStoreNecessaryTextures();
 
 	Msg	("* t-report - base: %d, %d K",	c_base,		m_base/1024);

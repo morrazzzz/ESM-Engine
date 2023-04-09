@@ -81,7 +81,7 @@ BOOL CObjectSpace::_RayTest	( const Fvector &start, const Fvector &dir, float ra
 			}
 		} else {
 			xrc.ray_query		(&Static,start,dir,range);
-			return xrc.r_count	();
+			return static_cast<bool>(xrc.r_count());
 		}
 	}
 	return FALSE;

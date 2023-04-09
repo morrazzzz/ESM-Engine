@@ -80,6 +80,8 @@ IC void set_value(T& val, const T& _val)
 	val = _val;
 };
 
+#pragma pack(2)
+
 template <class T>
 class CustomValue: public PropValue
 {
@@ -280,7 +282,12 @@ public:
     TOnTestEqual		OnTestEqual;
     TOnDrawCanvasEvent	OnDrawCanvasEvent;
 public:
-						CanvasValue		(const shared_str& val, int h):OnDrawCanvasEvent(0),OnTestEqual(0),height(h){value=val;}
+						CanvasValue		(const shared_str& val, int h):height(h)
+                        {
+                            this->OnDrawCanvasEvent = 0;
+                            this->OnTestEqual = 0;
+                            value=val;
+                        }
     virtual xr_string	GetDrawText		(TOnDrawTextEvent){return value.c_str()?value.c_str():"";}
     virtual	void		ResetValue		(){;}
     virtual	bool		Equal			(PropValue* val)
@@ -420,7 +427,11 @@ public:
 // utils
     void				AppendChooseItem	(LPCSTR name, LPCSTR hint){VERIFY(m_Items); m_Items->push_back(SChooseItem(name,hint));}
 public:
-						ChooseValue			(shared_str* val, u32 cid, LPCSTR path, void* param, u32 sub_item_count, u32 choose_flags):RTextValue(val),m_ChooseID(cid),m_StartPath(path),subitem(sub_item_count),m_Items(0),m_FillParam(param),OnChooseFillEvent(0),OnDrawThumbnailEvent(0),m_ChooseFlags(choose_flags){}
+						ChooseValue			(shared_str* val, u32 cid, LPCSTR path, void* param, u32 sub_item_count, u32 choose_flags):RTextValue(val),m_ChooseID(cid),m_StartPath(path),subitem(sub_item_count),m_Items(0),m_FillParam(param),m_ChooseFlags(choose_flags)
+                        {
+                            this->OnChooseFillEvent = 0;
+                            this->OnDrawThumbnailEvent = 0;
+                        }
 };
 
 typedef CustomValue<BOOL>		BOOLValue;

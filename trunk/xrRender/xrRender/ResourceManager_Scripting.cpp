@@ -174,10 +174,10 @@ void	CResourceManager::LS_Load			()
 		luabind::set_error_callback		(LuaError);
 #endif
 
-	function		(LSVM, "log",	LuaLog);
+//	std::function		(LSVM, "log",	LuaLog);
 
 	module			(LSVM)
-	[
+	[def("log", &LuaLog),
 		class_<adopt_sampler>("_sampler")
 			.def(								constructor<const adopt_sampler&>())
 			 .def("texture", &adopt_sampler::_texture, return_reference_to<1>())

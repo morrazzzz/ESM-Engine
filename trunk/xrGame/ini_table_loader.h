@@ -113,15 +113,15 @@ typename CSIni_Table::ITEM_TABLE& CSIni_Table::table	()
 
 	for (CInifile::SectCIt i = table_ini.Data.begin(); table_ini.Data.end() != i; ++i)
 	{
-		T_INI_LOADER::index_type cur_index = T_INI_LOADER::IdToIndex((*i).first, type_max(T_INI_LOADER::index_type));
+		auto cur_index = T_INI_LOADER::IdToIndex((*i).first, type_max(typename T_INI_LOADER::index_type));
 
-		if(type_max(T_INI_LOADER::index_type) == cur_index)
+		if(type_max(typename T_INI_LOADER::index_type) == cur_index)
 			Debug.fatal(DEBUG_INFO,"wrong community %s in section [%s]", (*i).first, table_sect);
 
 		(*m_pTable)[cur_index].resize(cur_table_width);
 		for(std::size_t j=0; j<cur_table_width; j++)
 		{
-			(*m_pTable)[cur_index][j] = convert<typename T_ITEM>(_GetItem(*(*i).second,(int)j,buffer));
+			(*m_pTable)[cur_index][j] = convert<T_ITEM>(_GetItem(*(*i).second,(int)j,buffer));
 		}
 	}
 

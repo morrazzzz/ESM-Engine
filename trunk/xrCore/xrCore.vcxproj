@@ -225,6 +225,7 @@
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
       <AdditionalIncludeDirectories>$(SolutionDir);../3rd party/DX9SDK/Include;     %(AdditionalIncludeDirectories)
       </AdditionalIncludeDirectories>
+      <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
       <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>

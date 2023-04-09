@@ -130,8 +130,8 @@ public:
 	u32		size				() const							{ return (u32)inherited::size();} 
 
 	void	clear_and_free		()									{ inherited::clear();			}
-	void	clear_not_free		()									{ erase(begin(),end());			}
-	void	clear_and_reserve	()									{ if ( capacity() <= (size()+size()/4) ) clear_not_free(); else { u32 old=size(); clear_and_free(); reserve(old); } }
+	void	clear_not_free		()									{ inherited::erase(inherited::begin(),inherited::end());			}
+	void	clear_and_reserve	()									{ if (inherited:: capacity() <= (size()+size()/4) ) clear_not_free(); else { u32 old=size(); clear_and_free(); inherited::reserve(old); } }
 
 #ifdef M_DONTDEFERCLEAR_EXT
 	void	clear				()									{ clear_and_free	();			}
@@ -139,8 +139,8 @@ public:
 	void	clear				()									{ clear_not_free	();			}
 #endif
 
-	const_reference operator[]	(size_type _Pos) const				{ {VERIFY(_Pos<size());} return (*(begin() + _Pos)); }
-	reference operator[]		(size_type _Pos)					{ {VERIFY(_Pos<size());} return (*(begin() + _Pos)); }
+	typename inherited::const_reference operator[]	(typename inherited::size_type _Pos) const				{ {VERIFY(_Pos<size());} return (*(inherited::begin() + _Pos)); }
+	typename inherited::reference operator[]		(typename inherited::size_type _Pos)					{ {VERIFY(_Pos<size());} return (*(inherited::begin() + _Pos)); }
 };
 
 // vector<bool>
@@ -161,7 +161,7 @@ private:
 
 public: 
 	u32		size				() const							{ return (u32)inherited::size();} 
-	void	clear				()									{ erase(begin(),end());			} 
+	void	clear				()									{ inherited::erase(inherited::begin(),inherited::end());			} 
 };
 
 // deque
