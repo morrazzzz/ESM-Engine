@@ -27,17 +27,10 @@ static u32	init_counter	= 0;
 void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs, LPCSTR fs_fname)
 {
 	strcpy_s					(ApplicationName,_ApplicationName);
-	if (0==init_counter) {
-#ifdef XRCORE_STATIC	
-		_clear87	();
-		_control87	( _PC_53,   MCW_PC );
-		_control87	( _RC_CHOP, MCW_RC );
-		_control87	( _RC_NEAR, MCW_RC );
-		_control87	( _MCW_EM,  MCW_EM );
-#endif
+	if (!init_counter) {
 		// Init COM so we can use CoCreateInstance
 //		HRESULT co_res = 
-			CoInitializeEx (NULL, COINIT_MULTITHREADED);
+			CoInitializeEx (nullptr, COINIT_MULTITHREADED);
 
 		strcpy_s			(Params,sizeof(Params),GetCommandLine());
 		_strlwr_s			(Params,sizeof(Params));
@@ -76,55 +69,51 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
 		InitLog				();
 		_initialize_cpu		();
 
-//		Debug._initialize	();
-
 		rtc_initialize		();
 
 		xr_FS				= xr_new<CLocatorAPI>	();
 
 		xr_EFS				= xr_new<EFS_Utils>		();
-//.		R_ASSERT			(co_res==S_OK);
 	}
-	if (init_fs){
+	if (init_fs)
+	{
 		u32 flags			= 0;
-		if (0!=strstr(Params,"-build"))	 flags |= CLocatorAPI::flBuildCopy;
-		if (0!=strstr(Params,"-ebuild")) flags |= CLocatorAPI::flBuildCopy|CLocatorAPI::flEBuildCopy;
+		if (strstr(Params,"-build"))	 
+			flags |= CLocatorAPI::flBuildCopy;
+		if (strstr(Params,"-ebuild")) 
+			flags |= CLocatorAPI::flBuildCopy|CLocatorAPI::flEBuildCopy;
+
 #ifdef DEBUG
 		if (strstr(Params,"-cache"))  flags |= CLocatorAPI::flCacheFiles;
 		else flags &= ~CLocatorAPI::flCacheFiles;
 #endif // DEBUG
-#ifdef _EDITOR // for EDITORS - no cache
-		flags 				&=~ CLocatorAPI::flCacheFiles;
-#endif // _EDITOR
+
 		flags |= CLocatorAPI::flScanAppRoot;
 
-#ifndef	_EDITOR
-	#ifndef ELocatorAPIH
-		if (0!=strstr(Params,"-file_activity"))	 flags |= CLocatorAPI::flDumpFileActivity;
-	#endif
-#endif
+		if (strstr(Params,"-file_activity"))	 
+			flags |= CLocatorAPI::flDumpFileActivity;
+
 		FS._initialize		(flags,0,fs_fname);
-		Msg					("'%s' build %d, %s\n","xrCore",build_id, build_date);
+		     Msg("'%s' build %d, %s\n","xrCore",build_id, build_date);
+			 Msg("Engine Discord: https://discord.gg/D4CK5Vu6t3");
 		EFS._initialize		();
+
 #ifdef DEBUG
-    #ifndef	_EDITOR
 		Msg					("CRT heap 0x%08x",_get_heap_handle());
 		Msg					("Process heap 0x%08x",GetProcessHeap());
-    #endif
 #endif // DEBUG
+
 	}
 	SetLogCB				(cb);
 	init_counter++;
 }
 
-#ifndef	_EDITOR
 #include "compression_ppmd_stream.h"
 extern compression::ppmd::stream	*trained_model;
-#endif
 void xrCore::_destroy		()
 {
 	--init_counter;
-	if (0==init_counter){
+	if (!init_counter){
 		FS._destroy			();
 		EFS._destroy		();
 		xr_delete			(xr_FS);

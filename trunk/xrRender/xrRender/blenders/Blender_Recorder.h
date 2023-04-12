@@ -88,6 +88,7 @@ public:
 	void				i_Filter_Mip		(u32 s, u32		f);
 	void				i_Filter_Mag		(u32 s, u32		f);
 	void				i_Filter			(u32 s, u32 _min, u32 _mip, u32 _mag);
+	void				i_BorderColor(u32 s, u32	color);
 
 	// R1/R2-compiler	[programmable]		- templates
 	void				r_Pass				(LPCSTR vs,		LPCSTR ps,		bool bFog,	BOOL	bZtest=TRUE,				BOOL	bZwrite=TRUE,			BOOL	bABlend=FALSE,			D3DBLEND	abSRC=D3DBLEND_ONE,		D3DBLEND abDST=D3DBLEND_ZERO,	BOOL aTest=FALSE,	u32 aRef=0);
@@ -99,6 +100,7 @@ public:
 	void				r_Sampler_rtf		(LPCSTR name,	LPCSTR texture,		bool b_ps1x_ProjectiveDivide=false);
 	void				r_Sampler_clf		(LPCSTR name,	LPCSTR texture,		bool b_ps1x_ProjectiveDivide=false);
 	void				r_Sampler_clw		(LPCSTR name,	LPCSTR texture,		bool b_ps1x_ProjectiveDivide=false);
+	void				r_ColorWriteEnable(bool cR = true, bool cG = true, bool cB = true, bool cA = true);
 	void				r_End				();
 
 	CBlender_Compile	();

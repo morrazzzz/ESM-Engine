@@ -63,6 +63,7 @@ public:
 		u32		noshadows			: 1;
 		u32		Tshadows			: 1;						// transluent shadows
 		u32		disasm				: 1;
+		u32		advancedpp          : 1;	//	advanced post process (DOF, SSAO, volumetrics, etc.)
 
 		u32		forcegloss			: 1;
 		u32		forceskinw			: 1;
@@ -198,18 +199,15 @@ public:
 	virtual void					level_Unload				();
 
 	virtual IDirect3DBaseTexture9*	texture_load			(LPCSTR	fname, u32& msize);
-	virtual HRESULT					shader_compile			(
-		LPCSTR							name,
-		LPCSTR                          pSrcData,
-		UINT                            SrcDataLen,
-		void*							pDefines,
-		void*							pInclude,
-		LPCSTR                          pFunctionName,
-		LPCSTR                          pTarget,
-		DWORD                           Flags,
-		void*							ppShader,
-		void*							ppErrorMsgs,
-		void*							ppConstantTable);
+	virtual HRESULT shader_compile(
+		LPCSTR name,
+		DWORD const* pSrcData,
+		UINT SrcDataLen,
+		LPCSTR pFunctionName,
+		LPCSTR pTarget,
+		DWORD Flags,
+		void*& result
+	);
 
 	// Information
 	virtual void					Statistics					(CGameFont* F);
@@ -279,6 +277,9 @@ public:
 	// Constructor/destructor/loader
 	CRender							();
 	virtual ~CRender				();
+
+private:
+		FS_FileSet m_file_set;
 };
 
 extern CRender						RImplementation;

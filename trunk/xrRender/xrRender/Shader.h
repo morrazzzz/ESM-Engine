@@ -80,7 +80,7 @@ struct	SPass			: public xr_resource_flagged									{
 #endif
 
 						~SPass			();
-	BOOL				equal			(ref_state& _state, ref_ps& _ps, ref_vs& _vs, ref_ctable& _ctable, ref_texture_list& _T, ref_matrix_list& _M, ref_constant_list& _C);
+	BOOL equal(const SPass& other);
 };
 typedef	resptr_core<SPass,resptr_base<SPass> >												ref_pass;
 

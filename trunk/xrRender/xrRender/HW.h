@@ -2,11 +2,10 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_HW_H__0E25CF4A_FFEC_11D3_B4E3_4854E82A090D__INCLUDED_)
-#define AFX_HW_H__0E25CF4A_FFEC_11D3_B4E3_4854E82A090D__INCLUDED_
 #pragma once
 
 #include "hwcaps.h"
+#include "stats_manager.h"
 
 class CHW
 {
@@ -24,13 +23,15 @@ public:
 	D3DDEVTYPE				DevT;
 	D3DPRESENT_PARAMETERS	DevPP;
 
+	stats_manager			stats_manager;
+
 	CHW()
 	{
-    	hD3D9		= NULL;
-		pD3D		= NULL;
-		pDevice		= NULL;
-		pBaseRT		= NULL;
-		pBaseZB		= NULL;
+    	hD3D9		= nullptr;
+		pD3D		= nullptr;
+		pDevice		= nullptr;
+		pBaseRT		= nullptr;
+		pBaseZB		= nullptr;
 	};
 
 	void					CreateD3D				();
@@ -58,5 +59,3 @@ private:
 };
 
 extern ECORE_API CHW HW;
-
-#endif // !defined(AFX_HW_H__0E25CF4A_FFEC_11D3_B4E3_4854E82A090D__INCLUDED_)

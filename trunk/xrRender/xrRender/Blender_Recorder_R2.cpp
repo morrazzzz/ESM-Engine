@@ -1,7 +1,10 @@
 #include "stdafx.h"
+#pragma hdrstop
+
 #include "ResourceManager.h"
-#include "..\xrRender\xrRender\blenders\Blender_Recorder.h"
-#include "..\xrRender\xrRender\blenders\Blender.h"
+#include "blenders\Blender_Recorder.h"
+#include "blenders\Blender.h"
+
 #include "dxRenderDeviceRender.h"
 
 void fix_texture_name(LPSTR fn);
@@ -25,9 +28,17 @@ void	CBlender_Compile::r_Pass		(LPCSTR _vs, LPCSTR _ps, bool bFog, BOOL bZtest, 
 	SVS* vs					= DEV->_CreateVS			(_vs);
 	dest.ps					= ps;
 	dest.vs					= vs;
+#if defined(USE_DX10) || defined(USE_DX11)
+	SGS* gs					= DEV->_CreateGS			("null");
+	dest.gs					= gs;
+#	ifdef USE_DX11
+	dest.hs = DEV->_CreateHS("null");
+	dest.ds = DEV->_CreateDS("null");
+	dest.cs = DEV->_CreateCS("null");
+#	endif
+#endif	//	USE_DX10
 	ctable.merge			(&ps->constants);
 	ctable.merge			(&vs->constants);
-	SetMapping				();
 
 	// Last Stage - disable
 	if (0==stricmp(_ps,"null"))	{
@@ -43,17 +54,33 @@ void	CBlender_Compile::r_Constant	(LPCSTR name, R_constant_setup* s)
 	if (C)					C->handler	= s;
 }
 
+void CBlender_Compile::r_ColorWriteEnable( bool cR, bool cG, bool cB, bool cA)
+{
+	BYTE	Mask = 0;
+	Mask |= cR ? D3DCOLORWRITEENABLE_RED : 0;
+	Mask |= cG ? D3DCOLORWRITEENABLE_GREEN : 0;
+	Mask |= cB ? D3DCOLORWRITEENABLE_BLUE : 0;
+	Mask |= cA ? D3DCOLORWRITEENABLE_ALPHA : 0;
+
+	RS.SetRS( D3DRS_COLORWRITEENABLE, Mask);
+	RS.SetRS( D3DRS_COLORWRITEENABLE1, Mask);
+	RS.SetRS( D3DRS_COLORWRITEENABLE2, Mask);
+	RS.SetRS( D3DRS_COLORWRITEENABLE3, Mask);
+}
+
+#if !defined(USE_DX10) && !defined(USE_DX11)
 u32		CBlender_Compile::i_Sampler		(LPCSTR _name)
 {
 	//
 	string256				name;
-	strcpy_s					(name,_name);
+	xr_strcpy					(name,_name);
 //. andy	if (strext(name)) *strext(name)=0;
 	fix_texture_name		(name);
 
 	// Find index
 	ref_constant C			= ctable.get(name);
 	if (!C)					return	u32(-1);
+
 	R_ASSERT				(C->type == RC_sampler);
 	u32 stage				= C->samp.index;
 
@@ -75,6 +102,10 @@ void	CBlender_Compile::i_Address		(u32 s, u32	address)
 	RS.SetSAMP			(s,D3DSAMP_ADDRESSU,	address);
 	RS.SetSAMP			(s,D3DSAMP_ADDRESSV,	address);
 	RS.SetSAMP			(s,D3DSAMP_ADDRESSW,	address);
+}
+void	CBlender_Compile::i_BorderColor	(u32 s, u32	color)
+{
+	RS.SetSAMP			(s,D3DSAMP_BORDERCOLOR,	color);
 }
 void	CBlender_Compile::i_Filter_Min		(u32 s, u32	f)
 {
@@ -103,6 +134,13 @@ u32		CBlender_Compile::r_Sampler		(LPCSTR _name, LPCSTR texture, bool b_ps1x_Pro
 
 		// force ANISO-TF for "s_base"
 		if ((0==xr_strcmp(_name,"s_base")) && (fmin==D3DTEXF_LINEAR))	{ fmin = D3DTEXF_ANISOTROPIC; fmag=D3DTEXF_ANISOTROPIC; }
+		
+		if ( 0==xr_strcmp(_name,"s_base_hud") )
+		{
+			fmin	= D3DTEXF_GAUSSIANQUAD; //D3DTEXF_PYRAMIDALQUAD; //D3DTEXF_ANISOTROPIC; //D3DTEXF_LINEAR; //D3DTEXF_POINT; //D3DTEXF_NONE
+			fmag	= D3DTEXF_GAUSSIANQUAD; //D3DTEXF_PYRAMIDALQUAD; //D3DTEXF_ANISOTROPIC; //D3DTEXF_LINEAR; //D3DTEXF_POINT; //D3DTEXF_NONE; 
+		}
+
 		if ((0==xr_strcmp(_name,"s_detail")) && (fmin==D3DTEXF_LINEAR))	{ fmin = D3DTEXF_ANISOTROPIC; fmag=D3DTEXF_ANISOTROPIC; }
 
 		// Sampler states
@@ -113,7 +151,7 @@ u32		CBlender_Compile::r_Sampler		(LPCSTR _name, LPCSTR texture, bool b_ps1x_Pro
 	}
 	return	dwStage;
 }
-
+	
 void	CBlender_Compile::r_Sampler_rtf	(LPCSTR name, LPCSTR texture, bool b_ps1x_ProjectiveDivide)
 {
 	r_Sampler	(name,texture,b_ps1x_ProjectiveDivide,D3DTADDRESS_CLAMP,D3DTEXF_POINT,D3DTEXF_NONE,D3DTEXF_POINT);
@@ -127,17 +165,17 @@ void	CBlender_Compile::r_Sampler_clw	(LPCSTR name, LPCSTR texture, bool b_ps1x_P
 	u32 s			= r_Sampler	(name,texture,b_ps1x_ProjectiveDivide,D3DTADDRESS_CLAMP,D3DTEXF_LINEAR,D3DTEXF_NONE,D3DTEXF_LINEAR);
 	if (u32(-1)!=s)	RS.SetSAMP	(s,D3DSAMP_ADDRESSW, D3DTADDRESS_WRAP);
 }
+
 void	CBlender_Compile::r_End			()
 {
+	SetMapping				();
 	dest.constants			= DEV->_CreateConstantTable(ctable);
 	dest.state				= DEV->_CreateState		(RS.GetContainer());
 	dest.T					= DEV->_CreateTextureList	(passTextures);
 	dest.C					= 0;
 #ifdef _EDITOR
 	dest.M					= 0;
-	SH->passes.push_back	(DEV->_CreatePass(dest.state,dest.ps,dest.vs,dest.constants,dest.T,dest.M,dest.C));
-#else
-	ref_matrix_list			temp(0);
-	SH->passes.push_back	(DEV->_CreatePass(dest.state,dest.ps,dest.vs,dest.constants,dest.T,temp,dest.C));
 #endif
+	SH->passes.push_back(DEV->_CreatePass(dest));
 }
+#endif	//	USE_DX10

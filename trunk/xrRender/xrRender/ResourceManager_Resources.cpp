@@ -11,8 +11,8 @@
 
 #include "ResourceManager.h"
 #include "tss.h"
-#include "..\xrRender\xrRender\blenders\blender.h"
-#include "..\xrRender\xrRender\blenders\blender_recorder.h"
+#include "blenders\blender.h"
+#include "blenders\blender_recorder.h"
 
 void fix_texture_name(LPSTR fn);
 
@@ -25,40 +25,6 @@ BOOL	reclaim		(xr_vector<T*>& vec, const T* ptr)
 		if (*it == ptr)	{ vec.erase	(it); return TRUE; }
 		return FALSE;
 }
-
-//--------------------------------------------------------------------------------------------------------------
-class	includer				: public ID3DXInclude
-{
-public:
-	HRESULT __stdcall	Open	(D3DXINCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID *ppData, UINT *pBytes)
-	{
-		string_path				pname;
-		strconcat				(sizeof(pname),pname,::Render->getShaderPath(),pFileName);
-		IReader*		R		= FS.r_open	("$game_shaders$",pname);
-		if (0==R)				{
-			// possibly in shared directory or somewhere else - open directly
-			R					= FS.r_open	("$game_shaders$",pFileName);
-			if (0==R)			return			E_FAIL;
-		}
-
-		// duplicate and zero-terminate
-		u32				size	= R->length();
-		u8*				data	= xr_alloc<u8>	(size + 1);
-		CopyMemory			(data,R->pointer(),size);
-		data[size]				= 0;
-		FS.r_close				(R);
-
-		*ppData					= data;
-		*pBytes					= size;
-		return	D3D_OK;
-	}
-	HRESULT __stdcall	Close	(LPCVOID	pData)
-	{
-		xr_free	(pData);
-		return	D3D_OK;
-	}
-};
-
 //--------------------------------------------------------------------------------------------------------------
 SState*		CResourceManager::_CreateState		(SimulatorStates& state_code)
 {
@@ -85,25 +51,25 @@ void		CResourceManager::_DeleteState		(const SState* state)
 }
 
 //--------------------------------------------------------------------------------------------------------------
-SPass*		CResourceManager::_CreatePass			(ref_state& _state, ref_ps& _ps, ref_vs& _vs, ref_ctable& _ctable, ref_texture_list& _T, ref_matrix_list& _M, ref_constant_list& _C)
+SPass* CResourceManager::_CreatePass(const SPass& proto)
 {
-	for (u32 it=0; it<v_passes.size(); it++)
-		if (v_passes[it]->equal(_state,_ps,_vs,_ctable,_T,_M,_C))
+	for (u32 it = 0; it < v_passes.size(); it++)
+		if (v_passes[it]->equal(proto))
 			return v_passes[it];
 
-	SPass*	P					=	xr_new<SPass>();
-	P->dwFlags					|=	xr_resource_flagged::RF_REGISTERED;
-	P->state					=	_state;
-	P->ps						=	_ps;
-	P->vs						=	_vs;
-	P->constants				=	_ctable;
-	P->T						=	_T;
+	SPass* P = xr_new<SPass>();
+	P->dwFlags |= xr_resource_flagged::RF_REGISTERED;
+	P->state = proto.state;
+	P->ps = proto.ps;
+	P->vs = proto.vs;
+	P->constants = proto.constants;
+	P->T = proto.T;
 #ifdef _EDITOR
-	P->M						=	_M;
+	P->M = proto.M;
 #endif
-	P->C						=	_C;
+	P->C = proto.C;
 
-	v_passes.push_back			(P);
+	v_passes.push_back(P);
 	return v_passes.back();
 }
 
@@ -154,12 +120,12 @@ void		CResourceManager::_DeleteDecl		(const SDeclaration* dcl)
 SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 {
 	string_path			name;
-	strcpy_s				(name,_name);
-	if (0 == ::Render->m_skinning)	strcat(name,"_0");
-	if (1 == ::Render->m_skinning)	strcat(name,"_1");
-	if (2 == ::Render->m_skinning)	strcat(name,"_2");
-	if (3 == ::Render->m_skinning)	strcat(name, "_3");
-	if (4 == ::Render->m_skinning)	strcat(name, "_4");
+	xr_strcpy(name, _name);
+	if (0 == ::Render->m_skinning)	xr_strcat(name, "_0");
+	if (1 == ::Render->m_skinning)	xr_strcat(name, "_1");
+	if (2 == ::Render->m_skinning)	xr_strcat(name, "_2");
+	if (3 == ::Render->m_skinning)	xr_strcat(name, "_3");
+	if (4 == ::Render->m_skinning)	xr_strcat(name, "_4");
 	LPSTR N				= LPSTR		(name);
 	map_VS::iterator I	= m_vs.find	(N);
 	if (I!=m_vs.end())	return I->second;
@@ -173,12 +139,7 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 			return _vs;
 		}
 
-		includer					Includer;
-		LPD3DXBUFFER				pShaderBuf	= NULL;
-		LPD3DXBUFFER				pErrorBuf	= NULL;
-		LPD3DXSHADER_CONSTANTTABLE	pConstants	= NULL;
-		HRESULT						_hr			= S_OK;
-		string_path					cname;
+		string_path cname;
 		strconcat					(sizeof(cname),cname,::Render->getShaderPath(),_name,".vs");
 		FS.update_path				(cname,	"$game_shaders$", cname);
 //		LPCSTR						target		= NULL;
@@ -187,52 +148,37 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 		R_ASSERT3					(fs, "shader file doesnt exist", cname);
 
 		// Select target
-		LPCSTR						c_target	= "vs_2_0";
-		LPCSTR						c_entry		= "main";
-		/*if (HW.Caps.geometry.dwVersion>=CAP_VERSION(3,0))			target="vs_3_0";
-		else*/ if (HW.Caps.geometry_major>=2)						c_target="vs_2_0";
-		else 														c_target="vs_1_1";
-
-		LPSTR pfs					= xr_alloc<char>(fs->length() + 1);
-		strncpy						(pfs, (LPCSTR)fs->pointer(), fs->length());
-		pfs							[fs->length()] = 0;
-
-		if (strstr(pfs, "main_vs_1_1"))			{ c_target = "vs_1_1"; c_entry = "main_vs_1_1";	}
-		if (strstr(pfs, "main_vs_2_0"))			{ c_target = "vs_2_0"; c_entry = "main_vs_2_0";	}
+		LPCSTR c_target = "vs_2_0";
+		LPCSTR c_entry = "main";
+		if (HW.Caps.geometry_major >= 2)
+			c_target = "vs_2_0";
+		else
+			c_target = "vs_1_1";
 		
-		xr_free(pfs);
+		// duplicate and zero-terminate
+		IReader* file = FS.r_open(cname);
+		R_ASSERT2(file, cname);
+		size_t const size = file->length();
+		char* const data = (LPSTR)_alloca(size + 1);
+		CopyMemory(data, file->pointer(), size);
+		data[size] = 0;
+		FS.r_close(file);
 
-		// vertex
-		R_ASSERT2					(fs,cname);
-		_hr = ::Render->shader_compile(name,LPCSTR(fs->pointer()),fs->length(), NULL, &Includer, c_entry, c_target, D3DXSHADER_DEBUG | D3DXSHADER_PACKMATRIX_ROWMAJOR /*| D3DXSHADER_PREFER_FLOW_CONTROL*/, &pShaderBuf, &pErrorBuf, NULL);
-//		_hr = D3DXCompileShader		(LPCSTR(fs->pointer()),fs->length(), NULL, &Includer, "main", target, D3DXSHADER_DEBUG | D3DXSHADER_PACKMATRIX_ROWMAJOR, &pShaderBuf, &pErrorBuf, NULL);
-		FS.r_close					(fs);
+		if (strstr(data, "main_vs_1_1")) { c_target = "vs_1_1"; c_entry = "main_vs_1_1"; }
+		if (strstr(data, "main_vs_2_0")) { c_target = "vs_2_0"; c_entry = "main_vs_2_0"; }
 
-		if (SUCCEEDED(_hr))
-		{
-			if (pShaderBuf)
-			{
-				_hr = HW.pDevice->CreateVertexShader	((DWORD*)pShaderBuf->GetBufferPointer(), &_vs->vs);
-				if (SUCCEEDED(_hr))	{
-					LPCVOID			data		= NULL;
-					_hr	= D3DXFindShaderComment	((DWORD*)pShaderBuf->GetBufferPointer(),MAKEFOURCC('C','T','A','B'),&data,NULL);
-					if (SUCCEEDED(_hr) && data)
-					{
-						pConstants				= LPD3DXSHADER_CONSTANTTABLE(data);
-						_vs->constants.parse	(pConstants,0x2);
-					} else	_hr = E_FAIL;
-				}
-			}
-			else	_hr = E_FAIL;
-		} else {
-			VERIFY	(pErrorBuf);
-			Log		("! error: ",(LPCSTR)pErrorBuf->GetBufferPointer());
+		Msg("compiling shader %s", name);
+		HRESULT const _hr = ::Render->shader_compile(name, (DWORD const*)data, (UINT)size, c_entry, c_target, D3DXSHADER_DEBUG | D3DXSHADER_PACKMATRIX_ROWMAJOR, (void*&)_vs);
+
+		if (FAILED(_hr)) {
+			FlushLog();
 		}
-		_RELEASE	(pShaderBuf);
-		_RELEASE	(pErrorBuf);
-		pConstants	= NULL;
-		R_CHK		(_hr);
-		return		_vs;
+		CHECK_OR_EXIT(
+			!FAILED(_hr),
+			make_string("Your video card doesn't meet game requirements.\n\nTry to lower game settings.")
+		);
+
+		return _vs;
 	}
 }
 
@@ -265,19 +211,19 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR name)
 		}
 
 		// Open file
-		includer					Includer;
-		string_path					cname;
-		strconcat					(sizeof(cname), cname,::Render->getShaderPath(),name,".ps");
+		string_path cname;
+		LPCSTR shader_path = ::Render->getShaderPath();
+		strconcat(sizeof(cname), cname, shader_path, name, ".ps");
 		FS.update_path				(cname,	"$game_shaders$", cname);
 
 		// duplicate and zero-terminate
-		IReader*		R		= FS.r_open(cname);
-		R_ASSERT2				(R,cname);
-		u32				size	= R->length();
-		char*			data	= xr_alloc<char>(size + 1);
-		CopyMemory			(data,R->pointer(),size);
+		IReader* file = FS.r_open(cname);
+		R_ASSERT2(file, cname);
+		size_t const size = file->length();
+		char* const data = (LPSTR)_alloca(size + 1);
+		CopyMemory(data, file->pointer(), size);
 		data[size]				= 0;
-		FS.r_close				(R);
+		FS.r_close				(file);
 
 		// Select target
 		LPCSTR						c_target	= "ps_2_0";
@@ -288,47 +234,17 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR name)
 		if (strstr(data,"main_ps_1_4"))			{ c_target = "ps_1_4"; c_entry = "main_ps_1_4";	}
 		if (strstr(data,"main_ps_2_0"))			{ c_target = "ps_2_0"; c_entry = "main_ps_2_0";	}
 
-		// Compile
-		LPD3DXBUFFER				pShaderBuf = nullptr;
-		LPD3DXBUFFER				pErrorBuf  = nullptr;
-		LPD3DXSHADER_CONSTANTTABLE	pConstants	= nullptr;
-		HRESULT						_hr			= S_OK;
-		_hr = ::Render->shader_compile	(name,data,size, nullptr, &Includer, c_entry, c_target, D3DXSHADER_DEBUG | D3DXSHADER_PACKMATRIX_ROWMAJOR /*| D3DXSHADER_PREFER_FLOW_CONTROL*/, &pShaderBuf, &pErrorBuf, NULL);
-		//_hr = D3DXCompileShader		(text,text_size, NULL, &Includer, c_entry, c_target, D3DXSHADER_DEBUG | D3DXSHADER_PACKMATRIX_ROWMAJOR, &pShaderBuf, &pErrorBuf, NULL);
-		xr_free						(data);
+		Msg("compiling shader %s", name);
+		HRESULT const _hr = ::Render->shader_compile(name, (DWORD const*)data, (UINT)size, c_entry, c_target, D3DXSHADER_DEBUG | D3DXSHADER_PACKMATRIX_ROWMAJOR, (void*&)_ps);
 
-		if (SUCCEEDED(_hr))
-		{
-			if (pShaderBuf)
-			{
-				_hr = HW.pDevice->CreatePixelShader	((DWORD*)pShaderBuf->GetBufferPointer(), &_ps->ps);
-				if (SUCCEEDED(_hr))	{
-					LPCVOID			dataLPCVoid		= nullptr;
-					_hr	= D3DXFindShaderComment	((DWORD*)pShaderBuf->GetBufferPointer(),MAKEFOURCC('C','T','A','B'),&dataLPCVoid,nullptr);
-					if (SUCCEEDED(_hr) && dataLPCVoid)
-					{
-						pConstants				= LPD3DXSHADER_CONSTANTTABLE(dataLPCVoid);
-						_ps->constants.parse	(pConstants,0x1);
-					} else	_hr = E_FAIL;
-				}
-			}
-			else	_hr = E_FAIL;
-		}else
-		{
-			Msg("error is %s", (LPCSTR)pErrorBuf->GetBufferPointer());
+		if (FAILED(_hr)) {
+			FlushLog();
 		}
-		_RELEASE		(pShaderBuf);
-		_RELEASE		(pErrorBuf);
-		pConstants		= NULL;
-
-		if (FAILED(_hr))
-			Msg			("Can't compile shader %s",name);
-
 		CHECK_OR_EXIT		(
 			!FAILED(_hr),
-			make_string("Your video card doesn't meet game requirements\n\nPixel Shaders v1.1 or higher required")
+			make_string("Your video card doesn't meet game requirements.\n\nTry to lower game settings.")
 		);
-		return			_ps;
+		return _ps;
 	}
 }
 void	CResourceManager::_DeletePS			(const SPS* ps)
@@ -480,7 +396,7 @@ CTexture* CResourceManager::_CreateTexture	(LPCSTR _Name)
 	if (0==xr_strcmp(_Name,"null"))	return 0;
 	R_ASSERT		(_Name && _Name[0]);
 	string_path		Name;
-	strcpy_s			(Name,_Name); //. andy if (strext(Name)) *strext(Name)=0;
+	xr_strcpy(Name, _Name); //. andy if (strext(Name)) *strext(Name)=0;
 	fix_texture_name (Name);
 	// ***** first pass - search already loaded texture
 	LPSTR N			= LPSTR(Name);

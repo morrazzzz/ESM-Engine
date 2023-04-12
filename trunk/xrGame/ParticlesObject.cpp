@@ -92,12 +92,15 @@ void CParticlesObject::UpdateSpatial()
 		renderable.xform.transform_tiny(P, vis.sphere.P);
 		R = vis.sphere.R;
 
-		if (0==spatial.type)	{
+		if (!spatial.type)	
+		{
 			// First 'valid' update - register
 			spatial.type			= STYPE_RENDERABLE;
 			spatial.sphere.set		(P,R);
 			spatial_register		();
-		} else {
+		}
+		else 
+		{
 			BOOL	bMove			= FALSE;
 			if		(!P.similar(spatial.sphere.P,EPS_L*10.f))		bMove	= TRUE;
 			if		(!fsimilar(R,spatial.sphere.R,0.15f))			bMove	= TRUE;
@@ -166,7 +169,7 @@ void CParticlesObject::shedule_Update	(u32 _dt)
 		if (0){//.psDeviceFlags.test(mtParticles))	{    //. AlexMX comment this line// NO UNCOMMENT - DON'T WORK PROPERLY
 			mt_dt					= dt;
 			fastdelegate::FastDelegate0<>		delegate	(this,&CParticlesObject::PerformAllTheWork_mt);
-			Device.seqParallel.push_back		(delegate);
+			Device.seqParallel.emplace_back(delegate);
 		} else {
 			mt_dt					= 0;
 			IParticleCustom* V		= smart_cast<IParticleCustom*>(renderable.visual); VERIFY(V);

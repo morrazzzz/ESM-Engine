@@ -15,8 +15,8 @@ CBlender_LmEbB::CBlender_LmEbB	()
 {
 	description.CLS		= B_LmEbB;
 	description.version	= 0x1;
-	strcpy				(oT2_Name,	"$null");
-	strcpy				(oT2_xform,	"$null");
+	xr_strcpy				(oT2_Name,	"$null");
+	xr_strcpy				(oT2_xform,	"$null");
 	oBlend.value		= FALSE;
 }
 
@@ -138,7 +138,7 @@ void	CBlender_LmEbB::Compile(CBlender_Compile& C)
 		}
 	}
 }
-#else 
+#elif RENDER==R_R2
 //////////////////////////////////////////////////////////////////////////
 // R2
 //////////////////////////////////////////////////////////////////////////
@@ -150,6 +150,28 @@ void	CBlender_LmEbB::Compile(CBlender_Compile& C)
 	C.r_Sampler			("s_lmap",	C.L_textures[1]	);
 	C.r_Sampler_clf		("s_hemi",	*C.L_textures[2]);
 	C.r_Sampler			("s_env",	oT2_Name,false,D3DTADDRESS_CLAMP);
+	C.r_End				();
+}
+#else
+//////////////////////////////////////////////////////////////////////////
+// R3
+//////////////////////////////////////////////////////////////////////////
+void	CBlender_LmEbB::Compile(CBlender_Compile& C)
+{
+	if (oBlend.value)	C.r_Pass	("lmapE","lmapE",TRUE,TRUE,FALSE,TRUE,D3DBLEND_SRCALPHA,	D3DBLEND_INVSRCALPHA,	TRUE,0);
+	else				C.r_Pass	("lmapE","lmapE",TRUE);
+	//C.r_Sampler			("s_base",	C.L_textures[0]	);
+	C.r_dx10Texture			("s_base",	C.L_textures[0]	);
+	C.r_dx10Sampler			("smp_base");
+	//C.r_Sampler			("s_lmap",	C.L_textures[1]	);
+	C.r_dx10Texture			("s_lmap",	C.L_textures[1]	);
+	C.r_dx10Sampler			("smp_linear");
+	//C.r_Sampler_clf		("s_hemi",	*C.L_textures[2]);
+	C.r_dx10Texture			("s_hemi",	*C.L_textures[2]);
+	C.r_dx10Sampler			("smp_rtlinear");
+	//C.r_Sampler			("s_env",	oT2_Name,false,D3DTADDRESS_CLAMP);
+	C.r_dx10Texture			("s_env",	oT2_Name);
+	//C.r_dx10Sampler			("smp_rtlinear");
 	C.r_End				();
 }
 #endif

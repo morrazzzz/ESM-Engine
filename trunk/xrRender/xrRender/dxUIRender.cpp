@@ -27,9 +27,8 @@ void dxUIRender::SetShader(IUIShader &shader)
 
 void dxUIRender::SetAlphaRef(int aref)
 {
-//morrazzzz: So far so
-  CHK_DX(HW.pDevice->SetRenderState(D3DRS_ALPHAREF,aref));
-//	RCache.set_AlphaRef(aref);
+    //CHK_DX(HW.pDevice->SetRenderState(D3DRS_ALPHAREF,aref));
+	RCache.set_AlphaRef(aref);
 }
 /*
 void dxUIRender::StartTriList(u32 iMaxVerts)

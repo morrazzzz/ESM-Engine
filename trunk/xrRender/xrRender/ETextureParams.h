@@ -9,6 +9,7 @@ struct ECORE_API STextureParams{
         ttBumpMap,
         ttNormalMap,
         ttTerrain,
+		tbmUseParallax,
 		ttForceU32	= u32(-1)
 	};
 	enum ETFormat{

@@ -109,6 +109,18 @@
     <Filter Include="Refactored">
       <UniqueIdentifier>{a5f4ea2e-f5e8-440e-a90d-24ac31511706}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Refactored\Interfaces">
+      <UniqueIdentifier>{3731eafa-fac0-4e26-88c2-ecff7facebe1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Refactored\HW">
+      <UniqueIdentifier>{7a3baa31-66da-41ba-b5c6-156203820ae8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Refactored\Backend">
+      <UniqueIdentifier>{929df9b0-64b4-4e3b-9524-ffa87bf018a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Refactored\stats_manager">
+      <UniqueIdentifier>{9f71ee77-a7cf-4488-9cf0-0ac94b4c8716}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Refactored\Execution &amp; 3D">
       <UniqueIdentifier>{b2869bcb-0a0b-457f-a0a1-fb2d6d6a6a2e}</UniqueIdentifier>
     </Filter>
@@ -118,20 +130,11 @@
     <Filter Include="Refactored\Execution &amp; 3D\Visuals\Skeleton">
       <UniqueIdentifier>{7aec6858-4dc7-4bde-beac-b1920d1886cf}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Refactored\Interfaces">
-      <UniqueIdentifier>{3731eafa-fac0-4e26-88c2-ecff7facebe1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Refactored\Execution &amp; 3D\DebugDraw">
       <UniqueIdentifier>{8960f06c-9375-4d48-9e69-ac42716fba17}</UniqueIdentifier>
     </Filter>
     <Filter Include="Refactored\Execution &amp; 3D\Gamma">
       <UniqueIdentifier>{c4033dc1-d18f-4c28-acf6-c09d7af40d9a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Refactored\HW">
-      <UniqueIdentifier>{7a3baa31-66da-41ba-b5c6-156203820ae8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Refactored\Backend">
-      <UniqueIdentifier>{929df9b0-64b4-4e3b-9524-ffa87bf018a3}</UniqueIdentifier>
     </Filter>
     <Filter Include="Refactored\Execution &amp; 3D\Shaders">
       <UniqueIdentifier>{d83cfdc5-79a9-4281-a7ee-98a50e5fc4bb}</UniqueIdentifier>
@@ -573,6 +576,21 @@
     <ClInclude Include="..\xrRender\TextureDescrManager.h">
       <Filter>Refactored\Execution &amp; 3D\Shaders\ShaderManager</Filter>
     </ClInclude>
+    <ClInclude Include="..\xrRender\stats_manager.h">
+      <Filter>Refactored\stats_manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\R_Backend_hemi.h">
+      <Filter>Refactored\Backend</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\R_Backend_tree.h">
+      <Filter>Refactored\Backend</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRenderDX9\dx9r_constants_cache.h">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources\dx9_R_shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRenderDX9\dx9R_Backend_Runtime.h">
+      <Filter>Refactored\Backend</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -911,9 +929,6 @@
     <ClCompile Include="..\xrRender\tss_def.cpp">
       <Filter>Refactored\Execution &amp; 3D\Shaders\Blender</Filter>
     </ClCompile>
-    <ClCompile Include="..\xrRender\r_constants_cache.cpp">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources\dx9_R_shader</Filter>
-    </ClCompile>
     <ClCompile Include="..\xrRender\r_constants.cpp">
       <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
     </ClCompile>
@@ -961,6 +976,18 @@
     </ClCompile>
     <ClCompile Include="..\xrRender\TextureDescrManager.cpp">
       <Filter>Refactored\Execution &amp; 3D\Shaders\ShaderManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\stats_manager.cpp">
+      <Filter>Refactored\stats_manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\R_Backend_hemi.cpp">
+      <Filter>Refactored\Backend</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\R_Backend_tree.cpp">
+      <Filter>Refactored\Backend</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRenderDX9\dx9r_constants_cache.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources\dx9_R_shader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -131,7 +131,7 @@ BOOL CAI_Crow::net_Spawn		(CSE_Abstract* DC)
 	setEnabled	(TRUE);
 
 	// animations
-	IKinematicsAnimated*	M		= smart_cast<IKinematicsAnimated*>(Visual()); R_ASSERT(M);
+	auto M		= smart_cast<IKinematicsAnimated*>(Visual()); R_ASSERT(M);
 	m_Anims.m_death.Load		(M,"norm_death");
 	m_Anims.m_death_dead.Load	(M,"norm_death_dead");
 	m_Anims.m_death_idle.Load	(M,"norm_death_idle");

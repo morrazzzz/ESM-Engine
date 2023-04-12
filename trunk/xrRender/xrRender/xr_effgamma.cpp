@@ -1,5 +1,60 @@
 #include "stdafx.h"
 #include "xr_effgamma.h"
+//#include "device.h"
+
+#if defined(USE_DX10) || defined(USE_DX11)
+
+void CGammaControl::Update() 
+{
+	if (HW.pDevice) 
+	{
+		DXGI_GAMMA_CONTROL_CAPABILITIES GC;
+		DXGI_GAMMA_CONTROL				G;
+		IDXGIOutput *pOutput;
+
+		CHK_DX (HW.m_pSwapChain->GetContainingOutput(&pOutput));
+		HRESULT hr = pOutput->GetGammaControlCapabilities(&GC);
+		if (SUCCEEDED(hr))
+		{
+			GenLUT( GC, G );
+			pOutput->SetGammaControl(&G);
+		}
+	}
+}
+
+void CGammaControl::GenLUT( const DXGI_GAMMA_CONTROL_CAPABILITIES &GC, DXGI_GAMMA_CONTROL &G)
+{
+	DXGI_RGB Offset = {0,0,0};
+	DXGI_RGB Scale = {1,1,1};
+	G.Offset = Offset;
+	G.Scale = Scale;
+
+	float DeltaCV = (GC.MaxConvertedValue - GC.MinConvertedValue);
+	
+	float og	= 1.f / (fGamma + EPS);
+	float B		= fBrightness/2.f;
+	float C		= fContrast/2.f;
+
+	for (u32 i=0; i<GC.NumGammaControlPoints; i++) 
+	{
+		float	c = (C+.5f)*powf( GC.ControlPointPositions[i], og )
+					+ (B-0.5f)*0.5f 
+					- C*0.5f
+					+ 0.25f;
+
+		c = GC.MinConvertedValue + c*DeltaCV;
+
+		G.GammaCurve[i].Red = c*cBalance.r;
+		G.GammaCurve[i].Green = c*cBalance.g;
+		G.GammaCurve[i].Blue = c*cBalance.b;
+
+		clamp(G.GammaCurve[i].Red, GC.MinConvertedValue, GC.MaxConvertedValue);
+		clamp(G.GammaCurve[i].Green, GC.MinConvertedValue, GC.MaxConvertedValue);
+		clamp(G.GammaCurve[i].Blue, GC.MinConvertedValue, GC.MaxConvertedValue);
+	}
+}
+
+#else	//	USE_DX10
 
 IC u16 clr2gamma(float c)
 {
@@ -7,9 +62,11 @@ IC u16 clr2gamma(float c)
 	clamp		(C,0,65535);
 	return u16	(C);
 }
+
 void CGammaControl::Update() 
 {
-	if (HW.pDevice) {
+	if (HW.pDevice) 
+	{
 		D3DGAMMARAMP G;
 		GenLUT(G);
 		HW.pDevice->SetGammaRamp(0,D3DSGR_NO_CALIBRATION,&G);
@@ -28,3 +85,5 @@ void CGammaControl::GenLUT(D3DGAMMARAMP &G)
 		G.blue[i]		= clr2gamma(c*cBalance.b);
 	}
 }
+
+#endif	//	USE_DX10

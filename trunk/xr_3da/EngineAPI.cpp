@@ -38,6 +38,16 @@ CEngineAPI::~CEngineAPI()
 	}
 }
 extern u32 renderer_value; //con cmd
+ENGINE_API int g_current_renderer = 0;
+
+ENGINE_API bool is_enough_address_space_available()
+{
+	SYSTEM_INFO		system_info;
+	GetSystemInfo(&system_info);
+
+	return (*(size_t*)&system_info.lpMaximumApplicationAddress) > 0x90000000ull;
+}
+
 
 void CEngineAPI::Initialize(void)
 {
@@ -117,12 +127,14 @@ void CEngineAPI::CreateRendererList()
 		return;
 
 	bool bSupports_r2 = false;
+	bool bSupports_r2_5 = false;
 
 	LPCSTR			r2_name = "xrRender_R2.dll";
 
 	if (strstr(Core.Params, "-perfhud_hack"))
 	{
 		bSupports_r2 = true;
+		bSupports_r2_5 = true;
 	}
 	else
 	{
@@ -134,6 +146,7 @@ void CEngineAPI::CreateRendererList()
 			bSupports_r2 = true;
 			SupportsAdvancedRendering* test_rendering = (SupportsAdvancedRendering*)GetProcAddress(hRender, "SupportsAdvancedRendering");
 			R_ASSERT(test_rendering);
+			bSupports_r2_5 = test_rendering();
 			FreeLibrary(hRender);
 		}
 	}
@@ -143,12 +156,16 @@ void CEngineAPI::CreateRendererList()
 	xr_vector<LPCSTR>			_tmp;
 	u32 i = 0;
 	bool bBreakLoop = false;
-	for (; i < 3; ++i)
+	for (; i < 4; ++i)
 	{
 		switch (i)
 		{
 		case 1:
 			if (!bSupports_r2)
+				bBreakLoop = true;
+			break;
+		case 3:		//"renderer_r2.5"
+			if (!bSupports_r2_5)
 				bBreakLoop = true;
 			break;
 		default:;
@@ -162,6 +179,7 @@ void CEngineAPI::CreateRendererList()
 		case 0: val = "renderer_r1";			break;
 		case 1: val = "renderer_r2a";		break;
 		case 2: val = "renderer_r2";			break;
+		case 3: val = "renderer_r2.5";		break;
 		}
 		if (bBreakLoop) break;
 		_tmp.back() = xr_strdup(val);

@@ -494,8 +494,8 @@ void CInventoryOwner::sell_useless_items		()
 {
 	CGameObject					*object = smart_cast<CGameObject*>(this);
 
-	TIItemContainer::iterator	I = inventory().m_all.begin();
-	TIItemContainer::iterator	E = inventory().m_all.end();
+	auto	I = inventory().m_all.begin();
+	auto	E = inventory().m_all.end();
 	for ( ; I != E; ++I) {
 		if ((*I)->object().CLS_ID == CLSID_IITEM_BOLT)
 			continue;

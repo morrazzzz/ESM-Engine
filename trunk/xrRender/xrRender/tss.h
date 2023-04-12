@@ -1,8 +1,24 @@
+#ifndef TSS_H
+#define TSS_H
 #pragma once
 
 #include "tss_def.h"
 
-class CSimulatorTSS
+#if defined(USE_DX10) || defined(USE_DX11)
+enum	XRDX10SAMPLERSTATETYPE
+{
+	XRDX10SAMP_ANISOTROPICFILTER	=	256,
+	XRDX10SAMP_COMPARISONFILTER,
+	XRDX10SAMP_COMPARISONFUNC,
+	XRDX10SAMP_MINLOD				//	integer value. 0 - the most detailed level
+};
+enum	XRDX10RENDERSTATETYPE
+{
+	XRDX10RS_ALPHATOCOVERAGE		=	1024
+};
+#endif	//	USE_DX10
+
+class  CSimulatorTSS
 {
 public:
 	IC void Set			(SimulatorStates& container, u32 S, u32 N, u32 V)
@@ -59,17 +75,18 @@ public:
 	}
 };
 
-class CSimulatorRS
+class  CSimulatorRS
 {
 public:
 	IC void Set			(SimulatorStates& container, u32 N, u32 V)
 	{
-		R_ASSERT(N<256);
+		//	Igor: XBox has render states 400 and hire
+		//R_ASSERT(N<256);
 		container.set_RS(N,V);
 	}
 };
 
-class CSimulator
+class  CSimulator
 {
 public:
 	CSimulatorTSS		TSS;
@@ -87,3 +104,5 @@ public:
 	IC void				SetRS		(u32 N, u32 V)						{ RS.Set(container,N,V);	}
 	IC SimulatorStates&	GetContainer()									{ return container; }
 };
+
+#endif

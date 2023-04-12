@@ -1,17 +1,7 @@
-#ifndef r_constants_cacheH
-#define r_constants_cacheH
+#ifndef dx9r_constants_cacheH
+#define dx9r_constants_cacheH
 #pragma once
 
-#include "r_constants.h"
-
-#if defined(USE_DX10) || defined(USE_DX11)
-#include "../xrRenderDX10/dx10r_constants_cache.h"
-#else	//	USE_DX10
-#include "../xrRenderDX9/dx9r_constants_cache.h"
-#endif	//	USE_DX10
-
-
-/*
 template <class T, u32 limit>
 class	R_constant_cache
 {
@@ -180,5 +170,4 @@ public:
 		if (a_pixel.b_dirty || a_vertex.b_dirty)	flush_cache();
 	}
 };
-*/
-#endif
+#endif	//	dx9r_constants_cacheH

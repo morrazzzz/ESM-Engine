@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#include "r_constants_cache.h"
+#include "../xrRender/r_constants_cache.h"
 
 void R_constants::flush_cache()
 {

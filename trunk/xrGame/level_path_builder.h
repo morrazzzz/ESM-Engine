@@ -33,7 +33,7 @@ public:
 		m_dest_vertex_id	= dest_vertex_id;
 
 		m_object->m_wait_for_distributed_computation	= true;
-		Device.seqParallel.push_back	(fastdelegate::FastDelegate0<>(this,&CLevelPathBuilder::process));
+		Device.seqParallel.emplace_back(fastdelegate::FastDelegate0<>(this,&CLevelPathBuilder::process));
 	}
 
 			void __stdcall	process				()

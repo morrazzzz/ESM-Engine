@@ -118,18 +118,15 @@ public:
 	virtual void					level_Unload			();
 	
 	virtual IDirect3DBaseTexture9*	texture_load			(LPCSTR	fname, u32& msize);
-	virtual HRESULT					shader_compile			(
+	virtual HRESULT					shader_compile(
 		LPCSTR							name,
-		LPCSTR                          pSrcData,
+		DWORD const* pSrcData,
 		UINT                            SrcDataLen,
-		void*							pDefines,
-		void*							pInclude,
 		LPCSTR                          pFunctionName,
 		LPCSTR                          pTarget,
 		DWORD                           Flags,
-		void*							ppShader,
-		void*							ppErrorMsgs,
-		void*							ppConstantTable);
+		void*& result
+	);
 
 	// Information
 	virtual void					Statistics				(CGameFont* F);
@@ -202,6 +199,8 @@ public:
 	// Constructor/destructor/loader
 	CRender							();
 	virtual ~CRender				();
+private:
+	FS_FileSet						m_file_set;
 };
 
 extern CRender						RImplementation;

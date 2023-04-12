@@ -564,14 +564,15 @@ void CLevel::OnFrame	()
 	if(!g_dedicated_server)
 	{
 		if (g_mt_config.test(mtLevelSounds)) 
-			Device.seqParallel.push_back	(fastdelegate::FastDelegate0<>(m_level_sound_manager,&CLevelSoundManager::Update));
+			Device.seqParallel.emplace_back(fastdelegate::FastDelegate0<>(m_level_sound_manager,&CLevelSoundManager::Update));
 		else								
 			m_level_sound_manager->Update	();
 	}
 	// deffer LUA-GC-STEP
 	if (!g_dedicated_server)
 	{
-		if (g_mt_config.test(mtLUA_GC))	Device.seqParallel.push_back	(fastdelegate::FastDelegate0<>(this,&CLevel::script_gc));
+		if (g_mt_config.test(mtLUA_GC))
+			Device.seqParallel.emplace_back(fastdelegate::FastDelegate0<>(this,&CLevel::script_gc));
 		else							script_gc	()	;
 	}
 	//-----------------------------------------------------
