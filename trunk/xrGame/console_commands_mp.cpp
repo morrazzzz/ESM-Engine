@@ -42,9 +42,9 @@ extern	BOOL	g_sv_mp_bSpectator_TeamCamera	;
 extern	BOOL	g_sv_mp_bCountParticipants		;
 extern	float	g_sv_mp_fVoteQuota				;
 extern	float	g_sv_mp_fVoteTime				;
-extern	u32		g_sv_dm_dwForceRespawn			;
-extern	s32		g_sv_dm_dwFragLimit				;
-extern	s32		g_sv_dm_dwTimeLimit				;
+//extern	u32		g_sv_dm_dwForceRespawn			;
+//extern	s32		g_sv_dm_dwFragLimit				;
+//extern	s32		g_sv_dm_dwTimeLimit				;
 extern	BOOL	g_sv_dm_bDamageBlockIndicators	;
 extern	u32		g_sv_dm_dwDamageBlockTime		;
 extern	BOOL	g_sv_dm_bAnomaliesEnabled		;
@@ -61,9 +61,9 @@ extern	BOOL	g_bLeaveTDemo;
 extern	int		g_sv_tdm_iTeamKillLimit			;
 extern	int		g_sv_tdm_bTeamKillPunishment	;
 extern	u32		g_sv_ah_dwArtefactRespawnDelta	;
-extern	int		g_sv_ah_dwArtefactsNum			;
+//extern	int		g_sv_ah_dwArtefactsNum			;
 extern	u32		g_sv_ah_dwArtefactStayTime		;
-extern	int		g_sv_ah_iReinforcementTime		;
+//extern	int		g_sv_ah_iReinforcementTime		;
 extern	BOOL	g_sv_ah_bBearerCantSprint		;
 extern	BOOL	g_sv_ah_bShildedBases			;
 extern	BOOL	g_sv_ah_bAfReturnPlayersToBases ;
@@ -73,7 +73,7 @@ extern	int		g_be_message_out;
 
 extern	int		g_sv_Skip_Winner_Waiting;
 extern	int 	g_sv_Wait_For_Players_Ready;
-extern	int 	G_DELAYED_ROUND_TIME;	
+//extern	int 	G_DELAYED_ROUND_TIME;	
 extern	int		g_sv_Pending_Wait_Time;
 extern	int		g_sv_Client_Reconnect_Time;
 		int		g_dwEventDelay			= 0	;
@@ -662,24 +662,6 @@ public:
 	virtual void	Info	(TInfo& I)	{strcpy(I,"Switch to Previous Map in map rotation list"); }
 };
 
-class CCC_AnomalySet : public IConsole_Command {
-public:
-	CCC_AnomalySet(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = false; };
-	virtual void Execute(LPCSTR args) 
-	{
-		if (!OnServer())		return;
-
-		game_sv_Deathmatch* gameDM = smart_cast<game_sv_Deathmatch *>(Level().Server->game);
-		if (!gameDM) return;
-
-		string256			AnomalySet;		
-		sscanf				(args,"%s", AnomalySet);
-		gameDM->StartAnomalies(atol(AnomalySet));
-	};
-
-	virtual void	Info	(TInfo& I)	{strcpy(I,"Activating pointed Anomaly set"); }
-};
-
 class CCC_Vote_Start : public IConsole_Command {
 public:
 					CCC_Vote_Start		(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = false; };
@@ -906,51 +888,6 @@ public:
 	virtual void	Info	(TInfo& I){strcpy(I,"List Players"); }
 };
 
-class CCC_StartTeamMoney : public IConsole_Command {
-public:
-					CCC_StartTeamMoney(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
-	virtual void	Execute(LPCSTR args) 
-	{
-		if (!OnServer())	return;
-
-		game_sv_mp* pGameMP		= smart_cast<game_sv_Deathmatch *>(Level().Server->game);
-		if (!pGameMP)		return;
-
-		string128			Team = "";
-		s32 TeamMoney		= 0;
-		sscanf				(args,"%s %i", Team, &TeamMoney);
-
-		if (!Team[0])
-		{
-			Msg("- --------------------");
-			Msg("Teams start money:");
-			u32 TeamCount = pGameMP->GetTeamCount();
-			for (u32 i=0; i<TeamCount; i++)
-			{
-				TeamStruct* pTS = pGameMP->GetTeamData(i);
-				if (!pTS) continue;
-				Msg ("Team %d: %d", i, pTS->m_iM_Start);
-			}
-			Msg("- --------------------");
-			return;
-		}else
-		{
-			u32 TeamID			= 0;
-			s32 TeamStartMoney	= 0;
-			int cnt = sscanf				(args,"%i %i", &TeamID, &TeamStartMoney);
-			if(cnt!=2)
-			{
-				Msg("invalid args. (int int) expected");
-				return;
-			}
-			TeamStruct* pTS		= pGameMP->GetTeamData(TeamID);
-			if (pTS) 
-				pTS->m_iM_Start = TeamStartMoney;
-		}
-	};
-
-	virtual void	Info	(TInfo& I)	{strcpy(I,"Set Start Team Money");}
-};
 class CCC_SV_Integer : public CCC_Integer {
 public:
 	CCC_SV_Integer(LPCSTR N, int* V, int _min=0, int _max=999) :CCC_Integer(N,V,_min,_max)  {};
@@ -1021,7 +958,7 @@ public:
 	virtual void	Save	(IWriter *F)	{};
 };
 
-class CCC_SwapTeams : public IConsole_Command {
+/*class CCC_SwapTeams : public IConsole_Command {
 public:
 					CCC_SwapTeams(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
 	virtual void	Execute(LPCSTR args) {
@@ -1038,7 +975,7 @@ public:
 		}
 	}
 	virtual void	Info	(TInfo& I){strcpy(I,"swap teams for artefacthunt game"); }
-};
+};*/
 
 
 #ifdef BATTLEYE
@@ -1289,7 +1226,6 @@ void register_mp_console_commands()
 	CMD1(CCC_ListMaps,		"sv_listmaps"				);	
 	CMD1(CCC_NextMap,		"sv_nextmap"				);	
 	CMD1(CCC_PrevMap,		"sv_prevmap"				);
-	CMD1(CCC_AnomalySet,	"sv_nextanomalyset"			);
 
 	CMD1(CCC_Vote_Start,	"cl_votestart"				);
 	CMD1(CCC_Vote_Stop,		"sv_votestop"				);
@@ -1311,7 +1247,7 @@ void register_mp_console_commands()
 
 	CMD4(CCC_AuthCheck,		"sv_no_auth_check",				&g_SV_Disable_Auth_Check, 0, 1);
 
-	CMD4(CCC_Integer,		"sv_artefact_spawn_force",		&g_SV_Force_Artefact_Spawn, 0, 1);
+//	CMD4(CCC_Integer,		"sv_artefact_spawn_force",		&g_SV_Force_Artefact_Spawn, 0, 1);
 
 	CMD4(CCC_Integer,		"net_dbg_dump_update_write",	&g_Dump_Update_Write, 0, 1);
 	CMD4(CCC_Integer,		"net_dbg_dump_update_read",	&g_Dump_Update_Read, 0, 1);
@@ -1326,9 +1262,8 @@ void register_mp_console_commands()
 
 	CMD4(CCC_Integer,		"sv_wait_for_players_ready",	&g_sv_Wait_For_Players_Ready, 0, 1);
 #endif
-	CMD1(CCC_StartTeamMoney,"sv_startteammoney"		);		
 
-	CMD4(CCC_Integer,		"sv_hail_to_winner_time",		&G_DELAYED_ROUND_TIME, 0, 60);
+//	CMD4(CCC_Integer,		"sv_hail_to_winner_time",		&G_DELAYED_ROUND_TIME, 0, 60);
 
 	//. CMD4(CCC_Integer,		"sv_pending_wait_time",		&g_sv_Pending_Wait_Time, 0, 60000);
 
@@ -1347,34 +1282,34 @@ void register_mp_console_commands()
 	CMD4(CCC_SV_Float,		"sv_vote_quota"				,	&g_sv_mp_fVoteQuota					, 0.0f,1.0f);
 	CMD4(CCC_SV_Float,		"sv_vote_time"				,	&g_sv_mp_fVoteTime					, 0.5f,10.0f);
 
-	CMD4(CCC_SV_Integer,	"sv_forcerespawn"			,	(int*)&g_sv_dm_dwForceRespawn		,	0,3600);	//sec
-	CMD4(CCC_SV_Integer,	"sv_fraglimit"				,	&g_sv_dm_dwFragLimit				,	0,100);
-	CMD4(CCC_SV_Integer,	"sv_timelimit"				,	&g_sv_dm_dwTimeLimit				,	0,180);		//min
-	CMD4(CCC_SV_Integer,	"sv_dmgblockindicator"		,	(int*)&g_sv_dm_bDamageBlockIndicators,	0, 1);
-	CMD4(CCC_SV_Integer,	"sv_dmgblocktime"			,	(int*)&g_sv_dm_dwDamageBlockTime	,	0, 600);	//sec
-	CMD4(CCC_SV_Integer,	"sv_anomalies_enabled"		,	(int*)&g_sv_dm_bAnomaliesEnabled	,	0, 1);
-	CMD4(CCC_SV_Integer,	"sv_anomalies_length"		,	(int*)&g_sv_dm_dwAnomalySetLengthTime,	0, 180); //min
-	CMD4(CCC_SV_Integer,	"sv_pda_hunt"				,	(int*)&g_sv_dm_bPDAHunt				,	0, 1);
-	CMD4(CCC_SV_Integer,	"sv_warm_up"				,	(int*)&g_sv_dm_dwWarmUp_MaxTime		,	0, 3600); //sec
+//	CMD4(CCC_SV_Integer,	"sv_forcerespawn"			,	(int*)&g_sv_dm_dwForceRespawn		,	0,3600);	//sec
+//	CMD4(CCC_SV_Integer,	"sv_fraglimit"				,	&g_sv_dm_dwFragLimit				,	0,100);
+//	CMD4(CCC_SV_Integer,	"sv_timelimit"				,	&g_sv_dm_dwTimeLimit				,	0,180);		//min
+//	CMD4(CCC_SV_Integer,	"sv_dmgblockindicator"		,	(int*)&g_sv_dm_bDamageBlockIndicators,	0, 1);
+//	CMD4(CCC_SV_Integer,	"sv_dmgblocktime"			,	(int*)&g_sv_dm_dwDamageBlockTime	,	0, 600);	//sec
+//	CMD4(CCC_SV_Integer,	"sv_anomalies_enabled"		,	(int*)&g_sv_dm_bAnomaliesEnabled	,	0, 1);
+//	CMD4(CCC_SV_Integer,	"sv_anomalies_length"		,	(int*)&g_sv_dm_dwAnomalySetLengthTime,	0, 180); //min
+//	CMD4(CCC_SV_Integer,	"sv_pda_hunt"				,	(int*)&g_sv_dm_bPDAHunt				,	0, 1);
+//	CMD4(CCC_SV_Integer,	"sv_warm_up"				,	(int*)&g_sv_dm_dwWarmUp_MaxTime		,	0, 3600); //sec
 
 	CMD4(CCC_Integer,		"sv_max_ping_limit"			,	(int*)&g_sv_dwMaxClientPing		,	1, 2000);
 
-	CMD4(CCC_SV_Integer,	"sv_auto_team_balance"		,	(int*)&g_sv_tdm_bAutoTeamBalance	,	0,1);
-	CMD4(CCC_SV_Integer,	"sv_auto_team_swap"			,	(int*)&g_sv_tdm_bAutoTeamSwap		,	0,1);
-	CMD4(CCC_SV_Integer,	"sv_friendly_indicators"	,	(int*)&g_sv_tdm_bFriendlyIndicators	,	0,1);
-	CMD4(CCC_SV_Integer,	"sv_friendly_names"			,	(int*)&g_sv_tdm_bFriendlyNames		,	0,1);
-	CMD4(CCC_SV_Float,		"sv_friendlyfire"			,	&g_sv_tdm_fFriendlyFireModifier		,	0.0f,2.0f);
-	CMD4(CCC_SV_Integer,	"sv_teamkill_limit"			,	&g_sv_tdm_iTeamKillLimit			,	0,100);
-	CMD4(CCC_SV_Integer,	"sv_teamkill_punish"		,	(int*)&g_sv_tdm_bTeamKillPunishment	,	0,1);
+//	CMD4(CCC_SV_Integer,	"sv_auto_team_balance"		,	(int*)&g_sv_tdm_bAutoTeamBalance	,	0,1);
+//	CMD4(CCC_SV_Integer,	"sv_auto_team_swap"			,	(int*)&g_sv_tdm_bAutoTeamSwap		,	0,1);
+//	CMD4(CCC_SV_Integer,	"sv_friendly_indicators"	,	(int*)&g_sv_tdm_bFriendlyIndicators	,	0,1);
+//	CMD4(CCC_SV_Integer,	"sv_friendly_names"			,	(int*)&g_sv_tdm_bFriendlyNames		,	0,1);
+//	CMD4(CCC_SV_Float,		"sv_friendlyfire"			,	&g_sv_tdm_fFriendlyFireModifier		,	0.0f,2.0f);
+//	CMD4(CCC_SV_Integer,	"sv_teamkill_limit"			,	&g_sv_tdm_iTeamKillLimit			,	0,100);
+//	CMD4(CCC_SV_Integer,	"sv_teamkill_punish"		,	(int*)&g_sv_tdm_bTeamKillPunishment	,	0,1);
 
-	CMD4(CCC_SV_Integer,	"sv_artefact_respawn_delta"	,	(int*)&g_sv_ah_dwArtefactRespawnDelta	,0,600);	//sec
-	CMD4(CCC_SV_Integer,	"sv_artefacts_count"		,	(int*)&g_sv_ah_dwArtefactsNum			, 1,100);
-	CMD4(CCC_SV_Integer,	"sv_artefact_stay_time"		,	(int*)&g_sv_ah_dwArtefactStayTime		, 0,180);	//min
-	CMD4(CCC_SV_Integer,	"sv_reinforcement_time"		,	(int*)&g_sv_ah_iReinforcementTime		, -1,3600); //sec
-	CMD4(CCC_SV_Integer,	"sv_bearercantsprint"		,	(int*)&g_sv_ah_bBearerCantSprint				, 0, 1)	;
-	CMD4(CCC_SV_Integer,	"sv_shieldedbases"			,	(int*)&g_sv_ah_bShildedBases					, 0, 1)	;
-	CMD4(CCC_SV_Integer,	"sv_returnplayers"			,	(int*)&g_sv_ah_bAfReturnPlayersToBases		, 0, 1)	;
-	CMD1(CCC_SwapTeams,		"g_swapteams"				);
+//	CMD4(CCC_SV_Integer,	"sv_artefact_respawn_delta"	,	(int*)&g_sv_ah_dwArtefactRespawnDelta	,0,600);	//sec
+//	CMD4(CCC_SV_Integer,	"sv_artefacts_count"		,	(int*)&g_sv_ah_dwArtefactsNum			, 1,100);
+//	CMD4(CCC_SV_Integer,	"sv_artefact_stay_time"		,	(int*)&g_sv_ah_dwArtefactStayTime		, 0,180);	//min
+//	CMD4(CCC_SV_Integer,	"sv_reinforcement_time"		,	(int*)&g_sv_ah_iReinforcementTime		, -1,3600); //sec
+//	CMD4(CCC_SV_Integer,	"sv_bearercantsprint"		,	(int*)&g_sv_ah_bBearerCantSprint				, 0, 1)	;
+//	CMD4(CCC_SV_Integer,	"sv_shieldedbases"			,	(int*)&g_sv_ah_bShildedBases					, 0, 1)	;
+//	CMD4(CCC_SV_Integer,	"sv_returnplayers"			,	(int*)&g_sv_ah_bAfReturnPlayersToBases		, 0, 1)	;
+//	CMD1(CCC_SwapTeams,		"g_swapteams"				);
 #ifdef DEBUG
 	CMD4(CCC_SV_Integer,	"sv_demo_delta_frame"	,	(int*)&g_dwDemoDeltaFrame	,	0,100);
 	CMD4(CCC_SV_Integer,	"sv_ignore_money_on_buy"	,	(int*)&g_sv_dm_bDMIgnore_Money_OnBuy,	0, 1);

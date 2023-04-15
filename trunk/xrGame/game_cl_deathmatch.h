@@ -107,7 +107,7 @@ protected:
 public:
 	virtual s16						ModifyTeam				(s16 Team)	{return Team;};
 
-	virtual		char*				getTeamSection			(int Team);
+	virtual char* getTeamSection(int Team);
 	virtual	void					SetCurrentBuyMenu		();
 	virtual	void					SetCurrentSkinMenu		();//	{pCurSkinMenu = pSkinMenuTeam0; };
 

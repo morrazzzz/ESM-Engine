@@ -27,7 +27,15 @@ protected:
 	typedef typename inherited_action::_value_type			_value_type;
     using _world_operator = typename inherited_planner::_world_operator;
 
+	using _action_id_type = typename inherited_planner::_action_id_type;
+
 public:
+	using inherited_planner::current_action_id;
+	using inherited_planner::current_action;
+	using inherited_planner::m_initialized;
+	using inherited_planner::update;
+	using inherited_planner::set_target_state;
+	using inherited_action::effects;
 	typedef typename inherited_action::COperatorCondition	COperatorCondition;
 	
 

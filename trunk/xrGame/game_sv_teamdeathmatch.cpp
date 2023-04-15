@@ -8,6 +8,7 @@
 
 #include "ui\UIBuyWndShared.h"
 
+/*
 //-------------------------------------------------------
 extern	s32		g_sv_dm_dwFragLimit;
 //-------------------------------------------------------
@@ -504,3 +505,4 @@ void game_sv_TeamDeathmatch::WriteGameState(CInifile& ini, LPCSTR sect, bool bRo
 		ini.w_u32		(sect,buf_name, GetTeamScore(i));
 	}
 }
+*/

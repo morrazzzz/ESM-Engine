@@ -9,6 +9,7 @@
 #pragma once
 
 #include "associative_vector.h"
+#include "Level.h"
 
 template <bool v> struct Bool2Type {static const bool value = v;};
 template <

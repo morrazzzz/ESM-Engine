@@ -968,10 +968,10 @@ void xrServer::PerformCheckClientsForMaxPing()
 	};
 }
 
-extern	s32		g_sv_dm_dwFragLimit;
-extern  s32		g_sv_ah_dwArtefactsNum;
-extern	s32		g_sv_dm_dwTimeLimit;
-extern	int		g_sv_ah_iReinforcementTime;
+//extern	s32		g_sv_dm_dwFragLimit;
+//extern  s32		g_sv_ah_dwArtefactsNum;
+//extern	s32		g_sv_dm_dwTimeLimit;
+//extern	int		g_sv_ah_iReinforcementTime;
 
 xr_token game_types[];
 void xrServer::GetServerInfo( CServerInfo* si )
@@ -984,7 +984,7 @@ void xrServer::GetServerInfo( CServerInfo* si )
 	si->AddItem( "Uptime", time, RGB(255,228,0) );
 
 	strcpy_s( tmp256, get_token_name(game_types, game->Type() ) );
-	if ( game->Type() == GAME_DEATHMATCH || game->Type() == GAME_TEAMDEATHMATCH )
+/*	if ( game->Type() == GAME_DEATHMATCH || game->Type() == GAME_TEAMDEATHMATCH )
 	{
 		strcat_s( tmp256, " [" );
 		strcat_s( tmp256, itoa( g_sv_dm_dwFragLimit, tmp, 10 ) );
@@ -1010,6 +1010,6 @@ void xrServer::GetServerInfo( CServerInfo* si )
 		strcat_s( tmp256, itoa( g_sv_ah_iReinforcementTime, tmp, 10 ) );
 		strcat_s( tmp256, "]" );
 	}
-	si->AddItem( "Game type", tmp256, RGB(128,255,255) );
+	si->AddItem( "Game type", tmp256, RGB(128,255,255) );*/
 }
 

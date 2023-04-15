@@ -11,6 +11,7 @@
 #include "ui\UIBuyWndShared.h"
 #include "game_cl_base_weapon_usage_statistic.h"
 
+/*
 BOOL	g_SV_Force_Artefact_Spawn = FALSE;
 
 #ifdef DEBUG
@@ -551,7 +552,7 @@ void		game_sv_ArtefactHunt::OnObjectLeaveTeamBase	(u16 id, u16 zone_team)
 
 	CSE_ALifeCreatureActor* eActor = smart_cast<CSE_ALifeCreatureActor*> (e_who);
 //	CSE_ALifeTeamBaseZone*	eZoneBase = smart_cast<CSE_ALifeTeamBaseZone*> (e_zone);
-	if (eActor /*&& eZoneBase*/)
+	if (eActor /*&& eZoneBase)
 	{
 		if (eActor->g_team() == zone_team)
 		{
@@ -830,7 +831,7 @@ void game_sv_ArtefactHunt::Assign_Artefact_RPoint(CSE_Abstract* E)
 	m_LastRespawnPointID = rpID[ID];
 	r	= rp[m_LastRespawnPointID];
 	rpID.erase(rpID.begin()+ID);
-*/	
+	
 	u32 ID				= ArtefactChooserRandom.randI((int)rp.size());
 //.	Msg					("---select artefact RPoint [%d]", ID);
 	r					= rp[ID];
@@ -1300,4 +1301,4 @@ void game_sv_ArtefactHunt::WriteGameState(CInifile& ini, LPCSTR sect, bool bRoun
 	inherited::WriteGameState(ini, sect, bRoundResult);
 
 	ini.w_u32		(sect,"artefacts_limit", Get_ArtefactsCount());
-}
+}*/

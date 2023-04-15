@@ -13,6 +13,7 @@
 
 #define TEMPLATE_SPECIALIZATION template <typename _client_type, typename _server_type>
 #define CSObjectItemClientServer CObjectItemClientServer<_client_type,_server_type>
+#include "Level.h"
 
 TEMPLATE_SPECIALIZATION
 IC	CSObjectItemClientServer::CObjectItemClientServer	(const CLASS_ID &clsid, LPCSTR script_clsid) :

@@ -359,17 +359,17 @@ bool game_cl_TeamDeathmatch::CanBeReady				()
 	return inherited::CanBeReady();
 };
 
-char*	game_cl_TeamDeathmatch::getTeamSection(int Team)
+char* game_cl_TeamDeathmatch::getTeamSection(int Team)
 {
 	switch (Team)
 	{
 	case 1:
 		{
-			return "teamdeathmatch_team1";
+			return (char*)"teamdeathmatch_team1";
 		}break;
 	case 2:
 		{
-			return "teamdeathmatch_team2";
+			return (char*)"teamdeathmatch_team2";
 		}break;
 	default:
 		return NULL;

@@ -6,6 +6,7 @@
 #include "Hit.h"
 #include "../xr_3da/pure_relcase.h"
 
+/*
 class	game_sv_Deathmatch			: public game_sv_mp,private pure_relcase
 {
 	typedef game_sv_mp inherited;
@@ -105,7 +106,7 @@ public:
 
 	virtual		void				OnEvent					(NET_Packet &tNetPacket, u16 type, u32 time, ClientID sender );
 
-	virtual		void				OnTeamScore				(u32 /**team/**/, bool)						;		// команда выиграла
+	virtual		void				OnTeamScore				(u32 /**team/**, bool)						;		// команда выиграла
 	virtual		void				OnTeamsInDraw			()								{};		// ничья
 
 	// Events
@@ -165,16 +166,16 @@ public:
 	virtual		void				LoadTeams				();
 	virtual		void				LoadTeamData			(const shared_str& caSection);
 	virtual		void				LoadSkinsForTeam		(const shared_str& caSection, TEAM_SKINS_NAMES* pTeamSkins);
-	virtual		void				LoadDefItemsForTeam		(const shared_str& caSection, /*TEAM_WPN_LIST *pWpnList,*/ DEF_ITEMS_LIST* pDefItems);
+	virtual		void				LoadDefItemsForTeam		(const shared_str& caSection, /*TEAM_WPN_LIST *pWpnList, DEF_ITEMS_LIST* pDefItems);
 
-	virtual		char*				GetAnomalySetBaseName	() {return "deathmatch_game_anomaly_sets";};
+	virtual		const char*				GetAnomalySetBaseName	() {return "deathmatch_game_anomaly_sets";};
 	virtual		void				LoadAnomalySets			();
 	virtual		void				StartAnomalies			(int AnomalySet = -1);
 
 	virtual		bool				IsBuyableItem			(LPCSTR	ItemName);
 	//----- Money routines -----------------------------------------------------------------
 	virtual		void				Money_SetStart			(ClientID	id_who);
-	virtual		s32					GetMoneyAmount			(const shared_str& caSection, char* caMoneyStr);
+	virtual		s32					GetMoneyAmount			(const shared_str& caSection, const char* caMoneyStr);
 				int					GetTeamScore			(u32 idx);
 				void				SetTeamScore			(u32 idx, int val);
 				game_PlayerState*	GetWinningPlayer		();
@@ -202,3 +203,4 @@ public:
 add_to_type_list(game_sv_Deathmatch)
 #undef script_type_list
 #define script_type_list save_type_list(game_sv_Deathmatch)
+*/

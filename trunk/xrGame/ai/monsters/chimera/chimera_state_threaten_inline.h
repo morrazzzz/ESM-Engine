@@ -80,10 +80,10 @@ void CStateChimeraThreatenAbstract::reselect_state()
 	}
 
 	if (prev_substate == eStateThreaten) {
-		if (get_state(eStateSteal)->check_start_conditions()) {
+		if (this->get_state(eStateSteal)->check_start_conditions()) {
 			select_state(eStateSteal);
 			return;
-		} else if (get_state(eStateWalk)->check_start_conditions()) {
+		} else if (this->get_state(eStateWalk)->check_start_conditions()) {
 			select_state(eStateWalk);
 			return;
 		}

@@ -355,9 +355,9 @@ void	game_cl_Deathmatch::OnSpectatorSelect		()
 };
 
 
-char*	game_cl_Deathmatch::getTeamSection(int Team)
+char* game_cl_Deathmatch::getTeamSection(int Team)
 {
-	return "deathmatch_team0";
+	return (char*)"deathmatch_team0";
 };
 
 void game_cl_Deathmatch::Check_Invincible_Players()

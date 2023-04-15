@@ -21,7 +21,7 @@ void CPurchaseList::process	(CInifile &ini_file, LPCSTR section, CInventoryOwner
 
 	m_deficits.clear		();
 
-	const CGameObject		&game_object = smart_cast<const CGameObject &>(owner);
+	const CGameObject& game_object = smart_cast<const CGameObject&>(owner);
 	CInifile::Sect			&S = ini_file.r_section(section);
 	CInifile::SectCIt		I = S.Data.begin();
 	CInifile::SectCIt		E = S.Data.end();

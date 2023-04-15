@@ -37,6 +37,7 @@ template <
 	typename _index_type,
 	typename _iteration_type
 >
+
 struct SFlooder ;
 
 template <
@@ -44,6 +45,7 @@ template <
 	typename _index_type,
 	typename _iteration_type
 >
+
 struct SStraightLineParams;
 
 template <
@@ -121,11 +123,13 @@ namespace GraphEngineSpace {
 				_iteration_type
 			>		CBaseParameters;
 
+#ifdef DEBUG
 	typedef SFlooder<
 				_dist_type,
 				_index_type,
 				_iteration_type
 			>		CFlooder;
+#endif
 	typedef SStraightLineParams<
 				_dist_type,
 				_index_type,

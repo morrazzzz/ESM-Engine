@@ -10,6 +10,7 @@
 
 #include "ai_space.h"
 #include "script_engine.h"
+#include "../xr_3da/ai_script_space.h"
 
 IC	bool compare_safe(const luabind::object &o1 , const luabind::object &o2)
 {
@@ -71,8 +72,7 @@ IC	bool compare_safe(const luabind::object &o1 , const luabind::object &o2)
 template <typename _return_type>
 class CScriptCallbackEx_ {
 public:
-	typedef _return_type							return_type;
-
+	using return_type = _return_type;
 private:
 	typedef luabind::functor<_return_type>			functor_type;
 	typedef luabind::object							object_type;
@@ -81,7 +81,6 @@ private:
 protected:
 	functor_type					m_functor;
 	object_type						m_object;
-
 private:
 	IC			bool				empty					() const;
 

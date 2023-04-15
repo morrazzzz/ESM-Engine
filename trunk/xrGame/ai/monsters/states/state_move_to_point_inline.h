@@ -5,6 +5,8 @@
 >
 
 #define CStateMonsterMoveToPointAbstract CStateMonsterMoveToPoint<_Object>
+#include "xrGame/ai_space.h"
+#include "xrGame/level_graph.h"
 
 TEMPLATE_SPECIALIZATION
 void CStateMonsterMoveToPointAbstract::initialize()

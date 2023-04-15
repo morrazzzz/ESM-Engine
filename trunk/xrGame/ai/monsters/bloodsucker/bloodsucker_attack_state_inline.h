@@ -13,7 +13,7 @@ TEMPLATE_SPECIALIZATION
 CBloodsuckerStateAttackAbstract::CBloodsuckerStateAttack(_Object *obj) : inherited_attack(obj)
 {
 	//add_state(eStateAttack_Hide,	xr_new<CBloodsuckerStateAttackHide<_Object> > (obj));
-	add_state	(eStateAttack_Hide,	xr_new<CStateMonsterMoveToPointEx<_Object> >(obj));
+	this->add_state	(eStateAttack_Hide,	xr_new<CStateMonsterMoveToPointEx<_Object> >(obj));
 }
 
 TEMPLATE_SPECIALIZATION
@@ -50,22 +50,22 @@ void CBloodsuckerStateAttackAbstract::execute()
 {
 	bool selected = false;
 
-	if (check_home_point()) {
+	if (this->check_home_point()) {
 		select_state	(eStateAttack_MoveToHomePoint);
 		selected		= true;
 	} else if (check_hiding()) {
 		select_state	(eStateAttack_Hide);
 		selected		= true;
-	} else if (check_steal_state()) {
+	} else if (this->check_steal_state()) {
 		select_state	(eStateAttack_Steal);
 		selected		= true;
-	} else if (check_camp_state()) {
+	} else if (this->check_camp_state()) {
 		select_state	(eStateAttackCamp);
 		selected		= true;
-	} else if (check_find_enemy_state()) {
+	} else if (this->check_find_enemy_state()) {
 		select_state	(eStateAttack_FindEnemy);
 		selected		= true;
-	} else if (check_run_attack_state()) {
+	} else if (this->check_run_attack_state()) {
 		select_state	(eStateAttack_RunAttack);
 		selected		= true;
 	}
@@ -78,7 +78,7 @@ void CBloodsuckerStateAttackAbstract::execute()
 			if (!get_state_current()->check_completion()) {
 				b_melee = true;
 			}
-		} else if (get_state(eStateAttack_Melee)->check_start_conditions()) {
+		} else if (this->get_state(eStateAttack_Melee)->check_start_conditions()) {
 			b_melee = true;
 		}
 		
@@ -98,7 +98,7 @@ void CBloodsuckerStateAttackAbstract::execute()
 	}
 
 	// clear behinder var if not melee state selected
-	if (current_substate != eStateAttack_Melee) m_time_start_check_behinder = 0;
+	if (current_substate != eStateAttack_Melee) this->m_time_start_check_behinder = 0;
 	update_invisibility				();
 	
 	get_state_current()->execute	();
@@ -144,7 +144,7 @@ TEMPLATE_SPECIALIZATION
 bool CBloodsuckerStateAttackAbstract::check_hiding()
 {
 	if (current_substate == eStateAttack_Hide) 
-		if (!get_state(eStateAttack_Melee)->check_start_conditions()) 
+		if (!this->get_state(eStateAttack_Melee)->check_start_conditions()) 
 			if (!get_state_current()->check_completion()) {
 				//object->path().set_use_dest_orient	(true);
 				//object->path().set_dest_direction	(Fvector().sub(object->EnemyMan.get_enemy()->Position(),m_dir_point));

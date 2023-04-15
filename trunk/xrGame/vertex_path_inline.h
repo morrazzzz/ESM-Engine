@@ -62,8 +62,8 @@ IC	void CVertexPathBuilder::get_node_path	(xr_vector<_index_type> &path, CGraphV
 	path[--i]				= best->index();
 	t2						= t1->back();
 
-	xr_vector<_index_type>::reverse_iterator	I = path.rbegin();
-	xr_vector<_index_type>::reverse_iterator	E = path.rend();
+	auto	I = path.rbegin();
+	auto    E = path.rend();
 	for (++I ; t2; t2 = t2->back(), ++I)
 		*I = t2->index();
 }

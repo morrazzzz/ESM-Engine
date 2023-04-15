@@ -9,8 +9,7 @@
 #pragma once
 
 #include "action_base.h"
-
-class CScriptGameObject;
+#include "script_game_object.h";
 
 template <typename _object_type>
 class CActionScriptBase : public CScriptActionBase {

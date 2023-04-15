@@ -68,7 +68,7 @@ protected:
 
 public:
 
-									game_sv_ArtefactHunt	(){m_type = GAME_ARTEFACTHUNT;}
+									game_sv_ArtefactHunt	(){}
 	virtual		void				Create					(shared_str& options);
 
 	virtual		LPCSTR				type_name			() const { return "artefacthunt";};
@@ -96,7 +96,7 @@ public:
 
 	virtual		void				LoadTeams				();
 
-	virtual		char*				GetAnomalySetBaseName	() {return "artefacthunt_game_anomaly_sets";};
+	virtual		const char*				GetAnomalySetBaseName	() {return "artefacthunt_game_anomaly_sets";};
 
 	virtual		void				OnObjectEnterTeamBase	(u16 id, u16 zone_team);
 	virtual		void				OnObjectLeaveTeamBase	(u16 id, u16 zone_team);

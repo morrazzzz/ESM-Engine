@@ -31,6 +31,7 @@
 
 #include <luabind/scope.hpp>
 #include <luabind/detail/calc_has_arg.hpp>
+#include <luabind/cdecl_cast.hpp>
 
 namespace luabind
 {
@@ -325,13 +326,6 @@ namespace luabind
 			F fun;
             policy_cons<Policies...> policies;
 		};
-	}
-
-
-	template <typename C, typename R, typename... A>
-	constexpr decltype(auto) cdecl_cast(const C& c, R(C::*f)(A...) const)
-	{
-		return static_cast<R(__cdecl*)(A...)>(c);
 	}
 
 	template<typename Function, typename... Policies>

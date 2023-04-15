@@ -20,7 +20,7 @@ CUIBuyWeaponTab::CUIBuyWeaponTab()
 CUIBuyWeaponTab::~CUIBuyWeaponTab()
 {}
 
-void CUIBuyWeaponTab::Init(CUIXml* xml, char* path)
+void CUIBuyWeaponTab::Init(CUIXml* xml, const char* path)
 {
 
 	R_ASSERT3					(xml->NavigateToNode(path,0), "XML node not found", path);

@@ -6,6 +6,10 @@ class	CStateChimeraThreaten : public CState<_Object> {
 protected:
 	typedef CState<_Object> inherited;
 	typedef CState<_Object>* state_ptr;
+	using inherited::object;
+	using inherited::prev_substate;
+	using inherited::select_state;
+	using inherited::add_state;
 
 	enum {
 		eStateWalk			= u32(0),

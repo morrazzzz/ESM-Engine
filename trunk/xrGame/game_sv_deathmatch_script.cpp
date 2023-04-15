@@ -5,6 +5,7 @@
 
 using namespace luabind;
 
+/*
 template <typename T>
 struct CWrapperBase : public T, public luabind::wrap_base {
 	typedef T inherited;
@@ -29,3 +30,4 @@ void game_sv_Deathmatch::script_register(lua_State *L)
 		];
 
 }
+*/

@@ -5,6 +5,8 @@
 #include "state_custom_action.h"
 #include "../../../cover_point.h"
 #include "../monster_cover_manager.h"
+#include "xrGame/ai_space.h"
+#include "xrGame/level_graph.h"
 
 
 #define TEMPLATE_SPECIALIZATION template <\

@@ -6,7 +6,7 @@
 void	game_sv_TeamDeathmatch::OnEvent (NET_Packet &P, u16 type, u32 time, ClientID sender )
 {
 
-	inherited::OnEvent(P, type, time, sender);
+	//inherited::OnEvent(P, type, time, sender);
 	/*
 	switch	(type)
 	{

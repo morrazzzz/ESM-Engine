@@ -54,6 +54,14 @@ public:
 	typedef GraphEngineSpace::CWorldState			CWorldState;
 	typedef _world_operator							_world_operator;
 
+	using inherited::solve;
+	using inherited::solution;
+	using inherited::get_operator;
+	using inherited::evaluators;
+	using inherited::operators;
+	using inherited::m_evaluators;
+	using inherited::m_operators;
+
 	using _condition_type = typename inherited::_condition_type;
 	using _edge_type = typename inherited::_edge_type;
 	using _operator_ptr = typename inherited::_operator_ptr;

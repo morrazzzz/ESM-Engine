@@ -2,10 +2,10 @@
 
 #include "game_sv_deathmatch.h"
 
-class	game_sv_TeamDeathmatch			: public game_sv_Deathmatch
+class	game_sv_TeamDeathmatch	/*		: public game_sv_Deathmatch*/
 {
 private:
-	typedef game_sv_Deathmatch inherited;
+//	typedef game_sv_Deathmatch inherited;
 
 protected:
 	
@@ -20,7 +20,7 @@ protected:
 	virtual		void				ConsoleCommands_Clear	();
 
 public:	
-									game_sv_TeamDeathmatch	(){m_type = GAME_TEAMDEATHMATCH;}
+									game_sv_TeamDeathmatch	() {}
 	virtual		void				Create					(shared_str& options);
 
 	virtual		void				OnEvent					(NET_Packet &tNetPacket, u16 type, u32 time, ClientID sender );
@@ -55,7 +55,7 @@ public:
 
 	virtual		void				LoadTeams				();
 
-	virtual		char*				GetAnomalySetBaseName	()	{return "teamdeathmatch_game_anomaly_sets";};	
+	virtual		const char*				GetAnomalySetBaseName	()	{return "teamdeathmatch_game_anomaly_sets";};	
 	virtual		BOOL				CanHaveFriendlyFire		()	{return TRUE;}
 	virtual		void				OnFraglimitExceed		();
 	virtual		void				OnTimelimitExceed		();

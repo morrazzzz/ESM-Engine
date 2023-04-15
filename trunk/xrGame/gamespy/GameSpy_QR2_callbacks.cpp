@@ -20,7 +20,7 @@ void __cdecl callback_serverkey(int keyid, void* outbuf, void *userdata)
 	
 
 	game_sv_mp* gmMP = smart_cast<game_sv_mp*>(pServer->game);
-	game_sv_Deathmatch* gmDM = smart_cast<game_sv_Deathmatch*>(pServer->game);
+//	game_sv_Deathmatch* gmDM = smart_cast<game_sv_Deathmatch*>(pServer->game);
 	game_sv_TeamDeathmatch* gmTDM = smart_cast<game_sv_TeamDeathmatch*>(pServer->game);
 	game_sv_ArtefactHunt* gmAhunt = smart_cast<game_sv_ArtefactHunt*>(pServer->game);
 
@@ -73,7 +73,7 @@ void __cdecl callback_serverkey(int keyid, void* outbuf, void *userdata)
 	case GAMETYPE_NAME_KEY: ADD_KEY_VAL(pServer->game, pQR2, BufferAdd_Int, outbuf, Type()); break; //pQR2->BufferAdd_Int(outbuf, pServer->game->Type()); break;
 	case NUMTEAMS_KEY:		ADD_KEY_VAL(gmMP, pQR2, BufferAdd_Int, outbuf, GetNumTeams()); break; //pQR2->BufferAdd_Int(outbuf, gmMP->GetNumTeams()); break;		
 	case G_MAX_PING_KEY:	pQR2->BufferAdd_Int(outbuf, g_sv_dwMaxClientPing); break;
-	//------- game ---------//	
+/*	//------- game ---------//	
 	case G_MAP_ROTATION_KEY:			ADD_KEY_VAL(gmDM, pQR2, BufferAdd_Int, outbuf, HasMapRotation()); break; //if (gmDM) pQR2->BufferAdd_Int(outbuf, gmDM->HasMapRotation());		else pQR2->BufferAdd(outbuf, "");	break;
 	case G_VOTING_ENABLED_KEY:			ADD_KEY_VAL(gmDM, pQR2, BufferAdd_Int, outbuf, IsVotingEnabled()); break; //if (gmDM) pQR2->BufferAdd_Int(outbuf, gmDM->IsVotingEnabled());		else pQR2->BufferAdd(outbuf, ""); break;
 	case G_SPECTATOR_MODES_KEY:			ADD_KEY_VAL(gmDM, pQR2, BufferAdd_Int, outbuf, GetSpectatorModes()); break; //if (gmDM) pQR2->BufferAdd_Int(outbuf, gmDM->GetSpectatorModes());	else pQR2->BufferAdd(outbuf, "");	 break;		
@@ -85,7 +85,7 @@ void __cdecl callback_serverkey(int keyid, void* outbuf, void *userdata)
 	case G_ANOMALIES_ENABLED_KEY:		ADD_KEY_VAL(gmDM, pQR2, BufferAdd_Int, outbuf, IsAnomaliesEnabled()); break; //if (gmDM)pQR2->BufferAdd_Int(outbuf, gmDM->IsAnomaliesEnabled());	else pQR2->BufferAdd(outbuf, "");	break;
 	case G_ANOMALIES_TIME_KEY:			ADD_KEY_VAL(gmDM, pQR2, BufferAdd_Int, outbuf, GetAnomaliesTime()); break; //if (gmDM)pQR2->BufferAdd_Int(outbuf, gmDM->GetAnomaliesTime());		else pQR2->BufferAdd(outbuf, "");	break;
 	case G_WARM_UP_TIME_KEY:			ADD_KEY_VAL(gmDM, pQR2, BufferAdd_Int, outbuf, GetWarmUpTime()); break; //if (gmDM)pQR2->BufferAdd_Int(outbuf, gmDM->GetWarmUpTime());			else pQR2->BufferAdd(outbuf, "");	break;
-	case G_FORCE_RESPAWN_KEY:			ADD_KEY_VAL(gmDM, pQR2, BufferAdd_Int, outbuf, GetForceRespawn()); break; //if (gmDM)pQR2->BufferAdd_Int(outbuf, gmDM->GetForceRespawn());		else pQR2->BufferAdd(outbuf, "");	break;
+	case G_FORCE_RESPAWN_KEY:			ADD_KEY_VAL(gmDM, pQR2, BufferAdd_Int, outbuf, GetForceRespawn()); break; //if (gmDM)pQR2->BufferAdd_Int(outbuf, gmDM->GetForceRespawn());		else pQR2->BufferAdd(outbuf, "");	break;*/
 		//---- game_sv_teamdeathmatch ----
 	case G_AUTO_TEAM_BALANCE_KEY:		ADD_KEY_VAL(gmTDM, pQR2, BufferAdd_Int, outbuf, Get_AutoTeamBalance()); break; //if (gmTDM)pQR2->BufferAdd_Int(outbuf, gmTDM->Get_AutoTeamBalance	());			break;
 	case G_AUTO_TEAM_SWAP_KEY:			ADD_KEY_VAL(gmTDM, pQR2, BufferAdd_Int, outbuf, Get_AutoTeamSwap()); break; //if (gmTDM)pQR2->BufferAdd_Int(outbuf, gmTDM->Get_AutoTeamSwap		());			break;
@@ -156,7 +156,7 @@ void __cdecl callback_teamkey(int keyid, int index, void* outbuf, void *userdata
 	CGameSpy_QR2* pQR2 = pServer->QR2();
 	if (!pQR2) return;
 
-	game_sv_Deathmatch* gmDM = smart_cast<game_sv_Deathmatch*>(pServer->game);
+/*	game_sv_Deathmatch* gmDM = smart_cast<game_sv_Deathmatch*>(pServer->game);
 	if (!gmDM || u32(index) >= gmDM->GetNumTeams()) return;
 
 	switch (keyid)
@@ -166,7 +166,7 @@ void __cdecl callback_teamkey(int keyid, int index, void* outbuf, void *userdata
 		{
 			pQR2->BufferAdd(outbuf, "");
 		}break;
-	};
+	};*/
 };
 
 void __cdecl callback_keylist(qr2_key_type keytype, void* keybuffer, void *userdata)

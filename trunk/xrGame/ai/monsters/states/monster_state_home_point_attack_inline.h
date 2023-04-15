@@ -76,7 +76,7 @@ bool CStateMonsterAttackMoveToHomePointAbstract::check_start_conditions()
 TEMPLATE_SPECIALIZATION
 bool CStateMonsterAttackMoveToHomePointAbstract::check_completion()
 {
-	if (object->HitMemory.get_last_hit_time() > time_state_started) return true;
+	if (object->HitMemory.get_last_hit_time() > this->time_state_started) return true;
 	if (object->EnemyMan.see_enemy_now() && object->Home->at_home(object->EnemyMan.get_enemy()->Position())) return true;
 	if (m_skip_camp && (prev_substate != u32(-1)) && (prev_substate != eStateAttack_HomePoint_Hide) ) return true;
 

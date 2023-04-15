@@ -44,7 +44,7 @@ public:
 
 	virtual	DLL_Pure*	_construct			()
 	{
-		return			(call_member<DLL_Pure*>(this,"_construct"));
+		return			(luabind::call_member<DLL_Pure*>(this,"_construct"));
 	}
 
 	static	DLL_Pure*	_construct_static	(base *self)

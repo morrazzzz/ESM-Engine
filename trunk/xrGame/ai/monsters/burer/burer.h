@@ -2,6 +2,7 @@
 #include "../BaseMonster/base_monster.h"
 #include "../telekinesis.h"
 #include "../anim_triple.h"
+#include "../../../Actor.h"
 #include "../scanning_ability.h"
 #include "../../../script_export_space.h"
 

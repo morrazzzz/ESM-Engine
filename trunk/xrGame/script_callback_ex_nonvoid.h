@@ -10,6 +10,10 @@
 
 template <typename _return_type>
 class CScriptCallbackEx : public CScriptCallbackEx_<_return_type> {
+	using inherited = CScriptCallbackEx_<_return_type>;
+	using return_type = typename inherited::return_type;
+	using inherited::m_functor;
+	using inherited::m_object;
 public:
 #	define	macros_return_operator		return return_type
 #	undef	SCRIPT_CALLBACK_EX_GENERATORS

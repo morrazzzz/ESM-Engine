@@ -16,7 +16,7 @@ public:
 	using _value_type = typename CPropertyEvaluator<_object_type>::_value_type;
 protected:
 	typedef CPropertyEvaluator<_object_type>		inherited;
-
+//	using inherited::m_evaluator_name;
 protected:
 	_value_type			m_value;
 

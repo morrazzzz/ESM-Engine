@@ -10,8 +10,7 @@
 
 #include "profiler.h"
 #include "quadtree.h"
-
-class CCoverPoint;
+#include "cover_point.h"
 
 namespace LevelGraph {
 	class	CVertex;

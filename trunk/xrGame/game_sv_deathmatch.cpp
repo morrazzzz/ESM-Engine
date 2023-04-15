@@ -17,6 +17,7 @@
 #include "Missile.h"
 #include "game_cl_base_weapon_usage_statistic.h"
 
+/*
 //#define DELAYED_ROUND_TIME	7000
 #include "ui\UIBuyWndShared.h"
 #include "../xr_3da/xr_ioconsole.h"
@@ -590,7 +591,6 @@ void	game_sv_Deathmatch::SM_SwitchOnPlayer(CObject* pNewObject)
 		{
 			pHudItem->OnStateSwitch(pHudItem->GetState());
 		};
-*/
 	}
 
 	m_pSM_CurViewEntity				= pNewObject;
@@ -802,7 +802,7 @@ void game_sv_Deathmatch::CheckItem(game_PlayerState* ps, PIItem pItem, xr_vector
 		if (pWeapon)
 		{
 			u8 OldAddons  = pWeapon->GetAddonsState();
-			u8 NewAddons  = u8((ItemID&0xff00)>>0x08)/*u8(ItemID&0x00ff)>>0x05*/;
+			u8 NewAddons  = u8((ItemID&0xff00)>>0x08)/*u8(ItemID&0x00ff)>>0x05
 			if (ExactMatch)
 			{
 				if (OldAddons != NewAddons)
@@ -1092,7 +1092,7 @@ void	game_sv_Deathmatch::LoadTeams			()
 	LoadTeamData("deathmatch_team0");
 };
 
-s32		game_sv_Deathmatch::GetMoneyAmount			(const shared_str& caSection, char* caMoneyStr)
+s32		game_sv_Deathmatch::GetMoneyAmount			(const shared_str& caSection, const char* caMoneyStr)
 {
 	if (pSettings->line_exist(caSection, caMoneyStr))
 		return pSettings->r_s32(caSection, caMoneyStr);
@@ -1108,7 +1108,7 @@ void	game_sv_Deathmatch::LoadTeamData			(const shared_str& caSection)
 
 //	LoadWeaponsForTeam	(caSection, &NewTeam.aWeapons);
 	LoadSkinsForTeam	(caSection, &NewTeam.aSkins);
-	LoadDefItemsForTeam	(caSection, /*&NewTeam.aWeapons, */&NewTeam.aDefaultItems);	
+	LoadDefItemsForTeam	(caSection, /*&NewTeam.aWeapons, &NewTeam.aDefaultItems);	
 	//-------------------------------------------------------------
 	if( pSettings->section_exist(caSection) )//money
 	{
@@ -1302,7 +1302,7 @@ void	game_sv_Deathmatch::LoadAnomalySets			()
 	//-----------------------------------------------------------
 	if (!g_pGameLevel || !Level().pLevel) return;
 
-	char* ASetBaseName = GetAnomalySetBaseName();
+	const char* ASetBaseName = GetAnomalySetBaseName();
 
 	string1024 SetName, AnomaliesNames, AnomalyName;
 	ANOMALIES		AnomalySingleSet;
@@ -2035,7 +2035,7 @@ void game_sv_Deathmatch::OnRender				()
 			}
 		}
 	}
-	*/
+	
 };
 #endif
 
@@ -2087,3 +2087,4 @@ void game_sv_Deathmatch::WriteGameState(CInifile& ini, LPCSTR sect, bool bRoundR
 	}
 }
 
+*/

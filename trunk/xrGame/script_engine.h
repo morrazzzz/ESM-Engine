@@ -12,6 +12,7 @@
 #include "script_export_space.h"
 #include "script_space_forward.h"
 #include "associative_vector.h"
+#include "../xr_3da/ai_script_space.h"
 
 extern "C" {
 	#include <lua.h>

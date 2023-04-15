@@ -219,7 +219,7 @@ IC	void CAbstractGraph::save			(IWriter &stream)
 	stream.open_chunk			(1);
 	auto		I = vertices().cbegin();
 	auto		E = vertices().cend();
-	for (int i=0; I != E; ++I, ++i) {
+	for (u32 i=0; I != E; ++I, ++i) {
 		stream.open_chunk		(i);
 		{
 			stream.open_chunk	(0);
@@ -245,8 +245,8 @@ IC	void CAbstractGraph::save			(IWriter &stream)
 			save_data			((*i_const_vect).second->vertex_id(),stream);
 
 			stream.w_u32		((u32)(*i_const_vect).second->edges().size());
-			auto		i = (*i_const_vect).second->edges().begin();
-			auto		e = (*i_const_vect).second->edges().end();
+			auto		i = (*i_const_vect).second->edges().cbegin();
+			auto		e = (*i_const_vect).second->edges().cend();
 			for ( ; i != e; ++i) {
 				save_data		((*i).vertex_id(),stream);
 				save_data		((*i).weight(),stream);

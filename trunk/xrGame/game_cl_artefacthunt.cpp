@@ -577,17 +577,17 @@ bool game_cl_ArtefactHunt::CanBeReady				()
 	return true;
 };
 
-char*	game_cl_ArtefactHunt::getTeamSection(int Team)
+char* game_cl_ArtefactHunt::getTeamSection(int Team)
 {
 	switch (Team)
 	{
 	case 1:
 		{
-			return "artefacthunt_team1";
+			return (char*)"artefacthunt_team1";
 		}break;
 	case 2:
 		{
-			return "artefacthunt_team2";
+			return (char*)"artefacthunt_team2";
 		}break;
 	default:
 		NODEFAULT;

@@ -54,6 +54,10 @@ protected:
 				_index_type,
 				_iteration_type
 			> inherited;
+
+	using inherited::graph;
+	using inherited::goal_node_index;
+	using inherited::start_node_index;
 public:
 	using const_iterator = typename inherited::const_iterator;
 

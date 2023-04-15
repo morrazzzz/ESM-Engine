@@ -21,7 +21,7 @@ struct CDataStorageBucketList {
 	template <template <typename _T> class T1>
 	struct BucketList {
 		template<typename T2>
-		struct _vertex : public T1<T2> {
+		struct __vertex : public T1<T2> {
 			_path_id_type	m_path_id;
 			_bucket_id_type	m_bucket_id;
 		};
@@ -31,11 +31,11 @@ struct CDataStorageBucketList {
 		typename _data_storage,
 		template <typename _T> class _vertex = CEmptyClassTemplate
 	>
-	class CDataStorage : public CDataStorageDoubleLinkedList<false>::CDataStorage<_data_storage,BucketList<_vertex>::_vertex> {
+	class CDataStorage : public CDataStorageDoubleLinkedList<false>::CDataStorage<_data_storage, typename BucketList<_vertex>::__vertex> {
 	public:
 		typedef typename CDataStorageDoubleLinkedList<false>::CDataStorage<
 			_data_storage,
-			BucketList<_vertex>::_vertex
+			typename BucketList<_vertex>::__vertex
 		>											inherited;
 		typedef typename inherited::inherited_base	inherited_base;
 		typedef typename inherited::CGraphVertex	CGraphVertex;
@@ -43,6 +43,8 @@ struct CDataStorageBucketList {
 		typedef typename CGraphVertex::_index_type	_index_type;
 
 	protected:
+		using inherited::current_path_id;
+
 		_dist_type				m_min_bucket_value;
 		_dist_type				m_max_bucket_value;
 		CGraphVertex			*m_buckets[bucket_count];
