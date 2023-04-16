@@ -790,6 +790,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="DiscordRPC.hpp" />
     <ClInclude Include="edit_actions.h" />
     <ClInclude Include="GameMtlLib.h" />
     <ClInclude Include="line_editor.h" />
@@ -881,6 +882,7 @@
   <ItemGroup>
     <ClCompile Include="bone.cpp" />
     <ClCompile Include="defines.cpp" />
+    <ClCompile Include="DiscordRPC.cpp" />
     <ClCompile Include="edit_actions.cpp" />
     <ClCompile Include="GameMtlLib.cpp" />
     <ClCompile Include="GameMtlLib_Engine.cpp" />

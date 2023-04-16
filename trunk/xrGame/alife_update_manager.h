@@ -13,7 +13,7 @@
 #include "alife_storage_manager.h"
 
 namespace RestrictionSpace {
-	enum ERestrictorTypes;
+	enum ERestrictorTypes : u32;
 }
 
 class CALifeUpdateManager :

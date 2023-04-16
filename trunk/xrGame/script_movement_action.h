@@ -12,19 +12,19 @@
 #include "script_export_space.h"
 
 namespace DetailPathManager {
-	enum EDetailPathType;
+	enum EDetailPathType : u32;
 };
 
 namespace MonsterSpace {
-	enum EBodyState;
-	enum EMovementType;
-	enum EScriptMonsterMoveAction;
-	enum EScriptMonsterSpeedParam;
+	enum EBodyState : u32;
+	enum EMovementType : u32;
+	enum EScriptMonsterMoveAction : u32;
+	enum EScriptMonsterSpeedParam : u32;
 };
 
 namespace PatrolPathManager {
-	enum EPatrolStartType;
-	enum EPatrolRouteType;
+	enum EPatrolStartType : u32;
+	enum EPatrolRouteType : u32;
 };
 
 class CPatrolPath;
@@ -34,27 +34,27 @@ class CPatrolPathParams;
 class CScriptMovementAction : public CScriptAbstractAction {
 public:
 	enum EGoalType {
-		eGoalTypeObject = u32(0),
+		eGoalTypeObject = static_cast<u32>(0),
 		eGoalTypePatrolPath,
 		eGoalTypePathPosition,
 		eGoalTypeNoPathPosition,
 		eGoalTypePathNodePosition,
 		eGoalTypeInput,
-		eGoalTypeDummy = u32(-1),
+		eGoalTypeDummy = static_cast<u32>(-1),
 	};
 
 	enum EInputKeys {
-		eInputKeyNone		= u32(1) << 0,
-		eInputKeyForward	= u32(1) << 1,
-		eInputKeyBack		= u32(1) << 2,
-		eInputKeyLeft		= u32(1) << 3,
-		eInputKeyRight		= u32(1) << 4,
-		eInputKeyShiftUp	= u32(1) << 5,
-		eInputKeyShiftDown	= u32(1) << 6,
-		eInputKeyBreaks		= u32(1) << 7,
-		eInputKeyEngineOn	= u32(1) << 8,
-		eInputKeyEngineOff	= u32(1) << 9,
-		eInputKeyDummy		= u32(1) << 10,
+		eInputKeyNone		= static_cast<u32>(1) << 0,
+		eInputKeyForward	= static_cast<u32>(1) << 1,
+		eInputKeyBack		= static_cast<u32>(1) << 2,
+		eInputKeyLeft		= static_cast<u32>(1) << 3,
+		eInputKeyRight		= static_cast<u32>(1) << 4,
+		eInputKeyShiftUp	= static_cast<u32>(1) << 5,
+		eInputKeyShiftDown	= static_cast<u32>(1) << 6,
+		eInputKeyBreaks		= static_cast<u32>(1) << 7,
+		eInputKeyEngineOn	= static_cast<u32>(1) << 8,
+		eInputKeyEngineOff	= static_cast<u32>(1) << 9,
+		eInputKeyDummy		= static_cast<u32>(1) << 10,
 	};
 
 public:

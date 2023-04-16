@@ -13,11 +13,11 @@
 #include "game_graph_space.h"
 
 namespace MovementManager {
-	enum EPathType;
+	enum EPathType : u32;
 };
 
 namespace DetailPathManager {
-	enum EDetailPathType;
+	enum EDetailPathType : u32;
 };
 
 template <
@@ -117,8 +117,8 @@ protected:
 			>		CLevelPathManager;
 
 private:
-	enum EPathState {
-		ePathStateSelectGameVertex = u32(0),
+	enum EPathState : u32 {
+		ePathStateSelectGameVertex = static_cast<u32>(0),
 		ePathStateBuildGamePath,
 		ePathStateContinueGamePath,
 		
@@ -135,7 +135,7 @@ private:
 
 		ePathStateTeleport,
 		
-		ePathStateDummy = u32(-1),
+		ePathStateDummy = static_cast<u32>(-1),
 	};
 
 protected:

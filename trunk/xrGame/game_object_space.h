@@ -1,7 +1,7 @@
 #pragma once
 
 namespace GameObject {
-	enum ECallbackType {
+	enum ECallbackType : u32 {
 		eTradeStart = static_cast<u32>(0),
 		eTradeStop,
 		eTradeSellBuyItem,

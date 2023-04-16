@@ -1,11 +1,11 @@
 #pragma once
 
-enum ETaskState {
+enum ETaskState : u32{
 	eTaskStateFail			= 0,
 	eTaskStateInProgress,
 	eTaskStateCompleted,
 //.	eTaskUserDefined,
-	eTaskStateDummy			= u32(-1)
+	eTaskStateDummy			= static_cast<u32>(-1)
 };
 
 

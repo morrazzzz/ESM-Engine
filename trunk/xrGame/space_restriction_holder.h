@@ -15,7 +15,7 @@ template <typename _1, typename _2> class intrusive_ptr;
 
 namespace RestrictionSpace {
 	struct CTimeIntrusiveBase;
-	enum ERestrictorTypes;
+	enum ERestrictorTypes : u32;
 };
 
 namespace SpaceRestrictionHolder {

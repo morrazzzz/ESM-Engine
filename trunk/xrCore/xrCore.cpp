@@ -132,6 +132,12 @@ void xrCore::_destroy		()
 	}
 }
 
+const char* xrCore::GetEngineVersion() {
+		static string256 buff;
+		std::snprintf(buff, sizeof(buff), "xrCore build %d, %s", build_id, build_date);
+		return buff;
+}
+
 #ifndef XRCORE_STATIC
 	BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD ul_reason_for_call, LPVOID lpvReserved)
 {
@@ -164,3 +170,4 @@ void xrCore::_destroy		()
     return TRUE;
 }
 #endif // XRCORE_STATIC
+

@@ -12,7 +12,7 @@
 #include "script_export_space.h"
 
 namespace SightManager {
-	enum ESightType;
+	enum ESightType : u32;
 };
 
 class CScriptGameObject;
@@ -20,11 +20,11 @@ class CScriptGameObject;
 class CScriptWatchAction : public CScriptAbstractAction {
 public:
 	enum EGoalType {
-		eGoalTypeObject = u32(0),
+		eGoalTypeObject = static_cast<u32>(0),
 		eGoalTypeWatchType,
 		eGoalTypeDirection,
 		eGoalTypeCurrent,
-		eGoalTypeDummy = u32(-1),
+		eGoalTypeDummy = static_cast<u32>(-1),
 	};
 
 public:

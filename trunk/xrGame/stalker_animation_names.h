@@ -19,12 +19,12 @@ extern LPCSTR in_place_names		[];
 extern LPCSTR global_names			[];
 extern LPCSTR head_names			[];
 
-enum ECriticalWoundType {
-	critical_wound_type_head		= u32(4),
+enum ECriticalWoundType : u32 {
+	critical_wound_type_head		= static_cast<u32>(4),
 	critical_wound_type_torso,
 	critical_wound_type_hand_left,
 	critical_wound_type_hand_right,
 	critical_wound_type_leg_left,
 	critical_wound_type_leg_right,
-	critical_wound_type_dummy		= u32(-1),
+	critical_wound_type_dummy		= static_cast<u32>(-1),
 };

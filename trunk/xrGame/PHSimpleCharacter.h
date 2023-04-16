@@ -6,7 +6,7 @@
 #include "IColisiondamageInfo.h"
 #include "../xr_3da/GameMtlLib.h"
 namespace ALife {
-	enum EHitType;
+	enum EHitType : u32;
 };
 #ifdef DEBUG
 #include "PHDebug.h"

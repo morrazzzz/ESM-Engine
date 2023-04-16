@@ -42,14 +42,14 @@
 #endif
 
 namespace MonsterSpace {
-	enum EMovementDirection;
+	enum EMovementDirection : u32;
 };
 
 namespace StalkerSpace {
-	enum EBodyAction;
+	enum EBodyAction : u32;
 };
 
-enum ECriticalWoundType;
+enum ECriticalWoundType : u32;
 
 class CALifeSimulator;
 class CCharacterPhysicsSupport;

@@ -23,13 +23,13 @@ namespace RestrictionSpace {
 		}
 	};
 
-	enum ERestrictorTypes {
-		eDefaultRestrictorTypeNone = u8(0),
-		eDefaultRestrictorTypeOut  = u8(1),
-		eDefaultRestrictorTypeIn   = u8(2),
-		eRestrictorTypeNone		   = u8(3),
-		eRestrictorTypeIn		   = u8(4),
-		eRestrictorTypeOut		   = u8(5),
+	enum ERestrictorTypes : u32{
+		eDefaultRestrictorTypeNone = static_cast<u8>(0),
+		eDefaultRestrictorTypeOut  = static_cast<u8>(1),
+		eDefaultRestrictorTypeIn   = static_cast<u8>(2),
+		eRestrictorTypeNone		   = static_cast<u8>(3),
+		eRestrictorTypeIn		   = static_cast<u8>(4),
+		eRestrictorTypeOut		   = static_cast<u8>(5),
 	};
 };
 

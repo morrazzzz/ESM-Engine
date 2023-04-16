@@ -13,10 +13,13 @@
 #include "weaponhud.h"
 #include "stalker_animation_data_storage.h"
 #include "stalker_velocity_holder.h"
+#include "string_table.h"
+#include "../xr_3da/x_ray.h"
 
 #include "../xr_3da/CameraManager.h"
 #include "ai_space.h"
 #include "script_engine.h"
+#include "xr_3da/DiscordRPC.hpp"
 
 #ifdef DEBUG
 #include "profiler.h"
@@ -461,6 +464,9 @@ void CGamePersistent::OnFrame	()
 #endif
 	if (!g_dedicated_server && !m_intro_event.empty())	m_intro_event();
 
+	if(Device.dwPrecacheFrame == 0 && g_pGameLevel)
+		Discord.Update(CStringTable().translate(Level().name()).c_str(), Level().name().c_str());
+
 	if( !m_pMainMenu->IsActive() )
 		m_pMainMenu->DestroyInternal(false);
 
@@ -667,6 +673,8 @@ void CGamePersistent::LoadTitle(bool change_tip, shared_str map_name)
 			xr_sprintf(buff, "ls_mp_tip_%d", tip_num);
 
 		pApp->LoadTitleInt(CStringTable().translate("ls_header").c_str(), tmp.c_str(), CStringTable().translate(buff).c_str());
+
+		Discord.Update("Loading level...");
 	}
 }
 

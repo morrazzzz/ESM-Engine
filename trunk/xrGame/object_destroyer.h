@@ -132,7 +132,7 @@ struct CDestroyer {
 	template <typename T>
 	IC	static void delete_data(T &data)
 	{
-		CHelper4<T>::delete_data<object_type_traits::is_stl_container<T>::value>(data);
+		CHelper4<T>::template delete_data<object_type_traits::is_stl_container<T>::value>(data);
 	}
 };
 

@@ -145,6 +145,9 @@
     <Filter Include="RenderRef\doug_lea_memory_allocator">
       <UniqueIdentifier>{c877d372-a7bb-42d6-8e49-12f99ea7f3c4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="DiscordRPC">
+      <UniqueIdentifier>{cc2e8b2a-b048-46d0-b3ae-60993dd0a588}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="_d3d_extensions.h">
@@ -407,6 +410,9 @@
     </ClInclude>
     <ClInclude Include="GameMtlLib.h">
       <Filter>Game API\GameMaterials</Filter>
+    </ClInclude>
+    <ClInclude Include="DiscordRPC.hpp">
+      <Filter>DiscordRPC</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -679,6 +685,9 @@
     </ClCompile>
     <ClCompile Include="bone.cpp">
       <Filter>Game API\Animator</Filter>
+    </ClCompile>
+    <ClCompile Include="DiscordRPC.cpp">
+      <Filter>DiscordRPC</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -221,4 +221,5 @@ XRCORE_API	char*				timestamp				(string64& dest);
 
 extern XRCORE_API u32			crc32					(const void* P, u32 len);
 
+XRCORE_API std::string StringToUTF8(const char* in);
 #endif

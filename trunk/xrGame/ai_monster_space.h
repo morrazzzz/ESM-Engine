@@ -11,31 +11,31 @@
 #include "xrserver_space.h"
 
 namespace MonsterSpace {
-	enum EMentalState {
-		eMentalStateDanger = u32(0),
+	enum EMentalState : u32{
+		eMentalStateDanger = static_cast<u32>(0),
 		eMentalStateFree,
 		eMentalStatePanic,
 	};
 
-	enum EBodyState {
+	enum EBodyState : u32{
 		eBodyStateCrouch = 0,
 		eBodyStateStand,
 	};
 
-	enum EMovementType {
+	enum EMovementType : u32{
 		eMovementTypeWalk = 0,
 		eMovementTypeRun,
 		eMovementTypeStand,
 	};
 
-	enum EMovementDirection {
+	enum EMovementDirection : u32{
 		eMovementDirectionForward = 0,
 		eMovementDirectionBackward,
 		eMovementDirectionLeft,
 		eMovementDirectionRight,
 	};
 
-	enum EObjectAction {
+	enum EObjectAction : u32{
 		eObjectActionSwitch1,
 		eObjectActionSwitch2,
 		eObjectActionReload1,
@@ -63,9 +63,9 @@ namespace MonsterSpace {
 		eObjectActionTake,
 		eObjectActionMisfire1,
 		eObjectActionEmpty1,
-		eObjectActionNoItems		= eObjectActionIdle | u16(-1),
+		eObjectActionNoItems		= eObjectActionIdle | static_cast<u16>(-1),
 		// 
-		eObjectActionDummy			= u32(-1),
+		eObjectActionDummy			= static_cast<u32>(-1),
 	};
 
 	struct SBoneRotation {
@@ -74,7 +74,7 @@ namespace MonsterSpace {
 		float			speed;
 	};
 
-	enum EScriptMonsterMoveAction {
+	enum EScriptMonsterMoveAction : u32 {
 		eMA_WalkFwd,
 		eMA_WalkBkwd,
 		eMA_Run,
@@ -83,13 +83,13 @@ namespace MonsterSpace {
 		eMA_Steal
 	};
 	
-	enum EScriptMonsterSpeedParam {
-		eSP_Default				= u32(0),
+	enum EScriptMonsterSpeedParam : u32{
+		eSP_Default				= static_cast<u32>(0),
 		eSP_ForceSpeed,	
-		eSP_None				= u32(-1),
+		eSP_None				= static_cast<u32>(-1),
 	};
 
-	enum EScriptMonsterAnimAction {
+	enum EScriptMonsterAnimAction : u32{
 		eAA_StandIdle, 
 		eAA_SitIdle,			
 		eAA_LieIdle,			
@@ -99,28 +99,28 @@ namespace MonsterSpace {
 		eAA_Attack,				
 		eAA_LookAround,
 		eAA_Turn,
-		eAA_NoAction			= u32(-1)
+		eAA_NoAction			= static_cast<u32>(-1)
 	};
 
-	enum EScriptMonsterGlobalAction {
-		eGA_Rest				= u32(0),
+	enum EScriptMonsterGlobalAction : u32{
+		eGA_Rest				= static_cast<u32>(0),
 		eGA_Eat,
 		eGA_Attack,
 		eGA_Panic,
-		eGA_None				= u32(-1)
+		eGA_None				= static_cast<u32>(-1)
 	};
 
-	enum EScriptSoundAnim {
-		eAnimSoundCustom		= u32(0),
+	enum EScriptSoundAnim : u32{
+		eAnimSoundCustom		= static_cast<u32>(0),
 		eAnimSoundDefault,
 	};
 
-	enum EMonsterHeadAnimType {
-		eHeadAnimNormal			= u32(0),
+	enum EMonsterHeadAnimType : u32{
+		eHeadAnimNormal			= static_cast<u32>(0),
 		eHeadAnimAngry,
 		eHeadAnimGlad,
 		eHeadAnimKind,
 
-		eHeadAnimNone			= u32(-1),
+		eHeadAnimNone			= static_cast<u32>(-1),
 	};
 };

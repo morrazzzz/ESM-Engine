@@ -39,7 +39,7 @@ class CAttachableItem;
 class animation_movement_controller;
 class CBlend;
 namespace GameObject {
-	enum ECallbackType;
+	enum ECallbackType : u32;
 };
 
 template <typename _return_type>

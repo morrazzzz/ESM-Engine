@@ -17,11 +17,11 @@ class CMissile;
 class CFoodItem;
 
 namespace ObjectHandlerSpace {
-	enum EWorldProperties;
+	enum EWorldProperties : u32;
 };
 
 namespace MonsterSpace {
-	enum EObjectAction;
+	enum EObjectAction : u32;
 };
 
 class CObjectHandlerPlanner : public CActionPlanner<CAI_Stalker,true> {

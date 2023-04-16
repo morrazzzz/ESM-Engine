@@ -74,9 +74,9 @@ namespace StalkerSpace {
 		eStalkerSoundMaskDummy						= u32(-1),
 	};
 
-	enum EBodyAction {
-		eBodyActionNone		= u32(0),
+	enum EBodyAction : u32{
+		eBodyActionNone		= static_cast<u32>(0),
 		eBodyActionHello,
-		eBodyActionDummy	= u32(-1),
+		eBodyActionDummy	= static_cast<u32>(-1),
 	};
 };

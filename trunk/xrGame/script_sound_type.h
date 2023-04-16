@@ -10,7 +10,7 @@
 
 #include "script_export_space.h"
 
-enum ESoundTypes;
+enum ESoundTypes : u32;
 
 typedef enum_exporter<ESoundTypes> CScriptSoundType;
 add_to_type_list(CScriptSoundType)

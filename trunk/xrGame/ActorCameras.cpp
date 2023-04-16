@@ -69,9 +69,9 @@ void CActor::camUpdateLadder(float dt)
 	{
 		float &cam_pitch					= cameras[eacFirstEye]->pitch;
 		const float ldown_pitch				= cameras[eacFirstEye]->lim_pitch.y;
-		float delta							= angle_difference_signed(ldown_pitch,cam_pitch);
-		if(delta>0.f)
-			cam_pitch						+= delta* _min(dt*10.f,1.f) ;
+		const float delta1							= angle_difference_signed(ldown_pitch,cam_pitch);
+		if(delta1>0.f)
+			cam_pitch						+= delta1* _min(dt*10.f,1.f) ;
 	}
 }
 
@@ -180,7 +180,7 @@ void CActor::cam_Update(float dt, float fFOV)
 			xrXRC				xrc			;
 			xrc.box_options		(0)			;
 			xrc.box_query		(Level().ObjectSpace.GetStaticModel(), bc, bd)		;
-			u32 tri_count		= xrc.r_count();
+			u32 tri_count		= static_cast<u32>(xrc.r_count());
 			if (tri_count)		{
 				float da		= 0.f;
 				BOOL bIntersect	= FALSE;
@@ -238,18 +238,18 @@ void CActor::cam_Update(float dt, float fFOV)
 		xrXRC						xrc			;
 		xrc.box_options				(0)			;
 		xrc.box_query				(Level().ObjectSpace.GetStaticModel(), point, Fvector().set(VIEWPORT_NEAR,VIEWPORT_NEAR,VIEWPORT_NEAR) );
-		u32 tri_count				= xrc.r_count();
+		u32 tri_count				= static_cast<u32>(xrc.r_count());
 		if (tri_count)
 		{
 			_viewport_near			= 0.01f;
 		}
 		else
 		{
-			xr_vector<ISpatial*> ISpatialResult;
-			g_SpatialSpacePhysic->q_box(ISpatialResult, 0, STYPE_PHYSIC, point, Fvector().set(VIEWPORT_NEAR,VIEWPORT_NEAR,VIEWPORT_NEAR));
-			for (u32 o_it=0; o_it<ISpatialResult.size(); o_it++)
+			xr_vector<ISpatial*> spatial_result;
+			g_SpatialSpacePhysic->q_box(spatial_result, 0, STYPE_PHYSIC, point, Fvector().set(VIEWPORT_NEAR,VIEWPORT_NEAR,VIEWPORT_NEAR));
+			for (u32 o_it=0; o_it<spatial_result.size(); o_it++)
 			{
-				CPHShell*		pCPHS= smart_cast<CPHShell*>(ISpatialResult[o_it]);
+				CPHShell*		pCPHS= smart_cast<CPHShell*>(spatial_result[o_it]);
 				if (pCPHS)
 				{
 					_viewport_near			= 0.01f;

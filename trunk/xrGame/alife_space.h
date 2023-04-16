@@ -50,40 +50,40 @@ namespace ALife {
 	};
 
 	enum ECombatResult {
-		eCombatResultRetreat1 = u32(0),
+		eCombatResultRetreat1 = static_cast<u32>(0),
 		eCombatResultRetreat2,
 		eCombatResultRetreat12,
 		eCombatResult1Kill2,
 		eCombatResult2Kill1,
 		eCombatResultBothKilled,
-		eCombatDummy = u32(-1),
+		eCombatDummy = static_cast<u32>(-1),
 	};
 
 	enum ECombatAction {
-		eCombatActionAttack = u32(0),
+		eCombatActionAttack = static_cast<u32>(0),
 		eCombatActionRetreat,
-		eCombatActionDummy = u32(-1),
+		eCombatActionDummy = static_cast<u32>(-1),
 	};
 
 	enum EMeetActionType {
-		eMeetActionTypeAttack = u32(0),
+		eMeetActionTypeAttack = static_cast<u32>(0),
 		eMeetActionTypeInteract,
 		eMeetActionTypeIgnore,
 		eMeetActionSmartTerrain,
-		eMeetActionTypeDummy = u32(-1),
+		eMeetActionTypeDummy = static_cast<u32>(-1),
 	};
 
-	enum ERelationType {
-		eRelationTypeFriend = u32(0),
+	enum ERelationType : u32{
+		eRelationTypeFriend = static_cast<u32>(0),
 		eRelationTypeNeutral,
 		eRelationTypeEnemy,
 		eRelationTypeWorstEnemy,
 		eRelationTypeLast,
-		eRelationTypeDummy = u32(-1),
+		eRelationTypeDummy = static_cast<u32>(-1),
 	};
 
-	enum EHitType {
-		eHitTypeBurn = u32(0),
+	enum EHitType : u32 {
+		eHitTypeBurn = static_cast<u32>(0),
 		eHitTypeShock,
 		eHitTypeStrike,
 		eHitTypeWound,
@@ -104,19 +104,19 @@ namespace ALife {
 	};
 
 	enum EWeaponPriorityType {
-		eWeaponPriorityTypeKnife = u32(0),
+		eWeaponPriorityTypeKnife = static_cast<u32>(0),
 		eWeaponPriorityTypeSecondary,
 		eWeaponPriorityTypePrimary,
 		eWeaponPriorityTypeGrenade,
-		eWeaponPriorityTypeDummy = u32(-1),
+		eWeaponPriorityTypeDummy = static_cast<u32>(-1),
 	};
 
 	enum ECombatType {
-		eCombatTypeMonsterMonster = u32(0),
+		eCombatTypeMonsterMonster = static_cast<u32>(0),
 		eCombatTypeMonsterAnomaly,
 		eCombatTypeAnomalyMonster,
 		eCombatTypeSmartTerrain,
-		eCombatTypeDummy = u32(-1),
+		eCombatTypeDummy = static_cast<u32>(-1),
 	};
 
 	//возможность подключения аддонов

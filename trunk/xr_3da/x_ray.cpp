@@ -19,6 +19,7 @@
 #include "ispatial.h"
 #include "CopyProtection.h"
 #include <process.h>
+#include "DiscordRPC.hpp"
 
 #define CORE_FEATURE_SET(feature, section) Core.Features.set(xrCore::Feature::feature, READ_IF_EXISTS(pSettings, r_bool, section, #feature, false))
 
@@ -288,6 +289,8 @@ void Startup					()
 	// Destroy LOGO
 	DestroyWindow				(logoWindow);
 	logoWindow					= NULL;
+
+	Discord.Init();
 
 	// Main cycle
 	CheckCopyProtection			( );

@@ -14,22 +14,22 @@
 #include "xr_time.h"
 #include "character_info_defs.h"
 
-enum EPdaMsg;
-enum ESoundTypes;
-enum ETaskState;
+enum EPdaMsg : u32;
+enum ESoundTypes : u32;
+enum ETaskState : u32;
 
-namespace ALife {enum ERelationType;};
-namespace ScriptEntity {enum EActionType;};
-namespace MovementManager { enum EPathType;};
-namespace DetailPathManager { enum EDetailPathType;};
-namespace SightManager {enum ESightType;};
+namespace ALife {enum ERelationType : u32;};
+namespace ScriptEntity {enum EActionType : u32;};
+namespace MovementManager { enum EPathType : u32;};
+namespace DetailPathManager { enum EDetailPathType : u32;};
+namespace SightManager {enum ESightType : u32;};
 
 class NET_Packet;
 class CGameTask;
 
 namespace PatrolPathManager { 
-	enum EPatrolStartType;
-	enum EPatrolRouteType;
+	enum EPatrolStartType : u32;
+	enum EPatrolRouteType : u32;
 };
 
 namespace MemorySpace {
@@ -41,25 +41,25 @@ namespace MemorySpace {
 };
 
 namespace MonsterSpace {
-	enum EBodyState;
-	enum EMovementType;
-	enum EMovementDirection;
-	enum EDirectionType;
-	enum EPathState;
-	enum EObjectAction;
-	enum EMentalState;
-	enum EScriptMonsterMoveAction;
-	enum EScriptMonsterSpeedParam;
-	enum EScriptMonsterAnimAction;
-	enum EScriptMonsterGlobalAction;
-	enum EScriptSoundAnim;
-	enum EMonsterSounds;
-	enum EMonsterHeadAnimType;
+	enum EBodyState : u32;
+	enum EMovementType : u32;
+	enum EMovementDirection : u32;
+	enum EDirectionType : u32;
+	enum EPathState : u32;
+	enum EObjectAction : u32;
+	enum EMentalState : u32;
+	enum EScriptMonsterMoveAction : u32;
+	enum EScriptMonsterSpeedParam : u32;
+	enum EScriptMonsterAnimAction : u32;
+	enum EScriptMonsterGlobalAction : u32;
+	enum EScriptSoundAnim : u32;
+	enum EMonsterSounds : u32;
+	enum EMonsterHeadAnimType : u32;
 	struct SBoneRotation;
 };
 
 namespace GameObject {
-	enum ECallbackType;
+	enum ECallbackType : u32;
 };
 
 class CGameObject;
@@ -111,7 +111,7 @@ class CScriptGameObject;
 class CScriptGameObject;
 
 namespace SightManager {
-	enum ESightType;
+	enum ESightType : u32;
 }
 
 struct CSightParams {
