@@ -231,6 +231,9 @@
     <ClCompile Include="dump_string.cpp">
       <Filter>Math</Filter>
     </ClCompile>
+    <ClCompile Include="_cylinder.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FTimer.h">

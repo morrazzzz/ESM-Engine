@@ -4,6 +4,8 @@
 
 #include "stdafx.h"
 #include "HOM.h"
+
+#include "dxRenderDeviceRender.h"
 #include "occRasterizer.h"
 #include "../../xr_3da/GameFont.h"
  
@@ -364,7 +366,7 @@ void CHOM::OnRender	()
 			RCache.set_xform_world(Fidentity);
 			// draw solid
 			Device.SetNearer(TRUE);
-			RCache.set_Shader	(Device.m_SelectionShader);
+			RCache.set_Shader	(dxRenderDeviceRender::Instance().m_SelectionShader);
 			RCache.dbg_Draw		(D3DPT_TRIANGLELIST,&*poly.begin(),poly.size()/3);
 			Device.SetNearer(FALSE);
 			// draw wire
@@ -373,7 +375,7 @@ void CHOM::OnRender	()
 			}else{
 				Device.SetNearer(TRUE);
 			}
-			RCache.set_Shader	(Device.m_SelectionShader);
+			RCache.set_Shader	(dxRenderDeviceRender::Instance().m_SelectionShader);
 			RCache.dbg_Draw		(D3DPT_LINELIST,&*line.begin(),line.size()/2);
 			if (bDebug){
 				RImplementation.rmNormal();

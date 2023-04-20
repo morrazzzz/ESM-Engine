@@ -525,7 +525,7 @@ extern int			psNET_ServerPending;
 extern int			psNET_DedicatedSleep;
 extern char			psNET_Name[32];
 extern Flags32		psEnvFlags;
-extern float		r__dtex_range;
+//extern float		r__dtex_range;
 
 extern int			g_ErrorLineCount;
 
@@ -572,7 +572,7 @@ void CCC_Register()
 	CMD3(CCC_Mask,		"rs_occlusion",			&psDeviceFlags,		rsOcclusion);
 
 	CMD3(CCC_Mask,		"rs_detail",			&psDeviceFlags,		rsDetails	);
-	CMD4(CCC_Float,		"r__dtex_range",		&r__dtex_range,		5,		175	);
+//	CMD4(CCC_Float,		"r__dtex_range",		&r__dtex_range,		5,		175	);
 
 	CMD3(CCC_Mask,		"rs_constant_fps",		&psDeviceFlags,		rsConstantFPS			);
 	CMD3(CCC_Mask,		"rs_render_statics",	&psDeviceFlags,		rsDrawStatic			);

@@ -1297,7 +1297,8 @@ void CUIMainIngameWnd::draw_adjust_mode()
 {
 	if (g_bHudAdjustMode&&m_pWeapon) //draw firePoint,ShellPoint etc
 	{
-		CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
+		R_ASSERT(false);
+		/*CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
 		if(!pActor)
 			return;
 
@@ -1350,7 +1351,7 @@ void CUIMainIngameWnd::draw_adjust_mode()
 			parent.transform_tiny	(SP);
 
 
-			RCache.dbg_DrawAABB(FP,0.01f,0.01f,0.01f,D3DCOLOR_XRGB(255,0,0));
+			DRender->dbg_DrawAABB(FP,0.01f,0.01f,0.01f,D3DCOLOR_XRGB(255,0,0));
 			RCache.dbg_DrawAABB(FP2,0.02f,0.02f,0.02f,D3DCOLOR_XRGB(0,0,255));
 			RCache.dbg_DrawAABB(SP,0.01f,0.01f,0.01f,D3DCOLOR_XRGB(0,255,0));
 		
@@ -1361,7 +1362,7 @@ void CUIMainIngameWnd::draw_adjust_mode()
 			RCache.dbg_DrawAABB(FP,0.01f,0.01f,0.01f,D3DCOLOR_XRGB(255,0,0));
 			RCache.dbg_DrawAABB(FP2,0.02f,0.02f,0.02f,D3DCOLOR_XRGB(0,0,255));
 			RCache.dbg_DrawAABB(SP,0.02f,0.02f,0.02f,D3DCOLOR_XRGB(0,255,0));
-		}
+		}*/
 	}
 }
 #endif

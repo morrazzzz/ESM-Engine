@@ -50,6 +50,8 @@ public:
 	>												CProblemSolver;
 	typedef CProblemSolver							inherited;
 	typedef typename inherited::_edge_type			_action_id_type;
+	typedef typename inherited::CConditionEvaluator CConditionEvaluator;
+
 	typedef GraphEngineSpace::CWorldProperty		CWorldProperty;
 	typedef GraphEngineSpace::CWorldState			CWorldState;
 	typedef _world_operator							_world_operator;

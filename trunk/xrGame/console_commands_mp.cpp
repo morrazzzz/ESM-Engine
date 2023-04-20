@@ -51,7 +51,7 @@ extern	BOOL	g_sv_dm_bAnomaliesEnabled		;
 extern	u32		g_sv_dm_dwAnomalySetLengthTime	;
 extern	BOOL	g_sv_dm_bPDAHunt				;
 extern	u32		g_sv_dm_dwWarmUp_MaxTime		;
-extern	BOOL	g_sv_dm_bDMIgnore_Money_OnBuy	;
+//extern	BOOL	g_sv_dm_bDMIgnore_Money_OnBuy	;
 extern	BOOL	g_sv_tdm_bAutoTeamBalance		;
 extern	BOOL	g_sv_tdm_bAutoTeamSwap			;
 extern	BOOL	g_sv_tdm_bFriendlyIndicators	;
@@ -71,8 +71,8 @@ extern	u32		g_dwDemoDeltaFrame;
 extern u32		g_sv_dwMaxClientPing;
 extern	int		g_be_message_out;
 
-extern	int		g_sv_Skip_Winner_Waiting;
-extern	int 	g_sv_Wait_For_Players_Ready;
+//extern	int		g_sv_Skip_Winner_Waiting;
+//extern	int 	g_sv_Wait_For_Players_Ready;
 //extern	int 	G_DELAYED_ROUND_TIME;	
 extern	int		g_sv_Pending_Wait_Time;
 extern	int		g_sv_Client_Reconnect_Time;
@@ -1258,9 +1258,9 @@ void register_mp_console_commands()
 #ifdef DEBUG
 	CMD4(CCC_Integer,		"cl_leave_tdemo",		&g_bLeaveTDemo, 0, 1);
 
-	CMD4(CCC_Integer,		"sv_skip_winner_waiting",		&g_sv_Skip_Winner_Waiting, 0, 1);
+// 	CMD4(CCC_Integer,		"sv_skip_winner_waiting",		&g_sv_Skip_Winner_Waiting, 0, 1);
 
-	CMD4(CCC_Integer,		"sv_wait_for_players_ready",	&g_sv_Wait_For_Players_Ready, 0, 1);
+//	CMD4(CCC_Integer,		"sv_wait_for_players_ready",	&g_sv_Wait_For_Players_Ready, 0, 1);
 #endif
 
 //	CMD4(CCC_Integer,		"sv_hail_to_winner_time",		&G_DELAYED_ROUND_TIME, 0, 60);
@@ -1312,7 +1312,7 @@ void register_mp_console_commands()
 //	CMD1(CCC_SwapTeams,		"g_swapteams"				);
 #ifdef DEBUG
 	CMD4(CCC_SV_Integer,	"sv_demo_delta_frame"	,	(int*)&g_dwDemoDeltaFrame	,	0,100);
-	CMD4(CCC_SV_Integer,	"sv_ignore_money_on_buy"	,	(int*)&g_sv_dm_bDMIgnore_Money_OnBuy,	0, 1);
+//	CMD4(CCC_SV_Integer,	"sv_ignore_money_on_buy"	,	(int*)&g_sv_dm_bDMIgnore_Money_OnBuy,	0, 1);
 #endif
 
 	CMD1(CCC_RadminCmd,		"ra");

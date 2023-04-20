@@ -24,7 +24,7 @@ public:
         _vector3<T> kU, kV, kW = m_direction;
         _vector3<T>::generate_orthonormal_basis(kW,kU,kV);
         _vector3<T> kD; kD.set(kU.dotproduct(dir),kV.dotproduct(dir),kW.dotproduct(dir));
-#ifdef DEBUG
+#ifdef DISABLE_DEBUG
 		if(kD.square_magnitude() <= std::numeric_limits<T>::min())
 		{
 			Msg("dir :%f,%f,%f",dir.x,dir.y,dir.z);

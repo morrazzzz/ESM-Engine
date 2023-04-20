@@ -9,6 +9,7 @@
 #include "ui/UIDialogWnd.h"
 #include "../xr_3da/xr_input.h"
 #include "saved_game_wrapper.h"
+#include "Include/xrRender/DebugRender.h"
 
 #ifdef DEBUG
 #include "Actor.h"
@@ -179,7 +180,8 @@ void CLevel::IR_OnKeyboardPress	(int key)
 
 	case DIK_BACK:
 		if (GameID() == GAME_SINGLE)
-			HW.Caps.SceneMode			= (HW.Caps.SceneMode+1)%3;
+			DRender->NextSceneMode();
+			//HW.Caps.SceneMode			= (HW.Caps.SceneMode+1)%3;
 		return;
 
 	case DIK_F4: {

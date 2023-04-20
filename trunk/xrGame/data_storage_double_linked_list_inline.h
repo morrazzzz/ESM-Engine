@@ -61,7 +61,7 @@ IC	void CDoubleLinkedList::add_opened		(CGraphVertex &vertex)
 TEMPLATE_SPECIALIZATION
 IC	void CDoubleLinkedList::decrease_opened	(CGraphVertex &vertex, const _dist_type value)
 {
-	VERIFY					(!is_opened_empty());
+	VERIFY					(!this->is_opened_empty());
 	
 	if (!sorted)
 		return;
@@ -104,7 +104,7 @@ IC	void CDoubleLinkedList::decrease_opened	(CGraphVertex &vertex, const _dist_ty
 TEMPLATE_SPECIALIZATION
 IC	void CDoubleLinkedList::remove_best_opened	()
 {
-	VERIFY					(!is_opened_empty());
+	VERIFY					(!this->is_opened_empty());
 	m_list_head->next()->next()->prev()	= m_list_head;
 	inherited::remove_best_opened();
 }
@@ -112,7 +112,7 @@ IC	void CDoubleLinkedList::remove_best_opened	()
 TEMPLATE_SPECIALIZATION
 IC	typename CDoubleLinkedList::CGraphVertex &CDoubleLinkedList::get_best	() const
 {
-	VERIFY					(!is_opened_empty());
+	VERIFY					(!this->is_opened_empty());
 	if (sorted)
 		return				(*m_list_head->next());
 

@@ -16,7 +16,7 @@ private:
 	enum {line_vertex_limit	= 32767};
 
 private:
-	xr_vector<FVF::L>	m_line_vertices;
+//	xr_vector<FVF::L>	m_line_vertices;
 	xr_vector<u16>		m_line_indices;
 
 private:

@@ -4,6 +4,8 @@
 
 #include "stdafx.h"
 #include "r__sector.h"
+
+#include "dxRenderDeviceRender.h"
 #include "..\..\xr_3da\xrLevel.h"
 #include "..\..\xr_3da\xr_object.h"
 #include "fbasicvisual.h"
@@ -42,7 +44,7 @@ void CPortal::OnRender	()
 
 		RCache.set_xform_world(Fidentity);
 		// draw solid
-		RCache.set_Shader	(Device.m_SelectionShader);
+		RCache.set_Shader	(dxRenderDeviceRender::Instance().m_SelectionShader);
 		RCache.dbg_Draw		(D3DPT_TRIANGLEFAN,&*V.begin(),V.size()-2);
 
 		// draw wire
@@ -51,7 +53,7 @@ void CPortal::OnRender	()
 		}else{
 			Device.SetNearer(TRUE);
 		}
-		RCache.set_Shader	(Device.m_WireShader);
+		RCache.set_Shader	(dxRenderDeviceRender::Instance().m_WireShader);
 		RCache.dbg_Draw		(D3DPT_LINESTRIP,&*(V.begin()+1),V.size()-2);
 		if (bDebug){
 			RImplementation.rmNormal();

@@ -162,8 +162,8 @@ void CRender::level_Unload		()
 	//. dbg
 #ifdef DEBUG
 	// Device.Resources->_DumpMemoryUsage	();
-	Device.Resources->DBG_VerifyGeoms	();
-	Device.Resources->DBG_VerifyTextures();
+	dxRenderDeviceRender::Instance().Resources->DBG_VerifyGeoms	();
+	dxRenderDeviceRender::Instance().Resources->DBG_VerifyTextures();
 #endif
 	b_loaded					= FALSE;
 }

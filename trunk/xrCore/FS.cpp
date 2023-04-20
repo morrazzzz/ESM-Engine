@@ -12,6 +12,7 @@
 
 typedef void DUMMY_STUFF (const void*,const u32&,void*);
 XRCORE_API DUMMY_STUFF	*g_dummy_stuff = 0;
+static std::mutex g_file_mappings_Mutex;
 
 #ifdef M_BORLAND
 #	define O_SEQUENTIAL 0
@@ -25,9 +26,11 @@ XRCORE_API DUMMY_STUFF	*g_dummy_stuff = 0;
 
 void register_file_mapping			(void *address, const u32 &size, LPCSTR file_name)
 {
-	FILE_MAPPINGS::const_iterator	I = g_file_mappings.find(*(u32*)&address);
-	VERIFY							(I == g_file_mappings.end());
-	g_file_mappings.insert			(std::make_pair(*(u32*)&address,std::make_pair(size,shared_str(file_name))));
+	std::scoped_lock<decltype(g_file_mappings_Mutex)> lock(g_file_mappings_Mutex);
+
+	FILE_MAPPINGS::const_iterator I = g_file_mappings.find(*(u32*)&address);
+	VERIFY(I == g_file_mappings.end());
+	g_file_mappings.insert(std::make_pair(*(u32*)&address, std::make_pair(size, shared_str(file_name))));
 
 	g_file_mapped_memory			+= size;
 	++g_file_mapped_count;
@@ -41,8 +44,10 @@ void register_file_mapping			(void *address, const u32 &size, LPCSTR file_name)
 
 void unregister_file_mapping		(void *address, const u32 &size)
 {
-	FILE_MAPPINGS::iterator			I = g_file_mappings.find(*(u32*)&address);
-	VERIFY							(I != g_file_mappings.end());
+	std::scoped_lock<decltype(g_file_mappings_Mutex)> lock(g_file_mappings_Mutex);
+
+	FILE_MAPPINGS::iterator I = g_file_mappings.find(*(u32*)&address);
+	VERIFY(I != g_file_mappings.end());
 //	VERIFY2							((*I).second.first == size,make_string("file mapping sizes are different: %d -> %d",(*I).second.first,size));
 	g_file_mapped_memory			-= (*I).second.first;
 	--g_file_mapped_count;
