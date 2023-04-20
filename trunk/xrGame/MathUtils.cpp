@@ -443,11 +443,12 @@ void capped_cylinder_ray_collision_test()
 	pos.set(-3,-3,-3);dir.set(1,1,1);dir.normalize();R=10;
 	RAYvsCYLINDER(c,pos,dir,R,TRUE);//true, ?
 	float ir[2];
-	c.intersect(pos,dir,ir);
+	Fcylinder::ecode code[2];
+	c.intersect(pos,dir,ir, code);
 	//
 	pos.set(0,0,0);
 	RAYvsCYLINDER(c,pos,dir,R,FALSE);//true, ?
-	c.intersect(pos,dir,ir);
+	c.intersect(pos,dir,ir, code);
 	RAYvsCYLINDER(c,pos,dir,R,TRUE);//false
 	CTimer t;t.Start();
 	for(int i=0;i<1000000;i++)
@@ -474,7 +475,7 @@ void capped_cylinder_ray_collision_test()
 		//ray
 		Fvector dir,pos;//float R=Random.randF(0.1f,2.f);
 		dir.random_dir();pos.random_point(Fvector().set(2,2,2));
-		c.intersect(pos,dir,ir);
+		c.intersect(pos,dir,ir, code);
 	}
 		Msg("current intersect time %f ms",t.GetElapsed_sec()*1000.f);
 
