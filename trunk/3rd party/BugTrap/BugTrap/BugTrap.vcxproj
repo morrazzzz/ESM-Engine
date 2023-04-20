@@ -9,6 +9,10 @@
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Mixed|x64">
+      <Configuration>Mixed</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
@@ -63,6 +67,10 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">
+    <PlatformToolset>v143</PlatformToolset>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -381,6 +389,18 @@
       <AdditionalLibraryDirectories>$(ProjectDir)..\..\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">
+    <ClCompile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <PrecompiledHeader>Create</PrecompiledHeader>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\zlib\include;%(AdditionalIncludeDirectories)
+      </AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WINSOCK_DEPRECATED_NO_WARNINGS;WIN64;NDEBUG;_WINDOWS;_USRDLL;BUGTRAP_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>ws2_32.lib;comctl32.lib;shlwapi.lib;version.lib;wininet.lib;nothrownew.obj;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
   <ItemGroup>
     <Reference Include="System">
       <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
@@ -392,45 +412,123 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AboutDlg.cpp" />
-    <ClCompile Include="DescribeErrorDlg.cpp" />
-    <ClCompile Include="MachineInfoDlg.cpp" />
-    <ClCompile Include="MachineStateDlg.cpp" />
-    <ClCompile Include="MainDlg.cpp" />
-    <ClCompile Include="PreviewDlg.cpp" />
-    <ClCompile Include="SendMailDlg.cpp" />
-    <ClCompile Include="SimpleDlg.cpp" />
-    <ClCompile Include="TransferProgressDlg.cpp" />
-    <ClCompile Include="WaitDlg.cpp" />
-    <ClCompile Include="ColHelper.cpp" />
-    <ClCompile Include="StrHolder.cpp" />
-    <ClCompile Include="AnimProgressBar.cpp" />
-    <ClCompile Include="HexView.cpp" />
-    <ClCompile Include="HyperLink.cpp" />
-    <ClCompile Include="ImageView.cpp" />
-    <ClCompile Include="LayoutManager.cpp" />
-    <ClCompile Include="Splitter.cpp" />
-    <ClCompile Include="TextView.cpp" />
-    <ClCompile Include="WaitCursor.cpp" />
-    <ClCompile Include="CMapi.cpp" />
-    <ClCompile Include="EnumProcess.cpp" />
-    <ClCompile Include="InMemLogFile.cpp" />
-    <ClCompile Include="LogFile.cpp" />
-    <ClCompile Include="LogStream.cpp" />
-    <ClCompile Include="ModuleImportTable.cpp" />
-    <ClCompile Include="NetThunks.cpp" />
-    <ClCompile Include="SymEngine.cpp" />
-    <ClCompile Include="SymEngineNet.cpp" />
-    <ClCompile Include="TextLogFile.cpp" />
-    <ClCompile Include="ThemeXP.cpp" />
-    <ClCompile Include="XmlLogFile.cpp" />
-    <ClCompile Include="BugTrap.cpp" />
-    <ClCompile Include="BugTrapNet.cpp" />
-    <ClCompile Include="BugTrapUI.cpp" />
-    <ClCompile Include="BugTrapUtils.cpp" />
-    <ClCompile Include="ResManager.cpp" />
-    <ClCompile Include="AssemblyInfo.cpp" />
-    <ClCompile Include="Globals.cpp" />
+    <ClCompile Include="AboutDlg.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="DescribeErrorDlg.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="MachineInfoDlg.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="MachineStateDlg.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="MainDlg.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="PreviewDlg.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SendMailDlg.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SimpleDlg.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="TransferProgressDlg.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="WaitDlg.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="ColHelper.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="StrHolder.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="AnimProgressBar.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="HexView.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="HyperLink.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="ImageView.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="LayoutManager.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Splitter.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="TextView.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="WaitCursor.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="CMapi.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="EnumProcess.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="InMemLogFile.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="LogFile.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="LogStream.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="ModuleImportTable.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="NetThunks.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SymEngine.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SymEngineNet.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="TextLogFile.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="ThemeXP.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="XmlLogFile.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="BugTrap.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="BugTrapNet.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="BugTrapUI.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="BugTrapUtils.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="ResManager.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="AssemblyInfo.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Globals.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -438,16 +536,35 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_without_optimizations|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_without_optimizations|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Encoding.cpp" />
-    <ClCompile Include="TextFormat.cpp" />
-    <ClCompile Include="XmlReader.cpp" />
-    <ClCompile Include="XmlWriter.cpp" />
-    <ClCompile Include="FileStream.cpp" />
-    <ClCompile Include="InputStream.cpp" />
-    <ClCompile Include="MemStream.cpp" />
-    <ClCompile Include="OutputStream.cpp" />
-    <ClCompile Include="StrStream.cpp" />
+    <ClCompile Include="Encoding.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="TextFormat.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="XmlReader.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="XmlWriter.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="FileStream.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="InputStream.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="MemStream.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="OutputStream.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="StrStream.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Use</PrecompiledHeader>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AboutDlg.h" />
