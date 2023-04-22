@@ -1,7 +1,9 @@
 #include	"stdafx.h"
 #include	"r__pixel_calculator.h"
 #define		rt_dimensions 1024
+#include	"../xrRender/FBasicVisual.h"
 
+#if !defined(USE_DX10) && !defined(USE_DX11)
 void	r_pixel_calculator::begin	()
 {
 	rt.create		("$user$test",		rt_dimensions,rt_dimensions,HW.Caps.fTarget);
@@ -77,7 +79,8 @@ void	r_pixel_calculator	::run	()
 	{
 		if (0==dynamic_cast<IRender_Mesh*>(RImplementation.Visuals[it]))		continue;
 		Msg	("*%d*",it);
-		calculate	(RImplementation.Visuals[it]);
+		calculate	((dxRender_Visual*)RImplementation.Visuals[it]);
 	}
 	end		();
 }
+#endif	//	USE_DX10

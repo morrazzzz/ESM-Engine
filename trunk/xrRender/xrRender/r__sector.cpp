@@ -4,12 +4,11 @@
 
 #include "stdafx.h"
 #include "r__sector.h"
-
-#include "dxRenderDeviceRender.h"
-#include "..\..\xr_3da\xrLevel.h"
-#include "..\..\xr_3da\xr_object.h"
+#include "../../xr_3da/xrLevel.h"
+#include "../../xr_3da/xr_object.h"
 #include "fbasicvisual.h"
-#include "..\..\xr_3da\IGame_Persistent.h"
+#include "../../xr_3da/IGame_Persistent.h"
+#include "dxRenderDeviceRender.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -257,6 +256,6 @@ void CSector::load		(IReader& fs)
 	else {
 		// Assign visual
 		size	= fs.find_chunk(fsP_Root);	R_ASSERT(size==4);
-		m_root = (dxRender_Visual*)RImplementation.getVisual(fs.r_u32());
+		m_root	= (dxRender_Visual*)RImplementation.getVisual	(fs.r_u32());
 	}
 }

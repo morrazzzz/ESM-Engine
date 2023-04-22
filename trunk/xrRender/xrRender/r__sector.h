@@ -47,6 +47,8 @@ public:
 #endif
 };
 
+class dxRender_Visual;
+
 // Main 'Sector' class
 class	 CSector					: public IRender_Sector
 {

@@ -762,6 +762,19 @@ HRESULT	CRender::shader_compile(
 	}
 	sh_name[len] = '0' + char(4 == m_skinning); ++len;
 
+	//	Igor: need restart options
+	if (RImplementation.o.advancedpp && ps_r2_ls_flags.test(R2FLAG_DOF))
+	{
+		defines[def_it].Name = "USE_DOF";
+		defines[def_it].Definition = "1";
+		def_it++;
+		sh_name[len] = '1'; ++len;
+	}
+	else
+	{
+		sh_name[len] = '0'; ++len;
+	}
+
 	// finish
 	defines[def_it].Name			=	0;
 	defines[def_it].Definition		=	0;

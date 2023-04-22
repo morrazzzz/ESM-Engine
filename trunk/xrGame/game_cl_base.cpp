@@ -44,23 +44,23 @@ game_cl_GameState::~game_cl_GameState()
 
 void	game_cl_GameState::net_import_GameTime		(NET_Packet& P)
 {
-	//time
+	// time
 	u64 GameTime;
 	P.r_u64(GameTime);
 	float TimeFactor;
 	P.r_float(TimeFactor);
+
+	Level().SetGameTimeFactor(GameTime, TimeFactor);
 
 	u64 GameEnvironmentTime;
 	P.r_u64(GameEnvironmentTime);
 	float EnvironmentTimeFactor;
 	P.r_float(EnvironmentTimeFactor);
 
-	Level().SetGameTimeFactor(GameTime, TimeFactor);
-
-	u64 OldTime = Level().GetEnvironmentGameTime();
-	Level().SetEnvironmentGameTimeFactor	(GameEnvironmentTime,EnvironmentTimeFactor);
-	if (OldTime > GameTime)
-		GamePersistent().Environment().Invalidate();
+	// u64 OldTime = Level().GetEnvironmentGameTime();
+	Level().SetEnvironmentGameTimeFactor(GameEnvironmentTime, EnvironmentTimeFactor);
+	// if (OldTime > GameEnvironmentTime)
+	//	GamePersistent().Environment().Invalidate(/*false*/);
 }
 
 void	game_cl_GameState::net_import_state	(NET_Packet& P)

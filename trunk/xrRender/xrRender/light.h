@@ -15,6 +15,7 @@ public:
 		u32			bStatic	:	1;
 		u32			bActive	:	1;
 		u32			bShadow	:	1;
+		u32			bVolumetric : 1;
 	}				flags;
 	Fvector			position	;
 	Fvector			direction	;

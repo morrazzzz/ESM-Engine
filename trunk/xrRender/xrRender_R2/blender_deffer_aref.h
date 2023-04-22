@@ -10,6 +10,7 @@ public:
 	virtual		LPCSTR		getComment()	{ return "LEVEL: defer-base-aref";	}
 	virtual		BOOL		canBeDetailed()	{ return TRUE;		}
 	virtual		BOOL		canBeLMAPped()	{ return lmapped;	}
+	virtual		BOOL		canUseSteepParallax	()	{ return TRUE; }
 
 	virtual		void		Save			(IWriter&	fs);
 	virtual		void		Load			(IReader&	fs, u16 version);

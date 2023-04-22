@@ -201,6 +201,10 @@ void	CRenderTarget::phase_combine	()
 		pv->p.set(float(_w+EPS),EPS,			EPS,1.f); pv->uv0.set(p1.x, p0.y);pv->uv1.set(p1.x-ddw,p0.y-ddh);pv->uv2.set(p1.x+ddw,p0.y+ddh);pv->uv3.set(p1.x+ddw,p0.y-ddh);pv->uv4.set(p1.x-ddw,p0.y+ddh);pv->uv5.set(p1.x-ddw,p0.y,p0.y,p1.x+ddw);pv->uv6.set(p1.x,p0.y-ddh,p0.y+ddh,p1.x);pv++;
 		RCache.Vertex.Unlock		(4,g_aa_AA->vb_stride);
 
+		Fvector2	vDofKernel;
+		vDofKernel.set(0.5f / Device.dwWidth, 0.5f / Device.dwHeight);
+		vDofKernel.mul(ps_r2_dof_kernel_size);
+
 		// Draw COLOR
 		if (ps_r2_ls_flags.test(R2FLAG_AA))			RCache.set_Element	(s_combine->E[bDistort?3:1]);	// look at blender_combine.cpp
 		else										RCache.set_Element	(s_combine->E[bDistort?4:2]);	// look at blender_combine.cpp
@@ -210,6 +214,12 @@ void	CRenderTarget::phase_combine	()
 		RCache.set_c				("m_current",	m_current);
 		RCache.set_c				("m_previous",	m_previous);
 		RCache.set_c				("m_blur",		m_blur_scale.x,m_blur_scale.y, 0,0);
+		Fvector3					dof;
+		g_pGamePersistent->GetCurrentDof(dof);
+		RCache.set_c("dof_params", dof.x, dof.y, dof.z, ps_r2_dof_sky);
+		//.		RCache.set_c				("dof_params",	ps_r2_dof.x, ps_r2_dof.y, ps_r2_dof.z, ps_r2_dof_sky);
+		RCache.set_c("dof_kernel", vDofKernel.x, vDofKernel.y, ps_r2_dof_kernel_size, 0);
+
 		RCache.set_Geometry			(g_aa_AA);
 		RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
 	}

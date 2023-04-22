@@ -18,6 +18,7 @@
 #include "ui/UIDialogWnd.h"
 #include "date_time.h"
 #include "ai_space.h"
+#include "gamepersistent.h"
 #include "level_graph.h"
 #include "PHCommander.h"
 #include "PHScriptCall.h"
@@ -89,9 +90,18 @@ LPCSTR get_weather	()
 	return			(*g_pGamePersistent->Environment().GetWeather());
 }
 
+LPCSTR get_weather_prev()
+{
+	return			(*g_pGamePersistent->Environment().GetPrevWeather());
+}
+
 void set_weather	(LPCSTR weather_name, bool forced)
 {
 	g_pGamePersistent->Environment().SetWeather(weather_name, forced);
+}
+
+void set_weather_next(LPCSTR weather_name) {
+	g_pGamePersistent->Environment().SetWeatherNext(weather_name);
 }
 
 bool set_weather_fx(LPCSTR weather_name)
@@ -109,6 +119,7 @@ void set_time_factor(float time_factor)
 		return;
 
 	Level().Server->game->SetGameTimeFactor(time_factor);
+	GamePersistent().Environment().SetGameTime(Level().GetEnvironmentGameDayTimeSec(), Level().game->GetEnvironmentGameTimeFactor());
 }
 
 float get_time_factor()
@@ -540,7 +551,9 @@ void CLevel::script_register(lua_State *L)
 #endif
 		
 		def("get_weather",						get_weather),
+		def("get_weather_prev", get_weather_prev),
 		def("set_weather",						set_weather),
+		def("set_weather_next", set_weather_next),
 		def("set_weather_fx",					set_weather_fx),
 		def("is_wfx_playing",					is_wfx_playing),
 

@@ -213,6 +213,17 @@ protected:
 	int	m_iSilencerX, m_iSilencerY;
 	int	m_iGrenadeLauncherX, m_iGrenadeLauncherY;
 
+protected:
+	struct SZoomParams
+	{
+		    bool m_bZoomDofEnabled;
+
+			Fvector			m_ZoomDof;
+		    Fvector4		m_ReloadDof;
+			Fvector4		m_ReloadEmptyDof;
+
+	} m_zoom_params;
+
 ///////////////////////////////////////////////////
 //	для режима приближения и снайперского прицела
 ///////////////////////////////////////////////////
@@ -323,6 +334,8 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 protected:
 	virtual void			SetDefaults			();
+
+	virtual void			OnStateSwitch(u32 S);
 
 	//трассирование полета пули
 			void			FireTrace			(const Fvector& P, const Fvector& D);

@@ -1,6 +1,6 @@
 #include "StdAfx.h"
-#include "..\xrRender\light.h"
-#include "..\..\xr_3da\cl_intersect.h"
+#include "../xrRender/light.h"
+#include "../../xr_3da/cl_intersect.h"
 
 const	u32	delay_small_min			= 1;
 const	u32	delay_small_max			= 3;
@@ -34,6 +34,7 @@ void	light::vis_prepare			()
 	//Msg	("dist:%f, sa:%f",Device.vCameraPosition.distance_to(spatial.center),safe_area);
 	bool	skiptest	= false;
 	if (ps_r2_ls_flags.test(R2FLAG_EXP_DONT_TEST_UNSHADOWED) && !flags.bShadow)	skiptest=true;
+	if (ps_r2_ls_flags.test(R2FLAG_EXP_DONT_TEST_SHADOWED) && flags.bShadow)	skiptest=true;
 
 	if (skiptest || Device.vCameraPosition.distance_to(spatial.sphere.P)<=(spatial.sphere.R*1.01f+safe_area))	{	// small error
 		vis.visible		=	true;
@@ -47,6 +48,13 @@ void	light::vis_prepare			()
 	xform_calc										();
 	RCache.set_xform_world							(m_xform);
 	vis.query_order	= RImplementation.occq_begin	(vis.query_id);
+	//	Hack: Igor. Light is visible if it's frutum is visible. (Only for volumetric)
+	//	Hope it won't slow down too much since there's not too much volumetric lights
+	//	TODO: sort for performance improvement if this technique hurts
+	if ( (flags.type==IRender_Light::SPOT) && flags.bShadow && flags.bVolumetric )
+		RCache.set_Stencil			(FALSE);
+	else
+		RCache.set_Stencil			(TRUE,D3DCMP_LESSEQUAL,0x01,0xff,0x00);
 	RImplementation.Target->draw_volume				(this);
 	RImplementation.occq_end						(vis.query_id);
 }

@@ -98,6 +98,11 @@ extern ECORE_API int			ps_r2_dhemi_count;			// 5
 extern ECORE_API float			ps_r2_slight_fade;			// 1.f
 extern ECORE_API int			ps_r2_wait_sleep;
 
+//	x - min (0), y - focus (1.4), z - max (100)
+extern ECORE_API Fvector3		ps_r2_dof;
+extern ECORE_API float			ps_r2_dof_sky;				//	distance to sky
+extern ECORE_API float			ps_r2_dof_kernel_size;		//	7.0f
+
 enum
 {
 	R2FLAG_SUN					= (1<<0),
@@ -117,11 +122,14 @@ enum
 	
 	R2FLAG_EXP_SPLIT_SCENE					= (1<<13),
 	R2FLAG_EXP_DONT_TEST_UNSHADOWED			= (1<<14),
+	R2FLAG_EXP_DONT_TEST_SHADOWED = (1 << 15),
 
-	R2FLAG_USE_NVDBT			= (1<<15),
-	R2FLAG_USE_NVSTENCIL		= (1<<16),
+	R2FLAG_USE_NVDBT			= (1<<16),
+	R2FLAG_USE_NVSTENCIL		= (1<<17),
 
-	R2FLAG_EXP_MT_CALC			= (1<<17),
+	R2FLAG_EXP_MT_CALC			= (1<<18),
+
+	R2FLAG_DOF                  = (1 << 19),
 };
 
 extern void						xrRender_initconsole	();

@@ -1,12 +1,13 @@
 #include "StdAfx.h"
-#include "..\xrRender\light.h"
+#include "../xrRender/light.h"
+#include "../xrRender/FBasicVisual.h"
 
-		smapvis::smapvis	()
+smapvis::smapvis	()
 {
 	invalidate				();
 	frame_sleep				= 0;
 }
-		smapvis::~smapvis	()
+smapvis::~smapvis	()
 {
 	flushoccq				();
 	invalidate				();
@@ -14,6 +15,7 @@
 void	smapvis::invalidate	()
 {
 	state		=	state_counting;
+	testQ_V		=	0;
 	frame_sleep	=	Device.dwFrame + ps_r__LightSleepFrames;
 	invisible.clear	();
 }
@@ -77,18 +79,21 @@ void	smapvis::end		()
 void	smapvis::flushoccq	()
 {
 	// the tough part
-	if	(testQ_frame != Device.dwFrame)			return;
-	u32	fragments	=	RImplementation.occq_get(testQ_id);
+	if (testQ_frame != Device.dwFrame)			return;
+	if ( (state != state_working) || (!testQ_V) ) return;
+	u64	fragments	=	RImplementation.occq_get(testQ_id);
 	if	(0==fragments)			{
 		// this is invisible shadow-caster, register it
 		// next time we will not get this caster, so 'test_current' remains the same
 		invisible.push_back	(testQ_V);
 		test_count			--;
-		testQ_V				= 0;
 	} else {
 		// this is visible shadow-caster, advance testing
 		test_current		++;
 	}
+
+	testQ_V				= 0;
+
 	if (test_current==test_count)	{
 		// we are at the end of list
 		if (state==state_working)	state	= state_usingTC;
