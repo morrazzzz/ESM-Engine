@@ -4,11 +4,9 @@
 
 #include "stdafx.h"
 #include "spectator.h"
-#include "effectorfall.h"
 #include "CameraLook.h"
 #include "CameraFirstEye.h"
 #include "actor.h"
-#include "hudmanager.h"
 #include "xrServer_Objects.h"
 #include "game_cl_base.h"
 #include "level.h"

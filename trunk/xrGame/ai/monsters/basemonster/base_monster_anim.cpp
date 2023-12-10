@@ -8,11 +8,8 @@
 
 #include "stdafx.h"
 #include "base_monster.h"
-#include "../../../sound_player.h"
-#include "../../../ai_monster_space.h"
-#include "../control_animation_base.h"
 
-// Установка анимации
+// вЂќСЃС‚Р°РЅРѕРІРєР° Р°РЅРёРјР°С†РёРё
 void CBaseMonster::SelectAnimation(const Fvector &/**_view/**/, const Fvector &/**_move/**/, float /**speed/**/)
 {
 	control().animation().update_frame();

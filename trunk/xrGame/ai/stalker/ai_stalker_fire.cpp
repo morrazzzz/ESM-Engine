@@ -9,14 +9,12 @@
 #include "pch_script.h"
 #include "ai_stalker.h"
 #include "ai_stalker_impl.h"
-#include "../../script_entity_action.h"
 #include "../../inventory.h"
 #include "../../ef_storage.h"
 #include "../../stalker_decision_space.h"
 #include "../../script_game_object.h"
 #include "../../customzone.h"
-#include "..\include\xrRender\RenderVisual.h"
-#include "..\include\xrRender\KinematicsAnimated.h"
+#include "../include/xrRender/RenderVisual.h"
 #include "../../agent_manager.h"
 #include "../../stalker_animation_manager.h"
 #include "../../stalker_planner.h"
@@ -26,7 +24,6 @@
 #include "../../enemy_manager.h"
 #include "../../item_manager.h"
 #include "../../stalker_movement_manager.h"
-#include "../../entitycondition.h"
 #include "../../sound_player.h"
 #include "../../cover_point.h"
 #include "../../agent_member_manager.h"
@@ -47,10 +44,7 @@
 #include "../../stalker_animation_names.h"
 #include "../../agent_corpse_manager.h"
 #include "../../CharacterPhysicsSupport.h"
-#include "../../stalker_planner.h"
-#include "../../stalker_decision_space.h"
 #include "../../script_game_object.h"
-#include "../../inventory.h"
 
 #ifdef DEBUG
 #include "../include/xrRender/Kinematics.h"
@@ -70,7 +64,7 @@ float CAI_Stalker::GetWeaponAccuracy	() const
 {
 	float				base = PI/180.f;
 	
-	//влияние ранга на меткость
+	//РІР»РёСЏРЅРёРµ СЂР°РЅРіР° РЅР° РјРµС‚РєРѕСЃС‚СЊ
 	base				*= m_fRankDisperison;
 
 	if (!movement().path_completed()) {
@@ -195,7 +189,7 @@ void			CAI_Stalker::Hit					(SHit* pHDS)
 
 //	pHDS->power						*= .1f;
 
-	//хит может меняться в зависимости от ранга (новички получают больше хита, чем ветераны)
+	//С…РёС‚ РјРѕР¶РµС‚ РјРµРЅСЏС‚СЊСЃСЏ РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ СЂР°РЅРіР° (РЅРѕРІРёС‡РєРё РїРѕР»СѓС‡Р°СЋС‚ Р±РѕР»СЊС€Рµ С…РёС‚Р°, С‡РµРј РІРµС‚РµСЂР°РЅС‹)
 	SHit							HDS = *pHDS;
 	HDS.power						*= m_fRankImmunity;
 	if (m_boneHitProtection && HDS.hit_type == ALife::eHitTypeFireWound){

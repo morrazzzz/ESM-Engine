@@ -7,17 +7,13 @@
 #include "script_engine.h"
 #include "xr_Level_controller.h"
 #include "ui/UIMainIngameWnd.h"
-#include "UI/UIGameTutorial.h"
 #include "UI/UIMessagesWindow.h"
 #include "string_table.h"
 #include "game_cl_base_weapon_usage_statistic.h"
 
-#include "game_sv_mp_vote_flags.h"
-
 game_cl_GameState::game_cl_GameState()
 {
-	m_WeaponUsageStatistic		= xr_new<WeaponUsageStatistic>();
-
+	m_WeaponUsageStatistic = xr_new<WeaponUsageStatistic>();
 	local_player				= 0;
 	m_game_type_name			= 0;
 
@@ -39,7 +35,7 @@ game_cl_GameState::~game_cl_GameState()
 
 	shedule_unregister();
 
-	xr_delete					(m_WeaponUsageStatistic);
+	xr_delete(m_WeaponUsageStatistic);
 }
 
 void	game_cl_GameState::net_import_GameTime		(NET_Packet& P)
@@ -295,8 +291,8 @@ void game_cl_GameState::shedule_Update		(u32 dt)
 	{
 	case GAME_PHASE_INPROGRESS:
 		{
-			if (!IsGameTypeSingle())
-				m_WeaponUsageStatistic->Update();
+		if (!IsGameTypeSingle())
+			m_WeaponUsageStatistic->Update();
 		}break;
 	default:
 		{
@@ -376,7 +372,7 @@ void				game_cl_GameState::OnSwitchPhase			(u32 old_phase, u32 new_phase)
 	{
 		case GAME_PHASE_INPROGRESS:
 			{
-				m_WeaponUsageStatistic->Clear();
+			m_WeaponUsageStatistic->Clear();
 			}break;
 		default:
 			{

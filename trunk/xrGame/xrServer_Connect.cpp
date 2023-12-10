@@ -2,8 +2,6 @@
 #include "xrServer.h"
 #include "game_sv_single.h"
 #include "game_sv_deathmatch.h"
-#include "game_sv_teamdeathmatch.h"
-#include "game_sv_artefacthunt.h"
 #include "xrMessages.h"
 #include "game_cl_artefacthunt.h"
 #include "game_cl_single.h"

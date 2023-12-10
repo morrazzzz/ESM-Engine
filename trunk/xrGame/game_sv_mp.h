@@ -2,7 +2,6 @@
 #include "game_sv_base.h"
 #include "game_sv_mp_team.h"
 #include "game_base_kill_type.h"
-#include "game_base_menu_events.h"
 
 class		CItemMgr;
 class		xrClientData;

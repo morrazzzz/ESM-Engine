@@ -25,7 +25,6 @@
 #include "date_time.h"
 #include "mt_config.h"
 #include "ui/UIOptConCom.h"
-#include "GameTask.h"
 #include "MainMenu.h"
 #include "saved_game_wrapper.h"
 #include "../xrCore/xr_ini.h"
@@ -74,8 +73,6 @@ extern	BOOL	g_show_wnd_rect2			;
 //-----------------------------------------------------------
 extern	float	g_fTimeFactor;
 
-
-void register_mp_console_commands();
 //-----------------------------------------------------------
 
 		BOOL	g_bCheckTime			= FALSE;
@@ -972,7 +969,6 @@ struct CCC_ClearSmartCastStats : public IConsole_Command {
 };
 #endif
 
-#	include "game_graph.h"
 struct CCC_JumpToLevel : public IConsole_Command {
 	CCC_JumpToLevel(LPCSTR N) : IConsole_Command(N)  {};
 
@@ -1705,6 +1701,4 @@ void CCC_RegisterCommands()
 	CMD4(CCC_Integer,		"dbg_dump_physics_step", &g_bDebugDumpPhysicsStep, 0, 1);
 #endif
 	*g_last_saved_game	= 0;
-
-	register_mp_console_commands					();
 }

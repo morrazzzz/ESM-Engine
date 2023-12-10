@@ -14,7 +14,7 @@
 #include "../../inventory.h"
 #include "../../weapon.h"
 #include "../../weaponmagazined.h"
-#include "..\include\xrRender\Kinematics.h"
+#include "../include/xrRender/Kinematics.h"
 #include "../../script_engine.h"
 #include "../../sight_manager.h"
 #include "../../stalker_movement_manager.h"

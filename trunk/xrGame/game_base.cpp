@@ -3,7 +3,6 @@
 #include "ai_space.h"
 #include "script_engine.h"
 #include "level.h"
-#include "xrMessages.h"
 
 u64		g_qwStartGameTime		= 12*60*60*1000;
 float	g_fTimeFactor			= pSettings->r_float("alife","time_factor");

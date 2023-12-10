@@ -18,7 +18,6 @@
 #include "ui/UIMessageBoxEx.h"
 #include "CustomZone.h"
 #include "game_base_kill_type.h"
-#include "game_base_menu_events.h"
 #include "UIGameDM.h"
 #include "ui/UITextureMaster.h"
 #include "ui/UIVotingCategory.h"
@@ -1095,7 +1094,6 @@ void	game_cl_mp::OnSpectatorSelect		()
 	l_pPlayer->u_EventGen		(P, GE_GAME_EVENT, l_pPlayer->ID()	);
 //	P.w_u16(GAME_EVENT_PLAYER_SELECT_SPECTATOR);
 	P.w_u16(GAME_EVENT_PLAYER_GAME_MENU);
-	P.w_u8(PLAYER_SELECT_SPECTATOR);
 	l_pPlayer->u_EventSend		(P);
 
 	m_bSpectatorSelected = TRUE;	
@@ -1103,6 +1101,7 @@ void	game_cl_mp::OnSpectatorSelect		()
 
 void	game_cl_mp::OnGameMenuRespond		(NET_Packet& P)
 {
+/*
 	u8 Respond = P.r_u8();
 	switch (Respond)
 	{
@@ -1119,6 +1118,7 @@ void	game_cl_mp::OnGameMenuRespond		(NET_Packet& P)
 			OnGameMenuRespond_ChangeSkin(P);
 		}break;
 	}
+*/	
 };
 
 void	game_cl_mp::OnGameRoundStarted				()

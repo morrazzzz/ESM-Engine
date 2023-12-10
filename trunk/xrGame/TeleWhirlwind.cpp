@@ -3,9 +3,7 @@
 #include "PhysicsShell.h"
 #include "PhysicsShellHolder.h"
 #include "level.h"
-#include "hit.h"
 #include "phdestroyable.h"
-#include "xrmessages.h"
 #include "..\include\xrRender\Kinematics.h"
 #include "PHWorld.h"
 CTeleWhirlwind ::CTeleWhirlwind () 

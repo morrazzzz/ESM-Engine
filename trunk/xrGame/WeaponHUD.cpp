@@ -1,12 +1,8 @@
-// WeaponHUD.cpp:	HUD для оружия и прочих предметов, которые
-//					могут держать в руках персонажи, также используется
-//					для синхронизации анимаций с видом от 3-го лица
-//////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
 #include "WeaponHUD.h"
 #include "Weapon.h"
 #include "../xr_3da/Motion.h"
-#include "..\include\xrRender\Kinematics.h"
+#include "../include/xrRender/Kinematics.h"
 #include "level.h"
 
 #ifdef DEBUG

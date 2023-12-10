@@ -17,7 +17,6 @@
 #include "script_engine.h"
 #include "script_engine_space.h"
 #include "team_base_zone.h"
-#include "infoportion.h"
 #include "date_time.h"
 #include "space_restriction_manager.h"
 #include "seniority_hierarchy_holder.h"
@@ -29,7 +28,6 @@
 #include "../xr_3da/CameraManager.h"
 #include "level_sounds.h"
 #include "trade_parameters.h"
-#include "game_cl_base_weapon_usage_statistic.h"
 #include "clsid_game.h"
 #include "MainMenu.h"
 
@@ -184,8 +182,6 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 	*/
 	//---------------------------------------------------------	
 }
-
-extern CAI_Space *g_ai_space;
 
 CLevel::~CLevel()
 {
@@ -383,13 +379,8 @@ void CLevel::ProcessGameEvents		()
 {
 	// Game events
 	{
-		NET_Packet			P;
-		u32 svT				= timeServer()-NET_Latency;
-
-		/*
-		if (!game_events->queue.empty())	
-			Msg("- d[%d],ts[%d] -- E[svT=%d],[evT=%d]",Device.dwTimeGlobal,timeServer(),svT,game_events->queue.begin()->timestamp);
-		*/
+		NET_Packet P{};
+		u32 svT	= timeServer()-NET_Latency;
 
 		while	(game_events->available(svT))
 		{
@@ -415,8 +406,6 @@ void CLevel::ProcessGameEvents		()
 			}			
 		}
 	}
-	if (OnServer() && GameID()!= GAME_SINGLE)
-		Game().m_WeaponUsageStatistic->Send_Check_Respond();
 }
 
 #ifdef DEBUG_MEMORY_MANAGER
@@ -832,19 +821,9 @@ void CLevel::make_NetCorrectionPrediction	()
 		for (u32 i =0; i<lvInterpSteps; i++)	//second prediction "real current" to "future" position
 		{
 			ph_world->Step();
-#ifdef DEBUG
-/*
-			for	(OBJECTS_LIST_it OIt = pObjects4CrPr.begin(); OIt != pObjects4CrPr.end(); OIt++)
-			{
-				CGameObject* pObj = *OIt;
-				if (!pObj) continue;
-				pObj->PH_Ch_CrPr();
-			};
-*/
-#endif
 		}
 		//////////////////////////////////////////////////////////////////////////////////
-		for	(OBJECTS_LIST_it OIt = pObjects4CrPr.begin(); OIt != pObjects4CrPr.end(); OIt++)
+		for	(OBJECTS_LIST_it OIt = pObjects4CrPr.begin(); OIt != pObjects4CrPr.end(); ++OIt)
 		{
 			CGameObject* pObj = *OIt;
 			if (!pObj) continue;

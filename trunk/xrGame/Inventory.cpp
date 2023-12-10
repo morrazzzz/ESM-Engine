@@ -13,8 +13,6 @@
 #include "xr_level_controller.h"
 #include "level.h"
 #include "ai_space.h"
-#include "entitycondition.h"
-#include "game_base_space.h"
 #include "clsid_game.h"
 
 using namespace InventoryUtilities;

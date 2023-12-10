@@ -1,12 +1,10 @@
 #include "stdafx.h"
 #include "tushkano.h"
 #include "tushkano_state_manager.h"
-
 #include "../control_animation_base.h"
 #include "../control_direction_base.h"
 #include "../control_movement_base.h"
 #include "../control_path_builder_base.h"
-
 #include "../states/monster_state_rest.h"
 #include "../states/monster_state_eat.h"
 #include "../states/monster_state_attack.h"
@@ -15,9 +13,6 @@
 #include "../states/monster_state_hitted.h"
 #include "../states/monster_state_controlled.h"
 #include "../states/monster_state_help_sound.h"
-
-#include "../../../entitycondition.h"
-
 
 CStateManagerTushkano::CStateManagerTushkano(CTushkano *obj) : inherited(obj)
 {
@@ -61,10 +56,10 @@ void CStateManagerTushkano::execute()
 		}
 	} else state_id = eStateControlled;
 
-	// óñòàíîâèòü òåêóùåå ñîñòîÿíèå
+	// ÑƒÑÑ‚Ğ°Ğ½Ğ¾Ğ²Ğ¸Ñ‚ÑŒ Ñ‚ĞµĞºÑƒÑ‰ĞµĞµ ÑĞ¾ÑÑ‚Ğ¾ÑĞ½Ğ¸Ğµ
 	select_state(state_id); 
 
-	// âûïîëíèòü òåêóùåå ñîñòîÿíèå
+	// Ğ²Ñ‹Ğ¿Ğ¾Ğ»Ğ½Ğ¸Ñ‚ÑŒ Ñ‚ĞµĞºÑƒÑ‰ĞµĞµ ÑĞ¾ÑÑ‚Ğ¾ÑĞ½Ğ¸Ğµ
 	get_state_current()->execute();
 
 	prev_substate = current_substate;

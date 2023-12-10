@@ -1,6 +1,6 @@
 #pragma once
 
-#include "..\include\xrRender\Kinematics.h"
+#include "../include/xrRender/Kinematics.h"
 #include "../../../actor.h"
 #include "../../../../xr_3da/CameraBase.h"
 

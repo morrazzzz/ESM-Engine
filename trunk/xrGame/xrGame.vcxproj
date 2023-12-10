@@ -1557,7 +1557,6 @@
     <ClInclude Include="ai_space_inline.h" />
     <ClInclude Include="pch_script.h" />
     <ClInclude Include="StdAfx.h" />
-    <ClInclude Include="xr_Client_BattlEye.h" />
     <ClInclude Include="CameraFirstEye.h" />
     <ClInclude Include="cameralook.h" />
     <ClInclude Include="ActorEffector.h" />
@@ -1573,12 +1572,10 @@
     <ClInclude Include="EffectorShot.h" />
     <ClInclude Include="EffectorShotX.h" />
     <ClInclude Include="EffectorZoomInertion.h" />
-    <ClInclude Include="DynamicHeightMap.h" />
     <ClInclude Include="GamePersistent.h" />
     <ClInclude Include="Level.h" />
     <ClInclude Include="Level_network_Demo.h" />
     <ClInclude Include="LevelGameDef.h" />
-    <ClInclude Include="LevelFogOfWar.h" />
     <ClInclude Include="Level_Bullet_Manager.h" />
     <ClInclude Include="Tracer.h" />
     <ClInclude Include="seniority_hierarchy_holder.h" />
@@ -1849,9 +1846,6 @@
     <ClInclude Include="associative_vector_compare_predicate.h" />
     <ClInclude Include="associative_vector_compare_predicate_inline.h" />
     <ClInclude Include="RegistryFuncs.h" />
-    <ClInclude Include="battleye.h" />
-    <ClInclude Include="battleye_system.h" />
-    <ClInclude Include="xr_Server_BattlEye.h" />
     <ClInclude Include="xrServer.h" />
     <ClInclude Include="xrServer_Space.h" />
     <ClInclude Include="FastDelegate.h" />
@@ -1861,7 +1855,6 @@
     <ClInclude Include="xrEProps.h" />
     <ClInclude Include="game_base.h" />
     <ClInclude Include="game_base_kill_type.h" />
-    <ClInclude Include="game_base_menu_events.h" />
     <ClInclude Include="game_base_space.h" />
     <ClInclude Include="game_cl_artefacthunt.h" />
     <ClInclude Include="game_cl_artefacthunt_snd_msg.h" />
@@ -1877,7 +1870,6 @@
     <ClInclude Include="game_cl_mp_snd_messages.h" />
     <ClInclude Include="game_cl_mp_script.h" />
     <ClInclude Include="game_sv_base.h" />
-    <ClInclude Include="game_sv_base_console_vars.h" />
     <ClInclude Include="game_sv_event_queue.h" />
     <ClInclude Include="xr_time.h" />
     <ClInclude Include="game_sv_artefacthunt.h" />
@@ -1900,8 +1892,6 @@
     <ClInclude Include="GameSpy\GameSpy_Patching.h" />
     <ClInclude Include="GameSpy\GameSpy_QR2.h" />
     <ClInclude Include="GameSpy\GameSpy_QR2_callbacks.h" />
-    <ClInclude Include="gamespy\CdkeyDecode\base32.h" />
-    <ClInclude Include="gamespy\CdkeyDecode\cdkeydecode.h" />
     <ClInclude Include="id_generator.h" />
     <ClInclude Include="PropertiesListTypes.h" />
     <ClInclude Include="ShapeData.h" />
@@ -6218,7 +6208,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="xr_Client_BattlEye.cpp" />
     <ClCompile Include="CameraFirstEye.cpp" />
     <ClCompile Include="cameralook.cpp" />
     <ClCompile Include="ActorEffector.cpp" />
@@ -6273,20 +6262,6 @@
     <ClCompile Include="EffectorShot.cpp" />
     <ClCompile Include="EffectorShotX.cpp" />
     <ClCompile Include="EffectorZoomInertion.cpp" />
-    <ClCompile Include="DynamicHeightMap.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_Priquel|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_Priquel|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed_Priquel|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed_Priquel|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_Priquel|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_Priquel|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="GamePersistent.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug_Priquel|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug_Priquel|x64'">pch_script.h</PrecompiledHeaderFile>
@@ -6342,12 +6317,6 @@
     <ClCompile Include="Level_GameSpy_Funcs.cpp" />
     <ClCompile Include="Level_input.cpp" />
     <ClCompile Include="Level_load.cpp" />
-    <ClCompile Include="level_map_locations.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_Priquel|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_Priquel|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="Level_network.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug_Priquel|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug_Priquel|x64'">pch_script.h</PrecompiledHeaderFile>
@@ -6445,21 +6414,6 @@
     <ClCompile Include="Level_SLS_Load.cpp" />
     <ClCompile Include="Level_SLS_Save.cpp" />
     <ClCompile Include="Level_start.cpp" />
-    <ClCompile Include="LevelGameDef.cpp" />
-    <ClCompile Include="LevelFogOfWar.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_Priquel|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_Priquel|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed_Priquel|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed_Priquel|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_Priquel|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_Priquel|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="Level_Bullet_Manager.cpp" />
     <ClCompile Include="Level_bullet_manager_firetrace.cpp" />
     <ClCompile Include="Tracer.cpp" />
@@ -8494,7 +8448,6 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="console_commands_mp.cpp" />
     <ClCompile Include="date_time.cpp" />
     <ClCompile Include="xrgame_dll_detach.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug_Priquel|Win32'">pch_script.h</PrecompiledHeaderFile>
@@ -8600,8 +8553,6 @@
     <ClCompile Include="smart_cast_stats.cpp" />
     <ClCompile Include="string_table.cpp" />
     <ClCompile Include="RegistryFuncs.cpp" />
-    <ClCompile Include="battleye_system.cpp" />
-    <ClCompile Include="xr_Server_BattlEye.cpp" />
     <ClCompile Include="xrServer.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug_Priquel|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug_Priquel|x64'">pch_script.h</PrecompiledHeaderFile>
@@ -8795,7 +8746,6 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
     <ClCompile Include="game_sv_base.cpp" />
-    <ClCompile Include="game_sv_base_console_vars.cpp" />
     <ClCompile Include="game_sv_base_script.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug_Priquel|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug_Priquel|x64'">pch_script.h</PrecompiledHeaderFile>
@@ -8897,58 +8847,6 @@
     <ClCompile Include="GameSpy\GameSpy_Patching.cpp" />
     <ClCompile Include="GameSpy\GameSpy_QR2.cpp" />
     <ClCompile Include="GameSpy\GameSpy_QR2_callbacks.cpp" />
-    <ClCompile Include="gamespy\CdkeyDecode\base32.c">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_Priquel|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_Priquel|x64'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed_Priquel|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed_Priquel|x64'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_Priquel|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_Priquel|x64'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-      </PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="gamespy\CdkeyDecode\cdkeydecode.c">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_Priquel|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_Priquel|x64'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed_Priquel|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed_Priquel|x64'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_Priquel|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_Priquel|x64'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-      </PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="xrServer_Factory.cpp" />
     <ClCompile Include="xrServer_Objects_Abstract.cpp" />
     <ClCompile Include="xrServer_Object_Base.cpp" />

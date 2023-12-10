@@ -11,11 +11,9 @@
 #include "../ai_monster_effector.h"
 #include "../../../../xr_3da/CameraBase.h"
 #include "../../../xr_level_controller.h"
-#include "../../../detail_path_manager_space.h"
-#include "../../../detail_path_manager.h"
 #include "../../../CharacterPhysicsSupport.h"
 #include "../control_path_builder_base.h"
-#include "..\include\xrRender\Kinematics.h"
+#include "../include/xrRender/Kinematics.h"
 
 CPseudoGigant::CPseudoGigant()
 {

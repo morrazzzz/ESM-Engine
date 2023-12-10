@@ -1,45 +1,20 @@
 #include "stdafx.h"
 #include "MainMenu.h"
 #include "UI/UIDialogWnd.h"
-#include "ui/UIMessageBoxEx.h"
 #include "../xr_3da/xr_IOConsole.h"
 #include "../xr_3da/IGame_Level.h"
 #include "../xr_3da/CameraManager.h"
 #include "xr_Level_controller.h"
-#include "ui\UITextureMaster.h"
-#include "ui\UIXmlInit.h"
+#include "ui/UITextureMaster.h"
+#include "ui/UIXmlInit.h"
 #include <dinput.h>
-#include "ui\UIBtnHint.h"
+#include "ui/UIBtnHint.h"
 #include "UICursor.h"
-#include "gamespy/GameSpy_Full.h"
-#include "gamespy/GameSpy_HTTP.h"
-#include "gamespy/GameSpy_Available.h"
-#include "gamespy/CdkeyDecode/cdkeydecode.h"
 
 #include "object_broker.h"
 #include "../xr_3da/DiscordRPC.hpp"
 
 //#define DEMO_BUILD
-
-string128	ErrMsgBoxTemplate	[]	= {
-		"message_box_invalid_pass",
-		"message_box_invalid_host",
-		"message_box_session_full",
-		"message_box_server_reject",
-		"message_box_cdkey_in_use",
-		"message_box_cdkey_disabled",
-		"message_box_cdkey_invalid",
-		"message_box_different_version",
-		"message_box_gs_service_not_available",
-		"message_box_sb_master_server_connect_failed",
-		"msg_box_no_new_patch",
-		"msg_box_new_patch",
-		"msg_box_patch_download_error",		
-		"msg_box_patch_download_success",
-		"msg_box_connect_to_master_server",
-		"msg_box_kicked_by_server",
-		"msg_box_error_loading"
-};
 
 extern bool b_shniaganeed_pp;
 
@@ -69,27 +44,7 @@ CMainMenu::CMainMenu	()
 	m_NeedErrDialog					= ErrNoError;
 	m_start_time					= 0;
 
-	if(!g_dedicated_server)
-	{
-		g_btnHint						= xr_new<CUIButtonHint>();
-		m_pGameSpyFull					= xr_new<CGameSpy_Full>();
-		
-		for (u32 i=0; i<u32(ErrMax); i++)
-		{
-			CUIMessageBoxEx*			pNewErrDlg;
-			INIT_MSGBOX					(pNewErrDlg, ErrMsgBoxTemplate[i]);
-			m_pMB_ErrDlgs.push_back		(pNewErrDlg);
-		}
-
-		Register						(m_pMB_ErrDlgs[PatchDownloadSuccess]);
-		m_pMB_ErrDlgs[PatchDownloadSuccess]->SetWindowName	("msg_box");
-		m_pMB_ErrDlgs[PatchDownloadSuccess]->AddCallback	("msg_box", MESSAGE_BOX_YES_CLICKED, CUIWndCallback::void_function(this, &CMainMenu::OnRunDownloadedPatch));
-
-		Register						(m_pMB_ErrDlgs[ConnectToMasterServer]);
-		m_pMB_ErrDlgs[PatchDownloadSuccess]->SetWindowName	("msg_box_connecting");
-		m_pMB_ErrDlgs[PatchDownloadSuccess]->AddCallback	("msg_box_connecting", MESSAGE_BOX_OK_CLICKED, CUIWndCallback::void_function(this, &CMainMenu::OnConnectToMasterServerOkClicked));
-
-	}
+	g_btnHint						= xr_new<CUIButtonHint>();
 }
 
 CMainMenu::~CMainMenu	()
@@ -97,8 +52,6 @@ CMainMenu::~CMainMenu	()
 	xr_delete						(g_btnHint);
 	xr_delete						(m_startDialog);
 	g_pGamePersistent->m_pMainMenu	= NULL;
-	xr_delete						(m_pGameSpyFull);
-	delete_data						(m_pMB_ErrDlgs);	
 }
 
 void CMainMenu::ReadTextureInfo()
@@ -417,12 +370,6 @@ void CMainMenu::OnFrame()
 		if(m_Flags.test(flRestoreConsole))
 			Console->Show			();
 	}
-
-	if(IsActive() || m_sPDProgress.IsInProgress)
-		m_pGameSpyFull->Update();
-
-	if(IsActive())
-		CheckForErrorDlg();
 }
 
 void CMainMenu::OnDeviceCreate()
@@ -468,19 +415,14 @@ void CMainMenu::UnregisterPPDraw				(CUIWindow* w)
 
 void CMainMenu::SetErrorDialog					(EErrorDlg ErrDlg)	
 { 
-	m_NeedErrDialog = ErrDlg;
 };
 
 void CMainMenu::CheckForErrorDlg()
 {
-	if (m_NeedErrDialog == ErrNoError)	return;
-	StartStopMenu						(m_pMB_ErrDlgs[m_NeedErrDialog], false);
-	m_NeedErrDialog						= ErrNoError;
 };
 
 void CMainMenu::SwitchToMultiplayerMenu()
 {
-	m_startDialog->Dispatch				(2,1);
 };
 
 void CMainMenu::DestroyInternal(bool bForce)
@@ -491,127 +433,45 @@ void CMainMenu::DestroyInternal(bool bForce)
 
 void CMainMenu::OnNewPatchFound(LPCSTR VersionName, LPCSTR URL)
 {
-	if (m_sPDProgress.IsInProgress) return;
-	
-	if (m_pMB_ErrDlgs[NewPatchFound])	
-	{
-		delete_data(m_pMB_ErrDlgs[NewPatchFound]);
-		m_pMB_ErrDlgs[NewPatchFound] = NULL;
-	}
-	if (!m_pMB_ErrDlgs[NewPatchFound])
-	{
-		INIT_MSGBOX(m_pMB_ErrDlgs[NewPatchFound], "msg_box_new_patch");
-
-		shared_str tmpText;
-		tmpText.sprintf(m_pMB_ErrDlgs[NewPatchFound]->GetText(), VersionName, URL);
-		m_pMB_ErrDlgs[NewPatchFound]->SetText(*tmpText);		
-	}
-	m_sPatchURL = URL;
-	
-	Register						(m_pMB_ErrDlgs[NewPatchFound]);
-	m_pMB_ErrDlgs[NewPatchFound]->SetWindowName	("msg_box");
-	m_pMB_ErrDlgs[NewPatchFound]->AddCallback	("msg_box", MESSAGE_BOX_YES_CLICKED, CUIWndCallback::void_function(this, &CMainMenu::OnDownloadPatch));
-	StartStopMenu					(m_pMB_ErrDlgs[NewPatchFound], false);
-};
+}
 
 void CMainMenu::OnNoNewPatchFound				()
 {
-	StartStopMenu(m_pMB_ErrDlgs[NoNewPatch], false);
 }
 
 void CMainMenu::OnDownloadPatch(CUIWindow*, void*)
 {
-	CGameSpy_Available GSA;
-	shared_str result_string;
-	if (!GSA.CheckAvailableServices(result_string))
-	{
-		Msg(*result_string);
-		return;
-	};
-	
-	LPCSTR fileName = *m_sPatchURL;
-	if (!fileName) return;
-
-	string4096 FilePath = "";
-	char* FileName = NULL;
-	GetFullPathName(fileName, 4096, FilePath, &FileName);
-	/*
-	if (strrchr(fileName, '/')) fileName = strrchr(fileName, '/')+1;
-	else
-		if (strrchr(fileName, '\\')) fileName = strrchr(fileName, '\\')+1;
-	if (!fileName) return;
-	*/
-
-	string_path		fname;
-	if (FS.path_exist("$downloads$"))
-	{
-		FS.update_path(fname, "$downloads$", FileName);
-		m_sPatchFileName = fname;
-	}
-	else
-		m_sPatchFileName.sprintf	("downloads\\%s", FileName);	
-	
-	m_sPDProgress.IsInProgress	= true;
-	m_sPDProgress.Progress		= 0;
-	m_sPDProgress.FileName		= m_sPatchFileName;
-	m_sPDProgress.Status		= "";
-
-	m_pGameSpyFull->m_pGS_HTTP->DownloadFile(*m_sPatchURL, *m_sPatchFileName);
 }
 
 void	CMainMenu::OnDownloadPatchError()
 {
-	m_sPDProgress.IsInProgress	= false;
-	StartStopMenu(m_pMB_ErrDlgs[PatchDownloadError], false);
 };
 
 void	CMainMenu::OnDownloadPatchSuccess			()
-{
-	m_sPDProgress.IsInProgress	= false;
-	
-	StartStopMenu(m_pMB_ErrDlgs[PatchDownloadSuccess], false);
+{;
 }
 
 void CMainMenu::OnSessionTerminate(LPCSTR reason)
 {
-	if ( m_NeedErrDialog == SessionTerminate && (Device.dwTimeGlobal - m_start_time) < 8000 )
-		return;
-
-	m_start_time = Device.dwTimeGlobal;
-	string1024 Text;
-	strcpy_s(Text, sizeof(Text), "Client disconnected. ");
-	strcat_s(Text,sizeof(Text),reason);
-	m_pMB_ErrDlgs[SessionTerminate]->SetText(Text);
-	SetErrorDialog(CMainMenu::SessionTerminate);
 }
 
 void	CMainMenu::OnLoadError(LPCSTR module)
 {
-	string1024 Text;
-	strcpy_s(Text, sizeof(Text),"Error loading (not found) ");
-	strcat_s(Text,sizeof(Text), module);
-	m_pMB_ErrDlgs[LoadingError]->SetText(Text);
-	SetErrorDialog(CMainMenu::LoadingError);
 }
 
 void	CMainMenu::OnDownloadPatchProgress			(u64 bytesReceived, u64 totalSize)
 {
-	m_sPDProgress.Progress = (float(bytesReceived)/float(totalSize))*100.0f;
 };
 
 extern ENGINE_API string512  g_sLaunchOnExit_app;
 extern ENGINE_API string512  g_sLaunchOnExit_params;
 void	CMainMenu::OnRunDownloadedPatch			(CUIWindow*, void*)
 {
-	strcpy					(g_sLaunchOnExit_app,*m_sPatchFileName);
-	strcpy					(g_sLaunchOnExit_params,"");
-	Console->Execute		("quit");
 }
 
 void CMainMenu::CancelDownload()
 {
-	m_pGameSpyFull->m_pGS_HTTP->StopDownload();
-	m_sPDProgress.IsInProgress	= false;
+	
 }
 
 void CMainMenu::SetNeedVidRestart()
@@ -625,67 +485,24 @@ void CMainMenu::OnDeviceReset()
 		SetNeedVidRestart();
 }
 
-extern	void	GetCDKey(char* CDKeyStr);
-//extern	int VerifyClientCheck(const char *key, unsigned short cskey);
-
-bool CMainMenu::IsCDKeyIsValid()
-{
-	if (!m_pGameSpyFull || !m_pGameSpyFull->m_pGS_HTTP) return false;
-	string64 CDKey = "";
-	GetCDKey(CDKey);
-
-#ifndef DEMO_BUILD
-	if (!xr_strlen(CDKey)) return true;
-#endif
-
-	int GameID = 0;
-	for (int i=0; i<4; i++)
-	{
-		m_pGameSpyFull->m_pGS_HTTP->xrGS_GetGameID(&GameID, i);
-		if (VerifyClientCheck(CDKey, unsigned short (GameID)) == 1)
-			return true;
-	};	
-	return false;
-}
-
 bool		CMainMenu::ValidateCDKey					()
 {
-	if (IsCDKeyIsValid()) return true;
-	SetErrorDialog(CMainMenu::ErrCDKeyInvalid);
-	return false;
+	return true;
 }
 
 void		CMainMenu::Show_CTMS_Dialog				()
 {
-	if (!m_pMB_ErrDlgs[ConnectToMasterServer]) return;
-	if (m_pMB_ErrDlgs[ConnectToMasterServer]->IsShown()) return;
-	StartStopMenu(m_pMB_ErrDlgs[ConnectToMasterServer], false);
 }
 
 void		CMainMenu::Hide_CTMS_Dialog()
 {
-	if (!m_pMB_ErrDlgs[ConnectToMasterServer]) return;
-	if (!m_pMB_ErrDlgs[ConnectToMasterServer]->IsShown()) return;
-	StartStopMenu(m_pMB_ErrDlgs[ConnectToMasterServer], false);
 }
 
 void CMainMenu::OnConnectToMasterServerOkClicked(CUIWindow*, void*)
 {
-	Hide_CTMS_Dialog();
 }
 
 LPCSTR CMainMenu::GetGSVer()
 {
-	static string256	buff;
-	static string256	buff2;
-	if(m_pGameSpyFull)
-	{
-		strcpy(buff2, m_pGameSpyFull->GetGameVersion(buff));
-	}else
-	{
-		buff[0]		= 0;
-		buff2[0]	= 0;
-	}
-
-	return buff2;
+	return "ESM Engine x64 b1.02";
 }

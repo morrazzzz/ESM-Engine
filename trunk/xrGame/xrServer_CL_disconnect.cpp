@@ -1,8 +1,6 @@
 #include "stdafx.h"
-#include "hudmanager.h"
 #include "xrserver.h"
 #include "game_sv_single.h"
-#include "alife_simulator.h"
 #include "xrserver_objects.h"
 #include "level.h"
 

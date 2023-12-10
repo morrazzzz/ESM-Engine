@@ -15,7 +15,6 @@
 #include "cover_evaluators.h"
 #include "cover_point.h"
 #include "cover_manager.h"
-#include "missile.h"
 #include "stalker_movement_restriction.h"
 #include "movement_manager_space.h"
 #include "detail_path_manager_space.h"
@@ -35,7 +34,6 @@
 #include "danger_manager.h"
 #include "detail_path_manager.h"
 #include "weaponmagazined.h"
-#include "stalker_animation_manager.h"
 
 #define DISABLE_COVER_BEFORE_DETOUR
 

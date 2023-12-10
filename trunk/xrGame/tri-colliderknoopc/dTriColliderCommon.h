@@ -1,10 +1,7 @@
 #pragma once
 
 #include "../Level.h"
-#include "../ode_include.h"
 #include "../ExtendedGeom.h"
-#include "dTriColliderMath.h"
-
 
 extern xr_vector< flags8 >			gl_cl_tries_state	;
 

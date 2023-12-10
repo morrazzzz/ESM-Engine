@@ -2,8 +2,6 @@
 #include "pseudodog.h"
 #include "pseudodog_state_manager.h"
 #include "../../../sound_player.h"
-#include "../../../level.h"
-#include "../../../ai_monster_space.h"
 #include "../monster_velocity_space.h"
 #include "../control_animation_base.h"
 #include "../control_movement_base.h"

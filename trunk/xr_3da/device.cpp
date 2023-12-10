@@ -58,7 +58,7 @@ void CRenderDevice::Clear	()
 	m_pRender->Clear();
 }
 
-void CRenderDevice::End		(void)
+void CRenderDevice::End()
 {
 #ifndef DEDICATED_SERVER
 
@@ -258,37 +258,6 @@ void CRenderDevice::Run			()
 					Device.seqParallel.clear_not_free();
 					seqFrameMT.Process(rp_Frame);
 				}
-#ifdef DEDICATED_SERVER
-				u32 FrameEndTime = TimerGlobal.GetElapsed_ms();
-				u32 FrameTime = (FrameEndTime - FrameStartTime);
-				/*
-				string1024 FPS_str = "";
-				string64 tmp;
-				strcat(FPS_str, "FPS Real - ");
-				if (dwTimeDelta != 0)
-					strcat(FPS_str, ltoa(1000/dwTimeDelta, tmp, 10));
-				else
-					strcat(FPS_str, "~~~");
-
-				strcat(FPS_str, ", FPS Proj - ");
-				if (FrameTime != 0)
-					strcat(FPS_str, ltoa(1000/FrameTime, tmp, 10));
-				else
-					strcat(FPS_str, "~~~");
-
-*/
-				u32 DSUpdateDelta = 1000 / g_svDedicateServerUpdateReate;
-				if (FrameTime < DSUpdateDelta)
-				{
-					Sleep(DSUpdateDelta - FrameTime);
-					//					Msg("sleep for %d", DSUpdateDelta - FrameTime);
-					//					strcat(FPS_str, ", sleeped for ");
-					//					strcat(FPS_str, ltoa(DSUpdateDelta - FrameTime, tmp, 10));
-				}
-
-				//				Msg(FPS_str);
-#endif
-
 			}
 			else {
 				Sleep(100);

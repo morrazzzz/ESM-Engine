@@ -13,7 +13,6 @@
 #include "ui/UISkinSelector.h"
 #include "ui/UIPDAWnd.h"
 #include "ui/UIMapDesc.h"
-#include "game_base_menu_events.h"
 #include "ui/TeamInfo.h"
 #include "string_table.h"
 
@@ -140,28 +139,6 @@ void game_cl_TeamDeathmatch::TranslateGameMessage	(u32 msg, NET_Packet& P)
 				CTeamInfo::GetTeam_name(int(Team)));
 		}break;
 
-	case PLAYER_CHANGE_TEAM://tdm
-		{
-			u16 PlayerID, OldTeam, NewTeam;
-			P.r_u16 (PlayerID);
-			P.r_u16 (OldTeam);
-			P.r_u16 (NewTeam);
-
-			game_PlayerState* pPlayer = GetPlayerByGameID(PlayerID);
-			if (!pPlayer) break;
-
-			sprintf_s(Text, "%s%s %s%s %s%s", 
-							CTeamInfo::GetTeam_color_tag(int(OldTeam)), 
-							pPlayer->name, 
-							Color_Main, 
-							*st.translate("mp_switched_to"),
-							CTeamInfo::GetTeam_color_tag(int(NewTeam)), 
-							CTeamInfo::GetTeam_name(int(NewTeam)));
-			CommonMessageOut(Text);
-			//---------------------------------------
-			Msg("%s *s %s", pPlayer->name, *st.translate("mp_switched_to"), CTeamInfo::GetTeam_name(int(NewTeam)));
-		}break;
-
 	default:
 		inherited::TranslateGameMessage(msg,P);
 	};
@@ -275,7 +252,6 @@ void game_cl_TeamDeathmatch::OnTeamSelect(int Team)
 		NET_Packet		P;
 		l_pPlayer->u_EventGen		(P,GE_GAME_EVENT,l_pPlayer->ID()	);
 		P.w_u16(GAME_EVENT_PLAYER_GAME_MENU);
-		P.w_u8(PLAYER_CHANGE_TEAM);
 		
 		P.w_s16			(s16(Team+1));
 		//P.w_u32			(0);

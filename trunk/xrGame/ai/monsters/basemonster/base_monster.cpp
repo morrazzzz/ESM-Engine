@@ -4,27 +4,16 @@
 #include "../../../hit.h"
 #include "../../../PHDestroyable.h"
 #include "../../../CharacterPhysicsSupport.h"
-#include "../../../game_level_cross_table.h"
-#include "../../../game_graph.h"
 #include "../../../phmovementcontrol.h"
 #include "../ai_monster_squad_manager.h"
 #include "../../../xrserver_objects_alife_monsters.h"
 #include "../corpse_cover.h"
 #include "../../../cover_evaluators.h"
-#include "../../../seniority_hierarchy_holder.h"
-#include "../../../team_hierarchy_holder.h"
-#include "../../../squad_hierarchy_holder.h"
-#include "../../../group_hierarchy_holder.h"
-#include "../../../phdestroyable.h"
 #include "../../../detail_path_manager.h"
-#include "../../../hudmanager.h"
 #include "../../../memory_manager.h"
-#include "../../../visual_memory_manager.h"
 #include "../monster_velocity_space.h"
-#include "../../../entitycondition.h"
 #include "../../../sound_player.h"
 #include "../../../level.h"
-#include "../../../ui/UIMainIngameWnd.h"
 #include "../state_manager.h"
 #include "../controlled_entity.h"
 #include "../control_animation_base.h"
@@ -35,7 +24,6 @@
 #include "../monster_cover_manager.h"
 #include "../monster_home.h"
 #include "../../../inventory.h"
-#include "../../../xrserver.h"
 #include "../ai_monster_squad.h"
 #include "../../../actor.h"
 #include "../../../ai_object_location.h"
@@ -61,7 +49,7 @@ CBaseMonster::CBaseMonster()
 	EnemyMan.init_external			(this);
 	CorpseMan.init_external			(this);
 
-	// Инициализация параметров анимации	
+	// В»РЅРёС†РёР°Р»РёР·Р°С†РёВ¤ РїР°СЂР°РјРµС‚СЂРѕРІ Р°РЅРёРјР°С†РёРё	
 
 	StateMan						= 0;
 
@@ -369,13 +357,13 @@ void CBaseMonster::on_kill_enemy(const CEntity *obj)
 {
 	const CEntityAlive *entity	= smart_cast<const CEntityAlive *>(obj);
 	
-	// добавить в список трупов	
+	// РґРѕР±Р°РІРёС‚СЊ РІ СЃРїРёСЃРѕРє С‚СЂСѓРїРѕРІ	
 	CorpseMemory.add_corpse		(entity);
 	
-	// удалить всю информацию о хитах
+	// СѓРґР°Р»РёС‚СЊ РІСЃСЋ РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ С…РёС‚Р°С…
 	HitMemory.remove_hit_info	(entity);
 
-	// удалить всю информацию о звуках
+	// СѓРґР°Р»РёС‚СЊ РІСЃСЋ РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ Р·РІСѓРєР°С…
 	SoundMemory.clear			();
 }
 
@@ -447,7 +435,7 @@ CParticlesObject* CBaseMonster::PlayParticles(const shared_str& name, const Fvec
 {
 	CParticlesObject* ps = CParticlesObject::Create(name.c_str(),auto_remove);
 	
-	// вычислить позицию и направленность партикла
+	// РІС‹С‡РёСЃР»РёС‚СЊ РїРѕР·РёС†РёСЋ Рё РЅР°РїСЂР°РІР»РµРЅРЅРѕСЃС‚СЊ РїР°СЂС‚РёРєР»Р°
 	Fmatrix	matrix; 
 
 	matrix.identity			();

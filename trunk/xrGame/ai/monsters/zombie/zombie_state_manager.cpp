@@ -1,19 +1,15 @@
 #include "stdafx.h"
 #include "zombie.h"
 #include "zombie_state_manager.h"
-
 #include "../control_animation_base.h"
 #include "../control_direction_base.h"
 #include "../control_movement_base.h"
 #include "../control_path_builder_base.h"
-
 #include "../states/monster_state_rest.h"
 #include "../states/monster_state_attack.h"
 #include "../states/monster_state_eat.h"
 #include "../states/monster_state_hear_int_sound.h"
 #include "zombie_state_attack_run.h"
-#include "../../../entitycondition.h"
-#include "../../../detail_path_manager.h"
 #include "../states/monster_state_controlled.h"
 #include "../states/monster_state_help_sound.h"
 
@@ -59,10 +55,10 @@ void CStateManagerZombie::execute()
 		}
 	} else state_id = eStateControlled;
 
-	// óñòàíîâèòü òåêóùåå ñîñòîÿíèå
+	// ÑƒÑÑ‚Ğ°Ğ½Ğ¾Ğ²Ğ¸Ñ‚ÑŒ Ñ‚ĞµĞºÑƒÑ‰ĞµĞµ ÑĞ¾ÑÑ‚Ğ¾ÑĞ½Ğ¸Ğµ
 	select_state(state_id); 
 
-	// âûïîëíèòü òåêóùåå ñîñòîÿíèå
+	// Ğ²Ñ‹Ğ¿Ğ¾Ğ»Ğ½Ğ¸Ñ‚ÑŒ Ñ‚ĞµĞºÑƒÑ‰ĞµĞµ ÑĞ¾ÑÑ‚Ğ¾ÑĞ½Ğ¸Ğµ
 	get_state_current()->execute();
 
 	prev_substate = current_substate;

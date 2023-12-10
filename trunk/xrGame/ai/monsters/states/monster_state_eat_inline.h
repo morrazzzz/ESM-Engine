@@ -7,10 +7,8 @@
 #include "monster_state_eat_eat.h"
 #include "monster_state_eat_drag.h"
 #include "../../../PhysicsShell.h"
-#include "../../../PHMovementControl.h"
 #include "../../../CharacterPhysicsSupport.h"
 #ifdef _DEBUG
-#	include "../../../level.h"
 #	include "../../../level_debug.h"
 #endif
 
@@ -125,7 +123,7 @@ void CStateMonsterEatAbstract::setup_substates()
 
 	if (current_substate == eStateEat_CorpseApproachRun) {
 
-		// Îïðåäåëèòü ïîçèöèþ áëèæàéøåé áîíû ó òðóïà
+		// ÑœÐ¿Ñ€ÐµÐ´ÐµÐ»Ð¸Ñ‚ÑŒ Ð¿Ð¾Ð·Ð¸Ñ†Ð¸ÑŽ Ð±Ð»Ð¸Ð¶Ð°Ð¹ÑˆÐµÐ¹ Ð±Ð¾Ð½Ñ‹ Ñƒ Ñ‚Ñ€ÑƒÐ¿Ð°
 		Fvector nearest_bone_pos;
 		const CEntityAlive *corpseCEntity = object->CorpseMan.get_corpse();
 		if ((corpseCEntity->m_pPhysicsShell == nullptr) || (!corpseCEntity->m_pPhysicsShell->isActive())) {
@@ -202,7 +200,7 @@ void CStateMonsterEatAbstract::setup_substates()
 
 	if (current_substate == eStateEat_CorpseApproachWalk) {
 		
-		// Îïðåäåëèòü ïîçèöèþ áëèæàéøåé áîíû ó òðóïà
+		// ÑœÐ¿Ñ€ÐµÐ´ÐµÐ»Ð¸Ñ‚ÑŒ Ð¿Ð¾Ð·Ð¸Ñ†Ð¸ÑŽ Ð±Ð»Ð¸Ð¶Ð°Ð¹ÑˆÐµÐ¹ Ð±Ð¾Ð½Ñ‹ Ñƒ Ñ‚Ñ€ÑƒÐ¿Ð°
 		Fvector nearest_bone_pos;
 		const CEntityAlive *entity_alive = object->CorpseMan.get_corpse();
 		if ((entity_alive->m_pPhysicsShell == nullptr) || (!entity_alive->m_pPhysicsShell->isActive())) {
@@ -246,7 +244,7 @@ bool CStateMonsterEatAbstract::check_start_conditions()
 		
 }
 
-#define TIME_NOT_HUNGRY 20000
+constexpr auto TIME_NOT_HUNGRY = 20000;
 
 TEMPLATE_SPECIALIZATION
 bool CStateMonsterEatAbstract::hungry()

@@ -5,13 +5,13 @@
 #include "explosiverocket.h"
 #include "entity.h"
 #include "level.h"
-#include "..\include\xrRender\Kinematics.h"
+#include "../include/xrRender/Kinematics.h"
 
-CWeaponRPG7::CWeaponRPG7(void) : CWeaponCustomPistol("RPG7") 
+CWeaponRPG7::CWeaponRPG7() : CWeaponCustomPistol("RPG7") 
 {
 }
 
-CWeaponRPG7::~CWeaponRPG7(void) 
+CWeaponRPG7::~CWeaponRPG7() 
 {
 }
 

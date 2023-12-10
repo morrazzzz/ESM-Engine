@@ -1,10 +1,7 @@
 #include "stdafx.h"
 #include "igame_level.h"
 #include "igame_persistent.h"
-
-#include "xrSheduler.h"
 #include "xr_object_list.h"
-#include "std_classes.h"
 
 #include "xr_object.h"
 #include "../xrNetServer/net_utils.h"

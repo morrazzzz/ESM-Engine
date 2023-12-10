@@ -1103,6 +1103,7 @@ void		game_sv_mp::OnPlayerSpeechMessage	(NET_Packet& P, ClientID sender)
 
 void		game_sv_mp::OnPlayerGameMenu(NET_Packet& P, ClientID sender)
 {
+/*
 	u8 SubEvent = P.r_u8();
 	switch (SubEvent)
 	{
@@ -1119,6 +1120,7 @@ void		game_sv_mp::OnPlayerGameMenu(NET_Packet& P, ClientID sender)
 			OnPlayerSelectSkin(P, sender);
 		}break;
 	}
+	*/
 }
 void		game_sv_mp::OnPlayerSelectSpectator(NET_Packet& P, ClientID sender)
 {

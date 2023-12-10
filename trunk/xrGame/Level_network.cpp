@@ -123,15 +123,6 @@ void CLevel::net_Stop		()
 
 void CLevel::ClientSend()
 {
-	if (GameID() != GAME_SINGLE && OnClient())
-	{
-		if ( !net_HasBandwidth() ) return;
-	};
-
-#ifdef BATTLEYE
-	battleye_system.UpdateClient();
-#endif // BATTLEYE
-
 	NET_Packet				P;
 	u32						start	= 0;
 	//----------- for E3 -----------------------------
@@ -167,11 +158,6 @@ void CLevel::ClientSend()
 				}				
 			}			
 		}		
-	};
-	if (OnClient()) 
-	{
-		Flush_Send_Buffer();
-		return;
 	}
 	//-------------------------------------------------
 	while (1)
@@ -255,12 +241,6 @@ void CLevel::Send		(NET_Packet& P, u32 dwFlags, u32 dwTimeout)
 		Server->OnMessage	(P,Game().local_svdpnid	);
 	}else											
 		IPureClient::Send	(P,dwFlags,dwTimeout	);
-
-	if (g_pGameLevel && Level().game && GameID() != GAME_SINGLE && !g_SV_Disable_Auth_Check)		{
-		// anti-cheat
-		phTimefactor		= 1.f					;
-		psDeviceFlags.set	(rsConstantFPS,FALSE)	;	
-	}
 }
 
 void CLevel::net_Update	()

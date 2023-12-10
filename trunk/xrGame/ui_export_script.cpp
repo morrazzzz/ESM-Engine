@@ -1,7 +1,7 @@
 #include "pch_script.h"
 
 #include "script_ui_registrator.h"
-#include "UI\UIMultiTextStatic.h"
+#include "UI/UIMultiTextStatic.h"
 #include "MainMenu.h"
 
 using namespace luabind;

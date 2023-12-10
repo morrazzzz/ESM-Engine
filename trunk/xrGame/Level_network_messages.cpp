@@ -322,9 +322,6 @@ void CLevel::ClientReceive()
 			}break;
 		case M_BATTLEYE:
 			{
-#ifdef BATTLEYE
-			battleye_system.ReadPacketClient( P );
-#endif // BATTLEYE
 			}break;
 		}
 

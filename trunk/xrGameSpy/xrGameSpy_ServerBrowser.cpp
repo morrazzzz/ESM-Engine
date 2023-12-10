@@ -4,7 +4,6 @@
 
 #include "xrGameSpy_ServerBrowser.h"
 #include "gamespy/qr2/qr2regkeys.h"
-#include "../xrGame/battleye.h"
 
 #define GAMETYPE_NAME_KEY						100
 #define	DEDICATED_KEY							101

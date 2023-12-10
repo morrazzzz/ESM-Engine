@@ -18,7 +18,7 @@ void CRenderDevice::_Destroy	(BOOL bKeepTextures)
 	Memory.mem_compact			();
 }
 
-void CRenderDevice::Destroy	(void) {
+void CRenderDevice::Destroy() {
 	if (!b_is_Ready)			return;
 
 	Log("Destroying Direct3D...");

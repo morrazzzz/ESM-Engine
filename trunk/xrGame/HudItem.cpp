@@ -13,10 +13,9 @@
 #include "xrmessages.h"
 #include "level.h"
 #include "inventory.h"
-#include "../xr_3da/CameraBase.h"
 
 
-CHudItem::CHudItem(void)
+CHudItem::CHudItem()
 {
 	m_pHUD				= NULL;
 	SetHUDmode			(FALSE);
@@ -27,7 +26,7 @@ CHudItem::CHudItem(void)
 	m_bInertionAllow	= true;
 }
 
-CHudItem::~CHudItem(void)
+CHudItem::~CHudItem()
 {
 	xr_delete			(m_pHUD);
 }

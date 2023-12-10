@@ -4,7 +4,6 @@
 #include "../../../level.h"
 #include "../../../actor.h"
 #include "../../../inventory.h"
-#include "../../../HudItem.h"
 #include "../../../../xr_3da/CustomHUD.h"
 #include "../../../../xr_3da/effector.h"
 #include "../../../../xr_3da/effectorPP.h"
@@ -122,7 +121,7 @@ CAlienEffector::CAlienEffector(ECamEffectorType type, CAI_Bloodsucker *obj) :
 
 BOOL CAlienEffector::Process(Fvector &p, Fvector &d, Fvector &n, float& fFov, float& fFar, float& fAspect)
 {
-	// Инициализация
+	// В»РЅРёС†РёР°Р»РёР·Р°С†РёВ¤
 	Fmatrix	Mdef;
 	Mdef.identity		();
 	Mdef.j.set			(n);
@@ -172,7 +171,7 @@ BOOL CAlienEffector::Process(Fvector &p, Fvector &d, Fvector &n, float& fFov, fl
 	fFov = m_current_fov;
 	//////////////////////////////////////////////////////////////////////////
 
-	// Установить углы смещения
+	// вЂќСЃС‚Р°РЅРѕРІРёС‚СЊ СѓРіР»С‹ СЃРјРµС‰РµРЅРёВ¤
 	Fmatrix		R;
 	R.setHPB	(dangle_current.x,dangle_current.y,dangle_current.z);
 

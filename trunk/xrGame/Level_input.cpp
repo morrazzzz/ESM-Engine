@@ -16,7 +16,6 @@
 #include "Inventory.h"
 #include "HudItem.h"
 #include "clsid_game.h"
-#include "ai/monsters/BaseMonster/base_monster.h"
 #endif
 
 #ifdef DEBUG
@@ -163,11 +162,6 @@ void CLevel::IR_OnKeyboardPress	(int key)
 	switch (key) {
 	case DIK_NUMPAD5: 
 		{
-			if (GameID() != GAME_SINGLE) 
-			{
-				Msg("For this game type Demo Record is disabled.");
-///				return;
-			};
 			Console->Hide	();
 			Console->Execute("demo_record 1");
 		}
@@ -262,75 +256,7 @@ void CLevel::IR_OnKeyboardPress	(int key)
 		}
 		break;
 	}
-	/**/
-
-
-	case DIK_DIVIDE:
-		if( OnServer() ){
-//			float NewTimeFactor				= pSettings->r_float("alife","time_factor");
-			
-			if (GameID() == GAME_SINGLE)
-				Server->game->SetGameTimeFactor(g_fTimeFactor);
-			else
-			{
-				Server->game->SetEnvironmentGameTimeFactor(g_fTimeFactor);
-				Server->game->SetGameTimeFactor(g_fTimeFactor);
-			};
-		}
-		break;	
-	case DIK_MULTIPLY:
-		if( OnServer() ){
-			float NewTimeFactor				= 1000.f;
-			if (GameID() == GAME_SINGLE)
-				Server->game->SetGameTimeFactor(NewTimeFactor);
-			else
-			{
-				Server->game->SetEnvironmentGameTimeFactor(NewTimeFactor);
-//				Server->game->SetGameTimeFactor(NewTimeFactor);
-			};
-		}
-		break;
 #endif
-#ifdef DEBUG
-	case DIK_F9:{
-//		if (!ai().get_alife())
-//			break;
-//		const_cast<CALifeSimulatorHeader&>(ai().alife().header()).set_state(ALife::eZoneStateSurge);
-		if (GameID() != GAME_SINGLE)
-		{
-			extern INT g_sv_SendUpdate;
-			g_sv_SendUpdate = 1;
-		};
-		break;
-	}
-		return;
-//	case DIK_F10:{
-//		ai().level_graph().set_dest_point();
-//		ai().level_graph().build_detail_path();
-//		if (!Objects.FindObjectByName("m_stalker_e0000") || !Objects.FindObjectByName("localhost/dima"))
-//			return;
-//		if (!m_bSynchronization) {
-//			m_bSynchronization	= true;
-//			ai().level_graph().set_start_point();
-//			m_bSynchronization	= false;
-//		}
-//		luabind::functor<void>	functor;
-//		ai().script_engine().functor("alife_test.set_switch_online",functor);
-//		functor(0,false);
-//	}
-//		return;
-//	case DIK_F11:
-//		ai().level_graph().build_detail_path();
-//		if (!Objects.FindObjectByName("m_stalker_e0000") || !Objects.FindObjectByName("localhost/dima"))
-//			return;
-//		if (!m_bSynchronization) {
-//			m_bSynchronization	= true;
-//			ai().level_graph().set_dest_point();
-//			ai().level_graph().select_cover_point();
-//			m_bSynchronization	= false;
-//		}
-//		return;
-#endif // DEBUG
 #ifndef MASTER_GOLD
 	}
 #endif // MASTER_GOLD
@@ -343,16 +269,6 @@ void CLevel::IR_OnKeyboardPress	(int key)
 			IInputReceiver*		IR	= smart_cast<IInputReceiver*>	(smart_cast<CGameObject*>(CURRENT_ENTITY()));
 			if (IR)				IR->IR_OnKeyboardPress(get_binded_action(key));
 		}
-
-
-	#ifdef _DEBUG
-		CObject *obj = Level().Objects.FindObjectByName("monster");
-		if (obj) {
-			CBaseMonster *monster = smart_cast<CBaseMonster *>(obj);
-			if (monster) 
-				monster->debug_on_key(key);
-		}
-	#endif
 }
 
 void CLevel::IR_OnKeyboardRelease(int key)

@@ -9,7 +9,6 @@
 #include "stdafx.h"
 #include "ai/stalker/ai_stalker.h"
 #include "ai_space.h"
-#include "alife_simulator.h"
 #include "alife_space.h"
 #include "inventory.h"
 #include "clsid_game.h"

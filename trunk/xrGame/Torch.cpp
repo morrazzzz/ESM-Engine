@@ -7,14 +7,12 @@
 #include "xrserver_objects_alife_items.h"
 #include "ai_sounds.h"
 
-#include "HUDManager.h"
 #include "level.h"
-#include "..\include\xrRender\Kinematics.h"
+#include "../include/xrRender/Kinematics.h"
 #include "../xr_3da/camerabase.h"
 #include "inventory.h"
 #include "game_base_space.h"
 
-#include "UIGameCustom.h"
 #include "actorEffector.h"
 #include "CustomOutfit.h"
 

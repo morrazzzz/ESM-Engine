@@ -1276,20 +1276,11 @@
     <Filter Include="Core\Client\Effectors\Weapon">
       <UniqueIdentifier>{fddbaefb-3301-4eef-aa82-8391a3f2a90f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\Client\Effects">
-      <UniqueIdentifier>{d402e8cc-3820-4e37-9294-a1e6a7ef23b8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Client\Effects\Core">
-      <UniqueIdentifier>{53d1fc79-3327-484f-9790-eb25824820cc}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core\Client\Game Persistent">
       <UniqueIdentifier>{a76d86d2-8cad-4b6b-8a12-933e11654fef}</UniqueIdentifier>
     </Filter>
     <Filter Include="Core\Client\Level">
       <UniqueIdentifier>{ddf547f5-d4aa-457f-8f6a-edde3382ecc0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Client\Level\Map Fog Of War">
-      <UniqueIdentifier>{58fea3e2-b7b7-4580-8441-d2e63bc77b47}</UniqueIdentifier>
     </Filter>
     <Filter Include="Core\Client\Level\Bullet Manager">
       <UniqueIdentifier>{941f4de5-cec1-4753-a90d-dee068d7de7e}</UniqueIdentifier>
@@ -1884,9 +1875,6 @@
     </Filter>
     <Filter Include="Core\Server\GameSpy">
       <UniqueIdentifier>{b20c7091-83c1-4dec-a33c-2434cac32adb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Server\GameSpy\CdkeyDecode">
-      <UniqueIdentifier>{79e6a22d-9c0c-4940-8282-59dc159ad997}</UniqueIdentifier>
     </Filter>
     <Filter Include="Core\Server\ID_Generator">
       <UniqueIdentifier>{9d04edaa-e250-4297-bb7c-9b7ac3d64262}</UniqueIdentifier>
@@ -4674,9 +4662,6 @@
     <ClInclude Include="StdAfx.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="xr_Client_BattlEye.h">
-      <Filter>Core\Client</Filter>
-    </ClInclude>
     <ClInclude Include="CameraFirstEye.h">
       <Filter>Core\Client\Cameras</Filter>
     </ClInclude>
@@ -4722,9 +4707,6 @@
     <ClInclude Include="EffectorZoomInertion.h">
       <Filter>Core\Client\Effectors\Weapon</Filter>
     </ClInclude>
-    <ClInclude Include="DynamicHeightMap.h">
-      <Filter>Core\Client\Effects\Core</Filter>
-    </ClInclude>
     <ClInclude Include="GamePersistent.h">
       <Filter>Core\Client\Game Persistent</Filter>
     </ClInclude>
@@ -4736,9 +4718,6 @@
     </ClInclude>
     <ClInclude Include="LevelGameDef.h">
       <Filter>Core\Client\Level</Filter>
-    </ClInclude>
-    <ClInclude Include="LevelFogOfWar.h">
-      <Filter>Core\Client\Level\Map Fog Of War</Filter>
     </ClInclude>
     <ClInclude Include="Level_Bullet_Manager.h">
       <Filter>Core\Client\Level\Bullet Manager</Filter>
@@ -5532,15 +5511,6 @@
     <ClInclude Include="RegistryFuncs.h">
       <Filter>Core\Common\Registry</Filter>
     </ClInclude>
-    <ClInclude Include="battleye.h">
-      <Filter>Core\Server</Filter>
-    </ClInclude>
-    <ClInclude Include="battleye_system.h">
-      <Filter>Core\Server</Filter>
-    </ClInclude>
-    <ClInclude Include="xr_Server_BattlEye.h">
-      <Filter>Core\Server</Filter>
-    </ClInclude>
     <ClInclude Include="xrServer.h">
       <Filter>Core\Server</Filter>
     </ClInclude>
@@ -5566,9 +5536,6 @@
       <Filter>Core\Server\Games</Filter>
     </ClInclude>
     <ClInclude Include="game_base_kill_type.h">
-      <Filter>Core\Server\Games</Filter>
-    </ClInclude>
-    <ClInclude Include="game_base_menu_events.h">
       <Filter>Core\Server\Games</Filter>
     </ClInclude>
     <ClInclude Include="game_base_space.h">
@@ -5614,9 +5581,6 @@
       <Filter>Core\Server\Games\client\mp_script</Filter>
     </ClInclude>
     <ClInclude Include="game_sv_base.h">
-      <Filter>Core\Server\Games\server</Filter>
-    </ClInclude>
-    <ClInclude Include="game_sv_base_console_vars.h">
       <Filter>Core\Server\Games\server</Filter>
     </ClInclude>
     <ClInclude Include="game_sv_event_queue.h">
@@ -5684,12 +5648,6 @@
     </ClInclude>
     <ClInclude Include="GameSpy\GameSpy_QR2_callbacks.h">
       <Filter>Core\Server\GameSpy</Filter>
-    </ClInclude>
-    <ClInclude Include="gamespy\CdkeyDecode\base32.h">
-      <Filter>Core\Server\GameSpy\CdkeyDecode</Filter>
-    </ClInclude>
-    <ClInclude Include="gamespy\CdkeyDecode\cdkeydecode.h">
-      <Filter>Core\Server\GameSpy\CdkeyDecode</Filter>
     </ClInclude>
     <ClInclude Include="id_generator.h">
       <Filter>Core\Server\ID_Generator</Filter>
@@ -7127,9 +7085,6 @@
     <ClCompile Include="ai\Monsters\monster_home.cpp">
       <Filter>AI\AMonsters\common\components\Home</Filter>
     </ClCompile>
-    <ClCompile Include="ai\Monsters\Bloodsucker\bloodsucker.cpp">
-      <Filter>AI\AMonsters\monsters\Bloodsucker</Filter>
-    </ClCompile>
     <ClCompile Include="ai\Monsters\Bloodsucker\bloodsucker_state_manager.cpp">
       <Filter>AI\AMonsters\monsters\Bloodsucker</Filter>
     </ClCompile>
@@ -7778,9 +7733,6 @@
     <ClCompile Include="StdAfx.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="xr_Client_BattlEye.cpp">
-      <Filter>Core\Client</Filter>
-    </ClCompile>
     <ClCompile Include="CameraFirstEye.cpp">
       <Filter>Core\Client\Cameras</Filter>
     </ClCompile>
@@ -7829,9 +7781,6 @@
     <ClCompile Include="EffectorZoomInertion.cpp">
       <Filter>Core\Client\Effectors\Weapon</Filter>
     </ClCompile>
-    <ClCompile Include="DynamicHeightMap.cpp">
-      <Filter>Core\Client\Effects\Core</Filter>
-    </ClCompile>
     <ClCompile Include="GamePersistent.cpp">
       <Filter>Core\Client\Game Persistent</Filter>
     </ClCompile>
@@ -7845,9 +7794,6 @@
       <Filter>Core\Client\Level</Filter>
     </ClCompile>
     <ClCompile Include="Level_load.cpp">
-      <Filter>Core\Client\Level</Filter>
-    </ClCompile>
-    <ClCompile Include="level_map_locations.cpp">
       <Filter>Core\Client\Level</Filter>
     </ClCompile>
     <ClCompile Include="Level_network.cpp">
@@ -7879,12 +7825,6 @@
     </ClCompile>
     <ClCompile Include="Level_start.cpp">
       <Filter>Core\Client\Level</Filter>
-    </ClCompile>
-    <ClCompile Include="LevelGameDef.cpp">
-      <Filter>Core\Client\Level</Filter>
-    </ClCompile>
-    <ClCompile Include="LevelFogOfWar.cpp">
-      <Filter>Core\Client\Level\Map Fog Of War</Filter>
     </ClCompile>
     <ClCompile Include="Level_Bullet_Manager.cpp">
       <Filter>Core\Client\Level\Bullet Manager</Filter>
@@ -8588,9 +8528,6 @@
     <ClCompile Include="console_commands.cpp">
       <Filter>Core\Common\Console Commands</Filter>
     </ClCompile>
-    <ClCompile Include="console_commands_mp.cpp">
-      <Filter>Core\Common\Console Commands</Filter>
-    </ClCompile>
     <ClCompile Include="date_time.cpp">
       <Filter>Core\Common\DateTime</Filter>
     </ClCompile>
@@ -8626,12 +8563,6 @@
     </ClCompile>
     <ClCompile Include="RegistryFuncs.cpp">
       <Filter>Core\Common\Registry</Filter>
-    </ClCompile>
-    <ClCompile Include="battleye_system.cpp">
-      <Filter>Core\Server</Filter>
-    </ClCompile>
-    <ClCompile Include="xr_Server_BattlEye.cpp">
-      <Filter>Core\Server</Filter>
     </ClCompile>
     <ClCompile Include="xrServer.cpp">
       <Filter>Core\Server</Filter>
@@ -8685,9 +8616,6 @@
       <Filter>Core\Server\Games\client\mp_script</Filter>
     </ClCompile>
     <ClCompile Include="game_sv_base.cpp">
-      <Filter>Core\Server\Games\server</Filter>
-    </ClCompile>
-    <ClCompile Include="game_sv_base_console_vars.cpp">
       <Filter>Core\Server\Games\server</Filter>
     </ClCompile>
     <ClCompile Include="game_sv_base_script.cpp">
@@ -8767,12 +8695,6 @@
     </ClCompile>
     <ClCompile Include="GameSpy\GameSpy_QR2_callbacks.cpp">
       <Filter>Core\Server\GameSpy</Filter>
-    </ClCompile>
-    <ClCompile Include="gamespy\CdkeyDecode\base32.c">
-      <Filter>Core\Server\GameSpy\CdkeyDecode</Filter>
-    </ClCompile>
-    <ClCompile Include="gamespy\CdkeyDecode\cdkeydecode.c">
-      <Filter>Core\Server\GameSpy\CdkeyDecode</Filter>
     </ClCompile>
     <ClCompile Include="xrServer_Factory.cpp">
       <Filter>Core\Server\ServerEntities</Filter>
@@ -9679,6 +9601,9 @@
     </ClCompile>
     <ClCompile Include="IKFoot.cpp">
       <Filter>Physics\IK</Filter>
+    </ClCompile>
+    <ClCompile Include="ai\Monsters\Bloodsucker\bloodsucker.cpp">
+      <Filter>AI\AMonsters\monsters\Bloodsucker\Vampire State</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

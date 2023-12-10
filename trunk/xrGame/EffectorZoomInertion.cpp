@@ -1,7 +1,3 @@
-// EffectorZoomInertion.cpp: инерци€(покачивани€) оружи€ в режиме
-//							 приближени€
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "EffectorZoomInertion.h"
 

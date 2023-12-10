@@ -1,9 +1,6 @@
 #include "stdafx.h"
-#include "snork.h"
 #include "snork_jump.h"
 //#include "../jump_ability.h"
-#include "../../../../Include/xrRender/KinematicsAnimated.h"
-#include "../../../level.h"
 
 //CSnorkJump::CSnorkJump(CSnork *monster)
 //{
@@ -74,14 +71,14 @@
 //	Fvector target_position;
 //	target->Center				(target_position);
 //
-//	// получить вектор направления и его мир угол
+//	// РїРѕР»СѓС‡РёС‚СЊ РІРµРєС‚РѕСЂ РЅР°РїСЂР°РІР»РµРЅРёСЏ Рё РµРіРѕ РјРёСЂ СѓРіРѕР»
 //	Fvector		dir;
 //	float		dir_yaw, dir_pitch;
 //
 //	dir.sub		(target_position, source_position);
 //	dir.getHP	(dir_yaw, dir_pitch);
 //
-//	// проверка на angle и на dist
+//	// РїСЂРѕРІРµСЂРєР° РЅР° angle Рё РЅР° dist
 //	float yaw_current, yaw_target;
 //	m_object->control().direction().get_heading(yaw_current, yaw_target);
 //	if (angle_difference(yaw_current, -dir_yaw) < PI_DIV_6) {
@@ -107,8 +104,8 @@
 //	float			yaw, pitch;
 //	Fvector().sub	(m_target_object->Position(), m_object->Position()).getHP(yaw, pitch);
 //
-//	// получить вектор направления и его мир угол
-//	//// проверка на angle и на dist
+//	// РїРѕР»СѓС‡РёС‚СЊ РІРµРєС‚РѕСЂ РЅР°РїСЂР°РІР»РµРЅРёСЏ Рё РµРіРѕ РјРёСЂ СѓРіРѕР»
+//	//// РїСЂРѕРІРµСЂРєР° РЅР° angle Рё РЅР° dist
 //	//if (angle_difference(m_object->movement().m_body.current.yaw, -yaw) < PI_DIV_2) {
 //	//	return;
 //	//}

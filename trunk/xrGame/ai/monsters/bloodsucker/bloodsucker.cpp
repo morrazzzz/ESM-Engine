@@ -2,27 +2,20 @@
 #include "bloodsucker.h"
 #include "bloodsucker_state_manager.h"
 #include "../../../actor.h"
-#include "../../../ActorEffector.h"
-#include "..\include\xrRender\Kinematics.h"
+#include "../include/xrRender/Kinematics.h"
 #include "../../../level.h"
 #include "../../../material_manager.h"
 #include "bloodsucker_vampire_effector.h"
 #include "../../../detail_path_manager.h"
 #include "../../../level_debug.h"
 #include "../monster_velocity_space.h"
-#include "../../../gamepersistent.h"
 #include "../../../game_object_space.h"
-
 #include "../control_animation_base.h"
 #include "../control_movement_base.h"
-#include "../control_rotation_jump.h"
-
 #include "../../../sound_player.h"
 #include "../../../../xr_3da/camerabase.h"
 #include "../../../xr_level_controller.h"
 #include "../../../ActorCondition.h"
-
-#include "../../../PHDestroyable.h"
 #include "../../../CharacterPhysicsSupport.h"
 
 #ifdef DEBUG
@@ -219,11 +212,11 @@ void  CAI_Bloodsucker::BoneCallback(CBoneInstance *B)
 
 void CAI_Bloodsucker::vfAssignBones()
 {
-	// Установка callback на кости
+	// РЈСЃС‚Р°РЅРѕРІРєР° callback РЅР° РєРѕСЃС‚Рё
 
 	bone_spine =	&smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_spine"));
 	bone_head =		&smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_head"));
-	if(!PPhysicsShell())//нельзя ставить колбеки, если создан физ шел - у него стоят свои колбеки!!!
+	if(!PPhysicsShell())//РЅРµР»СЊР·СЏ СЃС‚Р°РІРёС‚СЊ РєРѕР»Р±РµРєРё, РµСЃР»Рё СЃРѕР·РґР°РЅ С„РёР· С€РµР» - Сѓ РЅРµРіРѕ СЃС‚РѕСЏС‚ СЃРІРѕРё РєРѕР»Р±РµРєРё!!!
 	{
 		bone_spine->set_callback(bctCustom,BoneCallback,this);
 		bone_head->set_callback(bctCustom,BoneCallback,this);
@@ -240,15 +233,15 @@ void CAI_Bloodsucker::vfAssignBones()
 
 void CAI_Bloodsucker::LookDirection(Fvector to_dir, float bone_turn_speed)
 {
-	//// получаем вектор направления к источнику звука и его мировые углы
+	//// РїРѕР»СѓС‡Р°РµРј РІРµРєС‚РѕСЂ РЅР°РїСЂР°РІР»РµРЅРёСЏ Рє РёСЃС‚РѕС‡РЅРёРєСѓ Р·РІСѓРєР° Рё РµРіРѕ РјРёСЂРѕРІС‹Рµ СѓРіР»С‹
 	//float		yaw,pitch;
 	//to_dir.getHP(yaw,pitch);
 
-	//// установить параметры вращения по yaw
-	//float cur_yaw = -movement().m_body.current.yaw;						// текущий мировой угол монстра
-	//float bone_angle;											// угол для боны	
+	//// СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РїР°СЂР°РјРµС‚СЂС‹ РІСЂР°С‰РµРЅРёСЏ РїРѕ yaw
+	//float cur_yaw = -movement().m_body.current.yaw;						// С‚РµРєСѓС‰РёР№ РјРёСЂРѕРІРѕР№ СѓРіРѕР» РјРѕРЅСЃС‚СЂР°
+	//float bone_angle;											// СѓРіРѕР» РґР»СЏ Р±РѕРЅС‹	
 
-	//float dy = _abs(angle_normalize_signed(yaw - cur_yaw));		// дельта, на которую нужно поворачиваться
+	//float dy = _abs(angle_normalize_signed(yaw - cur_yaw));		// РґРµР»СЊС‚Р°, РЅР° РєРѕС‚РѕСЂСѓСЋ РЅСѓР¶РЅРѕ РїРѕРІРѕСЂР°С‡РёРІР°С‚СЊСЃСЏ
 
 	//if (angle_difference(cur_yaw,yaw) <= MAX_BONE_ANGLE) {		// bone turn only
 	//	bone_angle = dy;
@@ -264,7 +257,7 @@ void CAI_Bloodsucker::LookDirection(Fvector to_dir, float bone_turn_speed)
 	//Bones.SetMotion(bone_spine, AXIS_X, bone_angle, bone_turn_speed, 100);
 	//Bones.SetMotion(bone_head,	AXIS_X, bone_angle, bone_turn_speed, 100);
 
-	//// установить параметры вращения по pitch
+	//// СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РїР°СЂР°РјРµС‚СЂС‹ РІСЂР°С‰РµРЅРёСЏ РїРѕ pitch
 	//clamp(pitch, -MAX_BONE_ANGLE, MAX_BONE_ANGLE);
 	//pitch /= 2; 
 
@@ -339,7 +332,7 @@ void CAI_Bloodsucker::post_fsm_update()
 	
 	//EMonsterState state = StateMan->get_state_type();
 	//
-	// установить агрессивность
+	// СѓСЃС‚Р°РЅРѕРІРёС‚СЊ Р°РіСЂРµСЃСЃРёРІРЅРѕСЃС‚СЊ
 	//bool aggressive =	(is_state(state, eStateAttack)) || 
 	//					(is_state(state, eStatePanic))	|| 
 	//					(is_state(state, eStateHitted));
