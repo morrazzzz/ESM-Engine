@@ -94,7 +94,6 @@ private:
 #endif
 };
 
-#include <boost/noncopyable.hpp>
 class	ik_anim_state;
 struct SCalculateData {
 

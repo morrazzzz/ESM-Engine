@@ -624,8 +624,7 @@ void	CIKLimb::Update( CGameObject *O, const	CBlend *b, u16 interval )
 	Collide( collide_data, O, anim_foot, anim_state.step() );
 }
 
-struct ssaved_callback :
-	private boost::noncopyable
+struct ssaved_callback
 {
 	ssaved_callback(CBoneInstance& bi) :
 		_bi(bi),
