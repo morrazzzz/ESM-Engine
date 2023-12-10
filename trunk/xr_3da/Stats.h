@@ -14,8 +14,10 @@ class ENGINE_API CStats: public pureRender
 {
 public:
 	CGameFont*	pFont;
+	CGameFont* pFPSFont_;
 
 	float		fFPS,fRFPS,fTPS		;			// FPS, RenderFPS, TPS
+	int			iFPS;
 	float		fMem_calls			;
 	u32			dwMem_calls			;
 	u32			dwSND_Played,dwSND_Allocated;	// Play/Alloc
@@ -99,6 +101,11 @@ public:
 
 	IC CGameFont*	Font			(){return pFont;}
 private:
+	float			UpdateFPSCounterSkip;
+	float			UpdateFPSMinute;
+	float			fCounterTotalMinute;
+	int				iTotalMinute;
+	int				iAvrageMinute;
 	FactoryPtr<IStatsRender> m_pRender;
 };
 

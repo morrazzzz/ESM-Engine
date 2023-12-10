@@ -46,8 +46,7 @@ void CIKLimbsController::Create( CGameObject* O )
 	O->add_visual_callback(IKVisualCallback);
 }
 
-struct envc :
-private boost::noncopyable,
+struct envc:
 public SEnumVerticesCallback
 {
 	Fvector &pos;

@@ -12,6 +12,9 @@
 int		g_ErrorLineCount	= 15;
 Flags32 g_stats_flags		= {0};
 
+extern BOOL DisplayEngineInformation_;
+extern BOOL DisplayFPSShow_;
+
 // stats
 DECLARE_RP(Stats);
 
@@ -321,18 +324,58 @@ void CStats::Show()
 		F.SetHeightI						(f_base_size);
 		seqStats.Process				(rp_Stats);
 		pFont->OnRender					();
-	};
+	}
+
+	if (DisplayFPSShow_)
+	{
+		CGameFont& fpsFont = *pFPSFont_;
+
+		fpsFont.SetColor(0xFF8772A8);
+		fpsFont.SetHeightI(0.02);
+		fpsFont.SetAligment(CGameFont::alRight);
+		float posx, posy;
+		if (Device.dwWidth / Device.dwHeight < 1.5f) {			//posx = 1200.f * (Device.dwWidth / 1280.f);
+			posx = 1180.f * (Device.dwWidth / 1280.f);
+			posy = 10.f * (Device.dwHeight / 720.f);
+		}
+		else {
+			//posx = 940.f * (Device.dwWidth / 1024.f);
+			posx = 890.f * (Device.dwWidth / 1024.f);
+			posy = 15.f * (Device.dwHeight / 768.f);
+			fpsFont.SetHeightI(0.030);
+		}
+		fpsFont.OutSet(posx, posy);
+
+		if (DisplayFPSShow_)
+		{
+			UpdateFPSCounterSkip += 1.f * Device.fTimeDelta;
+			UpdateFPSMinute += 1.f * Device.fTimeDelta;
+			if (UpdateFPSCounterSkip > 0.1f) {
+				UpdateFPSCounterSkip = 0;
+				iFPS = fFPS;
+				fCounterTotalMinute += fFPS;
+			}
+			if (UpdateFPSMinute > 60.0f) {
+				UpdateFPSMinute = 0;
+				iTotalMinute = fCounterTotalMinute / 10;
+				iAvrageMinute = fCounterTotalMinute / 600;
+				fCounterTotalMinute = 0;
+
+			}
+			fpsFont.OutNext("      %i", iFPS);
+			fpsFont.OutSkip();
+			fpsFont.OutNext("A/MIN %i", iAvrageMinute);
+			fpsFont.OutNext("T/MIN %i", iTotalMinute);
+		}
+
+		pFPSFont_->OnRender();
+	}
 
 	if( psDeviceFlags.test(rsStatistic) || psDeviceFlags.test(rsCameraPos) ){
 		_draw_cam_pos					(pFont);
 		pFont->OnRender					();
-	};
+	}
 
-	if (psDeviceFlags.test(rsDrawFPS))
-	{
-		draw_fps(pFont);
-		pFont->OnRender();
-	};
 #ifdef DEBUG
 	//////////////////////////////////////////////////////////////////////////
 	// PERF ALERT
@@ -448,7 +491,8 @@ void CStats::OnDeviceCreate			()
 
 //	if (!strstr(Core.Params, "-dedicated"))
 #ifndef DEDICATED_SERVER
-	pFont	= xr_new<CGameFont>		("stat_font", CGameFont::fsDeviceIndependent);
+	pFont	= xr_new<CGameFont>("stat_font", CGameFont::fsDeviceIndependent);
+	pFPSFont_ = xr_new<CGameFont>("hud_font_di", CGameFont::fsDeviceIndependent);
 #endif
 	
 	if(!pSettings->section_exist("evaluation")
@@ -470,6 +514,7 @@ void CStats::OnDeviceCreate			()
 void CStats::OnDeviceDestroy		()
 {
 	xr_delete	(pFont);
+	xr_delete(pFPSFont_);
 }
 
 void CStats::OnRender				()

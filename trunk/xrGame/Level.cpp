@@ -48,8 +48,6 @@
 #include "../xr_3da/xr_object.h"
 #endif
 
-ENGINE_API bool g_dedicated_server;
-
 extern BOOL	g_bDebugDumpPhysicsStep;
 
 CPHWorld	*ph_world			= 0;
@@ -477,8 +475,11 @@ void CLevel::OnFrame	()
 
 	if (m_bNeed_CrPr)					make_NetCorrectionPrediction();
 
-	if(!g_dedicated_server)
-		MapManager().Update		();
+	if (g_mt_config.test(mtMap))
+		Device.seqParallel.emplace_back(fastdelegate::FastDelegate0(m_map_manager, &CMapManager::Update));
+	else
+		MapManager().Update	();
+
 	// Inherited update
 	inherited::OnFrame		();
 

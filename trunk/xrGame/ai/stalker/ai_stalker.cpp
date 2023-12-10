@@ -640,7 +640,7 @@ void CAI_Stalker::UpdateCL()
 	VERIFY2						(PPhysicsShell()||getEnabled(), *cName());
 
 	if (g_Alive()) {
-		if (g_mt_config.test(mtObjectHandler) /*&& CObjectHandler::planner().initialized()*/) {
+		if (g_mt_config.test(mtObjectHandler) && planner().initialized()) {
 			auto f = fastdelegate::FastDelegate0<>(this,&CAI_Stalker::update_object_handler);
 #ifdef DEBUG
 			xr_vector<fastdelegate::FastDelegate0<> >::const_iterator	I;
@@ -873,61 +873,14 @@ void CAI_Stalker::Think			()
 	u32							update_delta = Device.dwTimeGlobal - m_dwLastUpdateTime;
 	
 	START_PROFILE("stalker/schedule_update/think/brain")
-//	try {
-//		try {
-			brain().update			(update_delta);
-//		}
-#ifdef DEBUG
-//		catch (luabind::cast_failed &message) {
-//			Msg						("! Expression \"%s\" from luabind::object to %s",message.what(),message.info()->name());
-//			throw;
-//		}
-#endif
-//		catch (std::exception &message) {
-//			Msg						("! Expression \"%s\"",message.what());
-//			throw;
-//		}
-//		catch (...) {
-//			Msg						("! unknown exception occured");
-//			throw;
-//		}
-//	}
-//	catch(...) {
-#ifdef DEBUG
-//		Msg						("! Last action being executed : %s",brain().current_action().m_action_name);
-#endif
-//		brain().setup			(this);
-//		brain().update			(update_delta);
-//	}
+	brain().update			(update_delta);
 	STOP_PROFILE
 
 	START_PROFILE("stalker/schedule_update/think/movement")
 	if (!g_Alive())
 		return;
 
-//	try {
-		movement().update		(update_delta);
-//	}
-#if 0//def DEBUG
-	catch (luabind::cast_failed &message) {
-		Msg						("! Expression \"%s\" from luabind::object to %s",message.what(),message.info()->name());
-		movement().initialize	();
-		movement().update		(update_delta);
-		throw;
-	}
-	catch (std::exception &message) {
-		Msg						("! Expression \"%s\"",message.what());
-		movement().initialize	();
-		movement().update		(update_delta);
-		throw;
-	}
-	catch (...) {
-		Msg						("! unknown exception occured");
-		movement().initialize	();
-		movement().update		(update_delta);
-		throw;
-	}
-#endif // DEBUG
+	movement().update		(update_delta);
 
 	STOP_PROFILE
 	STOP_PROFILE

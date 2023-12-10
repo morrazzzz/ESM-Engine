@@ -270,7 +270,7 @@ void		CHW::CreateDevice(HWND m_hWnd, bool move_window)
 		fDepth = selectDepthStencil(fTarget);
 	}
 
-	if ((D3DFMT_UNKNOWN == fTarget) || (D3DFMT_UNKNOWN == fTarget)) {
+	if ((D3DFMT_UNKNOWN == fTarget)) {
 		Msg("Failed to initialize graphics hardware.\n"
 			"Please try to restart the game.\n"
 			"Can not find matching format for back buffer."

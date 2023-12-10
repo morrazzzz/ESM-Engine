@@ -21,6 +21,9 @@ ENGINE_API BOOL g_bRendering = FALSE;
 BOOL		g_bLoaded = FALSE;
 ref_light	precache_light = 0;
 
+extern BOOL DisplayEngineInformation_;
+extern BOOL DisplayFPSShow_;
+
 BOOL CRenderDevice::Begin	()
 {
 #ifndef DEDICATED_SERVER
@@ -233,7 +236,7 @@ void CRenderDevice::Run			()
 					if (Begin()) {
 
 						seqRender.Process(rp_Render);
-						if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || psDeviceFlags.test(rsDrawFPS) || psDeviceFlags.test(rsDrawMemory)||  Statistic->errors.size())
+						if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || DisplayEngineInformation_ || DisplayFPSShow_ || psDeviceFlags.test(rsDrawMemory)||  Statistic->errors.size())
 							Statistic->Show();
 						End();
 					}

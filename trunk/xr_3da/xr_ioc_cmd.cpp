@@ -155,48 +155,13 @@ public:
 		Log("- --- Command listing: end ----");
 	}
 };
-//-----------------------------------------------------------------------
-void 			crashthread			( void* )
-{
-	Sleep		(1000);
-	Msg			("~ crash thread activated")	;
-	u64			clk		= CPU::GetCLK		()	;
-	CRandom		rndg;
-	rndg.seed	(s32(clk));
-	for (;;)	{
-		Sleep	(1);
-		__try	{
-			//try {
-				union	{
-					struct {
-						u8	_b0;
-						u8	_b1;
-						u8	_b2;
-						u8	_b3;
-					};
-					uintptr_t	_ptri;
-					u32*		_ptr;
-				}		rndptr;
-				rndptr._b0		=	u8(rndg.randI(0,256));
-				rndptr._b1		=	u8(rndg.randI(0,256));
-				rndptr._b2		=	u8(rndg.randI(0,256));
-				rndptr._b3		=	u8(rndg.randI(0,256));
-				rndptr._ptri	&=  (1ul<31ul)-1;
-				*rndptr._ptr	=	0xBAADF00D;
-			//} catch(...) {
-			//	// OK
-			//}
-		} __except	(EXCEPTION_EXECUTE_HANDLER)	{
-			// OK
-		}
-	}
-}
+
 class CCC_Crash : public IConsole_Command
 {
 public:
-	CCC_Crash(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+	CCC_Crash(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; }
 	virtual void Execute(LPCSTR args) {
-		thread_spawn	(crashthread,"crash",0,0);
+		VERIFY2(false, "It`s is not FATAL ERROR!!!!");
 	}
 };
 
@@ -524,11 +489,13 @@ extern int			psNET_ServerUpdate;
 extern int			psNET_ServerPending;
 extern int			psNET_DedicatedSleep;
 extern char			psNET_Name[32];
-extern Flags32		psEnvFlags;
+
 //extern float		r__dtex_range;
 
 extern int			g_ErrorLineCount;
 
+BOOL DisplayEngineInformation_ = FALSE;
+BOOL DisplayFPSShow_ = FALSE;
 
 ENGINE_API int			ps_r__Supersample			= 1;
 void CCC_Register()
@@ -580,7 +547,6 @@ void CCC_Register()
 #endif
 
 	// Counters
-	CMD3(CCC_Mask, "rs_draw_fps", &psDeviceFlags, rsDrawFPS);
 	CMD3(CCC_Mask, "rs_draw_memory", &psDeviceFlags, rsDrawMemory);
 
 	// Render device states
@@ -621,13 +587,13 @@ void CCC_Register()
 	CMD1(CCC_VID_Reset, "vid_restart"			);
 	
 	// Sound
-	CMD2(CCC_Float,		"snd_volume_eff",		&psSoundVEffects);
-	CMD2(CCC_Float,		"snd_volume_music",		&psSoundVMusic);
-	CMD1(CCC_SND_Restart,"snd_restart"			);
-	CMD3(CCC_Mask,		"snd_acceleration",		&psSoundFlags,		ss_Hardware	);
-	CMD3(CCC_Mask,		"snd_efx",				&psSoundFlags,		ss_EAX		);
-	CMD4(CCC_Integer,	"snd_targets",			&psSoundTargets,	4,32		);
-	CMD4(CCC_Integer,	"snd_cache_size",		&psSoundCacheSizeMB,4,32		);
+	CMD2(CCC_Float,		"snd_volume_eff",		&psSoundVEffects)
+	CMD2(CCC_Float,		"snd_volume_music",		&psSoundVMusic)
+	CMD1(CCC_SND_Restart,"snd_restart")
+	CMD3(CCC_Mask,		"snd_acceleration",		&psSoundFlags,		ss_Hardware)
+	CMD3(CCC_Mask,		"snd_efx",				&psSoundFlags,		ss_EAX)
+	CMD4(CCC_Integer,	"snd_targets",			&psSoundTargets,	64,128)
+	CMD4(CCC_Integer,	"snd_cache_size",		&psSoundCacheSizeMB,32,64)
 
 #ifdef DEBUG
 	CMD3(CCC_Mask,		"snd_stats",			&g_stats_flags,		st_sound	);
@@ -669,6 +635,8 @@ if(strstr(Core.Params,"designer"))
 	CMD1(CCC_DumpOpenFiles,		"dump_open_files");
 //#endif
 
+	CMD4(CCC_Integer, "show_display_engine_information", &DisplayEngineInformation_, 0, 1)
+	CMD4(CCC_Integer, "show_fps_display", &DisplayFPSShow_, 0, 1)
 
 	extern int g_svTextConsoleUpdateRate;
 	CMD4(CCC_Integer, "sv_console_update_rate", &g_svTextConsoleUpdateRate, 1, 100);

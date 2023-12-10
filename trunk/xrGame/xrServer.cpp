@@ -413,13 +413,6 @@ void xrServer::SendUpdatesToAll()
 	if (game->sv_force_sync)	Perform_game_export();
 
 	VERIFY						(verify_entities());
-
-#ifdef BATTLEYE
-	if ( g_pGameLevel )
-	{
-		Level().battleye_system.UpdateServer( this );
-	}
-#endif // BATTLEYE
 }
 
 xr_vector<shared_str>	_tmp_log;

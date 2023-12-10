@@ -112,7 +112,7 @@ namespace SmartDynamicCast
                 typedef typename search_base<Tail>::result result;
             };
 
-            typedef typename selector<is_type<Base, typename Head::Head>::value>::result result;
+            typedef typename selector<std::is_same_v<Base, typename Head::Head>>::result result;
         };
 
         template <>
@@ -326,7 +326,7 @@ namespace SmartDynamicCast
                     typedef search_result result;
                 };
 
-                typedef typename selector<is_type<Loki::NullType, search_result>::value>::result result;
+                using result = typename selector<std::is_same_v<Loki::NullType, search_result>>::result;
             };
 
             template <bool>
@@ -346,7 +346,7 @@ namespace SmartDynamicCast
                     typedef typename list_iterator<Tail>::result result;
                 };
 
-                typedef typename _selector<!is_type<Loki::NullType, helper_result>::value>::result result;
+                typedef typename _selector<!std::is_same_v<Loki::NullType, helper_result>>::result result;
             };
 
             template <>
@@ -369,7 +369,7 @@ namespace SmartDynamicCast
                         typedef typename list_iterator<Tail>::result result;
                     };
 
-                    typedef typename _selector2<!is_type<Loki::NullType, helper_result>::value>::result result;
+                    typedef typename _selector2<!std::is_same_v<Loki::NullType, helper_result>>::result result;
                 };
 
                 template <>
@@ -410,7 +410,7 @@ namespace SmartDynamicCast
                 typedef typename list_iterator<cast_type_list>::result result;
             };
 
-            typedef typename _selector<!is_type<Loki::NullType, nearest>::value>::result result;
+            typedef typename _selector<!std::is_same_v<Loki::NullType, nearest>>::result result;
         };
 
         template <>

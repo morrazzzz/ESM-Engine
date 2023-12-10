@@ -1,17 +1,10 @@
 #include "stdafx.h"
-
 #include "ikfoot.h"
-
-//#include "ik_collide_data.h"
 #include "GameObject.h"
-
-
 //#include "ode_include.h"
 #include "../include/xrrender/Kinematics.h"
 #include "../xr_3da/bone.h"
 #include "../xr_3da/ennumerateVertices.h"
-#include <boost/noncopyable.hpp>
-
 
 #ifdef DEBUG
 #include "PHDebug.h"
@@ -68,7 +61,6 @@ void CIKFoot::Create		(  IKinematics	*K, LPCSTR section, u16 bones[4] )
 }
 
 struct envc :
-private boost::noncopyable,
 public SEnumVerticesCallback
 {
 	Fvector &pos;
