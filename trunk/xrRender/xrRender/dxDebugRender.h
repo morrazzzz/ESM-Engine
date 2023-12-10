@@ -1,3 +1,5 @@
+#ifndef	dxDebugRender_included
+#define	dxDebugRender_included
 #pragma once
 
 #ifdef DEBUG
@@ -53,3 +55,5 @@ private:
 extern dxDebugRender DebugRenderImpl;
 extern dxDebugRender* rdebug_render;
 #endif // DEBUG
+
+#endif	//	dxDebugRender_included

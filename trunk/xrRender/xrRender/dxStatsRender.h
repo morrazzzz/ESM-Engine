@@ -1,3 +1,5 @@
+#ifndef	dxStatsRender_included
+#define	dxStatsRender_included
 #pragma once
 
 #include "..\..\Include\xrRender\StatsRender.h"
@@ -16,3 +18,5 @@ public:
 	virtual void SetDrawParams (IRenderDeviceRender *pRender);
 private:
 };
+
+#endif	//	dxStatsRender_included

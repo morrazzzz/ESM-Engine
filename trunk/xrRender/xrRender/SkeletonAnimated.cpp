@@ -6,7 +6,7 @@
 
 #include	"AnimationKeyCalculate.h"
 #include	"SkeletonX.h"
-#include	"../../xr_3da/fmesh.h"
+#include	"../../xrEngine/fmesh.h"
 #ifdef DEBUG
 #include	"../../xrcore/dump_string.h"
 #endif
@@ -464,9 +464,9 @@ void CKinematicsAnimated::LL_UpdateTracks( float dt, bool b_force, bool leave_bl
 		for (; I!=E; I++)
 		{
 			CBlend& B = *(*I);
-			if ( !b_force && B.dwFrame == Device.dwFrame )
+			if ( !b_force && B.dwFrame == RDEVICE.dwFrame )
 					continue;
-			B.dwFrame =	Device.dwFrame;
+			B.dwFrame =	RDEVICE.dwFrame;
 			if( B.update( dt, B.Callback ) && !leave_blends )
 			{
 				DestroyCycle( B );
@@ -535,18 +535,18 @@ void	CKinematicsAnimated::LL_UpdateFxTracks( float dt )
 void CKinematicsAnimated::UpdateTracks	()
 {
 	_DBG_SINGLE_USE_MARKER;
-	if (Update_LastTime==Device.dwTimeGlobal) return;
-	u32 DT	= Device.dwTimeGlobal-Update_LastTime;
+	if (Update_LastTime==RDEVICE.dwTimeGlobal) return;
+	u32 DT	= RDEVICE.dwTimeGlobal-Update_LastTime;
 	if (DT>66) DT=66;
 	float dt = float(DT)/1000.f;
 	
 	if( GetUpdateTracksCalback()  )
 	{
-		if( ( *GetUpdateTracksCalback() )( float(Device.dwTimeGlobal-Update_LastTime)/1000.f, *this ) )
-					Update_LastTime = Device.dwTimeGlobal;
+		if( ( *GetUpdateTracksCalback() )( float(RDEVICE.dwTimeGlobal-Update_LastTime)/1000.f, *this ) )
+					Update_LastTime = RDEVICE.dwTimeGlobal;
 		return;
 	}
-	Update_LastTime 	= Device.dwTimeGlobal;
+	Update_LastTime 	= RDEVICE.dwTimeGlobal;
 	LL_UpdateTracks	( dt, false, false );
 }
 
@@ -655,7 +655,7 @@ void CKinematicsAnimated::IBlend_Startup	()
 #endif
 	}
 	// cycles+fx clear
-	for (u32 i=0; i<MAX_PARTS; i++)
+	for (i=0; i<MAX_PARTS; i++)
 		blend_cycles[i].clear();
 	blend_fx.clear		();
 	ChannelFactorsStartup();

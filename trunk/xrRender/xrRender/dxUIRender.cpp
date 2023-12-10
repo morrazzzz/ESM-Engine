@@ -13,8 +13,8 @@ void dxUIRender::CreateUIGeom()
 
 void dxUIRender::DestroyUIGeom()
 {
-	hGeom_TL = nullptr;
-	hGeom_LIT = nullptr;
+	hGeom_TL = NULL;
+	hGeom_LIT = NULL;
 }
 
 void dxUIRender::SetShader(IUIShader &shader)
@@ -27,7 +27,7 @@ void dxUIRender::SetShader(IUIShader &shader)
 
 void dxUIRender::SetAlphaRef(int aref)
 {
-    //CHK_DX(HW.pDevice->SetRenderState(D3DRS_ALPHAREF,aref));
+	//CHK_DX(HW.pDevice->SetRenderState(D3DRS_ALPHAREF,aref));
 	RCache.set_AlphaRef(aref);
 }
 /*

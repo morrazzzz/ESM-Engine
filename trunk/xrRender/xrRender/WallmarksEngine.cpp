@@ -5,9 +5,9 @@
 #include "stdafx.h"
 #include "WallmarksEngine.h"
 
-#include "../../xr_3da/xr_object.h"
-#include "../../xr_3da/x_ray.h"
-#include "../../xr_3da/GameFont.h"
+#include "../../xrEngine/xr_object.h"
+#include "../../xrEngine/x_ray.h"
+#include "../../xrEngine/GameFont.h"
 #include "SkeletonCustom.h"
 
 u32 g_r = 1;
@@ -105,7 +105,6 @@ void		CWallmarksEngine::static_wm_render		(CWallmarksEngine::static_wallmark*	W,
 		V->p.set		(el.p);
 		V->color		= C;
 		V->t.set		(el.t);
-		++V;
 	}
 }
 //--------------------------------------------------------------------------------
@@ -151,7 +150,7 @@ void CWallmarksEngine::RecurseTri(u32 t, Fmatrix &mView, CWallmarksEngine::stati
 		}
 		
 		// recurse
-		for (u32 i=0; i<3; i++)
+		for (i=0; i<3; i++)
 		{
 			u32 adj					= sml_adjacency[3*t+i];
 			if (0xffffffff==adj)	continue;

@@ -3,7 +3,7 @@
 
 #pragma warning(push)
 #pragma warning(disable:4995)
-#include <d3dx9.h>
+#include <d3dx/d3dx9.h>
 #pragma warning(pop)
 
 #include "../../xrCDB/frustum.h"
@@ -163,7 +163,7 @@ void	CBackend::set_ClipPlanes	(u32 _enable, Fplane*	_planes /*=NULL */, u32 coun
 	if		(count>HW.Caps.geometry.dwClipPlanes)	count=HW.Caps.geometry.dwClipPlanes;
 
 	D3DXMATRIX			worldToClipMatrixIT;
-	D3DXMatrixInverse	(&worldToClipMatrixIT,NULL,(D3DXMATRIX*)&Device.mFullTransform);
+	D3DXMatrixInverse	(&worldToClipMatrixIT,NULL,(D3DXMATRIX*)&RDEVICE.mFullTransform);
 	D3DXMatrixTranspose	(&worldToClipMatrixIT,&worldToClipMatrixIT);
 	for		(u32 it=0; it<count; it++)		{
 		Fplane&		P			= _planes	[it];

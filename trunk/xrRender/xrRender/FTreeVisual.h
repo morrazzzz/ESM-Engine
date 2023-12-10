@@ -3,6 +3,8 @@
 // refs
 struct	FSlideWindowItem;
 
+#include "FBasicVisual.h"
+
 class	FTreeVisual				:	public dxRender_Visual, public IRender_Mesh
 {
 private:

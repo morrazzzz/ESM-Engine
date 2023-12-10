@@ -3,11 +3,14 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+#pragma hdrstop
 
-#include "../../xr_3da/render.h"
-   
+#ifndef _EDITOR
+#	include "../../xrEngine/render.h"
+#endif // #ifndef _EDITOR
+
 #include "fbasicvisual.h"
-#include "../../xr_3da/fmesh.h"
+#include "../../xrEngine/fmesh.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -19,14 +22,14 @@ IRender_Mesh::~IRender_Mesh()
 	_RELEASE(p_rm_Indices);		
 }
 
-dxRender_Visual::dxRender_Visual()
+dxRender_Visual::dxRender_Visual		()
 {
 	Type				= 0;
 	shader				= 0;
 	vis.clear			();
 }
 
-dxRender_Visual::~dxRender_Visual()
+dxRender_Visual::~dxRender_Visual		()
 {
 }
 
@@ -34,7 +37,9 @@ void dxRender_Visual::Release		()
 {
 }
 
-void dxRender_Visual::Load(const char* N, IReader *data, u32 )
+//CStatTimer						tscreate;
+
+void dxRender_Visual::Load		(const char* N, IReader *data, u32 )
 {
 #ifdef DEBUG
 	dbg_name	= N;
@@ -47,6 +52,7 @@ void dxRender_Visual::Load(const char* N, IReader *data, u32 )
 	{
 		R_ASSERT2			(hdr.format_version==xrOGF_FormatVersion, "Invalid visual version");
 		Type				= hdr.type;
+		//if (hdr.shader_id)	shader	= ::Render->getShader	(hdr.shader_id);
 		if (hdr.shader_id)	shader	= ::RImplementation.getShader	(hdr.shader_id);
 		vis.box.set			(hdr.bb.min,hdr.bb.max	);
 		vis.sphere.set		(hdr.bs.c,	hdr.bs.r	);
@@ -70,7 +76,7 @@ void dxRender_Visual::Load(const char* N, IReader *data, u32 )
 }
 
 #define PCOPY(a)	a = pFrom->a
-void dxRender_Visual::Copy(dxRender_Visual*pFrom)
+void	dxRender_Visual::Copy(dxRender_Visual *pFrom)
 {
 	PCOPY(Type);
 	PCOPY(shader);

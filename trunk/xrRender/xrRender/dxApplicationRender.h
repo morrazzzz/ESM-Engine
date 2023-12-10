@@ -1,3 +1,5 @@
+#ifndef dxApplicationRender_included
+#define dxApplicationRender_included
 #pragma once
 
 #include "..\..\Include\xrRender\ApplicationRender.h"
@@ -23,3 +25,5 @@ private:
 	ref_shader				sh_progress;
 	void					draw_face		(ref_shader& sh, Frect& coords, Frect& tex_coords, const Fvector2& tex_size);
 };
+
+#endif	//	ApplicationRender_included

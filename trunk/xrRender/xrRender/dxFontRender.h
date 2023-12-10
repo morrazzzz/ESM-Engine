@@ -1,3 +1,5 @@
+#ifndef dxFontRender_included
+#define dxFontRender_included
 #pragma once
 
 #include "..\..\Include\xrRender\FontRender.h"
@@ -15,3 +17,5 @@ private:
 	ref_shader				pShader;
 	ref_geom				pGeom;
 };
+
+#endif	//	FontRender_included

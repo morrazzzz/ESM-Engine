@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
 #include "dxApplicationRender.h"
-#include "../../xr_3da/x_ray.h"
-#include "../../xr_3da/GameFont.h"
+#include "../../xrEngine/x_ray.h"
+#include "../../xrEngine/GameFont.h"
 
 void draw_multiline_text(CGameFont* F, float fTargetWidth, LPCSTR pszText);
 
@@ -29,9 +29,7 @@ void dxApplicationRender::destroy_loading_shaders()
 
 void dxApplicationRender::setLevelLogo(LPCSTR pszLogoName)
 {
-//morrazzzz: Disabled it. While it is necessary to redo, make new screenshots, but hands do not reach this yet. 
-// There will be time, I will make new screenshots.
-//hLevelLogo.create("hud\\default", pszLogoName);
+	hLevelLogo.create("hud\\default", pszLogoName);
 }
 
 void dxApplicationRender::KillHW()
@@ -222,7 +220,7 @@ void dxApplicationRender::load_draw_internal(CApplication &owner)
 	if(hLevelLogo)
 	{
 		Frect						r;
-		r.lt.set					(0,173); //ls_tip
+		r.lt.set					(0,173);
 
 		if(b_ws)
 			r.lt.x					*= ws_k;

@@ -3,10 +3,10 @@
 
 #include "dxRenderDeviceRender.h"
 
-#include "../../xr_3da/environment.h"
-#include "ResourceManager.h"
+#include "../../xrEngine/environment.h"
+#include "../../Layers/xrRender/ResourceManager.h"
 
-#include "../../xr_3da/xr_efflensflare.h"
+#include "../../xrEngine/xr_efflensflare.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -17,10 +17,10 @@ static	Fvector3	hbox_verts[24]	=
 	{ 1.f,	-1.f,	-1.f}, { 1.f,	-1.01f,	-1.f},	// down
 	{-1.f,	-1.f,	 1.f}, {-1.f,	-1.01f,	 1.f},	// down
 	{ 1.f,	-1.f,	 1.f}, { 1.f,	-1.01f,	 1.f},	// down
-	{-1.f,   1.f,    -1.f}, {-1.f,    1.f,   -1.f},
-	{ 1.f,   1.f,    -1.f}, { 1.f,    1.f,   -1.f},
-	{-1.f,   1.f,     1.f}, {-1.f,    1.f,    1.f},
-	{ 1.f,   1.f,     1.f}, { 1.f,    1.f,    1.f},
+	{-1.f,	 2.f,	-1.f}, {-1.f,	 1.f,	-1.f},
+	{ 1.f,	 2.f,	-1.f}, { 1.f,	 1.f,	-1.f},
+	{-1.f,	 2.f,	 1.f}, {-1.f,	 1.f,	 1.f},
+	{ 1.f,	 2.f,	 1.f}, { 1.f,	 1.f,	 1.f},
 	{-1.f,	 0.f,	-1.f}, {-1.f,	-1.f,	-1.f},	// half
 	{ 1.f,	 0.f,	-1.f}, { 1.f,	-1.f,	-1.f},	// half
 	{ 1.f,	 0.f,	 1.f}, { 1.f,	-1.f,	 1.f},	// half
@@ -279,10 +279,10 @@ void dxEnvironmentRender::RenderSky(CEnvironment &env)
 	// The state may be not set by RCache if the state is changed using API SetRenderState() function before 
 	// and the RCache flag will remain unchanged to it's old value. 
 	// 
-//	RCache.set_Z(FALSE);
-//	RCache.set_Z(TRUE);
+	RCache.set_Z(FALSE);
+	RCache.set_Z(TRUE);
  	env.eff_LensFlare->Render		(TRUE,FALSE,FALSE);
-//	RCache.set_Z(FALSE);
+	RCache.set_Z(FALSE);
 #else
 	env.eff_LensFlare->Render		(TRUE,FALSE,FALSE);
 #endif

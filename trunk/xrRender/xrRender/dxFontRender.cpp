@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "dxFontRender.h"
 
-#include "../../xr_3da/GameFont.h"
+#include "../../xrEngine/GameFont.h"
 
 dxFontRender::dxFontRender()
 {

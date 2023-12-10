@@ -1,17 +1,16 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 #pragma hdrstop
 
-#include	"../../xr_3da/render.h"
+#include	"../../xrEngine/Render.h"
 #include	"ResourceManager.h"
 #include	"tss.h"
-#include	"..\xrRender\xrRender\blenders\blender.h"
-#include	"..\xrRender\xrRender\blenders\blender_recorder.h"
-#include	"../../xr_3da/ai_script_space.h"
-#include	"../../xr_3da/ai_script_lua_extension.h"
+#include	"blenders\blender.h"
+#include	"blenders\blender_recorder.h"
+#include	"../../xrEngine/ai_script_space.h"
+#include	"../../xrEngine/ai_script_lua_extension.h"
 #include	"luabind/return_reference_to_policy.hpp"
-#include "dxRenderDeviceRender.h"
 
-lua_State* LSVM = nullptr;
+#include	"dxRenderDeviceRender.h"
 
 using namespace				luabind;
 
@@ -69,6 +68,7 @@ public:
 	adopt_compiler&			_ZB				(bool	_test,	bool _write)			{	C->PassSET_ZB		(_test,_write);			return	*this;		}
 	adopt_compiler&			_blend			(bool	_blend, u32 abSRC, u32 abDST)	{	C->PassSET_ablend_mode(_blend,abSRC,abDST);	return 	*this;		}
 	adopt_compiler&			_aref			(bool	_aref,  u32 aref)				{	C->PassSET_ablend_aref(_aref,aref);			return 	*this;		}
+	adopt_compiler&			_color_write_enable (bool cR, bool cG, bool cB, bool cA)		{	C->r_ColorWriteEnable(cR, cG, cB, cA);		return	*this;		}
 	adopt_sampler			_sampler		(LPCSTR _name)							{	u32 s = C->r_Sampler(_name,0);				return	adopt_sampler(C,s);	}
 };
 
@@ -88,130 +88,86 @@ void LuaError(lua_State* L)
 }
 
 #ifndef PURE_ALLOC
-#	ifndef USE_MEMORY_MONITOR
+//#	ifndef USE_MEMORY_MONITOR
 #		define USE_DL_ALLOCATOR
-#	endif // USE_MEMORY_MONITOR
+//#	endif // USE_MEMORY_MONITOR
 #endif // PURE_ALLOC
 
-#ifndef USE_DL_ALLOCATOR
-	static void *lua_alloc_xr	(void *ud, void *ptr, size_t osize, size_t nsize) {
-	(void)ud;
-	(void)osize;
-	if (nsize == 0) {
-		xr_free	(ptr);
-		return	NULL;
-	}
-	else
-#	ifdef DEBUG_MEMORY_NAME
-		return Memory.mem_realloc		(ptr, nsize, "LUA:Render");
-#	else // DEBUG_MEMORY_MANAGER
-		return Memory.mem_realloc		(ptr, nsize);
-#	endif // DEBUG_MEMORY_MANAGER
-	}
-#else // USE_DL_ALLOCATOR
-#include "doug_lea_memory_allocator.h"
-#include <Luabind/luabind/luabind_memory.h>
-#include <Luabind/luabind/luabind_delete.h>
+#ifdef USE_DL_ALLOCATOR
 
-	static void *lua_alloc_dl	(void *ud, void *ptr, size_t osize, size_t nsize) {
-	(void)ud;
-	(void)osize;
-	if (nsize == 0)	{	dlfree			(ptr);	 return	NULL;  }
-	else				return dlrealloc	(ptr, nsize);
-	}
+#include "../../xrCore/memory_allocator_options.h"
+
+#ifdef USE_ARENA_ALLOCATOR
+	static const u32	s_arena_size = 8*1024*1024;
+	static char			s_fake_array[s_arena_size];
+	doug_lea_allocator	g_render_lua_allocator( s_fake_array, s_arena_size, "render:lua" );
+#else // #ifdef USE_ARENA_ALLOCATOR
+	doug_lea_allocator	g_render_lua_allocator( 0, 0, "render:lua" );
+#endif // #ifdef USE_ARENA_ALLOCATOR
+
 #endif // USE_DL_ALLOCATOR
 
-using namespace luabind;
-
-static void* __cdecl luabind_allocator(luabind::memory_allocation_function_parameter, const void* pointer, size_t const size) //Ðàíüøå âñåãî èíèòèòñÿ çäåñü, ïîýòîìó ïóñòü çäåñü è áóäåò
-{
-	if (!size)
-	{
-		void* non_const_pointer = const_cast<LPVOID>(pointer);
-		xr_free(non_const_pointer);
-		return nullptr;
-	}
-
-	if (!pointer)
-	{
-#ifndef DEBUG
-		return Memory.mem_alloc(size);
-#else
-		return Memory.mem_alloc(size, "void");
-#endif
-	}
-
-	void* non_const_pointer = const_cast<LPVOID>(pointer);
-#ifndef DEBUG
-	return Memory.mem_realloc(non_const_pointer, size);
-#else
-	return Memory.mem_realloc(non_const_pointer, size, "void");
-#endif
-}
-
 // export
-void	CResourceManager::LS_Load			()
+void	CResourceManager::LS_Load()
 {
-	luabind::allocator = &luabind_allocator; //Àëëîêàòîð èíèòèòñÿ òîëüêî çäåñü è òîëüêî îäèí ðàç!
-	luabind::allocator_parameter = nullptr;
-
-#ifndef USE_DL_ALLOCATOR
-	LSVM			= lua_newstate(lua_alloc_xr, NULL);
-#else // USE_XR_ALLOCAOR
-	LSVM			= lua_newstate(lua_alloc_dl, NULL);
-#endif // USE_XR_ALLOCAOR
-	if (!LSVM)		{
-		Msg			("! ERROR : Cannot initialize LUA VM!");
+	LSVM = luaL_newstate();
+	if (!LSVM) {
+		Msg("! ERROR : Cannot initialize LUA VM!");
 		return;
 	}
 
 	// initialize lua standard library functions 
-	luaL_openlibs(LSVM);
+	luaopen_base(LSVM);
+	luaopen_table(LSVM);
+	luaopen_string(LSVM);
+	luaopen_math(LSVM);
+	luaopen_jit(LSVM);
 
-	luabind::open						(LSVM);
+	luabind::open(LSVM);
 #if !XRAY_EXCEPTIONS
-	if (!luabind::get_error_callback())
-		luabind::set_error_callback		(LuaError);
+	if (0 == luabind::get_error_callback())
+		luabind::set_error_callback(LuaError);
 #endif
 
-//	std::function		(LSVM, "log",	LuaLog);
-
 	module			(LSVM)
-	[def("log", &LuaLog),
+	[
+		def("log", LuaLog),
+
 		class_<adopt_sampler>("_sampler")
 			.def(								constructor<const adopt_sampler&>())
-			 .def("texture", &adopt_sampler::_texture, return_reference_to<1>())
-			 .def("project", &adopt_sampler::_projective, return_reference_to<1>())
-			 .def("clamp", &adopt_sampler::_clamp, return_reference_to<1>())
-			 .def("wrap", &adopt_sampler::_wrap, return_reference_to<1>())
-			 .def("mirror", &adopt_sampler::_mirror, return_reference_to<1>())
-			 .def("f_anisotropic", &adopt_sampler::_f_anisotropic, return_reference_to<1>())
-			 .def("f_trilinear", &adopt_sampler::_f_trilinear, return_reference_to<1>())
-			 .def("f_bilinear", &adopt_sampler::_f_bilinear, return_reference_to<1>())
-			 .def("f_linear", &adopt_sampler::_f_linear, return_reference_to<1>())
-			 .def("f_none", &adopt_sampler::_f_none, return_reference_to<1>())
-			 .def("fmin_none", &adopt_sampler::_fmin_none, return_reference_to<1>())
-			 .def("fmin_point", &adopt_sampler::_fmin_point, return_reference_to<1>())
-			 .def("fmin_linear", &adopt_sampler::_fmin_linear, return_reference_to<1>())
-			 .def("fmin_aniso", &adopt_sampler::_fmin_aniso, return_reference_to<1>())
-			 .def("fmip_none", &adopt_sampler::_fmip_none, return_reference_to<1>())
-			 .def("fmip_point", &adopt_sampler::_fmip_point, return_reference_to<1>())
-			 .def("fmip_linear", &adopt_sampler::_fmip_linear, return_reference_to<1>())
-			 .def("fmag_none", &adopt_sampler::_fmag_none, return_reference_to<1>())
-			 .def("fmag_point", &adopt_sampler::_fmag_point, return_reference_to<1>())
-			 .def("fmag_linear", &adopt_sampler::_fmag_linear, return_reference_to<1>()),
+			.def("texture",						&adopt_sampler::_texture		,return_reference_to(_1))
+			.def("project",						&adopt_sampler::_projective		,return_reference_to(_1))
+			.def("clamp",						&adopt_sampler::_clamp			,return_reference_to(_1))
+			.def("wrap",						&adopt_sampler::_wrap			,return_reference_to(_1))
+			.def("mirror",						&adopt_sampler::_mirror			,return_reference_to(_1))
+			.def("f_anisotropic",				&adopt_sampler::_f_anisotropic	,return_reference_to(_1))
+			.def("f_trilinear",					&adopt_sampler::_f_trilinear	,return_reference_to(_1))
+			.def("f_bilinear",					&adopt_sampler::_f_bilinear		,return_reference_to(_1))
+			.def("f_linear",					&adopt_sampler::_f_linear		,return_reference_to(_1))
+			.def("f_none",						&adopt_sampler::_f_none			,return_reference_to(_1))
+			.def("fmin_none",					&adopt_sampler::_fmin_none		,return_reference_to(_1))
+			.def("fmin_point",					&adopt_sampler::_fmin_point		,return_reference_to(_1))
+			.def("fmin_linear",					&adopt_sampler::_fmin_linear	,return_reference_to(_1))
+			.def("fmin_aniso",					&adopt_sampler::_fmin_aniso		,return_reference_to(_1))
+			.def("fmip_none",					&adopt_sampler::_fmip_none		,return_reference_to(_1))
+			.def("fmip_point",					&adopt_sampler::_fmip_point		,return_reference_to(_1))
+			.def("fmip_linear",					&adopt_sampler::_fmip_linear	,return_reference_to(_1))
+			.def("fmag_none",					&adopt_sampler::_fmag_none		,return_reference_to(_1))
+			.def("fmag_point",					&adopt_sampler::_fmag_point		,return_reference_to(_1))
+			.def("fmag_linear",					&adopt_sampler::_fmag_linear	,return_reference_to(_1)),
 
 		class_<adopt_compiler>("_compiler")
 			.def(								constructor<const adopt_compiler&>())
-		    .def("begin", &adopt_compiler::_pass, return_reference_to<1>())
-		    .def("sorting", &adopt_compiler::_options, return_reference_to<1>())
-		    .def("emissive", &adopt_compiler::_o_emissive, return_reference_to<1>())
-		    .def("distort", &adopt_compiler::_o_distort, return_reference_to<1>())
-		    .def("wmark", &adopt_compiler::_o_wmark, return_reference_to<1>())
-		    .def("fog", &adopt_compiler::_fog, return_reference_to<1>())
-		    .def("zb", &adopt_compiler::_ZB, return_reference_to<1>())
-		    .def("blend", &adopt_compiler::_blend, return_reference_to<1>())
-		    .def("aref", &adopt_compiler::_aref, return_reference_to<1>())
+			.def("begin",						&adopt_compiler::_pass			,return_reference_to(_1))
+			.def("sorting",						&adopt_compiler::_options		,return_reference_to(_1))
+			.def("emissive",					&adopt_compiler::_o_emissive	,return_reference_to(_1))
+			.def("distort",						&adopt_compiler::_o_distort		,return_reference_to(_1))
+			.def("wmark",						&adopt_compiler::_o_wmark		,return_reference_to(_1))
+			.def("fog",							&adopt_compiler::_fog			,return_reference_to(_1))
+			.def("zb",							&adopt_compiler::_ZB			,return_reference_to(_1))
+			.def("blend",						&adopt_compiler::_blend			,return_reference_to(_1))
+			.def("aref",						&adopt_compiler::_aref			,return_reference_to(_1))
+			.def("color_write_enable",			&adopt_compiler::_color_write_enable,return_reference_to(_1))
 			.def("sampler",						&adopt_compiler::_sampler		),	// returns sampler-object
 
 		class_<adopt_blend>("blend")
@@ -236,10 +192,10 @@ void	CResourceManager::LS_Load			()
 	VERIFY								(folder);
 	for (u32 it=0; it<folder->size(); it++)	{
 		string_path						namesp,fn;
-		strcpy_s							(namesp,(*folder)[it]);
+		xr_strcpy							(namesp,(*folder)[it]);
 		if	(0==strext(namesp) || 0!=xr_strcmp(strext(namesp),".s"))	continue;
 		*strext	(namesp)=0;
-		if		(0==namesp[0])			strcpy_s	(namesp,"_G");
+		if		(0==namesp[0])			xr_strcpy	(namesp,"_G");
 		strconcat						(sizeof(fn),fn,::Render->getShaderPath(),(*folder)[it]);
 		FS.update_path					(fn,"$game_shaders$",fn);
 		try {
@@ -250,10 +206,6 @@ void	CResourceManager::LS_Load			()
 		}
 	}
 	FS.file_list_close			(folder);
-
-#ifdef USE_JIT
-	luaJIT_setmode			(LSVM,LUAJIT_MODE_ENGINE,LUAJIT_MODE_ON);
-#endif
 }
 
 void	CResourceManager::LS_Unload			()
@@ -303,8 +255,9 @@ Shader*	CResourceManager::_lua_Create		(LPCSTR d_shader, LPCSTR s_textures)
 	{
 		// Analyze possibility to detail this shader
 		C.iElement			= 0;
-//.		C.bDetail			= Device.Resources->_GetDetailTexture(*C.L_textures[0],C.detail_texture,C.detail_scaler);
-		C.bDetail			= DEV->m_textures_description.GetDetailTexture(C.L_textures[0],C.detail_texture,C.detail_scaler);
+//.		C.bDetail			= dxRenderDeviceRender::Instance().Resources->_GetDetailTexture(*C.L_textures[0],C.detail_texture,C.detail_scaler);
+		//C.bDetail			= dxRenderDeviceRender::Instance().Resources->m_textures_description.GetDetailTexture(C.L_textures[0],C.detail_texture,C.detail_scaler);
+		C.bDetail			= dxRenderDeviceRender::Instance().Resources->m_textures_description.GetDetailTexture(C.L_textures[0],C.detail_texture,C.detail_scaler);
 
 		if (C.bDetail)		S.E[0]	= C._lua_Compile(s_shader,"normal_hq");
 		else				S.E[0]	= C._lua_Compile(s_shader,"normal");
@@ -312,8 +265,9 @@ Shader*	CResourceManager::_lua_Create		(LPCSTR d_shader, LPCSTR s_textures)
 		if (Script::bfIsObjectPresent(LSVM,s_shader,"normal",LUA_TFUNCTION))
 		{
 			C.iElement			= 0;
-//.			C.bDetail			= Device.Resources->_GetDetailTexture(*C.L_textures[0],C.detail_texture,C.detail_scaler);
-			C.bDetail			= DEV->m_textures_description.GetDetailTexture(C.L_textures[0],C.detail_texture,C.detail_scaler);
+//.			C.bDetail			= dxRenderDeviceRender::Instance().Resources->_GetDetailTexture(*C.L_textures[0],C.detail_texture,C.detail_scaler);
+			//C.bDetail			= dxRenderDeviceRender::Instance().Resources->m_textures_description.GetDetailTexture(C.L_textures[0],C.detail_texture,C.detail_scaler);
+			C.bDetail			= dxRenderDeviceRender::Instance().Resources->m_textures_description.GetDetailTexture(C.L_textures[0],C.detail_texture,C.detail_scaler);
 			S.E[0]				= C._lua_Compile(s_shader,"normal");
 		}
 	}
@@ -322,8 +276,9 @@ Shader*	CResourceManager::_lua_Create		(LPCSTR d_shader, LPCSTR s_textures)
 	if (Script::bfIsObjectPresent(LSVM,s_shader,"normal",LUA_TFUNCTION))
 	{
 		C.iElement			= 1;
-//.		C.bDetail			= Device.Resources->_GetDetailTexture(*C.L_textures[0],C.detail_texture,C.detail_scaler);
-		C.bDetail			= DEV->m_textures_description.GetDetailTexture(C.L_textures[0],C.detail_texture,C.detail_scaler);
+//.		C.bDetail			= dxRenderDeviceRender::Instance().Resources->_GetDetailTexture(*C.L_textures[0],C.detail_texture,C.detail_scaler);
+		//C.bDetail			= dxRenderDeviceRender::Instance().Resources->m_textures_description.GetDetailTexture(C.L_textures[0],C.detail_texture,C.detail_scaler);
+		C.bDetail			= dxRenderDeviceRender::Instance().Resources->m_textures_description.GetDetailTexture(C.L_textures[0],C.detail_texture,C.detail_scaler);
 		S.E[1]				= C._lua_Compile(s_shader,"normal");
 	}
 
@@ -372,11 +327,11 @@ ShaderElement*		CBlender_Compile::_lua_Compile	(LPCSTR namesp, LPCSTR name)
 	LPCSTR				t_0		= *L_textures[0]			? *L_textures[0] : "null";
 	LPCSTR				t_1		= (L_textures.size() > 1)	? *L_textures[1] : "null";
 	LPCSTR				t_d		= detail_texture			? detail_texture : "null" ;
-	luabind::object				shader	= get_globals(LSVM)[namesp];
-	functor<void>		element	= object_cast<functor<void> >(shader[name]);
+	lua_State*			LSVM	= dxRenderDeviceRender::Instance().Resources->LSVM;
+	object				shader	= globals(LSVM)[namesp];
 	adopt_compiler		ac		= adopt_compiler(this);
-	element						(ac,t_0,t_1,t_d);
+	call_function<void>(shader[name], ac, t_0, t_1, t_d);
 	r_End				();
-	ShaderElement*	_r	= DEV->_CreateElement(E);
+	ShaderElement*	_r	= dxRenderDeviceRender::Instance().Resources->_CreateElement(E);
 	return			_r;
 }

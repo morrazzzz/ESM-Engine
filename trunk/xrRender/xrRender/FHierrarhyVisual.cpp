@@ -1,9 +1,17 @@
+// FHierrarhyVisual.cpp: implementation of the FHierrarhyVisual class.
+//
+//////////////////////////////////////////////////////////////////////
+
 #include "stdafx.h"
+#pragma hdrstop
 
 #include "FHierrarhyVisual.h"
-#include "../../xr_3da/fmesh.h"
-#include "../../xr_3da/render.h"
-
+#include "../../xrEngine/Fmesh.h"
+#ifndef _EDITOR
+#include "../../xrEngine/render.h"
+#else
+#include "../../Include/xrAPI/xrAPI.h"
+#endif
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -18,7 +26,7 @@ FHierrarhyVisual::~FHierrarhyVisual()
 {
 	if (!bDontDelete) {
 		for (u32 i=0; i<children.size(); i++)	
-			::Render->model_Delete((IRenderVisual*&)children[i]);
+			::Render->model_Delete((IRenderVisual *&)children[i]);
 	}
 	children.clear();
 }
@@ -59,7 +67,7 @@ void FHierrarhyVisual::Load(const char* N, IReader *data, u32 dwFlags)
                 IReader* O = OBJ->open_chunk(0);
                 for (int count=1; O; count++) {
 					string_path			name_load,short_name,num;
-					strcpy_s				(short_name,N);
+					xr_strcpy				(short_name,N);
 					if (strext(short_name)) *strext(short_name)=0;
 					strconcat			(sizeof(name_load),name_load,short_name,":",itoa(count,num,10));
 					children.push_back	((dxRender_Visual*)::Render->model_CreateChild(name_load,O));
@@ -86,7 +94,7 @@ void	FHierrarhyVisual::Copy(dxRender_Visual *pSrc)
 	children.clear	();
 	children.reserve(pFrom->children.size());
 	for (u32 i=0; i<pFrom->children.size(); i++) {
-		dxRender_Visual *p = (dxRender_Visual*)::Render->model_Duplicate	(pFrom->children[i]);
+		dxRender_Visual *p = (dxRender_Visual*) ::Render->model_Duplicate	(pFrom->children[i]);
 		children.push_back(p);
 	}
 	bDontDelete = FALSE;

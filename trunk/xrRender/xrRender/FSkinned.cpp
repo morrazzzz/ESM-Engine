@@ -6,18 +6,17 @@
 #pragma hdrstop
 
 #pragma warning(disable:4995)
-#include <d3dx9.h>
+#include <d3dx/d3dx9.h>
 #pragma warning(default:4995)
 
-#include "../../xr_3da/fmesh.h"
+#include "../../xrEngine/fmesh.h"
 #include "../../xrCPU_Pipe/xrCPU_Pipe.h"
 #include "FSkinned.h"
 #include "SkeletonX.h"
-#include "../xrCore/dump_string.h"
 
-//#include "../xrRenderDX10/dx10BufferUtils.h"
+#include "../xrRenderDX10/dx10BufferUtils.h"
 
-#include "../../xr_3da/EnnumerateVertices.h"
+#include "../../xrEngine/EnnumerateVertices.h"
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -611,7 +610,7 @@ void CSkeletonX_ext::_Load_hw	(Fvisual& V, void *	_verts_)
 			BYTE*	bytes		= 0;
 			VERIFY				(NULL==V.p_rm_Vertices);
 			R_CHK				(HW.pDevice->CreateVertexBuffer	(V.vCount*vStride,dwUsage,0,D3DPOOL_MANAGED,&V.p_rm_Vertices,0));
-//			HW.stats_manager.increment_stats_vb					(V.p_rm_Vertices);
+			HW.stats_manager.increment_stats_vb					(V.p_rm_Vertices);
 			R_CHK				(V.p_rm_Vertices->Lock(0,0,(void**)&bytes,0));
 			vertHW_1W*		dst	= (vertHW_1W*)bytes;
 			vertBoned1W*	src = (vertBoned1W*)_verts_;
@@ -631,7 +630,7 @@ void CSkeletonX_ext::_Load_hw	(Fvisual& V, void *	_verts_)
 			BYTE* bytes			= 0;
 			VERIFY				(NULL==V.p_rm_Vertices);
 			R_CHK				(HW.pDevice->CreateVertexBuffer	(V.vCount*vStride,dwUsage,0,D3DPOOL_MANAGED,&V.p_rm_Vertices,0));
-//			HW.stats_manager.increment_stats_vb					(V.p_rm_Vertices);
+			HW.stats_manager.increment_stats_vb					(V.p_rm_Vertices);
 			R_CHK				(V.p_rm_Vertices->Lock(0,0,(void**)&bytes,0));
 			vertHW_2W* dst		= (vertHW_2W*)bytes;
 			vertBoned2W* src	= (vertBoned2W*)_verts_;
@@ -652,7 +651,7 @@ void CSkeletonX_ext::_Load_hw	(Fvisual& V, void *	_verts_)
 			BYTE*	bytes			= 0;
 			VERIFY					(NULL==V.p_rm_Vertices);
 			R_CHK					(HW.pDevice->CreateVertexBuffer	(V.vCount*vStride,dwUsage,0,D3DPOOL_MANAGED,&V.p_rm_Vertices,0));
-//			HW.stats_manager.increment_stats_vb						(V.p_rm_Vertices);
+			HW.stats_manager.increment_stats_vb						(V.p_rm_Vertices);
 			R_CHK					(V.p_rm_Vertices->Lock(0,0,(void**)&bytes,0));
 			vertHW_3W* dst			= (vertHW_3W*)bytes;
 			vertBoned3W* src		= (vertBoned3W*)_verts_;
@@ -674,7 +673,7 @@ void CSkeletonX_ext::_Load_hw	(Fvisual& V, void *	_verts_)
 			BYTE*	bytes			= 0;
 			VERIFY					(NULL==V.p_rm_Vertices);
 			R_CHK					(HW.pDevice->CreateVertexBuffer	(V.vCount*vStride,dwUsage,0,D3DPOOL_MANAGED,&V.p_rm_Vertices,0));
-//			HW.stats_manager.increment_stats_vb						(V.p_rm_Vertices);
+			HW.stats_manager.increment_stats_vb						(V.p_rm_Vertices);
 			R_CHK					(V.p_rm_Vertices->Lock(0,0,(void**)&bytes,0));
 			vertHW_4W* dst			= (vertHW_4W*)bytes;
 			vertBoned4W* src		= (vertBoned4W*)_verts_;

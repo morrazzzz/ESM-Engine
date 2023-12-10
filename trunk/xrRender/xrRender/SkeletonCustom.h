@@ -3,7 +3,7 @@
 #define SkeletonCustomH
 
 #include		"fhierrarhyvisual.h"
-#include		"../../xr_3da/bone.h"
+#include		"../../xrEngine/bone.h"
 #include		"../../Include/xrRender/Kinematics.h"
 
 // consts

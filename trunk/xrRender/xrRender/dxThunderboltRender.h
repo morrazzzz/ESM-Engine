@@ -1,3 +1,5 @@
+#ifndef dxThunderboltRender_included
+#define dxThunderboltRender_included
 #pragma once
 
 #include "..\..\Include\xrRender\ThunderboltRender.h"
@@ -15,3 +17,5 @@ private:
 	ref_geom			  		hGeom_model;
 	ref_geom			  		hGeom_gradient;
 };
+
+#endif	//	ThunderboltRender_included

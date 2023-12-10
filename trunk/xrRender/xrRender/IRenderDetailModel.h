@@ -1,10 +1,12 @@
+#ifndef IRenderDetailModelH
+#define IRenderDetailModelH
 #pragma once
 
 #include "../../Include/xrRender/RenderDetailModel.h"
 
 //////////////////////////////////////////////////////////////////////////
 // definition (Detail Model)
-class	IRender_DetailModel
+class		IRender_DetailModel
 {
 public:
 	struct fvfVertexIn	{
@@ -33,3 +35,5 @@ public:
 	virtual void					transfer	(Fmatrix& mXform, fvfVertexOut* vDest, u32 C, u16* iDest, u32 iOffset, float du, float dv)	= 0;
 	virtual ~IRender_DetailModel()	{};
 };
+
+#endif

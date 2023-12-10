@@ -1,11 +1,13 @@
+#ifndef SH_CONSTANT_H
+#define SH_CONSTANT_H
 #pragma once
 
-#include "../../xr_3da/WaveForm.h"
+#include "../../xrEngine/WaveForm.h"
 
-class	IReader;
-class	IWriter;
+class		IReader;
+class		IWriter;
 
-class	CConstant	: public xr_resource_named									{
+class	ECORE_API	CConstant	: public xr_resource_named									{
 public:
 	enum			{ modeProgrammable=0, modeWaveForm	};
 public:
@@ -54,3 +56,5 @@ public:
 
 typedef	resptr_core<CConstant,resptr_base<CConstant> >	
 	ref_constant_obsolette;
+
+#endif
