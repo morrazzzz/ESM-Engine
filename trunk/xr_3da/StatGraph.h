@@ -1,12 +1,14 @@
-#pragma once
+//---------------------------------------------------------------------------
+#ifndef StatGraphH
+#define StatGraphH
 
 #include "../Include/xrRender/FactoryPtr.h"
 #include "../Include/xrRender/StatGraphRender.h"
 
+//---------------------------------------------------------------------------
 class ENGINE_API CStatGraph	: public pureRender
 {
 	friend class dxStatGraphRender;
-
 public:
 	enum EStyle{
     	stBar,
@@ -34,11 +36,11 @@ protected:
 					SSubGraph(EStyle s)
 		{
 			style = s;
-		}
+		};
 					void SetStyle (EStyle s)
 		{
 			style = s;
-		}
+		};
 	};
 	DEFINE_VECTOR	(SSubGraph,SubGraphVec,SubGraphVecIt);
 	SubGraphVec		subgraphs;
@@ -52,7 +54,9 @@ protected:
 	u32				base_color;
 	u32				rect_color;
 	u32				back_color;
-	FactoryPtr<IStatGraphRender> m_pRender;
+	FactoryPtr<IStatGraphRender>	m_pRender;
+	//ref_geom 		hGeomTri;
+	//ref_geom 		hGeomLine;
 
 	
 	struct SMarker {
@@ -63,6 +67,15 @@ protected:
 
 	DEFINE_DEQUE	(SMarker,MarkersDeq,MarkersDeqIt);
 	MarkersDeq		m_Markers;
+
+protected:
+//	virtual void	RenderBack		();
+
+//	virtual void	RenderBars		( FVF::TL0uv** ppv, ElementsDeq* pelements );
+//	virtual void	RenderLines		( FVF::TL0uv** ppv, ElementsDeq* pelements );
+//	virtual void	RenderBarLines	( FVF::TL0uv** ppv, ElementsDeq* pelements );
+////	virtual void	RenderPoints	( FVF::TL0uv** ppv, ElementsDeq* pelements );
+//	virtual	void	RenderMarkers	( FVF::TL0uv** ppv, MarkersDeq* pmarkers );
 public:
   					CStatGraph	();
 					~CStatGraph	();
@@ -150,3 +163,4 @@ public:
 		m_Markers.erase(m_Markers.begin()+ID);
 	}
 };
+#endif

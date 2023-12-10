@@ -23,10 +23,16 @@ IGame_Level::IGame_Level	()
 	pHUD						= NULL;
 }
 
+//#include "resourcemanager.h"
+
 IGame_Level::~IGame_Level	()
 {
+#pragma todo("KRodin: а нафиг оно надо вообще?")
+	/*
 	if(strstr(Core.Params,"-nes_texture_storing") )
-		Device.m_pRender->ResourcesStoreNecessaryTextures();
+		Device.Resources->StoreNecessaryTextures();
+	*/
+
 //.	DEL_INSTANCE				( pHUD			);
 	xr_delete					( pLevel		);
 
@@ -49,6 +55,9 @@ void IGame_Level::net_Stop			()
 
 	bReady						= false;	
 }
+
+//-------------------------------------------------------------------------------------------
+extern CStatTimer				tscreate;
 
 BOOL IGame_Level::Load			(u32 dwNum) 
 {
@@ -86,6 +95,8 @@ BOOL IGame_Level::Load			(u32 dwNum)
 
 	// Render-level Load
 	Render->level_Load			(LL_Stream);
+	tscreate.FrameEnd			();
+	// Msg						("* S-CREATE: %f ms, %d times",tscreate.result,tscreate.count);
 
 	// Objects
 	g_pGamePersistent->Environment().mods_load	();
@@ -96,34 +107,24 @@ BOOL IGame_Level::Load			(u32 dwNum)
 	// Done
 	FS.r_close					( LL_Stream );
 	bReady						= true;
-	if (!g_dedicated_server)	IR_Capture();
-#ifndef DEDICATED_SERVER
+	IR_Capture();
 	Device.seqRender.Add		(this);
-#endif
-
 	Device.seqFrame.Add			(this);
 
 	return TRUE;
 }
 
-int		psNET_DedicatedSleep	= 5;
 void	IGame_Level::OnRender		( ) 
 {
-#ifndef DEDICATED_SERVER
 //	if (_abs(Device.fTimeDelta)<EPS_S) return;
 
 	// Level render, only when no client output required
-	if (!g_dedicated_server)	{
 		Render->Calculate			();
 		Render->Render				();
-	} else {
-		Sleep						(psNET_DedicatedSleep);
-	}
 
 	// Font
 //	pApp->pFontSystem->SetSizeI(0.023f);
 //	pApp->pFontSystem->OnRender	();
-#endif
 }
 
 void	IGame_Level::OnFrame		( ) 

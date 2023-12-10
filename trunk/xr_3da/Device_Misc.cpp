@@ -1,18 +1,19 @@
 #include "stdafx.h"
+//#include "dxerr8.h"
 
 // *****************************************************************************************
 // Error handling
 
 //----------------------------- FLAGS
 static struct _DF {
-	const char *	name;
+	char *	name;
 	u32	mask;
 } DF[] = {
 	{"rsFullscreen",	rsFullscreen	},
 	{"rsClearBB",		rsClearBB 		},
 	{"rsVSync",			rsVSync 		},
 	{"rsWireframe",		rsWireframe		},
-    {nullptr,0}
+    {NULL,0}
 };
 
 void CRenderDevice::DumpFlags()

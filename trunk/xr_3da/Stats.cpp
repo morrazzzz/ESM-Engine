@@ -2,7 +2,7 @@
 #include "GameFont.h"
 #pragma hdrstop
 
-#include "ISpatial.h"
+#include "ISpatial.h" //#include "../xrcdb/ISpatial.h"
 #include "IGame_Persistent.h"
 #include "render.h"
 #include "xr_object.h"
@@ -70,17 +70,8 @@ void _draw_cam_pos(CGameFont* pFont)
 {
 	float sz		= pFont->GetHeight();
 	pFont->SetHeightI(0.02f);
-	pFont->SetColor(color_rgba(255, 255, 0, 250));
-	pFont->Out(10, 230, "CAMERA POSITION:  [%3.2f,%3.2f,%3.2f]", VPUSH(Device.vCameraPosition));
-	pFont->SetHeight(sz);
-	pFont->OnRender();
-}
-void draw_fps(CGameFont* pFont)
-{
-	float sz = pFont->GetHeight();
-	pFont->SetHeightI(0.025f);
-	pFont->SetColor(color_rgba(0, 255, 0, 250));
-	pFont->Out(720, 10, "FPS: %1.0f", 1.0f / Device.fTimeDelta);
+	pFont->SetColor	(0xffffffff);
+	pFont->Out		(10, 600, "CAMERA POSITION:  [%3.2f,%3.2f,%3.2f]",VPUSH(Device.vCameraPosition));
 	pFont->SetHeight(sz);
 	pFont->OnRender	();
 }
@@ -132,6 +123,8 @@ void CStats::Show()
 		netClient1.FrameEnd			();
 		netClient2.FrameEnd			();
 		netServer.FrameEnd			();
+        netClientCompressor.FrameEnd();
+		netServerCompressor.FrameEnd();
 		
 		TEST0.FrameEnd				();
 		TEST1.FrameEnd				();
@@ -153,8 +146,9 @@ void CStats::Show()
 		fFPS = fInv*fFPS + fOne*fps;
 
 		if (RenderTOTAL.result>EPS_S) {
-			u32 renderedPolys = Device.m_pRender->GetCacheStatPolys();
-			fTPS = fInv * fTPS + fOne * float(renderedPolys) / (RenderTOTAL.result * 1000.f);
+			u32	rendered_polies = Device.m_pRender->GetCacheStatPolys();
+			fTPS = fInv*fTPS + fOne*float(rendered_polies)/(RenderTOTAL.result*1000.f);
+			//fTPS = fInv*fTPS + fOne*float(RCache.stat.polys)/(RenderTOTAL.result*1000.f);
 			fRFPS= fInv*fRFPS+ fOne*1000.f/RenderTOTAL.result;
 		}
 	}
@@ -166,10 +160,8 @@ void CStats::Show()
 	}
 
 	////////////////////////////////////////////////
-	if (g_dedicated_server) return;
+	//if (g_dedicated_server) return;
 	////////////////////////////////////////////////
-
-	
 
 	int frm = 2000;
 	div_t ddd = div(Device.dwFrame,frm);
@@ -206,7 +198,7 @@ void CStats::Show()
 	};
 
 	// Show them
-	if (psDeviceFlags.test(rsStatistic))
+		if (psDeviceFlags.test(rsStatistic))
 	{
 		static float	r_ps		= 0;
 		static float	b_ps		= 0;
@@ -221,13 +213,20 @@ void CStats::Show()
 		F.OutNext	("FPS/RFPS:    %3.1f/%3.1f",fFPS,fRFPS);
 		F.OutNext	("TPS:         %2.2f M",	fTPS);
 		m_pRender->OutData1(F);
+		//F.OutNext	("VERT:        %d/%d",		RCache.stat.verts,RCache.stat.calls?RCache.stat.verts/RCache.stat.calls:0);
+		//F.OutNext	("POLY:        %d/%d",		RCache.stat.polys,RCache.stat.calls?RCache.stat.polys/RCache.stat.calls:0);
+		//F.OutNext	("DIP/DP:      %d",			RCache.stat.calls);
 #ifdef DEBUG
 		F.OutSkip	();
 		F.OutNext	("mapped:      %d",			g_file_mapped_memory);
 		F.OutSkip	();
 		m_pRender->OutData2(F);
+		//F.OutNext	("SH/T/M/C:    %d/%d/%d/%d",RCache.stat.states,RCache.stat.textures,RCache.stat.matrices,RCache.stat.constants);
+		//F.OutNext	("RT/PS/VS:    %d/%d/%d",	RCache.stat.target_rt,RCache.stat.ps,RCache.stat.vs);
+		//F.OutNext	("DCL/VB/IB:   %d/%d/%d",   RCache.stat.decl,RCache.stat.vb,RCache.stat.ib);
 #endif
 		m_pRender->OutData3(F);
+		//F.OutNext	("xforms:      %d",			RCache.stat.xforms);
 		F.OutSkip	();
 
 #define PPP(a) (100.f*float(a)/float(EngineTOTAL.result))
@@ -261,7 +260,7 @@ void CStats::Show()
 		F.OutNext	("  Wait-L:    %2.2fms",RenderDUMP_Wait.result);	
 		F.OutNext	("  Wait-S:    %2.2fms",RenderDUMP_Wait_S.result);	
 		F.OutNext	("  Skinning:  %2.2fms",RenderDUMP_SKIN.result);	
-		F.OutNext	("  DT_Vis/Cnt:%2.2fms",RenderDUMP_DT_VIS.result,RenderDUMP_DT_Count);	
+		F.OutNext	("  DT_Vis/Cnt:%2.2fms/%d",RenderDUMP_DT_VIS.result,RenderDUMP_DT_Count);	
 		F.OutNext	("  DT_Render: %2.2fms",RenderDUMP_DT_Render.result);	
 		F.OutNext	("  DT_Cache:  %2.2fms",RenderDUMP_DT_Cache.result);	
 		F.OutNext	("  Wallmarks: %2.2fms, %d/%d - %d",RenderDUMP_WM.result,RenderDUMP_WMS_Count,RenderDUMP_WMD_Count,RenderDUMP_WMT_Count);
@@ -285,6 +284,9 @@ void CStats::Show()
 		F.OutNext	("netClientRecv:   %2.2fms, %d",	netClient1.result,netClient1.count);
 		F.OutNext	("netClientSend:   %2.2fms, %d",	netClient2.result,netClient2.count);
 		F.OutNext	("netServer:   %2.2fms, %d",		netServer.result,netServer.count);
+		F.OutNext	("netClientCompressor:   %2.2fms",	netClientCompressor.result);
+		F.OutNext	("netServerCompressor:   %2.2fms",	netServerCompressor.result);
+		
 		F.OutSkip	();
 
 		F.OutSkip	();
@@ -303,10 +305,20 @@ void CStats::Show()
 		F.OutNext	("qpc[%3d]",CPU::qpc_counter);
 		CPU::qpc_counter	=	0		;
 #endif // DEBUG_MEMORY_MANAGER
-
-		F.OutSkip();
+//		F.OutSet	(640,0);
+		F.OutSkip	();
 		m_pRender->OutData4(F);
-
+		/*
+		F.OutNext	("static:        %3.1f/%d",	RCache.stat.r.s_static.verts/1024.f,		RCache.stat.r.s_static.dips );
+		F.OutNext	("flora:         %3.1f/%d",	RCache.stat.r.s_flora.verts/1024.f,			RCache.stat.r.s_flora.dips );
+		F.OutNext	("  flora_lods:  %3.1f/%d",	RCache.stat.r.s_flora_lods.verts/1024.f,	RCache.stat.r.s_flora_lods.dips );
+		F.OutNext	("dynamic:       %3.1f/%d",	RCache.stat.r.s_dynamic.verts/1024.f,		RCache.stat.r.s_dynamic.dips );
+		F.OutNext	("  dynamic_sw:  %3.1f/%d",	RCache.stat.r.s_dynamic_sw.verts/1024.f,	RCache.stat.r.s_dynamic_sw.dips );
+		F.OutNext	("  dynamic_inst:%3.1f/%d",	RCache.stat.r.s_dynamic_inst.verts/1024.f,	RCache.stat.r.s_dynamic_inst.dips );
+		F.OutNext	("  dynamic_1B:  %3.1f/%d",	RCache.stat.r.s_dynamic_1B.verts/1024.f,	RCache.stat.r.s_dynamic_1B.dips );
+		F.OutNext	("  dynamic_2B:  %3.1f/%d",	RCache.stat.r.s_dynamic_2B.verts/1024.f,	RCache.stat.r.s_dynamic_2B.dips );
+		F.OutNext	("details:       %3.1f/%d",	RCache.stat.r.s_details.verts/1024.f,		RCache.stat.r.s_details.dips );
+*/
 		//////////////////////////////////////////////////////////////////////////
 		// Renderer specific
 		F.SetHeightI						(f_base_size);
@@ -371,10 +383,10 @@ void CStats::Show()
 		pFPSFont_->OnRender();
 	}
 
-	if( psDeviceFlags.test(rsStatistic) || psDeviceFlags.test(rsCameraPos) ){
+	if( /*psDeviceFlags.test(rsStatistic) ||*/ psDeviceFlags.test(rsCameraPos) ){
 		_draw_cam_pos					(pFont);
 		pFont->OnRender					();
-	}
+	};
 
 #ifdef DEBUG
 	//////////////////////////////////////////////////////////////////////////
@@ -386,11 +398,14 @@ void CStats::Show()
 		F.OutSet						(300,300);
 		F.SetHeightI						(f_base_size*2);
 		if (fFPS<30)					F.OutNext	("FPS       < 30:   %3.1f",	fFPS);
+		//if (RCache.stat.verts>500000)	F.OutNext	("Verts     > 500k: %d",	RCache.stat.verts);
 		m_pRender->GuardVerts(F);
-
+		////if (RCache.stat.polys>500000)	F.OutNext	("Polys     > 500k: %d",	RCache.stat.polys);
 		if (psDeviceFlags.test(rsStatistic))
 		{
 			m_pRender->GuardDrawCalls(F);
+			//if (RCache.stat.calls>1000)		F.OutNext	("DIP/DP    > 1k:   %d",	RCache.stat.calls);
+			////if (RCache.stat.textures>1000)F.OutNext	("T_change  > 500:  %d",	RCache.stat.textures);
 			if (RenderDUMP_DT_Count>1000)	F.OutNext	("DT_count  > 1000: %u",	RenderDUMP_DT_Count);
 			F.OutSkip						();
 			//if (fMem_calls>1500)			F.OutNext	("MMGR calls > 1500:%3.1f",	fMem_calls);
@@ -463,6 +478,8 @@ void CStats::Show()
 		netClient1.FrameStart		();
 		netClient2.FrameStart		();
 		netServer.FrameStart		();
+		netClientCompressor.FrameStart();
+		netServerCompressor.FrameStart();
 
 		TEST0.FrameStart			();
 		TEST1.FrameStart			();
@@ -513,6 +530,7 @@ void CStats::OnDeviceCreate			()
 
 void CStats::OnDeviceDestroy		()
 {
+	SetLogCB(0); 
 	xr_delete	(pFont);
 	xr_delete(pFPSFont_);
 }
@@ -527,15 +545,22 @@ void CStats::OnRender				()
 		CSound_stats_ext::item_vec_it	_E = snd_stat_ext.items.end();
 		for (;_I!=_E;_I++){
 			const CSound_stats_ext::SItem& item = *_I;
-			if (item._3D){
+			if (item._3D)
+			{
 				m_pRender->SetDrawParams(&*Device.m_pRender);
+				//RCache.set_xform_world(Fidentity);
+				//RCache.set_Shader		(Device.m_SelectionShader);
+				//RCache.set_c			("tfactor",1,1,1,1);
 				DU->DrawCross			(item.params.position, 0.5f, 0xFF0000FF, true );
 				if (g_stats_flags.is(st_sound_min_dist))
 					DU->DrawSphere		(Fidentity, item.params.position, item.params.min_distance, 0x400000FF,	0xFF0000FF, true, true);
 				if (g_stats_flags.is(st_sound_max_dist))
 					DU->DrawSphere		(Fidentity, item.params.position, item.params.max_distance, 0x4000FF00,	0xFF008000, true, true);
-				xr_string out_txt		= (g_stats_flags.is(st_sound_info_name))?item.name.c_str():"";
-				if (item.game_object){
+				
+				xr_string out_txt		= (out_txt.size() && g_stats_flags.is(st_sound_info_name)) ? item.name.c_str():"";
+
+				if (item.game_object)
+				{
 					if (g_stats_flags.is(st_sound_ai_dist))
 						DU->DrawSphere	(Fidentity, item.params.position, item.params.max_ai_distance, 0x80FF0000,0xFF800000,true,true);
 					if (g_stats_flags.is(st_sound_info_object)){
@@ -544,7 +569,7 @@ void CStats::OnRender				()
 						out_txt			+= ")";
 					}
 				}
-				if (g_stats_flags.is_any(st_sound_info_name|st_sound_info_object))
+				if (g_stats_flags.is_any(st_sound_info_name|st_sound_info_object) && item.name.size())
 					DU->OutText			(item.params.position, out_txt.c_str(),0xFFFFFFFF,0xFF000000);
 			}
 		}

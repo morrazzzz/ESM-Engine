@@ -1,5 +1,4 @@
-#ifndef DefinesH
-#define DefinesH
+#pragma once
 
 #ifdef	DEBUG
 	ENGINE_API	extern BOOL			bDebug;
@@ -22,26 +21,21 @@ enum {
 	rsOcclusion						= (1ul<<4ul),
 	rsStatistic						= (1ul<<5ul),
 	rsDetails						= (1ul<<6ul),
-	rsRefresh60hz					= (1ul<<7ul),
+	rsAlwaysActive					= (1ul<<7ul),
 	rsConstantFPS					= (1ul<<8ul),
 	rsDrawStatic					= (1ul<<9ul),
 	rsDrawDynamic					= (1ul<<10ul),
 	rsDisableObjectsAsCrows			= (1ul<<11ul),
 
 	rsOcclusionDraw					= (1ul<<12ul),
-	rsOcclusionStats				= (1ul<<13ul),
-
-	mtSound							= (1ul<<14ul),
-	mtPhysics						= (1ul<<15ul),
-	mtNetwork						= (1ul<<16ul),
-	mtParticles						= (1ul<<17ul),
+	rsRefresh60hz					= (1ul<<13ul),
+	rsMTTexLoad						= (1ul<<14ul),
 
 	rsCameraPos						= (1ul<<18ul),
 	rsR2							= (1ul<<19ul),
 
-	rsDrawMemory = (1ul << 20ul),
-
-	// 20-32 bit - reserved to Editor
+	rsR3 = (1ul << 20ul),
+	rsR4 = (1ul << 21ul),
 };
 
 
@@ -73,5 +67,3 @@ ENGINE_API extern	Flags32		psDeviceFlags		;
 #define _omotions_			    "$omotions$"
 #define _smotion_			    "$smotion$"
 #define _detail_objects_	    "$detail_objects$"
-
-#endif

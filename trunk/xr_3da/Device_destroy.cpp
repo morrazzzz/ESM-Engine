@@ -1,9 +1,9 @@
 #include "stdafx.h"
 
+#include "../Include/xrRender/DrawUtils.h"
 #include "render.h"
 #include "IGame_Persistent.h"
-#include "../include/xrRender/RenderFactory.h"
-#include "../Include/xrRender/DrawUtils.h"
+#include "xr_IOConsole.h"
 
 void CRenderDevice::_Destroy	(BOOL bKeepTextures)
 {
@@ -14,11 +14,13 @@ void CRenderDevice::_Destroy	(BOOL bKeepTextures)
 	Statistic->OnDeviceDestroy	();
 	::Render->destroy			();
 	m_pRender->OnDeviceDestroy(bKeepTextures);
+	//Resources->OnDeviceDestroy	(bKeepTextures);
+	//RCache.OnDeviceDestroy		();
 
 	Memory.mem_compact			();
 }
 
-void CRenderDevice::Destroy() {
+void CRenderDevice::Destroy	(void) {
 	if (!b_is_Ready)			return;
 
 	Log("Destroying Direct3D...");
@@ -30,6 +32,9 @@ void CRenderDevice::Destroy() {
 
 	// real destroy
 	m_pRender->DestroyHW();
+
+	//xr_delete					(Resources);
+	//HW.DestroyDevice			();
 
 	seqRender.R.clear			();
 	seqAppActivate.R.clear		();
@@ -48,22 +53,35 @@ void CRenderDevice::Destroy() {
 
 #include "IGame_Level.h"
 #include "CustomHUD.h"
+extern BOOL bNeed_re_create_env;
 void CRenderDevice::Reset		(bool precache)
 {
-	bool b_16_before	= (float)dwWidth/(float)dwHeight > (1024.0f/768.0f+0.01f);
+	u32 dwWidth_before		= dwWidth;
+	u32 dwHeight_before		= dwHeight;
 
 	ShowCursor				(TRUE);
 	u32 tm_start			= TimerAsync();
+	if (g_pGamePersistent){
 
-	m_pRender->Reset(m_hWnd, dwWidth, dwHeight, fWidth_2, fHeight_2);
+//.		g_pGamePersistent->Environment().OnDeviceDestroy();
+	}
 
-	g_pGamePersistent->Environment().bNeed_re_create_env = true;
-	
+	m_pRender->Reset( m_hWnd, dwWidth, dwHeight, fWidth_2, fHeight_2);
+
+	if (g_pGamePersistent)
+	{
+//.		g_pGamePersistent->Environment().OnDeviceCreate();
+		//bNeed_re_create_env = TRUE;
+		g_pGamePersistent->Environment().bNeed_re_create_env = TRUE;
+	}
 	_SetupStates			();
 	if (precache)
-		PreCache			(20);
+		PreCache			(20, true, false);
 	u32 tm_end				= TimerAsync();
 	Msg						("*** RESET [%d ms]",tm_end-tm_start);
+
+	//	TODO: Remove this! It may hide crash
+	Memory.mem_compact();
 
 #ifndef DEDICATED_SERVER
 	ShowCursor	(FALSE);
@@ -71,7 +89,8 @@ void CRenderDevice::Reset		(bool precache)
 		
 	seqDeviceReset.Process(rp_DeviceReset);
 
-	bool b_16_after	= (float)dwWidth/(float)dwHeight > (1024.0f/768.0f+0.01f);
-	if(b_16_after!=b_16_before && g_pGameLevel && g_pGameLevel->pHUD) 
-	g_pGameLevel->pHUD->OnScreenRatioChanged();
+	if(dwWidth_before!=dwWidth || dwHeight_before!=dwHeight) 
+	{
+		seqResolutionChanged.Process(rp_ScreenResolutionChanged);
+	}
 }
