@@ -184,6 +184,9 @@ void CGamePersistent::OnGameStart()
 {
 	__super::OnGameStart		();
 	
+	EnabledTipsForZone_ = READ_IF_EXISTS(pSettings, r_bool, "tips_zone", "enable_tips_zone", true);
+	CountTipsForZone_ = READ_IF_EXISTS(pSettings, r_u16, "tips_zone", "count_tips_zone", 100);
+
 	UpdateGameType				();
 
 }
@@ -650,34 +653,24 @@ void CGamePersistent::OnRenderPPUI_PP()
 void CGamePersistent::LoadTitle(bool change_tip, shared_str map_name)
 {
 	pApp->LoadStage();
-	if (change_tip)
+	if (change_tip && EnabledTipsForZone_)
 	{
 		string512				buff;
-		u8						tip_num;
-		luabind::functor<u8>	m_functor;
-		bool is_single = !xr_strcmp(m_game_params.m_game_type, "single");
-		if (is_single)
-		{
-			R_ASSERT(ai().script_engine().functor("loadscreen.get_tip_number", m_functor));
-			tip_num = m_functor(map_name.c_str());
-		}
-		else
-		{
-			R_ASSERT(ai().script_engine().functor("loadscreen.get_mp_tip_number", m_functor));
-			tip_num = m_functor(map_name.c_str());
-		}
+		u16						tip_num;
+
+		tip_num = static_cast<u16>(Random.randI(1, CountTipsForZone_));
 		//		tip_num = 83;
 		xr_sprintf(buff, "%s%d:", CStringTable().translate("ls_tip_number").c_str(), tip_num);
 		shared_str				tmp = buff;
 
-		if (is_single)
-			xr_sprintf(buff, "ls_tip_%d", tip_num);
-		else
-			xr_sprintf(buff, "ls_mp_tip_%d", tip_num);
+		xr_sprintf(buff, "ls_tip_%d", tip_num);
 
-		pApp->LoadTitleInt(CStringTable().translate("ls_header").c_str(), tmp.c_str(), CStringTable().translate(buff).c_str());
+		string128 TipsHeader_; 
+		xr_sprintf(TipsHeader_, "%d %s", CountTipsForZone_, CStringTable().translate("ls_header_text").c_str());
 
-		Discord.Update("Loading level...");
+		pApp->LoadTitleInt(TipsHeader_, tmp.c_str(), CStringTable().translate(buff).c_str());
+
+		Discord.Update("Loading level: %s", map_name.c_str());
 	}
 }
 

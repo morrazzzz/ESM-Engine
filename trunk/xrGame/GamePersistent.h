@@ -25,6 +25,11 @@ class CGamePersistent:
 
 	bool				m_bPickableDOF;
 
+	//START: Tips for zone
+	bool EnabledTipsForZone_; //Enable tips for zone
+	u16 CountTipsForZone_; //Count tips for configs
+	//END: Tips for zone
+
 	CUISequencer*		m_intro;
 	EVENT				eQuickLoad;
 	Fvector				m_dof[4];	// 0-dest 1-current 2-from 3-original
