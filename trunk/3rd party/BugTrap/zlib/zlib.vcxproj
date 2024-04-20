@@ -259,6 +259,7 @@
       <PrecompiledHeader />
       <AdditionalIncludeDirectories>include;%(AdditionalIncludeDirectories)
       </AdditionalIncludeDirectories>
+      <ConformanceMode>true</ConformanceMode>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>

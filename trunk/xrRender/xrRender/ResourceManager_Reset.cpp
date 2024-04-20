@@ -75,8 +75,8 @@ void	CResourceManager::reset_end				()
 template<class C>	void mdump(C c)
 {
 	if (0==c.size())	return;
-	for (C::iterator I=c.begin(); I!=c.end(); I++)
-		Msg	("*        : %3d: %s",I->second->dwReference, I->second->cName.c_str());
+	for (const auto& pair : c)
+		Msg	("*        : %3d: %s", pair.second->dwReference, pair.second->cName.c_str());
 }
 
 CResourceManager::~CResourceManager		()
