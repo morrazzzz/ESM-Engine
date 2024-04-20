@@ -320,7 +320,7 @@ public:
 template <typename KEY_TYPE>
 inline unsigned CHashTraits<KEY_TYPE>::HashKey(const KEY_TYPE& key)
 {
-	return ((unsigned long long)key >> 4);
+	return ((unsigned)key >> 4);
 }
 #endif
 
