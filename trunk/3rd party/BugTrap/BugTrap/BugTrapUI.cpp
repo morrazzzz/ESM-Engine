@@ -357,6 +357,8 @@ static DWORD WSASendReport(PCTSTR pszHostName, CTransferThreadParams* pTransferT
 					SOCKET sock = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, NULL, WSA_FLAG_OVERLAPPED);
 					if (sock != INVALID_SOCKET)
 					{
+						DWORD dwPacketSize;
+						size_t nHeaderPosition = 0;
 						CMemStream MemStream(256);
 						CUTF8EncStream EncStream(&MemStream);
 						BOOL bConnected = FALSE;
@@ -397,8 +399,6 @@ static DWORD WSASendReport(PCTSTR pszHostName, CTransferThreadParams* pTransferT
 							goto end; // Internal error.
 						}
 
-						size_t nHeaderPosition = 0;
-
 						// Protocol signature.
 						*(PDWORD)(pBuffer + nHeaderPosition) = g_dwProtocolSignature;
 						nHeaderPosition += sizeof(DWORD);
@@ -430,8 +430,7 @@ static DWORD WSASendReport(PCTSTR pszHostName, CTransferThreadParams* pTransferT
 						}
 
 						// Report file extension.
-						PCTSTR pszReportFileExtension = CSymEngine::GetReportFileExtension();
-						if (! WriteBinaryString(EncStream, pszReportFileExtension, pBuffer, nHeaderPosition, dwBufferSize))
+						if (! WriteBinaryString(EncStream, CSymEngine::GetReportFileExtension(), pBuffer, nHeaderPosition, dwBufferSize))
 						{
 							dwErrorCode = ERROR_INTERNAL_ERROR;
 							goto end; // Internal error.
@@ -452,7 +451,7 @@ static DWORD WSASendReport(PCTSTR pszHostName, CTransferThreadParams* pTransferT
 						ZeroMemory(&ov, sizeof(ov));
 						ov.hEvent = hCompletionEvent;
 
-						DWORD dwPacketSize = (DWORD)nHeaderPosition;
+					    dwPacketSize = (DWORD)nHeaderPosition;
 						for (;;)
 						{
 							WSABUF buf;

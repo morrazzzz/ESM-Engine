@@ -615,6 +615,7 @@ void CTextView::LoadCache(void)
 		TEXTMETRIC tmetr;
 		::GetTextMetrics(hdc, &tmetr);
 		int nExtraWidth = tmetr.tmAveCharWidth + LOWORD(GetTabbedTextExtent(hdc, g_szEllipsis, g_dwEllipsisLength, 0, NULL));
+		DWORD dwLineBufferPos = 0, dwTextCachePos = 0;
 
 		if (m_pTextCache == NULL)
 		{
@@ -626,9 +627,7 @@ void CTextView::LoadCache(void)
 				goto end;
 			}
 		}
-		const CLineInfo& rLineInfoConst = m_arrLines[(size_t)0];
-		SetFilePointer(m_hFile, rLineInfoConst.m_dwLineStart, NULL, FILE_BEGIN);
-		DWORD dwLineBufferPos = 0, dwTextCachePos = 0;
+		SetFilePointer(m_hFile, m_arrLines[(size_t)0].m_dwLineStart, NULL, FILE_BEGIN);
 		for (;;)
 		{
 			DWORD dwNumRead = 0;

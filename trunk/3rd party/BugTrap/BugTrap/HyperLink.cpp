@@ -286,7 +286,7 @@ LRESULT CALLBACK CHyperLink::HyperLinkWndProc(HWND hwnd, UINT uMsg, WPARAM wPara
 			hwndParent = GetParent(hwnd);
 			if (hwndParent)
 			{
-				BOOL bPrevCtrl = GetKeyState(VK_SHIFT) < 0;
+				WPARAM bPrevCtrl = GetKeyState(VK_SHIFT) < 0;
 				FORWARD_WM_NEXTDLGCTL(hwndParent, bPrevCtrl, FALSE, PostMessage);
 			}
 			break;

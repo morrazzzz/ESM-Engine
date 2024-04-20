@@ -510,6 +510,7 @@ void CHexView::LoadCache(void)
 	_ASSERTE(m_hFile != INVALID_HANDLE_VALUE);
 	m_dwFileSize = GetFileSize(m_hFile, NULL);
 	m_dwFirstCachedLine = 0;
+	DWORD dwNumRead = 0;
 	DWORD dwCacheSize = min(m_dwFileSize, CACHE_SIZE);
 	m_pbCache = new BYTE[dwCacheSize];
 	if (m_pbCache == NULL)
@@ -517,7 +518,6 @@ void CHexView::LoadCache(void)
 		ResetFile();
 		goto end;
 	}
-	DWORD dwNumRead = 0;
 	ReadFile(m_hFile, m_pbCache, dwCacheSize, &dwNumRead, NULL);
 
 end:

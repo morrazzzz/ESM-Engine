@@ -286,6 +286,25 @@ int CIncomparableTraits<DATA_TYPE>::OrderedCompare(const DATA_TYPE& /*rData1*/, 
 }
 
 /// Hash key traits.
+#if _M_X64
+template <typename KEY_TYPE>
+class CHashTraits
+{
+public:
+	/// Computes the hash value for the given object instance.
+	static unsigned long long HashKey(const KEY_TYPE& key);
+};
+
+/**
+ * @param key - hash value must be generated for this object.
+ * @return hash value of the given object.
+ */
+template <typename KEY_TYPE>
+inline unsigned long long CHashTraits<KEY_TYPE>::HashKey(const KEY_TYPE& key)
+{
+	return ((unsigned long long)key >> 4);
+}
+#else
 template <typename KEY_TYPE>
 class CHashTraits
 {
@@ -301,8 +320,9 @@ public:
 template <typename KEY_TYPE>
 inline unsigned CHashTraits<KEY_TYPE>::HashKey(const KEY_TYPE& key)
 {
-	return ((unsigned)key >> 4);
+	return ((unsigned long long)key >> 4);
 }
+#endif
 
 /// Explicit template specialization for string hash tables.
 template <> class CHashTraits<CStrHolder>

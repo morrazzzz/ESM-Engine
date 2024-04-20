@@ -147,17 +147,17 @@ template <typename TYPE, class TRAITS, class ENGINE>
 class CBaseSmartPtr : protected ENGINE
 {
 public:
-	CBaseSmartPtr(void) { Assign(NULL); }
+	CBaseSmartPtr(void) { ENGINE::Assign(NULL); }
 	explicit CBaseSmartPtr(TYPE* ptr) { Assign(ptr); }
 	CBaseSmartPtr(const CBaseSmartPtr& sptr) { Assign(sptr); }
-	~CBaseSmartPtr(void) { Release(); }
+	~CBaseSmartPtr(void) { ENGINE::Release(); }
 	const CBaseSmartPtr& operator=(TYPE* ptr);
 	const CBaseSmartPtr& operator=(const CBaseSmartPtr& sptr);
 
-	TYPE& operator*(void) const { _ASSERTE(GetPtr() != NULL); return *GetPtr(); }
-	TYPE* operator->(void) const { _ASSERTE(GetPtr() != NULL); return GetPtr(); }
-	bool operator!(void) const { return (GetPtr() == NULL); }
-	operator TYPE*(void) const { return GetPtr(); }
+	TYPE& operator*(void) const { _ASSERTE(ENGINE::GetPtr() != NULL); return *ENGINE::GetPtr(); }
+	TYPE* operator->(void) const { _ASSERTE(ENGINE::GetPtr() != NULL); return ENGINE::GetPtr(); }
+	bool operator!(void) const { return (ENGINE::GetPtr() == NULL); }
+	operator TYPE*(void) const { return ENGINE::GetPtr(); }
 
 	friend bool operator==(const CBaseSmartPtr& sptr1, const CBaseSmartPtr& sptr2) { return sptr1.GetPtr() == sptr2.GetPtr(); }
 	friend bool operator!=(const CBaseSmartPtr& sptr1, const CBaseSmartPtr& sptr2) { return sptr1.GetPtr() != sptr2.GetPtr(); }
@@ -170,8 +170,8 @@ public:
 template <typename TYPE, class TRAITS, class ENGINE>
 const CBaseSmartPtr<TYPE, TRAITS, ENGINE>& CBaseSmartPtr<TYPE, TRAITS, ENGINE>::operator=(TYPE* ptr)
 {
-	Release();
-	Assign(ptr);
+	ENGINE::Release();
+	ENGINE::Assign(ptr);
 	return *this;
 }
 
@@ -180,8 +180,8 @@ const CBaseSmartPtr<TYPE, TRAITS, ENGINE>& CBaseSmartPtr<TYPE, TRAITS, ENGINE>::
 {
 	if (this != &sptr)
 	{
-		Release();
-		Assign(sptr);
+		ENGINE::Release();
+		ENGINE::Assign(sptr);
 	}
 	return *this;
 }
@@ -212,7 +212,7 @@ public:
 	CSmartArray(const CSmartArray& sptr) : CBaseClass(sptr) { }
 	const CSmartArray& operator=(TYPE* ptr) { CBaseClass::operator=(ptr); return *this; }
 	const CSmartArray& operator=(const CSmartArray& sptr) { CBaseClass::operator=(sptr); return *this; }
-	TYPE& operator[](INT_PTR index) const { _ASSERTE(GetPtr() != NULL); _ASSERTE(index >= 0); return GetPtr()[index]; }
+	TYPE& operator[](INT_PTR index) const { _ASSERTE(ENGINE::GetPtr() != NULL); _ASSERTE(index >= 0); return ENGINE::GetPtr()[index]; }
 };
 
 #undef CBaseClass
