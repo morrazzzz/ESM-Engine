@@ -34,7 +34,7 @@ namespace MonsterMovement {
 		eChimeraVelocityParameterUpperWalkFwd		= eVelocityParameterCustom << 1,
 		eChimeraVelocityParameterJumpGround			= eVelocityParameterCustom << 2,
 	
-		eChimeraVelocityParamsUpperWalkFwd			= eVelocityParameterStand | eChimeraVelocityParameterUpperWalkFwd,
+		eChimeraVelocityParamsUpperWalkFwd			= eVelocityParameterStand | static_cast<int>(eChimeraVelocityParameterUpperWalkFwd),
 	};
 
 	enum EMovementParametersSnork {
@@ -45,8 +45,8 @@ namespace MonsterMovement {
 		eControllerVelocityParameterMoveFwd		= eVelocityParameterCustom << 1,
 		eControllerVelocityParameterMoveBkwd	= eVelocityParameterCustom << 2,
 
-		eControllerVelocityParamsMoveFwd		= eControllerVelocityParameterMoveFwd	| eVelocityParameterStand,
-		eControllerVelocityParamsMoveBkwd		= eControllerVelocityParameterMoveBkwd	| eVelocityParameterStand,
+		eControllerVelocityParamsMoveFwd		= eControllerVelocityParameterMoveFwd	| static_cast<int>(eVelocityParameterStand),
+		eControllerVelocityParamsMoveBkwd		= eControllerVelocityParameterMoveBkwd	| static_cast<int>(eVelocityParameterStand),
 	};
 
 	enum EMovementParametersGiant {

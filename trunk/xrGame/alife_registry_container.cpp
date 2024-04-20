@@ -22,7 +22,7 @@ struct CRegistryHelperLoad {
 	}
 
 	template <>
-	IC	static void do_load<true>(T1 *self, T2 &p1)
+	IC void do_load<true>(T1 *self, T2 &p1)
 	{
 		self->Head::load(p1);
 	}
@@ -43,7 +43,7 @@ struct CRegistryHelperSave {
 	}
 
 	template <>
-	IC	static void do_save<true>(T1 *self, T2 &p1)
+	IC void do_save<true>(T1 *self, T2 &p1)
 	{
 		self->Head::save(p1);
 	}
@@ -71,7 +71,7 @@ public:
 	}
 
 	template <>
-	IC	static void go_process<Loki::NullType>(T1 *self, T2 p1)
+	IC void go_process<Loki::NullType>(T1 *self, T2 p1)
 	{
 	}
 

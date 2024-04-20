@@ -92,7 +92,7 @@ enum {
   dLastSpaceClass = dQuadTreeSpaceClass,
 
   dFirstUserClass,
-  dLastUserClass = dFirstUserClass + dMaxUserClasses - 1,
+  dLastUserClass = dFirstUserClass + static_cast<int>(dMaxUserClasses - 1),
   dGeomNumClasses
 };
 

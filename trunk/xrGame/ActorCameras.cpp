@@ -215,7 +215,7 @@ void CActor::cam_Update(float dt, float fFOV)
 	float flCurrentPlayerY	= xform.c.y;
 
 	// Smooth out stair step ups
-	if ((character_physics_support()->movement()->Environment()==peOnGround) && (flCurrentPlayerY-fPrevCamPos>0)){
+	if ((character_physics_support()->movement()->Environment() == static_cast<int>(peOnGround)) && (flCurrentPlayerY-fPrevCamPos>0)){
 		fPrevCamPos			+= dt*1.5f;
 		if (fPrevCamPos > flCurrentPlayerY)
 			fPrevCamPos		= flCurrentPlayerY;

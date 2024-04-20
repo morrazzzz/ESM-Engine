@@ -38,7 +38,7 @@ protected:
 	}
 
 	template <>
-		static  void				LoadItemData<0>  (u32 count, LPCSTR cfgRecord)
+		 void				LoadItemData<0>  (u32 count, LPCSTR cfgRecord)
 	{
 		for (u32 k = 0; k < count; k+= 1)
 		{
@@ -53,7 +53,7 @@ protected:
 	}
 
 	template <>
-		static  void				LoadItemData<1>  (u32 count, LPCSTR cfgRecord)
+		 void				LoadItemData<1>  (u32 count, LPCSTR cfgRecord)
 	{
 		for (u32 k = 0; k < count; k+= 2)
 		{

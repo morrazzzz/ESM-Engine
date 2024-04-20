@@ -79,7 +79,7 @@ struct CDestroyer {
 		}
 
 		template <>
-		IC	static void delete_data<true>(T &data)
+		IC	void delete_data<true>(T &data)
 		{
 			data.destroy();
 		}
@@ -94,7 +94,7 @@ struct CDestroyer {
 		}
 
 		template <>
-		IC	static void delete_data<true>(T &data)
+		IC void delete_data<true>(T &data)
 		{
 			if (data)
 				CDestroyer::delete_data	(*data);
@@ -123,7 +123,7 @@ struct CDestroyer {
 		}
 
 		template <>
-		IC	static void delete_data<true>(T &data)
+		IC	void delete_data<true>(T &data)
 		{
 			CHelper3::delete_data	(data);
 		}
