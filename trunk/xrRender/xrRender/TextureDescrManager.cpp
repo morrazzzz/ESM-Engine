@@ -128,9 +128,7 @@ void CTextureDescrMngr::LoadTHM()
 		texture_desc& desc		= m_texture_details[fn];
                 desc.m_type                     = tp.type;
 #endif
-		if (STextureParams::ttImage		== tp.fmt ||
-			STextureParams::ttTerrain	== tp.fmt ||
-			STextureParams::ttNormalMap	== tp.fmt	)
+		if (STextureParams::ttImage == tp.type || STextureParams::ttTerrain	== tp.type || STextureParams::ttNormalMap == tp.type)
 		{
 #ifndef _EDITOR
 		texture_desc& desc		 = m_texture_details[fn];
@@ -158,7 +156,7 @@ void CTextureDescrMngr::LoadTHM()
 				xr_delete				(desc.m_spec);
 
 			desc.m_spec					= xr_new<texture_spec>();
-			desc.m_spec->m_material		= tp.material+tp.material_weight;
+			desc.m_spec->m_material		= static_cast<int>(tp.material)+tp.material_weight;
 			
 			if(tp.bump_mode==STextureParams::tbmUse)
 				desc.m_spec->m_bump_name	= tp.bump_name;

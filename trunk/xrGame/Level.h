@@ -124,17 +124,18 @@ public:
 	virtual void				OnSessionFull			();
 	virtual void				OnConnectRejected		();
 private:
-	BOOL						m_bNeed_CrPr;
-	u32							m_dwNumSteps;
-	bool						m_bIn_CrPr;
-
 	DEF_VECTOR					(OBJECTS_LIST, CGameObject*);
+
+	CObject* pCurrentControlEntity;
 
 	OBJECTS_LIST				pObjects4CrPr;
 	OBJECTS_LIST				pActors4CrPr;
 
-	CObject*					pCurrentControlEntity;
+	BOOL						m_bNeed_CrPr;
+	u32							m_dwNumSteps;
+
 	xrServer::EConnect			m_connect_server_err;
+
 public:
 	void						AddObject_To_Objects4CrPr	(CGameObject* pObj);
 	void						AddActor_To_Actors4CrPr		(CGameObject* pActor);
@@ -147,16 +148,12 @@ private:
 	
 	void						make_NetCorrectionPrediction	();
 
-	u32							m_dwDeltaUpdate ;
+	u32							m_dwDeltaUpdate;
 	u32							m_dwLastNetUpdateTime;
 	void						UpdateDeltaUpd					( u32 LastTime );
 	void						BlockCheatLoad					()				;
 
 	BOOL						Connect2Server					(LPCSTR options);
-private:
-	bool						m_bConnectResultReceived;
-	bool						m_bConnectResult;
-	xr_string					m_sConnectResult;
 public:	
 	void						OnGameSpyChallenge				(NET_Packet* P);
 	void						OnBuildVersionChallenge			();
@@ -329,6 +326,10 @@ protected:
 	u32		m_dwCL_PingDeltaSend;
 	u32		m_dwCL_PingLastSendTime;
 	u32		m_dwRealPing;
+private:
+	bool						m_bIn_CrPr;
+	bool						m_bConnectResultReceived;
+	bool						m_bConnectResult;
 public:
 	virtual	u32				GetRealPing					() { return m_dwRealPing; };
 

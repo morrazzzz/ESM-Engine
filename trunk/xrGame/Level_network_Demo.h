@@ -70,9 +70,9 @@ private:
 	
 
 	crashhandler*				m_pOldCrashHandler;
-	bool						m_we_used_old_crach_handler;
-
 	u32							m_dwCurDemoFrame;
+
+	bool						m_we_used_old_crach_handler;
 	void						Demo_StartFrame			();
 	void						Demo_EndFrame			();
 	

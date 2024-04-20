@@ -21,7 +21,6 @@ class ui_core: public CDeviceResetNotifier
 {
 	C2DFrustum		m_2DFrustum;
 	C2DFrustum		m_2DFrustumPP;
-	bool			m_bPostprocess;
 
 	CFontManager*	m_pFontManager;
 	CUICursor*		m_pUICursor;
@@ -57,6 +56,8 @@ public:
 	virtual void	OnDeviceReset					();
 	static	bool	is_16_9_mode					();
 	shared_str		get_xml_name					(LPCSTR fn);
+private:
+	bool m_bPostprocess;
 };
 
 extern CUICursor*	GetUICursor						();

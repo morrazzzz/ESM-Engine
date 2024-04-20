@@ -29,14 +29,11 @@ private:
 	BOOL						m_jit				;
 
 #ifdef DEBUG
+protected:
+	CMemoryWriter				m_output;
 public:
 	bool						m_stack_is_ready	;
 #endif
-
-#ifdef DEBUG
-protected:
-	CMemoryWriter				m_output;
-#endif // DEBUG
 
 protected:
 	static	int					vscript_log					(ScriptStorage::ELuaMessageType tLuaMessageType, LPCSTR caFormat, va_list marker);

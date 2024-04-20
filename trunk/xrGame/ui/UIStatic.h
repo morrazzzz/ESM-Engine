@@ -166,8 +166,8 @@ public:
 
 	CUILines*				m_pLines;
 protected:
-	bool			m_bEnableTextHighlighting;
-		// ÷вет подсветки
+	CUIFrameWindow* m_pMask;
+	// ÷вет подсветки
 	u32				m_HighlightColor;
 
 	// this array of color will be useful in CUI3tButton class
@@ -175,6 +175,7 @@ protected:
 	u32  m_dwTextColor[4];
 	bool m_bUseTextColor[4]; // note: 0 index will be ignored
 
+	bool m_bEnableTextHighlighting;
 	bool m_bClipper;
 	bool m_bStretchTexture;
 	bool m_bAvailableTexture;
@@ -184,19 +185,17 @@ protected:
 	
 	Fvector2		m_TextOffset;
 
-	bool			m_bHeading;
 	float			m_fHeading;
+	bool			m_bHeading;
 
     // ƒл€ вывода текстуры с обрезанием по маске используем CUIFrameWindow
-	CUIFrameWindow	*m_pMask;
 	Fvector2		m_TextureOffset;
 
 	// ќбрезка надписи
+	Frect	m_ClipRect;
 	EElipsisPosition	m_ElipsisPos;
 	void Elipsis(const Frect &rect, EElipsisPosition elipsisPos);
 	int	m_iElipsisIndent;
-	Frect	m_ClipRect;
-
 private:
 	Frect	m_xxxRect; // need by RescaleRelative2Rect(Frect& r). it is initializes only once in Init(x,y,width,height)
 

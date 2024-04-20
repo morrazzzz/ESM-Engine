@@ -307,7 +307,7 @@ BOOL			CLevel::Connect2Server				(LPCSTR options)
 		}
 		//-----------------------------------------
 	}
-	Msg							("%c client : connection %s - <%s>", m_bConnectResult ?'*':'!', m_bConnectResult ? "accepted" : "rejected", m_sConnectResult.c_str());
+//	Msg							("%c client : connection %s - <%s>", m_bConnectResult ?'*':'!', m_bConnectResult ? "accepted" : "rejected", m_sConnectResult.c_str());
 	if		(!m_bConnectResult) 
 	{
 		OnConnectRejected	();	
@@ -373,7 +373,7 @@ void			CLevel::OnConnectResult				(NET_Packet*	P)
 			}break;		
 		}
 	};	
-	m_sConnectResult			= ResultStr;
+//	m_sConnectResult			= ResultStr;
 	
 	if (IsDemoSave())
 	{

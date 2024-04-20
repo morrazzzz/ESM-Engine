@@ -180,6 +180,11 @@ protected:
 	u32						m_dwLastClickTime;
 	u32						m_dwFocusReceiveTime;
 
+#ifdef DEBUG
+	Flags32					m_dbg_flag;
+	int m_dbg_id;
+#endif
+
 	//флаг автоматического удаления во время вызова деструктора
 	bool					m_bAutoDelete;
 
@@ -191,12 +196,6 @@ protected:
 	// Если курсор над окном
 	bool					m_bCursorOverWindow;
 	bool					m_bClickable;
-
-#ifdef DEBUG
-	int m_dbg_id;
-	Flags32					m_dbg_flag;
-#endif
-
 public:
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

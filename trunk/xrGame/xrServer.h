@@ -35,8 +35,8 @@ public:
 	
 	game_PlayerState*		ps;
 	struct{
-		u8						m_maxPingWarnings;
 		u32						m_dwLastMaxPingWarningTime;
+		u8						m_maxPingWarnings;
 	}m_ping_warn;
 	struct{
 		BOOL					m_has_admin_rights;

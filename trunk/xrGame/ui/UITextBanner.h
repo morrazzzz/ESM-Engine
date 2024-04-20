@@ -87,9 +87,6 @@ protected:
 	void EffectFade();
 	void EffectFlicker();
 
-	// ‘лаг, который определ€ет состо€ние анимации
-	bool		m_bAnimate;
-
 	// Font
 	CGameFont				*m_pFont;
 	float					fontSize;
@@ -98,6 +95,8 @@ protected:
 	// Letters color
 	u32			m_Cl;
 
+	// ‘лаг, который определ€ет состо€ние анимации
+	bool		m_bAnimate;
 };
 
 #endif

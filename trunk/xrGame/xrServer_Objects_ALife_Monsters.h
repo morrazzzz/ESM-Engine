@@ -179,30 +179,33 @@ add_to_type_list(CSE_ALifeZoneVisual)
 //---------------------------------------------------------------------------------------------------------
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeCreatureAbstract,CSE_ALifeDynamicObjectVisual)
-	u8								s_team;
-	u8								s_squad;
-	u8								s_group;
+    xr_vector<ALife::_OBJECT_ID>	m_dynamic_out_restrictions;
+    xr_vector<ALife::_OBJECT_ID>	m_dynamic_in_restrictions;
+
+	SRotation						o_torso;				// torso in world coord
+
 	float							fHealth;
 	float							m_fMorale;
 	float							m_fAccuracy;
 	float							m_fIntelligence;
 
-	u32								timestamp;				// server(game) timestamp
-	u8								flags;
 	float							o_model;				// model yaw
-	SRotation						o_torso;				// torso in world coords
-	bool							m_bDeathIsProcessed;
 
-	xr_vector<ALife::_OBJECT_ID>	m_dynamic_out_restrictions;
-	xr_vector<ALife::_OBJECT_ID>	m_dynamic_in_restrictions;
-
+	u32								timestamp;				// server(game) timestamp
 	u32								m_ef_creature_type;
 	u32								m_ef_weapon_type;
 	u32								m_ef_detector_type;
 
 	ALife::_OBJECT_ID				m_killer_id;
 	ALife::_TIME_ID					m_game_death_time;
-									
+			
+	bool							m_bDeathIsProcessed;
+
+	u8								s_team;
+	u8								s_squad;
+	u8								s_group;
+	u8								flags;
+
 									CSE_ALifeCreatureAbstract(LPCSTR caSection);
 	virtual							~CSE_ALifeCreatureAbstract();
 	virtual u8						g_team					();
@@ -229,6 +232,8 @@ add_to_type_list(CSE_ALifeCreatureAbstract)
 #define script_type_list save_type_list(CSE_ALifeCreatureAbstract)
 
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeMonsterAbstract,CSE_ALifeCreatureAbstract,CSE_ALifeSchedulable)
+    CALifeMonsterBrain* m_brain;
+
 	GameGraph::_GRAPH_ID				m_tNextGraphID;
 	GameGraph::_GRAPH_ID				m_tPrevGraphID;
 	float								m_fGoingSpeed;
@@ -246,18 +251,17 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeMonsterAbstract,CSE_ALifeCreatureAbstract,
 	shared_str							m_in_space_restrictors;
 	svector<float,ALife::eHitTypeMax>	m_fpImmunityFactors;
 
+	ALife::_TIME_ID						m_stay_after_death_time_interval;
+
 	ALife::_OBJECT_ID					m_smart_terrain_id;
 	
+	int									m_rank;
+
 	//---------------------------------------------------------
 	// bool if monster under smart terrain and currently executes task
 	// if monster on the way then (m_smart_terrain_id != 0xffff) && (!m_task_reached)
 	bool								m_task_reached;		
 	//---------------------------------------------------------
-
-	int									m_rank;
-
-	ALife::_TIME_ID						m_stay_after_death_time_interval;
-
 public:
 									CSE_ALifeMonsterAbstract(LPCSTR					caSection);
 	virtual							~CSE_ALifeMonsterAbstract();
@@ -293,10 +297,6 @@ public:
 	virtual	bool					redundant				() const;
 #endif
 	virtual bool					need_update				(CSE_ALifeDynamicObject *object);
-
-private:
-	CALifeMonsterBrain				*m_brain;
-
 public:
 SERVER_ENTITY_DECLARE_END
 add_to_type_list(CSE_ALifeMonsterAbstract)

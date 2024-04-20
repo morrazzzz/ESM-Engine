@@ -654,8 +654,10 @@ public:
 	virtual xr_string	GetDrawText		(TOnDrawTextEvent OnDrawText)
     {
         u32 draw_val 	= GetValue();
-        for(u32 i=0; i<cnt; i++) if (items[i].ID==draw_val) return items[i].str;
-        return 0;
+        for(u32 i=0; i<cnt; i++) 
+            if (items[i].ID==draw_val) 
+                return items[i].str;
+        return "";
     }
 };
 //------------------------------------------------------------------------------

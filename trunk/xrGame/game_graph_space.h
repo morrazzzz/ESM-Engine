@@ -32,11 +32,11 @@ namespace GameGraph {
 	class
 #endif
 		SLevel {
-		shared_str				m_name;
 		Fvector					m_offset;
-		_LEVEL_ID				m_id;
+		shared_str				m_name;
 		shared_str				m_section;
 		xrGUID					m_guid;
+		_LEVEL_ID				m_id;
 
 	public:
 		IC const shared_str &name		() const

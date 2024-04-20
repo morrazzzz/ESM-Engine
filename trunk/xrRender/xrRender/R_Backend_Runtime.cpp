@@ -248,7 +248,7 @@ void CBackend::set_Textures			(STextureList* _T)
 #endif	//	UDE_DX10
 		{
 			//	Set up pixel shader resources
-			VERIFY(load_id < CTexture::rstVertex+mtMaxVertexShaderTextures);
+			VERIFY(load_id < CTexture::rstVertex+static_cast<int>(mtMaxVertexShaderTextures));
 
 			// vertex only //d-map or vertex	
 			u32		load_id_remapped	= load_id - CTexture::rstVertex;

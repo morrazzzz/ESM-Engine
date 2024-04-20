@@ -459,8 +459,8 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeCar,CSE_ALifeDynamicObjectVisual,CSE_PHSke
 	{
 		void read	(NET_Packet& P);
 		void write   (NET_Packet& P);
-		u8 open_state;
 		float health;
+		u8 open_state;
 	};
 	struct SWheelState				
 	{
