@@ -3,7 +3,8 @@
 
 #include "fs_internal.h"
 
-XRCORE_API CInifile *pSettings	= NULL;
+XRCORE_API CInifile /*const*/* pSettings = NULL;
+//XRCORE_API CInifile const * pSettingsAuth	= NULL;
 
 CInifile* CInifile::Create(const char* szFileName, BOOL ReadOnly)
 {	return xr_new<CInifile>(szFileName,ReadOnly); }
@@ -322,6 +323,11 @@ u32		CInifile::line_count(LPCSTR Sname)
 	u32	C = 0;
 	for (; I!=S.Data.end(); I++)	if (*I->first) C++;
 	return  C;
+}
+
+u32	CInifile::section_count()const
+{
+	return DATA.size();
 }
 
 

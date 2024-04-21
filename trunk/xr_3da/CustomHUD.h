@@ -18,7 +18,8 @@ class CUI;
 
 class ENGINE_API CCustomHUD:
 	public DLL_Pure,
-	public IEventReceiver	
+	public IEventReceiver,
+	public pureScreenResolutionChanged
 {
 public:
 					CCustomHUD				();

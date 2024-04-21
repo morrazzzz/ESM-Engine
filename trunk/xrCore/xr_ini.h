@@ -67,6 +67,7 @@ public:
 	BOOL		line_exist		( const shared_str& S, const shared_str& L );
 	u32			line_count		( LPCSTR S			);
 	u32			line_count		( const shared_str& S	);
+	u32			section_count	( )const;
 	BOOL		section_exist	( LPCSTR S			);
 	BOOL		section_exist	( const shared_str& S	);
 	Root&		sections		( ){return DATA;}
@@ -135,7 +136,7 @@ public:
 };
 
 // Main configuration file
-extern XRCORE_API CInifile *pSettings;
-
+extern XRCORE_API CInifile /*const*/ * pSettings;
+//extern XRCORE_API CInifile const * pSettingsAuth;	
 
 #endif //__XR_INI_H__
