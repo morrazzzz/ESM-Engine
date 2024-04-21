@@ -93,6 +93,7 @@ CConsole::CConsole()
 	m_cmd_history_max = cmd_history_max;
 	m_disable_tips    = false;
 	Register_callbacks();
+	Device.seqResolutionChanged.Add(this);
 }
 
 void CConsole::Initialize()
@@ -130,6 +131,7 @@ CConsole::~CConsole()
 	xr_delete( m_hShader_back );
 	xr_delete( m_editor );
 	Destroy();
+	Device.seqResolutionChanged.Remove(this);
 }
 
 void CConsole::Destroy()

@@ -50,20 +50,33 @@ void CRenderDevice::Destroy() {
 #include "CustomHUD.h"
 void CRenderDevice::Reset		(bool precache)
 {
-	bool b_16_before	= (float)dwWidth/(float)dwHeight > (1024.0f/768.0f+0.01f);
+	u32 dwWidth_before = dwWidth;
+	u32 dwHeight_before = dwHeight;
 
 	ShowCursor				(TRUE);
 	u32 tm_start			= TimerAsync();
 
+	if (g_pGamePersistent){
+
+//.		g_pGamePersistent->Environment().OnDeviceDestroy();
+	}
+
 	m_pRender->Reset(m_hWnd, dwWidth, dwHeight, fWidth_2, fHeight_2);
 
-	g_pGamePersistent->Environment().bNeed_re_create_env = true;
-	
+	if (g_pGamePersistent)
+	{
+//.		g_pGamePersistent->Environment().OnDeviceCreate();
+		//bNeed_re_create_env = TRUE;
+		g_pGamePersistent->Environment().bNeed_re_create_env = TRUE;
+	}
 	_SetupStates			();
 	if (precache)
-		PreCache			(20);
+		PreCache			(20/*, true, false */ );
 	u32 tm_end				= TimerAsync();
 	Msg						("*** RESET [%d ms]",tm_end-tm_start);
+
+	//	TODO: Remove this! It may hide crash
+	Memory.mem_compact();
 
 #ifndef DEDICATED_SERVER
 	ShowCursor	(FALSE);
@@ -71,7 +84,8 @@ void CRenderDevice::Reset		(bool precache)
 		
 	seqDeviceReset.Process(rp_DeviceReset);
 
-	bool b_16_after	= (float)dwWidth/(float)dwHeight > (1024.0f/768.0f+0.01f);
-	if(b_16_after!=b_16_before && g_pGameLevel && g_pGameLevel->pHUD) 
-	g_pGameLevel->pHUD->OnScreenRatioChanged();
+	if (dwWidth_before != dwWidth || dwHeight_before != dwHeight)
+	{
+		seqResolutionChanged.Process(rp_ScreenResolutionChanged);
+	}
 }

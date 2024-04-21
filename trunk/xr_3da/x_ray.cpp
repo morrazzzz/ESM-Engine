@@ -9,6 +9,10 @@
 #include "igame_level.h"
 #include "igame_persistent.h"
 
+#include "dedicated_server_only.h"
+#include "no_single.h"
+//#include "../xrNetServer/NET_AuthCheck.h"
+
 #include "xr_input.h"
 #include "xr_ioconsole.h"
 #include "x_ray.h"
@@ -49,14 +53,65 @@ static int start_day	= 31;	// 31
 static int start_month	= 1;	// January
 static int start_year	= 1999;	// 1999
 
-#ifdef NDEBUG
-namespace std {
-	void _terminate()
-	{
-		abort();
+// binary hash, mainly for copy-protection
+
+#ifndef DEDICATED_SERVER
+
+#include "../xrGameSpy/gamespy/md5c.c"
+#include <ctype.h>
+
+#define DEFAULT_MODULE_HASH "3CAABCFCFF6F3A810019C6A72180F166"
+static char szEngineHash[33] = DEFAULT_MODULE_HASH;
+
+PROTECT_API char * ComputeModuleHash( char * pszHash )
+{
+	char szModuleFileName[ MAX_PATH ];
+	HANDLE hModuleHandle = NULL , hFileMapping = NULL;
+	LPVOID lpvMapping = NULL;
+	MEMORY_BASIC_INFORMATION MemoryBasicInformation;
+
+	if ( ! GetModuleFileName( NULL , szModuleFileName , MAX_PATH ) )
+		return pszHash;
+
+	hModuleHandle = CreateFile( szModuleFileName , GENERIC_READ , FILE_SHARE_READ , NULL , OPEN_EXISTING , 0 , NULL );
+
+	if ( hModuleHandle == INVALID_HANDLE_VALUE )
+		return pszHash;
+
+	hFileMapping = CreateFileMapping( hModuleHandle , NULL , PAGE_READONLY , 0 , 0 , NULL );
+
+	if ( hFileMapping == NULL ) {
+		CloseHandle( hModuleHandle );
+		return pszHash;
 	}
+
+	lpvMapping = MapViewOfFile( hFileMapping , FILE_MAP_READ , 0 , 0 , 0 );
+
+	if ( lpvMapping == NULL ) {
+		CloseHandle( hFileMapping );
+		CloseHandle( hModuleHandle );
+		return pszHash;
+	}
+
+	ZeroMemory( &MemoryBasicInformation , sizeof( MEMORY_BASIC_INFORMATION ) );
+
+	VirtualQuery( lpvMapping , &MemoryBasicInformation , sizeof( MEMORY_BASIC_INFORMATION ) );
+
+	if ( MemoryBasicInformation.RegionSize ) {
+		char szHash[33];
+		MD5Digest( ( unsigned char *)lpvMapping , (unsigned int) MemoryBasicInformation.RegionSize , szHash );
+		MD5Digest( ( unsigned char *)szHash , 32 , pszHash );
+		for ( int i = 0 ; i < 32 ; ++i )
+			pszHash[ i ] = (char)toupper( pszHash[ i ] );
+	}
+
+	UnmapViewOfFile( lpvMapping );
+	CloseHandle( hFileMapping );
+	CloseHandle( hModuleHandle );
+
+	return pszHash;
 }
-#endif // #ifdef NDEBUG
+#endif // DEDICATED_SERVER
 
 void compute_build_id	()
 {
@@ -67,7 +122,7 @@ void compute_build_id	()
 	int					years;
 	string16			month;
 	string256			buffer;
-	strcpy_s				(buffer,__DATE__);
+	xr_strcpy				(buffer,__DATE__);
 	sscanf				(buffer,"%s %d %d",month,&days,&years);
 
 	for (int i=0; i<12; i++) {
@@ -92,7 +147,7 @@ void compute_build_id	()
 //////////////////////////////////////////////////////////////////////////
 struct _SoundProcessor	: public pureFrame
 {
-	virtual void OnFrame	( )
+	virtual void	_BCL	OnFrame	( )
 	{
 		//Msg							("------------- sound: %d [%3.2f,%3.2f,%3.2f]",u32(Device.dwFrame),VPUSH(Device.vCameraPosition));
 		Device.Statistic->Sound.Begin();
@@ -113,6 +168,7 @@ string512	g_sBenchmarkName;
 
 ENGINE_API	string512		g_sLaunchOnExit_params;
 ENGINE_API	string512		g_sLaunchOnExit_app;
+ENGINE_API	string_path		g_sLaunchWorkingFolder;
 // -------------------------------------------
 // startup point
 void InitEngine		()
@@ -125,14 +181,39 @@ void InitEngine		()
 
 void InitSettings	()
 {
-	string_path					fname; 
-	FS.update_path				(fname,"$game_config$","system.ltx");
-	pSettings					= xr_new<CInifile>	(fname,TRUE);
-	CHECK_OR_EXIT				(!pSettings->sections().empty(),make_string("Cannot find file %s.\nReinstalling application may fix this problem.",fname));
+#ifndef DEDICATED_SERVER
+	Msg("EH: %s\n", ComputeModuleHash(szEngineHash));
+#endif // DEDICATED_SERVER
 
-	FS.update_path				(fname,"$game_config$","game.ltx");
-	pGameIni					= xr_new<CInifile>	(fname,TRUE);
-	CHECK_OR_EXIT				(!pGameIni->sections().empty(),make_string("Cannot find file %s.\nReinstalling application may fix this problem.",fname));
+	string_path					fname;
+	FS.update_path(fname, "$game_config$", "system.ltx");
+#ifdef DEBUG
+	Msg("Updated path to system.ltx is %s", fname);
+#endif // #ifdef DEBUG
+	pSettings = xr_new<CInifile>(fname, TRUE);
+	CHECK_OR_EXIT(0 != pSettings->section_count(), make_string("Cannot find file %s.\nReinstalling application may fix this problem.", fname));
+
+	/*
+	xr_auth_strings_t			tmp_ignore_pathes;
+	xr_auth_strings_t			tmp_check_pathes;
+	fill_auth_check_params(tmp_ignore_pathes, tmp_check_pathes);
+
+	path_excluder_predicate			tmp_excluder(&tmp_ignore_pathes);
+	CInifile::allow_include_func_t	tmp_functor;
+	tmp_functor.bind(&tmp_excluder, &path_excluder_predicate::is_allow_include);
+	pSettingsAuth = xr_new<CInifile>(
+		fname,
+		TRUE,
+		TRUE,
+		FALSE,
+		0,
+		tmp_functor
+	);
+	*/
+
+	FS.update_path(fname, "$game_config$", "game.ltx");
+	pGameIni = xr_new<CInifile>(fname, TRUE);
+	CHECK_OR_EXIT(0 != pGameIni->section_count(), make_string("Cannot find file %s.\nReinstalling application may fix this problem.", fname));
 }
 void InitConsole	()
 {
@@ -171,12 +252,24 @@ void destroyInput	()
 {
 	xr_delete					( pInput		);
 }
-void InitSound		()
+
+void InitSound()
 {
-	CSound_manager_interface::_create					(u64(Device.m_hWnd));
-//	Msg				("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-//	ref_sound*	x	= 
+	CSound_manager_interface::_create(u64(Device.m_hWnd));
+	//	Msg				("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+	//	ref_sound*	x	= 
 }
+
+PROTECT_API void InitSound1		()
+{
+	CSound_manager_interface::_create				(0);
+}
+
+PROTECT_API void InitSound2		()
+{
+	CSound_manager_interface::_create				(1);
+}
+
 void destroySound	()
 {
 	CSound_manager_interface::_destroy				( );
@@ -235,11 +328,13 @@ void CheckPrivilegySlowdown		( )
 #endif // DEBUG
 }
 
-void Startup					()
+void Startup()
 {
-	execUserScript	();
-//.	InitInput		();
-	InitSound		();
+#pragma todo("PATCH XRSOUND!!!")
+//	InitSound1();
+	execUserScript();
+	InitSound();
+//	InitSound2();
 
 	const char* preset{};
 	if (strstr(Core.Params, "-minimum"))
@@ -305,7 +400,7 @@ Memory.mem_usage();
 	Engine.Event.Dump			( );
 
 	// Destroying
-	destroySound();
+//.	destroySound();
 	destroyInput();
 
 	if(!g_bBenchmark)
@@ -317,6 +412,8 @@ Memory.mem_usage();
 		destroyConsole();
 	else
 		Console->Destroy();
+
+	destroySound();
 
 	destroyEngine();
 }
@@ -491,11 +588,45 @@ XRCORE_API DUMMY_STUFF	*g_temporary_stuff;
 
 ENGINE_API	bool g_dedicated_server	= false;
 
+#ifndef DEDICATED_SERVER
+// forward declaration for Parental Control checks
+BOOL IsPCAccessAllowed();
+#endif // DEDICATED_SERVER
+
 int APIENTRY WinMain_impl(HINSTANCE hInstance,
                      HINSTANCE hPrevInstance,
                      char *    lpCmdLine,
                      int       nCmdShow)
 {
+	#ifdef DEDICATED_SERVER
+	Debug._initialize			(true);
+#else // DEDICATED_SERVER
+	Debug._initialize			(false);
+#endif // DEDICATED_SERVER
+
+	if (!IsDebuggerPresent()) {
+
+		HMODULE const kernel32	= LoadLibrary("kernel32.dll");
+		R_ASSERT				(kernel32);
+
+		typedef BOOL (__stdcall*HeapSetInformation_type) (HANDLE, HEAP_INFORMATION_CLASS, PVOID, SIZE_T);
+		HeapSetInformation_type const heap_set_information = 
+			(HeapSetInformation_type)GetProcAddress(kernel32, "HeapSetInformation");
+		if (heap_set_information) {
+			ULONG HeapFragValue	= 2;
+#ifdef DEBUG
+			BOOL const result	= 
+#endif // #ifdef DEBUG
+				heap_set_information(
+					GetProcessHeap(),
+					HeapCompatibilityInformation,
+					&HeapFragValue,
+					sizeof(HeapFragValue)
+				);
+			VERIFY2				(result, "can't set process heap low fragmentation");
+		}
+	}
+
 //	foo();
 #ifndef DEDICATED_SERVER
 
@@ -503,6 +634,12 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 
 	if ( ( strstr( lpCmdLine , "--skipmemcheck" ) == NULL ) && IsOutOfVirtualMemory() )
 		return 0;
+
+	// Parental Control for Vista and upper
+	if ( ! IsPCAccessAllowed() ) {
+		MessageBox( NULL , "Access restricted" , "Parental Control" , MB_OK | MB_ICONERROR );
+		return 1;
+	}
 
 	// Check for another instance
 #ifdef NO_MULTI_INSTANCES
@@ -603,23 +740,20 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 		Startup	 					( );
 		Core._destroy				( );
 
-		char* _args[3];
 		// check for need to execute something external
 		if (/*xr_strlen(g_sLaunchOnExit_params) && */xr_strlen(g_sLaunchOnExit_app) ) 
 		{
-			string4096 ModuleFileName = "";		
-			GetModuleFileName(NULL, ModuleFileName, 4096);
+			//CreateProcess need to return results to next two structures
+			STARTUPINFO si;
+			PROCESS_INFORMATION pi;
+			ZeroMemory(&si, sizeof(si));
+			si.cb = sizeof(si);
+			ZeroMemory(&pi, sizeof(pi));
+			//We use CreateProcess to setup working folder
+			char const * temp_wf = (xr_strlen(g_sLaunchWorkingFolder) > 0) ? g_sLaunchWorkingFolder : NULL;
+			CreateProcess(g_sLaunchOnExit_app, g_sLaunchOnExit_params, NULL, NULL, FALSE, 0, NULL,
+				temp_wf, &si, &pi);
 
-			string4096 ModuleFilePath		= "";
-			char* ModuleName				= NULL;
-			GetFullPathName					(ModuleFileName, 4096, ModuleFilePath, &ModuleName);
-			ModuleName[0]					= 0;
-			strcat							(ModuleFilePath, g_sLaunchOnExit_app);
-			_args[0] 						= g_sLaunchOnExit_app;
-			_args[1] 						= g_sLaunchOnExit_params;
-			_args[2] 						= NULL;		
-			
-			_spawnv							(_P_NOWAIT, _args[0], _args);//, _envvar);
 		}
 #ifndef DEDICATED_SERVER
 #ifdef NO_MULTI_INSTANCES		
@@ -735,7 +869,7 @@ CApplication::CApplication()
 	eConsole = Engine.Event.Handler_Attach("KERNEL:console", this);
 
 	// levels
-	Level_Current				= 0;
+	Level_Current				= u32(-1);
 	Level_Scan					( );
 
 	// Font
@@ -811,6 +945,7 @@ void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
 			g_pGameLevel->net_Start			(op_server,op_client);
 			pApp->LoadEnd					(); 
 		}
+		FlushLog			();
 		xr_free							(op_server);
 		xr_free							(op_client);
 	} 
@@ -854,7 +989,7 @@ void CApplication::LoadBegin	()
 
 		g_appLoaded			= FALSE;
 
-		_InitializeFont		(pFontSystem,"ui_font_graffiti19_russian",0);
+		_InitializeFont		(pFontSystem,"ui_font_letterica18_russian",0);
 
 		m_pRender->LoadBegin();
 
@@ -882,9 +1017,9 @@ void CApplication::destroy_loading_shaders()
 	m_pRender->destroy_loading_shaders();
 }
 
-u32 calc_progress_color(u32, u32, int, int);
+//u32 calc_progress_color(u32, u32, int, int);
 
-void CApplication::LoadDraw		()
+PROTECT_API void CApplication::LoadDraw		()
 {
 	if(g_appLoaded)				return;
 	Device.dwFrame				+= 1;
@@ -1009,6 +1144,56 @@ int CApplication::Level_ID(LPCSTR name)
 	return -1;
 }
 
+#ifndef DEDICATED_SERVER
+// Parential control for Vista and upper
+typedef BOOL(*PCCPROC)(CHAR*);
+
+BOOL IsPCAccessAllowed()
+{
+	CHAR szPCtrlChk[MAX_PATH], szGDF[MAX_PATH], * pszLastSlash;
+	HINSTANCE hPCtrlChk = NULL;
+	PCCPROC pctrlchk = NULL;
+	BOOL bAllowed = TRUE;
+
+	if (!GetModuleFileName(NULL, szPCtrlChk, MAX_PATH))
+		return TRUE;
+
+	if ((pszLastSlash = strrchr(szPCtrlChk, '\\')) == NULL)
+		return TRUE;
+
+	*pszLastSlash = '\0';
+
+	strcpy_s(szGDF, szPCtrlChk);
+
+	strcat_s(szPCtrlChk, "\\pctrlchk.dll");
+	if (GetFileAttributes(szPCtrlChk) == INVALID_FILE_ATTRIBUTES)
+		return TRUE;
+
+	if ((pszLastSlash = strrchr(szGDF, '\\')) == NULL)
+		return TRUE;
+
+	*pszLastSlash = '\0';
+
+	strcat_s(szGDF, "\\Stalker-COP.exe");
+	if (GetFileAttributes(szGDF) == INVALID_FILE_ATTRIBUTES)
+		return TRUE;
+
+	if ((hPCtrlChk = LoadLibrary(szPCtrlChk)) == NULL)
+		return TRUE;
+
+	if ((pctrlchk = (PCCPROC)GetProcAddress(hPCtrlChk, "pctrlchk")) == NULL) {
+		FreeLibrary(hPCtrlChk);
+		return TRUE;
+	}
+
+	bAllowed = pctrlchk(szGDF);
+
+	FreeLibrary(hPCtrlChk);
+
+	return bAllowed;
+}
+#endif // DEDICATED_SERVER
+
 void doBenchmark(LPCSTR name)
 {
 	g_bBenchmark = true;
@@ -1020,10 +1205,10 @@ void doBenchmark(LPCSTR name)
 	shared_str test_command;
 	for(int i=0;i<test_count;++i){
 		ini.r_line			( "benchmark", i, &test_name, &t);
-		strcpy_s				(g_sBenchmarkName, test_name);
+		xr_strcpy				(g_sBenchmarkName, test_name);
 		
 		test_command		= ini.r_string_wb("benchmark",test_name);
-		strcpy_s			(Core.Params,*test_command);
+		xr_strcpy			(Core.Params,*test_command);
 		_strlwr_s				(Core.Params);
 		
 		InitInput					();
@@ -1037,11 +1222,11 @@ void doBenchmark(LPCSTR name)
 
 		Engine.External.Initialize	( );
 
-		strcpy_s						(Console->ConfigFile,"user.ltx");
+		xr_strcpy						(Console->ConfigFile,"user.ltx");
 		if (strstr(Core.Params,"-ltx ")) {
 			string64				c_name;
 			sscanf					(strstr(Core.Params,"-ltx ")+5,"%[^ ] ",c_name);
-			strcpy_s				(Console->ConfigFile,c_name);
+			xr_strcpy				(Console->ConfigFile,c_name);
 		}
 
 		Startup	 				();

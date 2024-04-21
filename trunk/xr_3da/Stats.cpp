@@ -133,6 +133,9 @@ void CStats::Show()
 		netClient2.FrameEnd			();
 		netServer.FrameEnd			();
 		
+		netClientCompressor.FrameEnd();
+		netServerCompressor.FrameEnd();
+
 		TEST0.FrameEnd				();
 		TEST1.FrameEnd				();
 		TEST2.FrameEnd				();
@@ -153,8 +156,8 @@ void CStats::Show()
 		fFPS = fInv*fFPS + fOne*fps;
 
 		if (RenderTOTAL.result>EPS_S) {
-			u32 renderedPolys = Device.m_pRender->GetCacheStatPolys();
-			fTPS = fInv * fTPS + fOne * float(renderedPolys) / (RenderTOTAL.result * 1000.f);
+			u32	rendered_polies = Device.m_pRender->GetCacheStatPolys();
+			fTPS = fInv * fTPS + fOne * float(rendered_polies) / (RenderTOTAL.result * 1000.f);
 			fRFPS= fInv*fRFPS+ fOne*1000.f/RenderTOTAL.result;
 		}
 	}
@@ -285,6 +288,8 @@ void CStats::Show()
 		F.OutNext	("netClientRecv:   %2.2fms, %d",	netClient1.result,netClient1.count);
 		F.OutNext	("netClientSend:   %2.2fms, %d",	netClient2.result,netClient2.count);
 		F.OutNext	("netServer:   %2.2fms, %d",		netServer.result,netServer.count);
+		F.OutNext	("netClientCompressor:   %2.2fms",	netClientCompressor.result);
+		F.OutNext	("netServerCompressor:   %2.2fms",	netServerCompressor.result);
 		F.OutSkip	();
 
 		F.OutSkip	();
@@ -463,6 +468,8 @@ void CStats::Show()
 		netClient1.FrameStart		();
 		netClient2.FrameStart		();
 		netServer.FrameStart		();
+		netClientCompressor.FrameStart();
+		netServerCompressor.FrameStart();
 
 		TEST0.FrameStart			();
 		TEST1.FrameStart			();
