@@ -86,7 +86,8 @@ void CUISequencer::Start(LPCSTR tutor_name)
 	CUIXml uiXml;
 	uiXml.Init					(CONFIG_PATH, UI_PATH, "game_tutorials.xml");
 	
-	int items_count				= uiXml.GetNodesNum	(tutor_name,0,"item");	VERIFY(items_count>0);
+	int items_count				= uiXml.GetNodesNum	(tutor_name,0,"item");	
+	VERIFY2(items_count>0, make_string("Cannot find game tutorial: %s", tutor_name));
 	uiXml.SetLocalRoot			(uiXml.NavigateToNode(tutor_name,0));
 
 	m_bPlayEachItem				= !!uiXml.ReadInt("play_each_item",0,0);
@@ -121,6 +122,9 @@ void CUISequencer::Destroy()
 	IR_Release					();
 	m_bActive					= false;
 	m_pStoredInputReceiver		= NULL;
+
+	if(!m_on_destroy_event.empty())
+		m_on_destroy_event		();
 }
 
 void CUISequencer::Stop()

@@ -295,3 +295,17 @@ void CHUDManager::net_Relcase	(CObject *object)
 	VERIFY						(m_pHUDTarget);
 	m_pHUDTarget->net_Relcase	(object);
 }
+
+void CHUDManager::OnScreenResolutionChanged()
+{
+/*
+	pUIGame->HideShownDialogs();
+
+	xr_delete(pWpnScopeXml);
+
+	pUIGame->UnLoad();
+	pUIGame->Load();
+
+	pUIGame->OnConnected();
+*/
+}

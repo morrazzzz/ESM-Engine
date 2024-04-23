@@ -17,6 +17,8 @@
 #include "igame_persistent.h"
 
 ENGINE_API CRenderDevice Device;
+ENGINE_API CLoadScreenRenderer load_screen_renderer;
+
 ENGINE_API BOOL g_bRendering = FALSE; 
 
 BOOL		g_bLoaded = FALSE;
@@ -160,23 +162,26 @@ void 			mt_Thread	(void *ptr)	{
 }
 
 #include "igame_level.h"
-void CRenderDevice::PreCache	(u32 amount)
+void CRenderDevice::PreCache	(u32 amount, bool b_draw_loadscreen, bool b_wait_user_input)
 {
-	if (m_pRender->GetForceGPU_REF())
-		amount=0;
+	if (m_pRender->GetForceGPU_REF()) amount=0;
 #ifdef DEDICATED_SERVER
 	amount = 0;
 #endif
 	// Msg			("* PCACHE: start for %d...",amount);
 	dwPrecacheFrame	= dwPrecacheTotal = amount;
-	if(amount && !precache_light && g_pGameLevel)
-	{
+	if (amount && !precache_light && g_pGameLevel && g_loading_events.empty()) {
 		precache_light					= ::Render->light_create();
 		precache_light->set_shadow		(false);
 		precache_light->set_position	(vCameraPosition);
 		precache_light->set_color		(255,255,255);
 		precache_light->set_range		(5.0f);
 		precache_light->set_active		(true);
+	}
+
+	if(amount && b_draw_loadscreen && load_screen_renderer.b_registered==false)
+	{
+		load_screen_renderer.start	(b_wait_user_input);
 	}
 }
 
@@ -518,4 +523,29 @@ void	CRenderDevice::RemoveSeqFrame	( pureFrame* f )
 {
 	seqFrameMT.Remove	( f );
 	seqFrame.Remove		( f );
+}
+
+CLoadScreenRenderer::CLoadScreenRenderer()
+	:b_registered(false)
+{}
+
+void CLoadScreenRenderer::start(bool b_user_input)
+{
+	Device.seqRender.Add(this, 0);
+	b_registered = true;
+	b_need_user_input = b_user_input;
+}
+
+void CLoadScreenRenderer::stop()
+{
+	if (!b_registered)				return;
+	Device.seqRender.Remove(this);
+	pApp->destroy_loading_shaders();
+	b_registered = false;
+	b_need_user_input = false;
+}
+
+void CLoadScreenRenderer::OnRender()
+{
+	pApp->load_draw_internal();
 }

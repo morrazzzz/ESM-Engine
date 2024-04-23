@@ -109,7 +109,7 @@ public:
 	virtual void	Destroy				();
 
 	virtual void		OnRender			();
-	virtual void /*_BCL*/	OnFrame				();
+	virtual void _BCL	OnFrame				();
 	virtual void	OnScreenResolutionChanged();
 	string64		ConfigFile;
 	bool			bVisible;
