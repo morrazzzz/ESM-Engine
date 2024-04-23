@@ -71,7 +71,7 @@ void CRenderDevice::Reset		(bool precache)
 	}
 	_SetupStates			();
 	if (precache)
-		PreCache			(20/*, true, false */ );
+		PreCache			(20, true, false);
 	u32 tm_end				= TimerAsync();
 	Msg						("*** RESET [%d ms]",tm_end-tm_start);
 

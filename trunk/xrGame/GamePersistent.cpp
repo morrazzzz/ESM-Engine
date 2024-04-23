@@ -162,7 +162,6 @@ void CGamePersistent::OnAppEnd	()
 void CGamePersistent::Start		(LPCSTR op)
 {
 	__super::Start				(op);
-	m_intro_event.bind			(this,&CGamePersistent::start_game_intro);
 }
 
 void CGamePersistent::Disconnect()
@@ -421,13 +420,50 @@ void CGamePersistent::update_logo_intro			()
 		m_intro_event			= 0;
 		xr_delete				(m_intro);
 		Console->Execute		("main_menu on");
+	}else
+    if(!m_intro)
+	{
+		m_intro_event			= 0;
 	}
+}
+
+bool allow_intro ()
+{
+	return 0 == strstr(Core.Params,"-nointro");
+}
+
+extern int g_keypress_on_start;
+void CGamePersistent::game_loaded()
+{
+	if (Device.dwPrecacheFrame <= 2)
+	{
+		if (g_pGameLevel &&
+			g_pGameLevel->bReady &&
+			(allow_intro() && g_keypress_on_start) &&
+			load_screen_renderer.b_need_user_input)
+//			m_game_params.m_e_game_type == GAME_SINGLE)
+		{
+			VERIFY(NULL == m_intro);
+			m_intro = xr_new<CUISequencer>();
+			m_intro->Start("game_loaded");
+			Msg("intro_start game_loaded");
+			m_intro->m_on_destroy_event.bind(this, &CGamePersistent::update_game_loaded);
+		}
+		m_intro_event = 0;
+	}
+}
+
+void CGamePersistent::update_game_loaded()
+{
+	xr_delete(m_intro);
+	Msg("intro_delete ::update_game_loaded"); load_screen_renderer.stop();
+	start_game_intro();
 }
 
 void CGamePersistent::start_game_intro		()
 {
 #if 1//def DEBUG
-	if (0!=strstr(Core.Params,"-nointro")){
+	if (!allow_intro()){
 		m_intro_event			= 0;
 		return;
 	}
@@ -444,8 +480,15 @@ void CGamePersistent::start_game_intro		()
 }
 void CGamePersistent::update_game_intro			()
 {
-	if(m_intro && (false==m_intro->IsActive())){
+	if(m_intro && (false==m_intro->IsActive()))
+	{
 		xr_delete				(m_intro);
+		Msg("intro_delete ::update_game_intro");
+		m_intro_event			= 0;
+	}
+	else
+	if(!m_intro)
+	{
 		m_intro_event			= 0;
 	}
 }
@@ -455,6 +498,11 @@ extern CUISequencer * g_tutorial2;
 
 void CGamePersistent::OnFrame	()
 {
+	if (Device.dwPrecacheFrame == 5 && m_intro_event.empty())
+	{
+		m_intro_event.bind(this, &CGamePersistent::game_loaded);
+	}
+
 	if(g_tutorial2){ 
 		g_tutorial2->Destroy	();
 		xr_delete				(g_tutorial2);
@@ -468,6 +516,9 @@ void CGamePersistent::OnFrame	()
 	++m_frame_counter;
 #endif
 	if (!g_dedicated_server && !m_intro_event.empty())	m_intro_event();
+
+//	if (!g_dedicated_server && Device.dwPrecacheFrame == 0 && !m_intro && m_intro_event.empty())
+//		load_screen_renderer.stop();
 
 	if(Device.dwPrecacheFrame == 0 && g_pGameLevel)
 		Discord.Update(CStringTable().translate(Level().name()).c_str(), Level().name().c_str());
