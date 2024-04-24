@@ -21,7 +21,7 @@ static std::mutex g_file_mappings_Mutex;
 #ifdef DEBUG
 	XRCORE_API	u32								g_file_mapped_memory = 0;
 	u32								g_file_mapped_count	= 0;
-	typedef std::map<u32,std::pair<u32,shared_str> >	FILE_MAPPINGS;
+	typedef xr_map<u32,std::pair<u32,shared_str>> FILE_MAPPINGS;
 	FILE_MAPPINGS					g_file_mappings;
 
 void register_file_mapping			(void *address, const u32 &size, LPCSTR file_name)
@@ -37,7 +37,7 @@ void register_file_mapping			(void *address, const u32 &size, LPCSTR file_name)
 #ifdef USE_MEMORY_MONITOR
 //	memory_monitor::monitor_alloc	(addres,size,"file mapping");
 	string512						temp;
-	sprintf_s						(temp, sizeof(temp),"file mapping: %s",file_name);
+	xr_sprintf						(temp, sizeof(temp),"file mapping: %s",file_name);
 	memory_monitor::monitor_alloc	(address,size,temp);
 #endif // USE_MEMORY_MONITOR
 }
@@ -129,7 +129,7 @@ void*  FileDownload(LPCSTR fn, u32* pdwSize)
 
 typedef char MARK[9];
 IC void mk_mark(MARK& M, const char* S)
-{	strncpy(M,S,8); }
+{	strncpy_s(M, sizeof M, S,8); }
 
 void  FileCompress	(const char *fn, const char* sign, void* data, u32 size)
 {

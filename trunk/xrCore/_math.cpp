@@ -228,7 +228,7 @@ namespace CPU
 //------------------------------------------------------------------------------------
 void _initialize_cpu	(void) 
 {
-	Msg("* Detected CPU: %s %s, F%d/M%d/S%d, %.2f mhz, %d-clk 'rdtsc'",
+	Msg("* Detected CPU: %s [%s], F%d/M%d/S%d, %.2f mhz, %d-clk 'rdtsc'",
 		CPU::ID.v_name,CPU::ID.model_name,
 		CPU::ID.family,CPU::ID.model,CPU::ID.stepping,
 		float(CPU::clk_per_second/u64(1000000)),

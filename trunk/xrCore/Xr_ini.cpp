@@ -3,8 +3,7 @@
 
 #include "fs_internal.h"
 
-XRCORE_API CInifile /*const*/* pSettings = NULL;
-//XRCORE_API CInifile const * pSettingsAuth	= NULL;
+XRCORE_API CInifile const * pSettings = NULL;
 
 CInifile* CInifile::Create(const char* szFileName, BOOL ReadOnly)
 {	return xr_new<CInifile>(szFileName,ReadOnly); }
@@ -302,13 +301,13 @@ bool	CInifile::save_as( LPCSTR new_fname )
     return false;
 }
 
-BOOL	CInifile::section_exist( LPCSTR S )
+BOOL	CInifile::section_exist( LPCSTR S ) const
 {
-	RootIt I = std::lower_bound(DATA.begin(),DATA.end(),S,sect_pred);
+	RootCIt I = std::lower_bound(DATA.begin(),DATA.end(),S,sect_pred);
 	return (I!=DATA.end() && xr_strcmp(*(*I)->Name,S)==0);
 }
 
-BOOL	CInifile::line_exist( LPCSTR S, LPCSTR L )
+BOOL	CInifile::line_exist( LPCSTR S, LPCSTR L ) const
 {
 	if (!section_exist(S)) return FALSE;
 	Sect&	I = r_section(S);
@@ -316,7 +315,7 @@ BOOL	CInifile::line_exist( LPCSTR S, LPCSTR L )
 	return (A!=I.Data.end() && xr_strcmp(*A->first,L)==0);
 }
 
-u32		CInifile::line_count(LPCSTR Sname)
+u32		CInifile::line_count(LPCSTR Sname) const
 {
 	Sect&	S = r_section(Sname);
 	SectCIt	I = S.Data.begin();
@@ -332,26 +331,26 @@ u32	CInifile::section_count()const
 
 
 //--------------------------------------------------------------------------------------
-CInifile::Sect&	CInifile::r_section		( const shared_str& S	)					{ return	r_section(*S);		}
-BOOL			CInifile::line_exist	( const shared_str& S, const shared_str& L )	{ return	line_exist(*S,*L);	}
-u32				CInifile::line_count	( const shared_str& S	)					{ return	line_count(*S);		}
-BOOL			CInifile::section_exist	( const shared_str& S	)					{ return	section_exist(*S);	}
+CInifile::Sect&	CInifile::r_section		( const shared_str& S	)const					{ return	r_section(*S);		}
+BOOL			CInifile::line_exist	( const shared_str& S, const shared_str& L )const	{ return	line_exist(*S,*L);	}
+u32				CInifile::line_count	( const shared_str& S	)const					{ return	line_count(*S);		}
+BOOL			CInifile::section_exist	( const shared_str& S	)const					{ return	section_exist(*S);	}
 
 //--------------------------------------------------------------------------------------
 // Read functions
 //--------------------------------------------------------------------------------------
-CInifile::Sect& CInifile::r_section( LPCSTR S )
+CInifile::Sect& CInifile::r_section( LPCSTR S ) const
 {
 	char	section[256]; strcpy_s(section,sizeof(section),S); strlwr(section);
-	RootIt I = std::lower_bound(DATA.begin(),DATA.end(),section,sect_pred);
+	RootCIt I = std::lower_bound(DATA.begin(),DATA.end(),section,sect_pred);
 	if (!(I!=DATA.end() && xr_strcmp(*(*I)->Name,section)==0))
 		Debug.fatal(DEBUG_INFO,"Can't open section '%s'",S);
 	return	**I;
 }
 
-LPCSTR	CInifile::r_string(LPCSTR S, LPCSTR L)
+LPCSTR	CInifile::r_string(LPCSTR S, LPCSTR L) const
 {
-	Sect&	I = r_section(S);
+	Sect const&	I = r_section(S);
 	SectCIt	A = std::lower_bound(I.Data.begin(),I.Data.end(),L,item_pred);
 	if (A!=I.Data.end() && xr_strcmp(*A->first,L)==0)	return *A->second;
 	else
@@ -359,7 +358,8 @@ LPCSTR	CInifile::r_string(LPCSTR S, LPCSTR L)
 	return 0;
 }
 
-shared_str		CInifile::r_string_wb(LPCSTR S, LPCSTR L)	{
+shared_str		CInifile::r_string_wb(LPCSTR S, LPCSTR L)const
+{
 	LPCSTR		_base		= r_string(S,L);
 	
 	if	(0==_base)					return	shared_str(0);
@@ -373,49 +373,59 @@ shared_str		CInifile::r_string_wb(LPCSTR S, LPCSTR L)	{
 	return									shared_str(_original);
 }
 
-u8 CInifile::r_u8(LPCSTR S, LPCSTR L)
+u8 CInifile::r_u8(LPCSTR S, LPCSTR L)const
 {
 	LPCSTR		C = r_string(S,L);
 	return		u8(atoi(C));
 }
-u16 CInifile::r_u16(LPCSTR S, LPCSTR L)
+u16 CInifile::r_u16(LPCSTR S, LPCSTR L)const
 {
 	LPCSTR		C = r_string(S,L);
 	return		u16(atoi(C));
 }
-u32 CInifile::r_u32(LPCSTR S, LPCSTR L)
+u32 CInifile::r_u32(LPCSTR S, LPCSTR L)const
 {
 	LPCSTR		C = r_string(S,L);
 	return		u32(atoi(C));
 }
-s8 CInifile::r_s8(LPCSTR S, LPCSTR L)
+u64 CInifile::r_u64(LPCSTR S, LPCSTR L)const
+{
+	LPCSTR C = r_string(S, L);
+	return u64(atoi(C));
+}
+s8 CInifile::r_s8(LPCSTR S, LPCSTR L)const
 {
 	LPCSTR		C = r_string(S,L);
 	return		s8(atoi(C));
 }
-s16 CInifile::r_s16(LPCSTR S, LPCSTR L)
+s16 CInifile::r_s16(LPCSTR S, LPCSTR L)const
 {
 	LPCSTR		C = r_string(S,L);
 	return		s16(atoi(C));
 }
-s32 CInifile::r_s32(LPCSTR S, LPCSTR L)
+s32 CInifile::r_s32(LPCSTR S, LPCSTR L)const
 {
 	LPCSTR		C = r_string(S,L);
 	return		s32(atoi(C));
 }
-float CInifile::r_float(LPCSTR S, LPCSTR L)
+s64 CInifile::r_s64(LPCSTR S, LPCSTR L)const
+{
+	LPCSTR C = r_string(S, L);
+	return s64(atoi(C));
+}
+float CInifile::r_float(LPCSTR S, LPCSTR L)const
 {
 	LPCSTR		C = r_string(S,L);
 	return		float(atof( C ));
 }
-Fcolor CInifile::r_fcolor( LPCSTR S, LPCSTR L )
+Fcolor CInifile::r_fcolor( LPCSTR S, LPCSTR L )const
 {
 	LPCSTR		C = r_string(S,L);
 	Fcolor		V={0,0,0,0};
 	sscanf		(C,"%f,%f,%f,%f",&V.r,&V.g,&V.b,&V.a);
 	return V;
 }
-u32 CInifile::r_color( LPCSTR S, LPCSTR L )
+u32 CInifile::r_color( LPCSTR S, LPCSTR L )const
 {
 	LPCSTR		C = r_string(S,L);
 	u32			r=0,g=0,b=0,a=255;
@@ -423,62 +433,63 @@ u32 CInifile::r_color( LPCSTR S, LPCSTR L )
 	return color_rgba(r,g,b,a);
 }
 
-Ivector2 CInifile::r_ivector2( LPCSTR S, LPCSTR L )
+Ivector2 CInifile::r_ivector2( LPCSTR S, LPCSTR L )const
 {
 	LPCSTR		C = r_string(S,L);
 	Ivector2	V={0,0};
 	sscanf		(C,"%d,%d",&V.x,&V.y);
 	return V;
 }
-Ivector3 CInifile::r_ivector3( LPCSTR S, LPCSTR L )
+Ivector3 CInifile::r_ivector3( LPCSTR S, LPCSTR L )const
 {
 	LPCSTR		C = r_string(S,L);
 	Ivector		V={0,0,0};
 	sscanf		(C,"%d,%d,%d",&V.x,&V.y,&V.z);
 	return V;
 }
-Ivector4 CInifile::r_ivector4( LPCSTR S, LPCSTR L )
+Ivector4 CInifile::r_ivector4( LPCSTR S, LPCSTR L )const
 {
 	LPCSTR		C = r_string(S,L);
 	Ivector4	V={0,0,0,0};
 	sscanf		(C,"%d,%d,%d,%d",&V.x,&V.y,&V.z,&V.w);
 	return V;
 }
-Fvector2 CInifile::r_fvector2( LPCSTR S, LPCSTR L )
+Fvector2 CInifile::r_fvector2( LPCSTR S, LPCSTR L )const
 {
 	LPCSTR		C = r_string(S,L);
 	Fvector2	V={0.f,0.f};
 	sscanf		(C,"%f,%f",&V.x,&V.y);
 	return V;
 }
-Fvector3 CInifile::r_fvector3( LPCSTR S, LPCSTR L )
+Fvector3 CInifile::r_fvector3( LPCSTR S, LPCSTR L )const
 {
 	LPCSTR		C = r_string(S,L);
 	Fvector3	V={0.f,0.f,0.f};
 	sscanf		(C,"%f,%f,%f",&V.x,&V.y,&V.z);
 	return V;
 }
-Fvector4 CInifile::r_fvector4( LPCSTR S, LPCSTR L )
+Fvector4 CInifile::r_fvector4( LPCSTR S, LPCSTR L )const
 {
 	LPCSTR		C = r_string(S,L);
 	Fvector4	V={0.f,0.f,0.f,0.f};
 	sscanf		(C,"%f,%f,%f,%f",&V.x,&V.y,&V.z,&V.w);
 	return V;
 }
-BOOL	CInifile::r_bool( LPCSTR S, LPCSTR L )
+BOOL	CInifile::r_bool( LPCSTR S, LPCSTR L )const
 {
 	LPCSTR		C = r_string(S,L);
 	char		B[8];
-	strncpy		(B,C,7);
+	strncpy_s		(B,C,7);
+	B[7]		= 0;
 	strlwr		(B);
     return 		IsBOOL(B);
 }
-CLASS_ID CInifile::r_clsid( LPCSTR S, LPCSTR L)
+CLASS_ID CInifile::r_clsid( LPCSTR S, LPCSTR L)const
 {
 	LPCSTR		C = r_string(S,L);
 	return		TEXT2CLSID(C);
 }
-int		CInifile::r_token	( LPCSTR S, LPCSTR L, const xr_token *token_list)
+int		CInifile::r_token	( LPCSTR S, LPCSTR L, const xr_token *token_list)const
 {
 	LPCSTR		C = r_string(S,L);
 	for( int i=0; token_list[i].name; i++ )
@@ -486,7 +497,7 @@ int		CInifile::r_token	( LPCSTR S, LPCSTR L, const xr_token *token_list)
 			return token_list[i].id;
 	return 0;
 }
-BOOL	CInifile::r_line( LPCSTR S, int L, const char** N, const char** V )
+BOOL	CInifile::r_line( LPCSTR S, int L, const char** N, const char** V )const
 {
 	Sect&	SS = r_section(S);
 	if (L>=(int)SS.Data.size() || L<0 ) return FALSE;
@@ -498,7 +509,7 @@ BOOL	CInifile::r_line( LPCSTR S, int L, const char** N, const char** V )
 		}
 	return FALSE;
 }
-BOOL	CInifile::r_line( const shared_str& S, int L, const char** N, const char** V )
+BOOL	CInifile::r_line( const shared_str& S, int L, const char** N, const char** V )const
 {
 	return r_line(*S,L,N,V);
 }
@@ -511,10 +522,12 @@ void	CInifile::w_string	( LPCSTR S, LPCSTR L, LPCSTR			V, LPCSTR comment)
 	R_ASSERT	(!bReadOnly);
 
 	// section
-	char	sect	[256];
-	_parse	(sect,S);
-	_strlwr	(sect);
-	if (!section_exist(sect))	{
+	string256			sect;
+	_parse				(sect,S);
+	_strlwr				(sect);
+
+	if (!section_exist(sect))	
+	{
 		// create _new_ section
 		Sect			*NEW = xr_new<Sect>();
 		NEW->Name		= sect;
@@ -562,6 +575,11 @@ void	CInifile::w_u32			( LPCSTR S, LPCSTR L, u32				V, LPCSTR comment )
 	string128 temp; sprintf_s		(temp,sizeof(temp),"%d",V);
 	w_string	(S,L,temp,comment);
 }
+void CInifile::w_u64(LPCSTR S, LPCSTR L, u64 V, LPCSTR comment)
+{
+	string128 temp; sprintf_s(temp, sizeof temp, "%d", V);
+	w_string(S, L, temp, comment);
+}
 void	CInifile::w_s8			( LPCSTR S, LPCSTR L, s8				V, LPCSTR comment )
 {
 	string128 temp; sprintf_s		(temp,sizeof(temp),"%d",V);
@@ -576,6 +594,11 @@ void	CInifile::w_s32			( LPCSTR S, LPCSTR L, s32				V, LPCSTR comment )
 {
 	string128 temp; sprintf_s		(temp,sizeof(temp),"%d",V);
 	w_string	(S,L,temp,comment);
+}
+void CInifile::w_s64(LPCSTR S, LPCSTR L, s64 V, LPCSTR comment)
+{
+	string128 temp; sprintf_s(temp, sizeof temp, "%d", V);
+	w_string(S, L, temp, comment);
 }
 void	CInifile::w_float		( LPCSTR S, LPCSTR L, float				V, LPCSTR comment )
 {
