@@ -24,7 +24,8 @@
 #include "../xr_3da/igame_persistent.h"
 
 #ifdef DEBUG
-#	include "debug_renderer.h"
+#include "level_debug.h"
+#include "debug_renderer.h"
 #endif
 
 #define ITEM_REMOVE_TIME		30000
@@ -219,15 +220,12 @@ void CInventoryItem::OnH_A_Chield()
 {
 	inherited::OnH_A_Chield		();
 }
-#ifdef DEBUG
-extern	Flags32	dbg_net_Draw_Flags;
-#endif
 
 void CInventoryItem::UpdateCL()
 {
 #ifdef DEBUG
 	if(bDebug){
-		if (dbg_net_Draw_Flags.test(1<<4) )
+		if (dbg_net_Draw_Flags.test(dbg_draw_invitem))
 		{
 			Device.seqRender.Remove(this);
 			Device.seqRender.Add(this);
@@ -969,7 +967,8 @@ void CInventoryItem::OnRender()
 {
 	if (bDebug && object().Visual())
 	{
-		if (!(dbg_net_Draw_Flags.is_any((1<<4)))) return;
+		if (!(dbg_net_Draw_Flags.is_any(dbg_draw_invitem)))
+			return;
 
 		Fvector bc,bd; 
 		object().Visual()->getVisData().box.get_CD(bc, bd);

@@ -14,6 +14,10 @@
 #include "../xr_3da/XR_IOConsole.h"
 #include "ui/UIInventoryUtilities.h"
 
+#ifdef DEBUG
+#include "level_debug.h"
+#endif
+
 xrClientData::xrClientData	():IClient(Device.GetTimerGlobal())
 {
 	ps					= Level().Server->game->createPlayerState();
@@ -735,7 +739,8 @@ CSE_Abstract*	xrServer::entity_Create		(LPCSTR name)
 void			xrServer::entity_Destroy	(CSE_Abstract *&P)
 {
 #ifdef DEBUG
-	Msg							("xrServer::entity_Destroy : [%d][%s][%s]",P->ID,P->name(),P->name_replace());
+	if (dbg_net_Draw_Flags.test(dbg_destroy))
+		Msg("xrServer::entity_Destroy : [%d][%s][%s]", P->ID, P->name(), P->name_replace());
 #endif
 	R_ASSERT					(P);
 	entities.erase				(P->ID);

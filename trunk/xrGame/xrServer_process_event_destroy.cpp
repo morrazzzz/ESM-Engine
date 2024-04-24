@@ -8,6 +8,10 @@
 #include "ai_space.h"
 #include "alife_object_registry.h"
 
+#ifdef DEBUG
+#include "level_debug.h"
+#endif
+
 xr_string xrServer::ent_name_safe(u16 eid)
 {
 	string1024						buff;
@@ -26,7 +30,8 @@ void xrServer::Process_event_destroy	(NET_Packet& P, ClientID sender, u32 time, 
 	// Parse message
 	u16								id_dest	= ID;
 #ifdef DEBUG
-	Msg								("sv destroy object %s [%d]", ent_name_safe(id_dest).c_str(), Device.dwFrame);
+	if (dbg_net_Draw_Flags.test(dbg_destroy))
+		Msg("sv destroy object %s [%d]", ent_name_safe(id_dest).c_str(), Device.dwFrame);
 #endif
 
 	CSE_Abstract*					e_dest = game->get_entity_from_eid	(id_dest);	// кто должен быть уничтожен

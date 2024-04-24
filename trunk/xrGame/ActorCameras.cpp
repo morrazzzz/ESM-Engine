@@ -3,6 +3,7 @@
 #include "../xr_3da/CameraBase.h"
 #ifdef DEBUG
 #include "PHDebug.h"
+#include "level_debug.h"
 #endif
 #include "Car.h"
 
@@ -348,13 +349,12 @@ void CActor::update_camera (CCameraShotEffector* effector)
 
 #ifdef DEBUG
 void dbg_draw_frustum (float FOV, float _FAR, float A, Fvector &P, Fvector &D, Fvector &U);
-extern	Flags32	dbg_net_Draw_Flags;
 
 void CActor::OnRender	()
 {
 	if (!bDebug)				return;
 
-	if ((dbg_net_Draw_Flags.is_any((1<<5))))
+	if ((dbg_net_Draw_Flags.is_any(dbg_draw_actor_phys)))
 		character_physics_support()->movement()->dbg_Draw	();
 
 	OnRender_Network();

@@ -6,13 +6,11 @@
 #include "MathUtils.h"
 
 #ifdef DEBUG
-#	include "debug_renderer.h"
-#	include "level.h"
-#	include "PHDebug.h"
-#endif
-
-#ifdef DEBUG
-#	include "debug_renderer.h"
+#include "debug_renderer.h"
+#include "level.h"
+#include "level_debug.h"
+#include "PHDebug.h"
+#include "debug_renderer.h"
 #endif
 
 static const float down_leader_extension_tolerance=0.2f;
@@ -351,10 +349,10 @@ void CClimableObject::ObjectContactCallback(bool&	do_colide,bool bo1,dContact& c
 	
 }
 #ifdef DEBUG
-extern	Flags32	dbg_net_Draw_Flags;
 void CClimableObject ::OnRender()
 {
-	if (!dbg_net_Draw_Flags.test(1<<10)&&!ph_dbg_draw_mask.test(phDbgLadder)) return;
+	if (!dbg_net_Draw_Flags.test(dbg_draw_climbable) && !ph_dbg_draw_mask.test(phDbgLadder))
+		return;
 
 	Fmatrix form;m_box.xform_get(form);
 	//form.mulA(XFORM());

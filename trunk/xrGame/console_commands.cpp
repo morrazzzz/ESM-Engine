@@ -31,9 +31,10 @@
 #include "level_graph.h"
 
 #ifdef DEBUG
-#	include "PHDebug.h"
-#	include "ui/UIDebugFonts.h" 
-#	include "game_graph.h"
+#include "PHDebug.h"
+#include "level_debug.h"
+#include "ui/UIDebugFonts.h" 
+#include "game_graph.h"
 #include "../include/xrRender/Kinematics.h"
 #endif // DEBUG
 
@@ -78,9 +79,6 @@ int				g_keypress_on_start = 1;
 		BOOL	g_bCheckTime			= FALSE;
 		int		net_cl_inputupdaterate	= 50;
 		Flags32	g_mt_config				= {mtLevelPath | mtDetailPath | mtObjectHandler | mtSoundPlayer | mtAiVision | mtBullets | mtLUA_GC | mtLevelSounds | mtALife | mtMap};
-#ifdef DEBUG
-		Flags32	dbg_net_Draw_Flags		= {0};
-#endif
 
 #ifdef DEBUG
 		BOOL	g_bDebugNode			= FALSE;
@@ -1608,18 +1606,18 @@ void CCC_RegisterCommands()
 	CMD1(CCC_ShowSmartCastStats,	"show_smart_cast_stats");
 	CMD1(CCC_ClearSmartCastStats,	"clear_smart_cast_stats");
 
-	CMD3(CCC_Mask,		"dbg_draw_actor_alive",		&dbg_net_Draw_Flags,	(1<<0));
-	CMD3(CCC_Mask,		"dbg_draw_actor_dead",		&dbg_net_Draw_Flags,	(1<<1));
-	CMD3(CCC_Mask,		"dbg_draw_customzone",		&dbg_net_Draw_Flags,	(1<<2));
-	CMD3(CCC_Mask,		"dbg_draw_teamzone",		&dbg_net_Draw_Flags,	(1<<3));
-	CMD3(CCC_Mask,		"dbg_draw_invitem",			&dbg_net_Draw_Flags,	(1<<4));
-	CMD3(CCC_Mask,		"dbg_draw_actor_phys",		&dbg_net_Draw_Flags,	(1<<5));
-	CMD3(CCC_Mask,		"dbg_draw_customdetector",	&dbg_net_Draw_Flags,	(1<<6));
-	CMD3(CCC_Mask,		"dbg_destroy",				&dbg_net_Draw_Flags,	(1<<7));
-	CMD3(CCC_Mask,		"dbg_draw_autopickupbox",	&dbg_net_Draw_Flags,	(1<<8));
-	CMD3(CCC_Mask,		"dbg_draw_rp",				&dbg_net_Draw_Flags,	(1<<9));
-	CMD3(CCC_Mask,		"dbg_draw_climbable",		&dbg_net_Draw_Flags,	(1<<10));
-	CMD3(CCC_Mask,		"dbg_draw_skeleton",		&dbg_net_Draw_Flags,	(1<<11));
+	CMD3(CCC_Mask,		"dbg_draw_actor_alive",		&dbg_net_Draw_Flags,	dbg_draw_actor_alive);
+	CMD3(CCC_Mask,		"dbg_draw_actor_dead",		&dbg_net_Draw_Flags,	dbg_draw_actor_dead);
+	CMD3(CCC_Mask,		"dbg_draw_customzone",		&dbg_net_Draw_Flags,	dbg_draw_customzone);
+	CMD3(CCC_Mask,		"dbg_draw_teamzone",		&dbg_net_Draw_Flags,	dbg_draw_teamzone);
+	CMD3(CCC_Mask,		"dbg_draw_invitem",			&dbg_net_Draw_Flags,	dbg_draw_invitem);
+	CMD3(CCC_Mask,		"dbg_draw_actor_phys",		&dbg_net_Draw_Flags,	dbg_draw_actor_phys);
+	CMD3(CCC_Mask,		"dbg_draw_customdetector",	&dbg_net_Draw_Flags,	dbg_draw_customdetector);
+	CMD3(CCC_Mask,		"dbg_destroy",				&dbg_net_Draw_Flags,	dbg_destroy);
+	CMD3(CCC_Mask,		"dbg_draw_autopickupbox",	&dbg_net_Draw_Flags,	dbg_draw_autopickupbox);
+	CMD3(CCC_Mask,		"dbg_draw_rp",				&dbg_net_Draw_Flags,	dbg_draw_rp);
+	CMD3(CCC_Mask,		"dbg_draw_climbable",		&dbg_net_Draw_Flags,	dbg_draw_climbable);
+	CMD3(CCC_Mask,		"dbg_draw_skeleton",		&dbg_net_Draw_Flags,	dbg_draw_skeleton);
 
 
 	CMD3(CCC_Mask,		"dbg_draw_ph_contacts",			&ph_dbg_draw_mask,	phDbgDrawContacts);
