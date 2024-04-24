@@ -4,13 +4,9 @@
 #include "../xr_3da/xr_object.h"
 #include "level.h"
 #include "HUDManager.h"
-#endif
+#include "debug_renderer.h"
 
-#ifdef DEBUG
-#	include "debug_renderer.h"
-#endif
-
-#ifdef DEBUG
+Flags32 dbg_net_Draw_Flags = { 0 };
 
 CLevelDebug::CLevelDebug()
 {

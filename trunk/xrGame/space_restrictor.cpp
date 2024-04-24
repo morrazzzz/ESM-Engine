@@ -16,7 +16,8 @@
 #include "CustomZone.h"
 
 #ifdef DEBUG
-#	include "debug_renderer.h"
+#include "debug_renderer.h"
+#include "level_debug.h"
 #endif
 
 CSpaceRestrictor::~CSpaceRestrictor	()
@@ -204,12 +205,12 @@ continue_loop:
 #include "customzone.h"
 #include "hudmanager.h"
 
-extern	Flags32	dbg_net_Draw_Flags;
-
 void CSpaceRestrictor::OnRender	()
 {
-	if(!bDebug) return;
-	if (!(dbg_net_Draw_Flags.is_any((1<<2)))) return;
+	if(!bDebug) 
+		return;
+	if (!(dbg_net_Draw_Flags.is_any(dbg_draw_customzone))) 
+		return;
 	DRender->OnFrameEnd();
 	Fvector l_half; l_half.set(.5f, .5f, .5f);
 	Fmatrix l_ball, l_box;
