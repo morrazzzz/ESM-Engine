@@ -4,7 +4,6 @@
 using std::swap;
 
 #include <type_traits>
-#include "buffer_vector.h"
 
 #ifdef	__BORLANDC__
 #define M_NOSTDCONTAINERS_EXT
@@ -24,6 +23,7 @@ using std::swap;
 #define xr_set std::set
 #define xr_multiset std::multiset
 #define xr_map std::map
+#define xr_hash_map std::hash_map
 #define xr_multimap std::multimap
 #define xr_string std::string
 
@@ -139,8 +139,8 @@ public:
 	void	clear				()									{ clear_not_free	();			}
 #endif
 
-	typename inherited::const_reference operator[]	(typename inherited::size_type _Pos) const				{ {VERIFY(_Pos<size());} return (*(inherited::begin() + _Pos)); }
-	typename inherited::reference operator[]		(typename inherited::size_type _Pos)					{ {VERIFY(_Pos<size());} return (*(inherited::begin() + _Pos)); }
+	typename inherited::const_reference operator[]	(typename inherited::size_type _Pos) const				{ {VERIFY2(_Pos<size(), make_string("index is out of range: index requested[%d], size of container[%d]", _Pos, size()).c_str());} return (*(inherited::begin() + _Pos)); }
+	typename inherited::reference operator[]		(typename inherited::size_type _Pos)					{ {VERIFY2(_Pos<size(), make_string("index is out of range: index requested[%d], size of container[%d]", _Pos, size()).c_str());} return (*(inherited::begin() + _Pos)); }
 };
 
 // vector<bool>
@@ -236,6 +236,7 @@ struct pred_stri {
 #define DEFINE_STACK(T,N)			typedef xr_stack< T > N;
 
 #include "FixedVector.h"
+#include "buffer_vector.h"
 
 // auxilary definition
 DEFINE_VECTOR(bool,boolVec,boolIt);
@@ -251,7 +252,7 @@ DEFINE_VECTOR(Fcolor,FcolorVec,FcolorIt);
 DEFINE_VECTOR(Fcolor*,LPFcolorVec,LPFcolorIt);
 DEFINE_VECTOR(LPSTR,LPSTRVec,LPSTRIt);
 DEFINE_VECTOR(LPCSTR,LPCSTRVec,LPCSTRIt);
-//DEFINE_VECTOR(string64,string64Vec,string64It);
+DEFINE_VECTOR(string64,string64Vec,string64It);
 DEFINE_VECTOR(xr_string,SStringVec,SStringVecIt);
 
 DEFINE_VECTOR(s8,S8Vec,S8It);
