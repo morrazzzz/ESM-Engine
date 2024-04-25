@@ -309,3 +309,36 @@ void CHUDManager::OnScreenResolutionChanged()
 	pUIGame->OnConnected();
 */
 }
+
+bool   CHUDManager::RenderActiveItemUIQuery()
+{
+	return 0;
+}
+
+void   CHUDManager::RenderActiveItemUI()
+{
+}
+
+//restore????
+/*
+#include "player_hud.h"
+bool   CHUDManager::RenderActiveItemUIQuery()
+{
+	if (!psHUD_Flags.is(HUD_DRAW_RT2))
+		return false;
+
+	if (!psHUD_Flags.is(HUD_WEAPON|HUD_WEAPON_RT|HUD_WEAPON_RT2))return false;
+
+	if(!need_render_hud())			return false;
+
+	return (g_player_hud && g_player_hud->render_item_ui_query() );
+}
+
+void   CHUDManager::RenderActiveItemUI()
+{
+	if (!psHUD_Flags.is(HUD_DRAW_RT2))
+		return;
+
+	g_player_hud->render_item_ui		();
+}
+*/
