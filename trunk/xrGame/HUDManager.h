@@ -76,5 +76,10 @@ public:
 	virtual void			OnScreenRatioChanged();
 	virtual void			OnDisconnected		();
 	virtual void			OnConnected			();
+
+	virtual void			RenderActiveItemUI	();
+	virtual bool			RenderActiveItemUIQuery();
+
+
 	virtual void			net_Relcase			(CObject *object);
 };
