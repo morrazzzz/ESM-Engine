@@ -117,7 +117,7 @@ public:
 	shared_str													c_lmaterial		;
 	float														o_hemi			;
 	float														o_sun			;
-	IDirect3DQuery9*											q_sync_point[2]	;
+	IDirect3DQuery9*											q_sync_point[CHWCaps::MAX_GPUS]	;
 	u32															q_sync_count	;
 private:
 	// Loading / Unloading

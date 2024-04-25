@@ -86,7 +86,7 @@ void	CRenderTarget::phase_luminance()
 	}
 
 	// 222: Perform LUM-SAT, pass 2, 8x8 => 1x1
-	u32			gpu_id	= Device.dwFrame%2;
+	u32			gpu_id	= Device.dwFrame%HW.Caps.iGPUNum;
 	u_setrt		(rt_LUM_pool[gpu_id*2+1],NULL,NULL,NULL);
 	{
 		// Build filter-kernel
