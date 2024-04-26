@@ -4,8 +4,8 @@
 #include	"../../xr_3da/render.h"
 #include	"ResourceManager.h"
 #include	"tss.h"
-#include	"..\xrRender\xrRender\blenders\blender.h"
-#include	"..\xrRender\xrRender\blenders\blender_recorder.h"
+#include	"blenders\blender.h"
+#include	"blenders\blender_recorder.h"
 #include	"../../xr_3da/ai_script_space.h"
 #include	"../../xr_3da/ai_script_lua_extension.h"
 #include	"luabind/return_reference_to_policy.hpp"
@@ -69,6 +69,7 @@ public:
 	adopt_compiler&			_ZB				(bool	_test,	bool _write)			{	C->PassSET_ZB		(_test,_write);			return	*this;		}
 	adopt_compiler&			_blend			(bool	_blend, u32 abSRC, u32 abDST)	{	C->PassSET_ablend_mode(_blend,abSRC,abDST);	return 	*this;		}
 	adopt_compiler&			_aref			(bool	_aref,  u32 aref)				{	C->PassSET_ablend_aref(_aref,aref);			return 	*this;		}
+	adopt_compiler&			_color_write_enable (bool cR, bool cG, bool cB, bool cA)		{	C->r_ColorWriteEnable(cR, cG, cB, cA);		return	*this;		}
 	adopt_sampler			_sampler		(LPCSTR _name)							{	u32 s = C->r_Sampler(_name,0);				return	adopt_sampler(C,s);	}
 };
 
@@ -212,6 +213,7 @@ void	CResourceManager::LS_Load			()
 		    .def("zb", &adopt_compiler::_ZB, return_reference_to<1>())
 		    .def("blend", &adopt_compiler::_blend, return_reference_to<1>())
 		    .def("aref", &adopt_compiler::_aref, return_reference_to<1>())
+		    .def("color_write_enable",			&adopt_compiler::_color_write_enable,return_reference_to<1>())
 			.def("sampler",						&adopt_compiler::_sampler		),	// returns sampler-object
 
 		class_<adopt_blend>("blend")
@@ -236,10 +238,10 @@ void	CResourceManager::LS_Load			()
 	VERIFY								(folder);
 	for (u32 it=0; it<folder->size(); it++)	{
 		string_path						namesp,fn;
-		strcpy_s							(namesp,(*folder)[it]);
+		xr_strcpy							(namesp,(*folder)[it]);
 		if	(0==strext(namesp) || 0!=xr_strcmp(strext(namesp),".s"))	continue;
 		*strext	(namesp)=0;
-		if		(0==namesp[0])			strcpy_s	(namesp,"_G");
+		if		(0==namesp[0])			xr_strcpy	(namesp,"_G");
 		strconcat						(sizeof(fn),fn,::Render->getShaderPath(),(*folder)[it]);
 		FS.update_path					(fn,"$game_shaders$",fn);
 		try {
@@ -303,8 +305,9 @@ Shader*	CResourceManager::_lua_Create		(LPCSTR d_shader, LPCSTR s_textures)
 	{
 		// Analyze possibility to detail this shader
 		C.iElement			= 0;
-//.		C.bDetail			= Device.Resources->_GetDetailTexture(*C.L_textures[0],C.detail_texture,C.detail_scaler);
-		C.bDetail			= DEV->m_textures_description.GetDetailTexture(C.L_textures[0],C.detail_texture,C.detail_scaler);
+//.		C.bDetail			= dxRenderDeviceRender::Instance().Resources->_GetDetailTexture(*C.L_textures[0],C.detail_texture,C.detail_scaler);
+		//C.bDetail			= dxRenderDeviceRender::Instance().Resources->m_textures_description.GetDetailTexture(C.L_textures[0],C.detail_texture,C.detail_scaler);
+		C.bDetail			= dxRenderDeviceRender::Instance().Resources->m_textures_description.GetDetailTexture(C.L_textures[0],C.detail_texture,C.detail_scaler);
 
 		if (C.bDetail)		S.E[0]	= C._lua_Compile(s_shader,"normal_hq");
 		else				S.E[0]	= C._lua_Compile(s_shader,"normal");
@@ -312,8 +315,9 @@ Shader*	CResourceManager::_lua_Create		(LPCSTR d_shader, LPCSTR s_textures)
 		if (Script::bfIsObjectPresent(LSVM,s_shader,"normal",LUA_TFUNCTION))
 		{
 			C.iElement			= 0;
-//.			C.bDetail			= Device.Resources->_GetDetailTexture(*C.L_textures[0],C.detail_texture,C.detail_scaler);
-			C.bDetail			= DEV->m_textures_description.GetDetailTexture(C.L_textures[0],C.detail_texture,C.detail_scaler);
+//.			C.bDetail			= dxRenderDeviceRender::Instance().Resources->_GetDetailTexture(*C.L_textures[0],C.detail_texture,C.detail_scaler);
+			//C.bDetail			= dxRenderDeviceRender::Instance().Resources->m_textures_description.GetDetailTexture(C.L_textures[0],C.detail_texture,C.detail_scaler);
+			C.bDetail			= dxRenderDeviceRender::Instance().Resources->m_textures_description.GetDetailTexture(C.L_textures[0],C.detail_texture,C.detail_scaler);
 			S.E[0]				= C._lua_Compile(s_shader,"normal");
 		}
 	}
@@ -322,8 +326,9 @@ Shader*	CResourceManager::_lua_Create		(LPCSTR d_shader, LPCSTR s_textures)
 	if (Script::bfIsObjectPresent(LSVM,s_shader,"normal",LUA_TFUNCTION))
 	{
 		C.iElement			= 1;
-//.		C.bDetail			= Device.Resources->_GetDetailTexture(*C.L_textures[0],C.detail_texture,C.detail_scaler);
-		C.bDetail			= DEV->m_textures_description.GetDetailTexture(C.L_textures[0],C.detail_texture,C.detail_scaler);
+//.		C.bDetail			= dxRenderDeviceRender::Instance().Resources->_GetDetailTexture(*C.L_textures[0],C.detail_texture,C.detail_scaler);
+		//C.bDetail			= dxRenderDeviceRender::Instance().Resources->m_textures_description.GetDetailTexture(C.L_textures[0],C.detail_texture,C.detail_scaler);
+		C.bDetail			= dxRenderDeviceRender::Instance().Resources->m_textures_description.GetDetailTexture(C.L_textures[0],C.detail_texture,C.detail_scaler);
 		S.E[1]				= C._lua_Compile(s_shader,"normal");
 	}
 
@@ -377,6 +382,6 @@ ShaderElement*		CBlender_Compile::_lua_Compile	(LPCSTR namesp, LPCSTR name)
 	adopt_compiler		ac		= adopt_compiler(this);
 	element						(ac,t_0,t_1,t_d);
 	r_End				();
-	ShaderElement*	_r	= DEV->_CreateElement(E);
+	ShaderElement*	_r	= dxRenderDeviceRender::Instance().Resources->_CreateElement(E);
 	return			_r;
 }

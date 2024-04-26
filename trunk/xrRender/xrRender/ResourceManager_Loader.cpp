@@ -2,12 +2,12 @@
 #pragma hdrstop
 
 #include "ResourceManager.h"
-#include "..\xrRender\xrRender\blenders\blender.h"
+#include "blenders\blender.h"
 
 
 void	CResourceManager::OnDeviceDestroy(BOOL )
 {
-	if (Device.b_is_Ready)				return;
+	if (RDEVICE.b_is_Ready)				return;
 	m_textures_description.UnLoad		();
 //.	xr_delete			(m_description);
 
@@ -51,7 +51,7 @@ void	CResourceManager::OnDeviceDestroy(BOOL )
 
 void	CResourceManager::OnDeviceCreate	(IReader* F)
 {
-	if (!Device.b_is_Ready) return;
+	if (!RDEVICE.b_is_Ready) return;
 
 	string256	name;
 
