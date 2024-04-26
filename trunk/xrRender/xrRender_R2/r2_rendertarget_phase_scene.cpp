@@ -17,6 +17,10 @@ void	CRenderTarget::phase_scene_prepare	()
 		u_setrt(Device.dwWidth, Device.dwHeight, HW.pBaseRT, NULL, NULL, HW.pBaseZB);
 		CHK_DX(HW.pDevice->Clear(0L, NULL, D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, 0x0, 1.0f, 0L));
 	}
+
+	//	Igor: for volumetric lights
+	m_bHasActiveVolumetric				= false;
+	//	Clear later if try to draw volumetric
 }
 
 // begin
