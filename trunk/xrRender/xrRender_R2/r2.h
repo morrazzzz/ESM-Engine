@@ -120,6 +120,7 @@ public:
 	float														o_sun			;
 	IDirect3DQuery9*											q_sync_point[CHWCaps::MAX_GPUS]	;
 	u32															q_sync_count	;
+	bool														m_bFirstFrameAfterReset;	// Determines weather the frame is the first after resetting device.
 
 	xr_vector<sun::cascade>										m_sun_cascades;
 private:
