@@ -16,6 +16,22 @@
 
 void fix_texture_name(LPSTR fn);
 
+void simplify_texture(string_path& fn)
+{
+	if (strstr(Core.Params, "-game_designer"))
+	{
+		if (strstr(fn, "$user")) return;
+		if (strstr(fn, "ui\\")) return;
+		if (strstr(fn, "lmap#")) return;
+		if (strstr(fn, "act\\")) return;
+		if (strstr(fn, "fx\\")) return;
+		if (strstr(fn, "glow\\")) return;
+		if (strstr(fn, "map\\")) return;
+		xr_strcpy(fn, "ed\\ed_not_existing_texture");
+	}
+}
+
+
 template <class T>
 BOOL	reclaim(xr_vector<T*>& vec, const T* ptr)
 {
@@ -276,7 +292,7 @@ void				CResourceManager::_DeleteConstantTable	(const R_constant_table* C)
 }
 
 //--------------------------------------------------------------------------------------------------------------
-CRT*	CResourceManager::_CreateRT		(LPCSTR Name, u32 w, u32 h,	D3DFORMAT f)
+CRT*	CResourceManager::_CreateRT		(LPCSTR Name, u32 w, u32 h,	D3DFORMAT f, u32 SampleCount )
 {
 	R_ASSERT(Name && Name[0] && w && h);
 
@@ -289,7 +305,7 @@ CRT*	CResourceManager::_CreateRT		(LPCSTR Name, u32 w, u32 h,	D3DFORMAT f)
 		CRT *RT					=	xr_new<CRT>();
 		RT->dwFlags				|=	xr_resource_flagged::RF_REGISTERED;
 		m_rtargets.insert		(mk_pair(RT->set_name(Name),RT));
-		if (Device.b_is_Ready)	RT->create	(Name,w,h,f);
+		if (RDEVICE.b_is_Ready)	RT->create	(Name,w,h,f);
 		return					RT;
 	}
 }
@@ -304,6 +320,9 @@ void	CResourceManager::_DeleteRT		(const CRT* RT)
 	}
 	Msg	("! ERROR: Failed to find render-target '%s'",*RT->cName);
 }
+
+//	DX10 cut 
+/*
 //--------------------------------------------------------------------------------------------------------------
 CRTC*	CResourceManager::_CreateRTC		(LPCSTR Name, u32 size,	D3DFORMAT f)
 {
@@ -318,7 +337,7 @@ CRTC*	CResourceManager::_CreateRTC		(LPCSTR Name, u32 size,	D3DFORMAT f)
 		CRTC *RT				=	xr_new<CRTC>();
 		RT->dwFlags				|=	xr_resource_flagged::RF_REGISTERED;
 		m_rtargets_c.insert		(mk_pair(RT->set_name(Name),RT));
-		if (Device.b_is_Ready)	RT->create	(Name,size,f);
+		if (RDEVICE.b_is_Ready)	RT->create	(Name,size,f);
 		return					RT;
 	}
 }
@@ -333,6 +352,7 @@ void	CResourceManager::_DeleteRTC		(const CRTC* RT)
 	}
 	Msg	("! ERROR: Failed to find render-target '%s'",*RT->cName);
 }
+*/
 //--------------------------------------------------------------------------------------------------------------
 void	CResourceManager::DBG_VerifyGeoms	()
 {
@@ -396,8 +416,13 @@ CTexture* CResourceManager::_CreateTexture	(LPCSTR _Name)
 	if (0==xr_strcmp(_Name,"null"))	return 0;
 	R_ASSERT		(_Name && _Name[0]);
 	string_path		Name;
-	xr_strcpy(Name, _Name); //. andy if (strext(Name)) *strext(Name)=0;
+	xr_strcpy			(Name,_Name); //. andy if (strext(Name)) *strext(Name)=0;
 	fix_texture_name (Name);
+
+#ifdef	DEBUG
+	simplify_texture(Name);
+#endif	//	DEBUG
+
 	// ***** first pass - search already loaded texture
 	LPSTR N			= LPSTR(Name);
 	map_TextureIt I = m_textures.find	(N);
@@ -408,7 +433,7 @@ CTexture* CResourceManager::_CreateTexture	(LPCSTR _Name)
 		T->dwFlags			|=	xr_resource_flagged::RF_REGISTERED;
 		m_textures.insert	(mk_pair(T->set_name(Name),T));
 		T->Preload			();
-		if (Device.b_is_Ready && !bDeferredLoad) T->Load();
+		if (RDEVICE.b_is_Ready && !bDeferredLoad) T->Load();
 		return		T;
 	}
 }

@@ -15,15 +15,15 @@ CRT::~CRT			()
 	destroy			();
 
 	// release external reference
-	DEV->_DeleteRT	(this);	
+	DEV->_DeleteRT	(this);
 }
 
-void CRT::create	(LPCSTR Name, u32 w, u32 h,	D3DFORMAT f)
+void CRT::create	(LPCSTR Name, u32 w, u32 h,	D3DFORMAT f, u32 SampleCount )
 {
 	if (pSurface)	return;
 
 	R_ASSERT	(HW.pDevice && Name && Name[0] && w && h);
-	_order		= CPU::GetCLK()	;	//Device.GetTimerGlobal()->GetElapsed_clk();
+	_order		= CPU::GetCLK()	;	//RDEVICE.GetTimerGlobal()->GetElapsed_clk();
 
 	HRESULT		_hr;
 
@@ -69,6 +69,8 @@ void CRT::create	(LPCSTR Name, u32 w, u32 h,	D3DFORMAT f)
 	// Try to create texture/surface
 	DEV->Evict				();
 	_hr = HW.pDevice->CreateTexture		(w, h, 1, usage, f, D3DPOOL_DEFAULT, &pSurface,NULL);
+	HW.stats_manager.increment_stats_rtarget	( pSurface );
+
 	if (FAILED(_hr) || (0==pSurface))	return;
 
 	// OK
@@ -86,7 +88,10 @@ void CRT::destroy		()
 		pTexture->surface_set	(0);
 		pTexture				= NULL;
 	}
+	
 	_RELEASE	(pRT		);
+
+	HW.stats_manager.decrement_stats_rtarget	( pSurface );
 	_RELEASE	(pSurface	);
 }
 void CRT::reset_begin	()
@@ -97,12 +102,15 @@ void CRT::reset_end		()
 {
 	create		(*cName,dwWidth,dwHeight,fmt);
 }
-void resptrcode_crt::create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f)
+void resptrcode_crt::create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 SampleCount )
 {
 	_set			(DEV->_CreateRT(Name,w,h,f));
 }
 
+
 //////////////////////////////////////////////////////////////////////////
+//	DX10 cut 
+/*
 CRTC::CRTC			()
 {
 	if (pSurface)	return;
@@ -117,13 +125,13 @@ CRTC::~CRTC			()
 	destroy			();
 
 	// release external reference
-	DEV->_DeleteRTC	(this);	
+	DEV->_DeleteRTC	(this);
 }
 
 void CRTC::create	(LPCSTR Name, u32 size,	D3DFORMAT f)
 {
 	R_ASSERT	(HW.pDevice && Name && Name[0] && size && btwIsPow2(size));
-	_order		= CPU::GetCLK();	//Device.GetTimerGlobal()->GetElapsed_clk();
+	_order		= CPU::GetCLK();	//RDEVICE.GetTimerGlobal()->GetElapsed_clk();
 
 	HRESULT		_hr;
 
@@ -183,3 +191,4 @@ void resptrcode_crtc::create(LPCSTR Name, u32 size, D3DFORMAT f)
 {
 	_set		(DEV->_CreateRTC(Name,size,f));
 }
+*/
