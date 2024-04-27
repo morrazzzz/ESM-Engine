@@ -16,26 +16,68 @@
 #include "gamefont.h"
 #include "render.h"
 
-float	psCamInert		= 0.7f;
+float	psCamInert		= 0.f;
 float	psCamSlideInert	= 0.25f;
 
 SPPInfo		pp_identity;
 SPPInfo		pp_zero;
 
-void SPPInfo::normalize() 
+SPPInfo& SPPInfo::add(const SPPInfo& ppi)
 {
-	/*
-	noise.intensity = _max(_min(noise.intensity, 1.f), 0.f);
-	noise.color.r = _max(_min(noise.color.r, 1.f), 0.f);
-	noise.color.g = _max(_min(noise.color.g, 1.f), 0.f);
-	noise.color.b = _max(_min(noise.color.b, 1.f), 0.f);
-	noise.color.a = _max(_min(noise.color.a, 1.f), 0.f);
-	blend_color.r = _max(_min(blend_color.r, 1.f), 0.f);
-	blend_color.g = _max(_min(blend_color.g, 1.f), 0.f);
-	blend_color.b = _max(_min(blend_color.b, 1.f), 0.f);
-	blend_color.a = _max(_min(blend_color.a, 1.f), 0.f);
-	*/
+	blur += ppi.blur;
+	gray += ppi.gray;
+	duality.h += ppi.duality.h;
+	duality.v += ppi.duality.v;
+
+	noise.intensity = _max(noise.intensity, ppi.noise.intensity);
+	noise.grain = _max(noise.grain, ppi.noise.grain);
+	noise.fps = _max(noise.fps, ppi.noise.fps);
+	color_base += ppi.color_base;
+	color_gray += ppi.color_gray;
+	color_add += ppi.color_add;
+
+	if (ppi.cm_tex1.size())
+	{
+		if (cm_tex1.size())
+		{
+			cm_tex2 = ppi.cm_tex1;
+			cm_interpolate = 1.0f - cm_influence / (cm_influence + ppi.cm_influence);
+		}
+		else
+		{
+			cm_tex1 = ppi.cm_tex1;
+			cm_influence = ppi.cm_influence;
+			cm_interpolate = 0.0f;
+		}
+		cm_influence = _max(cm_influence, ppi.cm_influence);
+	}
+	return			*this;
 }
+
+SPPInfo& SPPInfo::sub(const SPPInfo& ppi)
+{
+	blur -= ppi.blur;
+	gray -= ppi.gray;
+	duality.h -= ppi.duality.h;
+	duality.v -= ppi.duality.v;
+	color_base -= ppi.color_base;
+	color_gray -= ppi.color_gray;
+	color_add -= ppi.color_add;
+	return *this;
+}
+
+SPPInfo::SPPInfo()
+{
+	blur = gray = duality.h = duality.v = 0;
+	noise.intensity = 0; noise.grain = 1; noise.fps = 10;
+	color_base.set(.5f, .5f, .5f);
+	color_gray.set(.333f, .333f, .333f);
+	color_add.set(0.f, 0.f, 0.f);
+	cm_influence = 0.0f;
+	cm_interpolate = 0.0f;
+}
+void SPPInfo::normalize()
+{}
 
 void SPPInfo::validate(LPCSTR str)
 {
@@ -88,6 +130,12 @@ SPPInfo& SPPInfo::lerp(const SPPInfo& def, const SPPInfo& to, float factor)
 		def.color_add.g	+ (to.color_add.g - def.color_add.g) * factor, 
 		def.color_add.b	+ (to.color_add.b - def.color_add.b) * factor
 		);
+
+	pp.cm_tex1 = to.cm_tex1;
+	pp.cm_tex2 = to.cm_tex2;
+	pp.cm_influence += def.cm_influence + (to.cm_influence - def.cm_influence) * factor;
+	pp.cm_interpolate += def.cm_interpolate + (to.cm_interpolate - def.cm_interpolate) * factor;
+
 	return *this;
 }
 
@@ -98,13 +146,6 @@ CCameraManager::CCameraManager(bool bApplyOnUpdate)
 #endif
 
 	m_bAutoApply					= bApplyOnUpdate;
-	vPosition.set					(0,0,0);
-	vDirection.set					(0,0,1);
-	vNormal.set						(0,1,0);
-
-	fFov							= 90;
-	fFar							= 100;
-	fAspect							= 1.f;
 
 	pp_identity.blur				= 0;
 	pp_identity.gray				= 0;
@@ -166,7 +207,7 @@ void CCameraManager::RemoveCamEffector(ECamEffectorType type)
 	for (EffectorCamIt it=m_EffectorsCam.begin(); it!=m_EffectorsCam.end(); it++ )
 		if ((*it)->eType==type)
 		{ 
-			xr_delete(*it);
+			OnEffectorReleased	(*it);
 			m_EffectorsCam.erase(it);
 			return;
 		}
@@ -177,6 +218,24 @@ CEffectorPP* CCameraManager::GetPPEffector(EEffectorPPType type)
 	for (EffectorPPIt it=m_EffectorsPP.begin(); it!=m_EffectorsPP.end(); it++ )
 		if ((*it)->Type()==type) return *it;
 	return 0;
+}
+
+ECamEffectorType   CCameraManager::RequestCamEffectorId ()
+{
+	ECamEffectorType	index = (ECamEffectorType)effCustomEffectorStartID;
+	for (;
+							GetCamEffector(index);
+							index	=	(ECamEffectorType)(index+1) ) { ; }
+	return index;
+}
+
+EEffectorPPType   CCameraManager::RequestPPEffectorId ()
+{
+	EEffectorPPType	index = (EEffectorPPType)effCustomEffectorStartID;
+	for (;
+							GetPPEffector(index);
+							index	=	(EEffectorPPType)(index+1) ) { ; }
+	return index;
 }
 
 CEffectorPP* CCameraManager::AddPPEffector(CEffectorPP* ef) 
@@ -190,16 +249,29 @@ void CCameraManager::RemovePPEffector(EEffectorPPType type)
 {
 	for (EffectorPPIt it=m_EffectorsPP.begin(); it!=m_EffectorsPP.end(); it++ )
 		if ((*it)->Type()==type){ 
-			if ((*it)->FreeOnRemove())	xr_delete(*it);
+			if ((*it)->FreeOnRemove())
+			{
+				OnEffectorReleased		(*it);
+//				xr_delete				(*it);
+			}
 			m_EffectorsPP.erase			(it);
 			return;
 		}
 }
 
-void CCameraManager::Update(const CCameraBase* C)
+void CCameraManager::OnEffectorReleased(SBaseEffector* e)
+{
+	if (!e->m_on_b_remove_callback.empty())
+		e->m_on_b_remove_callback();
+
+	xr_delete(e);
+}
+
+void CCameraManager::UpdateFromCamera(const CCameraBase* C)
 {	
 	Update(C->vPosition,C->vDirection,C->vNormal, C->f_fov, C->f_aspect, g_pGamePersistent->Environment().CurrentEnv->far_plane, C->m_Flags.flags); 
 }
+
 void CCameraManager::Update(const Fvector& P, const Fvector& D, const Fvector& N, float fFOV_Dest, float fASPECT_Dest, float fFAR_Dest, u32 flags)
 {
 #ifdef DEBUG
@@ -211,107 +283,141 @@ void CCameraManager::Update(const Fvector& P, const Fvector& D, const Fvector& N
 #endif
 	// camera
 	if (flags&CCameraBase::flPositionRigid)
-		vPosition.set		(P);
+		m_cam_info.p.set		(P);
 	else
-		vPosition.inertion	(P,	psCamInert);
-	if (flags&CCameraBase::flDirectionRigid){
-		vDirection.set		(D);
-		vNormal.set			(N);
+		m_cam_info.p.inertion	(P,	psCamInert);
+	if (flags&CCameraBase::flDirectionRigid)
+	{
+		m_cam_info.d.set		(D);
+		m_cam_info.n.set		(N);
 	}else{
-		vDirection.inertion	(D,	psCamInert);
-		vNormal.inertion	(N,	psCamInert);
+		m_cam_info.d.inertion	(D,	psCamInert);
+		m_cam_info.n.inertion	(N,	psCamInert);
 	}
 	
 	// Normalize
-	vDirection.normalize	();
-	vNormal.normalize		();
-	vRight.crossproduct		(vNormal,vDirection);
-	vNormal.crossproduct	(vDirection,vRight);
+	m_cam_info.d.normalize	();
+	m_cam_info.n.normalize	();
+	m_cam_info.r.crossproduct	(m_cam_info.n, m_cam_info.d);
+	m_cam_info.n.crossproduct	(m_cam_info.d, m_cam_info.r);
 
 	float aspect				= Device.fHeight_2/Device.fWidth_2;
 	float src					= 10*Device.fTimeDelta;	clamp(src,0.f,1.f);
 	float dst					= 1-src;
-	fFov						= fFov*dst		+ fFOV_Dest*src;
-	fFar						= fFar*dst		+ fFAR_Dest*src;
-	fAspect						= fAspect*dst	+ (fASPECT_Dest*aspect)*src;
+	m_cam_info.fFov				= m_cam_info.fFov*dst		+ fFOV_Dest*src;
+	m_cam_info.fFar				= m_cam_info.fFar*dst		+ fFAR_Dest*src;
+	m_cam_info.fAspect			= m_cam_info.fAspect*dst	+ (fASPECT_Dest*aspect)*src;
+	m_cam_info.dont_apply			= false;
 
-	// Effector
-	BOOL bOverlapped = FALSE;
-	if (m_EffectorsCam.size())
-	{
-		for (int i = m_EffectorsCam.size() - 1; i >= 0; i--)
-		{
-			CEffectorCam* eff = m_EffectorsCam[i];
-			if (eff->Valid() && eff->Process(vPosition, vDirection, vNormal, fFov, fFar, fAspect))
-			{
-				bOverlapped |= eff->Overlapped();
-			}
-			else
-			{
-				if (eff->AllowProcessingIfInvalid())
-				{
-					eff->ProcessIfInvalid(vPosition, vDirection, vNormal, fFov, fFar, fAspect);
-					bOverlapped |= eff->Overlapped();
-				}
+	UpdateCamEffectors();
 
-				m_EffectorsCam.erase(m_EffectorsCam.begin() + i);
-				xr_delete(eff);
-			}
-		}
+	UpdatePPEffectors();
 
-		// Normalize
-		vDirection.normalize();
-		vNormal.normalize();
-		vRight.crossproduct(vNormal, vDirection);
-		vNormal.crossproduct(vDirection, vRight);
-	}
-
-	pp_affected.validate		("before applying pp");
-	// EffectorPP
-	int		_count	= 0;
-	if(m_EffectorsPP.size()) {
-		pp_affected = pp_identity;
-		for(int i = m_EffectorsPP.size()-1; i >= 0; i--) {
-			CEffectorPP* eff	= m_EffectorsPP[i];
-			SPPInfo l_PPInf		= pp_zero;
-			if((eff->Valid())&&eff->Process(l_PPInf)) 
-			{
-				++_count;
-				pp_affected			+= l_PPInf;
-				pp_affected			-= pp_identity;
-				pp_affected.validate("in cycle");
-			}else 
-				RemovePPEffector(eff->Type());
-		}
-		if (0==_count)	pp_affected				= pp_identity;
-		else			pp_affected.normalize	();
-	} else {
-		pp_affected		=	pp_identity;
-	}
-
-	if( !positive(pp_affected.noise.grain) ) pp_affected.noise.grain = pp_identity.noise.grain;
-	
-	pp_affected.validate		("after applying pp");
-	if (FALSE==bOverlapped && m_bAutoApply)
+	if (FALSE==m_cam_info.dont_apply && m_bAutoApply)
 			ApplyDevice		(VIEWPORT_NEAR);
 
 	UpdateDeffered			();
 }
 
+bool CCameraManager::ProcessCameraEffector(CEffectorCam* eff)
+{
+	bool res = false;
+	if (eff->Valid() && eff->ProcessCam(m_cam_info))
+	{
+		res = true;
+	}
+	else
+	{
+		if (eff->AllowProcessingIfInvalid())
+		{
+			eff->ProcessIfInvalid(m_cam_info);
+			res = true;
+		}
+
+		EffectorCamVec::iterator it = std::find(m_EffectorsCam.begin(), m_EffectorsCam.end(), eff);
+
+		m_EffectorsCam.erase(it);
+		OnEffectorReleased(eff);
+	}
+	return res;
+}
+
+void CCameraManager::UpdateCamEffectors()
+{
+	if (m_EffectorsCam.empty()) 	return;
+	EffectorCamVec::reverse_iterator rit = m_EffectorsCam.rbegin();
+	for (; rit != m_EffectorsCam.rend(); ++rit)
+		ProcessCameraEffector(*rit);
+
+	m_cam_info.d.normalize();
+	m_cam_info.n.normalize();
+	m_cam_info.r.crossproduct(m_cam_info.n, m_cam_info.d);
+	m_cam_info.n.crossproduct(m_cam_info.d, m_cam_info.r);
+}
+
+void CCameraManager::UpdatePPEffectors()
+{
+	pp_affected.validate("before applying pp");
+
+	int		_count = 0;
+	if (m_EffectorsPP.size())
+	{
+		bool b = false;
+		pp_affected = pp_identity;
+		for (int i = m_EffectorsPP.size() - 1; i >= 0; --i)
+		{
+			CEffectorPP* eff = m_EffectorsPP[i];
+			SPPInfo l_PPInf = pp_zero;
+			if (eff->Valid() && eff->Process(l_PPInf))
+			{
+				++_count;
+				if (!b)
+				{
+					pp_affected.add(l_PPInf);
+					pp_affected.sub(pp_identity);
+					pp_affected.validate("in cycle");
+				}
+				if (!eff->bOverlap)
+				{
+					b = true;
+					pp_affected = l_PPInf;
+				}
+			}
+			else
+				RemovePPEffector(eff->Type());
+		}
+		if (0 == _count)
+			pp_affected = pp_identity;
+		else
+			pp_affected.normalize();
+	}
+	else
+	{
+		pp_affected = pp_identity;
+	}
+
+	if (!positive(pp_affected.noise.grain))
+		pp_affected.noise.grain = pp_identity.noise.grain;
+
+	pp_affected.validate("after applying pp");
+}
+
+
+
 void CCameraManager::ApplyDevice (float _viewport_near)
 {
 	// Device params
-	Device.mView.build_camera_dir(vPosition, vDirection, vNormal);
+	Device.mView.build_camera_dir(m_cam_info.p, m_cam_info.d, m_cam_info.n);
 
-	Device.vCameraPosition.set	( vPosition		);
-	Device.vCameraDirection.set	( vDirection	);
-	Device.vCameraTop.set		( vNormal		);
-	Device.vCameraRight.set		( vRight		);
+	Device.vCameraPosition.set	( m_cam_info.p );
+	Device.vCameraDirection.set	( m_cam_info.d );
+	Device.vCameraTop.set		( m_cam_info.n );
+	Device.vCameraRight.set		( m_cam_info.r );
 
 	// projection
-	Device.fFOV					= fFov;
-	Device.fASPECT				= fAspect;
-	Device.mProject.build_projection(deg2rad(fFov/**fAspect*/), fAspect, _viewport_near, fFar);
+	Device.fFOV					= m_cam_info.fFov;
+	Device.fASPECT				= m_cam_info.fAspect;
+	Device.mProject.build_projection(deg2rad(m_cam_info.fFov), m_cam_info.fAspect, _viewport_near, m_cam_info.fFar);
 
 	if( g_pGamePersistent && g_pGamePersistent->m_pMainMenu->IsActive() )
 		ResetPP					();
@@ -334,6 +440,10 @@ void CCameraManager::ApplyDevice (float _viewport_near)
 		T->set_color_base			(pp_affected.color_base);
 		T->set_color_gray			(pp_affected.color_gray);
 		T->set_color_add			(pp_affected.color_add);
+
+		T->set_cm_imfluence			(pp_affected.cm_influence);
+		T->set_cm_interpolate		(pp_affected.cm_interpolate);
+		T->set_cm_textures			(pp_affected.cm_tex1, pp_affected.cm_tex2);
 	}
 }
 
@@ -350,6 +460,9 @@ void CCameraManager::ResetPP()
 	T->set_color_base		(pp_identity.color_base);
 	T->set_color_gray		(pp_identity.color_gray);
 	T->set_color_add		(pp_identity.color_add);
+	T->set_cm_imfluence		(0.0f);
+	T->set_cm_interpolate	(1.0f);
+	T->set_cm_textures		("", "");
 }
 
 void CCameraManager::Dump()

@@ -151,6 +151,9 @@
     <Filter Include="Refactored\Execution &amp; 3D\Shaders\ShaderManager">
       <UniqueIdentifier>{0f2d72d7-680c-48e2-ae53-06343395ff56}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ColorMap">
+      <UniqueIdentifier>{70ceb815-5fdf-41b8-aebc-5dc2f717302a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\xrRender\cl_intersect.h">
@@ -591,6 +594,9 @@
     <ClInclude Include="..\xrRenderDX9\dx9R_Backend_Runtime.h">
       <Filter>Refactored\Backend</Filter>
     </ClInclude>
+    <ClInclude Include="..\xrRender\ColorMapManager.h">
+      <Filter>ColorMap</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -988,6 +994,9 @@
     </ClCompile>
     <ClCompile Include="..\xrRenderDX9\dx9r_constants_cache.cpp">
       <Filter>Refactored\Execution &amp; 3D\Shaders\Resources\dx9_R_shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\ColorMapManager.cpp">
+      <Filter>ColorMap</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

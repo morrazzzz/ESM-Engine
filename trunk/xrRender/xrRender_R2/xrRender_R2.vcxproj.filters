@@ -157,6 +157,9 @@
     <Filter Include="Refactored\stats_manager">
       <UniqueIdentifier>{ebb5d745-6418-405b-906f-a34a77f0213a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ColorMap">
+      <UniqueIdentifier>{c0d30526-a11d-4d77-b097-e850d67166f8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -623,6 +626,9 @@
     </ClInclude>
     <ClInclude Include="blender_light_direct_cascade.h">
       <Filter>Shading templates</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\ColorMapManager.h">
+      <Filter>ColorMap</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1114,6 +1120,9 @@
     </ClCompile>
     <ClCompile Include="blender_light_direct_cascade.cpp">
       <Filter>Shading templates</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\ColorMapManager.cpp">
+      <Filter>ColorMap</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

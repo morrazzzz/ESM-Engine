@@ -353,6 +353,7 @@
     <ClInclude Include="..\xrRender\blenders\Blender_CLSID.h" />
     <ClInclude Include="..\xrRender\blenders\Blender_Recorder.h" />
     <ClInclude Include="..\xrRender\cl_intersect.h" />
+    <ClInclude Include="..\xrRender\ColorMapManager.h" />
     <ClInclude Include="..\xrRender\D3DUtils.h" />
     <ClInclude Include="..\xrRender\du_box.h" />
     <ClInclude Include="..\xrRender\du_cone.h" />
@@ -475,6 +476,7 @@
     <ClCompile Include="..\xrRender\blenders\Blender_Recorder.cpp" />
     <ClCompile Include="..\xrRender\Blender_Recorder_R2.cpp" />
     <ClCompile Include="..\xrRender\Blender_Recorder_StandartBinding.cpp" />
+    <ClCompile Include="..\xrRender\ColorMapManager.cpp" />
     <ClCompile Include="..\xrRender\D3DUtils.cpp" />
     <ClCompile Include="..\xrRender\du_box.cpp" />
     <ClCompile Include="..\xrRender\du_cone.cpp" />
