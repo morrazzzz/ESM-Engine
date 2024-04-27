@@ -129,8 +129,6 @@ namespace FPU
 		m24r		();
 
 #endif	//XRCORE_STATIC
-
-		::Random.seed	( u32(CPU::GetCLK()%(1i64<<32i64)) );
 	}
 };
 #endif
@@ -249,6 +247,8 @@ void _initialize_cpu	(void)
     if (CPU::ID.feature&_CPU_FEATURE_SSE)	strcat(features,", SSE");
     if (CPU::ID.feature&_CPU_FEATURE_SSE2)	strcat(features,", SSE2");
 	Msg("* CPU Features: %s\n",features);
+
+	::Random.seed(u32(CPU::GetCLK() % (1i64 << 32i64)));
 
 	Fidentity.identity		();	// Identity matrix
 	Didentity.identity		();	// Identity matrix
