@@ -190,7 +190,7 @@ BOOL  CBulletManager::firetrace_callback(collide::rq_result& result, LPVOID para
 void CBulletManager::FireShotmark (SBullet* bullet, const Fvector& vDir, const Fvector &vEnd, collide::rq_result& R, u16 target_material, const Fvector& vNormal, bool ShowMark)
 {
 	SGameMtlPair* mtl_pair	= GMLib.GetMaterialPair(bullet->bullet_material_idx, target_material);
-	Fvector particle_dir;
+	Fvector particle_dir = vNormal;
 
 	if (R.O)
 	{
@@ -217,7 +217,6 @@ void CBulletManager::FireShotmark (SBullet* bullet, const Fvector& vDir, const F
 	else 
 	{
 		//вычислить нормаль к пораженной поверхности
-		particle_dir		= vNormal;
 		Fvector*	pVerts	= Level().ObjectSpace.GetStaticVerts();
 		CDB::TRI*	pTri	= Level().ObjectSpace.GetStaticTris()+R.element;
 
@@ -247,6 +246,10 @@ NULL:*mtl_pair->CollideParticles[::Random.randI(0,mtl_pair->CollideParticles.siz
 
 	if( (ps_name && ShowMark) || (bullet->flags.explosive && bStatic) )
 	{
+		VERIFY2(
+			(particle_dir.x * particle_dir.x + particle_dir.y * particle_dir.y + particle_dir.z * particle_dir.z) > flt_zero,
+			make_string("[%f][%f][%f]", VPUSH(particle_dir))
+		);
 		Fmatrix pos;
 		pos.k.normalize(particle_dir);
 		Fvector::generate_orthonormal_basis(pos.k, pos.j, pos.i);
