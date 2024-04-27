@@ -58,7 +58,7 @@ public:
 	virtual void IR_OnMouseHold			(int btn);
 	
 	virtual BOOL Overlapped				(){return m_bOverlapped;}
-	virtual	BOOL Process				(Fvector &p, Fvector &d, Fvector &n, float& fFov, float& fFar, float& fAspect);
+	virtual BOOL ProcessCam				(SCamEffectorInfo& info);
 };
 
 #endif // !defined(AFX_FDEMORECORD_H__D7638760_FB61_11D3_B4E3_4854E82A090D__INCLUDED_)

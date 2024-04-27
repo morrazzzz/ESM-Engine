@@ -547,7 +547,7 @@ void CGamePersistent::OnFrame	()
 					else
 						C = Actor()->Holder()->Camera();
 
-				Actor()->Cameras().Update		(C);
+				Actor()->Cameras().UpdateFromCamera		(C);
 				Actor()->Cameras().ApplyDevice	(VIEWPORT_NEAR);
 				}
 			}
@@ -561,7 +561,7 @@ void CGamePersistent::OnFrame	()
 			else
 				C = Actor()->Holder()->Camera();
 
-			Actor()->Cameras().Update		(C);
+			Actor()->Cameras().UpdateFromCamera		(C);
 			Actor()->Cameras().ApplyDevice	(VIEWPORT_NEAR);
 		}
 #endif // MASTER_GOLD
