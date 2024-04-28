@@ -11,6 +11,7 @@
 #include "script_fvector.h"
 #include "script_fcolor.h"
 #include "script_fmatrix.h"
+#include "script_crandom.h"
 #include "script_flags.h"
 #include "script_engine.h"
 #include "script_token_list.h"
