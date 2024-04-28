@@ -2275,6 +2275,9 @@
     <Filter Include="UI\Tutorial">
       <UniqueIdentifier>{5de14695-1482-412a-8da9-30aa4c6180d6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="AI\AScript\ScriptClasses\ScriptCRandom">
+      <UniqueIdentifier>{e199c394-e57b-4718-9504-7a49e462c875}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mt_config.h">
@@ -6504,6 +6507,9 @@
     <ClInclude Include="IKFoot_inl.h">
       <Filter>Physics\IK</Filter>
     </ClInclude>
+    <ClInclude Include="script_crandom.h">
+      <Filter>AI\AScript\ScriptClasses\ScriptCRandom</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -9604,6 +9610,9 @@
     </ClCompile>
     <ClCompile Include="ai\Monsters\Bloodsucker\bloodsucker.cpp">
       <Filter>AI\AMonsters\monsters\Bloodsucker\Vampire State</Filter>
+    </ClCompile>
+    <ClCompile Include="script_crandom_script.cpp">
+      <Filter>AI\AScript\ScriptClasses\ScriptCRandom</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
