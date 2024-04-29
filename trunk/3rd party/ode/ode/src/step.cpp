@@ -273,7 +273,7 @@ void dInternalStepIsland_x1 (dxWorld *world, dxBody * const *body, int nb,
   // entirely, so that the code that follows does not consider them.
   int m = 0;
   dxJoint::Info1 *info = (dxJoint::Info1*) ALLOCA (nj*sizeof(dxJoint::Info1));
-  int *ofs = (int*) ALLOCA (nj*sizeof(int));
+  int* ofs = (int*) ALLOCA (nj*sizeof(int));
   for (i=0, j=0; j<nj; j++) {	// i=dest, j=src
     joint[j]->vtable->getInfo1 (joint[j],info+i);
     dIASSERT (info[i].m >= 0 && info[i].m <= 6 &&
@@ -589,7 +589,7 @@ void dInternalStepIsland_x2 (dxWorld *world, dxBody * const *body, int nb,
 
   int m = 0;
   dxJoint::Info1 *info = (dxJoint::Info1*) ALLOCA (nj*sizeof(dxJoint::Info1));
-  int *ofs = (int*) ALLOCA (nj*sizeof(int));
+  int* ofs = (int*)ALLOCA(nj * sizeof(int));
   for (i=0, j=0; j<nj; j++) {	// i=dest, j=src
     joint[j]->vtable->getInfo1 (joint[j],info+i);
     dIASSERT (info[i].m >= 0 && info[i].m <= 6 &&
@@ -745,15 +745,17 @@ void dInternalStepIsland_x2 (dxWorld *world, dxBody * const *body, int nb,
 	  // get joint numbers and ensure ofs[j1] >= ofs[j2]
 	  int j1 = n1->joint->tag;
 	  int j2 = n2->joint->tag;
-	  if (ofs[j1] < ofs[j2]) {
-	    int tmp = j1;
-	    j1 = j2;
-	    j2 = tmp;
-	  }
 
-	  // if either joint was tagged as -1 then it is an inactive (m=0)
-	  // joint that should not be considered
-	  if (j1==-1 || j2==-1) continue;
+      // if either joint was tagged as -1 then it is an inactive (m=0)
+      // joint that should not be considered
+      if (j1 == -1 || j2 == -1) continue;
+
+      if (ofs[j1] < ofs[j2]) {
+          int tmp = j1;
+          j1 = j2;
+          j2 = tmp;
+
+      }
 
 	  // determine if body i is the 1st or 2nd body of joints j1 and j2
 	  int jb1 = (joint[j1]->node[1].body == body[i]);
