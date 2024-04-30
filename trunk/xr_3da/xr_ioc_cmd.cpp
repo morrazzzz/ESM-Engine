@@ -638,10 +638,10 @@ if(strstr(Core.Params,"designer"))
 	CMD4(CCC_Integer, "show_display_engine_information", &DisplayEngineInformation_, 0, 1)
 	CMD4(CCC_Integer, "show_fps_display", &DisplayFPSShow_, 0, 1)
 
-	extern int g_svTextConsoleUpdateRate;
-	CMD4(CCC_Integer, "sv_console_update_rate", &g_svTextConsoleUpdateRate, 1, 100);
+//	extern int g_svTextConsoleUpdateRate;
+//	CMD4(CCC_Integer, "sv_console_update_rate", &g_svTextConsoleUpdateRate, 1, 100);
 
-	extern int g_svDedicateServerUpdateReate;
-	CMD4(CCC_Integer, "sv_dedicated_server_update_rate", &g_svDedicateServerUpdateReate, 1, 1000);
+//	extern int g_svDedicateServerUpdateReate;
+//	CMD4(CCC_Integer, "sv_dedicated_server_update_rate", &g_svDedicateServerUpdateReate, 1, 1000);
 };
  

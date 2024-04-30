@@ -104,24 +104,26 @@ void CAttachmentOwner::attach(CInventoryItem *inventory_item)
 
 void CAttachmentOwner::detach(CInventoryItem *inventory_item)
 {
-	xr_vector<CAttachableItem*>::iterator	I = m_attached_objects.begin();
-	xr_vector<CAttachableItem*>::iterator	E = m_attached_objects.end();
-	for ( ; I != E; ++I) {
-		if ((*I)->item().object().ID() == inventory_item->object().ID()) {
-			m_attached_objects.erase	(I);
-			(*I)->afterDetach();
-			if (m_attached_objects.empty()) {
+		xr_vector<CAttachableItem*>::iterator	I = m_attached_objects.begin();
+		xr_vector<CAttachableItem*>::iterator	E = m_attached_objects.end();
+		for ( ; I != E; ++I) {
+			if ((*I)->item().object().ID() == inventory_item->object().ID()) {
+				m_attached_objects.erase	(I);
+				if (!m_attached_objects.empty())
+				{
+					(*I)->afterDetach();
+					break;
+				}
+
 				CGameObject					*game_object = smart_cast<CGameObject*>(this);
 				VERIFY						(game_object && game_object->Visual());
 				game_object->remove_visual_callback(AttachmentCallback);
 				
 				inventory_item->object().setVisible	(false);
-
+				break;
 			}
-			break;
 		}
 	}
-}
 
 bool CAttachmentOwner::attached				(const CInventoryItem *inventory_item) const
 {

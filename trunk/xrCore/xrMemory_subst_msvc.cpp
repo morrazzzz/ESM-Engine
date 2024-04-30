@@ -60,6 +60,9 @@ void*	xrMemory::mem_alloc		(size_t size
 #ifdef USE_MEMORY_MONITOR
 		memory_monitor::monitor_alloc	(result,size,_name);
 #endif // USE_MEMORY_MONITOR
+
+		ASAN_UNPOISON_MEMORY_REGION(result, sizeof result);
+
 		return							(result);
 	}
 #endif // PURE_ALLOC
@@ -88,6 +91,9 @@ void*	xrMemory::mem_alloc		(size_t size
 		//	Igor: Reserve 1 byte for xrMemory header
 		u32	pool				=	get_pool	(1+size+_footer);
 		//u32	pool				=	get_pool	(size+_footer);
+
+//		ASAN_UNPOISON_MEMORY_REGION(_ptr, sizeof _ptr);
+
 		if (mem_generic==pool)	
 		{
 			// generic
@@ -95,6 +101,9 @@ void*	xrMemory::mem_alloc		(size_t size
 			void*	_real		=	xr_aligned_offset_malloc	(1 + size + _footer,16,0x1);
 			//void*	_real		=	xr_aligned_offset_malloc	(size + _footer,16,0x1);
 			_ptr				=	(void*)(((u8*)_real)+1);
+
+			ASAN_UNPOISON_MEMORY_REGION(_ptr, sizeof _ptr);
+
 			*acc_header(_ptr)	=	mem_generic;
 		} else {
 			// pooled
@@ -120,6 +129,7 @@ void*	xrMemory::mem_alloc		(size_t size
 #ifdef USE_MEMORY_MONITOR
 	memory_monitor::monitor_alloc	(_ptr,size,_name);
 #endif // USE_MEMORY_MONITOR
+
 	return	_ptr;
 }
 
@@ -157,6 +167,9 @@ void	xrMemory::mem_free		(void* P)
 		VERIFY2					(pool<mem_pools_count,"Memory corruption");
 		mem_pools[pool].destroy	(_real);
 	}
+
+	ASAN_POISON_MEMORY_REGION(_real, sizeof _real);
+
 #ifdef DEBUG_MEMORY_MANAGER
 	if (mem_initialized)		debug_cs.Leave	();
 #endif // DEBUG_MEMORY_MANAGER
@@ -262,6 +275,8 @@ void*	xrMemory::mem_realloc	(void* P, size_t size
 		mem_free				(p_old);
 		_ptr					= p_new_mem_alloc;
 	}
+
+	ASAN_UNPOISON_MEMORY_REGION(_ptr, sizeof _ptr);
 
 #ifdef DEBUG_MEMORY_MANAGER
 	if (mem_initialized)		debug_cs.Leave	();

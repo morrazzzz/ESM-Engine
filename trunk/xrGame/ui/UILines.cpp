@@ -456,7 +456,7 @@ float CUILines::GetVIndentByAlign()
 u32 CUILines::GetColorFromText(const xr_string& str)const{
 //	typedef xr_string::size_type size;
 
-	StrSize begin, end, comma1_pos, comma2_pos, comma3_pos;
+	StrSize begin, end,comma1_pos, comma2_pos, comma3_pos;
 
 	begin = str.find(BEGIN);
 	end = str.find(END, begin);
@@ -464,7 +464,12 @@ u32 CUILines::GetColorFromText(const xr_string& str)const{
 	R_ASSERT2(npos != end, "CUISubLine::GetColorFromText -- can't find ending tag ]");
 	
 	// try default color
-	if (npos != str.find("%c[default]", begin, end - begin))
+
+	string32 DefaultColor_ = "%c[default]";
+
+	size_t FindDefaultColor_ = str.find(DefaultColor_, begin, end - begin);
+
+	if (npos != FindDefaultColor_)
 		return m_dwTextColor;
 
 	// Try predefined in XML colors
