@@ -301,8 +301,7 @@ public		:
 	  const int GetMax		() const {return max;};
 	  void GetBounds(int& fmin, int& fmax) const { fmin = min; fmax = max; }
 
-	CCC_Integer(LPCSTR N, int* V, int _min=0, int _max=999) :
-	  IConsole_Command(N),
+	CCC_Integer(LPCSTR N, int* V, int _min=0, int _max=999) :	  IConsole_Command(N),
 	  value(V),
 	  min(_min),
 	  max(_max)

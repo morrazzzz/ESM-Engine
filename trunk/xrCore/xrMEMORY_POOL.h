@@ -2,6 +2,8 @@
 #define xrMemory_POOLh
 #pragma once
 
+#include "xrASAN_Debug.h"
+
 class xrMemory;
 
 class	MEMPOOL
@@ -36,6 +38,9 @@ public:
 		if (0==list)	block_create();
 
 		void* E			= list;
+
+		ASAN_UNPOISON_MEMORY_REGION(E, sizeof E);
+
 		list			= (u8*)*access(list);
 		cs.Leave		();
 		return			E;
