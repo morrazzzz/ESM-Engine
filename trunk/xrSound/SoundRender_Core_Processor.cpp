@@ -23,10 +23,11 @@ void CSoundRender_Core::update	( const Fvector& P, const Fvector& D, const Fvect
 
 	if (0==bReady)				return;
     bLocked						= TRUE;
-	u32 new_tm					= Timer.GetElapsed_ms();
-	Timer_Delta					= new_tm-Timer_Value;
-	float dt					= float(Timer_Delta)/1000.f;
-	Timer_Value					= new_tm;
+	float new_tm				= Timer.GetElapsed_sec();
+	fTimer_Delta				= new_tm-fTimer_Value;
+//.	float dt					= float(Timer_Delta)/1000.f;
+	float dt_sec				= fTimer_Delta;
+	fTimer_Value				= new_tm;
 
 	s_emitters_u	++	;
 
@@ -37,7 +38,7 @@ void CSoundRender_Core::update	( const Fvector& P, const Fvector& D, const Fvect
 		CSoundRender_Target*	T	= s_targets	[it];
 		CSoundRender_Emitter*	E	= T->get_emitter();
 		if (E) {
-			E->update	(dt);
+			E->update	(dt_sec);
 			E->marker	= s_emitters_u;
 			E			= T->get_emitter();	// update can stop itself
 			if (E)		T->priority	= E->priority();
@@ -54,7 +55,7 @@ void CSoundRender_Core::update	( const Fvector& P, const Fvector& D, const Fvect
 		CSoundRender_Emitter*	pEmitter = s_emitters[it];
 		if (pEmitter->marker!=s_emitters_u)
 		{
-			pEmitter->update		(dt);
+			pEmitter->update		(dt_sec);
 			pEmitter->marker		= s_emitters_u;
 		}
 		if (!pEmitter->isPlaying())		
@@ -97,19 +98,22 @@ void CSoundRender_Core::update	( const Fvector& P, const Fvector& D, const Fvect
 	}
 
 	// update EAX
-    if (psSoundFlags.test(ss_EAX) && bEAX){
-        if (bListenerMoved){
+    if (psSoundFlags.test(ss_EAX) && bEAX)
+	{
+        if (bListenerMoved)
+		{
             bListenerMoved			= FALSE;
             e_target				= *get_environment	(P);
         }
-        e_current.lerp				(e_current,e_target,dt);
+
+        e_current.lerp				(e_current,e_target,dt_sec);
 
         i_eax_listener_set			(&e_current);
 		i_eax_commit_setting		();
 	}
 
     // update listener
-    update_listener					(P,D,N,dt);
+    update_listener					(P,D,N,dt_sec);
     
 	// Start rendering of pending targets
 	if (!s_targets_defer.empty())
@@ -152,15 +156,16 @@ void	CSoundRender_Core::statistic			(CSound_stats*  dest, CSound_stats_ext*  ext
 		cache.stats_clear	();
 	}
 	if (ext){
-		for (u32 it=0; it<s_emitters.size(); it++){
+		for (u32 it=0; it<s_emitters.size(); it++)
+		{
 			CSoundRender_Emitter*	_E = s_emitters[it];	
 			CSound_stats_ext::SItem _I;
 			_I._3D					= !_E->b2D;
 			_I._rendered			= !!_E->target;
-			_I.name					= _E->source->fname;
 			_I.params				= _E->p_source;
 			_I.volume				= _E->smooth_volume;
 			if (_E->owner_data){
+				_I.name				= _E->source()->fname;
 				_I.game_object		= _E->owner_data->g_object;
 				_I.game_type		= _E->owner_data->g_type;
 				_I.type				= _E->owner_data->s_type;
@@ -198,7 +203,7 @@ float CSoundRender_Core::get_occlusion_to( const Fvector& hear_pt, const Fvector
 #else
 		geom_DB.ray_options		(CDB::OPT_CULL);
 		geom_DB.ray_query		(geom_SOM,hear_pt,dir,range);
-		u32 r_cnt				= static_cast<u32>(geom_DB.r_count());
+		u32 r_cnt				= geom_DB.r_count();
 		CDB::RESULT*	_B 		= geom_DB.r_begin();
 #endif            
 		if (0!=r_cnt){
@@ -245,9 +250,9 @@ float CSoundRender_Core::get_occlusion(Fvector& P, float R, Fvector* occ)
 			geom_DB.ray_query		(geom_MODEL,base,dir,range);
 			if (0!=geom_DB.r_count()){ 
 				// cache polygon
-				const CDB::RESULT*	R_GeomDB = geom_DB.r_begin		();
+				const CDB::RESULT*	R = geom_DB.r_begin		();
 #endif            
-				const CDB::TRI&		T = geom_MODEL->get_tris	() [ R_GeomDB->id ];
+				const CDB::TRI&		T = geom_MODEL->get_tris	() [ R->id ];
 				const Fvector*		V = geom_MODEL->get_verts	();
 				occ[0].set			(V[T.verts[0]]);
 				occ[1].set			(V[T.verts[1]]);
@@ -265,13 +270,13 @@ float CSoundRender_Core::get_occlusion(Fvector& P, float R, Fvector* occ)
 #else
 		geom_DB.ray_options		(CDB::OPT_CULL);
 		geom_DB.ray_query		(geom_SOM,base,dir,range);
-		u32 r_cnt				= static_cast<u32>(geom_DB.r_count());
+		u32 r_cnt				= geom_DB.r_count();
         CDB::RESULT*	_B 		= geom_DB.r_begin();
 #endif            
 		if (0!=r_cnt){
 			for (u32 k=0; k<r_cnt; k++){
-				CDB::RESULT* R_Result	 = _B+k;
-				occ_value		*= *(float*)&R_Result->dummy;
+				CDB::RESULT* R	 = _B+k;
+				occ_value		*= *(float*)&R->dummy;
 			}
 		}
 	}

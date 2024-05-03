@@ -2,6 +2,8 @@
 #define SoundH
 #pragma once
 
+//#include "../include/xrapi/xrapi.h"
+
 #ifdef XRSOUND_EXPORTS
 	#define XRSOUND_API __declspec(dllexport)
 #else
@@ -28,8 +30,6 @@ class	XRSOUND_API					CSound_emitter;
 class	XRSOUND_API					CSound_stream_interface;
 class	XRSOUND_API					CSound_environment;
 
-//
-XRSOUND_API extern u32				psSoundFreq				;
 XRSOUND_API extern u32				psSoundModel			;
 XRSOUND_API extern float			psSoundVEffects			;
 XRSOUND_API extern float			psSoundVFactor			;
@@ -39,6 +39,8 @@ XRSOUND_API extern float			psSoundOcclusionScale	;
 XRSOUND_API extern Flags32			psSoundFlags			;
 XRSOUND_API extern int				psSoundTargets			;
 XRSOUND_API extern int				psSoundCacheSizeMB		;
+XRSOUND_API extern xr_token*		snd_devices_token		;
+XRSOUND_API extern u32				snd_device_id			;
 
 // Flags
 enum {
@@ -46,11 +48,7 @@ enum {
     ss_EAX				= (1ul<<2ul),	//!< Use eax
 	ss_forcedword		= u32(-1)
 };
-enum {
-	sf_22K,
-	sf_44K,
-	sf_forcedword = u32(-1)
-};
+
 enum {
 	sq_DEFAULT,
 	sq_NOVIRT,
@@ -82,23 +80,26 @@ public:
 	virtual void					accept			(CSound_UserDataVisitor*)	=0;
 	virtual void					invalidate		()							=0;
 };
-using CSound_UserDataPtr = resptr_core<CSound_UserData,resptr_base<CSound_UserData> >;
+typedef resptr_core<CSound_UserData,resptr_base<CSound_UserData> >	CSound_UserDataPtr;
 
 class ref_sound_data	: public xr_resource		{
 public:
-	shared_str						nm;
+//	shared_str						nm;
 	CSound_source*					handle;			//!< Pointer to wave-source interface
 	CSound_emitter*					feedback;		//!< Pointer to emitter, automaticaly clears on emitter-stop
 	esound_type						s_type;
 	int								g_type;			//!< Sound type, usually for AI
 	CObject*						g_object;		//!< Game object that emitts ref_sound
 	CSound_UserDataPtr				g_userdata;
+	shared_str						fn_attached		[2];
+
+	u32								dwBytesTotal;
 	float							fTimeTotal;
 public:
-									ref_sound_data	();
-									ref_sound_data	(LPCSTR fName, esound_type sound_type, int game_type);
-	virtual							~ref_sound_data	();
-	float							get_length_sec() const { return fTimeTotal; };
+									ref_sound_data		();
+									ref_sound_data		(LPCSTR fName, esound_type sound_type, int game_type);
+	virtual							~ref_sound_data		();
+	float							get_length_sec		() const {return fTimeTotal;};
 };
 typedef resptr_core<ref_sound_data,resptr_base<ref_sound_data> >	ref_sound_data_ptr;
 /*! \class ref_sound
@@ -112,59 +113,27 @@ struct	ref_sound
 {
 	ref_sound_data_ptr		_p;
 public:
-    //! A constructor
-    /*!
-		\sa ~ref_sound()
-	*/
 							ref_sound				(){ }
 							~ref_sound				(){ }
 
-	IC CSound_source*		_handle					(){return _p?_p->handle:0;}
-	IC CSound_emitter*		_feedback				(){return _p?_p->feedback:0;}
-	IC CObject*				_g_object				(){VERIFY(_p); return _p->g_object;}
-	IC int					_g_type					(){VERIFY(_p); return _p->g_type;}
-	IC esound_type			_sound_type				(){VERIFY(_p); return _p->s_type;}
-	IC CSound_UserDataPtr	_g_userdata				(){VERIFY(_p); return _p->g_userdata;}
+	IC CSound_source*		_handle					()		const			{return _p?_p->handle:NULL;}
+	IC CSound_emitter*		_feedback				()						{return _p?_p->feedback:0;}
+	IC CObject*				_g_object				()						{VERIFY(_p); return _p->g_object;}
+	IC int					_g_type					()						{VERIFY(_p); return _p->g_type;}
+	IC esound_type			_sound_type				()						{VERIFY(_p); return _p->s_type;}
+	IC CSound_UserDataPtr	_g_userdata				()						{VERIFY(_p); return _p->g_userdata;}
 
-	//! Loader/initializer
-	/*!
-		\sa clone()
-		\sa destroy()
-		\param name Name of wave-file
-		\param type Sound type, usually for \a AI
-	*/
 	IC void					create					( LPCSTR name, esound_type sound_type,	int	game_type);
+	IC void					attach_tail				( LPCSTR name);
 
-	//! Clones ref_sound from another
-	/*!
-		\sa create()
-		\sa destroy()
-		\param from Source to clone.
-		\param leave_type Controls whenewer to leave game/AI type as is
-	*/
 	IC void					clone					( const ref_sound& from, esound_type sound_type, int game_type);
 
-	//! Destroys and unload wave
-	/*!
-		\sa create()
-		\sa clone()
-	*/
 	IC void					destroy					( );
 
-	//@{
-	//! Starts playing this source
-	/*!
-		\sa stop()
-	*/
-	IC void					play					( CObject* O /*!< Object */,											u32 flags=0 /*!< Looping */, float delay=0.f /*!< Delay */);
-	IC void					play_at_pos				( CObject* O /*!< Object */,	const Fvector &pos /*!< 3D position */,	u32 flags=0 /*!< Looping */, float delay=0.f /*!< Delay */);
-	IC void					play_no_feedback		( CObject* O /*!< Object */,											u32 flags=0 /*!< Looping */, float delay=0.f /*!< Delay */, Fvector* pos=0, float* vol=0, float* freq=0, Fvector2* range=0);
-	//@}
+	IC void					play					( CObject* O, u32 flags=0, float delay=0.f);
+	IC void					play_at_pos				( CObject* O, const Fvector &pos ,	u32 flags=0, float delay=0.f);
+	IC void					play_no_feedback		( CObject* O, u32 flags=0, float delay=0.f, Fvector* pos=0, float* vol=0, float* freq=0, Fvector2* range=0);
 
-	//! Stops playing this source
-	/*!
-		\sa play(), etc
-	*/
 	IC void					stop 					( );
 	IC void					stop_deffered			( );
 	IC void					set_position			( const Fvector &pos);
@@ -175,16 +144,18 @@ public:
 
 	IC const CSound_params*	get_params				( );
     IC void					set_params				( CSound_params* p );
-	IC float				get_length_sec() const { return _p ? _p->get_length_sec() : 0.0f; };
+	IC float				get_length_sec			() const						{return _p?_p->get_length_sec():0.0f;};
 };
 
 /// definition (Sound Source)
 class XRSOUND_API	CSound_source
 {
 public:
-	virtual	u32				length_ms				( )		= 0;
-	virtual u32				game_type				( )		= 0;
-	virtual LPCSTR			file_name				( )		= 0;
+	virtual	float			length_sec				( ) const			= 0;
+	virtual u32				game_type				( ) const			= 0;
+	virtual LPCSTR			file_name				( ) const			= 0;
+	virtual u16				channels_num			( ) const			= 0;
+	virtual u32				bytes_total				( ) const			= 0;
 };
 
 /// definition (Sound Source)
@@ -268,7 +239,7 @@ typedef		void __stdcall sound_event						(ref_sound_data_ptr S, float range);
 /// definition (Sound Manager Interface)
 class XRSOUND_API	CSound_manager_interface
 {
-	virtual void	  				_initialize				( u64 window )																			= 0;
+	virtual void	  				_initialize				(int stage)																			= 0;
 	virtual void					_clear					( )																						= 0;
 
 protected:
@@ -277,18 +248,15 @@ protected:
 	virtual void					_destroy_data			( ref_sound_data& S)																	= 0;
 public:
 	virtual							~CSound_manager_interface(){}
-	//@{
-	/// General
-	static void						_create					( u64 window );
+
+	static void						_create					(int stage);
 	static void						_destroy				( );
 
 	virtual void					_restart				( )																						= 0;
     virtual BOOL					i_locked 				( )																						= 0;
-	//@}
 
-	//@{
-	/// Sound interface
 	virtual void					create					( ref_sound& S, LPCSTR fName,				esound_type sound_type, int		game_type)	= 0;
+	virtual void					attach_tail				( ref_sound& S, LPCSTR fName)															= 0;
 	virtual void					clone					( ref_sound& S, const ref_sound& from,		esound_type sound_type, int		game_type)	= 0;
 	virtual void					destroy					( ref_sound& S)																			= 0;
 	virtual void					stop_emitters			( )																						= 0;	
@@ -303,7 +271,6 @@ public:
 	virtual void					set_geometry_som		( IReader* I )																			= 0;
 	virtual void					set_geometry_occ		( CDB::MODEL* M )																		= 0;
 	virtual void					set_handler				( sound_event* E )																		= 0;
-	//@}
 
 	virtual void					update					( const Fvector& P, const Fvector& D, const Fvector& N)									= 0;
 	virtual void					statistic				( CSound_stats*  s0, CSound_stats_ext* s1 )												= 0;
@@ -321,14 +288,18 @@ public:
     virtual void					set_environment_size	(CSound_environment* src_env, CSound_environment** dst_env)								= 0;
 #endif
 };
+
+class  CSound_manager_interface;
 extern XRSOUND_API CSound_manager_interface*		Sound;
 
 /// ********* Sound ********* (utils, accessors, helpers)
-IC ref_sound_data::ref_sound_data				()																{	handle=0;feedback=0;g_type=0;g_object=0;s_type=st_Effect;												}
-IC ref_sound_data::ref_sound_data				( LPCSTR fName, 		esound_type sound_type, int	game_type )	{	::Sound->_create_data			(*this,fName, sound_type, game_type);									}
+IC ref_sound_data::ref_sound_data				()																{	handle=0;feedback=0;g_type=0;g_object=0;s_type=st_Effect;			}
+IC ref_sound_data::ref_sound_data				( LPCSTR fName, esound_type sound_type, int	game_type )	{	::Sound->_create_data			(*this,fName, sound_type, game_type);							}
 IC ref_sound_data::~ref_sound_data				()																{	::Sound->_destroy_data			(*this);																}
 
-IC void	ref_sound::create						( LPCSTR name,			esound_type sound_type, int	game_type)	{	VERIFY(!::Sound->i_locked()); 	::Sound->create		(*this,name,sound_type,game_type);					}
+IC void	ref_sound::create						( LPCSTR name, esound_type sound_type, int	game_type)	{	VERIFY(!::Sound->i_locked()); 	::Sound->create		(*this,name,sound_type,game_type);							}
+IC void	ref_sound::attach_tail					( LPCSTR name)											{	VERIFY(!::Sound->i_locked()); 	::Sound->attach_tail(*this,name);							}
+
 IC void	ref_sound::clone						( const ref_sound& from,esound_type sound_type, int	game_type)	{	VERIFY(!::Sound->i_locked()); 	::Sound->clone		(*this,from,sound_type,game_type);					}
 IC void	ref_sound::destroy						( )														{	VERIFY(!::Sound->i_locked()); 	::Sound->destroy	(*this);													}
 IC void	ref_sound::play							( CObject* O,						u32 flags, float d)	{	VERIFY(!::Sound->i_locked()); 	::Sound->play		(*this,O,flags,d);											}
@@ -352,4 +323,7 @@ IC void	ref_sound::set_params					( CSound_params* p )
         _feedback()->set_volume   	(p->volume);
     }
 }
+
+
+
 #endif

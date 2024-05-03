@@ -32,7 +32,7 @@
 
 #define ENGINE_API
 
-#include "xr_resource.h"
+#include "../xrcore/xr_resource.h"
 
 #ifdef _EDITOR    
 # 	include "ETools.h"

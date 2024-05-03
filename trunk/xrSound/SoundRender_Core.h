@@ -28,10 +28,9 @@ public:
     BOOL								bDeferredEAX;
     BOOL								bReady;
 
-    WAVEFORMATEX						wfm;
 	CTimer								Timer;
-	u32									Timer_Value;
-	u32									Timer_Delta;
+	float								fTimer_Value;
+	float								fTimer_Delta;
 	sound_event*						Handler;
 protected:
 	// Collider
@@ -65,13 +64,15 @@ public:
 	virtual								~CSoundRender_Core		();
 
 	// General
-	virtual void  						_initialize				( u64 window )=0;
+	virtual void  						_initialize				(int stage)=0;
 	virtual void						_clear					( )=0;
 	virtual void						_restart				( );
 
 	// Sound interface
 			void						verify_refsound			( ref_sound& S);
 	virtual void						create					( ref_sound& S, LPCSTR fName,			esound_type sound_type, int	game_type);
+	virtual void						attach_tail				( ref_sound& S, LPCSTR fName);
+
 	virtual void						clone					( ref_sound& S, const ref_sound& from,	esound_type sound_type, int	game_type);
 	virtual void						destroy					( ref_sound& S);
 	virtual void						stop_emitters			( );
