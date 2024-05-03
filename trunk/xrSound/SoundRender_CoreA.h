@@ -3,13 +3,9 @@
 #pragma once
 
 #include "SoundRender_Core.h"            
-
-#include <al.h>
-#include <alc.h>
-//.#include <alut.h>
+#include "OpenALDeviceList.h"
 #include <eax.h>
 
-#include "OpenALDeviceList.h"
 
 #ifdef DEBUG
 #	define A_CHK(expr)		{ alGetError(); 		expr; ALenum error=alGetError(); 			VERIFY2(error==AL_NO_ERROR, (LPCSTR)alGetString(error)); }
@@ -44,8 +40,9 @@ public:
 						    CSoundRender_CoreA		();
     virtual					~CSoundRender_CoreA		();
 
-	virtual void			_initialize				( u64 window );
+	virtual void			_initialize				(int stage);
 	virtual void			_clear					( );
+	virtual void			_restart				( );
     
 	virtual void			set_master_volume		( float f		);
 

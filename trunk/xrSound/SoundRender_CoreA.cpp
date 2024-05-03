@@ -44,29 +44,57 @@ BOOL CSoundRender_CoreA::EAXTestSupport	(BOOL bDeferred)
 	return TRUE;
 }
 
-void CSoundRender_CoreA::_initialize	(u64 window)
+void  CSoundRender_CoreA::_restart()
 {
-	bPresent			        = FALSE;
+	inherited::_restart();
+/*
+	CSoundRender_Target*	T	= 0;
+	for (u32 tit=0; tit<s_targets.size(); tit++)
+	{
+		T						= s_targets[tit];
+		T->_destroy				();
+	}
 
-	pDeviceList					= xr_new<ALDeviceList>();
+	// Reset the current context to NULL.
+    alcMakeContextCurrent		(NULL);         
+    // Release the context and the device.
+    alcDestroyContext			(pContext);		
+	pContext					= NULL;
+    alcCloseDevice				(pDevice);		
+	pDevice						= NULL;
 
-	if (0==pDeviceList->GetNumDevices()){ 
-		Log						("OpenAL: Can't create sound device.");
-		xr_delete				(pDeviceList);
+	_initialize					(2);
+
+	for (u32 tit=0; tit<s_targets.size(); tit++)
+	{
+		T						= s_targets[tit];
+		T->_initialize				();
+	}
+*/
+}
+
+void CSoundRender_CoreA::_initialize(int stage)
+{
+	if(stage==0)
+	{
+		pDeviceList					= xr_new<ALDeviceList>();
+
+		if (0==pDeviceList->GetNumDevices())
+		{ 
+			CHECK_OR_EXIT			(0,"OpenAL: Can't create sound device.");
+			xr_delete				(pDeviceList);
+		}
 		return;
 	}
 	
-	pDeviceList->SelectBestDevice();
-
-	int defaultIdx					= pDeviceList->GetDefaultDevice();
-	R_ASSERT						(defaultIdx>=0 && defaultIdx<pDeviceList->GetNumDevices());
-	const ALDeviceDesc& deviceDesc	= pDeviceList->GetDeviceDesc(defaultIdx);
-
-
+	pDeviceList->SelectBestDevice	();
+	R_ASSERT						(snd_device_id>=0 && snd_device_id<pDeviceList->GetNumDevices());
+	const ALDeviceDesc& deviceDesc	= pDeviceList->GetDeviceDesc(snd_device_id);
     // OpenAL device
-    pDevice						= alcOpenDevice		(deviceDesc.name.c_str());
-	if (pDevice == NULL){
-		Log						("SOUND: OpenAL: Failed to create device.");
+    pDevice						= alcOpenDevice		(deviceDesc.name);
+	if (pDevice == NULL)
+	{
+		CHECK_OR_EXIT			(0,"SOUND: OpenAL: Failed to create device.");
 		bPresent				= FALSE;
 		return;
 	}
@@ -74,12 +102,11 @@ void CSoundRender_CoreA::_initialize	(u64 window)
     // Get the device specifier.
     const ALCchar*		        deviceSpecifier;
     deviceSpecifier         	= alcGetString		(pDevice, ALC_DEVICE_SPECIFIER);
-	Msg				        	("SOUND: OpenAL: Required device: %s. Created device: %s.", deviceDesc.name.c_str(), deviceSpecifier);
 
     // Create context
     pContext					= alcCreateContext	(pDevice,NULL);
 	if (0==pContext){
-		Log						("SOUND: OpenAL: Failed to create context.");
+		CHECK_OR_EXIT			(0,"SOUND: OpenAL: Failed to create context.");
 		bPresent				= FALSE;
 		alcCloseDevice			(pDevice); pDevice = 0;
 		return;
@@ -100,45 +127,39 @@ void CSoundRender_CoreA::_initialize	(u64 window)
     A_CHK				        (alListenerf		(AL_GAIN,1.f));
 
     // Check for EAX extension
-    bEAX 				        = deviceDesc.eax && !deviceDesc.eax_unwanted;
+    bEAX 				        = deviceDesc.props.eax && !deviceDesc.props.eax_unwanted;
+
     eaxSet 				        = (EAXSet)alGetProcAddress	((const ALchar*)"EAXSet");
     if (eaxSet==NULL) bEAX 		= false;
     eaxGet 				        = (EAXGet)alGetProcAddress	((const ALchar*)"EAXGet");
     if (eaxGet==NULL) bEAX 		= false;
 
-    if (bEAX){
+    if (bEAX)
+	{
 		bDeferredEAX			= EAXTestSupport(TRUE);
         bEAX 					= EAXTestSupport(FALSE);
     }
 
-	ZeroMemory					( &wfm, sizeof( WAVEFORMATEX ) );
-	switch	( psSoundFreq ){            
-	default:
-	case sf_22K:	wfm.nSamplesPerSec = 22050; break;
-	case sf_44K:	wfm.nSamplesPerSec = 44100; break;
-	}
-	wfm.wFormatTag				= WAVE_FORMAT_PCM;
-	wfm.nChannels				= 2;	//(dsCaps.dwFlags&DSCAPS_PRIMARYSTEREO)?2:1;
-	wfm.wBitsPerSample			= 16;	//(dsCaps.dwFlags&DSCAPS_PRIMARY16BIT)?16:8;
-	wfm.nBlockAlign				= wfm.wBitsPerSample / 8 * wfm.nChannels;
-	wfm.nAvgBytesPerSec			= wfm.nSamplesPerSec * wfm.nBlockAlign;
+    inherited::_initialize		(stage);
 
-    // inherited initialize           
-    inherited::_initialize		(window);
-
-	// Pre-create targets
-	CSoundRender_Target*	T	= 0;
-	for (u32 tit=0; tit<u32(psSoundTargets); tit++)
+	if(stage==1)//first initialize
 	{
-		T						=	xr_new<CSoundRender_TargetA>();
-		if (T->_initialize()){	
-			s_targets.push_back	(T);
-        }else{
-        	Log					("! SOUND: OpenAL: Max targets - ",tit);
-            T->_destroy			();
-        	xr_delete			(T);
-        	break;
-        }
+		// Pre-create targets
+		CSoundRender_Target*	T	= 0;
+		for (u32 tit=0; tit<u32(psSoundTargets); tit++)
+		{
+			T						=	xr_new<CSoundRender_TargetA>();
+			if (T->_initialize())
+			{
+				s_targets.push_back	(T);
+			}else
+			{
+        		Log					("! SOUND: OpenAL: Max targets - ",tit);
+				T->_destroy			();
+        		xr_delete			(T);
+        		break;
+			}
+		}
 	}
 }
 

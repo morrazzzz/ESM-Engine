@@ -234,13 +234,6 @@ void destroyInput	()
 	xr_delete					( pInput		);
 }
 
-void InitSound()
-{
-	CSound_manager_interface::_create(u64(Device.m_hWnd));
-	//	Msg				("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-	//	ref_sound*	x	= 
-}
-
 PROTECT_API void InitSound1		()
 {
 	CSound_manager_interface::_create				(0);
@@ -312,11 +305,9 @@ void CheckPrivilegySlowdown		( )
 
 void Startup()
 {
-#pragma todo("PATCH XRSOUND!!!")
-//	InitSound1();
+	InitSound1();
 	execUserScript();
-	InitSound();
-//	InitSound2();
+	InitSound2();
 
 	const char* preset{};
 	if (strstr(Core.Params, "-minimum"))

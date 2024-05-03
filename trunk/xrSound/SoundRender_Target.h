@@ -7,8 +7,7 @@
 class CSoundRender_Target
 {
 protected:
-	WAVEFORMATEX				wfx;
-	CSoundRender_Emitter*		pEmitter;
+	CSoundRender_Emitter*		m_pEmitter;
 	BOOL						rendering;
 public:
 	float						priority;
@@ -23,14 +22,15 @@ public:
 		return &ovf;
 	}
 public:
-								CSoundRender_Target	(void);
-	virtual 					~CSoundRender_Target(void);
+								CSoundRender_Target	();
+	virtual 					~CSoundRender_Target();
 
-	CSoundRender_Emitter*		get_emitter			()	{ return pEmitter;	}
+	CSoundRender_Emitter*		get_emitter			()	{ return m_pEmitter;	}
 	BOOL						get_Rendering		()	{ return rendering;	}
 
 	virtual BOOL				_initialize			()=0;
 	virtual void				_destroy			()=0;
+	virtual void				_restart			()=0;
 
 	virtual void				start				(CSoundRender_Emitter* E)=0;
 	virtual void				render				()=0;
