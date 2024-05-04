@@ -477,6 +477,43 @@ public:
 		return inherited::GetToken();
 	}
 };
+#ifndef DEDICATED_SERVER
+class CCC_soundDevice : public CCC_Token
+{
+	typedef CCC_Token inherited;
+public:
+	CCC_soundDevice(LPCSTR N) :inherited(N, &snd_device_id, NULL) {};
+	virtual			~CCC_soundDevice()
+	{}
+
+	virtual void Execute(LPCSTR args)
+	{
+		GetToken();
+		if (!tokens)				return;
+		inherited::Execute(args);
+	}
+
+	virtual void	Status(TStatus& S)
+	{
+		GetToken();
+		if (!tokens)				return;
+		inherited::Status(S);
+	}
+
+	virtual xr_token* GetToken()
+	{
+		tokens = snd_devices_token;
+		return inherited::GetToken();
+	}
+
+	virtual void Save(IWriter* F)
+	{
+		GetToken();
+		if (!tokens)				return;
+		inherited::Save(F);
+	}
+};
+#endif
 //-----------------------------------------------------------------------
 ENGINE_API float	psHUD_FOV=0.45f;
 
@@ -616,6 +653,11 @@ void CCC_Register()
 	CMD2(CCC_Float,		"cam_slide_inert",		&psCamSlideInert);
 
 	CMD1(CCC_r2,		"renderer"					);
+
+#ifndef DEDICATED_SERVER
+	CMD1(CCC_soundDevice, "snd_device");
+#endif
+
 	//psSoundRolloff	= pSettings->r_float	("sound","rolloff");		clamp(psSoundRolloff,			EPS_S,	2.f);
 	psSoundOcclusionScale	= pSettings->r_float	("sound","occlusion_scale");clamp(psSoundOcclusionScale,	0.1f,	.5f);
 
@@ -638,10 +680,10 @@ if(strstr(Core.Params,"designer"))
 	CMD4(CCC_Integer, "show_display_engine_information", &DisplayEngineInformation_, 0, 1)
 	CMD4(CCC_Integer, "show_fps_display", &DisplayFPSShow_, 0, 1)
 
-//	extern int g_svTextConsoleUpdateRate;
-//	CMD4(CCC_Integer, "sv_console_update_rate", &g_svTextConsoleUpdateRate, 1, 100);
+	extern int g_svTextConsoleUpdateRate;
+	CMD4(CCC_Integer, "sv_console_update_rate", &g_svTextConsoleUpdateRate, 1, 100);
 
-//	extern int g_svDedicateServerUpdateReate;
-//	CMD4(CCC_Integer, "sv_dedicated_server_update_rate", &g_svDedicateServerUpdateReate, 1, 1000);
+	extern int g_svDedicateServerUpdateReate;
+	CMD4(CCC_Integer, "sv_dedicated_server_update_rate", &g_svDedicateServerUpdateReate, 1, 1000);
 };
  
