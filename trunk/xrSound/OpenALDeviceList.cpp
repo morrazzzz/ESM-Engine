@@ -41,8 +41,9 @@ void __cdecl al_log(char* msg)
 
 ALDeviceList::ALDeviceList()
 {
-#pragma todo("45 - ?")
-//	pLog					= al_log;
+#ifdef _EDITOR
+	pLog					= al_log;
+#endif
 	snd_device_id			= u32(-1);
 	Enumerate();
 }
