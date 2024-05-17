@@ -687,7 +687,6 @@ void CLocatorAPI::_initialize	(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
 	//-----------------------------------------------------------
 
 	CreateLog		(0!=strstr(Core.Params,"-nolog"));
-
 }
 
 void CLocatorAPI::_destroy		()

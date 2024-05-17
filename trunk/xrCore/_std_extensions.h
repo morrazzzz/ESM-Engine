@@ -202,24 +202,28 @@ IC char* xr_strcat(char* strDestination, const char* strSource)
 	return strcat(strDestination, strSource);
 }
 
-inline int __cdecl xr_sprintf(LPSTR destination, size_t const buffer_size, LPCSTR format_string, ...)
+IC int __cdecl xr_sprintf(LPSTR destination, size_t const buffer_size, LPCSTR format_string, ...)
 {
 	va_list args;
 	va_start(args, format_string);
-	return						vsprintf_s(destination, buffer_size, format_string, args);
+	int result = vsprintf_s(destination, buffer_size, format_string, args);
+	va_end(args);
+	return result;
 }
 
 template <int count>
-inline int __cdecl xr_sprintf(char(&destination)[count], LPCSTR format_string, ...)
+IC int __cdecl xr_sprintf(char(&destination)[count], LPCSTR format_string, ...)
 {
 	va_list args;
 	va_start(args, format_string);
-	return						vsprintf_s(destination, count, format_string, args);
+	int result = vsprintf_s(destination, count, format_string, args);
+	va_end(args);
+	return result;
 }
 
-XRCORE_API	char*				timestamp				(string64& dest);
+XRCORE_API char* timestamp(string64& dest);
 
-extern XRCORE_API u32			crc32					(const void* P, u32 len);
+extern XRCORE_API u32 crc32(const void* P, u32 len);
 
 XRCORE_API std::string StringToUTF8(const char* in);
 #endif
