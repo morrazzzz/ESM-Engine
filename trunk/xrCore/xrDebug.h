@@ -38,15 +38,17 @@ public:
 
 // warning
 // this function can be used for debug purposes only
-IC	std::string __cdecl	make_string		(LPCSTR format,...)
+IC	std::string __cdecl	make_string(LPCSTR format, ...)
 {
 	va_list		args;
-	va_start	(args,format);
+	va_start(args, format);
 
-	char		temp[4096];
-	vsprintf	(temp,format,args);
+	char temp[4096];
+	vsprintf(temp, format, args);
 
-	return		(temp);
+	va_end(args);
+
+	return temp;
 }
 
 extern XRCORE_API	xrDebug		Debug;

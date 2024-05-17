@@ -43,11 +43,7 @@
 #		define VERIFY4(expr, e2, e3, e4)do {static bool ignore_always = false; if (!ignore_always && !(expr)) ::Debug.fail(#expr,e2,e3,e4,DEBUG_INFO,ignore_always);} while(0)
 #		define CHK_DX(expr)				do {static bool ignore_always = false; HRESULT hr = expr; if (!ignore_always && FAILED(hr)) ::Debug.error(hr,#expr,DEBUG_INFO,ignore_always);} while(0)
 #	else // DEBUG
-#		ifdef __BORLANDC__
-#			define NODEFAULT
-#		else
-#			define NODEFAULT __assume(0)
-#		endif
+#		define NODEFAULT __assume(0)
 #		define VERIFY(expr)				do {} while (0)
 #		define VERIFY2(expr, e2)		do {} while (0)
 #		define VERIFY3(expr, e2, e3)	do {} while (0)
