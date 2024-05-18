@@ -402,28 +402,35 @@ void CBulletManager::CommitRenderSet		()	// @ the end of frame
 }
 void CBulletManager::CommitEvents			()	// @ the start of frame
 {
-	for (u32 _it=0; _it<m_Events.size(); _it++)	{
-		_event&		E	= m_Events[_it];
+	for (u32 _it = 0; _it < m_Events.size(); _it++) {
+		_event& E = m_Events[_it];
 		switch (E.Type)
 		{
 		case EVENT_HIT:
-			{
-				if (E.dynamic)	DynamicObjectHit	(E);
-				else			StaticObjectHit		(E);
-			}break;
+		{
+			if (E.dynamic)	DynamicObjectHit(E);
+			else			StaticObjectHit(E);
+		}break;
 		case EVENT_REMOVE:
-			{
-				m_Bullets[E.tgt_material] = m_Bullets.back();
-				m_Bullets.pop_back();
-			}break;
-		}		
+		{
+			m_Lock.Enter();
+			m_Bullets[E.tgt_material] = m_Bullets.back();
+			m_Bullets.pop_back();
+			m_Lock.Leave();
+		}break;
+		}
 	}
-	m_Events.clear_and_reserve	()	;
+
+	m_Lock.Enter();
+	m_Events.clear_and_reserve();
+	m_Lock.Leave();
 }
 
 void CBulletManager::RegisterEvent			(EventType Type, BOOL _dynamic, SBullet* bullet, const Fvector& end_point, collide::rq_result& R, u16 tgt_material)
 {
+	m_Lock.Enter();
 	m_Events.push_back	(_event())		;
+	m_Lock.Leave();
 	_event&	E		= m_Events.back()	;
 	E.Type			= Type				;
 	E.bullet		= *bullet			;
