@@ -396,34 +396,37 @@ u32 CUITradeWnd::CalcItemsPrice(CUIDragDropListEx* pList, CTrade* pTrade, bool b
 void CUITradeWnd::PerformTrade()
 {
 
-	if (m_uidata->UIOurTradeList.ItemsCount()==0 && m_uidata->UIOthersTradeList.ItemsCount()==0) 
+	if (m_uidata->UIOurTradeList.ItemsCount() == 0 && m_uidata->UIOthersTradeList.ItemsCount() == 0)
 		return;
 
-	int our_money			= (int)m_pInvOwner->get_money();
-	int others_money		= (int)m_pOthersInvOwner->get_money();
+	int our_money = (int)m_pInvOwner->get_money();
+	int others_money = (int)m_pOthersInvOwner->get_money();
 
-	int delta_price			= int(m_iOurTradePrice-m_iOthersTradePrice);
+	int delta_price = int(m_iOurTradePrice - m_iOthersTradePrice);
 
-	our_money				+= delta_price;
-	others_money			-= delta_price;
+	our_money += delta_price;
 
-	if(our_money>=0 && others_money>=0 && (m_iOurTradePrice>=0 || m_iOthersTradePrice>0))
+	if (!m_pOthersInvOwner->InfinitiveMoney())
+		others_money -= delta_price;
+
+	if (our_money >= 0 && others_money >= 0 && (m_iOurTradePrice >= 0 || m_iOthersTradePrice > 0))
 	{
 		m_pOthersTrade->OnPerformTrade(m_iOthersTradePrice, m_iOurTradePrice);
-		
-		TransferItems		(&m_uidata->UIOurTradeList,		&m_uidata->UIOthersBagList, m_pOthersTrade,	true);
-		TransferItems		(&m_uidata->UIOthersTradeList,	&m_uidata->UIOurBagList,	m_pOthersTrade,	false);
-	}else
-	{
-		if(others_money<0)
-			m_uidata->UIDealMsg		= HUD().GetUI()->UIGame()->AddCustomStatic("not_enough_money_other", true);
-		else
-			m_uidata->UIDealMsg		= HUD().GetUI()->UIGame()->AddCustomStatic("not_enough_money_mine", true);
 
-
-		m_uidata->UIDealMsg->m_endTime	= Device.fTimeGlobal+2.0f;// sec
+		TransferItems(&m_uidata->UIOurTradeList, &m_uidata->UIOthersBagList, m_pOthersTrade, true);
+		TransferItems(&m_uidata->UIOthersTradeList, &m_uidata->UIOurBagList, m_pOthersTrade, false);
 	}
-	SetCurrentItem			(NULL);
+	else
+	{
+		if (others_money < 0)
+			m_uidata->UIDealMsg = HUD().GetUI()->UIGame()->AddCustomStatic("not_enough_money_other", true);
+		else
+			m_uidata->UIDealMsg = HUD().GetUI()->UIGame()->AddCustomStatic("not_enough_money_mine", true);
+
+
+		m_uidata->UIDealMsg->m_endTime = Device.fTimeGlobal + 2.0f;// sec
+	}
+	SetCurrentItem(NULL);
 }
 
 void CUITradeWnd::DisableAll()
