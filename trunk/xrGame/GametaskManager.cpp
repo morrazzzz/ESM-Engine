@@ -12,7 +12,7 @@
 #include "ui/UIPDAWnd.h"
 #include "encyclopedia_article.h"
 #include "ui/UIEventsWnd.h"
-#include "../xr_3da/DiscordRPC.hpp"
+#include "../xr_3da/DiscordSDK.h"
 #include "string_table.h"
 
 #pragma warning(push)
@@ -311,7 +311,9 @@ void CGameTaskManager::SetActiveTask(const TASK_ID& id, u16 idx)
 		if(ml)
 			ml->EnablePointer();
 	}
-	Discord.Set_active_task_text(CStringTable().translate(o ? o->description : "st_no_active_task").c_str());
+
+	xr_string TaskNameDiscord_ = CStringTable().translate(o ? o->description : "st_no_active_task").c_str();
+	Discord.SetPhase(TaskNameDiscord_);
 }
 
 SGameTaskObjective* CGameTaskManager::ActiveObjective()

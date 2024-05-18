@@ -22,7 +22,7 @@
 #include "ispatial.h"
 #include "CopyProtection.h"
 #include <process.h>
-#include "DiscordRPC.hpp"
+#include "DiscordSDK.h"
 
 #define CORE_FEATURE_SET(feature, section) Core.Features.set(xrCore::Feature::feature, READ_IF_EXISTS(pSettings, r_bool, section, #feature, false))
 
@@ -358,7 +358,7 @@ void Startup()
 	DestroyWindow				(logoWindow);
 	logoWindow					= NULL;
 
-	Discord.Init();
+	Discord.InitSDK();
 
 	// Main cycle
 	CheckCopyProtection			( );
@@ -571,10 +571,10 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
                      char *    lpCmdLine,
                      int       nCmdShow)
 {
-	#ifdef DEDICATED_SERVER
-	Debug._initialize			(true);
+#ifdef DEDICATED_SERVER
+	Debug._initialize(true);
 #else // DEDICATED_SERVER
-	Debug._initialize			(false);
+	Debug._initialize(false);
 #endif // DEDICATED_SERVER
 
 	if (!IsDebuggerPresent()) {
@@ -761,12 +761,6 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 {
 	__try 
 	{
-#ifdef DEDICATED_SERVER
-		Debug._initialize	(true);
-#else // DEDICATED_SERVER
-		Debug._initialize	(false);
-#endif // DEDICATED_SERVER
-
 		WinMain_impl		(hInstance,hPrevInstance,lpCmdLine,nCmdShow);
 	}
 	__except(stack_overflow_exception_filter(GetExceptionCode()))

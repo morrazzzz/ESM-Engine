@@ -280,6 +280,8 @@ public:
 	const char* GetEngineVersion();
 };
 
+XRCORE_API xr_string ANSIToUTF8(const xr_string& string);
+
 //Borland class dll interface
 #define	_BCL			__stdcall	
 

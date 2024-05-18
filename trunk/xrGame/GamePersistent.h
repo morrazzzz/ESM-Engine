@@ -92,6 +92,9 @@ public:
 	        void		SetEffectorDOF(const Fvector& needed_dof);
 	        void		RestoreEffectorDOF();
 
+
+			void SetGameDiscordStatus();
+
 	virtual void		GetCurrentDof(Fvector3& dof);
 	virtual void		SetBaseDof(const Fvector3& dof);
 };

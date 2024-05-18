@@ -19,7 +19,7 @@
 #include "../xr_3da/CameraManager.h"
 #include "ai_space.h"
 #include "script_engine.h"
-#include "xr_3da/DiscordRPC.hpp"
+#include "xr_3da/DiscordSDK.h"
 
 #ifdef DEBUG
 #include "profiler.h"
@@ -437,6 +437,7 @@ void CGamePersistent::game_loaded()
 {
 	if (Device.dwPrecacheFrame <= 2)
 	{
+		SetGameDiscordStatus();
 		if (g_pGameLevel &&
 			g_pGameLevel->bReady &&
 			(allow_intro() && g_keypress_on_start) &&
@@ -519,9 +520,6 @@ void CGamePersistent::OnFrame	()
 
 //	if (!g_dedicated_server && Device.dwPrecacheFrame == 0 && !m_intro && m_intro_event.empty())
 //		load_screen_renderer.stop();
-
-	if(Device.dwPrecacheFrame == 0 && g_pGameLevel)
-		Discord.Update(CStringTable().translate(Level().name()).c_str(), Level().name().c_str());
 
 	if( !m_pMainMenu->IsActive() )
 		m_pMainMenu->DestroyInternal(false);
@@ -703,6 +701,8 @@ void CGamePersistent::OnRenderPPUI_PP()
 #include "../xr_3da/x_ray.h"
 void CGamePersistent::LoadTitle(bool change_tip, shared_str map_name)
 {
+	Discord.SetStatus("Загрузка игрового уровня");
+
 	pApp->LoadStage();
 	if (change_tip && EnabledTipsForZone_)
 	{
@@ -720,8 +720,6 @@ void CGamePersistent::LoadTitle(bool change_tip, shared_str map_name)
 		xr_sprintf(TipsHeader_, "%d %s", CountTipsForZone_, CStringTable().translate("ls_header_text").c_str());
 
 		pApp->LoadTitleInt(TipsHeader_, tmp.c_str(), CStringTable().translate(buff).c_str());
-
-		Discord.Update("Loading level: %s", map_name.c_str());
 	}
 }
 
@@ -785,4 +783,16 @@ void CGamePersistent::UpdateDof()
 	(m_dof[0].x < m_dof[2].x) ? clamp(m_dof[1].x, m_dof[0].x, m_dof[2].x) : clamp(m_dof[1].x, m_dof[2].x, m_dof[0].x);
 	(m_dof[0].y < m_dof[2].y) ? clamp(m_dof[1].y, m_dof[0].y, m_dof[2].y) : clamp(m_dof[1].y, m_dof[2].y, m_dof[0].y);
 	(m_dof[0].z < m_dof[2].z) ? clamp(m_dof[1].z, m_dof[0].z, m_dof[2].z) : clamp(m_dof[1].z, m_dof[2].z, m_dof[0].z);
+}
+
+void CGamePersistent::SetGameDiscordStatus()
+{
+	if (!g_pGameLevel)
+		return;
+
+	xr_string LevelName_ = "В игре:";
+	LevelName_ += "\t";
+	LevelName_ += CStringTable().translate(g_pGameLevel->name()).c_str();
+
+	Discord.SetStatus(LevelName_);
 }
