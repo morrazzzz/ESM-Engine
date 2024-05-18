@@ -138,6 +138,27 @@ const char* xrCore::GetEngineVersion() {
 		return buff;
 }
 
+xr_string ANSIToUTF8(const xr_string& string)
+{
+	wchar_t* wcs{};
+    int Lenght_ = MultiByteToWideChar(1251, 0, string.c_str(), (int)string.size(), wcs, 0);
+	wcs = new wchar_t[Lenght_ + 1];
+	MultiByteToWideChar(1251, 0, string.c_str(), (int)string.size(), wcs, Lenght_);
+	wcs[Lenght_] = L'\0';
+
+	char* u8s = nullptr;
+	Lenght_ = WideCharToMultiByte(CP_UTF8, 0, wcs, (int)std::wcslen(wcs), u8s, 0, nullptr, nullptr);
+	u8s = new char[Lenght_ + 1];
+	WideCharToMultiByte(CP_UTF8, 0, wcs, (int)std::wcslen(wcs), u8s, Lenght_, nullptr, nullptr);
+	u8s[Lenght_] = '\0';
+
+	xr_string result(u8s);
+	delete[] wcs;
+	delete[] u8s;
+
+	return result;
+}
+
 #ifndef XRCORE_STATIC
 	BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD ul_reason_for_call, LPVOID lpvReserved)
 {

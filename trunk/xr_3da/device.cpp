@@ -16,6 +16,8 @@
 #include "render.h"
 #include "igame_persistent.h"
 
+#include "DiscordSDK.h"
+
 ENGINE_API CRenderDevice Device;
 ENGINE_API CLoadScreenRenderer load_screen_renderer;
 
@@ -147,6 +149,8 @@ void 			mt_Thread	(void *ptr)	{
 		// we has granted permission to execute
 		mt_Thread_marker			= Device.dwFrame;
  
+		Discord.UpdateSDK();
+
 		for (u32 pit=0; pit<Device.seqParallel.size(); pit++)
 			Device.seqParallel[pit]	();
 		Device.seqParallel.clear_not_free	();
