@@ -24,10 +24,9 @@
 #include "PHScriptCall.h"
 #include "HUDManager.h"
 #include "game_cl_single.h"
-
 #include "map_manager.h"
 #include "map_location.h"
-#include "phworld.h"
+#include "physics_world_scripted.h"
 
 using namespace luabind;
 
@@ -343,9 +342,9 @@ void remove_calls_for_object(const luabind::object &lua_object)
 	Level().ph_commander_scripts().remove_calls(&c);
 }
 
-CPHWorld* physics_world()
+cphysics_world_scripted* physics_world_scripted()
 {
-	return	ph_world;
+	return	get_script_wrapper<cphysics_world_scripted>(*physics_world());
 }
 CEnvironment *environment()
 {

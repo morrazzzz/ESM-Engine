@@ -22,7 +22,7 @@
 #include "game_base_space.h"
 //#include "phvalide.h"
 
-
+#include "ph_valid_ode.h"
 
 IC		bool	PhOutOfBoundaries			(const Fvector& v)
 {
@@ -327,7 +327,9 @@ void CPHSimpleCharacter::Create(dVector3 sizes){
 	{
 		SetObjectContactCallback(m_object_contact_callback);
 	}
-	SetStaticContactCallBack(CharacterContactShotMark);
+	VERIFY(ph_world);
+	SetStaticContactCallBack(ph_world->default_character_contact_shotmark());
+	//SetStaticContactCallBack(CharacterContactShotMark);
 	m_elevator_state.SetCharacter(static_cast<CPHCharacter*>(this));
 	CPHObject::activate();
 	spatial_register();
@@ -335,8 +337,8 @@ void CPHSimpleCharacter::Create(dVector3 sizes){
 	CPHCollideValidator::SetCharacterClass(*this);
 	m_collision_damage_info.Construct();
 
-	m_last_picked_material = GAMEMTL_NONE_IDX;
 	m_last_env_update_pos = Fvector().set(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+	m_last_picked_material = GAMEMTL_NONE_IDX;
 }
 void CPHSimpleCharacter::SwitchOFFInitContact()
 {
@@ -1237,7 +1239,7 @@ void CPHSimpleCharacter::SafeAndLimitVelocity()
 					m_safe_position[0]+linear_velocity[0]*fixed_step,
 					m_safe_position[1]+linear_velocity[1]*fixed_step,
 					m_safe_position[2]+linear_velocity[2]*fixed_step);
-					VERIFY_BOUNDARIES(cast_fv(dBodyGetPosition(m_body)),phBoundaries,PhysicsRefObject())
+					VERIFY_BOUNDARIES(cast_fv(dBodyGetPosition(m_body)), phBoundaries, PhysicsRefObject());
 				}
 			}else	dBodySetLinearVel(m_body,0,0,0);
 

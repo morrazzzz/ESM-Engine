@@ -8,7 +8,7 @@
 
 #include "ActorEffector.h"
 
-#include "PHWorld.h"
+#include "IPHWorld.h"
 #include "level.h"
 #include "game_cl_base.h"
 #include "alife_registry_wrappers.h"
@@ -882,7 +882,7 @@ void CActor::PH_B_CrPr		()	// actions & operations before physic correction-pred
 	//just set last update data for now
 //	if (!m_bHasUpdate) return;	
 	if (CrPr_IsActivated()) return;
-	if (CrPr_GetActivationStep() > ph_world->m_steps_num) return;
+	if (CrPr_GetActivationStep() > physics_world()->StepsNum()) return;
 
 	if (g_Alive())
 	{
@@ -1105,7 +1105,7 @@ void	CActor::CalculateInterpolationParams()
 	float lV0 = State0.linear_vel.magnitude();
 	float lV1 = State1.linear_vel.magnitude();
 
-	u32		ConstTime = u32((fixed_step - ph_world->m_frame_time)*1000)+ Level().GetInterpolationSteps()*u32(fixed_step*1000);
+	u32		ConstTime = u32((fixed_step - physics_world()->FrameTime()) * 1000) + Level().GetInterpolationSteps() * u32(fixed_step * 1000);
 
 	m_dwIStartTime = m_dwILastUpdateTime;
 	

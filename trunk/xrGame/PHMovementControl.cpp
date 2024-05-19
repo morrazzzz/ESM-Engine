@@ -9,6 +9,7 @@
 #include "PHActorCharacter.h"
 #include "PHCapture.h"
 #include "ai_space.h"
+#include "iphworld.h"
 #include "detail_path_manager.h"
 #include "../xr_3da/GameMtlLib.h"
 #include "Level.h"
@@ -943,7 +944,7 @@ void CPHMovementControl::Jump(const Fvector &start_point,const Fvector &end_poin
 {
 	Fvector velosity;
 	velosity.sub(end_point,start_point);
-	TransferenceToThrowVel(velosity,time,ph_world->Gravity());
+	TransferenceToThrowVel(velosity,time, physics_world()->Gravity());
 	JumpV(velosity);
 }
 float CPHMovementControl::Jump(const Fvector &end_point)
@@ -960,19 +961,19 @@ void CPHMovementControl::GetJumpMinVelParam(Fvector &min_vel,float &time,JumpTyp
 
 float CPHMovementControl::JumpMinVelTime(const Fvector &end_point)
 {
-	return ThrowMinVelTime(Fvector().sub(end_point,smart_cast<CGameObject*>(m_character->PhysicsRefObject())->Position()),ph_world->Gravity());
+	return ThrowMinVelTime(Fvector().sub(end_point,smart_cast<CGameObject*>(m_character->PhysicsRefObject())->Position()), physics_world()->Gravity());
 }
 
 void CPHMovementControl::GetJumpParam(Fvector &velocity, JumpType &type,const Fvector &end_point, float time)
 {
 	Fvector velosity;velosity.sub(smart_cast<CGameObject*>(m_character->PhysicsRefObject())->Position(),end_point);
-	TransferenceToThrowVel(velosity,time,ph_world->Gravity());
+	TransferenceToThrowVel(velosity,time, physics_world()->Gravity());
 	if(velocity.y<0.f)
 	{
 		type=jtStrait;
 		return;
 	}
-	float rise_time=velosity.y/ph_world->Gravity();
+	float rise_time=velosity.y/ physics_world()->Gravity();
 	if(_abs(rise_time-time)<EPS_L)
 	{
 		type=jtHigh;

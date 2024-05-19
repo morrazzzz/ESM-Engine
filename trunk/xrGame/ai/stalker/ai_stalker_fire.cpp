@@ -40,7 +40,7 @@
 #include "../../restricted_object.h"
 #include "../../ai_object_location.h"
 #include "../../missile.h"
-#include "../../phworld.h"
+#include "../../iphworld.h"
 #include "../../stalker_animation_names.h"
 #include "../../agent_corpse_manager.h"
 #include "../../CharacterPhysicsSupport.h"
@@ -851,8 +851,8 @@ void CAI_Stalker::update_throw_params		()
 	// computing velocity with minimum magnitude
 	Fvector					velocity;
 	velocity.sub			(m_throw_target,m_throw_position);
-	float					time = ThrowMinVelTime(velocity,ph_world->Gravity());
-	TransferenceToThrowVel	(velocity,time,ph_world->Gravity());
+	float					time = ThrowMinVelTime(velocity, physics_world()->Gravity());
+	TransferenceToThrowVel	(velocity,time,physics_world()->Gravity());
 	m_throw_force			= velocity.magnitude();
 	m_throw_direction		= velocity.normalize();
 	VERIFY					(_valid(m_throw_force));

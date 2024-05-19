@@ -7,6 +7,10 @@
 #include "PhysicsGamePars.h"
 #include "ai_space.h"
 
+#include "iphworld.h"
+#include "PHCommander.h"
+#include "physics_game.h"
+
 extern	pureFrame*				g_pNetProcessor;
 
 BOOL CLevel::net_Start_client	( LPCSTR options )
@@ -88,8 +92,21 @@ bool	CLevel::net_start_client4				()
 
 		// Send physics to single or multithreaded mode
 		LoadPhysicsGameParams				();
-		ph_world							= xr_new<CPHWorld>();
-		ph_world->Create					();
+
+		create_physics_world(!!psDeviceFlags.test(mtPhysics), &ObjectSpace, &Objects, &Device);
+
+
+
+		R_ASSERT(physics_world());
+
+		m_ph_commander_physics_worldstep = xr_new<CPHCommander>();
+		physics_world()->set_update_callback(m_ph_commander_physics_worldstep);
+
+		physics_world()->set_default_contact_shotmark(ContactShotMark);
+		physics_world()->set_default_character_contact_shotmark(CharacterContactShotMark);
+
+		VERIFY(physics_world());
+		physics_world()->set_step_time_callback((PhysicsStepTimeCallback*)&PhisStepsCallback);
 
 		// Send network to single or multithreaded mode
 		// *note: release version always has "mt_*" enabled

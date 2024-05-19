@@ -34,6 +34,7 @@
 #include <functional>
 
 
+#include "console_vars.h"//#include "../xrphysics/console_vars.h"
 
 #ifdef DEBUG
 #include "space_restrictor.h"
@@ -46,9 +47,6 @@
 #include "../xr_3da/xr_object.h"
 #endif
 
-extern BOOL	g_bDebugDumpPhysicsStep;
-
-CPHWorld	*ph_world			= 0;
 float		g_cl_lvInterp		= 0;
 u32			lvInterpSteps		= 0;
 //////////////////////////////////////////////////////////////////////
@@ -195,10 +193,10 @@ CLevel::~CLevel()
 	Engine.Event.Handler_Detach	(eDemoPlay,		this);
 	Engine.Event.Handler_Detach	(eChangeRP,		this);
 
-	if (ph_world)
+	if (physics_world())
 	{
-		ph_world->Destroy		();
-		xr_delete				(ph_world);
+		destroy_physics_world();
+		xr_delete(m_ph_commander_physics_worldstep);
 	}
 
 	// destroy PSs
@@ -607,7 +605,7 @@ void CLevel::OnRender()
 
 
 #ifdef DEBUG
-	ph_world->OnRender	();
+	physics_world()->OnRender();
 #endif
 
 #ifdef DEBUG
@@ -775,15 +773,15 @@ void CLevel::make_NetCorrectionPrediction	()
 {
 	m_bNeed_CrPr	= false;
 	m_bIn_CrPr		= true;
-	u64 NumPhSteps = ph_world->m_steps_num;
-	ph_world->m_steps_num -= m_dwNumSteps;
-	if(g_bDebugDumpPhysicsStep&&m_dwNumSteps>10)
+	u64 NumPhSteps = physics_world()->StepsNum();
+	physics_world()->StepsNum() -= m_dwNumSteps;
+	if(ph_console::g_bDebugDumpPhysicsStep&&m_dwNumSteps>10)
 	{
 		Msg("!!!TOO MANY PHYSICS STEPS FOR CORRECTION PREDICTION = %d !!!",m_dwNumSteps);
 		m_dwNumSteps = 10;
 	};
 //////////////////////////////////////////////////////////////////////////////////
-	ph_world->Freeze();
+	physics_world()->Freeze();
 
 	//setting UpdateData and determining number of PH steps from last received update
 	for	(OBJECTS_LIST_it OIt = pObjects4CrPr.begin(); OIt != pObjects4CrPr.end(); OIt++)
@@ -798,7 +796,7 @@ void CLevel::make_NetCorrectionPrediction	()
 	
 	for (u32 i =0; i<m_dwNumSteps; i++)	
 	{
-		ph_world->Step();
+		physics_world()->Step();
 
 		for	(OBJECTS_LIST_it AIt = pActors4CrPr.begin(); AIt != pActors4CrPr.end(); AIt++)
 		{
@@ -819,7 +817,7 @@ void CLevel::make_NetCorrectionPrediction	()
 	{
 		for (u32 i =0; i<lvInterpSteps; i++)	//second prediction "real current" to "future" position
 		{
-			ph_world->Step();
+			physics_world()->Step();
 		}
 		//////////////////////////////////////////////////////////////////////////////////
 		for	(OBJECTS_LIST_it OIt = pObjects4CrPr.begin(); OIt != pObjects4CrPr.end(); ++OIt)
@@ -829,9 +827,9 @@ void CLevel::make_NetCorrectionPrediction	()
 			pObj->PH_A_CrPr();
 		};
 	};
-	ph_world->UnFreeze();
+	physics_world()->UnFreeze();
 
-	ph_world->m_steps_num = NumPhSteps;
+	physics_world()->StepsNum() = NumPhSteps;
 	m_dwNumSteps = 0;
 	m_bIn_CrPr = false;
 

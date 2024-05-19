@@ -4,7 +4,7 @@
 #include "tri-colliderknoopc/dTriList.h"
 #include "PhysicsCommon.h"
 #include "../xr_3da/gamemtllib.h"
-#include "MathUtils.h"
+#include "MathUtilsOde.h"
 void CPHContactBodyEffector::Init(dBodyID body,const dContact& contact,SGameMtl* material)
 {
 	CPHBaseBodyEffector::Init(body);

@@ -15,6 +15,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 static const float PARTICLE_EFFECT_DIST=70.f;
 static const float SOUND_EFFECT_DIST=70.f;
+const float			mass_limit = 10000.f;//some conventional value used as evaluative param (there is no code restriction on mass)
 //////////////////////////////////////////////////////////////////////////////////
 static const float SQUARE_PARTICLE_EFFECT_DIST=PARTICLE_EFFECT_DIST*PARTICLE_EFFECT_DIST;
 static const float SQUARE_SOUND_EFFECT_DIST=SOUND_EFFECT_DIST*SOUND_EFFECT_DIST;

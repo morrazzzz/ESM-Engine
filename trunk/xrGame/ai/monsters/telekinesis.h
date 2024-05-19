@@ -1,7 +1,7 @@
 #pragma once
 
 #include "telekinetic_object.h"
-#include "../../PHObject.h"
+#include "../../PHUpdateObject.h"
 
 
 
@@ -74,8 +74,8 @@ protected:
 private:
 
 	// обновление на шагах физики
-	virtual void 	PhDataUpdate		(dReal step);
-	virtual void 	PhTune				(dReal step);
+	virtual void 	PhDataUpdate		(float step);
+	virtual void 	PhTune				(float step);
 	
 
 };

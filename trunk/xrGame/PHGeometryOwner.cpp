@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "PHGeometryOwner.h"
+#include "PHWorld.h"
+
 #include "..\xr_3da\bone.h"
 #include "..\include\xrRender\Kinematics.h"
 
@@ -7,7 +9,9 @@ CPHGeometryOwner::CPHGeometryOwner()
 {
 	b_builded=false;
 	m_mass_center.set(0,0,0);
-	contact_callback=ContactShotMark;
+	VERIFY(ph_world);
+	//contact_callback=ContactShotMark;
+	contact_callback = ph_world->default_contact_shotmark();
 	object_contact_callback=NULL;
 	ul_material=GMLib.GetMaterialIdx("objects\\small_box");
 	m_group=NULL;
@@ -102,12 +106,12 @@ void CPHGeometryOwner::get_mc_kinematics(IKinematics* K,Fvector& mc,float& mass)
 	GEOM_I i_geom=m_geoms.begin(),e=m_geoms.end();
 	for(;i_geom!=e;++i_geom)
 	{
-		CBoneData& data=K->LL_GetData((*i_geom)->bone_id());
+		const IBoneData& data = K->GetBoneData((*i_geom)->bone_id());
 		Fvector add;
-		mass+=data.mass;
+		mass+=data.get_mass();
 		m_volume+=(*i_geom)->volume();
-		add.set(data.center_of_mass);
-		add.mul(data.mass);
+		add.set(data.get_center_of_mass());
+		add.mul(data.get_mass());
 		mc.add(add);
 	}
 	mc.mul(1.f/mass);
@@ -137,10 +141,21 @@ void CPHGeometryOwner::SetPhObjectInGeomData(CPHObject* O)
 	for(;i!=e;++i) (*i)->set_ph_object(O);
 }
 
+#pragma todo("restore!!!")
+/*
 dGeomID CPHGeometryOwner::dSpacedGeometry()
 {
-	if(!b_builded) return 0;
-	if(m_group) return (dGeomID)m_group;
+	if (!b_builded) return 0;
+	VERIFY(m_group);
+	//if(m_group) 
+	return (dGeomID)group_space();//(dGeomID)m_group;
+	//else return (*m_geoms.begin())->geometry_transform();
+}
+*/
+dGeomID CPHGeometryOwner::dSpacedGeometry()
+{
+	if (!b_builded) return 0;
+	if (m_group) return (dGeomID)m_group;
 	else return (*m_geoms.begin())->geometry_transform();
 }
 

@@ -1,13 +1,12 @@
 #include "stdafx.h"
 #include "artifact.h"
 #include "PhysicsShell.h"
-#include "PhysicsShellHolder.h"
 #include "../include/xrRender/Kinematics.h"
 #include "inventory.h"
 #include "level.h"
 #include "ai_object_location.h"
 #include "xrServer_Objects_ALife_Monsters.h"
-#include "phworld.h"
+#include "IPHWorld.h"
 #include "restriction_space.h"
 #include "../xr_3da/IGame_Persistent.h"
 
@@ -170,7 +169,7 @@ void CArtefact::OnH_A_Chield()
 
 void CArtefact::OnH_B_Independent(bool just_before_destroy) 
 {
-	VERIFY(!ph_world->Processing());
+	VERIFY(!physics_world()->Processing());
 	inherited::OnH_B_Independent(just_before_destroy);
 
 	StartLights();
@@ -193,7 +192,7 @@ void CArtefact::UpdateCL		()
 
 void CArtefact::UpdateWorkload		(u32 dt) 
 {
-	VERIFY(!ph_world->Processing());
+	VERIFY(!physics_world()->Processing());
 	// particles - velocity
 	Fvector vel = {0, 0, 0};
 	if (H_Parent()) 
@@ -242,7 +241,7 @@ void CArtefact::create_physic_shell	()
 
 void CArtefact::StartLights()
 {
-	VERIFY(!ph_world->Processing());
+	VERIFY(!physics_world()->Processing());
 	if(!m_bLightsEnabled) return;
 
 	//включить световую подсветку от двигателя
@@ -257,14 +256,14 @@ void CArtefact::StartLights()
 
 void CArtefact::StopLights()
 {
-	VERIFY(!ph_world->Processing());
+	VERIFY(!physics_world()->Processing());
 	if(!m_bLightsEnabled) return;
 	m_pTrailLight->set_active(false);
 }
 
 void CArtefact::UpdateLights()
 {
-	VERIFY(!ph_world->Processing());
+	VERIFY(!physics_world()->Processing());
 	if(!m_bLightsEnabled || !m_pTrailLight->get_active()) return;
 	m_pTrailLight->set_position(Position());
 }
@@ -469,7 +468,7 @@ void SArtefactActivation::Load()
 
 void SArtefactActivation::Start()
 {
-	VERIFY(!ph_world->Processing());
+	VERIFY(!physics_world()->Processing());
 	m_af->StopLights				();
 	m_cur_activation_state			= eStarting;
 	m_cur_state_time				= 0.0f;
@@ -487,7 +486,7 @@ void SArtefactActivation::Start()
 
 void SArtefactActivation::UpdateActivation()
 {
-	VERIFY(!ph_world->Processing());
+	VERIFY(!physics_world()->Processing());
 	m_cur_state_time				+=	Device.fTimeDelta;
 	if(m_cur_state_time				>=	m_activation_states[int(m_cur_activation_state)].m_time){
 		m_cur_activation_state		=	(EActivationStates)(int)(m_cur_activation_state+1);
@@ -517,7 +516,7 @@ void SArtefactActivation::PhDataUpdate(dReal step)
 	if (m_cur_activation_state==eFlying) {
 		Fvector dir	= {0, -1.f, 0};
 		if(Level().ObjectSpace.RayTest(m_af->Position(), dir, 1.0f, collide::rqtBoth,NULL,m_af) ){
-			dir.y = ph_world->Gravity()*1.1f; 
+			dir.y = physics_world()->Gravity() * 1.1f;
 			m_af->m_pPhysicsShell->applyGravityAccel(dir);
 		}
 	}
@@ -525,7 +524,7 @@ void SArtefactActivation::PhDataUpdate(dReal step)
 }
 void SArtefactActivation::ChangeEffects()
 {
-	VERIFY(!ph_world->Processing());
+	VERIFY(!physics_world()->Processing());
 	SStateDef& state_def = m_activation_states[(int)m_cur_activation_state];
 	
 	if(m_snd._feedback())
@@ -559,7 +558,7 @@ void SArtefactActivation::ChangeEffects()
 
 void SArtefactActivation::UpdateEffects()
 {
-	VERIFY(!ph_world->Processing());
+	VERIFY(!physics_world()->Processing());
 	if(m_snd._feedback())
 		m_snd.set_position( m_af->Position() );
 	
@@ -568,7 +567,7 @@ void SArtefactActivation::UpdateEffects()
 
 void SArtefactActivation::SpawnAnomaly()
 {
-	VERIFY(!ph_world->Processing());
+	VERIFY(!physics_world()->Processing());
 	string128 tmp;
 	LPCSTR str			= pSettings->r_string("artefact_spawn_zones",*m_af->cNameSect());
 	VERIFY3(3==_GetItemCount(str),"Bad record format in artefact_spawn_zones",str);

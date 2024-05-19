@@ -552,7 +552,7 @@ void CInventoryItem::PH_B_CrPr		()
 	net_updateData* p		= NetSync();
 	//just set last update data for now
 	if (object().CrPr_IsActivated()) return;
-	if (object().CrPr_GetActivationStep() > ph_world->m_steps_num) return;
+	if (object().CrPr_GetActivationStep() > physics_world()->StepsNum()) return;
 	object().CrPr_SetActivated(true);
 
 	///////////////////////////////////////////////
@@ -622,7 +622,7 @@ void CInventoryItem::PH_Ch_CrPr			()
 
 			object().PHUnFreeze			();
 			///////////////////////////////////////////////////////////////////
-			ph_world->Step				();
+			physics_world()->Step();
 			///////////////////////////////////////////////////////////////////
 			PH_Ch_CrPr					();
 			////////////////////////////////////
@@ -730,7 +730,7 @@ void CInventoryItem::CalculateInterpolationParams()
 	float lV0 = State0.linear_vel.magnitude();
 	float lV1 = State1.linear_vel.magnitude();
 
-	u32		ConstTime = u32((fixed_step - ph_world->m_frame_time)*1000)+ Level().GetInterpolationSteps()*u32(fixed_step*1000);
+	u32		ConstTime = u32((fixed_step - physics_world()->FrameTime()) * 1000) + Level().GetInterpolationSteps() * u32(fixed_step * 1000);
 	
 	p->m_dwIStartTime = p->m_dwILastUpdateTime;
 

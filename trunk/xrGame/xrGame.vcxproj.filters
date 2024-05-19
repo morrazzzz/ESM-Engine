@@ -2278,6 +2278,12 @@
     <Filter Include="AI\AScript\ScriptClasses\ScriptCRandom">
       <UniqueIdentifier>{e199c394-e57b-4718-9504-7a49e462c875}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Physics\Base\Objects\script">
+      <UniqueIdentifier>{46985d61-7b01-4947-b93d-912cfb752c95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Physics\Base\Objects\debug">
+      <UniqueIdentifier>{c0ba1350-d1d5-4e15-8683-53e700bc5113}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mt_config.h">
@@ -5709,9 +5715,6 @@
     <ClInclude Include="ode_redefine.h">
       <Filter>Physics\Base</Filter>
     </ClInclude>
-    <ClInclude Include="PHDebug.h">
-      <Filter>Physics\Base</Filter>
-    </ClInclude>
     <ClInclude Include="phvalide.h">
       <Filter>Physics\Base</Filter>
     </ClInclude>
@@ -6509,6 +6512,36 @@
     </ClInclude>
     <ClInclude Include="script_crandom.h">
       <Filter>AI\AScript\ScriptClasses\ScriptCRandom</Filter>
+    </ClInclude>
+    <ClInclude Include="IPHWorld.h">
+      <Filter>Physics\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="PHDebug.h">
+      <Filter>Physics\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="MathUtilsOde.h">
+      <Filter>Physics\Base\Objects\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsExternalCommon.h">
+      <Filter>Physics\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="PHUpdateObject.h">
+      <Filter>Physics\Base\Objects\PHObject</Filter>
+    </ClInclude>
+    <ClInclude Include="physics_game.h">
+      <Filter>Physics\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="iphysics_scripted.h">
+      <Filter>Physics\Base\Objects\script</Filter>
+    </ClInclude>
+    <ClInclude Include="physics_scripted.h">
+      <Filter>Physics\Base\Objects\script</Filter>
+    </ClInclude>
+    <ClInclude Include="debug_output.h">
+      <Filter>Physics\Base\Objects\debug</Filter>
+    </ClInclude>
+    <ClInclude Include="console_vars.h">
+      <Filter>Physics\Base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -8810,13 +8843,7 @@
     <ClCompile Include="xrGameSpyServer_callbacks.cpp">
       <Filter>Core\Server\xrGameSpyServer</Filter>
     </ClCompile>
-    <ClCompile Include="PHDebug.cpp">
-      <Filter>Physics\Base</Filter>
-    </ClCompile>
     <ClCompile Include="PHWorld.cpp">
-      <Filter>Physics\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="PHWorldScript.cpp">
       <Filter>Physics\Base</Filter>
     </ClCompile>
     <ClCompile Include="Physics.cpp">
@@ -8889,9 +8916,6 @@
       <Filter>Physics\Base\Objects\PhyMove\BaseCharacter</Filter>
     </ClCompile>
     <ClCompile Include="PhysicsShell.cpp">
-      <Filter>Physics\Base\Objects\BaseShell</Filter>
-    </ClCompile>
-    <ClCompile Include="PhysicsShellScript.cpp">
       <Filter>Physics\Base\Objects\BaseShell</Filter>
     </ClCompile>
     <ClCompile Include="PhysicsShellAnimator.cpp">
@@ -9613,6 +9637,27 @@
     </ClCompile>
     <ClCompile Include="script_crandom_script.cpp">
       <Filter>AI\AScript\ScriptClasses\ScriptCRandom</Filter>
+    </ClCompile>
+    <ClCompile Include="phvalide.cpp">
+      <Filter>Physics\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="PHDebug.cpp">
+      <Filter>Physics\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsExternalCommon.cpp">
+      <Filter>Physics\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="physics_scripted.cpp">
+      <Filter>Physics\Base\Objects\script</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsShellScript.cpp">
+      <Filter>Physics\Base\Objects\BaseShell</Filter>
+    </ClCompile>
+    <ClCompile Include="debug_output.cpp">
+      <Filter>Physics\Base\Objects\debug</Filter>
+    </ClCompile>
+    <ClCompile Include="console_vars.cpp">
+      <Filter>Physics\Base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

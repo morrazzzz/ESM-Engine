@@ -21,67 +21,6 @@ IC const Fvector &cast_fv(const float* fp)
 	return *((const Fvector*)fp);
 }
 
-ICF void	accurate_normalize(float* a)
-{
-	dReal	sqr_magnitude	= a[0]*a[0] + a[1]*a[1] + a[2]*a[2];
-	dReal	epsilon			= 1.192092896e-05F;
-	if		(sqr_magnitude > epsilon)
-	{
-		dReal	l	=	dRecipSqrt(sqr_magnitude);
-		a[0]		*=	l;
-		a[1]		*=	l;
-		a[2]		*=	l;
-		return;
-	}
-
-	dReal a0,a1,a2,aa0,aa1,aa2,l;
-	VERIFY (a);
-	a0 = a[0];
-	a1 = a[1];
-	a2 = a[2];
-	aa0 = dFabs(a0);
-	aa1 = dFabs(a1);
-	aa2 = dFabs(a2);
-	if (aa1 > aa0) {
-		if (aa2 > aa1) {
-			goto aa2_largest;
-		}
-		else {		// aa1 is largest
-			a0 /= aa1;
-			a2 /= aa1;
-			l = dRecipSqrt (a0*a0 + a2*a2 + 1);
-			a[0] = a0*l;
-			a[1] = (float)_copysign(l,a1);
-			a[2] = a2*l;
-		}
-	}
-	else {
-		if (aa2 > aa0) {
-aa2_largest:	// aa2 is largest
-			a0 /= aa2;
-			a1 /= aa2;
-			l = dRecipSqrt (a0*a0 + a1*a1 + 1);
-			a[0] = a0*l;
-			a[1] = a1*l;
-			a[2] = (float)_copysign(l,a2);
-		}
-		else {		// aa0 is largest
-			if (aa0 <= 0) {
-				// dDEBUGMSG ("vector has zero size"); ... this messace is annoying
-				a[0] = 1;	// if all a's are zero, this is where we'll end up.
-				a[1] = 0;	// return a default unit length vector.
-				a[2] = 0;
-				return;
-			}
-			a1 /= aa0;
-			a2 /= aa0;
-			l = dRecipSqrt (a1*a1 + a2*a2 + 1);
-			a[0] = (float)_copysign(l,a0);
-			a[1] = a1*l;
-			a[2] = a2*l;
-		}
-	}
-}
 IC  float	dXZMag(const float* v)
 {
 	return _sqrt(v[0]*v[0]+v[2]*v[2]);
@@ -106,119 +45,97 @@ IC	float	dXZDot(const Fvector& v0,const Fvector& v1)
 {
 	return v0.x*v1.x+v0.z*v1.z;
 }
-IC	void	dVectorSet(dReal* vd,const dReal* vs)
+IC	void	dVectorSet(float* vd,const float* vs)
 {
 	vd[0]=vs[0];vd[1]=vs[1];vd[2]=vs[2];
 }
 
-IC	void	dVectorSetInvert(dReal* vd,const dReal* vs)
+IC	void	dVectorSetInvert(float* vd,const float* vs)
 {
 	vd[0]=-vs[0];vd[1]=-vs[1];vd[2]=-vs[2];
 }
 
-IC	void dVectorSetZero(dReal* vd)
+IC	void dVectorSetZero(float* vd)
 {
 	vd[0]=0.f;vd[1]=0.f;vd[2]=0.f;
 }
 
-IC	void	dVector4Set(dReal* vd,const dReal* vs)
+IC	void	dVector4Set(float* vd,const float* vs)
 {
 	vd[0]=vs[0];vd[1]=vs[1];vd[2]=vs[2];vd[3]=vs[3];
 }
 
-IC	void	dVector4SetZero(dReal* vd)
+IC	void	dVector4SetZero(float* vd)
 {
 	vd[0]=0.f;vd[1]=0.f;vd[2]=0.f;vd[3]=0.f;
 } 
 
-IC void		dQuaternionSet(dReal* vd,const dReal* vs)
+IC void		dQuaternionSet(float* vd,const float* vs)
 {
 	dVector4Set(vd,vs);
 }
 
 
-IC	void	dVectorAdd(dReal* v,const dReal* av)
+IC	void	dVectorAdd(float* v,const float* av)
 {
 	v[0]+=av[0];	v[1]+=av[1];	v[2]+=av[2];
 }
-IC	void	dVectorAddMul(dReal* v,const dReal* ad,float mul)
+IC	void	dVectorAddMul(float* v,const float* ad,float mul)
 {
 	v[0]+=ad[0]*mul;
 	v[1]+=ad[1]*mul;
 	v[2]+=ad[2]*mul;
 }
-IC	void	dVectorAdd(dReal* v,const dReal* av0,const dReal* av1)
+IC	void	dVectorAdd(float* v,const float* av0,const float* av1)
 {
 	v[0]=av0[0]+av1[0];	v[1]=av0[1]+av1[1]; v[2]=av0[2]+av1[2];
 }
 
-IC	void	dVectorSub(dReal* v,const dReal* av)
+IC	void	dVectorSub(float* v,const float* av)
 {
 	v[0]-=av[0];	v[1]-=av[1];	v[2]-=av[2];
 }
 
-IC	void	dVectorSub(dReal* v,const dReal* av1,const dReal* av0)
+IC	void	dVectorSub(float* v,const float* av1,const float* av0)
 {
 	v[0]=av1[0]-av0[0];	v[1]=av1[1]-av0[1]; v[2]=av1[2]-av0[2];
 }
-IC	void	dVectorInvert(dReal* v)
+IC	void	dVectorInvert(float* v)
 {
 	v[0]=-v[0];v[1]=-v[1];v[2]=-v[2];
 }
-IC	void	dVectorMul(dReal* v,float mt)
+IC	void	dVectorMul(float* v,float mt)
 {
 	v[0]*=mt;v[1]*=mt;v[2]*=mt;
 }
-IC	void	dVectorMul(dReal* res,const dReal* av,float mt)
+IC	void	dVectorMul(float* res,const float* av,float mt)
 {
 	res[0]=av[0]*mt;res[1]=av[1]*mt;res[2]=av[2]*mt;
 }
-IC	void	dVectorInterpolate(dReal* v,dReal* to,float k) //changes to
+IC	void	dVectorInterpolate(float* v,float* to,float k) //changes to
 {
 	dVectorMul(v,1.f-k);dVectorMul(to,k);dVectorAdd(v,to);
 }
-IC	void	dVectorInterpolate(dReal* res,const dReal* from,const dReal* to,float k) //changes to
-{
-	dVector3 tov;
-	dVectorSet(res,from);
-	dVectorSet(tov,to);
-	dVectorInterpolate(res,tov,k);
-}
-IC	void	dVectorDeviation(const dReal* vector3_from,const dReal* vector3_to,dReal* vector_dev)
+IC	void	dVectorDeviation(const float* vector3_from,const float* vector3_to,float* vector_dev)
 {
 	dVectorSub(vector_dev,vector3_to,vector3_from);
 }
 
-IC	void	dVectorDeviationAdd(const dReal* vector3_from,const dReal* vector3_to,dReal* vector_dev)
+IC	void	dVectorDeviationAdd(const float* vector3_from,const float* vector3_to,float* vector_dev)
 {
 	vector_dev[0]+=vector3_from[0]-vector3_to[0];
 	vector_dev[1]+=vector3_from[1]-vector3_to[1];
 	vector_dev[2]+=vector3_from[2]-vector3_to[2];
 }
 
-IC	void	dMatrixSmallDeviation(const dReal* matrix33_from,const dReal* matrix33_to,dReal* vector_dev)
+IC	void	dMatrixSmallDeviation(const float* matrix33_from,const float* matrix33_to,float* vector_dev)
 {
 	vector_dev[0]=matrix33_from[10]-matrix33_to[10];
 	vector_dev[1]=matrix33_from[2]-matrix33_to[2];
 	vector_dev[2]=matrix33_from[4]-matrix33_to[4];
 }
 
-IC	bool	dVectorLimit(const dReal* v,float l,dReal* lv)
-{
-	dReal mag		=	_sqrt(dDOT(v,v));
-	if(mag>l)
-	{
-		dReal f=mag/l;
-		lv[0]=v[0]/f;lv[1]=v[1]/f;lv[2]=v[2]/f;
-		return true;
-	}
-	else
-	{
-		dVectorSet(lv,v);
-		return false;
-	}
-}
-IC	void	dMatrixSmallDeviationAdd(const dReal* matrix33_from,const dReal* matrix33_to,dReal* vector_dev)
+IC	void	dMatrixSmallDeviationAdd(const float* matrix33_from,const float* matrix33_to,float* vector_dev)
 {
 	vector_dev[0]+=matrix33_from[10]-matrix33_to[10];
 	vector_dev[1]+=matrix33_from[2]-matrix33_to[2];
@@ -285,7 +202,7 @@ IC float		prg_pos_on_plane(const Fvector	&in_norm,float d,const Fvector &in_pos,
 	return prg;
 }
 
-IC void		prg_dir_on_plane(const Fvector	&in_norm,const Fvector &in_dir,Fvector &out_dir)
+IC void		prg_on_normal(const Fvector	&in_norm,const Fvector &in_dir,Fvector &out_dir)
 {
 	float prg=-in_dir.dotproduct(in_norm);
 	Fvector diff;diff.set(in_norm);diff.mul(prg);
@@ -303,7 +220,7 @@ IC void		restrict_vector_in_dir(Fvector& V,const Fvector& dir)
 		V.sub(sub);
 	}
 }
-IC bool check_obb_sise(Fobb& obb)
+IC bool check_obb_sise(const Fobb& obb)
 {
 	return (!fis_zero(obb.m_halfsize.x,EPS_L)||
 		!fis_zero(obb.m_halfsize.y,EPS_L)||
@@ -458,14 +375,16 @@ IC bool valid_pos(const Fvector &P,const Fbox &B){
 }
 
 #ifdef DEBUG
-const float				DET_CHECK_EPS =0.15f					;//scale -35%  !? ;)
+constexpr float				DET_CHECK_EPS =0.15f					;//scale -35%  !? ;)
+constexpr float				DET_CHECK_FATAL_EPS =0.8f					;//scale -35%  !? ;)
 #define	VERIFY_RMATRIX(M)	{\
 	float d=DET(M);\
 	if( !fsimilar(d,1.f,DET_CHECK_EPS) ){\
 		\
-		Log("matrix--- ",M);	\
-		Log("determinant- ",d);	\
-		VERIFY2(0,"Is not valid rotational matrix");\
+		Msg("! matrix: %s ",get_string(M).c_str());	\
+		Msg("! determinant: %f ",d);	\
+		Msg("! Is not valid rotational matrix");\
+		VERIFY(fsimilar(d,1.f,DET_CHECK_FATAL_EPS));\
 	}};
 #else
 #define	VERIFY_RMATRIX(M)	

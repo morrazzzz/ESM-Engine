@@ -297,7 +297,7 @@ void DBG_DrawPHAbstruct(SPHDBGDrawAbsract* a)
 {
 	if(dbg_ph_draw_mode!=dmCashed)
 	{
-		if(ph_world->Processing()) dbg_ph_draw_mode=dmSecondaryThread;
+		if(physics_world()->Processing()) dbg_ph_draw_mode=dmSecondaryThread;
 		else					   dbg_ph_draw_mode=dmSimple;
 	}
 	switch (dbg_ph_draw_mode)
@@ -537,8 +537,8 @@ void DBG_DrawStatBeforeFrameStep()
 	{
 		static float obj_count=0.f;
 		static float update_obj_count=0.f;
-		obj_count=obj_count*0.9f + float(ph_world->ObjectsNumber())*0.1f;
-		update_obj_count=update_obj_count*0.9f + float(ph_world->UpdateObjectsNumber())*0.1f;
+		obj_count=obj_count*0.9f + float(physics_world()->ObjectsNumber())*0.1f;
+		update_obj_count=update_obj_count*0.9f + float(physics_world()->UpdateObjectsNumber())*0.1f;
 		DBG_OutText("Active Phys Objects %3.0f",obj_count);
 		DBG_OutText("Active Phys Update Objects %3.0f",update_obj_count);
 	}

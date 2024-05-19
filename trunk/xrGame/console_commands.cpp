@@ -18,7 +18,7 @@
 #include "script_engine_space.h"
 #include "script_process.h"
 #include "ui/UIMainIngameWnd.h"
-#include "phworld.h"
+#include "IPHWorld.h"
 #include "string_table.h"
 #include "ai_space.h"
 #include "ai/monsters/BaseMonster/base_monster.h"
@@ -29,6 +29,8 @@
 #include "saved_game_wrapper.h"
 #include "../xrCore/xr_ini.h"
 #include "level_graph.h"
+
+#include "console_vars.h"
 
 #ifdef DEBUG
 #include "PHDebug.h"
@@ -67,7 +69,7 @@ extern	int		g_dwInputUpdateDelta	;
 extern	BOOL	g_ShowAnimationInfo		;
 #endif // DEBUG
 extern	BOOL	g_bShowHitSectors		;
-extern	BOOL	g_bDebugDumpPhysicsStep	;
+//extern	BOOL	g_bDebugDumpPhysicsStep	;
 extern	ESingleGameDifficulty g_SingleGameDifficulty;
 extern	BOOL	g_show_wnd_rect			;
 extern	BOOL	g_show_wnd_rect2			;
@@ -887,7 +889,9 @@ public:
 	  virtual void	Execute	(LPCSTR args)
 	  {
 		  CCC_Integer::Execute	(args);
-		  dWorldSetQuickStepNumIterations(NULL,phIterations);
+//		  dWorldSetQuickStepNumIterations(NULL,phIterations);
+		  if (physics_world())
+			  physics_world()->StepNumIterations(phIterations);
 	  }
 };
 
@@ -899,7 +903,7 @@ public:
 		{};
 	  virtual void	Execute	(LPCSTR args)
 	  {
-		  if(!ph_world)	return;
+		  if(!physics_world())	return;
 #ifndef DEBUG
 		  if (g_pGameLevel && Level().game && GameID() != GAME_SINGLE)
 		  {
@@ -907,12 +911,12 @@ public:
 			  return;
 		  }
 #endif
-		  ph_world->SetGravity(float(atof(args)));
+		  physics_world()->SetGravity(float(atof(args)));
 	  }
 	  virtual void	Status	(TStatus& S)
 	{	
-		if(ph_world)
-			sprintf_s	(S,"%3.5f",ph_world->Gravity());
+		if(physics_world())
+			sprintf_s	(S,"%3.5f", physics_world()->Gravity());
 		else
 			sprintf_s	(S,"%3.5f",default_world_gravity);
 		while	(xr_strlen(S) && ('0'==S[xr_strlen(S)-1]))	S[xr_strlen(S)-1] = 0;
@@ -930,7 +934,11 @@ public:
 	  {
 		  float				step_count = (float)atof(args);
 		  clamp				(step_count,50.f,200.f);
-		  CPHWorld::SetStep(1.f/step_count);
+		  //IPHWorld::SetStep(1.f/step_count);
+		  ph_console::ph_step_time = 1.f / step_count;
+		  //physics_world()->SetStep(1.f/step_count);
+		  if (physics_world())
+			  physics_world()->SetStep(ph_console::ph_step_time);
 	  }
 	  virtual void	Status	(TStatus& S)
 	  {	
@@ -1013,45 +1021,49 @@ public:
 	void Execute(LPCSTR args)
 	{
 		if (!g_pGameLevel)
-			return;
-
-		if (!pSettings->section_exist(args))
 		{
-			Msg("! Can't find section: %s", args);
+			Msg("# Required load the level!");
 			return;
 		}
+
+		int CountItems_ = 1;
+		string256 SectionName_;
+
+		sscanf_s(args, "%s %d", SectionName_, (u32)sizeof SectionName_, &CountItems_);
+
+		if (!pSettings->section_exist(SectionName_))
+		{
+			Msg("! Can't find section: %s", SectionName_);
+			return;
+		}
+
+		Fvector CamPos_;
+		CamPos_.mad(Device.vCameraPosition, Device.vCameraDirection, HUD().GetCurrentRayQuery().range);
 
 		if (auto tpGame = smart_cast<game_sv_Single*>(Level().Server->game))
-			tpGame->alife().spawn_item(args, Actor()->Position(), Actor()->ai_location().level_vertex_id(), Actor()->ai_location().game_vertex_id(), ALife::_OBJECT_ID(-1));
+		{
+			for (int i = 0; i < CountItems_; i++)
+				tpGame->alife().spawn_item(SectionName_, CamPos_, /*Actor()->ai_location().level_vertex_id()*/0, Actor()->ai_location().game_vertex_id(), ALife::_OBJECT_ID(-1));
+		}
 	}
 
-#pragma todo("Починить потом!")
-	/*virtual void fill_tips(vecTips& tips, u32 mode)
+	virtual void fill_tips(vecTips& tips, u32 mode)
 	{
-		if (!ai().get_alife())
+		if (!g_pGameLevel)
 		{
-			Msg("! ALife simulator is needed to perform specified command!");
+			Msg("# Required load the level!");
 			return;
 		}
 
-		for (const auto& it = CInifile::Item();;)
+		for (const auto sect : pSettings->sections())
 		{
-
-			auto& section = it.first;
-
-			if (pSettings->line_exist(section, "class"))
-			{
-				tips.push_back(section);
-			}
+			if (sect->line_exist("class"))
+				tips.emplace_back(sect->Name);
 		}
 
 		std::sort(tips.begin(), tips.end());
-
-		// tips.push_back((*itb).second.name());
 	}
-	*/
 };
-//#endif // MASTER_GOLD
 
 class CCC_SpawnToInventory : public IConsole_Command
 {
@@ -1061,61 +1073,43 @@ public:
 	void Execute(LPCSTR args)
 	{
 		if (!g_pGameLevel)
-			return;
-
-		if (!pSettings->section_exist(args))
 		{
-			Msg("! Can't find section: %s", args);
+			Msg("# Required load the level!");
 			return;
 		}
 
-		if (auto tpGame = smart_cast<game_sv_Single*>(Level().Server->game))
+		int CountItems_ = 1;
+		string256 SectionName_;
+
+		sscanf_s(args, "%s %d", SectionName_, (u32)sizeof SectionName_, &CountItems_);
+
+		if (!pSettings->section_exist(SectionName_))
 		{
-			NET_Packet packet;
-			packet.w_begin(M_SPAWN);
-			packet.w_stringZ(args);
-
-			CSE_Abstract* item =
-				tpGame->alife().spawn_item(args, Actor()->Position(), Actor()->ai_location().level_vertex_id(), Actor()->ai_location().game_vertex_id(), 0, false);
-			item->Spawn_Write(packet, FALSE);
-			tpGame->alife().server().FreeID(item->ID, 0);
-			F_entity_Destroy(item);
-
-			ClientID clientID;
-			clientID.set(0xffff);
-
-			u16 dummy;
-			packet.r_begin(dummy);
-			VERIFY(dummy == M_SPAWN);
-			tpGame->alife().server().Process_spawn(packet, clientID);
+			Msg("! Can't find section: %s", SectionName_);
+			return;
 		}
+
+		for (int i = 0; i < CountItems_; i++)
+			Level().spawn_item(SectionName_, Actor()->Position(), Actor()->ai_location().level_vertex_id(), Actor()->ID());
 	}
 
-#pragma todo("Починить потом!")
-	/*
 	virtual void fill_tips(vecTips& tips, u32 mode)
 	{
-		if (!ai().get_alife())
+		if (!g_pGameLevel)
 		{
-			Msg("! ALife simulator is needed to perform specified command!");
+			Msg("# Required load the level!");
 			return;
 		}
 
-		for (const auto& it = CInifile::Item();;)
+		for (auto sect : pSettings->sections())
 		{
-			auto& section = it.first;
-
-			if (pSettings->line_exist(section, "class"))
-			{
-				tips.push_back(section);
-			}
+			if ((sect->line_exist("description") && !sect->line_exist("value") && !sect->line_exist("scheme_index"))
+				|| sect->line_exist("species"))
+				tips.emplace_back(sect->Name);
 		}
 
 		std::sort(tips.begin(), tips.end());
-
-		// tips.push_back((*itb).second.name());
 	}
-	*/
 };
 
 #include "GamePersistent.h"
@@ -1696,7 +1690,7 @@ void CCC_RegisterCommands()
 	CMD4(CCC_Integer,	"show_wnd_rect_all",			&g_show_wnd_rect2, 0, 1);
 	CMD1(CCC_Crash,		"crash"						);
 	CMD4(CCC_Integer,		"dbg_show_ani_info",	&g_ShowAnimationInfo,	0, 1)	;
-	CMD4(CCC_Integer,		"dbg_dump_physics_step", &g_bDebugDumpPhysicsStep, 0, 1);
+	CMD4(CCC_Integer,		"dbg_dump_physics_step", &ph_console::g_bDebugDumpPhysicsStep, 0, 1);
 #endif
 	CMD4(CCC_Integer, "keypress_on_start", &g_keypress_on_start, 0, 1);
 	*g_last_saved_game	= 0;

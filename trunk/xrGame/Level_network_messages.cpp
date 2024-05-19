@@ -12,6 +12,7 @@
 #include "saved_game_wrapper.h"
 #include "level_graph.h"
 #include "clsid_game.h"
+#include "IPHWorld.h"
 
 void CLevel::ClientReceive()
 {
@@ -104,7 +105,7 @@ void CLevel::ClientReceive()
 				else
 					dTime = Level().timeServer() - P->timeReceive + pStat.getPing();
 
-				u32 NumSteps = ph_world->CalcNumSteps(dTime);
+				u32 NumSteps = physics_world()->CalcNumSteps(dTime);
 				SetNumCrSteps(NumSteps);
 			}break;
 //		case M_UPDATE_OBJECTS:
@@ -137,10 +138,10 @@ void CLevel::ClientReceive()
 				}
 				else					
 					dTime = Level().timeServer() - P->timeReceive + Ping;
-				u32 NumSteps = ph_world->CalcNumSteps(dTime);
+				u32 NumSteps = physics_world()->CalcNumSteps(dTime);
 				SetNumCrSteps(NumSteps);
 
-				O->CrPr_SetActivationStep(u32(ph_world->m_steps_num) - NumSteps);
+				O->CrPr_SetActivationStep(u32(physics_world()->StepsNum()) - NumSteps);
 				AddActor_To_Actors4CrPr(O);
 
 			}break;

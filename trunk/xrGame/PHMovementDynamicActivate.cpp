@@ -4,13 +4,16 @@
 #include "phmovementcontrol.h"
 
 #include "ExtendedGeom.h"
-#include "MathUtils.h"
 #include "Physics.h"
 #include "Level.h"
 #include "../xr_3da/GameMtlLib.h"
 #include "PhysicsShellHolder.h"
 
+#pragma todo("REMOVE ME!!!!!!!")
+#include "ph_valid_ode.h"
 extern	class CPHWorld	*ph_world;
+
+
 ObjectContactCallbackFun* saved_callback		=	0	;
 static float max_depth							=	0.f	;
 
