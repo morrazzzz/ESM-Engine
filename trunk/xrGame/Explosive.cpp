@@ -29,6 +29,7 @@
 #include "MathUtils.h"
 #include "phvalidevalues.h"
 #include "PHActivationShape.h"
+#include "IPHWorld.h"
 #include "game_base_space.h"
 #include "profiler.h"
 #include "..\include\xrRender\Kinematics.h"
@@ -312,7 +313,7 @@ void CExplosive::Explode()
 {
 	VERIFY(0xffff != Initiator());
 	VERIFY(m_explosion_flags.test(flReadyToExplode));//m_bReadyToExplode
-	VERIFY(!ph_world->Processing());
+	VERIFY(!physics_world()->Processing());
 	//m_bExploding = true;
 	m_explosion_flags.set(flExploding,TRUE);
 	cast_game_object()->processing_activate();
@@ -461,7 +462,7 @@ void CExplosive::GetExplVelocity(Fvector &v)
 void CExplosive::UpdateCL() 
 {
 	//VERIFY(!this->getDestroy());
-	VERIFY(!ph_world->Processing());
+	VERIFY(!physics_world()->Processing());
 	if(!m_explosion_flags.test(flExploding)) return;// !m_bExploding
 	if(m_explosion_flags.test(flExploded))
 	{
@@ -619,7 +620,7 @@ void CExplosive::FindNormal(Fvector& normal)
 void CExplosive::StartLight	()
 {
 
-	VERIFY(!ph_world->Processing());
+	VERIFY(!physics_world()->Processing());
 	if(m_fLightTime>0)
 	{
 		
@@ -635,7 +636,7 @@ void CExplosive::StartLight	()
 void CExplosive::StopLight		()
 {
 	if	(m_pLight){
-		VERIFY						(!ph_world->Processing());
+		VERIFY						(!physics_world()->Processing());
 		m_pLight->set_active		(false);
 		LightDestroy				();
 	}

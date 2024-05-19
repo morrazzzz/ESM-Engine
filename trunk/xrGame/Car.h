@@ -1,7 +1,8 @@
 #pragma once
 #include "entity.h"
-#include "PHDynamicData.h"
+//#include "PHDynamicData.h"
 #include "PhysicsShell.h"
+#include "PHUpdateObject.h"
 #include "script_entity.h"
 #include "CarLights.h"
 #include "phobject.h"

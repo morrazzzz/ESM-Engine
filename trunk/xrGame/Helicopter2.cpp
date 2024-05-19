@@ -11,6 +11,8 @@
 #include "ai/stalker/ai_stalker.h"
 #include "CustomZone.h"
 
+#include "physics_game.h"
+
 #ifdef DEBUG
 #include "MathUtils.h"
 #endif

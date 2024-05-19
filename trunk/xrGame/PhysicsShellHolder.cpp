@@ -10,7 +10,7 @@
 #include "PHScriptCall.h"
 #include "CustomRocket.h"
 #include "Grenade.h"
-#include "phworld.h"
+#include "IPHWorld.h"
 #include "phactivationshape.h"
 #include "phvalide.h"
 CPhysicsShellHolder::CPhysicsShellHolder()
@@ -99,6 +99,10 @@ void CPhysicsShellHolder::correct_spawn_pos()
 	activation_shape.set_rotation		(XFORM());
 	PPhysicsShell()->DisableCollision	();
 	activation_shape.Activate			(size,1,1.f,M_PI/8.f);
+
+//	Fvector								ap = Fvector().set(0,0,0);
+//	ActivateShapePhysShellHolder		( this, XFORM(), size, c, ap );
+
 ////	VERIFY								(valid_pos(activation_shape.Position(),phBoundaries));
 //	if (!valid_pos(activation_shape.Position(),phBoundaries)) {
 //		CPHActivationShape				activation_shape;
@@ -109,19 +113,9 @@ void CPhysicsShellHolder::correct_spawn_pos()
 //	}
 
 	PPhysicsShell()->EnableCollision	();
-
-	Fvector								ap = activation_shape.Position();
-#ifdef DEBUG
-	if (!valid_pos(ap,phBoundaries)) {
-		Msg("not valid position	%f,%f,%f",ap.x,ap.y,ap.z);
-		Msg("size	%f,%f,%f",size.x,size.y,size.z);
-		Msg("Object: %s",Name());
-		Msg("Visual: %s",*(cNameVisual()));
-		Msg("Object	pos	%f,%f,%f",Position().x,Position().y,Position().z);
-	}
-#endif // DEBUG
-	VERIFY								(valid_pos(activation_shape.Position(),phBoundaries));
 	
+	Fvector								ap = activation_shape.Position();
+
 	Fmatrix								trans;
 	trans.identity						();
 	trans.c.sub							(ap,c);
@@ -260,7 +254,7 @@ void CPhysicsShellHolder::UpdateCL	()
 }
 float CPhysicsShellHolder::EffectiveGravity()
 {
-	return ph_world->Gravity();
+	return physics_world()->Gravity();
 }
 
 void		CPhysicsShellHolder::	save				(NET_Packet &output_packet)

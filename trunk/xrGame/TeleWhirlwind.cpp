@@ -5,7 +5,6 @@
 #include "level.h"
 #include "phdestroyable.h"
 #include "..\include\xrRender\Kinematics.h"
-#include "PHWorld.h"
 CTeleWhirlwind ::CTeleWhirlwind () 
 {
 	m_owner_object=NULL;

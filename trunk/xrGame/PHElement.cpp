@@ -6,7 +6,8 @@
 #include "PHContactBodyEffector.h"
 #include "MathUtils.h"
 #include "PhysicsShellHolder.h"
-#include "game_object_space.h"
+#include "ph_valid_ode.h"
+//#include "game_object_space.h"
 #include "../../3rd party/ode/ode/src/util.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "../Include/xrRender/KinematicsAnimated.h"
@@ -104,7 +105,7 @@ void CPHElement::			build	(){
 		dBodySetMass(m_body,&m_mass);
 	}
 
-	VERIFY_BOUNDARIES2(m_mass_center,phBoundaries,PhysicsRefObject(),"m_mass_center")
+	VERIFY_BOUNDARIES2(m_mass_center, phBoundaries, PhysicsRefObject(), "m_mass_center");
 
 	dBodySetPosition(m_body,m_mass_center.x,m_mass_center.y,m_mass_center.z);
 
@@ -291,7 +292,7 @@ void CPHElement::TransformPosition(const Fmatrix &form)
 	dMatrix3 dBM;
 	PHDynamicData::FMXtoDMX(new_bm,dBM);
 	dBodySetRotation(m_body,dBM);
-	VERIFY_BOUNDARIES2(new_bm.c,phBoundaries,PhysicsRefObject(),"TransformPosition dest pos")
+	VERIFY_BOUNDARIES2(new_bm.c, phBoundaries, PhysicsRefObject(), "TransformPosition dest pos");
 	dBodySetPosition(m_body,new_bm.c.x,new_bm.c.y,new_bm.c.z);
 	CPHDisablingFull::Reinit();
 	m_body_interpolation.ResetPositions();
@@ -1519,7 +1520,7 @@ void CPHElement::CutVelocity(float l_limit,float a_limit)
 	if(!isActive())return;
 	VERIFY(_valid(l_limit)&&_valid(a_limit));
 	dVector3 limitedl,limiteda,diffl,diffa;
-	bool blimitl=dVectorLimit(dBodyGetLinearVel(m_body),l_limit,limitedl);
+	bool blimitl=dVectorLimit(dBodyGetLinearVel(m_body), l_limit, limitedl);
 	bool blimita=dVectorLimit(dBodyGetAngularVel(m_body),a_limit,limiteda);
 
 	if(blimitl||blimita)

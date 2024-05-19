@@ -8,6 +8,9 @@
 #include "PhysicsShell.h"
 #include "..\include\xrRender\Kinematics.h"
 #include "..\include\xrRender\KinematicsAnimated.h"
+
+#include "IPHWorld.h"
+
 #include "Actor.h"
 #include "CustomZone.h"
 #include "Extendedgeom.h"
@@ -854,7 +857,7 @@ void						CCharacterPhysicsSupport::FlyTo(const	Fvector &disp)
 		VERIFY(m_pPhysicsShell);
 		float ammount=disp.magnitude();
 		if(fis_zero(ammount,EPS_L))	return;
-		ph_world->Freeze();
+		physics_world()->Freeze();
 		bool g=m_pPhysicsShell->get_ApplyByGravity();
 		m_pPhysicsShell->set_ApplyByGravity(false);
 		m_pPhysicsShell->add_ObjectContactCallback(StaticEnvironmentCB);
@@ -870,13 +873,13 @@ void						CCharacterPhysicsSupport::FlyTo(const	Fvector &disp)
 		for(u16	i=0;steps_num>i;++i)
 		{
 			m_pPhysicsShell->set_LinearVel(vel);
-			ph_world->Step();
+			physics_world()->Step();
 		}
 		//u16 step_num=disp.magnitude()/fixed_step;
 		m_pPhysicsShell->set_ApplyByGravity(g);
 		m_pPhysicsShell->set_CallbackData(cd);
 		m_pPhysicsShell->remove_ObjectContactCallback(StaticEnvironmentCB);
-		ph_world->UnFreeze();
+		physics_world()->UnFreeze();
 }
 
 void CCharacterPhysicsSupport::TestForWounded()

@@ -47,6 +47,9 @@ public:
 		CODEGeom*					GeomByBoneID							(u16 bone_id);
 		u16							numberOfGeoms							();																				//aux
 		dGeomID						dSpacedGeometry							();																				//aux
+protected:
+	IC	dSpaceID					group_space() { return m_group; }
+public:
 		Fvector						get_mc_data								();																				//aux
 		Fvector						get_mc_geoms							();																				//aux
 		void						get_mc_kinematics						(IKinematics* K,Fvector& mc,float& mass);

@@ -10,8 +10,9 @@
 #include "PHDestroyable.h"
 #include "Car.h"
 #include "..\include\xrRender\Kinematics.h"
-#include "PHWorld.h"
-extern CPHWorld*	ph_world;
+//#include "PHWorld.h"
+//extern CPHWorld*	ph_world;
+#include "IPHWorld.h"
 
 SCarLight::SCarLight()
 {
@@ -72,13 +73,13 @@ void SCarLight::ParseDefinitions(LPCSTR section)
 
 void SCarLight::Switch()
 {
-	VERIFY(!ph_world->Processing());
+	VERIFY(!physics_world()->Processing());
 	if(isOn())TurnOff();
 	else	  TurnOn();
 }
 void SCarLight::TurnOn()
 {
-	VERIFY(!ph_world->Processing());
+	VERIFY(!physics_world()->Processing());
 	if(isOn()) return;
 	IKinematics* K=smart_cast<IKinematics*>(m_holder->PCar()->Visual());
 	K->LL_SetBoneVisible(bone_id,TRUE,TRUE);
@@ -91,7 +92,7 @@ void SCarLight::TurnOn()
 }
 void SCarLight::TurnOff()
 {
-	VERIFY(!ph_world->Processing());
+	VERIFY(!physics_world()->Processing());
 	if(!isOn()) return;
  	glow_render ->set_active(false);
 	light_render->set_active(false);
@@ -100,14 +101,14 @@ void SCarLight::TurnOff()
 
 bool SCarLight::isOn()
 {
-	VERIFY(!ph_world->Processing());
+	VERIFY(!physics_world()->Processing());
 	VERIFY(light_render->get_active()==glow_render->get_active());
 	return light_render->get_active();
 }
 
 void SCarLight::Update()
 {
-	VERIFY(!ph_world->Processing());
+	VERIFY(!physics_world()->Processing());
 	if(!isOn()) return;
 	CCar* pcar=m_holder->PCar();
 	CBoneInstance& BI = smart_cast<IKinematics*>(pcar->Visual())->LL_GetBoneInstance(bone_id);
@@ -151,7 +152,7 @@ void CCarLights::ParseDefinitions()
 
 void CCarLights::Update()
 {
-	VERIFY(!ph_world->Processing());
+	VERIFY(!physics_world()->Processing());
 	LIGHTS_I i =m_lights.begin(),e=m_lights.end();
 	for(;i!=e;++i) (*i)->Update();
 }
@@ -159,7 +160,7 @@ void CCarLights::Update()
 void CCarLights::SwitchHeadLights()
 {
 	
-	VERIFY(!ph_world->Processing());
+	VERIFY(!physics_world()->Processing());
 	LIGHTS_I i =m_lights.begin(),e=m_lights.end();
 	for(;i!=e;++i) (*i)->Switch();
 }
@@ -167,13 +168,13 @@ void CCarLights::SwitchHeadLights()
 void CCarLights::TurnOnHeadLights()
 {
 
-	VERIFY(!ph_world->Processing());
+	VERIFY(!physics_world()->Processing());
 	LIGHTS_I i =m_lights.begin(),e=m_lights.end();
 	for(;i!=e;++i) (*i)->TurnOn();
 }
 void CCarLights::TurnOffHeadLights()
 {
-	VERIFY(!ph_world->Processing());
+	VERIFY(!physics_world()->Processing());
 	LIGHTS_I i =m_lights.begin(),e=m_lights.end();
 	for(;i!=e;++i) (*i)->TurnOff();
 }

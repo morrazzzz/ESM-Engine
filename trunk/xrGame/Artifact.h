@@ -3,6 +3,7 @@
 #include "hud_item_object.h"
 #include "hit_immunity.h"
 #include "PHObject.h"
+#include "PHUpdateObject.h"
 #include "script_export_space.h"
 
 struct SArtefactActivation;

@@ -9,8 +9,9 @@
 #include "PHDestroyable.h"
 #include "car.h"
 #include "..\include\xrRender\Kinematics.h"
-#include "PHWorld.h"
-extern CPHWorld*	ph_world;
+#include "IPHWorld.h"
+//#include "PHWorld.h"
+//extern CPHWorld*	ph_world;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 CCar::SExhaust::~SExhaust()
@@ -21,7 +22,7 @@ CCar::SExhaust::~SExhaust()
 
 void CCar::SExhaust::Init()
 {
-	VERIFY(!ph_world->Processing());
+	VERIFY(!physics_world()->Processing());
 	pelement=(bone_map.find(bone_id))->second.element;
 	IKinematics* K=smart_cast<IKinematics*>(pcar->Visual());
 	CBoneData&	bone_data=K->LL_GetData(u16(bone_id));
@@ -40,7 +41,7 @@ void CCar::SExhaust::Init()
 
 void CCar::SExhaust::Update()
 {
-	VERIFY(!ph_world->Processing());
+	VERIFY(!physics_world()->Processing());
 	Fmatrix global_transform;
 	pelement->InterpolateGlobalTransform(&global_transform);
 	global_transform.mulB_43(transform);
@@ -61,13 +62,13 @@ void CCar::SExhaust::Clear()
 
 void CCar::SExhaust::Play()
 {
-	VERIFY(!ph_world->Processing());
+	VERIFY(!physics_world()->Processing());
 	p_pgobject->Play();
 	Update();
 }
 
 void CCar::SExhaust::Stop()
 {
-	VERIFY(!ph_world->Processing());
+	VERIFY(!physics_world()->Processing());
 	p_pgobject->Stop();
 }
