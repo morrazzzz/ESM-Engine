@@ -312,7 +312,7 @@ void*	CPHGeometryOwner::get_CallbackData()
 		VERIFY(b_builded);
 		return (*m_geoms.begin())->get_callback_data	();
 }
-void CPHGeometryOwner::set_PhysicsRefObject(CPhysicsShellHolder* ref_object)
+void CPHGeometryOwner::set_PhysicsRefObject(IPhysicsShellHolder* ref_object)
 {
 	m_phys_ref_object=ref_object;
 	if(!b_builded) return;
@@ -320,24 +320,25 @@ void CPHGeometryOwner::set_PhysicsRefObject(CPhysicsShellHolder* ref_object)
 	for(;i!=e;++i) (*i)->set_ref_object(ref_object);
 }
 
-u16	CPHGeometryOwner::numberOfGeoms()
+u16	CPHGeometryOwner::numberOfGeoms() const
 {
 	return (u16)m_geoms.size();
 }
 
-void CPHGeometryOwner::get_Extensions(const Fvector& axis,float center_prg,float& lo_ext, float& hi_ext)
+void CPHGeometryOwner::get_Extensions(const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext) const
 {
+	t_get_extensions(m_geoms, axis, center_prg, lo_ext, hi_ext);
+	/*
 	lo_ext=dInfinity;hi_ext=-dInfinity;
-	GEOM_I i=m_geoms.begin(),e=m_geoms.end();
+	GEOM_CI i=m_geoms.begin(),e=m_geoms.end();
 	for(;i!=e;++i)
 	{
 		float temp_lo_ext,temp_hi_ext;
-		//GetTransformedGeometryExtensions((*i)->geometry_transform(),(float*)&axis,center_prg,&temp_lo_ext,&temp_hi_ext);
-		(*i)->get_extensions_bt(axis,center_prg,temp_lo_ext,temp_hi_ext);
+		(*i)->get_Extensions(axis,center_prg,temp_lo_ext,temp_hi_ext);
 		if(lo_ext>temp_lo_ext)lo_ext=temp_lo_ext;
 		if(hi_ext<temp_hi_ext)hi_ext=temp_hi_ext;
 	}
-
+	*/
 }
 
 void CPHGeometryOwner::get_MaxAreaDir(Fvector& dir)
@@ -376,12 +377,18 @@ void CPHGeometryOwner::setPosition(const Fvector& pos)
 		(*i)->set_position(pos);
 	}
 }
-void CPHGeometryOwner::CreateSimulBase()
+void CPHGeometryOwner::CreateGroupSpace()
 {
-	if(m_geoms.size()>1)
-	{
-		m_group=dSimpleSpaceCreate(0);
-		dSpaceSetCleanup(m_group,0);
+	VERIFY(!m_group);
+	m_group = dSimpleSpaceCreate(0);
+	dSpaceSetCleanup(m_group, 0);
+
+}
+void	CPHGeometryOwner::DestroyGroupSpace()
+{
+	if (m_group) {
+		dGeomDestroy((dGeomID)m_group);
+		m_group = NULL;
 	}
 }
 struct SFindPred

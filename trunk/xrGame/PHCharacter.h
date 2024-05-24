@@ -3,7 +3,9 @@
 #include "PHInterpolation.h"
 #include "PHSynchronize.h"
 #include "PHDisabling.h"
-class CPhysicsShellHolder;
+
+
+class IPhysicsShellHolder;
 class CClimableObject;
 class CGameObject;
 class ICollisionDamageInfo;
@@ -36,7 +38,7 @@ protected:
 
 CPHInterpolation m_body_interpolation;
 dBodyID				m_body;
-CPhysicsShellHolder* m_phys_ref_object;
+IPhysicsShellHolder* m_phys_ref_object;
 
 
 dReal					m_mass;
@@ -52,17 +54,13 @@ dVector3 m_safe_velocity;
 dVector3 m_safe_position;
 dReal	 m_mean_y;
 public:
-enum ERestrictionType
-{
-
-	rtStalker						=0	,
-	rtStalkerSmall						,
-	rtMonsterMedium						,
-	rtNone								,
-	rtActor
-};
 
 private:
+
+#ifdef		DEBUG
+	virtual		IPhysicsShellHolder* ref_object() { return PhysicsRefObject(); }
+#endif
+
 protected:
 ERestrictionType		m_new_restriction_type;
 ERestrictionType		m_restriction_type;
@@ -94,6 +92,7 @@ public:
 			bool		ActorMovable						()															{return b_actor_movable;}
 			void		SetActorMovable						(bool v)													{b_actor_movable=v;}
 virtual		const ICollisionDamageInfo	*CollisionDamageInfo()const														=0;
+virtual			  ICollisionDamageInfo	*CollisionDamageInfo()															=0;
 virtual		void		Reinit								()															=0;
 void					SetPLastMaterialIDX					(u16* p)													{p_lastMaterialIDX=p;}													
 const	u16				&LastMaterialIDX					()const														{return *p_lastMaterialIDX;}
@@ -125,12 +124,12 @@ virtual		bool		ForcedPhysicsControl				()															{return false;}
 virtual     void		SetCamDir							(const Fvector& cam_dir)									=0 ;
 virtual	const Fvector&	CamDir								()const														=0 ;
 virtual		Fvector		GetAcceleration						()															=0 ;
-virtual		void		SetPosition							(Fvector pos)												=0 ;
+virtual		void		SetPosition							(const Fvector &pos)										=0 ;
 virtual		void		SetApplyGravity						(BOOL flag)						{ dBodySetGravityMode(m_body,flag); }
 virtual		void		SetObjectContactCallback			(ObjectContactCallbackFun* callback)						=0 ;
 virtual		void		SetWheelContactCallback				(ObjectContactCallbackFun* callback)						=0 ;
 virtual		ObjectContactCallbackFun* ObjectContactCallBack	()															{return NULL;}
-virtual		void		GetVelocity							(Fvector& vvel)												=0 ;
+virtual		void		GetVelocity							(Fvector& vvel)const										=0 ;
 virtual		void		GetSavedVelocity					(Fvector& vvel)												;
 virtual		void		GetSmothedVelocity					(Fvector& vvel)												=0 ;
 virtual		void		SetVelocity							(Fvector vel)												=0 ;
@@ -140,8 +139,8 @@ virtual		void		GetFootCenter						(Fvector& vpos)												{vpos.set(*(Fvector
 virtual		void		SetMas								(dReal mass)												=0 ;
 virtual		void		SetCollisionDamageFactor			(float f)													=0 ;
 virtual		float		Mass								()															=0 ;
-virtual		void		SetPhysicsRefObject					(CPhysicsShellHolder* ref_object)							=0 ;
-virtual		CPhysicsShellHolder* PhysicsRefObject					()									{return m_phys_ref_object;}
+virtual		void		SetPhysicsRefObject					(IPhysicsShellHolder* ref_object)							=0 ;
+virtual		IPhysicsShellHolder* PhysicsRefObject			()									{return m_phys_ref_object;}
 virtual	void update_last_material() = 0;
 
 //AICharacter

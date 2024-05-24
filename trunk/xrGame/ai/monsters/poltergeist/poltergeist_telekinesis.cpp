@@ -3,8 +3,9 @@
 #include "../../../PhysicsShellHolder.h"
 #include "../../../level.h"
 #include "../../../actor.h"
+#include "../../../icolisiondamageinfo.h"//#include "../../../../xrPhysics/icolisiondamageinfo.h"
 
-CPolterTele::CPolterTele(CPoltergeist *polter) : inherited (polter)
+CPolterTele::CPolterTele(CPoltergeist *polter) : inherited (polter),m_pmt_object_collision_damage(0.5f)
 {
 }
 
@@ -30,6 +31,7 @@ void CPolterTele::load(LPCSTR section)
 	m_pmt_raise_speed					= READ_IF_EXISTS(pSettings,r_float,section,	"Tele_Raise_Speed",					3.f);
 	m_pmt_raise_time_to_wait_in_objects	= READ_IF_EXISTS(pSettings,r_u32,section,	"Tele_Delay_Between_Objects_Raise_Time", 500);
 	m_pmt_fly_velocity					= READ_IF_EXISTS(pSettings,r_float,section, "Tele_Fly_Velocity",				30.f);
+	m_pmt_object_collision_damage		= READ_IF_EXISTS(pSettings,r_float,section, "Tele_Collision_Damage",			0.5f);
 
 	::Sound->create						(m_sound_tele_hold,		pSettings->r_string(section,"sound_tele_hold"),	st_Effect,SOUND_TYPE_WORLD);
 	::Sound->create						(m_sound_tele_throw,	pSettings->r_string(section,"sound_tele_throw"),st_Effect,SOUND_TYPE_WORLD);
@@ -251,6 +253,28 @@ bool CPolterTele::tele_raise_objects()
 
 	return false;
 }
+struct SCollisionHitCallback :
+	public ICollisionHitCallback
+
+{
+	//	CollisionHitCallbackFun				*m_collision_hit_callback																																						;
+	CPhysicsShellHolder* m_object;
+	float m_pmt_object_collision_damage;
+	SCollisionHitCallback(CPhysicsShellHolder* object, float pmt_object_collision_damage) :
+		m_object(object), m_pmt_object_collision_damage(pmt_object_collision_damage)
+	{
+		VERIFY(object);
+	}
+	void call(IPhysicsShellHolder* obj, float min_cs, float max_cs, float& cs, float& hl, ICollisionDamageInfo* di)
+	{
+
+		if (cs > min_cs * 0.5f)
+			hl = m_pmt_object_collision_damage;
+		VERIFY(m_object);
+		di->SetInitiated();
+		m_object->set_collision_hit_callback(0);//delete this!!
+	}
+};
 
 void CPolterTele::tele_fire_objects()
 {
@@ -260,6 +284,10 @@ void CPolterTele::tele_fire_objects()
 		if ((tele_object.get_state() == TS_Raise) || (tele_object.get_state() == TS_Keep))  {
 			Fvector					enemy_pos;
 			enemy_pos				= get_head_position(Actor());
+			CPhysicsShellHolder* hobj = tele_object.get_object();
+
+			VERIFY(hobj);
+			hobj->set_collision_hit_callback(xr_new<SCollisionHitCallback>(hobj, m_pmt_object_collision_damage));
 			m_object->CTelekinesis::fire_t	(tele_object.get_object(),enemy_pos, tele_object.get_object()->Position().distance_to(enemy_pos) / m_pmt_fly_velocity);
 			return;
 		}

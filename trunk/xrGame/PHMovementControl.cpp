@@ -8,11 +8,15 @@
 #include "PHAICharacter.h"
 #include "PHActorCharacter.h"
 #include "PHCapture.h"
-#include "ai_space.h"
+#include "iphysicsshellholder.h"
 #include "iphworld.h"
 #include "detail_path_manager.h"
 #include "../xr_3da/GameMtlLib.h"
 #include "Level.h"
+#include "physicsshellholder.h"
+#ifdef DEBUG
+#include "phdebug.h"
+#endif
 #include "ElevatorState.h"
 #include "CalculateTriangle.h"
 #include "..\include\xrRender\Kinematics.h"
@@ -168,8 +172,8 @@ void CPHMovementControl::Calculate(Fvector& vAccel,const Fvector& camDir,float /
 
 	//CPhysicsShellHolder * O=di->DamageObject();
 	//SCollisionHitCallback* cc= O ? O->get_collision_hit_callback() : NULL;
-	const ICollisionDamageInfo	*cdi=CollisionDamageInfo();
-	if(cdi->HitCallback())cdi->HitCallback()->call(static_cast<CGameObject*>(m_character->PhysicsRefObject()),fMinCrashSpeed,fMaxCrashSpeed,fContactSpeed,gcontact_HealthLost,CollisionDamageInfo());
+	ICollisionDamageInfo	*cdi=CollisionDamageInfo();
+	if(cdi->HitCallback())cdi->HitCallback()->call((m_character->PhysicsRefObject()),fMinCrashSpeed,fMaxCrashSpeed,fContactSpeed,gcontact_HealthLost,CollisionDamageInfo());
 	
 	TraceBorder(previous_position);
 	CheckEnvironment(vPosition);
@@ -702,7 +706,7 @@ void CPHMovementControl::PathDIrPoint(const xr_vector<DetailPathManager::STravel
 	dir.add(tangent,to_path_point);
 	dir.normalize_safe();
 }
-void CPHMovementControl::SetActorRestrictorRadius(CPHCharacter::ERestrictionType rt,float r)
+void CPHMovementControl::SetActorRestrictorRadius(ERestrictionType rt,float r)
 {
 	if(m_character&&eCharacterType==actor)
 		static_cast<CPHActorCharacter*>(m_character)->SetRestrictorRadius(rt,r);
@@ -738,15 +742,15 @@ void CPHMovementControl::Load					(LPCSTR section){
 	float	cs_max		= pSettings->r_float	(section,"ph_crash_speed_max"	);
 	float	mass		= pSettings->r_float	(section,"ph_mass"				);
 	xr_token retrictor_types[]={
-		{ "actor",			CPHCharacter::rtActor},
-		{ "medium_monster",	CPHCharacter::rtMonsterMedium},
-		{ "stalker",		CPHCharacter::rtStalker	},
-		{ "none",			CPHCharacter::rtNone	},
+		{ "actor",			rtActor},
+		{ "medium_monster",	rtMonsterMedium},
+		{ "stalker",		rtStalker	},
+		{ "none",			rtNone	},
 		{ 0,							0}
 	};
 
 	if(pSettings->line_exist(section,"actor_restrictor"))
-		SetRestrictionType(CPHCharacter::ERestrictionType(pSettings->r_token(section,"actor_restrictor",retrictor_types)));
+		SetRestrictionType(ERestrictionType(pSettings->r_token(section,"actor_restrictor",retrictor_types)));
 	fCollisionDamageFactor=READ_IF_EXISTS(pSettings,r_float,section,"ph_collision_damage_factor",fCollisionDamageFactor);
 	R_ASSERT3(fCollisionDamageFactor<=1.f,"ph_collision_damage_factor >1.",section);
 	SetCrashSpeeds	(cs_min,cs_max);
@@ -815,7 +819,7 @@ VERIFY_BOUNDARIES2(pos,phBoundaries,m_character->PhysicsRefObject(),"CPHMovement
 #ifdef DEBUG
 		if(ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject)&&(!!pObject->cName())&&stricmp(PH_DBG_ObjectTrack(),*pObject->cName())==0)
 		{
-			Msg("CPHMovementControl::TryPosition %s (Object Position) %f,%f,%f",PH_DBG_ObjectTrack(),pObject->Position().x,pObject->Position().y,pObject->Position().z);
+			Msg("CPHMovementControl::TryPosition %s (Object Position) %f,%f,%f", PH_DBG_ObjectTrack(),pObject->Position().x,pObject->Position().y,pObject->Position().z);
 			Msg("CPHMovementControl::TryPosition %s (CPHMovementControl::vPosition) %f,%f,%f",PH_DBG_ObjectTrack(),vPosition.x,vPosition.y,vPosition.z);
 		}
 #endif
@@ -1112,7 +1116,7 @@ BOOL CPHMovementControl::BorderTraceCallback(collide::rq_result& result, LPVOID 
 	if(mtl->Flags.test(SGameMtl::flInjurious))
 	{
 		Fvector tri_norm;
-		GetNormal(T,tri_norm);
+		GetNormal(T,tri_norm,Level().ObjectSpace.GetStaticVerts());
 		if(p.m_dir.dotproduct(tri_norm)<0.f)p.m_movement->in_dead_area_count++;
 		else p.m_movement->in_dead_area_count--;
 	}
@@ -1134,7 +1138,7 @@ void	CPHMovementControl::TraceBorder(const Fvector &prev_position)
 
 	STraceBorderQParams			p(this,dir);
 	storage.r_clear				();
-	g_pGameLevel->ObjectSpace.RayQuery(storage,RD,BorderTraceCallback,&p,NULL,static_cast<CObject*>(m_character->PhysicsRefObject()));
+	g_pGameLevel->ObjectSpace.RayQuery(storage,RD,BorderTraceCallback,&p,NULL,smart_cast<CObject*>(m_character->PhysicsRefObject()));
 }
 
 void	CPHMovementControl::				UpdateObjectBox(CPHCharacter *ach)
@@ -1156,7 +1160,7 @@ void	CPHMovementControl::				UpdateObjectBox(CPHCharacter *ach)
 	R*=poses_dir.dotproduct(plane_cam); //(poses_dir.x*plane_cam.x+poses_dir.y*plane_cam.z);
 	Calculate(Fvector().set(0,0,0),Fvector().set(1,0,0),0,0,0,0);
 	m_character->SetObjectRadius(R);
-	ach->ChooseRestrictionType(CPHCharacter::rtStalker,1.f,m_character);
+	ach->ChooseRestrictionType(rtStalker,1.f,m_character);
 	m_character->UpdateRestrictionType(ach);
 }
 
@@ -1178,3 +1182,20 @@ void CPHMovementControl::update_last_material()
 	VERIFY(m_character);
 	m_character->update_last_material();
 }
+
+    const ICollisionDamageInfo	*CPHMovementControl::CollisionDamageInfo ()const	
+	{
+		VERIFY(m_character);
+		return m_character->CollisionDamageInfo ();
+	}
+	ICollisionDamageInfo	*CPHMovementControl::CollisionDamageInfo ()
+	{
+		VERIFY(m_character);
+		return m_character->CollisionDamageInfo ();
+	}
+
+	void	CPHMovementControl::SetPhysicsRefObject(CPhysicsShellHolder* ref_object)
+	{
+		VERIFY(m_character);
+		m_character->SetPhysicsRefObject(ref_object);
+	}

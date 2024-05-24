@@ -4,6 +4,7 @@
 struct dContact;
 //#include "FastDelegate.h"
 #include "../xr_3da/StatGraph.h"
+#include "debug_output.h" 
 #define DRAW_CONTACTS
 
 
@@ -24,71 +25,16 @@ extern	float			dbg_vel_collid_damage_to_display		;
 extern	LPCSTR			dbg_trace_object						;
 #ifdef DRAW_CONTACTS
 
-struct SPHContactDBGDraw
-{
-	int geomClass;
-	Fvector norm;
-	Fvector pos;
-	float depth;
-};
-DEFINE_VECTOR(SPHContactDBGDraw,CONTACT_VECTOR,CONTACT_I);
-extern CONTACT_VECTOR Contacts0;
-extern CONTACT_VECTOR Contacts1;
+
+//DEFINE_VECTOR(SPHContactDBGDraw,CONTACT_VECTOR,CONTACT_I);
+//extern CONTACT_VECTOR Contacts0;
+//extern CONTACT_VECTOR Contacts1;
 #endif
 ///ph_dbg_draw_mask 
-enum
-{
-	phDbgDrawContacts			=		1<<0,
-	phDbgDrawEnabledAABBS		=		1<<1,
-	phDBgDrawIntersectedTries	=		1<<2,
-	phDbgDrawSavedTries			=		1<<3,
-	phDbgDrawTriTrace			=		1<<4,
-	phDBgDrawNegativeTries		=		1<<5,
-	phDBgDrawPositiveTries		=		1<<6,
-	phDbgDrawTriTestAABB		=		1<<7,
-	phDBgDrawTriesChangesSign	=		1<<8,
-	phDbgDrawTriPoint			=		1<<9,
-	phDbgDrawExplosionPos		=		1<<10,
-	phDbgDrawObjectStatistics	=		1<<11,
-	phDbgDrawMassCenters		=		1<<12,
-	phDbgDrawDeathActivationBox =		1<<14,
-	phHitApplicationPoints		=		1<<15,
-	phDbgDrawCashedTriesStat	=		1<<16,
-	phDbgDrawCarDynamics		=		1<<17,
-	phDbgDrawCarPlots			=		1<<18,
-	phDbgLadder					=		1<<19,
-	phDbgDrawExplosions			=		1<<20,
-	phDbgDrawCarAllTrnsm		=		1<<21,
-	phDbgDrawZDisable			=		1<<22,
-	phDbgAlwaysUseAiPhMove		=		1<<23,
-	phDbgNeverUseAiPhMove		=		1<<24,
-	phDbgDispObjCollisionDammage=		1<<25,
-	phDbgIK						=		1<<26,
-	phDbgDrawIKGoal				=		1<<27,
-	phDbgIKLimits				=		1<<28,
-	phDbgCharacterControl		=		1<<29,
-	phDbgDrawRayMotions			=		1<<30,
-	phDbgTrackObject			=		1<<31
 
-};
-///ph_dbg_draw_mask1 ne pereputat by blin!
-enum
-{
-	ph_m1_DbgTrackObject		=		1<<0,
-	ph_m1_DbgActorRestriction	=		1<<1,
-	phDbgIKOff					=		1<<2,
-	phDbgHitAnims				=		1<<3,
-	phDbgDrawIKLimits			=		1<<4
-};
-struct SPHObjDBGDraw
-{
-	Fvector AABB;
-	Fvector AABB_center;
-};
-
-DEFINE_VECTOR( SPHObjDBGDraw, PHOBJ_DBG_V, PHOBJ_DBG_I );
-extern PHOBJ_DBG_V	dbg_draw_objects0;
-extern PHOBJ_DBG_V	dbg_draw_objects1;
+//DEFINE_VECTOR( SPHObjDBGDraw, PHOBJ_DBG_V, PHOBJ_DBG_I );
+//extern PHOBJ_DBG_V	dbg_draw_objects0;
+//extern PHOBJ_DBG_V	dbg_draw_objects1;
 class CPHObject;
 
 
@@ -105,7 +51,7 @@ void DBG_DrawStatAfterFrameStep( );
 void DBG_OpenCashedDraw( );
 void DBG_ClosedCashedDraw( u32 remove_time );
 void DBG_DrawPHAbstruct( SPHDBGDrawAbsract* a );
-void DBG_DrawPHObject( CPHObject *obj );
+void DBG_DrawPHObject( const CPHObject *obj );
 void DBG_DrawContact ( dContact &c );
 void DBG_DrawTri( CDB::RESULT *T, u32 c );
 void DBG_DrawTri(CDB::TRI *T, const Fvector *V_verts, u32 c );

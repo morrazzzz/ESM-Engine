@@ -34,6 +34,10 @@
 #include "profiler.h"
 #include "..\include\xrRender\Kinematics.h"
 
+//TODO: REMOVE ME!!!
+#include "PHCollideValidator.h" 
+//TODO: REMOVE ME!!!
+
 #define EFFECTOR_RADIUS 30.f
 const u16	TEST_RAYS_PER_OBJECT=5;
 const u16	BLASTED_OBJ_PROCESSED_PER_FRAME=3;
@@ -734,19 +738,27 @@ void CExplosive::SetExplosionSize(const Fvector	&new_size)
 	m_vExplodeSize.set(new_size);
 	
 }
+
+#pragma todo("REMOVE KOSTIL CODE IN ActivateExplosionBox!!!!! PUT BACK ActivateShapeExplosive. SoC-CoP Warning!!! ")
 void CExplosive::ActivateExplosionBox(const Fvector &size,Fvector &in_out_pos)
 {
-	CPhysicsShellHolder		*self_obj=smart_cast<CPhysicsShellHolder*>(cast_game_object());
-	CPhysicsShell* self_shell=self_obj->PPhysicsShell();
-	if(self_shell&&self_shell->isActive())self_shell->DisableCollision();
+	CPhysicsShellHolder* self_obj = smart_cast<CPhysicsShellHolder*>(cast_game_object());
+	CPhysicsShell* self_shell = self_obj->PPhysicsShell();
+	if (self_shell && self_shell->isActive())self_shell->DisableCollision();
+//	ActivateShapeExplosive(self_obj, size, m_vExplodeSize, in_out_pos);
+
 	CPHActivationShape activation_shape;//Fvector start_box;m_PhysicMovementControl.Box().getsize(start_box);
-	activation_shape.Create(in_out_pos,size,self_obj);
-	dBodySetGravityMode(activation_shape.ODEBody(),0);
-	activation_shape.Activate(size,1,1.f,M_PI/8.f);
+	activation_shape.Create(in_out_pos, size, self_obj);
+
+	CPHCollideValidator::SetCharacterClassNotCollide(activation_shape);
+
+	dBodySetGravityMode(activation_shape.ODEBody(), 0);
+	activation_shape.Activate(size, 1, 1.f, M_PI / 8.f);
 	in_out_pos.set(activation_shape.Position());
 	activation_shape.Size(m_vExplodeSize);
 	activation_shape.Destroy();
-	if(self_shell&&self_shell->isActive())self_shell->EnableCollision();
+
+	if (self_shell && self_shell->isActive())self_shell->EnableCollision();
 }
 void CExplosive::net_Relcase(CObject* O)
 {

@@ -23,6 +23,8 @@
 #include "ai/stalker/ai_stalker.h"
 #include "interactive_motion.h"
 #include "animation_movement_controller.h"
+#include "physics_shell_animated.h" //remove me???
+
 //const float default_hinge_friction = 5.f;//gray_wolf comment
 #ifdef DEBUG
 #	include "PHDebug.h"
@@ -35,13 +37,16 @@
 #	define USE_IK
 #endif // PRIQUEL
 
-void  NodynamicsCollide(bool& do_colide,bool bo1,dContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/)
-{
-	dBodyID body1=dGeomGetBody(c.geom.g1);
-	dBodyID body2=dGeomGetBody(c.geom.g2);
-	if(!body1||!body2||(dGeomUserDataHasCallback(c.geom.g1,NodynamicsCollide)&&dGeomUserDataHasCallback(c.geom.g2,NodynamicsCollide)))return;
-	do_colide=false; 
-}
+//void  NodynamicsCollide( bool& do_colide, bool bo1, dContact& c, SGameMtl * /*material_1*/, SGameMtl * /*material_2*/ )
+//{
+//	dBodyID body1=dGeomGetBody( c.geom.g1 );
+//	dBodyID body2=dGeomGetBody( c.geom.g2 );
+//	if( !body1 || !body2 || ( dGeomUserDataHasCallback( c.geom.g1,NodynamicsCollide )&& dGeomUserDataHasCallback( c.geom.g2, NodynamicsCollide ) ) )
+//		return;
+//	do_colide = false; 
+//}
+
+
 
 void  OnCharacterContactInDeath(bool& do_colide,bool bo1,dContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/)
 {
@@ -76,11 +81,13 @@ CCharacterPhysicsSupport::~CCharacterPhysicsSupport()
 }
 
 CCharacterPhysicsSupport::CCharacterPhysicsSupport(EType atype,CEntityAlive* aentity) 
-:	  m_pPhysicsShell(aentity->PPhysicsShell()),
-	  m_EntityAlife(*aentity),
-	  mXFORM(aentity->XFORM()),
-	  m_ph_sound_player(aentity),
-	  m_interactive_motion(0)
+:	m_pPhysicsShell(aentity->PPhysicsShell()),
+	m_EntityAlife(*aentity),
+	mXFORM(aentity->XFORM()),
+	m_ph_sound_player(aentity),
+	m_interactive_motion(0),
+	m_physics_shell_animated(NULL),
+	m_physics_shell_animated_time_destroy(u32(-1))
 {
 	m_PhysicMovementControl=xr_new<CPHMovementControl>(aentity);
 	m_flags.assign(0);
@@ -104,15 +111,19 @@ CCharacterPhysicsSupport::CCharacterPhysicsSupport(EType atype,CEntityAlive* aen
 	{
 	case etActor:
 		m_PhysicMovementControl->AllocateCharacterObject(CPHMovementControl::actor);
-		m_PhysicMovementControl->SetRestrictionType(CPHCharacter::rtActor);
+		m_PhysicMovementControl->SetRestrictionType(rtActor);
 		break;
 	case etStalker:
 		m_PhysicMovementControl->AllocateCharacterObject(CPHMovementControl::ai);
-		m_PhysicMovementControl->SetRestrictionType(CPHCharacter::rtStalker);
+		m_PhysicMovementControl->SetRestrictionType(rtStalker);
 		m_PhysicMovementControl->SetActorMovable(false);
 		break;
 	case etBitting:
 		m_PhysicMovementControl->AllocateCharacterObject(CPHMovementControl::ai);
+
+#pragma todo("Do we need this? The absence of this looks like a mistake. Explore this in more detail. SoC-CoP Warning.")
+		//m_PhysicMovementControl->SetRestrictionType(rtMonsterMedium);
+		//m_PhysicMovementControl->SetActorMovable(false);
 	}
 };
 
@@ -470,6 +481,25 @@ void CCharacterPhysicsSupport::in_UpdateCL( )
 	{
 		return;
 	}
+/*
+#ifdef DEBUG
+	if (dbg_draw_character_bones)
+		dbg_draw_geoms(m_weapon_geoms);
+
+	if (dbg_draw_character_bones)
+		DBG_DrawBones(m_EntityAlife);
+
+	if (dbg_draw_character_binds)
+		DBG_DrawBind(m_EntityAlife);
+
+	if (dbg_draw_character_physics_pones)
+		DBG_PhysBones(m_EntityAlife);
+
+	if (dbg_draw_character_physics && m_pPhysicsShell)
+		m_pPhysicsShell->dbg_draw_geometry(0.2f, D3DCOLOR_ARGB(100, 255, 0, 0));
+#endif
+*/
+	update_animation_collision();
 	CalculateTimeDelta( );
 	if( m_pPhysicsShell )
 	{
@@ -611,6 +641,31 @@ void CCharacterPhysicsSupport::set_movement_position( const Fvector &pos )
 	movement()->SetPosition( m_EntityAlife.Position() );
 }
 
+static const u32 physics_shell_animated_destroy_delay = 3000;
+void	CCharacterPhysicsSupport::destroy_animation_collision()
+{
+	xr_delete(m_physics_shell_animated);
+	m_physics_shell_animated_time_destroy = u32(-1);
+}
+void CCharacterPhysicsSupport::create_animation_collision()
+{
+	m_physics_shell_animated_time_destroy = Device.dwTimeGlobal + physics_shell_animated_destroy_delay;
+	if (m_physics_shell_animated)
+		return;
+	m_physics_shell_animated = xr_new<physics_shell_animated>(&m_EntityAlife, true);
+}
+
+void CCharacterPhysicsSupport::update_animation_collision()
+{
+	if (animation_collision())
+	{
+		animation_collision()->update(mXFORM);
+		//animation_collision( )->shell()->set_LinearVel( movement()->GetVelocity() );
+		if (Device.dwTimeGlobal > m_physics_shell_animated_time_destroy)
+			destroy_animation_collision();
+	}
+}
+
 void CCharacterPhysicsSupport::ActivateShell			( CObject* who )
 {
 	DestroyIKController( );
@@ -683,7 +738,7 @@ void CCharacterPhysicsSupport::ActivateShell			( CObject* who )
 	m_pPhysicsShell->set_Kinematics(K);
 	m_pPhysicsShell->RunSimulation();
 	m_pPhysicsShell->mXFORM.set(mXFORM);
-	m_pPhysicsShell->SetCallbacks(m_pPhysicsShell->GetBonesCallback());
+	m_pPhysicsShell->SetCallbacks( );
 	//
 
 	if (anim_mov_ctrl) //we do not whant to move by long animation in root 
@@ -816,21 +871,14 @@ void		 CCharacterPhysicsSupport::in_NetRelcase(CObject* O)
 	}
 }
  
-bool CCharacterPhysicsSupport::set_collision_hit_callback(SCollisionHitCallback* cc)
+void CCharacterPhysicsSupport::set_collision_hit_callback( ICollisionHitCallback* cc )
 {
-	if(!cc)
-	{
-		m_collision_hit_callback=NULL;
-		return true;
-	}
-	if(m_pPhysicsShell)
-	{
-		VERIFY2(cc->m_collision_hit_callback!=0,"No callback function");
-		m_collision_hit_callback=cc;
-		return true;
-	}else return false;
+	
+	xr_delete( m_collision_hit_callback );
+	m_collision_hit_callback = cc;
+
 }
-SCollisionHitCallback * CCharacterPhysicsSupport::get_collision_hit_callback()
+ICollisionHitCallback * CCharacterPhysicsSupport::get_collision_hit_callback()
 {
 	return m_collision_hit_callback;
 }

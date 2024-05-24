@@ -232,6 +232,8 @@ DEFINE_VECTOR	(shared_str,RStringVec,RStringVecIt);
 DEFINE_SET		(shared_str,RStringSet,RStringSetIt);
 DEFINE_VECTOR	(xr_rtoken,RTokenVec,RTokenVecIt);
 
+#define			xr_pure_interface	__interface
+
 #include "FS.h"
 #include "log.h"
 #include "xr_trims.h"

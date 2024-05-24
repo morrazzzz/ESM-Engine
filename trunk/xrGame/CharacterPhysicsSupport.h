@@ -14,7 +14,7 @@ class CPhysicsShell;
 class CPHMovementControl;
 class CIKLimbsController;
 class interactive_motion;
-
+class physics_shell_animated;
 
 
 class CCharacterPhysicsSupport :
@@ -62,10 +62,13 @@ private:
 	CPHMovementControl					*m_PhysicMovementControl																															;
 	CPHSoundPlayer						m_ph_sound_player																																	;
 	CIKLimbsController					*m_ik_controller																																	;
-	SCollisionHitCallback				*m_collision_hit_callback;
+
+	ICollisionHitCallback				*m_collision_hit_callback;
 	character_hit_animation_controller	m_hit_animations;
+	physics_shell_animated				*m_physics_shell_animated;
 
 	interactive_motion					*m_interactive_motion;
+	u32									m_physics_shell_animated_time_destroy;
 //skeleton modell(!share?)
 	float								skel_airr_lin_factor																																;
 	float								skel_airr_ang_factor																																;
@@ -142,12 +145,20 @@ IC		CIKLimbsController				*ik_controller					()	{return	m_ik_controller;}
 		void 							in_Load							(LPCSTR section)																									;
 		void 							in_Hit							(float P,Fvector &dir, CObject *who, s16 element,Fvector p_in_object_space, float impulse,ALife::EHitType hit_type ,bool is_killing=false);
 		void							in_NetSave						(NET_Packet& P)																										;
+
 		void							in_ChangeVisual					();
 		void							on_create_anim_mov_ctrl			();
 		void							on_destroy_anim_mov_ctrl		();
 		void							PHGetLinearVell					(Fvector& velocity);
-		SCollisionHitCallback*			get_collision_hit_callback		();
-		bool							set_collision_hit_callback		(SCollisionHitCallback* cc);
+		ICollisionHitCallback*			get_collision_hit_callback		( );
+		void							set_collision_hit_callback		( ICollisionHitCallback* cc );
+IC		physics_shell_animated			*animation_collision			( ){ return m_physics_shell_animated; }
+IC		const physics_shell_animated	*animation_collision			( )const{ return m_physics_shell_animated; }
+		void							create_animation_collision		( );
+		void							destroy_animation_collision		( );
+private:
+	void							update_animation_collision();
+public:
 /////////////////////////////////////////////////////////////////
 		CCharacterPhysicsSupport& operator = (CCharacterPhysicsSupport& /**asup/**/){R_ASSERT2(false,"Can not assign it");}
 								CCharacterPhysicsSupport				(EType atype,CEntityAlive* aentity)																					;

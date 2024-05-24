@@ -8,7 +8,12 @@ class CPHActivationShape : public CPHObject
 dBodyID					m_body																																							;
 dGeomID					m_geom																																							;
 Flags16					m_flags																																							;
-CSafeFixedRotationState m_safe_state																																					;			
+CSafeFixedRotationState m_safe_state																																					;
+
+#ifdef		DEBUG
+virtual		IPhysicsShellHolder* ref_object();
+#endif
+
 public:
 enum					EType
 {
@@ -25,7 +30,7 @@ enum		{
 			};
 							CPHActivationShape					()																															;
 							~CPHActivationShape					()																															;
-			void			Create								(const Fvector start_pos,const Fvector start_size,CPhysicsShellHolder* ref_obj,EType type=etBox,u16	flags=0)				;
+			void			Create								(const Fvector start_pos,const Fvector start_size, IPhysicsShellHolder* ref_obj,EType type=etBox,u16	flags=0)				;
 			void			Destroy								()																															;
 			bool			Activate							(const Fvector need_size,u16 steps,float max_displacement,float max_rotation,bool	un_freeze_later	=false)					;															
 const		Fvector			&Position							()																															;

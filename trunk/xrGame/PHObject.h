@@ -11,13 +11,16 @@ class CPHObject;
 class CPHUpdateObject;
 class CPHMoveStorage;
 class CPHSynchronize;
-typedef void CollideCallback(CPHObject* obj1,CPHObject* obj2, dGeomID o1, dGeomID o2);
 
+typedef void CollideCallback(CPHObject* obj1, CPHObject* obj2, dGeomID o1, dGeomID o2);
+#ifdef		DEBUG
+class IPhysicsShellHolder;
+#endif
 class CPHObject :
 	public ISpatial 
 {
 #ifdef DEBUG
-	friend void DBG_DrawPHObject(CPHObject* obj);
+	friend struct SPHObjDBGDraw;
 #endif
 	DECLARE_PHLIST_ITEM(CPHObject)
 
@@ -77,6 +80,7 @@ public:
 	virtual		bool			step_single						(dReal	step)					;
 				void			reinit_single					()								;
 				void			step_prediction					(float time)					;
+				void			step							(float time)					;
 	virtual 	void 			PhDataUpdate					(dReal	step)					=0;
 	virtual 	void 			PhTune							(dReal	step)					=0;
 	virtual		void 			spatial_move					()								;
@@ -96,7 +100,7 @@ public:
 
 							CPHObject						()										;
 			void			activate						()										;
-		IC	bool			is_active						()										{return !!m_flags.test(st_activated)/*b_activated*/;}
+		IC	bool			is_active						()	const								{return !!m_flags.test(st_activated)/*b_activated*/;}
 			void			deactivate						()										;
 			void			put_in_recently_deactivated		()										;
 			void			remove_from_recently_deactivated()										;
@@ -111,6 +115,11 @@ virtual		CPHMoveStorage*	MoveStorage						()										{return NULL;}
 virtual		ECastType		CastType						(){return tpNotDefinite;}
 virtual		void			vis_update_activate				()										{}
 virtual		void			vis_update_deactivate			()										{}
+
+#ifdef		DEBUG
+virtual		IPhysicsShellHolder	*ref_object					()										=0;
+#endif
+
 IC			CLBits&						collide_bits		()										{return m_collide_bits;}
 IC			_flags<CLClassBits>&		collide_class_bits	()										{return m_collide_class_bits;}
 IC			const CLBits&				collide_bits		()const 								{return m_collide_bits;}

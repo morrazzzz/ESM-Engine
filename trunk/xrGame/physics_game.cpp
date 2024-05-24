@@ -74,9 +74,31 @@ public:
 	virtual bool 			obsolete						()const{return false;}
 };
 
+static void play_object(dxGeomUserData* data, SGameMtlPair* mtl_pair, const dContactGeom* c)
+{
+	VERIFY(data);
+	VERIFY(mtl_pair);
+	VERIFY(c);
 
+	CPHSoundPlayer* sp = NULL;
+#ifdef	DEBUG
+	__try {
+		sp = data->ph_ref_object->ObjectPhSoundPlayer();
+	}
+	__except (EXCEPTION_EXECUTE_HANDLER) {
+		Msg("data->ph_ref_object: %p ", data->ph_ref_object);
+		Msg("data: %p ", data);
+		Msg("materials: %s ", mtl_pair->dbg_Name());
+		FlushLog();
+		FATAL("bad data->ph_ref_object");
+	}
+#else
+	sp = data->ph_ref_object->ObjectPhSoundPlayer();
+#endif
+	if (sp)
+		sp->Play(mtl_pair, *(Fvector*)c->pos);
 
-
+}
 template<class Pars>
 void  TContactShotMark(CDB::TRI* T,dContactGeom* c)
 {
@@ -131,8 +153,7 @@ void  TContactShotMark(CDB::TRI* T,dContactGeom* c)
 				{
 					if(data->ph_ref_object&&!mtl_pair->CollideSounds.empty())
 					{
-						if (CPHSoundPlayer* sp = data->ph_ref_object->ph_sound_player())
-							sp->Play(mtl_pair, *(Fvector*)c->pos);
+						play_object( data, mtl_pair, c );
 					}
 				}
 			}

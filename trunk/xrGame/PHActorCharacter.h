@@ -6,7 +6,7 @@
 class CPhysicShellHolder;
 struct SPHCharacterRestrictor
 {
-							SPHCharacterRestrictor							(CPHCharacter::ERestrictionType Ttype)
+							SPHCharacterRestrictor							(ERestrictionType Ttype)
 							{
 								m_type=Ttype;
 								m_character=NULL;
@@ -19,7 +19,7 @@ struct SPHCharacterRestrictor
 								Destroy();
 							};
 				CPHCharacter*			m_character;
-				CPHCharacter::ERestrictionType m_type;
+				ERestrictionType m_type;
 
 				dGeomID					m_restrictor;
 				dGeomID					m_restrictor_transform;
@@ -28,11 +28,11 @@ struct SPHCharacterRestrictor
 				void					SetMaterial							(u16 material);
 				void					Create								(CPHCharacter* ch,dVector3 sizes);
 				void					Destroy								(void);
-				void					SetPhysicsRefObject					(CPhysicsShellHolder* ref_object);
+				void					SetPhysicsRefObject					(IPhysicsShellHolder* ref_object);
 				void					SetRadius							(float r);
 };
 
-template <CPHCharacter::ERestrictionType Ttype>
+template <ERestrictionType Ttype>
 struct TPHCharacterRestrictor : public SPHCharacterRestrictor
 {
 		TPHCharacterRestrictor():SPHCharacterRestrictor(Ttype){}
@@ -93,21 +93,21 @@ class CPHActorCharacter :
 	RESRICTORS_V		m_restrictors;
 	float				m_speed_goal;
 public:
-	typedef TPHCharacterRestrictor<CPHCharacter::rtStalker>			stalker_restrictor;
-	typedef TPHCharacterRestrictor<CPHCharacter::rtStalkerSmall>	stalker_small_restrictor;
-	typedef TPHCharacterRestrictor<CPHCharacter::rtMonsterMedium>	medium_monster_restrictor;
+	typedef TPHCharacterRestrictor<rtStalker>			stalker_restrictor;
+	typedef TPHCharacterRestrictor<rtStalkerSmall>	stalker_small_restrictor;
+	typedef TPHCharacterRestrictor<rtMonsterMedium>	medium_monster_restrictor;
 public:
 	virtual CPHActorCharacter	*CastActorCharacter			(){return this;}
 	virtual	void		SetObjectContactCallback			(ObjectContactCallbackFun* callback);
 	virtual void		SetMaterial							(u16 material);
 	virtual void		Create								(dVector3 sizes);
 	virtual void		Destroy								(void);
-	virtual void		SetPhysicsRefObject					(CPhysicsShellHolder* ref_object);
+	virtual void		SetPhysicsRefObject					(IPhysicsShellHolder* ref_object);
 	virtual void		SetAcceleration						(Fvector accel);
 	virtual	void		Disable								();
 	virtual	void		Jump								(const Fvector& jump_velocity);
 	virtual void		InitContact							(dContact* c,bool &do_collide,u16	material_idx_1 ,u16 material_idx_2);
-			void		SetRestrictorRadius					(CPHCharacter::ERestrictionType rtype,float r);
+			void		SetRestrictorRadius					(ERestrictionType rtype,float r);
 virtual		void		ChooseRestrictionType				(ERestrictionType my_type,float my_depth,CPHCharacter *ch);
 						CPHActorCharacter					();
 	virtual				~CPHActorCharacter					(void);
@@ -115,5 +115,5 @@ private:
 	virtual	void		update_last_material();
 private:
 		void			ClearRestrictors					();
-		RESTRICTOR_I	Restrictor							(CPHCharacter::ERestrictionType rtype);
+		RESTRICTOR_I	Restrictor							(ERestrictionType rtype);
 };

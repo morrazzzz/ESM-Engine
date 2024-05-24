@@ -293,7 +293,7 @@ void* CODEGeom::get_callback_data()
 		return dGeomGetUserData(m_geom_transform)->callback_data;
 	}
 }
-void CODEGeom::set_ref_object(CPhysicsShellHolder* ro)
+void CODEGeom::set_ref_object(IPhysicsShellHolder* ro)
 {
 	if(!m_geom_transform) return;
 	if(geom())
@@ -382,11 +382,11 @@ float CBoxGeom::radius()
 {
 	return m_box.m_halfsize.x;
 }
-void CODEGeom::get_final_tx_bt(const dReal*	&p,	const dReal*	&R,dReal *bufV, dReal *bufM)
+void CODEGeom::get_final_tx_bt(const dReal*	&p,	const dReal*	&R,dReal *bufV, dReal *bufM) const
 {
 	VERIFY(m_geom_transform);
 	//dGeomID		g		=	geometry_bt()						;
-							get_final_tx	(m_geom_transform,p,R,bufV,bufM)	;
+	get_final_tx	(m_geom_transform,p,R,bufV,bufM)	;
 
 }
 void CODEGeom::get_final_tx(dGeomID g,const dReal*	&p,const dReal*	&R,dReal * bufV, dReal* bufM)
@@ -401,7 +401,7 @@ void CODEGeom::get_final_tx(dGeomID g,const dReal*	&p,const dReal*	&R,dReal * bu
 		p=dGeomGetPosition(g);
 	}
 }
-void CBoxGeom::get_extensions_bt(const Fvector& axis,float center_prg,float& lo_ext, float& hi_ext)
+void CBoxGeom::get_Extensions( const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext ) const
 {
 
 	VERIFY			(m_geom_transform)	;
@@ -529,7 +529,7 @@ float CSphereGeom::radius()
 	return m_sphere.R;
 }
 
-void CSphereGeom::get_extensions_bt(const Fvector& axis,float center_prg,float& lo_ext, float& hi_ext)
+void CSphereGeom::get_Extensions( const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext )const
 {
 	VERIFY			(m_geom_transform)	;
 	const dReal	*rot	=NULL			;
@@ -597,7 +597,7 @@ float CCylinderGeom::radius()
 	return m_cylinder.m_radius;
 }
 
-void CCylinderGeom::get_extensions_bt(const Fvector& axis,float center_prg,float& lo_ext, float& hi_ext)
+void CCylinderGeom::get_Extensions( const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext )const
 {
 	VERIFY			(m_geom_transform)	;
 	const dReal	*rot	=NULL			;
