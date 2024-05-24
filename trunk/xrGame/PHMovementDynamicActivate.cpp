@@ -82,13 +82,13 @@ void TTestDepthCallback (bool& do_colide,bool bo1,dContact& c,SGameMtl* material
 
 			if(ud1)
 			{
-				CPhysicsShell* phsl=ud1->ph_ref_object->PPhysicsShell();
+				CPhysicsShell* phsl=ud1->ph_ref_object->ObjectPPhysicsShell();
 				if(phsl) phsl->Enable();
 			}
 
 			if(ud2)
 			{
-				CPhysicsShell* phsl=ud2->ph_ref_object->PPhysicsShell();
+				CPhysicsShell* phsl=ud2->ph_ref_object->ObjectPPhysicsShell();
 				if(phsl) phsl->Enable();
 			}
 
@@ -304,7 +304,8 @@ bool CPHMovementControl:: ActivateBoxDynamic(DWORD id,int num_it/*=8*/,int num_s
 		if(Device.dwTimeGlobal-trying_times[id]<500&&dif.magnitude()<0.05f)
 																	return false;
 	}
-	if(!m_character||m_character->PhysicsRefObject()->PPhysicsShell())return false;
+	if(!m_character||m_character->PhysicsRefObject()->ObjectPPhysicsShell())
+		return false;
 	DWORD old_id=BoxID();
 
 	bool  character_disabled=character_exist && !m_character->IsEnabled();

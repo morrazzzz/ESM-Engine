@@ -15,7 +15,7 @@ const float JUMP_INCREASE_VELOCITY_RATE=1.2f;
 
 CPHActorCharacter::CPHActorCharacter()
 {
-	SetRestrictionType(CPHCharacter::rtActor);
+	SetRestrictionType(rtActor);
 
 	//std::fill(m_restrictors_index,m_restrictors_index+CPHCharacter::rtNone,end(m_restrictors));
 	//m_restrictors_index[CPHCharacter::rtStalker]		=begin(m_restrictors)+0;
@@ -71,23 +71,23 @@ void SPHCharacterRestrictor::Create(CPHCharacter* ch,dVector3 sizes)
 	dSpaceAdd(m_character->dSpace(),m_restrictor_transform);
 	dGeomUserDataSetPhObject(m_restrictor,(CPHObject*)m_character);
 	switch(m_type) {
-		case CPHCharacter::rtStalker:static_cast<CPHActorCharacter::stalker_restrictor*>(this)->Create(ch,sizes);
+		case rtStalker:static_cast<CPHActorCharacter::stalker_restrictor*>(this)->Create(ch,sizes);
 		break;
-		case CPHCharacter::rtStalkerSmall:static_cast<CPHActorCharacter::stalker_small_restrictor*>(this)->Create(ch,sizes);
+		case rtStalkerSmall:static_cast<CPHActorCharacter::stalker_small_restrictor*>(this)->Create(ch,sizes);
 		break;
-		case CPHCharacter::rtMonsterMedium:static_cast<CPHActorCharacter::medium_monster_restrictor*>(this)->Create(ch,sizes);
+		case rtMonsterMedium:static_cast<CPHActorCharacter::medium_monster_restrictor*>(this)->Create(ch,sizes);
 		break;
 		default:NODEFAULT;
 	}
 	
 }
 
-RESTRICTOR_I CPHActorCharacter::Restrictor(CPHCharacter::ERestrictionType rtype)
+RESTRICTOR_I CPHActorCharacter::Restrictor(ERestrictionType rtype)
 {
 	R_ASSERT2(rtype<rtActor,"not valide restrictor");
 	return begin(m_restrictors)+rtype;
 }
-void CPHActorCharacter::SetRestrictorRadius(CPHCharacter::ERestrictionType rtype,float r)
+void CPHActorCharacter::SetRestrictorRadius(ERestrictionType rtype,float r)
 {
 	if(m_restrictors.size()>0)(*Restrictor(rtype))->SetRadius(r);
 }
@@ -136,7 +136,7 @@ void SPHCharacterRestrictor::Destroy()
 	}
 	m_character=NULL;
 }
-void CPHActorCharacter::SetPhysicsRefObject(CPhysicsShellHolder* ref_object)
+void CPHActorCharacter::SetPhysicsRefObject(IPhysicsShellHolder* ref_object)
 {
 	inherited::SetPhysicsRefObject(ref_object);
 	RESTRICTOR_I i=begin(m_restrictors),e=end(m_restrictors);
@@ -145,7 +145,7 @@ void CPHActorCharacter::SetPhysicsRefObject(CPhysicsShellHolder* ref_object)
 		(*i)->SetPhysicsRefObject(ref_object);
 	}
 }
-void SPHCharacterRestrictor::SetPhysicsRefObject(CPhysicsShellHolder* ref_object)
+void SPHCharacterRestrictor::SetPhysicsRefObject(IPhysicsShellHolder* ref_object)
 {
 	if(m_character)
 		dGeomUserDataSetPhysicsRefObject(m_restrictor,ref_object);
@@ -282,7 +282,7 @@ void CPHActorCharacter::InitContact(dContact* c,bool &do_collide,u16 material_id
 
 }
 
-void CPHActorCharacter::ChooseRestrictionType	(CPHCharacter::ERestrictionType my_type,float my_depth,CPHCharacter *ch)
+void CPHActorCharacter::ChooseRestrictionType	(ERestrictionType my_type,float my_depth,CPHCharacter *ch)
 {
 if (my_type!=rtStalker||(ch->RestrictionType()!=rtStalker&&ch->RestrictionType()!=rtStalkerSmall))return;
 float checkR=m_restrictors[rtStalkerSmall]->m_restrictor_radius*1.5f;//+m_restrictors[rtStalker]->m_restrictor_radius)/2.f;
@@ -295,7 +295,7 @@ case rtStalkerSmall:
 		if(my_depth>0.05f)ch->SetNewRestrictionType(rtStalker);
 		else ch->SetRestrictionType(rtStalker);
 #ifdef DEBUG
-		if(ph_dbg_draw_mask1.test(ph_m1_DbgActorRestriction))
+		if(debug_output().ph_dbg_draw_mask1().test(ph_m1_DbgActorRestriction))
 				Msg("restriction ready to change small -> large");
 #endif
 	}
@@ -304,7 +304,7 @@ case rtStalker:
 	if(ch->ObjectRadius()<checkR)
 	{
 #ifdef DEBUG
-		if(ph_dbg_draw_mask1.test(ph_m1_DbgActorRestriction))
+		if(debug_output().ph_dbg_draw_mask1().test(ph_m1_DbgActorRestriction))
 						Msg("restriction  change large ->  small");
 #endif
 		ch->SetRestrictionType(rtStalkerSmall);

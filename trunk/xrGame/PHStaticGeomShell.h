@@ -9,6 +9,11 @@ class CPHStaticGeomShell:
 	public CPHObject,
 	public CPHUpdateObject
 {
+
+#ifdef	DEBUG
+	virtual		IPhysicsShellHolder* ref_object() { return CPHGeometryOwner::PhysicsRefObject(); }
+#endif
+
 			void			get_spatial_params	();	
 virtual		void			EnableObject		(CPHObject* obj){CPHUpdateObject::Activate();}
 virtual		dGeomID			dSpacedGeom			(){return dSpacedGeometry();}

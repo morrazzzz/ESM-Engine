@@ -1,16 +1,15 @@
 #include "pch_script.h"
 #include "physicobject.h"
 #include "PhysicsShell.h"
-#include "Physics.h"
+//#include "Physics.h"
 #include "xrserver_objects_alife.h"
-#include "..\include\xrRender\Kinematics.h"
-#include "..\include\xrRender\KinematicsAnimated.h"
+#include "Level.h"
+#include "../Include/xrRender/Kinematics.h"
+#include "../Include/xrRender/KinematicsAnimated.h"
 #include "../xr_3da/xr_collide_form.h"
+#include "PHSynchronize.h"
 #include "game_object_space.h"
-
-#ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
-	#include "PhysicsShellAnimator.h"
-#endif
+//#include "PhysicsShellAnimator.h"
 
 
 CPhysicObject::CPhysicObject(void) 
@@ -50,12 +49,10 @@ BOOL CPhysicObject::net_Spawn(CSE_Abstract* DC)
 	if (!PPhysicsShell()->isBreakable()&&!CScriptBinder::object()&&!CPHSkeleton::IsRemoving())
 		SheduleUnregister();
 
-#ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
-	if (PPhysicsShell()->Animated())
-	{
-		processing_activate();
-	}
-#endif
+//	if (PPhysicsShell()->Animated())
+//	{
+//		processing_activate();
+//	}
 
 	return TRUE;
 }
@@ -88,12 +85,11 @@ void CPhysicObject::RunStartupAnim(CSE_Abstract *D)
 }
 void CPhysicObject::net_Destroy()
 {
-#ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
-	if (PPhysicsShell()->Animated())
-	{
-		processing_deactivate();
-	}
-#endif
+	//if (PPhysicsShell()->Animated())
+	//{
+	//	processing_deactivate();
+	//}
+
 
 	inherited::net_Destroy	();
 	CPHSkeleton::RespawnInit();
@@ -137,14 +133,12 @@ void CPhysicObject::UpdateCL()
 {
 	inherited::UpdateCL();
 
-#ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
 	//Если наш физический объект анимированный, то 
 	//двигаем объект за анимацией
 	if (m_pPhysicsShell->PPhysicsShellAnimator())
 	{
-		m_pPhysicsShell->PPhysicsShellAnimator()->OnFrame();
+		m_pPhysicsShell->AnimatorOnFrame();
 	}
-#endif
 
 	PHObjectPositionUpdate();
 }
@@ -159,6 +153,13 @@ void CPhysicObject::PHObjectPositionUpdate	()
 		{
 			m_pPhysicsShell->Update();
 			XFORM().set			(m_pPhysicsShell->mXFORM);
+		}
+		else
+		if (m_pPhysicsShell->PPhysicsShellAnimator())
+		{
+			Fmatrix m;
+			m_pPhysicsShell->InterpolateGlobalTransform(&m);
+			XFORM().set(m);
 		}
 		else
 			m_pPhysicsShell->InterpolateGlobalTransform(&XFORM());
@@ -273,24 +274,14 @@ void CPhysicObject::InitServerObject(CSE_Abstract * D)
 	if(!l_tpALifePhysicObject)return;
 	l_tpALifePhysicObject->type			= u32(m_type);
 }
-SCollisionHitCallback*	CPhysicObject::	get_collision_hit_callback ()	
+ICollisionHitCallback*	CPhysicObject::	get_collision_hit_callback ()	
 {
 	return m_collision_hit_callback;
 }
-bool					CPhysicObject::	set_collision_hit_callback	(SCollisionHitCallback *cc)	
+void	CPhysicObject::	set_collision_hit_callback	(ICollisionHitCallback *cc)	
 {
-	if(!cc)
-	{
-		m_collision_hit_callback=NULL;
-		return true;
-	}
-	if(PPhysicsShell())
-	{
-		VERIFY2(cc->m_collision_hit_callback!=0,"No callback function");
-		m_collision_hit_callback=cc;
-		return true;
-	}
-	else return false;
+	xr_delete( m_collision_hit_callback );
+	m_collision_hit_callback = cc;
 }
 
 //////////////////////////////////////////////////////////////////////////

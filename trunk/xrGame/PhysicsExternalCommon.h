@@ -1,6 +1,9 @@
 #ifndef	_PHYSICS_EXTERNAL_COMMON_
 #define _PHYSICS_EXTERNAL_COMMON_
 #pragma once
+
+#include "MathUtils.h" //TODO: remove me???
+
 struct dContactGeom;
 struct dContact;
 struct SGameMtl;
@@ -23,8 +26,6 @@ struct dxGeomUserData;
 struct dContactGeom;
 bool ContactShotMarkGetEffectPars(dContactGeom *c, dxGeomUserData* &data, float &vel_cret, bool &b_invert_normal );
 
-//restore!!!
-/*
 template <typename geom_type>
 void	t_get_box( const geom_type*	shell, const	Fmatrix& form,	Fvector&	sz, Fvector&	c )
 {
@@ -38,7 +39,6 @@ void	t_get_box( const geom_type*	shell, const	Fmatrix& form,	Fvector&	sz, Fvecto
 		sz[i]=hi-lo;c.add(Fvector().mul(ax,(lo+hi)/2));
 	}
 }
-*/
 
 enum ERestrictionType
 {

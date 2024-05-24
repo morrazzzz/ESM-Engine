@@ -11,12 +11,60 @@
 #include "CustomRocket.h"
 #include "Grenade.h"
 #include "IPHWorld.h"
+#include "characterphysicssupport.h"
 #include "phactivationshape.h"
 #include "phvalide.h"
 CPhysicsShellHolder::CPhysicsShellHolder()
 {
 	init();
 }
+CPhysicsShellHolder::	~CPhysicsShellHolder()
+{
+	VERIFY(!m_pPhysicsShell);
+	//#ifndef MASTER_GOLD
+		//R_ASSERT( !m_pPhysicsShell );
+	//#endif
+	destroy_physics_shell(m_pPhysicsShell);
+}
+const IObjectPhysicsCollision* CPhysicsShellHolder::physics_collision()
+{
+	CCharacterPhysicsSupport* char_support = character_physics_support();
+	if (char_support)
+		char_support->create_animation_collision();
+	return this;
+}
+
+const IPhysicsShell* CPhysicsShellHolder::physics_shell() const
+{
+	/*
+	if (m_pPhysicsShell)
+		return m_pPhysicsShell;
+	const CCharacterPhysicsSupport* char_support = character_physics_support();
+	if (!char_support || !char_support->animation_collision())
+		return 0;
+	return  char_support->animation_collision()->shell();
+	*/
+
+	return nullptr;
+}
+
+IPhysicsShell* CPhysicsShellHolder::physics_shell()
+{
+	return  m_pPhysicsShell;
+}
+const IPhysicsElement* CPhysicsShellHolder::physics_character()  const
+{
+	/*
+	const CCharacterPhysicsSupport* char_support = character_physics_support();
+	if (!char_support)
+		return 0;
+	const CPHMovementControl* mov = character_physics_support()->movement();
+	VERIFY(mov);
+	return mov->IElement();
+	*/
+	return nullptr;
+}
+
 
 void CPhysicsShellHolder::net_Destroy()
 {
@@ -373,3 +421,155 @@ void CPhysicsShellHolder::on_physics_disable()
 	u_EventGen			(net_packet,GE_FREEZE_OBJECT,ID());
 	Level().Send		(net_packet,net_flags(TRUE,TRUE));
 }
+
+
+Fmatrix& CPhysicsShellHolder::ObjectXFORM()
+{
+	return XFORM();
+}
+Fvector& CPhysicsShellHolder::ObjectPosition()
+{
+	return Position();
+}
+LPCSTR CPhysicsShellHolder::ObjectName()const
+{
+	return cName().c_str();
+}
+LPCSTR CPhysicsShellHolder::ObjectNameVisual()const
+{
+	return cNameVisual().c_str();
+}
+LPCSTR CPhysicsShellHolder::ObjectNameSect()const
+{
+	return cNameSect().c_str();
+}
+bool CPhysicsShellHolder::ObjectGetDestroy()const
+{
+	return !!getDestroy();
+}
+ICollisionHitCallback* CPhysicsShellHolder::ObjectGetCollisionHitCallback()
+{
+	return get_collision_hit_callback();
+}
+u16	CPhysicsShellHolder::ObjectID()const
+{
+	return ID();
+}
+ICollisionForm* CPhysicsShellHolder::ObjectCollisionModel()
+{
+	return collidable.model;
+}
+
+IKinematics* CPhysicsShellHolder::ObjectKinematics()
+{
+	VERIFY(Visual());
+	return Visual()->dcast_PKinematics();
+}
+IDamageSource* CPhysicsShellHolder::ObjectCastIDamageSource()
+{
+	return cast_IDamageSource();
+}
+void CPhysicsShellHolder::ObjectProcessingDeactivate()
+{
+	processing_deactivate();
+}
+void CPhysicsShellHolder::ObjectProcessingActivate()
+{
+	processing_activate();
+}
+void CPhysicsShellHolder::ObjectSpatialMove()
+{
+	spatial_move();
+}
+CPhysicsShell*& CPhysicsShellHolder::ObjectPPhysicsShell()
+{
+	return PPhysicsShell();
+}
+//void CPhysicsShellHolder::enable_notificate()
+//{
+//	
+//}
+bool CPhysicsShellHolder::has_parent_object()
+{
+	return !!H_Parent();
+}
+//void CPhysicsShellHolder::on_physics_disable()
+//{
+//
+//}
+
+IPHCapture* CPhysicsShellHolder::PHCapture()
+{
+	/*
+	CCharacterPhysicsSupport* ph_sup = character_physics_support();
+	if (!ph_sup)
+		return 0;
+	CPHMovementControl* mov = ph_sup->movement();
+	if (!mov)
+		return 0;
+	return mov->PHCapture();
+	*/
+	return nullptr;
+}
+bool CPhysicsShellHolder::IsInventoryItem()
+{
+	return !!cast_inventory_item();
+}
+bool CPhysicsShellHolder::IsActor()
+{
+	return !!cast_actor();
+}
+bool CPhysicsShellHolder::IsStalker()
+{
+	return !!cast_stalker();
+}
+//void						SetWeaponHideState( u16 State, bool bSet )
+void CPhysicsShellHolder::HideAllWeapons(bool v)
+{
+
+}
+
+
+void	CPhysicsShellHolder::MovementCollisionEnable(bool enable)
+{
+	/*
+	VERIFY(character_physics_support());
+	VERIFY(character_physics_support()->movement());
+	character_physics_support()->movement()->CollisionEnable(enable);
+	*/
+}
+
+ICollisionDamageReceiver* CPhysicsShellHolder::ObjectPhCollisionDamageReceiver()
+{
+	return nullptr;// PHCollisionDamageReceiver();
+}
+
+
+void	CPhysicsShellHolder::BonceDamagerCallback(float& damage_factor)
+{
+	//CCharacterPhysicsSupport* phs=static_cast<CPhysicsShellHolder*>(o_damager)->character_physics_support();
+	//if(phs->IsSpecificDamager())damager_material_factor=phs->BonceDamageFactor();
+	CCharacterPhysicsSupport* phs = character_physics_support();
+	if (phs->IsSpecificDamager())
+		damage_factor = phs->BonceDamageFactor();
+}
+
+#ifdef	DEBUG
+std::string	CPhysicsShellHolder::dump(EDumpType type) const
+{
+/*
+	switch (type)
+	{
+
+	case	base:				return dbg_object_base_dump_string(this);						break;
+	case	poses:				return dbg_object_poses_dump_string(this);					break;
+	case	vis_geom:			return dbg_object_visual_geom_dump_string(this);				break;
+	case	props:				return dbg_object_props_dump_string(this);					break;
+	case	full:				return dbg_object_full_dump_string(this);						break;
+	case	full_capped:		return dbg_object_full_capped_dump_string(this);				break;
+	default: NODEFAULT;			return std::string("fail!");
+	}
+*/	
+	return "";
+}
+#endif

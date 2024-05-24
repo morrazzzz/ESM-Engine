@@ -40,6 +40,7 @@ void CPHCollisionDamageReceiver::Init()
 
 
 
+#pragma todo("Delete kostil!!!!")
 void CPHCollisionDamageReceiver::CollisionCallback(bool& do_colide,bool bo1,dContact& c,SGameMtl* material_1,SGameMtl* material_2)
 {
 	if(material_1->Flags.test(SGameMtl::flPassable)||material_2->Flags.test(SGameMtl::flPassable))return;
@@ -51,9 +52,10 @@ void CPHCollisionDamageReceiver::CollisionCallback(bool& do_colide,bool bo1,dCon
 	SGameMtl					*material_self		=	bo1 ? material_1:material_2;
 	SGameMtl					*material_damager	=	bo1 ? material_2:material_1;
 	VERIFY						(ud_self);
-	CPhysicsShellHolder			*o_self			=	ud_self->ph_ref_object;
-	CPhysicsShellHolder			*o_damager		=	NULL;if(ud_damager)o_damager=ud_damager->ph_ref_object;
-	u16							source_id		=	o_damager ? o_damager->ID():u16(-1);
+	CPhysicsShellHolder			*o_self			=	smart_cast<CPhysicsShellHolder*>(ud_self->ph_ref_object);
+	CPhysicsShellHolder			*o_damager		=	NULL;if(ud_damager)o_damager=smart_cast<CPhysicsShellHolder*>(ud_damager->ph_ref_object);
+	u16							source_id		=	o_damager ? o_damager->ID() /*o_damager->ObjectID()*/ : u16(-1);
+
 	CPHCollisionDamageReceiver	*dr	=o_self->PHCollisionDamageReceiver();
 	VERIFY2(dr,"wrong callback");
 	

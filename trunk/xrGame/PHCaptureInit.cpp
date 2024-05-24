@@ -216,11 +216,18 @@ CPHCapture::CPHCapture(CPHCharacter   *a_character,CPhysicsShellHolder	*a_taget_
 
 void CPHCapture::Init(CInifile* ini)
 {
+		VERIFY( m_taget_element );
+	VERIFY( m_character );
+	VERIFY( m_character->PhysicsRefObject() );
+	//VERIFY( m_character->PhysicsRefObject()->ObjectVisual( ) );
+	VERIFY( m_character->PhysicsRefObject()->ObjectKinematics( ) );
+	VERIFY( m_capture_bone );
+
 	Fvector dir;
 	Fvector capture_bone_position;
 	capture_bone_position.set(m_capture_bone->mTransform.c);
 	b_character_feedback=true;
-	(m_character->PhysicsRefObject())->XFORM().transform_tiny(capture_bone_position);
+	(m_character->PhysicsRefObject())->ObjectXFORM().transform_tiny(capture_bone_position);
 
 
 	m_taget_element->GetGlobalPositionDynamic(&dir);

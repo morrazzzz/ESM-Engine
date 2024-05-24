@@ -85,7 +85,7 @@ void	interactive_motion::switch_to_free(CPhysicsShell *s)
 //set to normal state
 	state_end(s);
 ///set all matrises valide
-	CPhysicsShellHolder *obj = s->get_ElementByStoreOrder(0)->PhysicsRefObject();
+	CPhysicsShellHolder* obj = smart_cast<CPhysicsShellHolder*>(s->get_ElementByStoreOrder(0)->PhysicsRefObject());
 	VERIFY(obj);
 	s->InterpolateGlobalTransform(&obj->XFORM());
 	IKinematics *K  = s->PKinematics();

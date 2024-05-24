@@ -100,7 +100,7 @@ CPHActivationShape::~CPHActivationShape()
 {
 	VERIFY(!m_body&&!m_geom);
 }
-void	CPHActivationShape::Create(const Fvector start_pos,const Fvector start_size,CPhysicsShellHolder* ref_obj,EType _type/*=etBox*/,u16	flags)
+void	CPHActivationShape::Create(const Fvector start_pos,const Fvector start_size, IPhysicsShellHolder* ref_obj,EType _type/*=etBox*/,u16	flags)
 {
 	VERIFY(ref_obj);
 	m_body			=	dBodyCreate	(0)												;
@@ -121,7 +121,7 @@ void	CPHActivationShape::Create(const Fvector start_pos,const Fvector start_size
 
 	dGeomCreateUserData				(m_geom)										;
 	dGeomUserDataSetObjectContactCallback(m_geom,ActivateTestDepthCallback)			;
-	dGeomUserDataSetPhysicsRefObject(m_geom,ref_obj)								;
+	dGeomUserDataSetPhysicsRefObject(m_geom, ref_obj)								;
 	dGeomSetBody					(m_geom,m_body)									;
 	dBodySetPosition				(m_body,start_pos.x,start_pos.y,start_pos.z)	;
 	Island()		.AddBody		(m_body)										;
@@ -288,3 +288,17 @@ void	CPHActivationShape::		set_rotation						(const	Fmatrix	&sof)
 	dMatrix3 rot;PHDynamicData::FMXtoDMX(sof,rot);
 	dBodySetRotation(ODEBody(),rot);
 }
+
+
+
+
+#ifdef		DEBUG
+IPhysicsShellHolder* CPHActivationShape::ref_object()
+{
+	VERIFY(m_geom);
+	dxGeomUserData* ud = retrieveGeomUserData(m_geom);
+	VERIFY(ud);
+	return ud->ph_ref_object;
+
+}
+#endif

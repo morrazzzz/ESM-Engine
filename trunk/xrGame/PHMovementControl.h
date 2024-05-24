@@ -3,6 +3,7 @@
 #define CPHMOVEMENT_CONTROL_H
 
 #include "PHCharacter.h"
+//#include "physicsexternalcommon.h"
 #include "MathUtils.h"
 namespace ALife {
 	enum EHitType : u32;
@@ -14,6 +15,8 @@ namespace DetailPathManager {
 
 class CPHAICharacter;
 class CPHSimpleCharacter;
+class CPhysicsShellHolder;
+class IPhysicsShellHolder;
 class CPHCapture;
 class CPHSynchronize;
 class ICollisionDamageInfo;
@@ -37,8 +40,8 @@ Fvector					PHCaptureGetNearestElemPos(const CPhysicsShellHolder* object);
 Fmatrix					PHCaptureGetNearestElemTransform(CPhysicsShellHolder* object);
 void					SetMaterial(u16 material);
 void					SetAirControlParam(float param){fAirControlParam=param;}
-void					SetActorRestrictorRadius(CPHCharacter::ERestrictionType rt, float r);
-void					SetRestrictionType(CPHCharacter::ERestrictionType rt){if(m_character)m_character->SetRestrictionType(rt);}
+void					SetActorRestrictorRadius(ERestrictionType rt, float r);
+void					SetRestrictionType(ERestrictionType rt){if(m_character)m_character->SetRestrictionType(rt);}
 void					SetActorMovable(bool v){if(m_character)m_character->SetActorMovable(v);}
 void                    update_last_material();
 void					SetForcedPhysicsControl(bool v){if(m_character)m_character->SetForcedPhysicsControl(v);}
@@ -173,7 +176,7 @@ public:
 	void				SetVelocity					(float x, float y, float z)	{SetVelocity(Fvector().set(x,y,z));}
 	void				SetVelocity					(const Fvector& v)	{vVelocity.set(v);SetCharacterVelocity(v);}
 	void				SetCharacterVelocity		(const Fvector& v)	{if(m_character)m_character->SetVelocity(v);}										
-	void				SetPhysicsRefObject			(CPhysicsShellHolder* ref_object){m_character->SetPhysicsRefObject(ref_object);};
+	void				SetPhysicsRefObject			(CPhysicsShellHolder* ref_object)	;
 	
 	void				CalcMaximumVelocity			(Fvector& /**dest/**/, Fvector& /**accel/**/, float /**friction/**/){};
 	void				CalcMaximumVelocity			(float& /**dest/**/, float /**accel/**/, float /**friction/**/){};
@@ -265,7 +268,8 @@ public:
 	static BOOL BorderTraceCallback(collide::rq_result& result, LPVOID params);
 	ObjectContactCallbackFun* ObjectContactCallback(){if(m_character)return m_character->ObjectContactCallBack();else return NULL; }
 	u16					ContactBone				(){return m_character->ContactBone();}
-	const ICollisionDamageInfo	*CollisionDamageInfo ()const {VERIFY(m_character);return m_character->CollisionDamageInfo ();}
+	const ICollisionDamageInfo	*CollisionDamageInfo ()const	;
+		ICollisionDamageInfo	*CollisionDamageInfo ();
 	void				GetDesiredPos			(Fvector& dpos)
 	{	
 		m_character->GetDesiredPosition(dpos);

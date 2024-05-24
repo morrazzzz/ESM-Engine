@@ -178,7 +178,7 @@ void CBreakableObject::ActivateBroken()
 	IKinematics* K=smart_cast<IKinematics*>(Visual());
 	m_pPhysicsShell->set_Kinematics(K);
 	m_pPhysicsShell->RunSimulation();
-	m_pPhysicsShell->SetCallbacks(m_pPhysicsShell->GetBonesCallback());
+	m_pPhysicsShell->SetCallbacks( );
 	K->CalculateBones_Invalidate();
 	K->CalculateBones();
 	m_pPhysicsShell->GetGlobalTransformDynamic(&XFORM());
@@ -254,7 +254,7 @@ void CBreakableObject::ObjectContactCallback(bool&/**do_colide/**/,bool bo1,dCon
 	if(
 		usr_data_1&&
 		usr_data_1->ph_ref_object&&
-		usr_data_1->ph_ref_object->CLS_ID == CLSID_OBJECT_BREAKABLE
+		smart_cast<CPhysicsShellHolder*>(usr_data_1->ph_ref_object)->CLS_ID == CLSID_OBJECT_BREAKABLE
 		) {
 				body=dGeomGetBody(c.geom.g2);
 				if(!body) return;
@@ -264,7 +264,7 @@ void CBreakableObject::ObjectContactCallback(bool&/**do_colide/**/,bool bo1,dCon
 	else if(
 		usr_data_2&&
 		usr_data_2->ph_ref_object&&
-		usr_data_2->ph_ref_object->CLS_ID == CLSID_OBJECT_BREAKABLE
+		smart_cast<CPhysicsShellHolder*>(usr_data_2->ph_ref_object)->CLS_ID == CLSID_OBJECT_BREAKABLE
 		){
 				body=dGeomGetBody(c.geom.g1);
 				if(!body) return;

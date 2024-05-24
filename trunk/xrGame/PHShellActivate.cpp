@@ -6,12 +6,9 @@
 #include "PHFracture.h"
 #include "PHJointDestroyInfo.h"
 #include "PHCollideValidator.h"
-#include "Level.h"
-#include "physicsshellholder.h"
-
-#ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
-	#include "PhysicsShellAnimator.h"
-#endif
+//#include "Level.h"
+#include "iphysicsshellholder.h"
+#include "PhysicsShellAnimator.h"
 
 ///////////////////////////////////////////////////////////////
 ///#pragma warning(disable:4995)
@@ -55,12 +52,16 @@ void CPHShell::Activate(const Fmatrix &m0,float dt01,const Fmatrix &m2,bool disa
 	}	
 	
 	Fmatrix m;
-	GetGlobalTransformDynamic	(&m);
+	{
+		Fmatrix old_m = mXFORM;//+GetGlobalTransformDynamic update mXFORM;
+		GetGlobalTransformDynamic	(&m);
+		mXFORM = old_m;
+	}
 	m.invert();m.mulA_43		(mXFORM);
 	TransformPosition(m);
 	if(PKinematics())
 	{
-		SetCallbacks(GetBonesCallback());
+		SetCallbacks( );
 	}
 
 	//bActive=true;
@@ -97,7 +98,7 @@ void CPHShell::Activate(const Fmatrix &transform,const Fvector& lin_vel,const Fv
 
 	if(PKinematics())
 	{
-		SetCallbacks(GetBonesCallback());
+		SetCallbacks( );
 	}
 	spatial_register();
 	//bActive=true;
@@ -115,28 +116,32 @@ void CPHShell::Activate(const Fmatrix &transform,const Fvector& lin_vel,const Fv
 
 
 
-void CPHShell::Activate(bool disable)
-{ 
-	if(isActive())return;
+void CPHShell::Activate(bool disable, bool not_set_bone_callbacks /*= false*/)
+{
+	if (isActive())return;
 
 	activate(disable);
-	{		
-		ELEMENT_I i=elements.begin(),e=elements.end();
-			 for(;i!=e;++i)(*i)->Activate(mXFORM,disable);
+	{
+		IKinematics* K = m_pKinematics;
+		if (not_set_bone_callbacks)
+			m_pKinematics = 0;
+		ELEMENT_I i = elements.begin(), e = elements.end();
+		for (; i != e; ++i)(*i)->Activate(mXFORM, disable);
+		m_pKinematics = K;
 	}
 
 	{
-		JOINT_I i=joints.begin(),e=joints.end();
-		for(;i!=e;++i) (*i)->Activate();
-	}	
-	
-	if(PKinematics())
+		JOINT_I i = joints.begin(), e = joints.end();
+		for (; i != e; ++i) (*i)->Activate();
+	}
+
+	if (PKinematics() && !not_set_bone_callbacks)
 	{
-		SetCallbacks(GetBonesCallback());
+		SetCallbacks();
 	}
 	spatial_register();
-	m_flags.set(flActivating,TRUE);
-	m_flags.set(flActive,TRUE);
+	m_flags.set(flActivating, TRUE);
+	m_flags.set(flActive, TRUE);
 
 }
 
@@ -221,12 +226,15 @@ void CPHShell::PresetActive()
 
 void CPHShell::Deactivate(){
 
-#ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
+	VERIFY(ph_world);
+	ph_world->NetRelcase(this);
+
 	if (m_pPhysicsShellAnimatorC)
 	{
+		VERIFY( PhysicsRefObject( ) );
+		PhysicsRefObject( )->ObjectProcessingDeactivate();
 		xr_delete<CPhysicsShellAnimator>(m_pPhysicsShellAnimatorC); 
 	}
-#endif
 
 	if(!isActive())return;
 	R_ASSERT2(!ph_world->Processing(),"can not deactivate physics shell during physics processing!!!");

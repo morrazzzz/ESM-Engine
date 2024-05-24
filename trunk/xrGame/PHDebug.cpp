@@ -27,13 +27,6 @@ u32	 	dbg_total_saved_tries					=0;
 u32	 	dbg_reused_queries_per_step				=0;
 u32	 	dbg_new_queries_per_step				=0;
 float	dbg_vel_collid_damage_to_display		=7.f;
-#ifdef DRAW_CONTACTS
-CONTACT_VECTOR Contacts0;
-CONTACT_VECTOR Contacts1;
-#endif
-
-PHOBJ_DBG_V	dbg_draw_objects0;
-PHOBJ_DBG_V	dbg_draw_objects1;
 
 PHABS_DBG_V	dbg_draw_abstruct0;
 PHABS_DBG_V	dbg_draw_abstruct1;
@@ -49,6 +42,21 @@ enum		EDBGPHDrawMode
 } dbg_ph_draw_mode=dmSecondaryThread;
 u32			cash_draw_remove_time=u32(-1);
 
+struct SPHObjDBGDraw :public SPHDBGDrawAbsract
+{
+
+	SPHObjDBGDraw(const CPHObject* obj)
+	{
+		AABB.set(obj->AABB);
+		AABB_center.set(obj->spatial.sphere.P);
+	}
+	void render()
+	{
+		Level().debug_renderer().draw_aabb(AABB_center, AABB.x, AABB.y, AABB.z, D3DCOLOR_XRGB(255, 0, 0));
+	}
+	Fvector AABB;
+	Fvector AABB_center;
+};
 
 struct SPHDBGDrawTri :public SPHDBGDrawAbsract
 {
@@ -392,64 +400,17 @@ void DBG_PHAbstructClear()
 	clear_vector(dbg_draw_simple);
 }
 
-void DBG_DrawPHObject(CPHObject* obj)
+void DBG_DrawPHObject(const CPHObject* obj)
 {
-	if(ph_dbg_draw_mask.test(phDbgDrawEnabledAABBS))
-	{
-		SPHObjDBGDraw obj_draw;
-		obj_draw.AABB.set(obj->AABB);
-		obj_draw.AABB_center.set(obj->spatial.sphere.P);
-		if(draw_frame)
-		{
-			dbg_draw_objects0.push_back(obj_draw);
-		}else
-		{
-			dbg_draw_objects1.push_back(obj_draw);
-		}
-	}
+	DBG_DrawPHAbstruct(xr_new<SPHObjDBGDraw>(obj));
 }
+#pragma todo("DELETE!!!!")
 void DBG_DrawContact(dContact& c)
 {
-#ifdef DRAW_CONTACTS
 
-	SPHContactDBGDraw dbc;
-	if(dGeomGetBody(c.geom.g1))
-	{
-		dbc.geomClass =dGeomGetClass(retrieveGeom(c.geom.g1));
-	}
-	else
-	{
-		dbc.geomClass=dGeomGetClass(retrieveGeom(c.geom.g2));
-	}
-	dbc.norm.set(cast_fv(c.geom.normal));
-	dbc.pos.set(cast_fv(c.geom.pos));
-	dbc.depth=c.geom.depth;
-	if(ph_dbg_draw_mask.test(phDbgDrawContacts))
-	{
-		if(draw_frame)Contacts0.push_back(dbc);
-		else		  Contacts1.push_back(dbc);
-	}
-#endif
 }
 void DBG_DrawFrameStart()
 {
-	
-	if(draw_frame)
-	{
-#ifdef DRAW_CONTACTS
-		Contacts0.clear();
-#endif
-		dbg_draw_objects0.clear();
-		dbg_draw_abstruct0.clear();
-	}
-	else
-	{
-#ifdef DRAW_CONTACTS
-		Contacts1.clear();
-#endif
-		dbg_draw_objects1.clear();
-		dbg_draw_abstruct1.clear();
-	}
 	DBG_PHAbstruactStartFrame(draw_frame);
 
 	dbg_tries_num								=0;
@@ -460,12 +421,6 @@ void DBG_DrawFrameStart()
 void PH_DBG_Clear()
 {
 	DBG_PHAbstructClear();
-	dbg_draw_objects0.clear();
-	dbg_draw_objects1.clear();
-#ifdef DRAW_CONTACTS
-	Contacts0.clear();
-	Contacts1.clear();
-#endif
 }
 
 void PH_DBG_Render()
@@ -474,58 +429,7 @@ void PH_DBG_Render()
 		DRender->ZEnable(false);
 	HUD().Font().pFontStat->OutSet	(550,250);
 
-	if(ph_dbg_draw_mask.test(phDbgDrawEnabledAABBS))
-	{
-		PHOBJ_DBG_I i,e;
-		if(!draw_frame)
-		{
-			i=dbg_draw_objects0.begin();
-			e=dbg_draw_objects0.end();
-		}else
-		{
-			i=dbg_draw_objects1.begin();
-			e=dbg_draw_objects1.end();
-		}
-		for(;e!=i;++i)
-		{
-			SPHObjDBGDraw& ds=*i;
-			Level().debug_renderer().draw_aabb(ds.AABB_center,ds.AABB.x,ds.AABB.y,ds.AABB.z,D3DCOLOR_XRGB(255,0,0));
-		}
-	}
-
 	DBG_PHAbstructRender();
-
-#ifdef DRAW_CONTACTS
-
-	if(ph_dbg_draw_mask.test(phDbgDrawContacts))
-	{
-	
-		CONTACT_I i,e;
-		if(!draw_frame)
-		{
-			i=Contacts0.begin();
-			e=Contacts0.end();
-		}
-		else
-		{
-			i=Contacts1.begin();
-			e=Contacts1.end();
-		}
-
-		for(;i!=e;i++)
-		{
-			SPHContactDBGDraw &c=*i;
-			bool is_cyl=c.geomClass==dCylinderClassUser;
-			Level().debug_renderer().draw_aabb			(c.pos,.01f,.01f,.01f,D3DCOLOR_XRGB(255*is_cyl,0,255*!is_cyl));
-			Fvector dir;
-			dir.set(c.norm);
-			dir.mul(c.depth*100.f);
-			dir.add(c.pos);
-			Level().debug_renderer().draw_line(Fidentity,c.pos,dir,D3DCOLOR_XRGB(255*is_cyl,0,255*!is_cyl));
-		}
-	}
-//	HUD().Font().pFontStat->OutNext("---------------------");
-#endif
 
 	if(ph_dbg_draw_mask.test(phDbgDrawZDisable))
 		DRender->ZEnable(true);

@@ -6543,6 +6543,21 @@
     <ClInclude Include="console_vars.h">
       <Filter>Physics\Base</Filter>
     </ClInclude>
+    <ClInclude Include="physics_shell_animated.h">
+      <Filter>Physics\Base\Objects\Shell</Filter>
+    </ClInclude>
+    <ClInclude Include="physics_shell_scripted.h">
+      <Filter>Physics\Base\Objects\script</Filter>
+    </ClInclude>
+    <ClInclude Include="physics_element_scripted.h">
+      <Filter>Physics\Base\Objects\script</Filter>
+    </ClInclude>
+    <ClInclude Include="physics_joint_scripted.h">
+      <Filter>Physics\Base\Objects\script</Filter>
+    </ClInclude>
+    <ClInclude Include="physics_world_scripted.h">
+      <Filter>Physics\Base\Objects\script</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -9650,14 +9665,29 @@
     <ClCompile Include="physics_scripted.cpp">
       <Filter>Physics\Base\Objects\script</Filter>
     </ClCompile>
-    <ClCompile Include="PhysicsShellScript.cpp">
-      <Filter>Physics\Base\Objects\BaseShell</Filter>
-    </ClCompile>
     <ClCompile Include="debug_output.cpp">
       <Filter>Physics\Base\Objects\debug</Filter>
     </ClCompile>
     <ClCompile Include="console_vars.cpp">
       <Filter>Physics\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="ExtendedGeom.cpp">
+      <Filter>Physics\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="physics_shell_animated.cpp">
+      <Filter>Physics\Base\Objects\Shell</Filter>
+    </ClCompile>
+    <ClCompile Include="physics_shell_scripted.cpp">
+      <Filter>Physics\Base\Objects\script</Filter>
+    </ClCompile>
+    <ClCompile Include="physics_element_scripted.cpp">
+      <Filter>Physics\Base\Objects\script</Filter>
+    </ClCompile>
+    <ClCompile Include="physics_joint_scripted.cpp">
+      <Filter>Physics\Base\Objects\script</Filter>
+    </ClCompile>
+    <ClCompile Include="physics_world_scripted.cpp">
+      <Filter>Physics\Base\Objects\script</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
