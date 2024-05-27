@@ -1,15 +1,51 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////
 #include "StdAfx.h"
+
+#include "PHCapture.h"
 #include "phcharacter.h"
 #include "Physics.h"
 #include "ExtendedGeom.h"
-#include "PHCapture.h"
-#include "entity_alive.h"
-#include "phmovementcontrol.h"
-#include "characterphysicssupport.h"
-///////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////
 
+//#include "entity_alive.h"
+//#include "phmovementcontrol.h"
+#include "../Include/xrRender/Kinematics.h"
+#include "iphysicsshellholder.h"
+#include "../xr_3da/bone.h"
+#include "../xr_3da/device.h"
+#include "mathutilsode.h"
+#include "phelement.h"
+
+//#include "characterphysicssupport.h"
+///////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
+IPHCapture	*phcapture_create(CPHCharacter *ch, IPhysicsShellHolder* object, NearestToPointCallback* cb /*=0*/ )
+{
+//m_capture=xr_new<CPHCapture>(m_character,
+//							 object,
+//							 cb
+//							 );
+	VERIFY( ch );
+	//VERIFY( object );
+	//VERIFY( cb );
+	return xr_new<CPHCapture>(ch,
+		   				 object,
+		   				 cb
+		   				 );
+}
+IPHCapture	*phcapture_create(CPHCharacter *ch, IPhysicsShellHolder* object,u16 element)
+{
+	VERIFY( ch );
+	return xr_new<CPHCapture>(ch,
+		object,
+		element
+		);
+}
+void	phcapture_destroy(IPHCapture* &c)
+{
+	CPHCapture* capture = smart_cast<CPHCapture*>(c);
+	xr_delete(capture);
+	c = 0;
+}
 
 void CPHCapture::CreateBody()
 {
@@ -24,14 +60,24 @@ void CPHCapture::CreateBody()
 
 CPHCapture::~CPHCapture()
 {
-	
 	Deactivate();
 }
+
+bool CPHCapture::Invalid()
+{
+	return 
+		!m_taget_object->ObjectPPhysicsShell()||
+		!m_taget_object->ObjectPPhysicsShell()->isActive()||
+		!m_character->b_exist;
+}
+
 void CPHCapture::PhDataUpdate(dReal /**step/**/)
 {
-	if(b_failed) return;
+
 	switch(e_state) 
 	{
+	case cstFree:  
+		break;
 	case cstPulling:  PullingUpdate();
 		break;
 	case cstCaptured: CapturedUpdate();
@@ -44,13 +90,24 @@ void CPHCapture::PhDataUpdate(dReal /**step/**/)
 
 void CPHCapture::PhTune(dReal /**step/**/)
 {
-	if(b_failed) return;
+	if(e_state == cstFree)
+		return;
+
 	//if(!m_taget_object->PPhysicsShell())	{
 	//	b_failed=true;
 	//	return;			//. hack
 	//}
+	VERIFY(m_character && m_character->b_exist);
+	VERIFY(m_taget_object);
+	VERIFY(m_taget_object->ObjectPPhysicsShell());
+	VERIFY(m_taget_object->ObjectPPhysicsShell()->isFullActive());
+	VERIFY( m_taget_element );
+	VERIFY( m_taget_element->isFullActive());
+	VERIFY( m_island.DActiveIsland() == &m_island );
+
 	bool act_capturer=m_character->CPHObject::is_active();
-	bool act_taget=m_taget_object->PPhysicsShell()->isEnabled();
+	bool act_taget=m_taget_object->ObjectPPhysicsShell()->isEnabled();
+	
 	b_disabled=!act_capturer&&!act_taget;
 	if(act_capturer)
 	{
@@ -66,11 +123,13 @@ void CPHCapture::PhTune(dReal /**step/**/)
 		break;
 	case cstCaptured: 
 		{
-				if(b_disabled) dBodyDisable(m_body);
+				if(b_disabled)
+					dBodyDisable(m_body);
 				else 
 				{
 					m_character->Island().Merge(&m_island);
 					m_taget_element->PhysicsShell()->PIsland()->Merge(&m_island);
+					VERIFY(!m_island.IsActive());
 				}
 		}
 		break;
@@ -78,12 +137,12 @@ void CPHCapture::PhTune(dReal /**step/**/)
 		break;
 	default: NODEFAULT;
 	}
-
+	
 }
 
 void CPHCapture::PullingUpdate()
 {
-	if(!m_taget_element->isActive()||Device.dwTimeGlobal-m_time_start>m_capture_time)
+	if(!m_taget_element->isActive()||inl_ph_world().Device().dwTimeGlobal-m_time_start>m_capture_time)
 	{
 		Release();
 		return;
@@ -91,9 +150,9 @@ void CPHCapture::PullingUpdate()
 
 	Fvector dir;
 	Fvector capture_bone_position;
-	CObject* object=smart_cast<CObject*>(m_character->PhysicsRefObject());
+	//CObject* object=smart_cast<CObject*>(m_character->PhysicsRefObject());
 	capture_bone_position.set(m_capture_bone->mTransform.c);
-	object->XFORM().transform_tiny(capture_bone_position);
+	m_character->PhysicsRefObject()->ObjectXFORM().transform_tiny(capture_bone_position);
 	m_taget_element->GetGlobalPositionDynamic(&dir);
 	dir.sub(capture_bone_position,dir);
 	float dist=dir.magnitude();
@@ -116,8 +175,10 @@ void CPHCapture::PullingUpdate()
 
 		CreateBody();
 		dBodySetPosition(m_body,capture_bone_position.x,capture_bone_position.y,capture_bone_position.z);
-		dJointAttach(m_joint,m_body,m_taget_element->get_body());
-		dJointAttach(m_ajoint,m_body,m_taget_element->get_body());
+		VERIFY( smart_cast<CPHElement*>(m_taget_element) );
+		CPHElement	* e = static_cast<CPHElement*>(m_taget_element);
+		dJointAttach(m_joint,m_body,e->get_body());
+		dJointAttach(m_ajoint,m_body,e->get_body());
 		dJointSetFeedback (m_joint, &m_joint_feedback);
 		dJointSetFeedback (m_ajoint, &m_joint_feedback);
 		dJointSetBallAnchor(m_joint,capture_bone_position.x,capture_bone_position.y,capture_bone_position.z);
@@ -211,6 +272,9 @@ void CPHCapture::PullingUpdate()
 
 		//dJointSetAMotorParam(m_ajoint,dParamLoStop ,0.f);
 		//dJointSetAMotorParam(m_ajoint,dParamHiStop ,0.f);	
+		m_taget_element->set_LinearVel ( Fvector().set( 0 ,0, 0 ) );
+		m_taget_element->set_AngularVel( Fvector().set( 0 ,0, 0 ) );
+
 
 		m_taget_element->set_DynamicLimits();
 		//m_taget_object->PPhysicsShell()->set_JointResistance()
@@ -245,9 +309,9 @@ void CPHCapture::CapturedUpdate()
 	}
 
 	Fvector capture_bone_position;
-	CObject* object=smart_cast<CObject*>(m_character->PhysicsRefObject());
+	//CObject* object=smart_cast<CObject*>(m_character->PhysicsRefObject());
 	capture_bone_position.set(m_capture_bone->mTransform.c);
-	object->XFORM().transform_tiny(capture_bone_position);
+	m_character->PhysicsRefObject()->ObjectXFORM().transform_tiny(capture_bone_position);
 	dBodySetPosition(m_body,capture_bone_position.x,capture_bone_position.y,capture_bone_position.z);
 }
 
@@ -256,7 +320,7 @@ void CPHCapture::ReleasedUpdate()
 	if(b_disabled) return;
 	if(!b_collide) 
 	{
-		b_failed=true;
+		e_state=cstFree;
 		m_taget_element->Enable();
 	}
 	b_collide=false;
@@ -280,17 +344,20 @@ void CPHCapture::object_contactCallbackFun(bool& do_colide,bool bo1,dContact& c,
 	if(! l_pUD1) return;
 	if(!l_pUD2) return;
 
-	CEntityAlive* capturer=smart_cast<CEntityAlive*>(l_pUD1->ph_ref_object);
+	//CEntityAlive* capturer=smart_cast<CEntityAlive*>(l_pUD1->ph_ref_object);
+	IPhysicsShellHolder* capturer=(l_pUD1->ph_ref_object);
 	if(capturer)
 	{
-		CPHCapture* capture=capturer->character_physics_support()->movement()->PHCapture();
+		IPHCapture* icapture=capturer->PHCapture();
+		CPHCapture* capture = static_cast<CPHCapture*>(icapture);
 		if(capture)
 		{
 			if(capture->m_taget_element->PhysicsRefObject()==l_pUD2->ph_ref_object)
 			{
 				do_colide = false;
 				capture->m_taget_element->Enable();
-				if(capture->e_state==CPHCapture::cstReleased) capture->ReleaseInCallBack();
+				if(capture->e_state==CPHCapture::cstReleased) 
+					capture->ReleaseInCallBack();
 			}
 			
 		}
@@ -298,27 +365,36 @@ void CPHCapture::object_contactCallbackFun(bool& do_colide,bool bo1,dContact& c,
 
 	}
 
-	capturer=smart_cast<CEntityAlive*>(l_pUD2->ph_ref_object);
+	capturer=l_pUD2->ph_ref_object;
 	if(capturer)
 	{
-		CPHCapture* capture=capturer->character_physics_support()->movement()->PHCapture();
+		CPHCapture* capture=static_cast<CPHCapture*>(capturer->PHCapture());
 		if(capture)
 		{
 			if(capture->m_taget_element->PhysicsRefObject()==l_pUD1->ph_ref_object)
 			{
 				do_colide = false;
 				capture->m_taget_element->Enable();
-				if(capture->e_state==CPHCapture::cstReleased) capture->ReleaseInCallBack();
+				if(capture->e_state==CPHCapture::cstReleased) 
+					capture->ReleaseInCallBack();
 			}
 			
 		}
 
 	}
 }
-void CPHCapture::net_Relcase(CObject* O)
+void CPHCapture::RemoveConnection(IPhysicsShellHolder* O)
 {
-	if(static_cast<CObject*>(m_taget_object)==O)
+	if( m_taget_object==O )
 	{
 		Deactivate();
 	}
+}
+
+void	CPHCapture::NetRelcase		(CPhysicsShell *s)
+{
+	VERIFY( s );
+	VERIFY( s->get_ElementByStoreOrder(0) );
+	VERIFY( s->get_ElementByStoreOrder(0)->PhysicsRefObject() );
+	RemoveConnection(s->get_ElementByStoreOrder(0)->PhysicsRefObject());
 }

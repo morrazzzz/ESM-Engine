@@ -496,6 +496,7 @@ add_to_type_list(CSE_ALifeObjectBreakable)
 
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeObjectClimable,CSE_Shape,CSE_ALifeDynamicObject)
 CSE_ALifeObjectClimable	(LPCSTR caSection);
+shared_str						material;
 virtual							~CSE_ALifeObjectClimable	();
 virtual bool					used_ai_locations	() const;
 virtual bool					can_switch_offline	() const;

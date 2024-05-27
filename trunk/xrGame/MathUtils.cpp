@@ -1,4 +1,7 @@
 #include "stdafx.h"
+#include "mathutils.h"
+#include "../3rd party/ode/include/ode/common.h"
+const float	phInfinity = dInfinity;
 /*
 #include "MathUtils.h"
 enum EBoxSideNearestPointCode
@@ -444,11 +447,12 @@ void capped_cylinder_ray_collision_test()
 	RAYvsCYLINDER(c,pos,dir,R,TRUE);//true, ?
 	float ir[2];
 	Fcylinder::ecode code[2];
-	c.intersect(pos,dir,ir, code);
+	c.intersect(pos,dir,ir,code);
 	//
 	pos.set(0,0,0);
 	RAYvsCYLINDER(c,pos,dir,R,FALSE);//true, ?
-	c.intersect(pos,dir,ir, code);
+	//Fcylinder::ecode code[2];
+	c.intersect(pos,dir,ir,code);
 	RAYvsCYLINDER(c,pos,dir,R,TRUE);//false
 	CTimer t;t.Start();
 	for(int i=0;i<1000000;i++)
@@ -475,7 +479,7 @@ void capped_cylinder_ray_collision_test()
 		//ray
 		Fvector dir,pos;//float R=Random.randF(0.1f,2.f);
 		dir.random_dir();pos.random_point(Fvector().set(2,2,2));
-		c.intersect(pos,dir,ir, code);
+		c.intersect(pos,dir,ir,code);
 	}
 		Msg("current intersect time %f ms",t.GetElapsed_sec()*1000.f);
 

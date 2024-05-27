@@ -3,20 +3,19 @@
 //////////////////////////////////////////////////////////////////////
 
 
-#include "ode_include.h"
+//#include "ode_include.h"
+//#include "../3rd party/ode/include/ode/common.h"
 #include "PHInterpolation.h"
-#include "MathUtils.h"
+#include "MathUtilsOde.h"
 #if !defined(AFX_PHDynamicData_H__ACC01646_B581_4639_B78C_30311432021B__INCLUDED_)
 #define AFX_PHDynamicData_H__ACC01646_B581_4639_B78C_30311432021B__INCLUDED_
 
 #if _MSC_VER > 1000
 #pragma once
 #endif // _MSC_VER > 1000
-class PHDynamicData;
 
 class PHDynamicData  
 {
-#if 0
 public:
 dVector3 pos;
 dMatrix3 R;
@@ -39,7 +38,7 @@ public:
 	void UpdateInterpolationRecursive()	;
 	void InterpolateTransform(Fmatrix& transform);
 	void InterpolateTransformVsParent(Fmatrix& transform);
-	PHDynamicData& operator [] (unsigned int i) {return Childs[i];};
+//	PHDynamicData& operator [] (unsigned int i) {return Childs[i];};
 	void Destroy();
 	void Create(unsigned int numOfchilds,dBodyID Body);
 	void CalculateData(void);
@@ -50,7 +49,7 @@ public:
 	void SetZeroTransform(Fmatrix& aTransform);
 	PHDynamicData(unsigned int numOfchilds,dBodyID body);
 	PHDynamicData();
-	virtual ~PHDynamicData();
+//	virtual ~PHDynamicData();
 	void GetWorldMX(Fmatrix& aTransform){
 			dMatrix3 R;
 			dQtoR(dBodyGetQuaternion(body),R);
@@ -86,8 +85,6 @@ public:
 			//meshTransform.PreTranslate(oVector3(dGeomGetPosition(dGeomTransformGetGeom(geom))));
 			//meshTransform.PostTranslate(oVector3(dBodyGetPosition(body)));
 			}
-#endif // #if 0
-public:
 	static inline void DMXPStoFMX(const dReal* R,const dReal* pos,Fmatrix& aTransform){
 
 			CopyMemory(&aTransform,R,sizeof(dMatrix3));
@@ -141,13 +138,11 @@ public:
 		R[6]=aTransform._32;
 		R[10]=aTransform._33;
 	};
-#if 0
 private:
 	void CalculateR_N_PosOfChilds(dBodyID parent);
 public:
 	bool SetGeom(dGeomID ageom);
 	bool SetTransform(dGeomID ageom);
-#endif // #if 0
 };
 
 #endif // !defined(AFX_PHDynamicData_H__ACC01646_B581_4639_B78C_30311432021B__INCLUDED_)

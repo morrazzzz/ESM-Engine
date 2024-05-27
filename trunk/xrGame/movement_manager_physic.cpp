@@ -176,7 +176,7 @@ void CMovementManager::move_along_path	(CPHMovementControl *movement_control, Fv
 		velocity.y=-0.8f;
 	velocity.normalize_safe();							  //как не странно, mdir - не нормирован
 	velocity.mul						(desirable_speed);//*1.25f
-	if(!movement_control->PhyssicsOnlyMode())
+	if(!movement_control->PhysicsOnlyMode())
 		movement_control->SetCharacterVelocity(velocity);
 
 	if (DBG_PH_MOVE_CONDITIONS(ph_dbg_draw_mask.test(phDbgNeverUseAiPhMove)||!ph_dbg_draw_mask.test(phDbgAlwaysUseAiPhMove)&&)!(m_nearest_objects.empty())) {  //  физ. объект
@@ -222,7 +222,7 @@ void CMovementManager::move_along_path	(CPHMovementControl *movement_control, Fv
 
 	// Физика устанавливает позицию в соответствии с нулевой скоростью 
 	if (detail().completed(dest_position,true)) {
-		if(!movement_control->PhyssicsOnlyMode()) {
+		if(!movement_control->PhysicsOnlyMode()) {
 			Fvector velocity				= {0.f,0.f,0.f};
 			movement_control->SetVelocity	(velocity);
 			m_speed							= 0.f;

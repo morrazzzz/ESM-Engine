@@ -1,6 +1,9 @@
-#pragma once
+#ifndef PH_COLLIDE_VALIDATOR
+#define PH_COLLIDE_VALIDATOR
 
-typedef u32	CGID;
+
+
+#include "icollidevalidator.h"
 typedef u32	CLClassBits;
 typedef u32 CLBits;
 class CPHObject;
@@ -34,9 +37,7 @@ static		void			RegisterObjToGroup			(CGID group,CPHObject& obj)								;
 static		void			RegisterObjToLastGroup		(CPHObject& obj)										;
 static		void			RestoreGroupObject			(const CPHObject& obj)									;
 static		bool			IsGroupObject				(const CPHObject& obj)									;
-
 static		bool			IsAnimatedObject			(const CPHObject& obj)									;
-
 static		void			SetStaticNotCollide			(CPHObject& obj)										;
 static		void			SetNonDynamicObject			(CPHObject& obj)										;
 static		void			SetDynamicNotCollide		(CPHObject& obj)										;
@@ -44,7 +45,6 @@ static		void			SetCharacterClass			(CPHObject& obj)										;
 static		void			SetCharacterClassNotCollide	(CPHObject& obj)										;
 static		void			SetRagDollClass				(CPHObject& obj)										;
 static		void			SetRagDollClassNotCollide	(CPHObject& obj)										;
-
 static		void			SetAnimatedClass			(CPHObject& obj)										;
 static		void			SetAnimatedClassNotCollide	(CPHObject& obj)										;
 
@@ -54,15 +54,24 @@ static		void			Init						()														;
 
 static	IC	bool			DoCollide					(const CPHObject& obj1,const CPHObject& obj2)
 {
-	switch(CollideType(obj1.collide_class_bits().flags,obj2.collide_class_bits().flags)) {
-		case cbNCGroupObject:	return DoCollideGroup		(obj1,obj2)			;break;
-		case 0:					return DoCollideNonMatched	(obj1,obj2)			;break;
-		default: NODEFAULT;
-	}
-#ifdef DEBUG
-	return false;
-#endif // DEBUG
+	//switch(CollideType(obj1.collide_class_bits().flags,obj2.collide_class_bits().flags)) {
+	//	case cbNCGroupObject:	return DoCollideGroup		(obj1,obj2)			;break;
+	//	case 0:					return DoCollideNonMatched	(obj1,obj2)			;break;
+	//	default: NODEFAULT;
+	//#ifdef DEBUG
+	//	return false;
+	//#endif // DEBUG
+	return ( 
+				CollideType( obj1.collide_class_bits().flags,obj2.collide_class_bits().flags ) != cbNCGroupObject 
+				|| 
+				DoCollideGroup		(obj1,obj2)	
+			) &&
+			DoCollideNonMatched	(obj1,obj2);
+	
+
 }
+
+
 
 static	IC bool				DoCollideStatic				(const CPHObject& obj)
 {
@@ -97,3 +106,6 @@ static		_flags<CLClassBits>		ClassFlags;
 static		_flags<CLClassBits>		ClassNCFlags;
 static		_flags<CLClassBits>		NonTypeFlags;
 };
+
+
+#endif

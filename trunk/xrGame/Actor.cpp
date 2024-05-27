@@ -432,7 +432,7 @@ void	CActor::Hit							(SHit* pHDS)
 	if( HDS.hit_type<ALife::eHitTypeBurn || HDS.hit_type >= ALife::eHitTypeMax )
 	{
 		string256	err;
-		sprintf_s		(err, "Unknown/unregistered hit type [%d]", HDS.hit_type);
+		xr_sprintf(err, "Unknown/unregistered hit type [%d]", HDS.hit_type);
 		R_ASSERT2	(0, err );
 	
 	}
@@ -1374,11 +1374,19 @@ void CActor::SetPhPosition(const Fmatrix &transform)
 
 void CActor::ForceTransform(const Fmatrix& m)
 {
-	if(!g_Alive())				return;
-	XFORM().set					(m);
-	if(character_physics_support()->movement()->CharacterExist()) character_physics_support()->movement()->EnableCharacter	();
-	character_physics_support()->set_movement_position( m.c );
-	character_physics_support()->movement()->SetVelocity		(0,0,0);
+	//if( !g_Alive() )
+	//			return;
+	//VERIFY(_valid(m));
+	//XFORM().set( m );
+	//if( character_physics_support()->movement()->CharacterExist() )
+	//		character_physics_support()->movement()->EnableCharacter();
+	//character_physics_support()->set_movement_position( m.c );
+	//character_physics_support()->movement()->SetVelocity( 0, 0, 0 );
+
+	character_physics_support()->ForceTransform( m );
+	const float block_damage_time_seconds = 2.f;
+	if(!IsGameTypeSingle())
+		character_physics_support()->movement()->BlockDamageSet( u64( block_damage_time_seconds/fixed_step ) );
 }
 
 ENGINE_API extern float		psHUD_FOV;

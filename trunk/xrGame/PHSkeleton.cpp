@@ -7,13 +7,14 @@
 #include "PhysicsShell.h"
 #include "PHSynchronize.h"
 #include "MathUtils.h"
-#include "..\include\xrRender\Kinematics.h"
-#include "PHObject.h"
-#include "PHCollideValidator.h"
+#include "../Include/xrRender/Kinematics.h"
+//#include "PHObject.h"
+//#include "../xrphysics/PHCollideValidator.h"
 #include "ai_object_location.h"
 #include "ai_space.h"
 #include "game_graph.h"
 #include "PHDestroyable.h"
+
 #define F_MAX         3.402823466e+38F
 
 u32 CPHSkeleton::existence_time=5000;
@@ -50,7 +51,7 @@ void CPHSkeleton::RespawnInit()
 		K->LL_SetBoneRoot(0);
 		K->LL_SetBonesVisible(0xffffffffffffffffL);
 		K->CalculateBones_Invalidate();
-		K->CalculateBones();
+		K->CalculateBones(TRUE);
 	}
 	Init();
 	ClearUnsplited();
@@ -73,10 +74,15 @@ bool CPHSkeleton::Spawn(CSE_Abstract *D)
 	CSE_Visual				*visual = smart_cast<CSE_Visual*>(D);
 	VERIFY					(visual);
 	m_startup_anim			= visual->startup_animation;
-
+	CPHSkeleton* source		= 0;
 	if(po->_flags.test(CSE_PHSkeleton::flSpawnCopy))
 	{
-		CPHSkeleton* source=smart_cast<CPHSkeleton*>(Level().Objects.net_Find(po->source_id));
+		source=smart_cast<CPHSkeleton*>(Level().Objects.net_Find(po->source_id));
+		VERIFY(source);
+	}
+	if(source)
+	{
+
 		R_ASSERT2(source,"no source");
 		source->UnsplitSingle(this);
 		m_flags.set				(CSE_PHSkeleton::flSpawnCopy,FALSE);
@@ -111,7 +117,7 @@ bool CPHSkeleton::Spawn(CSE_Abstract *D)
 			{
 				if(ini->line_exist("collide","not_collide_parts"))
 				{
-					CGID gr= CPHCollideValidator::RegisterGroup();
+					CGID gr= RegisterGroup();
 					obj->PPhysicsShell()->RegisterToCLGroup(gr);
 				}
 			}
@@ -151,6 +157,14 @@ void CPHSkeleton::Update(u32 dt)
 		m_unsplited_shels.empty()) 
 	{
 		if (obj->Local())	obj->DestroyObject	();
+/*
+		NET_Packet			P;
+		obj->u_EventGen		(P,GE_DESTROY,obj->ID());
+#ifdef DEBUG
+		Msg					("ge_destroy: [%d] - %s",obj->ID(),*(obj->cName()));
+#endif
+		if (obj->Local())	obj->u_EventSend			(P);
+*/
 		b_removing=false;
 	}
 
@@ -233,29 +247,28 @@ void CPHSkeleton::LoadNetState(NET_Packet& P)
 }
 void CPHSkeleton::RestoreNetState(CSE_PHSkeleton* po)
 {
-	if(!po->_flags.test(CSE_PHSkeleton::flSavedData))return;
+	VERIFY( po );
+	if(!po->_flags.test(CSE_PHSkeleton::flSavedData))
+		return;
 	CPhysicsShellHolder* obj=PPhysicsShellHolder();
 	PHNETSTATE_VECTOR& saved_bones=po->saved_bones.bones;
+	VERIFY( saved_bones.size() == obj->PHGetSyncItemsNumber() );
+
 	PHNETSTATE_I i=saved_bones.begin(),e=saved_bones.end();
 	if(obj->PPhysicsShell()&&obj->PPhysicsShell()->isActive())
 	{
 		obj->PPhysicsShell()->Disable();
 	}
-	for(u16 bone=0;e!=i;i++,bone++)
-	{
-		R_ASSERT(bone<obj->PHGetSyncItemsNumber());
-		obj->PHGetSyncItem(bone)->set_State(*i);
-	}
+
+	if( saved_bones.size() == obj->PHGetSyncItemsNumber() )
+		for( u16 bone=0; e!=i; i++, bone++ )
+		{
+			R_ASSERT(bone<obj->PHGetSyncItemsNumber());
+			obj->PHGetSyncItem(bone)->set_State(*i);
+		}
 	saved_bones.clear();
 	po->_flags.set(CSE_PHSkeleton::flSavedData,FALSE);
 	m_flags.set(CSE_PHSkeleton::flSavedData,FALSE);
-}
-
-void CPHSkeleton::ClearSavedBones()
-{
-	NET_Packet P;
-	CGameObject::u_EventGen(P, GE_CLEAR_SAVED_BONES, CPhysicsShellHolder().ID());
-	CGameObject::u_EventSend(P);
 }
 
 void CPHSkeleton::ClearUnsplited()
@@ -278,6 +291,7 @@ void CPHSkeleton::SpawnCopy()
 		CSE_ALifePHSkeletonObject	*l_tpALifePhysicObject = smart_cast<CSE_ALifePHSkeletonObject*>(D);
 		R_ASSERT					(l_tpALifePhysicObject);
 		l_tpALifePhysicObject->_flags.set	(CSE_PHSkeleton::flSpawnCopy,1);
+		//SetNotNeedSave()
 		/////////////////////////////////////////////////////////////////////////////////////////////
 		InitServerObject			(D);
 		// Send
@@ -325,7 +339,7 @@ void CPHSkeleton::UnsplitSingle(CPHSkeleton* SO)
 	pKinematics->LL_SetBoneVisible(split_bone,FALSE,TRUE);
 
 	pKinematics->CalculateBones_Invalidate	();
-	pKinematics->CalculateBones				();
+	pKinematics->CalculateBones				(TRUE);
 
 	mask0.assign(pKinematics->LL_GetBonesVisible());//first part mask
 	VERIFY2(mask0.flags,"mask0 -Zero");
@@ -338,7 +352,7 @@ void CPHSkeleton::UnsplitSingle(CPHSkeleton* SO)
 	newKinematics->LL_SetBonesVisible	(mask1.flags);
 
 	newKinematics->CalculateBones_Invalidate	();
-	newKinematics->CalculateBones				();
+	newKinematics->CalculateBones				(TRUE);
 
 	newPhysicsShell->set_Kinematics(newKinematics);
 	VERIFY(_valid(newPhysicsShell->mXFORM));
@@ -426,7 +440,7 @@ void CPHSkeleton::InitServerObject(CSE_Abstract * D)
 	l_tpALifePhysicObject->startup_animation=m_startup_anim;
 	D->s_name			= "ph_skeleton_object";//*cNameSect()
 	D->set_name_replace	("");
-	D->s_gameid			=	u8(GameID());
+//.	D->s_gameid			=	u8(GameID());
 	D->s_RP				=	0xff;
 	D->ID				=	0xffff;
 	D->ID_Parent		=	0xffff;//u16(ID());//

@@ -171,6 +171,7 @@ struct ECORE_API SBoneShape
 		sfNoPickable		= (1<<0), 	// use only in RayPick
         sfRemoveAfterBreak  = (1<<1),	
 		sfNoPhysics			= (1<<2),	
+        sfNoFogCollider		= (1<<3),	
 	};
 
 	u16				type;		// 2

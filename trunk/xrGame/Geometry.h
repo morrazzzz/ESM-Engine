@@ -3,6 +3,7 @@
 #include "PhysicsCommon.h"
 #include "ExtendedGeom.h"
 #include "mathutilsode.h"
+#include "../xr_3da/iphysicsgeometry.h"
 
 //this is equivalent dMULTIPLYOP0_333 whith consequent transposion of A
 #define dMULTIPLYOP3_333(A,op,B,C)  \
@@ -22,33 +23,41 @@ inline void dMULTIPLY3_333(dReal *A, const dReal *B, const dReal *C)
 
 class CGameObject;
 class CPHObject;
-class CODEGeom
+class CODEGeom:
+public IPhysicsGeometry
 {
 protected:
 	dGeomID m_geom_transform;
 	u16		m_bone_id;
+	Flags16 m_flags;
 protected:
 
 
 public:
 	//get
 	virtual		float		volume				()																	=0;
-	virtual		void		get_mass			(dMass& m)															=0;		//unit dencity mass;
-				void		get_mass			(dMass& m,const Fvector& ref_point, float density)					 ;
-				void		get_mass			(dMass& m,const Fvector& ref_point)									 ;
-				void		add_self_mass		(dMass& m,const Fvector& ref_point)									 ;
-				void		add_self_mass		(dMass& m,const Fvector& ref_point, float density)					 ;
-				void		get_local_center_bt	(Fvector& center)													 ;		//for built
-				void		get_global_center_bt(Fvector& center)													 ;		//for built
-				void		get_local_form_bt	(Fmatrix& form)														 ;	    //for built
-				void		get_global_form_bt	(Fmatrix& form)														 ;		//for built
-				
+	virtual		void		get_mass			( dMass& m )															=0;		//unit dencity mass;
+				void		get_mass			( dMass& m,const Fvector& ref_point, float density)					 ;
+				void		get_mass			( dMass& m,const Fvector& ref_point)									 ;
+				void		add_self_mass		( dMass& m,const Fvector& ref_point)									 ;
+				void		add_self_mass		( dMass& m,const Fvector& ref_point, float density)					 ;
+				void		get_local_center_bt	( Fvector& center )													 ;		//for built
+				void		get_global_center_bt( Fvector& center )													 ;		//for built
+				void		get_local_form_bt	( Fmatrix& form )													 ;	    //for built
+	virtual		void		get_xform			( Fmatrix& form ) const												 ;
+#ifdef	DEBUG
+	virtual		void		dbg_draw			( float scale, u32 color, Flags32 flags ) const;
+#endif
+	virtual		void		get_Box				( Fmatrix& form, Fvector&	sz )const									 ;
+	virtual		bool		collide_fluids		() const															 ;
 				void		set_static_ref_form	(const Fmatrix& form)												 ;		//for built
 	virtual		void		get_max_area_dir_bt	(Fvector& dir)														=0;
 	virtual		float		radius				()																	=0;
-	virtual		void		get_Extensions(const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext)const = 0;
+	virtual		void		get_Extensions		(const Fvector& axis,float center_prg,float& lo_ext, float& hi_ext)const =0;
 
 				void		clear_cashed_tries	()																	  ;
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	IC			dGeomID		geom()
 	{
 								return dGeomTransformGetGeom(m_geom_transform);
@@ -102,11 +111,13 @@ public:
 virtual const	Fvector&	local_center		()																	=0;
 virtual			void		get_local_form		(Fmatrix& form)														=0;
 virtual			void		set_local_form		(const Fmatrix& form)												=0;
+				void		set_local_form_bt	( const Fmatrix& xform )											;
 	//set
 	//element part
 				void		set_body			(dBodyID body)														;
-				void		set_bone_id			(u16 id)											{m_bone_id=id;}
-				u16			bone_id				()												{return m_bone_id;}
+				void		set_bone_id			(u16 id)											{m_bone_id=id	;}
+				u16			bone_id				()												{return m_bone_id	;}
+				void		set_shape_flags		( const Flags16 &_flags )						{ m_flags = _flags	;}
 				void		add_to_space		(dSpaceID space)													;
 				void		remove_from_space	(dSpaceID space)													;
 				void		set_material		(u16 ul_material)													;
@@ -125,10 +136,11 @@ protected:
 				void		get_final_tx_bt		( const dReal*	&p, const dReal* &R, dReal * bufV, dReal* bufM ) const;
 	virtual		dGeomID		create				()																	=0;
 public:
-	static		void		get_final_tx		(dGeomID g,const dReal*	&p,const dReal*	&R,dReal * bufV, dReal* bufM);
-				void		build				(const Fvector& ref_point)											;
-	virtual		void		set_position		(const Fvector& ref_point)											;//for build geom
-				void		move_local_basis	(const Fmatrix& inv_new_mul_old)									;
+	static		void		get_final_tx		( dGeomID g, const dReal* &p, const dReal*	&R,dReal * bufV, dReal* bufM );
+				void		build				( const Fvector& ref_point )										;
+	virtual		void		set_build_position	( const Fvector& ref_point )										;//for build geom
+				void		clear_motion_history( bool set_unspecified );
+				void		move_local_basis	( const Fmatrix& inv_new_mul_old )									;
 				void		destroy				()																	;
 							CODEGeom			()																	;
 	virtual					~ CODEGeom			()																	;
@@ -150,7 +162,13 @@ virtual const	Fvector&	local_center		()																	;
 	virtual		void		get_local_form		(Fmatrix& form)														;
 virtual			void		set_local_form		(const Fmatrix& form)												;
 	virtual		dGeomID		create				()																	;
-	virtual		void		set_position		(const Fvector& ref_point)											;
+	virtual		void		set_build_position	(const Fvector& ref_point)											;
+				void		set_size			(const Fvector&	half_size )											;
+				void		get_size			(Fvector&	half_size )	const											;
+private:
+#ifdef	DEBUG
+	virtual		void		dbg_draw			( float scale, u32 color, Flags32 flags ) const						;
+#endif
 };
 
 class CSphereGeom : public CODEGeom
@@ -161,14 +179,19 @@ public:
 							CSphereGeom			(const Fsphere& sphere)												;
 	virtual		float		volume				()																	;
 	virtual		float		radius				()																	;
-	virtual		void		get_Extensions	(const Fvector& axis,float center_prg,float& lo_ext, float& hi_ext)const;	
+	virtual		void		get_Extensions	(const Fvector& axis,float center_prg,float& lo_ext, float& hi_ext)const;
 	virtual		void		get_max_area_dir_bt	(Fvector& dir)													  {};
 	virtual		void		get_mass			(dMass& m)															;//unit dencity mass;
 virtual const	Fvector&	local_center		()																	;
 	virtual		void		get_local_form		(Fmatrix& form)														;
 	virtual		void		set_local_form		(const Fmatrix& form)												;
 	virtual		dGeomID		create				()																	;
-	virtual		void		set_position		(const Fvector& ref_point)											;
+	virtual		void		set_build_position	(const Fvector& ref_point)											;
+
+private:
+#ifdef	DEBUG
+	virtual		void		dbg_draw			( float scale, u32 color, Flags32 flags ) const;
+#endif
 };
 class CCylinderGeom : public CODEGeom
 {
@@ -185,6 +208,11 @@ virtual const	Fvector&	local_center		()																	;
 	virtual		void		get_local_form		(Fmatrix& form)														;
 	virtual		void		set_local_form		(const Fmatrix& form)												;
 	virtual		dGeomID		create				()																	;
-	virtual		void		set_position		(const Fvector& ref_point)											;
+	virtual		void		set_build_position	(const Fvector& ref_point)											;
+				void		set_radius			( float r )															;
+	private:
+#ifdef	DEBUG
+	virtual		void		dbg_draw			( float scale, u32 color, Flags32 flags ) const;
+#endif
 };
 #endif //GEOMETRY_H

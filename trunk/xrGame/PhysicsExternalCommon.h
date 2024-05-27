@@ -2,7 +2,7 @@
 #define _PHYSICS_EXTERNAL_COMMON_
 #pragma once
 
-#include "MathUtils.h" //TODO: remove me???
+#include "MathUtils.h"
 
 struct dContactGeom;
 struct dContact;

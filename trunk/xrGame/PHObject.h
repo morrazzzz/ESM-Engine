@@ -6,13 +6,14 @@
 #include "PHIsland.h"
 typedef u32	CLClassBits;
 typedef u32	CLBits;
+class ISpatial;
 DEFINE_VECTOR(ISpatial*,qResultVec,qResultIt)
 class CPHObject;
 class CPHUpdateObject;
 class CPHMoveStorage;
 class CPHSynchronize;
 
-typedef void CollideCallback(CPHObject* obj1, CPHObject* obj2, dGeomID o1, dGeomID o2);
+typedef void CollideCallback(CPHObject* obj1,CPHObject* obj2, dGeomID o1, dGeomID o2);
 #ifdef		DEBUG
 class IPhysicsShellHolder;
 #endif
@@ -131,6 +132,5 @@ IC			const _flags<CLClassBits>&	collide_class_bits 	()const 								{return m_co
 
 
 DEFINE_PHITEM_LIST(CPHObject,PH_OBJECT_STORAGE,PH_OBJECT_I)
-
 
 #endif//CPHOBJECT

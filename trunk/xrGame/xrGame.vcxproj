@@ -410,15 +410,19 @@
   <ItemGroup>
     <ClInclude Include="console_vars.h" />
     <ClInclude Include="debug_output.h" />
+    <ClInclude Include="icollisiondamagereceiver.h" />
     <ClInclude Include="IKFoot.h" />
     <ClInclude Include="IKFoot_inl.h" />
+    <ClInclude Include="IPHStaticGeomShell.h" />
     <ClInclude Include="IPHWorld.h" />
     <ClInclude Include="iphysics_scripted.h" />
     <ClInclude Include="MathUtilsOde.h" />
+    <ClInclude Include="MovementBoxDynamicActivate.h" />
     <ClInclude Include="mt_config.h" />
     <ClInclude Include="damage_manager.h" />
     <ClInclude Include="damage_manager_inline.h" />
     <ClInclude Include="DamageSource.h" />
+    <ClInclude Include="params.h" />
     <ClInclude Include="PHDebug.h" />
     <ClInclude Include="PHUpdateObject.h" />
     <ClInclude Include="PhysicsExternalCommon.h" />
@@ -1841,6 +1845,7 @@
     <ClInclude Include="ui\UIGameTutorial.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="collisiondamagereceiver.cpp" />
     <ClCompile Include="console_vars.cpp" />
     <ClCompile Include="damage_manager.cpp" />
     <ClCompile Include="action_base_script.cpp">
@@ -1860,6 +1865,8 @@
     <ClCompile Include="debug_output.cpp" />
     <ClCompile Include="ExtendedGeom.cpp" />
     <ClCompile Include="IKFoot.cpp" />
+    <ClCompile Include="MovementBoxDynamicActivate.cpp" />
+    <ClCompile Include="params.cpp" />
     <ClCompile Include="PHDebug.cpp" />
     <ClCompile Include="phvalide.cpp" />
     <ClCompile Include="PhysicsExternalCommon.cpp" />

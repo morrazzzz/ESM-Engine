@@ -65,8 +65,8 @@ void CActor::camUpdateLadder(float dt)
 		cam_yaw								+= delta * _min(dt*10.f,1.f) ;
 	}
 
-	CElevatorState* es = character_physics_support()->movement()->ElevatorState();
-	if(es && es->State()==CElevatorState::clbClimbingDown)
+	IElevatorState* es = character_physics_support()->movement()->ElevatorState();
+	if(es && es->State()== clbClimbingDown)
 	{
 		float &cam_pitch					= cameras[eacFirstEye]->pitch;
 		const float ldown_pitch				= cameras[eacFirstEye]->lim_pitch.y;
@@ -216,7 +216,7 @@ void CActor::cam_Update(float dt, float fFOV)
 	float flCurrentPlayerY	= xform.c.y;
 
 	// Smooth out stair step ups
-	if ((character_physics_support()->movement()->Environment() == static_cast<int>(peOnGround)) && (flCurrentPlayerY-fPrevCamPos>0)){
+	if ((character_physics_support()->movement()->Environment() == static_cast<int>(CPHMovementControl::peOnGround)) && (flCurrentPlayerY-fPrevCamPos>0)){
 		fPrevCamPos			+= dt*1.5f;
 		if (fPrevCamPos > flCurrentPlayerY)
 			fPrevCamPos		= flCurrentPlayerY;

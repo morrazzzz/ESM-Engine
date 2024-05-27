@@ -92,6 +92,7 @@ class CPHActorCharacter :
 
 	RESRICTORS_V		m_restrictors;
 	float				m_speed_goal;
+	bool				b_single_game;
 public:
 	typedef TPHCharacterRestrictor<rtStalker>			stalker_restrictor;
 	typedef TPHCharacterRestrictor<rtStalkerSmall>	stalker_small_restrictor;
@@ -107,12 +108,15 @@ public:
 	virtual	void		Disable								();
 	virtual	void		Jump								(const Fvector& jump_velocity);
 	virtual void		InitContact							(dContact* c,bool &do_collide,u16	material_idx_1 ,u16 material_idx_2);
-			void		SetRestrictorRadius					(ERestrictionType rtype,float r);
+	virtual	void		SetRestrictorRadius					(ERestrictionType rtype,float r);
 virtual		void		ChooseRestrictionType				(ERestrictionType my_type,float my_depth,CPHCharacter *ch);
-						CPHActorCharacter					();
+						CPHActorCharacter					( bool single_game );
 	virtual				~CPHActorCharacter					(void);
 private:
-	virtual	void		update_last_material();
+	virtual	void		ValidateWalkOn						();
+			bool		CanJump								();
+	virtual	void		update_last_material				();
+	virtual	void		PhTune								( dReal step );
 private:
 		void			ClearRestrictors					();
 		RESTRICTOR_I	Restrictor							(ERestrictionType rtype);

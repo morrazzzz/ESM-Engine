@@ -6558,6 +6558,18 @@
     <ClInclude Include="physics_world_scripted.h">
       <Filter>Physics\Base\Objects\script</Filter>
     </ClInclude>
+    <ClInclude Include="icollisiondamagereceiver.h">
+      <Filter>Physics\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="IPHStaticGeomShell.h">
+      <Filter>Physics\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="params.h">
+      <Filter>Physics\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="MovementBoxDynamicActivate.h">
+      <Filter>Physics\Base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -9688,6 +9700,15 @@
     </ClCompile>
     <ClCompile Include="physics_world_scripted.cpp">
       <Filter>Physics\Base\Objects\script</Filter>
+    </ClCompile>
+    <ClCompile Include="collisiondamagereceiver.cpp">
+      <Filter>Physics\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="params.cpp">
+      <Filter>Physics\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="MovementBoxDynamicActivate.cpp">
+      <Filter>Physics\Base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -2,6 +2,8 @@
 #define MATH_UTILS_H
 
 
+extern const float	phInfinity;
+
 IC  float* cast_fp(Fvector& fv)
 {
 	return (float*) (&fv);
@@ -20,6 +22,7 @@ IC const Fvector &cast_fv(const float* fp)
 {
 	return *((const Fvector*)fp);
 }
+
 
 IC  float	dXZMag(const float* v)
 {
@@ -116,6 +119,7 @@ IC	void	dVectorInterpolate(float* v,float* to,float k) //changes to
 {
 	dVectorMul(v,1.f-k);dVectorMul(to,k);dVectorAdd(v,to);
 }
+
 IC	void	dVectorDeviation(const float* vector3_from,const float* vector3_to,float* vector_dev)
 {
 	dVectorSub(vector_dev,vector3_to,vector3_from);
@@ -134,6 +138,7 @@ IC	void	dMatrixSmallDeviation(const float* matrix33_from,const float* matrix33_t
 	vector_dev[1]=matrix33_from[2]-matrix33_to[2];
 	vector_dev[2]=matrix33_from[4]-matrix33_to[4];
 }
+
 
 IC	void	dMatrixSmallDeviationAdd(const float* matrix33_from,const float* matrix33_to,float* vector_dev)
 {
@@ -160,8 +165,7 @@ IC	void twoq_2w(const Fquaternion& q1,const Fquaternion& q2,float dt,Fvector& w)
 	w.sub(v2);
 	w.add(v1);
 	float sinus_2=1.f-cosinus*cosinus,k=2.f/dt;
-	if(sinus_2>EPS)	
-		k*=static_cast<float>(acos(static_cast<double>(cosinus)/ static_cast<double>(_sqrt(sinus_2))));
+	if(sinus_2>EPS)	k*=acos(cosinus)/_sqrt(sinus_2);
 	w.mul(k);
 }
 
@@ -202,7 +206,7 @@ IC float		prg_pos_on_plane(const Fvector	&in_norm,float d,const Fvector &in_pos,
 	return prg;
 }
 
-IC void		prg_on_normal(const Fvector	&in_norm,const Fvector &in_dir,Fvector &out_dir)
+IC void		prg_on_normal( const Fvector	&in_norm, const Fvector &in_dir, Fvector &out_dir )
 {
 	float prg=-in_dir.dotproduct(in_norm);
 	Fvector diff;diff.set(in_norm);diff.mul(prg);
@@ -369,14 +373,17 @@ IC float DET(const Fmatrix &a){
 		a._13 * ( a._21 * a._32 - a._22 * a._31 ) ));
 }
 
+
 IC bool valid_pos(const Fvector &P,const Fbox &B){
 	Fbox BB=B;BB.grow(100000);
 	return !!BB.contains(P) ;
 }
 
+
+
 #ifdef DEBUG
-constexpr float				DET_CHECK_EPS =0.15f					;//scale -35%  !? ;)
-constexpr float				DET_CHECK_FATAL_EPS =0.8f					;//scale -35%  !? ;)
+const float				DET_CHECK_EPS =0.15f					;//scale -35%  !? ;)
+const float				DET_CHECK_FATAL_EPS =0.8f					;//scale -35%  !? ;)
 #define	VERIFY_RMATRIX(M)	{\
 	float d=DET(M);\
 	if( !fsimilar(d,1.f,DET_CHECK_EPS) ){\

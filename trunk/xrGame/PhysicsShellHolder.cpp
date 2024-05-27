@@ -12,6 +12,7 @@
 #include "Grenade.h"
 #include "IPHWorld.h"
 #include "characterphysicssupport.h"
+#include "phmovementcontrol.h"
 #include "phactivationshape.h"
 #include "phvalide.h"
 CPhysicsShellHolder::CPhysicsShellHolder()
@@ -167,7 +168,7 @@ void CPhysicsShellHolder::correct_spawn_pos()
 	Fmatrix								trans;
 	trans.identity						();
 	trans.c.sub							(ap,c);
-	PPhysicsShell()->TransformPosition	(trans);
+	PPhysicsShell()->TransformPosition	(trans, mh_clear );
 	PPhysicsShell()->GetGlobalTransformDynamic(&XFORM());
 	activation_shape.Destroy			();
 }
@@ -500,7 +501,6 @@ bool CPhysicsShellHolder::has_parent_object()
 
 IPHCapture* CPhysicsShellHolder::PHCapture()
 {
-	/*
 	CCharacterPhysicsSupport* ph_sup = character_physics_support();
 	if (!ph_sup)
 		return 0;
@@ -508,8 +508,6 @@ IPHCapture* CPhysicsShellHolder::PHCapture()
 	if (!mov)
 		return 0;
 	return mov->PHCapture();
-	*/
-	return nullptr;
 }
 bool CPhysicsShellHolder::IsInventoryItem()
 {
@@ -541,7 +539,7 @@ void	CPhysicsShellHolder::MovementCollisionEnable(bool enable)
 
 ICollisionDamageReceiver* CPhysicsShellHolder::ObjectPhCollisionDamageReceiver()
 {
-	return nullptr;// PHCollisionDamageReceiver();
+	return PHCollisionDamageReceiver();
 }
 
 

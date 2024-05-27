@@ -102,25 +102,36 @@ static void play_object(dxGeomUserData* data, SGameMtlPair* mtl_pair, const dCon
 template<class Pars>
 void  TContactShotMark(CDB::TRI* T,dContactGeom* c)
 {
-	dBodyID b=dGeomGetBody(c->g1);
-	dxGeomUserData* data;
-	bool b_invert_normal=false;
-	if(!b) 
-	{
-		b=dGeomGetBody(c->g2);
-		data=dGeomGetUserData(c->g2);
-		b_invert_normal=true;
-	}
-	else
-	{
-		data=dGeomGetUserData(c->g1);
-	}
-	if(!b) return;
-	dVector3 vel;
-	dMass m;
-	dBodyGetMass(b,&m);
-	dBodyGetPointVel(b,c->pos[0],c->pos[1],c->pos[2],vel);
-	dReal vel_cret=dFabs(dDOT(vel,c->normal))* _sqrt(m.mass);
+
+
+	//dBodyID b=dGeomGetBody(c->g1);
+	//dxGeomUserData* data =0;
+	//bool b_invert_normal=false;
+	//if(!b) 
+	//{
+	//	b=dGeomGetBody(c->g2);
+	//	data=dGeomGetUserData(c->g2);
+	//	b_invert_normal=true;
+	//}
+	//else
+	//{
+	//	data=dGeomGetUserData(c->g1);
+	//}
+	//if(!b) 
+	//	return;
+
+	//dVector3 vel;
+	//dMass m;
+	//dBodyGetMass(b,&m);
+	//dBodyGetPointVel(b,c->pos[0],c->pos[1],c->pos[2],vel);
+	//float vel_cret=_abs(dDOT(vel,c->normal))* _sqrt(m.mass);
+	dxGeomUserData* data = 0;
+	float vel_cret = 0;
+	bool b_invert_normal = false;
+	if (!ContactShotMarkGetEffectPars(c, data, vel_cret, b_invert_normal))
+		return;
+	//float vel_cret= GetVelCret(c);
+
 	Fvector to_camera;to_camera.sub(cast_fv(c->pos),Device.vCameraPosition);
 	float square_cam_dist=to_camera.square_magnitude();
 	if(data)

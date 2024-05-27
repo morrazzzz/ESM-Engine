@@ -3,8 +3,13 @@
 #include "PHDynamicData.h"
 #include "ExtendedGeom.h"
 #include "dcylinder//dCylinder.h"
-//global
 
+#include "../xr_3da/bone.h"
+
+//global
+#ifdef DEBUG
+#	include	"debug_output.h"
+#endif // #ifdef DEBUG
 
 static void computeFinalTx(dGeomID geom_transform,dReal* final_pos,dReal* final_R)
 {
@@ -142,6 +147,30 @@ void CODEGeom::get_global_center_bt(Fvector& center)
 	center.y += add[1];
 	center.z += add[2];
 }
+void	CODEGeom::	get_xform( Fmatrix& form ) const
+{
+	VERIFY			( m_geom_transform );
+	const dReal	*rot	=NULL			;
+	const dReal	*pos	=NULL			;
+	dVector3	p						;
+	dMatrix3	r						;
+	get_final_tx_bt( pos, rot, p, r )	;
+
+	PHDynamicData::DMXPStoFMX( rot, pos, form );
+}
+
+bool	CODEGeom::	collide_fluids		() const
+{
+	return !m_flags.test( SBoneShape::sfNoFogCollider ); 
+}
+void	CODEGeom::	get_Box	( Fmatrix& form, Fvector&	sz )const
+{
+	get_xform( form );
+	Fvector c;
+	t_get_box( this, form, sz, c );
+	form.c = c;
+}
+/*
 void CODEGeom::get_global_form_bt(Fmatrix& form)
 {
 	dMULTIPLY0_331 ((dReal*)(&form.c),dGeomGetRotation(m_geom_transform),dGeomGetPosition(geom()));
@@ -149,7 +178,7 @@ void CODEGeom::get_global_form_bt(Fmatrix& form)
 	dMULTIPLY3_333 ((dReal*)(&form),dGeomGetRotation(m_geom_transform),dGeomGetRotation(geom()));
 	//PHDynamicData::DMXtoFMX((dReal*)(&form),form);
 }
-
+*/
 void CODEGeom::set_static_ref_form(const Fmatrix& form)
 {
 	dGeomSetPosition(geometry_transform(),form.c.x,form.c.y,form.c.z);
@@ -159,10 +188,23 @@ void CODEGeom::set_static_ref_form(const Fmatrix& form)
 	PHDynamicData::FMX33toDMX(m33,R);
 	dGeomSetRotation(geometry_transform(),R);
 }
-
-void CODEGeom::set_position(const Fvector& /*ref_point*/)
+void CODEGeom::	clear_motion_history( bool set_unspecified )
 {
 	dGeomUserDataResetLastPos(geom());
+	if( set_unspecified )
+		return;
+	get_global_center_bt( cast_fv ( dGeomGetUserData( geom() )->last_pos ) );
+#ifdef	DEBUG
+	Fmatrix m;
+	get_xform( m );
+	if( Fvector().sub( m.c, cast_fv ( dGeomGetUserData( geom() )->last_pos ) ).magnitude() > EPS )
+		Msg("! WRONG THING" );
+#endif
+}
+
+void CODEGeom::set_build_position(const Fvector& /*ref_point*/)
+{
+	clear_motion_history( true );
 }
 
 void CODEGeom::set_body(dBodyID body)
@@ -332,7 +374,7 @@ void CODEGeom::move_local_basis(const Fmatrix& inv_new_mul_old)
 void CODEGeom::build(const Fvector& ref_point)
 {
 	init();
-	set_position(ref_point);
+	set_build_position(ref_point);
 }
 void CODEGeom::init()
 {
@@ -401,17 +443,27 @@ void CODEGeom::get_final_tx(dGeomID g,const dReal*	&p,const dReal*	&R,dReal * bu
 		p=dGeomGetPosition(g);
 	}
 }
+
+
+void	CODEGeom::	set_local_form_bt	( const Fmatrix& xform )
+{
+	dMatrix3 R;
+	PHDynamicData::FMXtoDMX( xform,R );
+	dGeomSetRotation( geom(), R );
+	dGeomSetPosition( geom(), xform.c.x, xform.c.y, xform.c.z );
+}
+
 void CBoxGeom::get_Extensions( const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext ) const
 {
 
-	VERIFY			(m_geom_transform)	;
+	VERIFY			( m_geom_transform );
 	const dReal	*rot	=NULL			;
 	const dReal	*pos	=NULL			;
 	dVector3	p						;
 	dMatrix3	r						;
 	dGeomID		g		=geometry_bt()	;
-	get_final_tx_bt(pos,rot,p,r)		;
-	GetBoxExtensions(g,cast_fp(axis),pos,rot,center_prg,&lo_ext,&hi_ext);	
+	get_final_tx_bt( pos, rot, p, r )	;
+	GetBoxExtensions( g, cast_fp(axis), pos, rot, center_prg, &lo_ext, &hi_ext );	
 }
 
 void CBoxGeom::get_max_area_dir_bt(Fvector& dir)
@@ -481,6 +533,8 @@ void CBoxGeom::set_local_form(const Fmatrix& form)
 	m_box.m_rotate.k.set(form.k);
 	m_box.m_translate.set(form.c);
 }
+
+
 dGeomID CBoxGeom::create()
 {
 
@@ -490,11 +544,32 @@ return dCreateBox(0,
 		m_box.m_halfsize.z*2.f
 		);
 }
+void	CBoxGeom::set_size(const Fvector&	half_size )
+{
+	m_box.m_halfsize.set( half_size );
+	VERIFY( geom() );
+	dGeomBoxSetLengths(		geom(),
+							m_box.m_halfsize.x*2.f,
+							m_box.m_halfsize.y*2.f,
+							m_box.m_halfsize.z*2.f
+						);
+}
 
-void CBoxGeom::set_position(const Fvector& ref_point)
+
+
+void	CBoxGeom::get_size(Fvector&	half_size ) const
+{
+	VERIFY( geom() );
+	dGeomBoxGetLengths(		geom(),
+							cast_fp( half_size )
+						);
+	half_size.mul( 0.5f );
+
+}
+void CBoxGeom::set_build_position(const Fvector& ref_point)
 {
 
-	inherited::set_position(ref_point);
+	inherited::set_build_position(ref_point);
 
 	dVector3 local_position={m_box.m_translate.x-ref_point.x,
 							m_box.m_translate.y-ref_point.y,
@@ -531,14 +606,14 @@ float CSphereGeom::radius()
 
 void CSphereGeom::get_Extensions( const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext )const
 {
-	VERIFY			(m_geom_transform)	;
+	VERIFY			( m_geom_transform );
 	const dReal	*rot	=NULL			;
 	const dReal	*pos	=NULL			;
 	dVector3	p						;
 	dMatrix3	r						;
 	dGeomID		g		=geometry_bt()	;
-	get_final_tx_bt(pos,rot,p,r)		;
-	GetSphereExtensions(g,cast_fp(axis),pos,center_prg,&lo_ext,&hi_ext);	
+	get_final_tx_bt( pos, rot, p, r )	;
+	GetSphereExtensions( g, cast_fp( axis ), pos, center_prg, &lo_ext, &hi_ext );	
 }
 const Fvector& CSphereGeom::local_center()
 {
@@ -559,10 +634,10 @@ dGeomID CSphereGeom::create()
 	return dCreateSphere(0,m_sphere.R);
 }
 
-void CSphereGeom::set_position(const Fvector& ref_point)
+void CSphereGeom::set_build_position(const Fvector& ref_point)
 {
 
-	inherited::set_position(ref_point);
+	inherited::set_build_position(ref_point);
 	dVector3 local_position={
 		m_sphere.P.x-ref_point.x,
 		m_sphere.P.y-ref_point.y,
@@ -605,9 +680,19 @@ void CCylinderGeom::get_Extensions( const Fvector& axis, float center_prg, float
 	dVector3	p						;
 	dMatrix3	r						;
 	dGeomID		g		=geometry_bt()	;
-	get_final_tx_bt(pos,rot,p,r)		;
-	GetCylinderExtensions(g,cast_fp(axis),pos,rot,center_prg,&lo_ext,&hi_ext);	
+	get_final_tx_bt( pos, rot, p, r )		;
+	GetCylinderExtensions( g, cast_fp( axis ), pos, rot, center_prg, &lo_ext, &hi_ext );	
 }
+
+
+void	CCylinderGeom::set_radius( float r )
+{
+	m_cylinder.m_radius = r;
+	VERIFY( geom() );
+	dGeomCylinderSetParams ( geom(), m_cylinder.m_radius, m_cylinder.m_height );
+}
+
+
 const Fvector& CCylinderGeom::local_center()
 {
 	return m_cylinder.m_center;
@@ -636,10 +721,10 @@ return dCreateCylinder(
 		m_cylinder.m_height
 		);
 }
-void CCylinderGeom::set_position(const Fvector& ref_point)
+void CCylinderGeom::set_build_position(const Fvector& ref_point)
 {
 
-	inherited::set_position(ref_point);
+	inherited::set_build_position(ref_point);
 	dVector3 local_position={
 	 m_cylinder.m_center.x-ref_point.x,
 	 m_cylinder.m_center.y-ref_point.y,
@@ -659,3 +744,64 @@ void CCylinderGeom::set_position(const Fvector& ref_point)
 		PHDynamicData::FMX33toDMX(m33,R);
 		dGeomSetRotation(geom(),R);
 }
+
+
+
+#ifdef	DEBUG
+void	CODEGeom::	dbg_draw			( float scale, u32 color, Flags32 flags )const
+{
+	Fmatrix m;
+	get_xform( m );
+	debug_output().DBG_DrawMatrix( m, 0.02f );
+	debug_output().DBG_DrawPoint( m.c, 0.001f, D3DCOLOR_XRGB(0, 255, 255 ) );
+}
+
+
+
+void	CBoxGeom::	dbg_draw			( float scale, u32 color, Flags32 flags )const
+{
+	inherited::dbg_draw( scale, color, flags );
+	
+	dGeomID	g = geom();
+	VERIFY( g );
+
+	Fmatrix m;
+	get_xform( m );
+
+	dVector3 l;
+	dGeomBoxGetLengths( g, l );
+
+	debug_output().DBG_DrawOBB( m, cast_fv( l ).mul( 0.5f ), color );
+}
+
+void	CSphereGeom::	dbg_draw			( float scale, u32 color, Flags32 flags )const
+{
+	inherited::dbg_draw( scale, color, flags );
+	
+	Fmatrix m;
+	get_xform( m );
+
+	dGeomID	g = geom();
+	VERIFY( g );
+	dGeomSphereGetRadius( g );
+
+	debug_output().DBG_DrawPoint( m.c, dGeomSphereGetRadius( g ), color );
+
+}
+
+void	CCylinderGeom::	dbg_draw			( float scale, u32 color, Flags32 flags )const
+{
+	inherited::dbg_draw( scale, color, flags );
+	
+	dGeomID	g = geom();
+	VERIFY( g );
+
+	Fmatrix m;
+	get_xform( m );
+
+	float r = 1, h = 1;
+	dGeomCylinderGetParams( g, &r, &h );
+	Fvector ext( Fvector().set( r, h*0.5f, r ) );
+	debug_output().DBG_DrawOBB( m, ext, color );
+}
+#endif
