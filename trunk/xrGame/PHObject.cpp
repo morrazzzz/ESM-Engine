@@ -171,13 +171,13 @@ bool	CPHObject::step_single(dReal	step)
 	return	ret							;
 }
 
-void		CPHObject::step(float time) //it is still not a true step for object because it collide the object only not subsequent collision is doing
+void		CPHObject::	step( float time ) //it is still not a true step for object because it collide the object only not subsequent collision is doing
 {
-	ph_world->r_spatial.clear_not_free();
-	reinit_single();
-	Collide();
-	IslandStep(time);
-	reinit_single();
+	ph_world->r_spatial.clear_not_free	();
+	reinit_single						();
+	Collide								();
+	IslandStep						( time );
+	reinit_single						();
 }
 
 bool		CPHObject::	DoCollideObj	()
@@ -255,4 +255,5 @@ void CPHUpdateObject::Deactivate()
 	ph_world->RemoveUpdateObject(this);
 	b_activated=false;
 }
+
 

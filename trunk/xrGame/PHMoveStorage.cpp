@@ -2,7 +2,7 @@
 #include "phmovestorage.h"
 #pragma warning(disable:4995)
 #pragma warning(disable:4267)
-#include "../../3rd party/ode/ode/src/collision_kernel.h"
+#include "../3rd party/ode/ode/src/collision_kernel.h"
 #pragma warning(default:4995)
 #pragma warning(default:4267)
 struct dxGeomTransform : public dxGeom {
@@ -14,7 +14,7 @@ struct dxGeomTransform : public dxGeom {
 	// computeAABB(), and it is valid while the AABB is valid.
 	dVector3 final_pos;
 	dMatrix3 final_R;
-	dxGeomTransform(dSpaceID space) : dxGeom(space, 1)
+	dxGeomTransform (dSpaceID space) : dxGeom (space,1)
 	{
 		type = dGeomTransformClass;
 		obj = 0;

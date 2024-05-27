@@ -2,10 +2,7 @@
 
 #include "phvalide.h"
 #include "mathutils.h"
-
-#include "physicsshellholder.h"
-
-//#include "iphysicsshellholder.h"
+#include "iphysicsshellholder.h"
 //#include "objectdump.h"
 
 
@@ -31,9 +28,9 @@ const Fbox	&ph_boundaries()
 #ifdef	DEBUG
 std::string dbg_valide_pos_string( const Fvector &pos,const Fbox &bounds, const IPhysicsShellHolder *obj, LPCSTR msg )
 {
-	return	std::string(msg) +
-		make_string("\n pos: %s , seems to be invalid ", get_string(pos).c_str()) +
-		make_string("\n Level box: %s ", get_string(bounds).c_str()) +
+	return	std::string( msg ) +
+			make_string( "\n pos: %s , seems to be invalid ", get_string( pos ).c_str() ) +
+			make_string( "\n Level box: %s ", get_string( bounds ).c_str() ) +
 			std::string( "\n object dump: \n" ) +
 			( obj ? obj->dump( full ) : std::string("") );
 }

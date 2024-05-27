@@ -4,9 +4,9 @@
 #include "MathUtils.h"
 #include "ElevatorState.h"
 #include "IColisiondamageInfo.h"
-#include "../xr_3da/GameMtlLib.h"
+#include "../xr_3da/gamemtllib.h"
 namespace ALife {
-	enum EHitType : u32;
+	enum EHitType: u32;
 };
 #ifdef DEBUG
 #include "debug_output.h"
@@ -19,13 +19,14 @@ class CPHSimpleCharacter :
 {
 	typedef CPHCharacter	inherited;
 private:
-	collide::rq_results		RQR;
+	
+	collide::rq_results			RQR;
 
 protected:
 	CElevatorState			m_elevator_state;
 	////////////////////////////damage////////////////////////////////////////
 #ifdef DEBUG
-public:
+	public:
 #endif
 	struct SCollisionDamageInfo
 	{
@@ -43,9 +44,9 @@ public:
 				ALife::EHitType			m_hit_type;
 				bool					is_initiated;
 		mutable	float					m_contact_velocity;
-	};	
+	};
 #ifdef	DEBUG
-	SCollisionDamageInfo& dbg_get_collision_dmg_info() { return m_collision_damage_info; }
+	SCollisionDamageInfo& dbg_get_collision_dmg_info(){ return m_collision_damage_info ;}
 #endif
 protected:
 	SCollisionDamageInfo		m_collision_damage_info;
@@ -125,8 +126,8 @@ protected:
 	Fvector m_ext_imulse				;
 	bool	b_death_pos					;
 	bool	b_foot_mtl_check			;
-	dReal	m_friction_factor;
-    bool	b_non_interactive			;
+	dReal	m_friction_factor			;
+	bool	b_non_interactive			;
 public:
 							CPHSimpleCharacter					()									;
 	virtual					~CPHSimpleCharacter					()						{Destroy();}
@@ -145,7 +146,7 @@ public:
 
 	//Check state
 	virtual		bool			 		ContactWas						()					{if(b_meet_control) {b_meet_control=false;return true;} else return false;}
-	virtual		EEnvironment	 		CheckInvironment				()					;
+	virtual		EEnvironment	 		CheckInvironment				()			;
 	virtual		void			 		GroundNormal					(Fvector &norm)		;
 	virtual		const ICollisionDamageInfo	*CollisionDamageInfo ()const {return this;}
 	virtual			  ICollisionDamageInfo	*CollisionDamageInfo (){return this;}
@@ -173,7 +174,7 @@ public:
 	virtual		bool		UpdateRestrictionType				(CPHCharacter* ach);
 	//get-set
 	virtual		void		SetObjectContactCallback			(ObjectContactCallbackFun* callback);
-//	virtual		void		SetObjectContactCallbackData		( void* data );
+	virtual		void		SetObjectContactCallbackData		( void* data );
 	virtual		void		SetWheelContactCallback				(ObjectContactCallbackFun* callback);
 private:
 				void		RemoveObjectContactCallback			(ObjectContactCallbackFun* callback);
@@ -181,7 +182,7 @@ private:
 static			void		TestRestrictorContactCallbackFun	(bool& do_colide,bool bo1,dContact& c,SGameMtl* material_1,SGameMtl* material_2);
 public:
 	virtual		ObjectContactCallbackFun* ObjectContactCallBack	();
-	void					SetStaticContactCallBack			(ContactCallbackFun* calback);
+	virtual		void		SetStaticContactCallBack			(ContactCallbackFun* calback);
 	virtual		void		SwitchOFFInitContact				()					;
 	virtual		void		SwitchInInitContact					()					;
 	virtual		void		SetAcceleration						(Fvector accel)		;
@@ -189,15 +190,15 @@ public:
 	virtual     void		SetCamDir							(const Fvector& cam_dir);
 	virtual	const Fvector&	CamDir								()const				{return m_cam_dir;}
 	virtual		void		SetMaterial							(u16 material)		;
-    virtual		void		SetPosition							(const Fvector &pos);
+	virtual		void		SetPosition							(const Fvector &pos);
 	virtual		void		GetVelocity							(Fvector& vvel)const;
 	virtual		void		GetSmothedVelocity					(Fvector& vvel)		;
 	virtual		void		SetVelocity							(Fvector vel)		;
 	virtual		void		SetAirControlFactor					(float factor)		{m_air_control_factor=factor;}
-	virtual		void		SetElevator							(CClimableObject* climable){m_elevator_state.SetElevator(climable);};
+	virtual		void		SetElevator							(IClimableObject* climable){m_elevator_state.SetElevator(climable);};
 	virtual	CElevatorState	*ElevatorState						()					;
 	virtual		void		SetCollisionDamageFactor			(float f)			{m_collision_damage_factor=f;}
-	virtual		void		GetPosition							(Fvector& vpos)		;
+	virtual		void		GetPosition							(Fvector& vpos)	;
 	virtual		void		GetPreviousPosition					(Fvector& pos)		;
 	virtual		float		FootRadius							()					;
 	virtual		void		DeathPosition						(Fvector& deathPos)	;
@@ -234,16 +235,16 @@ public:
 	bool		ValidateWalkOnMesh					()			;
 	bool		ValidateWalkOnObject				()			;
 private:
-	void		CheckCaptureJoint					()			;
-	void		ApplyAcceleration					()			;
+			void		CheckCaptureJoint					();
+			void		ApplyAcceleration					();
 
-	u16			RetriveContactBone					()			;
-	void		SafeAndLimitVelocity				()			;
+			u16			RetriveContactBone					();
+			void		SafeAndLimitVelocity				();
 virtual		void		UpdateStaticDamage					(dContact* c,SGameMtl* tri_material,bool bo1);
-	void		UpdateDynamicDamage					(dContact* c,u16 obj_material_idx,dBodyID b,bool bo1);
-IC	void 		FootProcess							(dContact* c,bool &do_collide ,bool bo);
-IC	void		foot_material_update				(u16	tri_material,u16	foot_material_idx);
-	static void	TestPathCallback(bool& do_colide,bool bo1,dContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/);
+			void		UpdateDynamicDamage					(dContact* c,u16 obj_material_idx,dBodyID b,bool bo1);
+IC			void 		FootProcess							(dContact* c,bool &do_collide ,bool bo);
+IC			void		foot_material_update				(u16	tri_material,u16	foot_material_idx);
+			static void	TestPathCallback(bool& do_colide,bool bo1,dContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/);
 virtual		void		Collide								();
 			void		OnStartCollidePhase					();
 private:
@@ -254,20 +255,20 @@ private:
 	virtual	void		collision_enable				()			{ CPHObject::collision_enable(); }
 	virtual	void		NetRelcase						( IPhysicsShellHolder* O );
 protected:
-	virtual	void	get_Box(Fvector& sz, Fvector& c)const;
-protected:
-	virtual	void	update_last_material();
+virtual	void	get_Box								( Fvector&	sz, Fvector& c )const;
+	protected:
+virtual	void	update_last_material						();
 public:	
 #ifdef DEBUG
-	virtual		void		OnRender							()					;
+	virtual		void		OnRender						();
 #endif
 };
 
 const dReal def_spring_rate=0.5f;
-const dReal def_dumping_rate = 20.1f;
+const dReal def_dumping_rate=20.1f;
 
-IC bool ignore_material(u16 material_idx)
+IC bool ignore_material( u16 material_idx )
 {
-	SGameMtl* material = GMLib.GetMaterialByIdx(material_idx);
-	return !!material->Flags.test(SGameMtl::flActorObstacle);
+		SGameMtl* material=GMLib.GetMaterialByIdx( material_idx );
+		return !!material->Flags.test( SGameMtl::flActorObstacle );
 }

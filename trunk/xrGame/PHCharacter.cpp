@@ -4,11 +4,16 @@
 #include "PHDynamicData.h"
 #include "Physics.h"
 #include "ExtendedGeom.h"
+#include "iphysicsshellholder.h"
+
 #include "../xr_3da/cl_intersect.h"
+#include "../xr_3da/gamemtllib.h"
+
 #include "tri-colliderKNoOPC\__aabb_tri.h"
-#include "../../3rd party/ode/ode/src/util.h"
+#include "../3rd party/ode/ode/src/util.h"
 #include "ph_valid_ode.h"
-#include "MathUtilsOde.h" //REMOVE ME!!!
+#include "Phaicharacter.h"
+#include "phactorcharacter.h"
 
 CPHCharacter::CPHCharacter(void):
   CPHDisablingTranslational()
@@ -24,7 +29,8 @@ m_mean_y		  				=0.f					;
 m_new_restriction_type=m_restriction_type				=rtNone					;
 b_actor_movable					=true					;
 p_lastMaterialIDX				=&lastMaterialIDX		;
-lastMaterialIDX					=u16(-1)				;
+lastMaterialIDX					=GAMEMTL_NONE_IDX		;
+injuriousMaterialIDX			=GAMEMTL_NONE_IDX		;
 m_creation_step					=u64(-1)				;
 b_in_touch_resrtrictor			=false					;
 m_current_object_radius			=-1.f					;
@@ -148,5 +154,90 @@ void CPHCharacter::CutVelocity(float l_limit,float /*a_limit*/)
 		dxStepBody(m_body,fixed_step);
 		dBodySetLinearVel(m_body,limitedl[0],limitedl[1],limitedl[2]);
 	}
+}
+
+const	Fmatrix&	CPHCharacter::XFORM				()							const
+{
+	return m_phys_ref_object->ObjectXFORM();//>renderable.xform;
+}
+void			CPHCharacter::get_LinearVel		( Fvector& velocity )		const
+{
+	GetVelocity( velocity );
+
+}
+void			CPHCharacter::get_AngularVel		( Fvector& velocity )		const		
+{
+	velocity.set(0,0,0);
+}
+
+const	Fvector	&CPHCharacter::mass_Center		()							const			
+{
+	return	cast_fv( dBodyGetLinearVel(m_body) );
+}
+
+
+void CPHCharacter::get_body_position( Fvector &p )
+{
+	VERIFY(b_exist);
+	VERIFY(get_body());
+	p.set(cast_fv(dBodyGetPosition(get_body())));
+}
+
+void	virtual_move_collide_callback( bool& do_collide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2 )
+{
+	if( !do_collide )
+		return;
+	do_collide = false;
+	SGameMtl* oposite_matrial	= bo1 ? material_1 : material_2 ;
+	if(oposite_matrial->Flags.test(SGameMtl::flPassable))
+		return;
+
+	dxGeomUserData	*my_data			=	retrieveGeomUserData(	bo1 ? c.geom.g1 : c.geom.g2 );
+	dxGeomUserData	*oposite_data		=	retrieveGeomUserData( bo1 ? c.geom.g2 : c.geom.g1 ) ;
+	VERIFY( my_data );
+	if( oposite_data && oposite_data->ph_ref_object == my_data->ph_ref_object )
+		return;
+
+	//if( c.geom.depth > camera_collision_sckin_depth/2.f )
+	//cam_collided = true;
+	//if( !cam_step )
+		//return;
+
+	c.surface.mu = 0;
+	c.surface.soft_cfm =0.01f;
+	dJointID contact_joint	= dJointCreateContact(0, ContactGroup, &c);//dJointCreateContactSpecial(0, ContactGroup, &c);
+	CPHObject* obj = (CPHObject*)my_data->callback_data;
+	VERIFY( obj );
+
+	obj->Island().DActiveIsland()->ConnectJoint(contact_joint);
+
+	if(bo1)
+		dJointAttach			(contact_joint, dGeomGetBody(c.geom.g1), 0);
+	else
+		dJointAttach			(contact_joint, 0, dGeomGetBody(c.geom.g2));
+	
+}
+
+void	CPHCharacter::	fix_body_rotation					()
+{
+		dBodyID b= get_body();//GetBody();
+		if(b)
+		{
+			dMatrix3 R;
+			dRSetIdentity (R);
+			dBodySetAngularVel(b,0.f,0.f,0.f);
+			dBodySetRotation(b,R);
+		}
+}
+
+
+
+CPHCharacter	*create_ai_character()
+{
+	return xr_new<CPHAICharacter>	();
+}
+CPHCharacter	*create_actor_character( bool single_game )
+{
+	return xr_new<CPHActorCharacter>	( single_game );
 }
 

@@ -45,10 +45,13 @@ void CCar::SExhaust::Update()
 	Fmatrix global_transform;
 	pelement->InterpolateGlobalTransform(&global_transform);
 	global_transform.mulB_43(transform);
-	dVector3 res;
+
+	//dVector3 res;
+	//Fvector	 res_vel;
+	//dBodyGetPointVel(pelement->get_body(),global_transform.c.x,global_transform.c.y,global_transform.c.z,res);
+	//CopyMemory (&res_vel,res,sizeof(Fvector));
 	Fvector	 res_vel;
-	dBodyGetPointVel(pelement->get_body(),global_transform.c.x,global_transform.c.y,global_transform.c.z,res);
-	CopyMemory (&res_vel,res,sizeof(Fvector));
+	pelement->GetPointVel( res_vel, global_transform.c );
 	//velocity.mul(0.95f);
 	//res_vel.mul(0.05f);
 	//velocity.add(res_vel);

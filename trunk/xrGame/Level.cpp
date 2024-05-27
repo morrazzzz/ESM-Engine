@@ -90,8 +90,9 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 	m_dwNumSteps				= 0;
 	m_dwDeltaUpdate				= u32(fixed_step*1000);
 	m_dwLastNetUpdateTime		= 0;
-
-	physics_step_time_callback	= (PhysicsStepTimeCallback*) &PhisStepsCallback;
+	//VERIFY						( physics_world() );
+	//physics_world()->set_step_time_callback((PhysicsStepTimeCallback*) &PhisStepsCallback);
+	//physics_step_time_callback	= (PhysicsStepTimeCallback*) &PhisStepsCallback;
 	m_seniority_hierarchy_holder= xr_new<CSeniorityHierarchyHolder>();
 
 	if(!g_dedicated_server)

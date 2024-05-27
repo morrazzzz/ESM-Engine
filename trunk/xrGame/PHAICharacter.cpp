@@ -8,12 +8,13 @@
 #include "tri-colliderKNoOPC\__aabb_tri.h"
 
 #include "phaicharacter.h"
+#include "../xr_3da/device.h"
 
 #ifdef DEBUG
-#	include "../xr_3da/StatGraph.h"
-#	include "PHDebug.h"
-#	include "level.h"
-#	include "debug_renderer.h"
+//#	include "../xrEngine/StatGraph.h"
+#	include "debug_output.h"
+//#	include "level.h"
+//#	include "debug_renderer.h"
 #endif
 
 CPHAICharacter::CPHAICharacter()
@@ -23,6 +24,7 @@ CPHAICharacter::CPHAICharacter()
 void CPHAICharacter::Create(dVector3 sizes)
 {
 	inherited::Create(sizes);
+	
 	m_forced_physics_control=false;//.
 }
 bool CPHAICharacter::TryPosition(Fvector pos,bool exact_state){
@@ -36,7 +38,7 @@ bool CPHAICharacter::TryPosition(Fvector pos,bool exact_state){
 	Fvector	displace;displace.sub(pos,current_pos);
 	float	disp_mag=displace.magnitude();
 	
-	if( fis_zero( disp_mag ) || fis_zero( Device.fTimeDelta ) ) 
+	if( fis_zero( disp_mag ) || fis_zero( inl_ph_world().Device().fTimeDelta ) ) 
 														return true ;
 	const	u32		max_steps = 15 ;
 	const	float	fmax_steps = float ( max_steps ) ;
@@ -93,7 +95,7 @@ bool CPHAICharacter::TryPosition(Fvector pos,bool exact_state){
 #endif
 
 	SetPosition(pos_new);
-	m_last_move.sub(pos_new,current_pos).mul(1.f/Device.fTimeDelta);
+	m_last_move.sub(pos_new,current_pos).mul(1.f/inl_ph_world().Device().fTimeDelta);
 	m_body_interpolation.UpdatePositions();
 	m_body_interpolation.UpdatePositions();
 	if(ret)
@@ -101,15 +103,16 @@ bool CPHAICharacter::TryPosition(Fvector pos,bool exact_state){
 	m_collision_damage_info.m_contact_velocity=0.f;
 	return ret;
 }
-
-void CPHAICharacter::		SetPosition							(Fvector pos)	
+/*
+void CPHAICharacter::		SetPosition	(const Fvector &pos)	
 {
-	m_vDesiredPosition.set(pos);
+	//m_vDesiredPosition.set(pos);
 	inherited::SetPosition(pos);
 
 }
-
-void CPHAICharacter::BringToDesired(float time,float velocity,float /**force/**/)
+*/
+/*
+void CPHAICharacter::BringToDesired(float time,float velocity,float force)
 {
 	Fvector pos,move;
 	GetPosition(pos);
@@ -149,7 +152,7 @@ void CPHAICharacter::BringToDesired(float time,float velocity,float /**force/**/
 	SetAcceleration(move);
 }
 
-
+*/
 
 void	CPHAICharacter::Jump(const Fvector& jump_velocity)
 {
@@ -166,6 +169,10 @@ void	CPHAICharacter::	ValidateWalkOn						()
 }
 void CPHAICharacter::InitContact(dContact* c,bool	&do_collide,u16 material_idx_1,u16 material_idx_2 )
 {
+	SGameMtl*	material_1=GMLib.GetMaterialByIdx(material_idx_1);
+	SGameMtl*	material_2=GMLib.GetMaterialByIdx(material_idx_2);
+	if((material_1&&material_1->Flags.test(SGameMtl::flActorObstacle))||(material_2&&material_2->Flags.test(SGameMtl::flActorObstacle)))
+		do_collide=true;
 	inherited::InitContact(c,do_collide,material_idx_1,material_idx_2);
 	if(is_control||b_lose_control||b_jumping)
 												c->surface.mu = 0.00f;
@@ -177,14 +184,21 @@ void CPHAICharacter::InitContact(dContact* c,bool	&do_collide,u16 material_idx_1
 		b_valide_wall_contact=false;
 	}
 #ifdef DEBUG
-	if(ph_dbg_draw_mask.test(phDbgNeverUseAiPhMove))do_collide=false;
+	if(debug_output().ph_dbg_draw_mask().test(phDbgNeverUseAiPhMove))do_collide=false;
 #endif
 }
+/*
+EEnvironment CPHAICharacter::CheckInvironment()
+{
+
+	return inherited::CheckInvironment();
+}
+*/
 #ifdef DEBUG
 void	CPHAICharacter::OnRender()	
 {
 	inherited::OnRender();
-
+#if	0
 	if(!b_exist) return;
 
 	Fvector pos;
@@ -201,5 +215,6 @@ void	CPHAICharacter::OnRender()
 
 
 	Level().debug_renderer().draw_ellipse(M, 0xffffffff);
+#endif
 }
 #endif

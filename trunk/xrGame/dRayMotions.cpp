@@ -1,9 +1,10 @@
 #include "stdafx.h" 
 #include "dCylinder/dCylinder.h"
+struct dContactGeom;
 int dCollideCylRay(dxGeom *o1, dxGeom *o2, int flags,dContactGeom *contact, int skip);
 //#pragma warning(disable:4995)
 //#pragma warning(disable:4267)
-//#include "../../xrODE/ode/src/collision_kernel.h"
+//#include "../3rd party/ode/ode/src/collision_kernel.h"
 //#pragma warning(default:4995)
 //#pragma warning(default:4267)
 
@@ -57,7 +58,6 @@ int dCollideRMS(dxGeom *o1, dxGeom *o2, int flags,
 	}
 	return ret;
 }
-
 inline void revert_contact(dContactGeom *c)
 {
 	c->normal[0] = -c->normal[0];
@@ -67,18 +67,15 @@ inline void revert_contact(dContactGeom *c)
 	c->g1 = c->g2;
 	c->g2 = tmp;
 }
-
 int dCollideRMCyl (dxGeom *o1, dxGeom *o2, int flags,
 				 dContactGeom *contact, int skip)
 {
 	dxRayMotions	*rm = (dxRayMotions*) dGeomGetClassData(o1);
 	int ret=	dCollideCylRay (o2,rm->ray,flags,contact,skip);
 	for (int i=0; i<ret; i++) {
-
 		dContactGeom *c = CONTACT(contact,skip*i);
 		revert_contact( c );
 		c->g1 = rm->ray_ownwer;
-		//c->depth*=60.f;
 	}
 	return ret;
 }

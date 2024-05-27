@@ -76,17 +76,28 @@ public:
 
 class CSafeFixedRotationState
 {
+	dMatrix3 rotation;
 	CSafeBodyLinearState m_safe_linear_state;
 public:
+	CSafeFixedRotationState()
+	{
+		dRSetIdentity( rotation );
+	}
 	IC	void	create					(dBodyID b)
 	{
 		R_ASSERT(dBodyStateValide(b));
+		std::copy_n( dBodyGetRotation(b), sizeof(rotation)/sizeof(dReal), rotation );
 		new_state(b);
+	}
+	IC  void	set_rotation ( const dMatrix3 r )
+	{
+		VERIFY( sizeof(rotation) == sizeof(dMatrix3) );
+		std::copy_n( r, sizeof(rotation)/sizeof(dReal), rotation );
 	}
 	IC	void	new_state				(dBodyID b)
 	{
-		dMatrix3 m;dRSetIdentity(m);
-		dBodySetRotation(b,m);
+		
+		dBodySetRotation(b,rotation);
 		dBodySetAngularVel(b,0.f,0.f,0.f);
 		m_safe_linear_state.new_state(b);
 	}

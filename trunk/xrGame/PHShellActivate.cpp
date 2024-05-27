@@ -9,12 +9,13 @@
 //#include "Level.h"
 #include "iphysicsshellholder.h"
 #include "PhysicsShellAnimator.h"
+#include "../Include/xrRender/Kinematics.h"
 
 ///////////////////////////////////////////////////////////////
 ///#pragma warning(disable:4995)
-//#include "../../xrODE/ode/src/collision_kernel.h"
-//#include "../../xrODE/ode/src/joint.h"
-//#include "../../xrODE/ode/src/objects.h"
+//#include "../3rd party/ode/ode/src/collision_kernel.h"
+//#include "../3rd party/ode/ode/src/joint.h"
+//#include "../3rd party/ode/ode/src/objects.h"
 
 //#pragma warning(default:4995)
 ///////////////////////////////////////////////////////////////////
@@ -58,7 +59,7 @@ void CPHShell::Activate(const Fmatrix &m0,float dt01,const Fmatrix &m2,bool disa
 		mXFORM = old_m;
 	}
 	m.invert();m.mulA_43		(mXFORM);
-	TransformPosition(m);
+	TransformPosition( m, mh_unspecified );
 	if(PKinematics())
 	{
 		SetCallbacks( );
@@ -117,31 +118,31 @@ void CPHShell::Activate(const Fmatrix &transform,const Fvector& lin_vel,const Fv
 
 
 void CPHShell::Activate(bool disable, bool not_set_bone_callbacks /*= false*/)
-{
-	if (isActive())return;
+{ 
+	if(isActive())return;
 
 	activate(disable);
-	{
+	{		
 		IKinematics* K = m_pKinematics;
-		if (not_set_bone_callbacks)
-			m_pKinematics = 0;
-		ELEMENT_I i = elements.begin(), e = elements.end();
-		for (; i != e; ++i)(*i)->Activate(mXFORM, disable);
+		if(not_set_bone_callbacks)
+				m_pKinematics = 0;
+		ELEMENT_I i=elements.begin(),e=elements.end();
+			 for(;i!=e;++i)(*i)->Activate(mXFORM,disable);
 		m_pKinematics = K;
 	}
 
 	{
-		JOINT_I i = joints.begin(), e = joints.end();
-		for (; i != e; ++i) (*i)->Activate();
-	}
-
-	if (PKinematics() && !not_set_bone_callbacks)
+		JOINT_I i=joints.begin(),e=joints.end();
+		for(;i!=e;++i) (*i)->Activate();
+	}	
+	
+	if(PKinematics() && !not_set_bone_callbacks )
 	{
-		SetCallbacks();
+		SetCallbacks( );
 	}
 	spatial_register();
-	m_flags.set(flActivating, TRUE);
-	m_flags.set(flActive, TRUE);
+	m_flags.set(flActivating,TRUE);
+	m_flags.set(flActive,TRUE);
 
 }
 
@@ -228,13 +229,14 @@ void CPHShell::Deactivate(){
 
 	VERIFY(ph_world);
 	ph_world->NetRelcase(this);
-
+	
 	if (m_pPhysicsShellAnimatorC)
 	{
 		VERIFY( PhysicsRefObject( ) );
 		PhysicsRefObject( )->ObjectProcessingDeactivate();
 		xr_delete<CPhysicsShellAnimator>(m_pPhysicsShellAnimatorC); 
 	}
+
 
 	if(!isActive())return;
 	R_ASSERT2(!ph_world->Processing(),"can not deactivate physics shell during physics processing!!!");
@@ -284,4 +286,14 @@ void CPHShell::Deactivate(){
 	m_flags.set(flActive,FALSE);
 	m_traced_geoms.clear();
 	CPHObject::UnsetRayMotions();
+}
+
+
+void	CPHShell::ActivatingBonePoses( IKinematics &K )
+{
+	ELEMENT_I i, e;
+	i = elements.begin(); e=elements.end();
+	for( ; i!=e; ++i )
+		(*i)->ActivatingPos( K.LL_GetTransform( (*i)->m_SelfID ) );
+		
 }

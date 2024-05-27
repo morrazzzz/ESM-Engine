@@ -52,7 +52,7 @@ public:
 	virtual		  IPhysicsShell			*physics_shell				()							;
 	virtual const IPhysicsElement		*physics_character			()const						;
 	virtual CPHDestroyable				*ph_destroyable				()							{return NULL;}
-	virtual CPHCollisionDamageReceiver	*PHCollisionDamageReceiver	()							{return NULL;}
+	virtual ICollisionDamageReceiver	*PHCollisionDamageReceiver	()							{return NULL;}
 	virtual CPHSkeleton					*PHSkeleton					()							{return NULL;}
 	virtual CPhysicsShellHolder			*cast_physics_shell_holder	()							{return this;}
 	virtual CParticlesPlayer			*cast_particles_player		()							{return this;}

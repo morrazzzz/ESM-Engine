@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "interactive_motion.h"
 #include "physicsshell.h"
+#include "extendedgeom.h"
 #include "PhysicsShellHolder.h"
 #include "MathUtils.h"
 #include "..\include\xrRender\Kinematics.h"
@@ -107,14 +108,14 @@ void imotion_position::state_start(CPhysicsShell *s)
 void	imotion_position::state_end(CPhysicsShell *s)
 {
 	inherited::state_end( s );
-	s->ToAnimBonesPositions();
+	s->ToAnimBonesPositions(mh_not_clear);
 	s->EnabledCallbacks(TRUE);
 }
 
 void imotion_position::move_update(CPhysicsShell *s)
 {
 	s->Disable();
-	s->ToAnimBonesPositions();
+	s->ToAnimBonesPositions(mh_not_clear);
 }
 
 void imotion_position::collide(CPhysicsShell *s)

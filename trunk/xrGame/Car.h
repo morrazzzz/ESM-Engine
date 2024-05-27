@@ -90,7 +90,7 @@ static	const u16				cAsCallsnum						=3;
 	virtual void						StartTimerEffects			()						{};
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	virtual CPhysicsShellHolder*		PPhysicsShellHolder			()						{return static_cast<CPhysicsShellHolder*>(this);}
-	virtual CPHCollisionDamageReceiver	*PHCollisionDamageReceiver	()						{return static_cast<CPHCollisionDamageReceiver*>(this);}
+	virtual ICollisionDamageReceiver	*PHCollisionDamageReceiver	()						{ return this; }
 
 ////////////////////////////////////////////////////////////////////////
 	CCarDamageParticles					m_damage_particles;

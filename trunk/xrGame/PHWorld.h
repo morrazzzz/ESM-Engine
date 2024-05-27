@@ -5,7 +5,6 @@
 #include "IPHWorld.h"
 #include "physics_scripted.h"
 #include "../xr_3da/pure.h"
-
 // refs
 struct	SGameMtlPair;
 //class	CPHCommander;
@@ -28,12 +27,12 @@ public:
 /////////////////////////////////////////////////////////////////////////////
 class	CObjectSpace;
 class	CObjectList;
-class CPHWorld : public	pureFrame,
-	public	IPHWorld,
-	public	cphysics_scripted
-#ifdef DEBUG
-	, public pureRender
-#endif
+class CPHWorld	:	public	pureFrame,
+					public	IPHWorld,
+					public	cphysics_scripted
+					#ifdef DEBUG
+					, public pureRender
+					#endif
 {
 	double						m_start_time												;
 	u32							m_delay														;
@@ -77,14 +76,15 @@ private:
 	ContactCallbackFun			*m_default_character_contact_shotmark						;
 	PhysicsStepTimeCallback		*physics_step_time_callback									;
 public:
-								CPHWorld						()							;
-	virtual ~CPHWorld() = default;
+
+								CPHWorld						( )							;
+	virtual						~CPHWorld						(){}						;
 
 //IC	dSpaceID					GetSpace						()			{return Space;}	;
 IC	bool						Exist							()			{return b_exist ;}
 	void						Create							(bool mt, CObjectSpace * os, CObjectList *lo, CRenderDeviceBase* dv );
 	void						SetGravity						(float	g)					;
-IC	float						Gravity							()							{return m_gravity;}
+IC  float						Gravity							()							{return m_gravity;}
 	void						AddObject						(CPHObject* object)			;
 	void						AddUpdateObject					(CPHUpdateObject* object)	;
 	void						AddRecentlyDisabled				(CPHObject* object)			;
@@ -111,7 +111,7 @@ IC	bool						Processing						()							{return b_processing;}
 	u32							CalcNumSteps					(u32 dTime)					;
 	u16							ObjectsNumber					()							;
 	u16							UpdateObjectsNumber				()							;
-	IC	u16							StepsShortCnt					()							{return m_steps_short_num;}
+IC	u16							StepsShortCnt					()							{return m_steps_short_num;}
 	u64							&StepsNum						()							{return m_steps_num;}
 	float						FrameTime						()							{return	m_frame_time;}
 ContactCallbackFun				*default_contact_shotmark		()							{ return m_default_contact_shotmark; }
@@ -123,7 +123,7 @@ ContactCallbackFun				*default_character_contact_shotmark()						{ return m_defa
 	CObjectSpace				&ObjectSpace					()							{ VERIFY( m_object_space ); return *m_object_space; }
 	CObjectList					&LevelObjects					()							{ VERIFY( m_level_objects ); return *m_level_objects; }
 	CRenderDeviceBase			&Device							()							{ VERIFY( m_device ); return *m_device;	}
-
+	
 //	void						AddCall							(CPHCondition*c,CPHAction*a);
 #ifdef DEBUG
 	virtual void 				OnRender						()							;
@@ -139,8 +139,8 @@ private:
 //add_to_type_list(CPHWorld)
 //#undef script_type_list
 //#define script_type_list save_type_list(CPHWorld)
-extern CPHWorld* ph_world;
-IC CPHWorld& inl_ph_world()
+extern CPHWorld	*ph_world					;
+IC CPHWorld&	inl_ph_world		()
 {
 	return *ph_world;
 }

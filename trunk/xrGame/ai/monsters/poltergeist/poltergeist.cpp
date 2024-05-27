@@ -222,19 +222,20 @@ void CPoltergeist::net_Destroy()
 
 void CPoltergeist::Die(CObject* who)
 {
-	if (m_tele) {
-		if (state_invisible) {
-			setVisible(true);
-
-			if (PPhysicsShell()) {
-				Fmatrix M;
-				M.set							(XFORM());
-				M.translate_over				(m_current_position);
-				PPhysicsShell()->SetTransform	(M);
-			} else 
-				Position() = m_current_position;
-		}
-	}
+#pragma todo("This commented code show body poltergeist at death. Do we need this? If it comes in handy, adapt it to xrPhysics. Or delete if not comes in handy. SoC-CoP Warning!")
+// 	if (m_tele) {
+// 		if (state_invisible) {
+// 			setVisible(true);
+// 
+// 			if (PPhysicsShell()) {
+// 				Fmatrix M;
+// 				M.set							(XFORM());
+// 				M.translate_over				(m_current_position);
+// 				PPhysicsShell()->SetTransform	(M);
+// 			} else 
+// 				Position() = m_current_position;
+// 		}
+// 	}
 
 	inherited::Die				(who);
 	Energy::disable				();

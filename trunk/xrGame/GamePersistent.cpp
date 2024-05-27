@@ -34,6 +34,8 @@
 #	include "ai_debug.h"
 #endif // _EDITOR
 
+#pragma todo("ODE Fuctions must migration to xrPhysics!! SoC-CoP TODO.")
+
 #ifdef DEBUG_MEMORY_MANAGER
 	static	void *	ode_alloc	(size_t size)								{ return Memory.mem_alloc(size,"ODE");			}
 	static	void *	ode_realloc	(void *ptr, size_t oldsize, size_t newsize)	{ return Memory.mem_realloc(ptr,newsize,"ODE");	}

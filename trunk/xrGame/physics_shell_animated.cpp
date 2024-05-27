@@ -20,7 +20,7 @@ bool physics_shell_animated::update(  const Fmatrix	&xrorm )
 
 	physics_shell	->mXFORM.set( xrorm );
 	physics_shell	->PKinematics()->CalculateBones( );	
-	physics_shell	->ToAnimBonesPositions(/* mh_unspecified*/);
+	physics_shell	->ToAnimBonesPositions( mh_unspecified );
 	return true;
 }
 
@@ -32,7 +32,7 @@ physics_shell_animated::~physics_shell_animated( )
 void physics_shell_animated::create_shell(  CPhysicsShellHolder* O  )
 {
 	physics_shell	=  P_build_Shell( (IPhysicsShellHolder*)(O), true, (BONE_P_MAP*)0, true );
-	physics_shell	->ToAnimBonesPositions(/* mh_unspecified*/);
+	physics_shell	->ToAnimBonesPositions( mh_unspecified );
 	physics_shell	->DisableCollision( );
 	physics_shell	->SetAnimated( true );
 }

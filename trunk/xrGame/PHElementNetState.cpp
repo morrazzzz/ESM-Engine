@@ -38,6 +38,7 @@ void CPHElement::set_State(const SPHNetState& state)
 	setForce(state.force);
 	setTorque(state.torque);
 	if(!isActive()) return;
+#if 1
 	if(state.enabled&& !dBodyIsEnabled(m_body)) 
 	{
 		dBodyEnable(m_body);
@@ -48,6 +49,7 @@ void CPHElement::set_State(const SPHNetState& state)
 		m_shell->DisableObject();
 		Disable();
 	}
+#endif
 	CPHDisablingFull::Reinit();
 	m_flags.set(flUpdate,TRUE);
 }

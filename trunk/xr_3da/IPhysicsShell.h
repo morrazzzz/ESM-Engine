@@ -2,8 +2,7 @@
 #define __IPHYSICSSHELL_H__
 #pragma once
 
-#pragma todo("RESTORE!!!!!!")
-//class IPhysicsGeometry;
+class IPhysicsGeometry;
 class	IPhysicsElement
 {
 public:
@@ -13,7 +12,7 @@ public:
 	virtual			void			get_Box				( Fvector&	sz, Fvector& c )const			= 0;
 	virtual	const	Fvector			&mass_Center		()							const			= 0;
 	virtual			u16				numberOfGeoms		()							const			= 0;
-//	virtual	const	IPhysicsGeometry*geometry			( u16 i )					const			= 0;
+	virtual	const	IPhysicsGeometry*geometry			( u16 i )					const			= 0;
 };
 
 class	IPhysicsShell

@@ -13,13 +13,14 @@
 #include "ai_object_location.h"
 #include "ai_space.h"
 #include "game_graph.h"
-#include "PHCollideValidator.h"
-#include "PHShell.h"
+//#include "PHCollideValidator.h"
+//#include "PHShell.h"
 #include "MathUtils.h"
-#include "..\include\xrRender\Kinematics.h"
 #ifdef DEBUG
-#include "PHWorld.h"
+#include "IPHWorld.h"
 #endif
+
+#include "../Include/xrRender/Kinematics.h"
 /*
 [impulse_transition_to_parts]
 random_min              =1       ; х массу объекта = величина случайно направленного импульса 
@@ -87,7 +88,7 @@ void CPHDestroyable::InitServerObject(CSE_Abstract* D)
 	//	l_tpALifePhysicObject->startup_animation=m_startup_anim;
 	
 	D->set_name_replace	("");
-	D->s_gameid			=	u8(GameID());
+//.	D->s_gameid			=	u8(GameID());
 	D->s_RP				=	0xff;
 	D->ID				=	0xffff;
 
@@ -150,11 +151,11 @@ void CPHDestroyable::Destroy(u16 source_id/*=u16(-1)*/,LPCSTR section/*="ph_skel
 	}
 	xr_vector<shared_str>::iterator i=m_destroyed_obj_visual_names.begin(),e=m_destroyed_obj_visual_names.end();
 
-//	if (IsGameTypeSingle()) //?????
-//	{
+	if (IsGameTypeSingle())
+	{
 		for(;e!=i;i++)
 			GenSpawnReplace(source_id,section,*i);
-//	};	
+	};	
 ///////////////////////////////////////////////////////////////////////////
 	m_flags.set(fl_destroyed,TRUE);
 	return;
@@ -212,8 +213,8 @@ void CPHDestroyable::NotificatePart(CPHDestroyableNotificate *dn)
 {
 	CPhysicsShell	*own_shell=PPhysicsShellHolder()->PPhysicsShell()			;
 	CPhysicsShell	*new_shell=dn->PPhysicsShellHolder()->PPhysicsShell()		;
-	IKinematics* own_K = smart_cast<IKinematics*>(PPhysicsShellHolder()->Visual());
-	IKinematics* new_K = smart_cast<IKinematics*>(dn->PPhysicsShellHolder()->Visual());
+	IKinematics		*own_K =smart_cast<IKinematics*>(PPhysicsShellHolder()->Visual());
+	IKinematics		*new_K =smart_cast<IKinematics*>(dn->PPhysicsShellHolder()->Visual())	;
 	VERIFY			(own_K&&new_K&&own_shell&&new_shell)						;
 	CInifile		*own_ini  =own_K->LL_UserData()								;
 	CInifile		*new_ini  =new_K->LL_UserData()								;
@@ -271,8 +272,8 @@ void CPHDestroyable::NotificatePart(CPHDestroyableNotificate *dn)
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-		dBodyID own_body=own_shell->get_Element(ref_bone)->get_body()			;
-
+		//dBodyID own_body=own_shell->get_Element(ref_bone)->get_body()			;
+		CPhysicsElement * own_element = own_shell->get_Element(ref_bone);
 		u16 new_el_number = new_shell->get_ElementsNumber()									;
 
 		for(u16 i=0;i<new_el_number;++i)
@@ -291,12 +292,18 @@ void CPHDestroyable::NotificatePart(CPHDestroyableNotificate *dn)
 			Fvector rnd_dir;rnd_dir.random_dir();
 			e->applyImpulse(rnd_dir,random_hit);
 			Fvector mc; mc.set(e->mass_Center());
-			dVector3 res_lvell;
-			dBodyGetPointVel(own_body,mc.x,mc.y,mc.z,res_lvell);
-			cast_fv(res_lvell).mul(lv_transition_factor);
-			e->set_LinearVel(cast_fv(res_lvell));
+
+			//dVector3 res_lvell;
+			//dBodyGetPointVel(own_body,mc.x,mc.y,mc.z,res_lvell);
+			Fvector res_lvell;
+			own_element->GetPointVel( res_lvell, mc );
+
+			res_lvell.mul(lv_transition_factor);
+			e->set_LinearVel(res_lvell);
 			
-			Fvector res_avell;res_avell.set(cast_fv(dBodyGetAngularVel(own_body)));
+			//Fvector res_avell;res_avell.set(cast_fv(dBodyGetAngularVel(own_body)));
+			Fvector res_avell;
+			own_element->get_AngularVel(res_avell);
 			res_avell.mul(av_transition_factor);
 			e->set_AngularVel(res_avell);
 		}
@@ -331,8 +338,6 @@ void CPHDestroyable::NotificatePart(CPHDestroyableNotificate *dn)
 
 void CPHDestroyable::NotificateDestroy(CPHDestroyableNotificate *dn)
 {
-	CPhysicsShellHolder* obj = PPhysicsShellHolder();
-	obj->setVisible(false);
 	VERIFY(m_depended_objects);
 	VERIFY(!physics_world()->Processing());
 	m_depended_objects--;

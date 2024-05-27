@@ -5,6 +5,8 @@
 #include "dTriColliderMath.h"
 #include "__aabb_tri.h"
 #include "../MathUtils.h"
+#include "../console_vars.h"
+#include "../phworld.h"
 #ifdef DEBUG
 #include "../PHDebug.h"
 #endif
@@ -26,17 +28,18 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide (
 	Fbox last_box;last_box.setb(data->last_aabb_pos,data->last_aabb_size);
 	Fbox box;box.setb(cast_fv(p),AABB);
 	
-
-	CDB::TRI*       T_array                         = Level().ObjectSpace.GetStaticTris();
-	const Fvector*	 V_array						 = Level().ObjectSpace.GetStaticVerts();
+	//VERIFY( g_pGameLevel );
+	CDB::TRI*       T_array                         = inl_ph_world().ObjectSpace().GetStaticTris();
+	const Fvector*	 V_array						 = inl_ph_world().ObjectSpace().GetStaticVerts();
 	if(no_last_pos||!last_box.contains(box))
 	{
 		
 		Fvector aabb;aabb.set(AABB);
-		aabb.mul(ph_tri_query_ex_aabb_rate);
+		aabb.mul(ph_console::ph_tri_query_ex_aabb_rate);
 	///////////////////////////////////////////////////////////////////////////////////////////////
 		XRC.box_options                (0);
-		XRC.box_query                  (Level().ObjectSpace.GetStaticModel(),cast_fv(p),aabb);
+		//VERIFY( g_pGameLevel );
+		XRC.box_query                  (inl_ph_world().ObjectSpace().GetStaticModel(),cast_fv(p),aabb);
 
 		CDB::RESULT*    R_begin                         = XRC.r_begin()	;
 		CDB::RESULT*    R_end                           = XRC.r_end()	;

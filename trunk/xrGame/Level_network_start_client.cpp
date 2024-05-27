@@ -91,7 +91,6 @@ bool	CLevel::net_start_client4				()
 		g_pGamePersistent->LoadTitle();
 
 		// Send physics to single or multithreaded mode
-		LoadPhysicsGameParams				();
 
 		create_physics_world(!!psDeviceFlags.test(mtPhysics), &ObjectSpace, &Objects, &Device);
 

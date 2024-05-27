@@ -122,7 +122,7 @@ CCharacterPhysicsSupport::CCharacterPhysicsSupport(EType atype,CEntityAlive* aen
 		m_PhysicMovementControl->AllocateCharacterObject(CPHMovementControl::ai);
 
 #pragma todo("Do we need this? The absence of this looks like a mistake. Explore this in more detail. SoC-CoP Warning.")
-		//m_PhysicMovementControl->SetRestrictionType(rtMonsterMedium);
+		m_PhysicMovementControl->SetRestrictionType(rtMonsterMedium);
 		//m_PhysicMovementControl->SetActorMovable(false);
 	}
 };
@@ -191,11 +191,11 @@ void CCharacterPhysicsSupport::in_NetSpawn(CSE_Abstract* e)
 		IKinematics*	ka=smart_cast<IKinematics*>(m_EntityAlife.Visual());
 		VERIFY(ka);
 		ka->CalculateBones_Invalidate();
-		ka->CalculateBones();
+		ka->CalculateBones( TRUE );
 		CollisionCorrectObjPos(m_EntityAlife.Position());
 		m_pPhysicsShell		= P_build_Shell(&m_EntityAlife,false);
 		ka->CalculateBones_Invalidate();
-		ka->CalculateBones();
+		ka->CalculateBones( TRUE );
 		return;
 	}
 
@@ -613,23 +613,57 @@ bool CCharacterPhysicsSupport::DoCharacterShellCollide()
 }
 void CCharacterPhysicsSupport::CollisionCorrectObjPos(const Fvector& start_from,bool	character_create/*=false*/)
 {
-	Fvector shift;shift.sub(start_from,m_EntityAlife.Position());
-
+	//Fvector shift;shift.sub( start_from, m_EntityAlife.Position() );
+	Fvector shift; shift.set(0, 0, 0);
 	Fbox box;
-	if(character_create)box.set(movement()->Box());
-	else	box.set(m_EntityAlife.BoundingBox());
-	Fvector vbox;Fvector activation_pos;
-	box.get_CD(activation_pos,vbox);shift.add(activation_pos);vbox.mul(2.f);
-	activation_pos.add(shift,m_EntityAlife.Position());
+	if (character_create)
+		box.set(movement()->Box());
+	else
+	{
+		if (m_pPhysicsShell)
+		{
+			VERIFY(m_pPhysicsShell->isFullActive());
+			Fvector sz, c;
+			get_box(m_pPhysicsShell, mXFORM, sz, c);
+			box.setb(Fvector().sub(c, m_EntityAlife.Position()), Fvector(sz).mul(0.5f));
+			m_pPhysicsShell->DisableCollision();
+		}
+		else
+			box.set(m_EntityAlife.BoundingBox());
+	}
+
+	Fvector vbox; Fvector activation_pos;
+	box.get_CD(activation_pos, vbox);
+	shift.add(activation_pos);
+	vbox.mul(2.f);
+	activation_pos.add(shift, m_EntityAlife.Position());
+	bool not_collide_characters = !DoCharacterShellCollide() && !character_create;
+	bool set_rotation = !character_create;
+
+	Fvector activation_res = Fvector().set(0, 0, 0);
+	////////////////
+
+//	bool ret = ActivateShapeCharacterPhysicsSupport(activation_res, vbox, activation_pos, mXFORM, not_collide_characters, set_rotation, &m_EntityAlife);
+	//////////////////
+
 	CPHActivationShape activation_shape;
-	activation_shape.Create(activation_pos,vbox,&m_EntityAlife);
-	if(!DoCharacterShellCollide()&&!character_create)
+	activation_shape.Create(activation_pos, vbox, &m_EntityAlife);
+	if (not_collide_characters)
 	{
 		CPHCollideValidator::SetCharacterClassNotCollide(activation_shape);
 	}
-	activation_shape.Activate(vbox,1,1.f,M_PI/8.f);
-	m_EntityAlife.Position().sub(activation_shape.Position(),shift);
+	if (set_rotation)
+		activation_shape.set_rotation(mXFORM);
+	bool ret = activation_shape.Activate(vbox, 1, 1.f, M_PI / 8.f);
+	activation_res.set(activation_shape.Position());
 	activation_shape.Destroy();
+
+	m_EntityAlife.Position().sub(activation_res, shift);
+
+
+	if (m_pPhysicsShell)
+		m_pPhysicsShell->EnableCollision();
+//	return ret;
 }
 
 void CCharacterPhysicsSupport::set_movement_position( const Fvector &pos )
@@ -640,7 +674,18 @@ void CCharacterPhysicsSupport::set_movement_position( const Fvector &pos )
 	
 	movement()->SetPosition( m_EntityAlife.Position() );
 }
+void CCharacterPhysicsSupport::ForceTransform(const Fmatrix& m)
+{
+	if (!m_EntityAlife.g_Alive())
+		return;
+	VERIFY(_valid(m));
+	m_EntityAlife.XFORM().set(m);
+	if (movement()->CharacterExist())
+		movement()->EnableCharacter();
+	set_movement_position(m.c);
+	movement()->SetVelocity(0, 0, 0);
 
+}
 static const u32 physics_shell_animated_destroy_delay = 3000;
 void	CCharacterPhysicsSupport::destroy_animation_collision()
 {
@@ -717,7 +762,7 @@ void CCharacterPhysicsSupport::ActivateShell			( CObject* who )
 		BR.set_callback_overwrite(true);
 
 	K->CalculateBones_Invalidate();
-	K->CalculateBones	();
+	K->CalculateBones	(TRUE);
 ////////////////////////////////////////////////////////////////////////////
 	if( m_pPhysicsShell ) return;
 	Fvector velocity;
@@ -756,7 +801,7 @@ void CCharacterPhysicsSupport::ActivateShell			( CObject* who )
 	}
 	m_pPhysicsShell->set_LinearVel(velocity);
 	K->CalculateBones_Invalidate();
-	K->CalculateBones	();
+	K->CalculateBones	(TRUE);
 	m_flags.set(fl_death_anim_on,FALSE);
 	m_eState=esDead;
 	m_flags.set(fl_skeleton_in_shell,TRUE);
@@ -864,11 +909,7 @@ void CCharacterPhysicsSupport::DestroyIKController()
 
 void		 CCharacterPhysicsSupport::in_NetRelcase(CObject* O)																													
 {
-	CPHCapture* c=m_PhysicMovementControl->PHCapture();
-	if(c)
-	{
-		c->net_Relcase(O);
-	}
+	m_PhysicMovementControl->NetRelcase( O );
 }
  
 void CCharacterPhysicsSupport::set_collision_hit_callback( ICollisionHitCallback* cc )
@@ -883,22 +924,7 @@ ICollisionHitCallback * CCharacterPhysicsSupport::get_collision_hit_callback()
 	return m_collision_hit_callback;
 }
 
-void	StaticEnvironmentCB (bool& do_colide,bool bo1,dContact& c,SGameMtl* material_1,SGameMtl* material_2)
-{
-	dJointID contact_joint	= dJointCreateContact(0, ContactGroup, &c);
 
-	if(bo1)
-	{
-		((CPHIsland*)(retrieveGeomUserData(c.geom.g1)->callback_data))->DActiveIsland()->ConnectJoint(contact_joint);
-		dJointAttach			(contact_joint, dGeomGetBody(c.geom.g1), 0);
-	}
-	else
-	{
-		((CPHIsland*)(retrieveGeomUserData(c.geom.g2)->callback_data))->DActiveIsland()->ConnectJoint(contact_joint);
-		dJointAttach			(contact_joint, 0, dGeomGetBody(c.geom.g2));
-	}
-	do_colide=false;
-}
 
 void						CCharacterPhysicsSupport::FlyTo(const	Fvector &disp)
 {
@@ -1026,16 +1052,18 @@ void CCharacterPhysicsSupport::CalculateTimeDelta()
 void CCharacterPhysicsSupport::on_create_anim_mov_ctrl	()
 {
 	VERIFY( !anim_mov_state.active );
-	anim_mov_state.character_exist = m_PhysicMovementControl->CharacterExist(); 
-	if(anim_mov_state.character_exist)
-		m_PhysicMovementControl->DestroyCharacter();
+	//anim_mov_state.character_exist = m_PhysicMovementControl->CharacterExist(); 
+	//if(anim_mov_state.character_exist)
+		//m_PhysicMovementControl->DestroyCharacter();
+	m_PhysicMovementControl->SetNonInteractive(true);
 	anim_mov_state.active = true;
 }
 
 void CCharacterPhysicsSupport::on_destroy_anim_mov_ctrl	()
 {
 	VERIFY( anim_mov_state.active );
-	if( anim_mov_state.character_exist )
-						CreateCharacter();
+	//if( anim_mov_state.character_exist )
+						//CreateCharacter();
+	m_PhysicMovementControl->SetNonInteractive(false);
 	anim_mov_state.active = false;
 }

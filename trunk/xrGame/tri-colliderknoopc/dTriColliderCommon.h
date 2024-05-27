@@ -1,9 +1,14 @@
 #pragma once
 
-#include "../Level.h"
+
+//#include "../ode_include.h"
+#include "../../3rd party/ode/include/ode/common.h"
 #include "../ExtendedGeom.h"
+#include "dTriColliderMath.h"
 
 extern xr_vector< flags8 >			gl_cl_tries_state	;
+
+//extern xr_vector<int>::iterator		I,E,B				;
 
 // NOTE: stride is sizeof(dContact) * N, where N is [0, ...)
 inline dContactGeom* CONTACT(dContactGeom* ptr, const int stride)

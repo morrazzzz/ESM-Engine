@@ -11,6 +11,6 @@ protected:
 };
 class	CPHCharacter;
 struct	NearestToPointCallback;
-XRPHYSICS_API IPHCapture	*phcapture_create(CPHCharacter *ch, IPhysicsShellHolder* object, NearestToPointCallback* cb /*=0*/ );
-XRPHYSICS_API IPHCapture	*phcapture_create(CPHCharacter *ch, IPhysicsShellHolder* object,u16 element);
-XRPHYSICS_API void			phcapture_destroy(IPHCapture* &c);
+IPHCapture	*phcapture_create(CPHCharacter *ch, IPhysicsShellHolder* object, NearestToPointCallback* cb /*=0*/ );
+IPHCapture	*phcapture_create(CPHCharacter *ch, IPhysicsShellHolder* object,u16 element);
+void			phcapture_destroy(IPHCapture* &c);
