@@ -168,6 +168,8 @@ private:
 		void 							CreateSkeleton					(CPhysicsShell* &pShell)																							;
 		void 							CreateSkeleton					();
 		void 							ActivateShell					(CObject* who)																										;
+		void							CreateShell						( CObject* who, Fvector& dp, Fvector & velocity  )																	;
+		void							EndActivateFreeShell			( CObject* who, const Fvector& inital_entity_position, const Fvector& dp, const Fvector & velocity )				;
 		void							KillHit							(CObject* who, ALife::EHitType hit_type, float &impulse)																										;
 static	void							DeathAnimCallback				(CBlend *B)																											;
 		void							CreateIKController				()																													;

@@ -391,9 +391,28 @@ bool is_similar(const Fmatrix &m0,const Fmatrix &m1,float param)
 
 void CCharacterPhysicsSupport::KillHit(CObject *who, ALife::EHitType hit_type, float &impulse)
 {
+#ifdef	DEBUG
+	//if (death_anim_debug)
+	//	Msg("death anim: kill hit  ");
+#endif
+	VERIFY(m_EntityAlife.Visual());
+	VERIFY(m_EntityAlife.Visual()->dcast_PKinematics());
+
+	//IKinematicsAnimated * KA = m_EntityAlife.Visual( )->dcast_PKinematicsAnimated	();
+	//VERIFY( KA );
+	//KA->SetUpdateTracksCalback( &tracks_disable_update );
+
 	TestForWounded();
 	Fmatrix prev_pose;prev_pose.set(mXFORM);
-	ActivateShell(who);
+
+	Fvector start;start.set( m_EntityAlife.Position( ) );
+	Fvector velocity;
+	Fvector death_position;
+
+	CreateShell( /*H.*/who, death_position, velocity);
+	//ActivateShell( H.who );
+
+//	if(Type() == etStalker && xr_strcmp(dbg_stalker_death_anim, "none") != 0)
 #ifdef DEBUG
 	if(Type() == etStalker && xr_strcmp(dbg_stalker_death_anim, "none") != 0)
 	{	
@@ -416,8 +435,21 @@ void CCharacterPhysicsSupport::KillHit(CObject *who, ALife::EHitType hit_type, f
 	{
 		impulse*=(hit_type==ALife::eHitTypeExplosion ? 1.f : skel_fatal_impulse_factor);
 	}
-	if(!is_imotion(m_interactive_motion))
-		m_flags.set(fl_block_hit,TRUE);
+
+	if( !is_imotion( m_interactive_motion ) )
+	{
+		
+#ifdef	DEBUG
+//		if( death_anim_debug )
+//		{
+//			Msg( "death anim: kill hit use free ragdoll " );
+//			Msg( "death anim: fatal impulse: %f, ", H.impulse );
+//		}
+#endif
+		
+		EndActivateFreeShell( /*H.*/who, start, death_position, velocity);
+		m_flags.set( fl_block_hit, TRUE );
+	}
 }
 
 void CCharacterPhysicsSupport::in_Hit(float P,Fvector &dir, CObject *who,s16 element,Fvector p_in_object_space, float impulse,ALife::EHitType hit_type ,bool is_killing)
@@ -711,11 +743,26 @@ void CCharacterPhysicsSupport::update_animation_collision()
 	}
 }
 
-void CCharacterPhysicsSupport::ActivateShell			( CObject* who )
+void CCharacterPhysicsSupport::ActivateShell(CObject* who)
 {
-	DestroyIKController( );
-	IKinematics* K=smart_cast<IKinematics*>( m_EntityAlife.Visual( ) );
+	R_ASSERT( _valid(m_EntityAlife.Position( )) );
+	Fvector start;start.set( m_EntityAlife.Position( ) );
+	Fvector velocity;
+	Fvector death_position;
+	CreateShell( who, death_position, velocity );
+	EndActivateFreeShell( who, start ,death_position, velocity );
+	VERIFY( m_pPhysicsShell );
+	m_pPhysicsShell->Enable();
+	m_pPhysicsShell->set_LinearVel( Fvector().set(0,-1,0) );
+}
 
+void	CCharacterPhysicsSupport::	CreateShell						( CObject* who, Fvector& dp, Fvector & velocity  )
+{
+	//xr_delete( m_collision_activating_delay );
+	//xr_delete( m_interactive_animation );
+	destroy_animation_collision( );
+	//DestroyIKController( );
+	IKinematics* K=smart_cast<IKinematics*>( m_EntityAlife.Visual( ) );
 	//animation movement controller issues
 	bool	anim_mov_ctrl =m_EntityAlife.animation_movement_controlled( );
 	CBoneInstance	&BR = K->LL_GetBoneInstance( K->LL_GetBoneRoot( ) );
@@ -741,7 +788,16 @@ void CCharacterPhysicsSupport::ActivateShell			( CObject* who )
 		BR.set_callback_overwrite(true);
 	}
 	//
+	u16 anim_root = K->LL_GetBoneRoot();
+	u16 physics_root = anim_root;
 
+	if (m_eType != etBitting)
+	{
+		physics_root = K->LL_BoneID("bip01_pelvis");
+		K->LL_SetBoneRoot(physics_root);
+
+	}
+//
 	if( !m_physics_skeleton ) 
 		CreateSkeleton( m_physics_skeleton );
 
@@ -754,6 +810,9 @@ void CCharacterPhysicsSupport::ActivateShell			( CObject* who )
 	}
 	
 //////////////////////this needs to evaluate object box//////////////////////////////////////////////////////
+	if( m_eType != etBitting )
+		K->LL_SetBoneRoot( anim_root );
+
 	for( u16 I = K->LL_BoneCount( )-1; I!=u16(-1); --I )
 				K->LL_GetBoneInstance( I ).reset_callback( );
 
@@ -764,17 +823,15 @@ void CCharacterPhysicsSupport::ActivateShell			( CObject* who )
 	K->CalculateBones_Invalidate();
 	K->CalculateBones	(TRUE);
 ////////////////////////////////////////////////////////////////////////////
-	if( m_pPhysicsShell ) return;
-	Fvector velocity;
+	if( m_pPhysicsShell ) 
+		return;
+
 	m_PhysicMovementControl->GetCharacterVelocity		( velocity );
-	velocity.mul( 1.3f );
-	Fvector dp, start;start.set( m_EntityAlife.Position( ) );
+
 	if( !m_PhysicMovementControl->CharacterExist( ) )
 		dp.set( m_EntityAlife.Position( ) );
 	else m_PhysicMovementControl->GetDeathPosition( dp );
 	m_PhysicMovementControl->DestroyCharacter( );
-
-	CollisionCorrectObjPos( dp );
 
 	//shell create
 	R_ASSERT2(m_physics_skeleton,"No skeleton created!!");
@@ -790,18 +847,20 @@ void CCharacterPhysicsSupport::ActivateShell			( CObject* who )
 		//			BR.Callback_overwrite = TRUE; 
 		BR.set_callback_overwrite(true);
 
-	//set shell params
-	if(!smart_cast<CCustomZone*>(who))
-	{
-		velocity.mul(1.25f*m_after_death_velocity_factor);
-	}
 	if(!DoCharacterShellCollide())
-	{
 		m_pPhysicsShell->DisableCharacterCollision();
-	}
-	m_pPhysicsShell->set_LinearVel(velocity);
+
+	if( m_eType != etBitting )
+		K->LL_SetBoneRoot( anim_root );
+
 	K->CalculateBones_Invalidate();
 	K->CalculateBones	(TRUE);
+
+
+	if (m_eType != etBitting)
+		K->LL_SetBoneRoot(physics_root);
+	//reset_root_bone_start_pose( *m_pPhysicsShell );
+
 	m_flags.set(fl_death_anim_on,FALSE);
 	m_eState=esDead;
 	m_flags.set(fl_skeleton_in_shell,TRUE);
@@ -816,32 +875,93 @@ void CCharacterPhysicsSupport::ActivateShell			( CObject* who )
 		m_pPhysicsShell->SetIgnoreDynamic();
 	}
 	m_pPhysicsShell->SetIgnoreSmall();
-	//end seting params
+}
 
+void	CCharacterPhysicsSupport::EndActivateFreeShell(CObject * who, const Fvector & inital_entity_position, const Fvector & dp, const Fvector & velocity)
+{
+	VERIFY ( m_pPhysicsShell );
+	VERIFY( m_eState==esDead );
+#ifdef	DEBUG
+/*
+if( dbg_draw_ragdoll_spawn )
+{
+	DBG_OpenCashedDraw();
+	m_pPhysicsShell->dbg_draw_geometry( 0.2f, D3DCOLOR_XRGB( 255, 100, 0 ) );
+	DBG_ClosedCashedDraw( 50000 );
+}
+*/
+#endif
 
+    CollisionCorrectObjPos( dp );
+	m_pPhysicsShell->SetGlTransformDynamic(mXFORM);
 
+#ifdef	DEBUG
+/*
+if( dbg_draw_ragdoll_spawn )
+{
+	DBG_OpenCashedDraw();
+	m_pPhysicsShell->dbg_draw_geometry( 0.2f, D3DCOLOR_XRGB( 255, 0, 100 ) );
+	DBG_ClosedCashedDraw( 50000 );
+}
+*/
+#endif
 	//fly back after correction
-	FlyTo(Fvector().sub(start,m_EntityAlife.Position()));
-	//
+	FlyTo(Fvector().sub(inital_entity_position,m_EntityAlife.Position()));
 
-	//actualize
-	m_pPhysicsShell->GetGlobalTransformDynamic(&mXFORM);
-	//
+#ifdef	DEBUG
+	/*
+if( dbg_draw_ragdoll_spawn )
+{
+	DBG_OpenCashedDraw();
+	m_pPhysicsShell->dbg_draw_geometry( 0.2f, D3DCOLOR_XRGB( 100, 255, 100 ) );
+	DBG_ClosedCashedDraw( 50000 );
+}
+*/
+#endif
+	Fvector v = velocity;
+	//apply_start_velocity_factor( who, v );
 
-	m_pPhysicsShell->add_ObjectContactCallback(OnCharacterContactInDeath);
-	m_pPhysicsShell->set_CallbackData((void*)this);
-//
-
-	if(anim_mov_ctrl && anim_mov_blend && anim_mov_blend->blend_state() != CBlend::eFREE_SLOT &&  anim_mov_blend->timeCurrent + Device.fTimeDelta*anim_mov_blend->speed < anim_mov_blend->timeTotal-SAMPLE_SPF-EPS)//.
+	v.mul(1.3f);
+	v.mul(1.25f * m_after_death_velocity_factor);
+	//set shell params
+	if (!smart_cast<CCustomZone*>(who))
 	{
-		const Fmatrix sv_xform = mXFORM;
-		mXFORM.set( start_xform );
-		//anim_mov_blend->blendPower = 1;
-		anim_mov_blend->timeCurrent  += Device.fTimeDelta * anim_mov_blend->speed;
-		m_pPhysicsShell->AnimToVelocityState( Device.fTimeDelta, 2 * default_l_limit, 10.f * default_w_limit );
-		mXFORM.set( sv_xform );
+		v.mul(1.25f * m_after_death_velocity_factor);
 	}
 
+#ifdef	DEBUG
+//		if( death_anim_debug )
+//		{
+//			Msg( "death anim: ragdoll velocity picked from char controller =(%f,%f,%f), velocity applied to ragdoll =(%f,%f,%f)  ", velocity.x, velocity.y, velocity.z, v.x, v.y, v.z );
+//		}
+#endif
+	m_pPhysicsShell->set_LinearVel( v );
+	//actualize
+	m_pPhysicsShell->GetGlobalTransformDynamic(&mXFORM);
+	m_pPhysicsShell->mXFORM.set(mXFORM);
+
+
+
+	//if( false &&  anim_mov_ctrl && anim_mov_blend && anim_mov_blend->blend != CBlend::eFREE_SLOT &&  anim_mov_blend->timeCurrent + Device.fTimeDelta*anim_mov_blend->speed < anim_mov_blend->timeTotal-SAMPLE_SPF-EPS)//.
+	//{
+	//	const Fmatrix sv_xform = mXFORM;
+	//	mXFORM.set( start_xform );
+	//	//anim_mov_blend->blendPower = 1;
+	//	anim_mov_blend->timeCurrent  += Device.fTimeDelta * anim_mov_blend->speed;
+	//	m_pPhysicsShell->AnimToVelocityState( Device.fTimeDelta, 2 * default_l_limit, 10.f * default_w_limit );
+	//	mXFORM.set( sv_xform );
+	//}
+	IKinematics* K=smart_cast<IKinematics*>( m_EntityAlife.Visual( ) );
+	//u16 root =K->LL_GetBoneRoot();
+	//if( root!=0 )
+	//{
+	//	K->LL_GetTransform( 0 ).set( Fidentity );
+	//	
+	//	K->LL_SetBoneVisible( 0, FALSE, FALSE );
+	//}
+	
+	K->CalculateBones_Invalidate();
+	K->CalculateBones	(TRUE);
 }
 void CCharacterPhysicsSupport::in_ChangeVisual()
 {
