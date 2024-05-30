@@ -17,8 +17,7 @@
 //#include "PHSimpleCalls.h"
 #include "PHSynchronize.h"
 #include "phnetstate.h"
-#pragma todo("restore geometry bits")
-#//include "geometrybits.h"
+#include "geometrybits.h"
 #include "console_vars.h"
 #include "../xr_3da/device.h"
 #include "../xr_3da/defines.h"
@@ -93,8 +92,7 @@ void __stdcall destroy_object_space(CObjectSpace* &os)
 
 void CPHMesh ::Create(dSpaceID space, dWorldID world){
 	Geom = dCreateTriList(space, 0, 0);
-#pragma todo("restore geometry bits")
-//	CPHGeometryBits::init_geom( *this );
+	CPHGeometryBits::init_geom( *this );
 }
 /////////////////////////////////////////////////////////////////////////
 

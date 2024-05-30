@@ -25,10 +25,10 @@
 #include "../xr_3da/StatGraph.h"
 #include "PHDebug.h"
 #endif
-#include "Physics.h"
+//#include "Physics.h"
 #include "MathUtils.h"
-#include "phvalidevalues.h"
-#include "PHActivationShape.h"
+//#include "phvalidevalues.h"
+#include "iActivationShape.h"
 #include "IPHWorld.h"
 #include "game_base_space.h"
 #include "profiler.h"
@@ -43,7 +43,7 @@ const u16	TEST_RAYS_PER_OBJECT=5;
 const u16	BLASTED_OBJ_PROCESSED_PER_FRAME=3;
 const float	exp_dist_extinction_factor=3.f;//(>1.f, 1.f -means no dist change of exp effect)	on the dist of m_fBlastRadius exp. wave effect in exp_dist_extinction_factor times less than maximum
 
-CExplosive::CExplosive(void) 
+CExplosive::CExplosive() 
 {
 	m_fBlastHit				= 50.f;
 	m_fBlastRadius			= 10.f;
@@ -739,26 +739,13 @@ void CExplosive::SetExplosionSize(const Fvector	&new_size)
 	
 }
 
-#pragma todo("REMOVE KOSTIL CODE IN ActivateExplosionBox!!!!! PUT BACK ActivateShapeExplosive. SoC-CoP Warning!!! ")
 void CExplosive::ActivateExplosionBox(const Fvector &size,Fvector &in_out_pos)
 {
-	CPhysicsShellHolder* self_obj = smart_cast<CPhysicsShellHolder*>(cast_game_object());
-	CPhysicsShell* self_shell = self_obj->PPhysicsShell();
-	if (self_shell && self_shell->isActive())self_shell->DisableCollision();
-//	ActivateShapeExplosive(self_obj, size, m_vExplodeSize, in_out_pos);
-
-	CPHActivationShape activation_shape;//Fvector start_box;m_PhysicMovementControl.Box().getsize(start_box);
-	activation_shape.Create(in_out_pos, size, self_obj);
-
-	CPHCollideValidator::SetCharacterClassNotCollide(activation_shape);
-
-	dBodySetGravityMode(activation_shape.ODEBody(), 0);
-	activation_shape.Activate(size, 1, 1.f, M_PI / 8.f);
-	in_out_pos.set(activation_shape.Position());
-	activation_shape.Size(m_vExplodeSize);
-	activation_shape.Destroy();
-
-	if (self_shell && self_shell->isActive())self_shell->EnableCollision();
+	CPhysicsShellHolder		*self_obj=smart_cast<CPhysicsShellHolder*>(cast_game_object());
+	CPhysicsShell* self_shell=self_obj->PPhysicsShell();
+	if(self_shell&&self_shell->isActive())self_shell->DisableCollision();
+	ActivateShapeExplosive( self_obj, size, m_vExplodeSize, in_out_pos );
+	if(self_shell&&self_shell->isActive())self_shell->EnableCollision();
 }
 void CExplosive::net_Relcase(CObject* O)
 {

@@ -2284,6 +2284,12 @@
     <Filter Include="Physics\Base\Objects\debug">
       <UniqueIdentifier>{c0ba1350-d1d5-4e15-8683-53e700bc5113}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Physics\CharacterSupport\interactive_motion">
+      <UniqueIdentifier>{e7135190-f4ab-474b-a2ed-49edccc34acf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Physics\CharacterSupport\hit_anims">
+      <UniqueIdentifier>{ffd9da05-945a-47e8-8706-7cfc8a2ee4b2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mt_config.h">
@@ -5880,13 +5886,7 @@
     <ClInclude Include="PHImpact.h">
       <Filter>Physics\Base\Impact</Filter>
     </ClInclude>
-    <ClInclude Include="character_hit_animations.h">
-      <Filter>Physics\CharacterSupport</Filter>
-    </ClInclude>
     <ClInclude Include="CharacterPhysicsSupport.h">
-      <Filter>Physics\CharacterSupport</Filter>
-    </ClInclude>
-    <ClInclude Include="interactive_motion.h">
       <Filter>Physics\CharacterSupport</Filter>
     </ClInclude>
     <ClInclude Include="tri-colliderKNoOPC\__aabb_tri.h">
@@ -6569,6 +6569,30 @@
     </ClInclude>
     <ClInclude Include="MovementBoxDynamicActivate.h">
       <Filter>Physics\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="GeometryBits.h">
+      <Filter>Physics\Base\Objects\PHObject\Geom</Filter>
+    </ClInclude>
+    <ClInclude Include="IActivationShape.h">
+      <Filter>Physics\ActivationBox</Filter>
+    </ClInclude>
+    <ClInclude Include="character_shell_control.h">
+      <Filter>Physics\CharacterSupport</Filter>
+    </ClInclude>
+    <ClInclude Include="imotion_position.h">
+      <Filter>Physics\CharacterSupport\interactive_motion</Filter>
+    </ClInclude>
+    <ClInclude Include="imotion_velocity.h">
+      <Filter>Physics\CharacterSupport\interactive_motion</Filter>
+    </ClInclude>
+    <ClInclude Include="interactive_motion.h">
+      <Filter>Physics\CharacterSupport\interactive_motion</Filter>
+    </ClInclude>
+    <ClInclude Include="animation_utils.h">
+      <Filter>Physics\CharacterSupport</Filter>
+    </ClInclude>
+    <ClInclude Include="character_hit_animations.h">
+      <Filter>Physics\CharacterSupport\hit_anims</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -9008,13 +9032,7 @@
     <ClCompile Include="PHSimpleCallsScript.cpp">
       <Filter>Physics\Base\Objects\PHCommander</Filter>
     </ClCompile>
-    <ClCompile Include="character_hit_animations.cpp">
-      <Filter>Physics\CharacterSupport</Filter>
-    </ClCompile>
     <ClCompile Include="CharacterPhysicsSupport.cpp">
-      <Filter>Physics\CharacterSupport</Filter>
-    </ClCompile>
-    <ClCompile Include="interactive_motion.cpp">
       <Filter>Physics\CharacterSupport</Filter>
     </ClCompile>
     <ClCompile Include="tri-colliderknoopc\dcTriListCollider.cpp">
@@ -9709,6 +9727,30 @@
     </ClCompile>
     <ClCompile Include="MovementBoxDynamicActivate.cpp">
       <Filter>Physics\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="GeometryBits.cpp">
+      <Filter>Physics\Base\Objects\PHObject\Geom</Filter>
+    </ClCompile>
+    <ClCompile Include="IActivationShape.cpp">
+      <Filter>Physics\ActivationBox</Filter>
+    </ClCompile>
+    <ClCompile Include="character_shell_control.cpp">
+      <Filter>Physics\CharacterSupport</Filter>
+    </ClCompile>
+    <ClCompile Include="imotion_position.cpp">
+      <Filter>Physics\CharacterSupport\interactive_motion</Filter>
+    </ClCompile>
+    <ClCompile Include="imotion_velocity.cpp">
+      <Filter>Physics\CharacterSupport\interactive_motion</Filter>
+    </ClCompile>
+    <ClCompile Include="interactive_motion.cpp">
+      <Filter>Physics\CharacterSupport\interactive_motion</Filter>
+    </ClCompile>
+    <ClCompile Include="animation_utils.cpp">
+      <Filter>Physics\CharacterSupport</Filter>
+    </ClCompile>
+    <ClCompile Include="character_hit_animations.cpp">
+      <Filter>Physics\CharacterSupport\hit_anims</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

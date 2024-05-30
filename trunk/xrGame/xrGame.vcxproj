@@ -408,11 +408,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="animation_utils.h" />
+    <ClInclude Include="character_shell_control.h" />
     <ClInclude Include="console_vars.h" />
     <ClInclude Include="debug_output.h" />
+    <ClInclude Include="GeometryBits.h" />
+    <ClInclude Include="IActivationShape.h" />
     <ClInclude Include="icollisiondamagereceiver.h" />
     <ClInclude Include="IKFoot.h" />
     <ClInclude Include="IKFoot_inl.h" />
+    <ClInclude Include="imotion_position.h" />
+    <ClInclude Include="imotion_velocity.h" />
     <ClInclude Include="IPHStaticGeomShell.h" />
     <ClInclude Include="IPHWorld.h" />
     <ClInclude Include="iphysics_scripted.h" />
@@ -1845,6 +1851,8 @@
     <ClInclude Include="ui\UIGameTutorial.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="animation_utils.cpp" />
+    <ClCompile Include="character_shell_control.cpp" />
     <ClCompile Include="collisiondamagereceiver.cpp" />
     <ClCompile Include="console_vars.cpp" />
     <ClCompile Include="damage_manager.cpp" />
@@ -1864,7 +1872,11 @@
     </ClCompile>
     <ClCompile Include="debug_output.cpp" />
     <ClCompile Include="ExtendedGeom.cpp" />
+    <ClCompile Include="GeometryBits.cpp" />
+    <ClCompile Include="IActivationShape.cpp" />
     <ClCompile Include="IKFoot.cpp" />
+    <ClCompile Include="imotion_position.cpp" />
+    <ClCompile Include="imotion_velocity.cpp" />
     <ClCompile Include="MovementBoxDynamicActivate.cpp" />
     <ClCompile Include="params.cpp" />
     <ClCompile Include="PHDebug.cpp" />
