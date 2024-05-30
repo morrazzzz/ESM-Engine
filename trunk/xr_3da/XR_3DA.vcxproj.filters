@@ -151,6 +151,9 @@
     <Filter Include="DiscordSDK\API">
       <UniqueIdentifier>{b6390f14-c666-4145-b45d-f8a770dbc876}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Interfaces\Physics">
+      <UniqueIdentifier>{ad6f416b-ef83-436f-9285-b9532525879d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="_d3d_extensions.h">
@@ -467,6 +470,15 @@
     </ClInclude>
     <ClInclude Include="..\3rd party\DiscordSDK\include\voice_manager.h">
       <Filter>DiscordSDK\API</Filter>
+    </ClInclude>
+    <ClInclude Include="IPhysicsShell.h">
+      <Filter>Interfaces\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="IPhysicsGeometry.h">
+      <Filter>Interfaces\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="IObjectPhysicsCollision.h">
+      <Filter>Interfaces\Physics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
