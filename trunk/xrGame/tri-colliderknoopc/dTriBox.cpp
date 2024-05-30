@@ -172,6 +172,69 @@ contact->depth = outDepth;
 
 }
 
+/*
+bool test_cross_side( dReal* outAx, dReal& outDepth, dReal *pos, dReal& outSignum, int &code, u8 c,  const dReal* R, const dReal* hside, const dReal* p,  const dReal* triSideAx, const dReal* vax,   const dReal* vox  )
+{
+
+for( u8 i=0;i<3;++i){
+	dVector3 axis;
+	dCROSS114(axis,=,triSideAx ,R+i );
+	accurate_normalize(axis);
+	int ix1=(i+1)%3;
+	int ix2=(i+2)%3;
+	dReal sidePr=
+		dFabs(dDOT14(axis,R+ix1)*hside[ix1])+
+		dFabs(dDOT14(axis,R+ix2)*hside[ix2]);
+
+	dReal	dist_ax=dDOT(vax,axis)-dDOT(p,axis);
+	dReal	dist_ox=dDOT(vox,axis)-dDOT(p,axis);
+
+	bool isPdistax=dist_ax>0.f;
+	bool isPdistox=dist_ox>0.f;
+	if(isPdistax != isPdistox) continue;
+
+	dReal depth_ax=sidePr-dFabs(dist_ax);
+	dReal depth_ox=sidePr-dFabs(dist_ox);
+	if( depth_ax>depth_ox ){
+		if(depth_ax>0.f){
+			if(depth_ax*1.05f<outDepth) 
+						{
+							dReal sgn=dist_ax<0.f ? -1.f : 1.f;
+							dReal sgn1=sgn*dDOT14(axis,R+ix1)<0.f ? -1.f : 1.f;
+							dReal sgn2=sgn*dDOT14(axis,R+ix2)<0.f ? -1.f : 1.f;
+							dVector3 crpos;
+							for(int ii=0;ii<3;++ii)
+								crpos[ii]=p[ii]+R[ii*4+ix1]*hside[ix1]*sgn1+R[ii*4+ix2]*hside[ix2]*sgn2;
+						
+							if( dcTriListCollider::CrossProjLine14( vax, triSideAx, crpos,R+i, hside[i], pos ) )
+							{
+							outDepth=depth_ax;
+							outSignum=sgn;
+							outAx[0]=axis[0];
+							outAx[1]=axis[1];
+							outAx[2]=axis[2];
+							code=c+i;
+							}
+						}
+					}
+			else return true;
+		}
+	}
+ return false;
+}
+*/
+IC bool normalize_if_possible( dReal *v )
+{
+	dReal sqr_magnitude = dDOT(v,v);
+	if( sqr_magnitude < EPS_S )
+		return false;
+	dReal	l	=	dRecipSqrt(sqr_magnitude);
+		v[0]		*=	l;
+		v[1]		*=	l;
+		v[2]		*=	l;
+	return true;
+}
+
 int dcTriListCollider::dTriBox (
 						const dReal* v0,const dReal* v1,const dReal* v2,
 						Triangle* T,
@@ -361,7 +424,7 @@ dVector3 pos;
 #define TEST(ax,ox,c) \
 for(i=0;i<3;++i){\
 	dCROSS114(axis,=,triSideAx##ax,R+i);\
-	accurate_normalize(axis);\
+	if(!normalize_if_possible(axis)) continue;\
 	int ix1=(i+1)%3;\
 	int ix2=(i+2)%3;\
 	sidePr=\
@@ -401,6 +464,10 @@ depth##ox=sidePr-dFabs(dist##ox);\
 }
 
 dVector3 crpos;
+//#define TEST(ax,ox,c) 
+//test_cross_side( dReal* outAx, dReal& outDepth, dReal *pos, dReal& outSignum, u8 &code, u8 c,  const dReal* R, const dReal* hside, const dReal* p,  const dReal* triSideAx, const dReal* vax,   const dReal* vox  )
+//if( test_cross_side (outAx,outDepth,pos,signum,code,10,R,hside,p,triSideAx0,v0,v2) )
+  // return 0;
 TEST(0,2,10)
 TEST(1,0,13)
 TEST(2,1,16)

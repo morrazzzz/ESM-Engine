@@ -558,25 +558,25 @@ void CCar::ChangeCondition	(float fDeltaCondition)
 		HUD().GetUI()->UIMainIngameWnd->CarPanel().SetCarHealth(GetfHealth()/* /100.f */);
 }
 
-void CCar::PHHit(float P,Fvector &dir, CObject *who,s16 element,Fvector p_in_object_space, float impulse, ALife::EHitType hit_type)
+void CCar::PHHit(SHit &H)
 {
 	if(!m_pPhysicsShell)	return;
-	if(m_bone_steer==element) return;
+	if(m_bone_steer==H.bone()) return;
 	if(CPHUpdateObject::IsActive())
 	{
-		Fvector vimpulse;vimpulse.set(dir);
-		vimpulse.mul(impulse);
+		Fvector vimpulse;vimpulse.set(H.direction());
+		vimpulse.mul( H.phys_impulse( ) );
 		vimpulse.y *=GravityFactorImpulse();
 		float mag=vimpulse.magnitude();
 		if(!fis_zero(mag))
 		{
 			 vimpulse.mul(1.f/mag);
-			 m_pPhysicsShell->applyHit(p_in_object_space,vimpulse,mag,element,hit_type);
+			 m_pPhysicsShell->applyHit(H.bone_space_position(),vimpulse,mag,H.bone(),H.type());
 		}
 		
 	} else
 	{
-		m_pPhysicsShell->applyHit(p_in_object_space,dir,impulse,element,hit_type);
+		m_pPhysicsShell->applyHit( H.bone_space_position(), H.direction(), H.phys_impulse(), H.bone(), H.type() );
 	}
 }
 

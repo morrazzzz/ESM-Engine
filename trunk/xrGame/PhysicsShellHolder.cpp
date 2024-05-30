@@ -10,11 +10,15 @@
 #include "PHScriptCall.h"
 #include "CustomRocket.h"
 #include "Grenade.h"
+
+//#include "phactivationshape.h"
 #include "IPHWorld.h"
+#include "iActivationShape.h"
+//#include "phvalide.h"
 #include "characterphysicssupport.h"
 #include "phmovementcontrol.h"
-#include "phactivationshape.h"
-#include "phvalide.h"
+#include "physics_shell_animated.h"
+#include "../xr_3da/iphysicsshell.h"
 CPhysicsShellHolder::CPhysicsShellHolder()
 {
 	init();
@@ -37,16 +41,12 @@ const IObjectPhysicsCollision* CPhysicsShellHolder::physics_collision()
 
 const IPhysicsShell* CPhysicsShellHolder::physics_shell() const
 {
-	/*
 	if (m_pPhysicsShell)
 		return m_pPhysicsShell;
 	const CCharacterPhysicsSupport* char_support = character_physics_support();
 	if (!char_support || !char_support->animation_collision())
 		return 0;
 	return  char_support->animation_collision()->shell();
-	*/
-
-	return nullptr;
 }
 
 IPhysicsShell* CPhysicsShellHolder::physics_shell()
@@ -55,15 +55,12 @@ IPhysicsShell* CPhysicsShellHolder::physics_shell()
 }
 const IPhysicsElement* CPhysicsShellHolder::physics_character()  const
 {
-	/*
 	const CCharacterPhysicsSupport* char_support = character_physics_support();
 	if (!char_support)
 		return 0;
 	const CPHMovementControl* mov = character_physics_support()->movement();
 	VERIFY(mov);
 	return mov->IElement();
-	*/
-	return nullptr;
 }
 
 
@@ -74,8 +71,12 @@ void CPhysicsShellHolder::net_Destroy()
 	Level().ph_commander_scripts().remove_calls(&cmpr);
 	//удалить партиклы из ParticlePlayer
 	CParticlesPlayer::net_DestroyParticles		();
+	CCharacterPhysicsSupport	*char_support = character_physics_support();
+	if( char_support )
+		char_support->destroy_imotion();
 	inherited::net_Destroy						();
 	b_sheduled									=	false;
+
 	deactivate_physics_shell						();
 	xr_delete									(m_pPhysicsShell);
 }
@@ -109,17 +110,22 @@ BOOL CPhysicsShellHolder::net_Spawn				(CSE_Abstract*	DC)
 	return ret;
 }
 
-void	CPhysicsShellHolder::PHHit(float P,Fvector &dir, CObject *who,s16 element,Fvector p_in_object_space, float impulse, ALife::EHitType hit_type /* ALife::eHitTypeWound*/)
+void	CPhysicsShellHolder::PHHit( SHit &H )
 {
-	if(impulse>0)
-		if(m_pPhysicsShell) m_pPhysicsShell->applyHit(p_in_object_space,dir,impulse,element,hit_type);
+	if ( H.phys_impulse() >0 )
+		if(m_pPhysicsShell) m_pPhysicsShell->applyHit(H.bone_space_position(),H.direction(),H.phys_impulse(),H.bone(),H.type());
 }
 
 //void	CPhysicsShellHolder::Hit(float P, Fvector &dir, CObject* who, s16 element,
 //						 Fvector p_in_object_space, float impulse, ALife::EHitType hit_type)
 void	CPhysicsShellHolder::Hit					(SHit* pHDS)
 {
-	PHHit(pHDS->damage(),pHDS->dir,pHDS->who,pHDS->boneID,pHDS->p_in_bone_space,pHDS->impulse,pHDS->hit_type);
+	bool const is_special_burn_hit_2_self	=	(pHDS->who == this) && (pHDS->boneID == BI_NONE) && 
+												( (pHDS->hit_type == ALife::eHitTypeBurn)/*|| (pHDS->hit_type == ALife::eHitTypeLightBurn)*/);
+	if ( !is_special_burn_hit_2_self )
+	{
+		PHHit(*pHDS);
+	}
 }
 
 void CPhysicsShellHolder::create_physic_shell	()
@@ -143,14 +149,8 @@ void CPhysicsShellHolder::correct_spawn_pos()
 	Fvector								c;
 	get_box								(PPhysicsShell(),XFORM(),size,c);
 
-	CPHActivationShape					activation_shape;
-	activation_shape.Create				(c,size,this);
-	activation_shape.set_rotation		(XFORM());
-	PPhysicsShell()->DisableCollision	();
-	activation_shape.Activate			(size,1,1.f,M_PI/8.f);
-
-//	Fvector								ap = Fvector().set(0,0,0);
-//	ActivateShapePhysShellHolder		( this, XFORM(), size, c, ap );
+	Fvector								ap = Fvector().set(0,0,0);
+	ActivateShapePhysShellHolder		( this, XFORM(), size, c, ap );
 
 ////	VERIFY								(valid_pos(activation_shape.Position(),phBoundaries));
 //	if (!valid_pos(activation_shape.Position(),phBoundaries)) {
@@ -163,14 +163,15 @@ void CPhysicsShellHolder::correct_spawn_pos()
 
 	PPhysicsShell()->EnableCollision	();
 	
-	Fvector								ap = activation_shape.Position();
+
+
 
 	Fmatrix								trans;
 	trans.identity						();
 	trans.c.sub							(ap,c);
 	PPhysicsShell()->TransformPosition	(trans, mh_clear );
 	PPhysicsShell()->GetGlobalTransformDynamic(&XFORM());
-	activation_shape.Destroy			();
+
 }
 
 void CPhysicsShellHolder::activate_physic_shell()
@@ -289,6 +290,11 @@ void CPhysicsShellHolder::OnChangeVisual()
 	inherited::OnChangeVisual();
 	if (0==renderable.visual) 
 	{
+		CCharacterPhysicsSupport	*char_support = character_physics_support();
+		if( char_support )
+			char_support->destroy_imotion();
+		
+		VERIFY( !character_physics_support() || !character_physics_support()->interactive_motion());
 		if(m_pPhysicsShell)m_pPhysicsShell->Deactivate();
 		xr_delete(m_pPhysicsShell);
 		VERIFY(0==m_pPhysicsShell);

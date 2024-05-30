@@ -5,7 +5,8 @@ template<class T,int size>
 class CCycleConstStorage
 {
 	T array[size];
-	u16 first;
+	int first;
+	IC int position( int i ) const { return (first+i)%size; }
 public:
 	IC CCycleConstStorage()
 	{
@@ -18,11 +19,15 @@ public:
 	IC void push_back(T& val)
 	{
 		array[first]=val;
-		first=(++first)%size;
+		first	=position( 1 );
 	}
 	IC T& operator [] (int i)
 	{
-		return array[(first+i)%size];
+		return array[ position( i ) ];
+	}
+	IC const T& operator [] (int i) const
+	{
+		return array[ position( i ) ];
 	}
 };
 #endif
