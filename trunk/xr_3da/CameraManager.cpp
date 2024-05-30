@@ -192,6 +192,7 @@ CEffectorCam* CCameraManager::AddCamEffector(CEffectorCam* ef)
 
 void CCameraManager::UpdateDeffered()
 {
+#pragma todo("FIX CAMERA!!! THESE FILTHY EFFECTS AND MUCH MORE ARE TOO UGLY. PRIORITY: 3!!!")
 	EffectorCamIt it		= m_EffectorsCam_added_deffered.begin();
 	EffectorCamIt it_e		= m_EffectorsCam_added_deffered.end();
 	for (; it!=it_e; ++it)
