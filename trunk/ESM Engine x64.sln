@@ -57,6 +57,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Xiph.org", "Xiph.org", "{69
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Lua", "Lua", "{14029FEB-A184-40D2-86A0-562CE83FCFB2}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xrPhysics", "xrPhysics\xrPhysics.vcxproj", "{98D24A3D-7666-4C11-9D6E-B10393CE8CBA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -331,6 +333,18 @@ Global
 		{3A214E06-B95E-4D61-A291-1F8DF2EC10FD}.Release|Win32.Build.0 = Release|Win32
 		{3A214E06-B95E-4D61-A291-1F8DF2EC10FD}.Release|x64.ActiveCfg = Release|x64
 		{3A214E06-B95E-4D61-A291-1F8DF2EC10FD}.Release|x64.Build.0 = Release|x64
+		{98D24A3D-7666-4C11-9D6E-B10393CE8CBA}.Debug|Win32.ActiveCfg = Debug|Win32
+		{98D24A3D-7666-4C11-9D6E-B10393CE8CBA}.Debug|Win32.Build.0 = Debug|Win32
+		{98D24A3D-7666-4C11-9D6E-B10393CE8CBA}.Debug|x64.ActiveCfg = Debug|Win32
+		{98D24A3D-7666-4C11-9D6E-B10393CE8CBA}.Debug|x64.Build.0 = Debug|Win32
+		{98D24A3D-7666-4C11-9D6E-B10393CE8CBA}.Mixed|Win32.ActiveCfg = Mixed|x64
+		{98D24A3D-7666-4C11-9D6E-B10393CE8CBA}.Mixed|Win32.Build.0 = Mixed|x64
+		{98D24A3D-7666-4C11-9D6E-B10393CE8CBA}.Mixed|x64.ActiveCfg = Mixed|x64
+		{98D24A3D-7666-4C11-9D6E-B10393CE8CBA}.Mixed|x64.Build.0 = Mixed|x64
+		{98D24A3D-7666-4C11-9D6E-B10393CE8CBA}.Release|Win32.ActiveCfg = Release|Win32
+		{98D24A3D-7666-4C11-9D6E-B10393CE8CBA}.Release|Win32.Build.0 = Release|Win32
+		{98D24A3D-7666-4C11-9D6E-B10393CE8CBA}.Release|x64.ActiveCfg = Release|Win32
+		{98D24A3D-7666-4C11-9D6E-B10393CE8CBA}.Release|x64.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -452,6 +452,9 @@
     <ClInclude Include="DiscordSDK.h" />
     <ClInclude Include="edit_actions.h" />
     <ClInclude Include="GameMtlLib.h" />
+    <ClInclude Include="IObjectPhysicsCollision.h" />
+    <ClInclude Include="IPhysicsGeometry.h" />
+    <ClInclude Include="IPhysicsShell.h" />
     <ClInclude Include="line_editor.h" />
     <ClInclude Include="line_edit_control.h" />
     <ClInclude Include="SkeletonMotionDefs.h" />

@@ -409,34 +409,26 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="animation_utils.h" />
+    <ClInclude Include="CaptureBoneCallback.h" />
     <ClInclude Include="character_shell_control.h" />
-    <ClInclude Include="console_vars.h" />
-    <ClInclude Include="debug_output.h" />
-    <ClInclude Include="GeometryBits.h" />
-    <ClInclude Include="IActivationShape.h" />
-    <ClInclude Include="icollisiondamagereceiver.h" />
     <ClInclude Include="IKFoot.h" />
     <ClInclude Include="IKFoot_inl.h" />
     <ClInclude Include="imotion_position.h" />
     <ClInclude Include="imotion_velocity.h" />
-    <ClInclude Include="IPHStaticGeomShell.h" />
-    <ClInclude Include="IPHWorld.h" />
     <ClInclude Include="iphysics_scripted.h" />
-    <ClInclude Include="MathUtilsOde.h" />
-    <ClInclude Include="MovementBoxDynamicActivate.h" />
     <ClInclude Include="mt_config.h" />
     <ClInclude Include="damage_manager.h" />
     <ClInclude Include="damage_manager_inline.h" />
     <ClInclude Include="DamageSource.h" />
-    <ClInclude Include="params.h" />
+    <ClInclude Include="PHCommander.h" />
     <ClInclude Include="PHDebug.h" />
-    <ClInclude Include="PHUpdateObject.h" />
-    <ClInclude Include="PhysicsExternalCommon.h" />
+    <ClInclude Include="PHReqComparer.h" />
+    <ClInclude Include="PHScriptCall.h" />
+    <ClInclude Include="PHSimpleCalls.h" />
     <ClInclude Include="physics_element_scripted.h" />
     <ClInclude Include="physics_game.h" />
     <ClInclude Include="physics_joint_scripted.h" />
     <ClInclude Include="physics_scripted.h" />
-    <ClInclude Include="physics_shell_animated.h" />
     <ClInclude Include="physics_shell_scripted.h" />
     <ClInclude Include="physics_world_scripted.h" />
     <ClInclude Include="script_crandom.h" />
@@ -1582,86 +1574,15 @@
     <ClInclude Include="script_value_container_impl.h" />
     <ClInclude Include="xrGameSpyServer.h" />
     <ClInclude Include="xrGameSpyServer_callbacks.h" />
-    <ClInclude Include="CalculateTriangle.h" />
-    <ClInclude Include="ExtendedGeom.h" />
-    <ClInclude Include="ode_include.h" />
-    <ClInclude Include="ode_redefine.h" />
-    <ClInclude Include="phvalide.h" />
-    <ClInclude Include="PHWorld.h" />
-    <ClInclude Include="Physics.h" />
-    <ClInclude Include="PhysicsCommon.h" />
     <ClInclude Include="PhysicsGamePars.h" />
-    <ClInclude Include="ph_shell_interface.h" />
-    <ClInclude Include="PHDefs.h" />
     <ClInclude Include="PHShellCreator.h" />
-    <ClInclude Include="PHStaticGeomShell.h" />
-    <ClInclude Include="BlockAllocator.h" />
-    <ClInclude Include="CycleConstStorage.h" />
-    <ClInclude Include="MathUtils.h" />
-    <ClInclude Include="PHDynamicData.h" />
-    <ClInclude Include="PHInterpolation.h" />
-    <ClInclude Include="PHItemList.h" />
-    <ClInclude Include="PHValideValues.h" />
-    <ClInclude Include="SpaceUtils.h" />
-    <ClInclude Include="PHBaseBodyEffector.h" />
-    <ClInclude Include="PHContactBodyEffector.h" />
     <ClInclude Include="PHNetState.h" />
-    <ClInclude Include="PHSynchronize.h" />
-    <ClInclude Include="PHMoveStorage.h" />
-    <ClInclude Include="DisablingParams.h" />
-    <ClInclude Include="PHDisabling.h" />
-    <ClInclude Include="PHActorCharacter.h" />
-    <ClInclude Include="PHActorCharacterInline.h" />
-    <ClInclude Include="PHAICharacter.h" />
-    <ClInclude Include="PHCapture.h" />
     <ClInclude Include="PHMovementControl.h" />
-    <ClInclude Include="ElevatorState.h" />
-    <ClInclude Include="PHSimpleCharacter.h" />
-    <ClInclude Include="PHSimpleCharacterInline.h" />
-    <ClInclude Include="IColisiondamageInfo.h" />
-    <ClInclude Include="PHCharacter.h" />
-    <ClInclude Include="PhysicsShell.h" />
-    <ClInclude Include="PhysicsShellAnimator.h" />
-    <ClInclude Include="PhysicsShellAnimatorBoneData.h" />
-    <ClInclude Include="animation_movement_controller.h" />
-    <ClInclude Include="PHElement.h" />
-    <ClInclude Include="PHElementInline.h" />
-    <ClInclude Include="PHJoint.h" />
-    <ClInclude Include="PHShell.h" />
-    <ClInclude Include="PHFracture.h" />
-    <ClInclude Include="PHJointDestroyInfo.h" />
-    <ClInclude Include="PHShellSplitter.h" />
-    <ClInclude Include="PHSplitedShell.h" />
-    <ClInclude Include="PHObject.h" />
-    <ClInclude Include="Geometry.h" />
-    <ClInclude Include="PHGeometryOwner.h" />
-    <ClInclude Include="PHIsland.h" />
-    <ClInclude Include="PHCommander.h" />
-    <ClInclude Include="PHReqComparer.h" />
-    <ClInclude Include="PHScriptCall.h" />
-    <ClInclude Include="PHSimpleCalls.h" />
-    <ClInclude Include="PHImpact.h" />
     <ClInclude Include="character_hit_animations.h" />
     <ClInclude Include="CharacterPhysicsSupport.h" />
     <ClInclude Include="interactive_motion.h" />
-    <ClInclude Include="tri-colliderKNoOPC\__aabb_tri.h" />
-    <ClInclude Include="tri-colliderknoopc\dcTriangle.h" />
-    <ClInclude Include="tri-colliderKNoOPC\dcTriListCollider.h" />
-    <ClInclude Include="tri-colliderknoopc\dSortTriPrimitive.h" />
-    <ClInclude Include="tri-colliderknoopc\dTriBox.h" />
-    <ClInclude Include="tri-colliderKNoOPC\dTriCollideK.h" />
-    <ClInclude Include="tri-colliderknoopc\dTriColliderCommon.h" />
-    <ClInclude Include="tri-colliderknoopc\dTriColliderMath.h" />
-    <ClInclude Include="tri-colliderknoopc\dTriCylinder.h" />
-    <ClInclude Include="tri-colliderKNoOPC\dTriList.h" />
-    <ClInclude Include="tri-colliderknoopc\dTriSphere.h" />
-    <ClInclude Include="tri-colliderKNoOPC\dxTriList.h" />
-    <ClInclude Include="tri-colliderknoopc\TriPrimitiveCollideClassDef.h" />
-    <ClInclude Include="dCylinder\dCylinder.h" />
-    <CustomBuild Include="dRayMotions.h" />
     <ClInclude Include="DamagableItem.h" />
     <ClInclude Include="PHSoundPlayer.h" />
-    <ClInclude Include="PHActivationShape.h" />
     <ClInclude Include="Hit.h" />
     <ClInclude Include="Ik\aint.h" />
     <ClInclude Include="Ik\Dof7control.h" />
@@ -1853,8 +1774,6 @@
   <ItemGroup>
     <ClCompile Include="animation_utils.cpp" />
     <ClCompile Include="character_shell_control.cpp" />
-    <ClCompile Include="collisiondamagereceiver.cpp" />
-    <ClCompile Include="console_vars.cpp" />
     <ClCompile Include="damage_manager.cpp" />
     <ClCompile Include="action_base_script.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
@@ -1870,18 +1789,15 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="debug_output.cpp" />
-    <ClCompile Include="ExtendedGeom.cpp" />
-    <ClCompile Include="GeometryBits.cpp" />
-    <ClCompile Include="IActivationShape.cpp" />
     <ClCompile Include="IKFoot.cpp" />
     <ClCompile Include="imotion_position.cpp" />
     <ClCompile Include="imotion_velocity.cpp" />
-    <ClCompile Include="MovementBoxDynamicActivate.cpp" />
-    <ClCompile Include="params.cpp" />
+    <ClCompile Include="PHCommander.cpp" />
     <ClCompile Include="PHDebug.cpp" />
-    <ClCompile Include="phvalide.cpp" />
-    <ClCompile Include="PhysicsExternalCommon.cpp" />
+    <ClCompile Include="PHMovementDynamicActivate.cpp" />
+    <ClCompile Include="PHScriptCall.cpp" />
+    <ClCompile Include="PHSimpleCalls.cpp" />
+    <ClCompile Include="PHSimpleCallsScript.cpp" />
     <ClCompile Include="physics_element_scripted.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
@@ -1911,7 +1827,6 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
     <ClCompile Include="physics_scripted.cpp" />
-    <ClCompile Include="physics_shell_animated.cpp" />
     <ClCompile Include="physics_shell_scripted.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
@@ -5950,142 +5865,16 @@
     <ClCompile Include="xrGameSpy_GameSpyFuncs.cpp" />
     <ClCompile Include="xrGameSpyServer.cpp" />
     <ClCompile Include="xrGameSpyServer_callbacks.cpp" />
-    <ClCompile Include="PHWorld.cpp" />
-    <ClCompile Include="Physics.cpp" />
     <ClCompile Include="physics_game.cpp" />
     <ClCompile Include="PhysicsGamePars.cpp" />
     <ClCompile Include="PHShellCreator.cpp" />
-    <ClCompile Include="PHStaticGeomShell.cpp" />
-    <ClCompile Include="MathUtils.cpp" />
-    <ClCompile Include="PHDynamicData.cpp" />
-    <ClCompile Include="PHInterpolation.cpp" />
-    <ClCompile Include="PHContactBodyEffector.cpp" />
     <ClCompile Include="PHNetState.cpp" />
-    <ClCompile Include="PHSynchronize.cpp" />
-    <ClCompile Include="PHMoveStorage.cpp" />
-    <ClCompile Include="DisablingParams.cpp" />
-    <ClCompile Include="PHDisabling.cpp" />
-    <ClCompile Include="PHActorCharacter.cpp" />
-    <ClCompile Include="PHMovementDynamicActivate.cpp" />
-    <ClCompile Include="PHAICharacter.cpp" />
-    <ClCompile Include="PHCapture.cpp" />
-    <ClCompile Include="PHCaptureInit.cpp" />
     <ClCompile Include="PHMovementControl.cpp" />
-    <ClCompile Include="ElevatorState.cpp" />
-    <ClCompile Include="PHSimpleCharacter.cpp" />
-    <ClCompile Include="PHCharacter.cpp" />
-    <ClCompile Include="PhysicsShell.cpp" />
-    <ClCompile Include="PhysicsShellAnimator.cpp" />
-    <ClCompile Include="animation_movement_controller.cpp" />
-    <ClCompile Include="PHElement.cpp" />
-    <ClCompile Include="PHElementNetState.cpp" />
-    <ClCompile Include="PHJoint.cpp" />
-    <ClCompile Include="PHShell.cpp" />
-    <ClCompile Include="PHShellActivate.cpp" />
-    <ClCompile Include="PHShellNetState.cpp" />
-    <ClCompile Include="ShellHit.cpp" />
-    <ClCompile Include="PHFracture.cpp" />
-    <ClCompile Include="PHJointDestroyInfo.cpp" />
-    <ClCompile Include="PHShellSplitter.cpp" />
-    <ClCompile Include="PHSplitedShell.cpp" />
-    <ClCompile Include="PHObject.cpp" />
-    <ClCompile Include="Geometry.cpp" />
-    <ClCompile Include="PHGeometryOwner.cpp" />
-    <ClCompile Include="PHIsland.cpp" />
-    <ClCompile Include="PHCommander.cpp" />
-    <ClCompile Include="PHScriptCall.cpp">
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
-      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">pch_script.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">pch_script.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
-      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">pch_script.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">pch_script.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
-      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
-    </ClCompile>
-    <ClCompile Include="PHSimpleCalls.cpp" />
-    <ClCompile Include="PHSimpleCallsScript.cpp">
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
-      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">pch_script.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">pch_script.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
-      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">pch_script.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">pch_script.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
-      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
-    </ClCompile>
     <ClCompile Include="character_hit_animations.cpp" />
     <ClCompile Include="CharacterPhysicsSupport.cpp" />
     <ClCompile Include="interactive_motion.cpp" />
-    <ClCompile Include="tri-colliderknoopc\dcTriListCollider.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="tri-colliderknoopc\dSortTriPrimitive.cpp" />
-    <ClCompile Include="tri-colliderknoopc\dTriBox.cpp">
-      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4002;4390;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4002;4390;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">4002;4390;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">4002;4390;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4002;4390;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4002;4390;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-    </ClCompile>
-    <ClCompile Include="tri-colliderKNoOPC\dTriCallideK.cpp">
-      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4002;4390;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4002;4390;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">4002;4390;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">4002;4390;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4002;4390;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4002;4390;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-    </ClCompile>
-    <ClCompile Include="tri-colliderknoopc\dTriCylinder.cpp">
-      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4002;4390;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4002;4390;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">4002;4390;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">4002;4390;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4002;4390;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4002;4390;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-    </ClCompile>
-    <ClCompile Include="tri-colliderKNoOPC\dTriList.cpp">
-      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4002;4390;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4002;4390;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">4002;4390;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">4002;4390;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4002;4390;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4002;4390;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-    </ClCompile>
-    <ClCompile Include="tri-colliderknoopc\dTriSphere.cpp">
-      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4002;4390;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4002;4390;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">4002;4390;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">4002;4390;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4002;4390;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4002;4390;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-    </ClCompile>
-    <ClCompile Include="dCylinder\dCylinder.cpp">
-      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4002;4390;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4002;4390;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">4002;4390;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">4002;4390;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4002;4390;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4002;4390;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-    </ClCompile>
-    <ClCompile Include="dRayMotions.cpp" />
     <ClCompile Include="DamagableItem.cpp" />
     <ClCompile Include="PHSoundPlayer.cpp" />
-    <ClCompile Include="PHActivationShape.cpp" />
     <ClCompile Include="Hit.cpp" />
     <ClCompile Include="Ik\aint.cxx" />
     <ClCompile Include="Ik\Dof7control.cpp" />
