@@ -2203,6 +2203,9 @@
     <Filter Include="Physics\CharacterSupport\interactive_anims">
       <UniqueIdentifier>{ae20dcbd-6ed4-4502-9f97-2bce3c17eadb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Physics\CharacterSupport\death_anims">
+      <UniqueIdentifier>{fb66c3ce-b01a-4bdd-8582-85a08882aa87}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mt_config.h">
@@ -6270,6 +6273,9 @@
     <ClInclude Include="physics_shell_animated.h">
       <Filter>Physics\CharacterSupport\interactive_anims</Filter>
     </ClInclude>
+    <ClInclude Include="death_anims.h">
+      <Filter>Physics\CharacterSupport\death_anims</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -9256,6 +9262,12 @@
     </ClCompile>
     <ClCompile Include="physics_shell_animated.cpp">
       <Filter>Physics\CharacterSupport\interactive_anims</Filter>
+    </ClCompile>
+    <ClCompile Include="death_anims.cpp">
+      <Filter>Physics\CharacterSupport\death_anims</Filter>
+    </ClCompile>
+    <ClCompile Include="death_anims_predicates.cpp">
+      <Filter>Physics\CharacterSupport\death_anims</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

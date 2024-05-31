@@ -29,9 +29,10 @@
 #include "ai/stalker/ai_stalker.h"
 #include "imotion_position.h"
 #include "imotion_velocity.h"
+#include "animation_movement_controller.h"
+#include "xrServer_Object_Base.h"
 #include "CustomZone.h"
 #include "level.h"
-#include "animation_movement_controller.h"
 #include "physics_shell_animated.h"
 
 //const float default_hinge_friction = 5.f;//gray_wolf comment
@@ -172,7 +173,11 @@ void CCharacterPhysicsSupport::in_NetSpawn(CSE_Abstract* e)
 	}
 
 	CPHDestroyable::Init();//this zerows colbacks !!;
-	IKinematicsAnimated* ka= smart_cast<IKinematicsAnimated*>(m_EntityAlife.Visual());
+	IRenderVisual *pVisual = m_EntityAlife.Visual();
+	IKinematicsAnimated*ka= smart_cast<IKinematicsAnimated*>( pVisual );
+	IKinematics*pK= smart_cast<IKinematics*>( pVisual );
+	VERIFY( &e->spawn_ini() );
+	m_death_anims.setup( ka, *e->s_name , pSettings );
 	if(!m_EntityAlife.g_Alive())
 	{
 		
@@ -370,8 +375,8 @@ bool is_similar(const Fmatrix &m0,const Fmatrix &m1,float param)
 void CCharacterPhysicsSupport::KillHit( SHit &H )
 {
 #ifdef	DEBUG
-	//if (death_anim_debug)
-	//	Msg("death anim: kill hit  ");
+	if (death_anim_debug)
+		Msg("death anim: kill hit  ");
 #endif
 	VERIFY(m_EntityAlife.Visual());
 	VERIFY(m_EntityAlife.Visual()->dcast_PKinematics());
@@ -392,8 +397,7 @@ void CCharacterPhysicsSupport::KillHit( SHit &H )
 
 //	if(Type() == etStalker && xr_strcmp(dbg_stalker_death_anim, "none") != 0)
 	float hit_angle = 0;
-#pragma todo("Before merging with another branch. She needs to be restored to her normal appearance. This is a temporary crutch, but a vector (with SoC animations death) it will still be empty and will return MotionID().")
-	MotionID m = MotionID(); //m_death_anims.motion(m_EntityAlife, H, hit_angle);
+	MotionID m = m_death_anims.motion(m_EntityAlife, H, hit_angle);
 
 	//TODO: If I transfer the smart cover`s from the CoP. Then you need to return to the usual appearance. It's not necessary yet. Let it be only for wounded
 	CAI_Stalker* const	holder = m_EntityAlife.cast_stalker();
@@ -910,6 +914,24 @@ if( dbg_draw_ragdoll_spawn )
 void CCharacterPhysicsSupport::in_ChangeVisual()
 {
 	
+	IKinematicsAnimated* KA = smart_cast<IKinematicsAnimated*>(m_EntityAlife.Visual());
+	if(m_ik_controller)
+	{
+		DestroyIKController();
+		if( KA )
+			CreateIKController();
+	}
+	//xr_delete(m_interactive_animation);
+	destroy_animation_collision();
+	destroy(m_interactive_motion);
+
+	if( KA )
+	{
+		m_death_anims.setup( KA, m_EntityAlife.cNameSect().c_str() , pSettings );
+		if( Type( ) != etBitting )
+				m_hit_animations.SetupHitMotions( *KA );
+	}
+
 	if(!m_physics_skeleton&&!m_pPhysicsShell) return;
 
 	if(m_pPhysicsShell)
@@ -925,11 +947,6 @@ void CCharacterPhysicsSupport::in_ChangeVisual()
 		if(m_pPhysicsShell)m_pPhysicsShell->Deactivate();
 		xr_delete(m_pPhysicsShell);
 		ActivateShell(NULL);
-	}
-	if(m_ik_controller)
-	{
-		DestroyIKController();
-		CreateIKController();
 	}
 }
 

@@ -412,6 +412,7 @@
     <ClInclude Include="animation_utils.h" />
     <ClInclude Include="CaptureBoneCallback.h" />
     <ClInclude Include="character_shell_control.h" />
+    <ClInclude Include="death_anims.h" />
     <ClInclude Include="IKFoot.h" />
     <ClInclude Include="IKFoot_inl.h" />
     <ClInclude Include="imotion_position.h" />
@@ -1789,6 +1790,8 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
+    <ClCompile Include="death_anims.cpp" />
+    <ClCompile Include="death_anims_predicates.cpp" />
     <ClCompile Include="IKFoot.cpp" />
     <ClCompile Include="imotion_position.cpp" />
     <ClCompile Include="imotion_velocity.cpp" />
