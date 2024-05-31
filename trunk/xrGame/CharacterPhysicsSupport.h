@@ -8,6 +8,7 @@
 #include "PHSoundPlayer.h"
 #include "Phdestroyable.h"
 #include "character_hit_animations.h"
+#include "death_anims.h"
 #include "character_shell_control.h"
 
 class CPhysicsShell;
@@ -65,6 +66,7 @@ private:
 
 	ICollisionHitCallback				*m_collision_hit_callback;
 	character_hit_animation_controller	m_hit_animations;
+	death_anims							m_death_anims;
 	float								m_BonceDamageFactor;
 	physics_shell_animated				*m_physics_shell_animated;
 
