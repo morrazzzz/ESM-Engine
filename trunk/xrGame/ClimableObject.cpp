@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "climableobject.h "
-#include "IPHStaticGeomShell.h"
+#include "../xrPhysics/IPHStaticGeomShell.h"
 #include "xrServer_Objects_ALife.h"
-#include "PHCharacter.h"
-#include "MathUtils.h"
-#include "extendedgeom.h"
+#include "../xrPhysics/PHCharacter.h"
+#include "../xrPhysics/MathUtils.h"
+#include "../xrPhysics/extendedgeom.h"
 #include "../xr_3da/gamemtllib.h"
 
 #ifdef DEBUG

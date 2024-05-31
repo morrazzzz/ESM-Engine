@@ -12,19 +12,19 @@
 
 #include "gravizone.h"
 
-#include "PhysicsShell.h"
+#include "../xrPhysics/PhysicsShell.h"
 #include "entity_alive.h"
 #include "phmovementcontrol.h"
 #include "xrmessages.h"
 #include "PhysicsShellHolder.h"
 #include "Level.h"
 #include "CharacterPhysicsSupport.h"
-CBaseGraviZone ::CBaseGraviZone (void)
+CBaseGraviZone ::CBaseGraviZone ()
 {
 	m_dwTeleTime = 0;
 
 }
-CBaseGraviZone ::~CBaseGraviZone (void)
+CBaseGraviZone ::~CBaseGraviZone ()
 {
 	
 }

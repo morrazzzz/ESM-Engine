@@ -130,9 +130,6 @@
     <Filter Include="physics\Base\Debug">
       <UniqueIdentifier>{33b8fb3b-5a9c-4575-9760-d43634b2a73e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="physics\camera_collision">
-      <UniqueIdentifier>{e4b58b14-ae6b-4309-9955-a817261ac43c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="physics\damage_receiver">
       <UniqueIdentifier>{aebd6f2a-e9db-4989-a285-3b2ff3cdade2}</UniqueIdentifier>
     </Filter>
@@ -201,7 +198,7 @@
     <ClCompile Include="PHContactBodyEffector.cpp">
       <Filter>physics\Base\Objects\BodyEffectors</Filter>
     </ClCompile>
-    <ClCompile Include="..\xrServerEntities\PHNetState.cpp">
+    <ClCompile Include="..\xrGame\PHNetState.cpp">
       <Filter>physics\Base\Objects\PHNet</Filter>
     </ClCompile>
     <ClCompile Include="PHMoveStorage.cpp">
@@ -311,9 +308,6 @@
     </ClCompile>
     <ClCompile Include="debug_output.cpp">
       <Filter>physics\Base\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="ActorCameraCollision.cpp">
-      <Filter>physics\camera_collision</Filter>
     </ClCompile>
     <ClCompile Include="collisiondamagereceiver.cpp">
       <Filter>physics\damage_receiver</Filter>
@@ -437,7 +431,7 @@
     <ClInclude Include="PHContactBodyEffector.h">
       <Filter>physics\Base\Objects\BodyEffectors</Filter>
     </ClInclude>
-    <ClInclude Include="..\xrServerEntities\PHNetState.h">
+    <ClInclude Include="..\xrGame\PHNetState.h">
       <Filter>physics\Base\Objects\PHNet</Filter>
     </ClInclude>
     <ClInclude Include="PHMoveStorage.h">
@@ -586,9 +580,6 @@
     </ClInclude>
     <ClInclude Include="debug_output.h">
       <Filter>physics\Base\Debug</Filter>
-    </ClInclude>
-    <ClInclude Include="ActorCameraCollision.h">
-      <Filter>physics\camera_collision</Filter>
     </ClInclude>
     <ClInclude Include="icollisiondamagereceiver.h">
       <Filter>physics\damage_receiver</Filter>

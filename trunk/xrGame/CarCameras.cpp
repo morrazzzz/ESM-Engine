@@ -2,7 +2,7 @@
 #pragma hdrstop
 #ifdef DEBUG
 #include "PHDebug.h"
-#include "iphworld.h"
+#include "../xrPhysics/iphworld.h"
 #endif
 #include "alife_space.h"
 #include "hit.h"

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "weaponammo.h"
-#include "PhysicsShell.h"
+#include "../xrPhysics/PhysicsShell.h"
 #include "xrserver_objects_alife_items.h"
 #include "inventory.h"
 #include "weapon.h"

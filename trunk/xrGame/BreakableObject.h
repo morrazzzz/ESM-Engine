@@ -1,14 +1,7 @@
-// DummyObject.h: interface for the CHangingLamp class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#ifndef BreakableObjectH
-#define BreakableObjectH
-
 #pragma once
 
 #include "physicsshellholder.h"
-#include "icollisiondamagereceiver.h"
+#include "../xrPhysics/icollisiondamagereceiver.h"
 
 class	IPHStaticGeomShell;
 //struct	dContact;
@@ -70,5 +63,3 @@ private:
 	virtual ICollisionDamageReceiver	*PHCollisionDamageReceiver	()								{return (this);}
 	virtual		void					CollisionHit				( u16 source_id, u16 bone_id, float power, const Fvector &dir, Fvector &pos );
 };
-
-#endif //BreakableObjectH

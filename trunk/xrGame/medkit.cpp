@@ -6,13 +6,13 @@
 #include "stdafx.h"
 
 #include "medkit.h"
-#include "PhysicsShell.h"
+#include "../xrPhysics/PhysicsShell.h"
 
-CMedkit::CMedkit(void) 
+CMedkit::CMedkit() 
 {
 }
 
-CMedkit::~CMedkit(void) 
+CMedkit::~CMedkit() 
 {
 }
 

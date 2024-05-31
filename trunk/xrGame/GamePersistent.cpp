@@ -34,19 +34,7 @@
 #	include "ai_debug.h"
 #endif // _EDITOR
 
-#pragma todo("ODE Fuctions must migration to xrPhysics!! SoC-CoP TODO.")
-
-#ifdef DEBUG_MEMORY_MANAGER
-	static	void *	ode_alloc	(size_t size)								{ return Memory.mem_alloc(size,"ODE");			}
-	static	void *	ode_realloc	(void *ptr, size_t oldsize, size_t newsize)	{ return Memory.mem_realloc(ptr,newsize,"ODE");	}
-	static	void	ode_free	(void *ptr, size_t size)					{ return xr_free(ptr);							}
-#else // DEBUG_MEMORY_MANAGER
-	static	void *	ode_alloc	(size_t size)								{ return xr_malloc(size);			}
-	static	void *	ode_realloc	(void *ptr, size_t oldsize, size_t newsize)	{ return xr_realloc(ptr,newsize);	}
-	static	void	ode_free	(void *ptr, size_t size)					{ return xr_free(ptr);				}
-#endif // DEBUG_MEMORY_MANAGER
-
-CGamePersistent::CGamePersistent(void)
+CGamePersistent::CGamePersistent()
 {
     m_bPickableDOF = false;
 	m_game_params.m_e_game_type	= GAME_ANY;
@@ -68,10 +56,6 @@ CGamePersistent::CGamePersistent(void)
 	m_frame_counter				= 0;
 	m_last_stats_frame			= u32(-2);
 #endif
-	// 
-	dSetAllocHandler			(ode_alloc		);
-	dSetReallocHandler			(ode_realloc	);
-	dSetFreeHandler				(ode_free		);
 
 	// 
 	BOOL	bDemoMode	= (0!=strstr(Core.Params,"-demomode "));

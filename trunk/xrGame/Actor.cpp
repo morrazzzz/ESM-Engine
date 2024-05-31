@@ -2,7 +2,6 @@
 #include "Actor_Flags.h"
 #include "hudmanager.h"
 #ifdef DEBUG
-#	include "ode_include.h"
 #	include "../xr_3da/StatGraph.h"
 #	include "PHDebug.h"
 #endif // DEBUG
@@ -21,6 +20,7 @@
 #include "CustomOutfit.h"
 #include "actorcondition.h"
 #include "UIGameCustom.h"
+#include "../xrPhysics/matrix_utils.h"
 #include "game_cl_base_weapon_usage_statistic.h"
 
 // breakpoints
@@ -32,7 +32,6 @@
 #include "HudItem.h"
 #include "ai_sounds.h"
 #include "inventory.h"
-#include "Physics.h"
 #include "level.h"
 #include "GamePersistent.h"
 #include "game_cl_base.h"
@@ -45,7 +44,7 @@
 #include "artifact.h"
 #include "CharacterPhysicsSupport.h"
 #include "material_manager.h"
-#include "IColisiondamageInfo.h"
+#include "../xrPhysics/IColisiondamageInfo.h"
 #include "ui/UIMainIngameWnd.h"
 #include "ui/UIArtefactPanel.h"
 #include "GameTaskManager.h"

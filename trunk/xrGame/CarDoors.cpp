@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #ifdef DEBUG
-#include "ode_include.h"
 #include "../xr_3da/StatGraph.h"
 #include "PHDebug.h"
 #endif
@@ -10,7 +9,7 @@
 #include "car.h"
 #include "../../xrNetServer/net_utils.h"
 #include "..\include\xrRender\Kinematics.h"
-#include "MathUtils.h"
+#include "../xrPhysics/MathUtils.h"
 #include "game_object_space.h"
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool CCar::DoorHit(float P,s16 element,ALife::EHitType hit_type)

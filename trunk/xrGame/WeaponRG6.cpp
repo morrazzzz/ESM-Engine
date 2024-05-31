@@ -5,7 +5,7 @@
 #include "level.h"
 #include "clsid_game.h"
 
-#include "MathUtils.h"
+#include "../xrPhysics/MathUtils.h"
 #ifdef DEBUG
 #include "phdebug.h"
 #endif

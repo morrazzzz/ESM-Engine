@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "CustomZone.h"
 #include "ZoneVisual.h"
-#include "PHUpdateObject.h"
+#include "../xrPhysics/PHUpdateObject.h"
 #include "PHMovementControl.h"
 #include "AmebaZone.h"
 #include "hudmanager.h"

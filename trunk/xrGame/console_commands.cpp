@@ -18,7 +18,7 @@
 #include "script_engine_space.h"
 #include "script_process.h"
 #include "ui/UIMainIngameWnd.h"
-#include "IPHWorld.h"
+#include "../xrPhysics/IPHWorld.h"
 #include "string_table.h"
 #include "ai_space.h"
 #include "ai/monsters/BaseMonster/base_monster.h"
@@ -30,7 +30,7 @@
 #include "../xrCore/xr_ini.h"
 #include "level_graph.h"
 
-#include "console_vars.h"
+#include "../xrPhysics/console_vars.h"
 
 #ifdef DEBUG
 #include "PHDebug.h"

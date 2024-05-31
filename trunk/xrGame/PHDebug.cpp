@@ -1,11 +1,17 @@
 #include "stdafx.h"
 #ifdef DEBUG
-#include "physics.h"
-#include "MathUtils.h"
+//#include "../xrPhysics/physics.h"
+//#include "../xrPhysics/MathUtils.h"
 #include "../xr_3da/StatGraph.h"
 #include "PHDebug.h"
-#include "PHObject.h"
-#include "ExtendedGeom.h"
+//#include "physics.h"
+#include "../xrphysics/MathUtils.h"
+//#include "PHObject.h"
+#include "../xrphysics/ExtendedGeom.h"
+#include "../xrphysics/iphworld.h"
+#include "../xrphysics/physicsshell.h"
+
+
 #include "Level.h"
 #include "Hudmanager.h"
 
@@ -515,7 +521,7 @@ void CFunctionGraph::Init(type_function fun,float x0,float x1,int l, int t, int 
 	s=(x_max-x_min)/points_num;
 	R_ASSERT(s>0.f);
 	m_stat_graph->SetRect(l,t,w,h,bk_color,bk_color);
-	float min=dInfinity;float max=-dInfinity;
+	float min=phInfinity;float max=-phInfinity;
 	for(float x=x_min;x<x_max;x+=s)
 	{
 		float val=m_function(x);
@@ -523,7 +529,7 @@ void CFunctionGraph::Init(type_function fun,float x0,float x1,int l, int t, int 
 		save_min(min,val);save_max(max,val);
 	}
 
-	R_ASSERT(min<dInfinity&&max>-dInfinity && min<=max);
+	R_ASSERT(min<phInfinity &&max>-phInfinity && min<=max);
 	m_stat_graph->SetMinMax(min,max,points_num);
 
 	for(float x=x_min;x<x_max;x+=s)

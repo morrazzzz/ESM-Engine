@@ -3,7 +3,7 @@
 #include "entity.h"
 #include "actor.h"
 #include "../xr_3da/LightAnimLibrary.h"
-#include "PhysicsShell.h"
+#include "../xrPhysics/PhysicsShell.h"
 #include "xrserver_objects_alife_items.h"
 #include "ai_sounds.h"
 

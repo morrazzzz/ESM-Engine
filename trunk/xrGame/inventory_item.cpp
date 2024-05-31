@@ -10,7 +10,6 @@
 #include "inventory_item.h"
 #include "inventory_item_impl.h"
 #include "inventory.h"
-#include "Physics.h"
 #include "xrserver_objects_alife.h"
 #include "xrserver_objects_alife_items.h"
 #include "entity_alive.h"
@@ -22,6 +21,7 @@
 #include "ai_object_location.h"
 #include "object_broker.h"
 #include "../xr_3da/igame_persistent.h"
+#include "../xrPhysics/IPHWorld.h"
 
 #ifdef DEBUG
 #include "level_debug.h"

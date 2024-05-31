@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "cardamageparticles.h"
 #ifdef DEBUG
-#include "ode_include.h"
 #include "../xr_3da/StatGraph.h"
 #include "PHDebug.h"
 #endif
@@ -10,7 +9,7 @@
 #include "PHDestroyable.h"
 #include "Car.h"
 #include "..\include\xrRender\Kinematics.h"
-#include "IPHWorld.h"
+#include "../xrPhysics/IPHWorld.h"
 //#include "PHWorld.h"
 //extern CPHWorld*	ph_world;
 void read_bones(IKinematics *K, LPCSTR S , xr_vector<u16>& bones)

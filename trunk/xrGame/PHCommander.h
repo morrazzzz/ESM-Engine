@@ -2,7 +2,7 @@
 #define PH_COMMANDER_H
 class CPHReqBase;
 class CPHReqComparerV;
-#include "iphworld.h"//#include "../xrphysics/iphworld.h"
+#include "../xrphysics/iphworld.h"
 class CPhysicsShell;
 class CPHReqBase
 {

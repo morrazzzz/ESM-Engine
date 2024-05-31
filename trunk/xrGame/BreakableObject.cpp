@@ -1,11 +1,8 @@
 #include "stdafx.h"
-#pragma hdrstop
-
 #include "BreakableObject.h"
 #include "xrserver_objects_alife.h"
-#include "IPHStaticGeomShell.h"
-#include "PhysicsShell.h"
-#include "Physics.h"
+#include "../xrPhysics/IPHStaticGeomShell.h"
+#include "../xrPhysics/PhysicsShell.h"
 #include "../xr_3da/xr_collide_form.h"
 #include "../../xrNetServer/net_utils.h"
 #include "clsid_game.h"

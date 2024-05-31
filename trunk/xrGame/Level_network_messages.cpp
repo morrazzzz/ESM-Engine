@@ -4,7 +4,6 @@
 #include "xrmessages.h"
 #include "game_cl_base.h"
 #include "net_queue.h"
-#include "Physics.h"
 #include "xrServer.h"
 #include "Actor.h"
 #include "game_cl_base_weapon_usage_statistic.h"
@@ -12,7 +11,7 @@
 #include "saved_game_wrapper.h"
 #include "level_graph.h"
 #include "clsid_game.h"
-#include "IPHWorld.h"
+#include "../xrPhysics/IPHWorld.h"
 
 void CLevel::ClientReceive()
 {

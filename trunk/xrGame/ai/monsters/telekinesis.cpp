@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "telekinesis.h"
 #include "../../entity_alive.h"
-#include "../../PhysicsShell.h"
+#include "../../xrPhysics/PhysicsShell.h"
 
 CTelekinesis::CTelekinesis()
 {

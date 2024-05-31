@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../../../PhysicsShell.h"
-#include "../../../PHInterpolation.h"
-#include "../../../PHElement.h"
+#include "../../../xrPhysics/PhysicsShell.h"
+//#include "../../../xrPhysics/PHInterpolation.h"
+//#include "../../../xrPhysics/PHElement.h"
 
 #define TEMPLATE_SPECIALIZATION template <\
 	typename _Object\
@@ -55,17 +55,17 @@ void CStateMonsterRestFunAbstract::execute()
 		CPhysicsShellHolder	*target = smart_cast<CPhysicsShellHolder *>	(corpse);
 
 		if  (target && target->m_pPhysicsShell) {
-			Fvector			dir_fv_one;
-			dir_fv_one.add			(Fvector().sub(target->Position(), object->Position()), object->Direction());
+			Fvector			dir;
+			dir.add			(Fvector().sub(target->Position(), object->Position()), object->Direction());
 			
 			float			h,p;
-			dir_fv_one.getHP		(h,p);
-			dir_fv_one.setHP		(h, p + 5 * PI / 180);
-			dir_fv_one.normalize	();
+			dir.getHP		(h,p);
+			dir.setHP		(h, p + 5 * PI / 180);
+			dir.normalize	();
 			
 			// выполнить бросок
-			for (u32 i=0; i<target->m_pPhysicsShell->Elements().size();i++) {
-				target->m_pPhysicsShell->Elements()[i]->applyImpulse(dir_fv_one, IMPULSE_TO_CORPSE * target->m_pPhysicsShell->getMass() / target->m_pPhysicsShell->Elements().size());
+			for (u32 i = 0; i < target->m_pPhysicsShell->get_ElementsNumber(); i++) {
+				target->m_pPhysicsShell->get_ElementByStoreOrder((u16)i)->applyImpulse(dir, IMPULSE_TO_CORPSE * target->m_pPhysicsShell->getMass() / target->m_pPhysicsShell->Elements().size());
 			}
 
 			time_last_hit	= Device.dwTimeGlobal;

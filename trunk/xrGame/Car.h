@@ -1,11 +1,11 @@
 #pragma once
 #include "entity.h"
 //#include "PHDynamicData.h"
-#include "PhysicsShell.h"
-#include "PHUpdateObject.h"
+#include "../xrPhysics/PhysicsShell.h"
+#include "../xrPhysics/PHUpdateObject.h"
 #include "script_entity.h"
 #include "CarLights.h"
-#include "phobject.h"
+//#include "../xrPhysics/phobject.h"
 #include "holder_custom.h"
 #include "PHSkeleton.h"
 #include "DamagableItem.h"
@@ -81,8 +81,8 @@ static	const u16				cAsCallsnum						=3;
 ////////////////////////////////////////////////////////////////////////
 	static	BONE_P_MAP					bone_map;					//interface for PhysicsShell
 	static	void 						ActorObstacleCallback		(bool& do_colide,bool bo1,dContact& c,SGameMtl* material_1,SGameMtl* material_2);
-	virtual void						PhDataUpdate				(dReal step)			;
-	virtual void						PhTune						(dReal step)			;
+	virtual void						PhDataUpdate				(float step)			;
+	virtual void						PhTune						(float step)			;
 /////////////////////////////////////////////////////////////////////////
 	virtual void						ApplyDamage					(u16 level)				;
 	virtual	float						Health						()						{return GetfHealth();}
@@ -456,7 +456,7 @@ private:
 	float	 			EnginePower							()	;
 	float	 			EngineDriveSpeed					()	;
 	float	 			DriveWheelsMeanAngleRate			()	;
-IC	float	 			EngineRpmFromWheels					(){return dFabs(DriveWheelsMeanAngleRate()*m_current_gear_ratio);}
+IC	float	 			EngineRpmFromWheels					(){return _abs(DriveWheelsMeanAngleRate()*m_current_gear_ratio);}
 	/////////////////////////////////////////////////////////////////////////	
 	void				SteerRight							();
 	void				SteerLeft							();

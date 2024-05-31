@@ -1,12 +1,8 @@
-// Explosive.cpp: интерфейс для взврывающихся объектов
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 
 #include "explosive.h"
 
-#include "PhysicsShell.h"
+#include "../xrPhysics/PhysicsShell.h"
 #include "entity.h"
 //#include "PSObject.h"
 #include "ParticlesObject.h"
@@ -26,17 +22,13 @@
 #include "PHDebug.h"
 #endif
 //#include "Physics.h"
-#include "MathUtils.h"
+#include "../xrPhysics/MathUtils.h"
 //#include "phvalidevalues.h"
-#include "iActivationShape.h"
-#include "IPHWorld.h"
+#include "../xrPhysics/iActivationShape.h"
+#include "../xrPhysics/IPHWorld.h"
 #include "game_base_space.h"
 #include "profiler.h"
 #include "..\include\xrRender\Kinematics.h"
-
-//TODO: REMOVE ME!!!
-#include "PHCollideValidator.h" 
-//TODO: REMOVE ME!!!
 
 #define EFFECTOR_RADIUS 30.f
 const u16	TEST_RAYS_PER_OBJECT=5;

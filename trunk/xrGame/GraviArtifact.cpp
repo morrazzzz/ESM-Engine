@@ -6,12 +6,12 @@
 
 #include "stdafx.h"
 #include "GraviArtifact.h"
-#include "PhysicsShell.h"
+#include "../xrPhysics/PhysicsShell.h"
 #include "level.h"
 #include "xrmessages.h"
 #include "game_cl_base.h"
 #include "..\include\xrRender\Kinematics.h"
-#include "IPHWorld.h"
+#include "../xrPhysics/IPHWorld.h"
 //extern CPHWorld*	ph_world;
 #define CHOOSE_MAX(x,inst_x,y,inst_y,z,inst_z)\
 	if(x>y)\
@@ -22,7 +22,7 @@
 		else{inst_z;}
 
 
-CGraviArtefact::CGraviArtefact(void) 
+CGraviArtefact::CGraviArtefact() 
 {
 	shedule.t_min = 20;
 	shedule.t_max = 50;
@@ -31,7 +31,7 @@ CGraviArtefact::CGraviArtefact(void)
 	m_fEnergy = 1.f;
 }
 
-CGraviArtefact::~CGraviArtefact(void) 
+CGraviArtefact::~CGraviArtefact() 
 {
 }
 

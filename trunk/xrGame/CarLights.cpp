@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "CarLights.h"
 #ifdef DEBUG
-#include "ode_include.h"
 #include "../xr_3da/StatGraph.h"
 #include "PHDebug.h"
 #endif
@@ -12,7 +11,7 @@
 #include "..\include\xrRender\Kinematics.h"
 //#include "PHWorld.h"
 //extern CPHWorld*	ph_world;
-#include "IPHWorld.h"
+#include "../xrPhysics/IPHWorld.h"
 
 SCarLight::SCarLight()
 {

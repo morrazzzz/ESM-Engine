@@ -13,10 +13,11 @@
 #include "level.h"
 #include "../xr_3da/cl_intersect.h"
 #include "../xr_3da/gamemtllib.h"
-#include "elevatorstate.h"
+#include "../xrPhysics/ielevatorstate.h"
 #include "CharacterPhysicsSupport.h"
 #include "EffectorShot.h"
-#include "PHShell.h"
+#include "../xrPhysics/PHShell.h"
+
 void CActor::cam_Set	(EActorCameras style)
 {
 	CCameraBase* old_cam = cam_Active();
@@ -122,8 +123,6 @@ ICF BOOL test_point(xrXRC& xrc, const Fmatrix& xform, const Fmatrix33& mat, cons
 	return FALSE;
 }
 
-#include "physics.h"
-#include "debug_renderer.h"
 void CActor::cam_Update(float dt, float fFOV)
 {
 	if(m_holder)		return;

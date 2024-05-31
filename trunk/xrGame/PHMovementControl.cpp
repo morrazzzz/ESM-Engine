@@ -3,13 +3,15 @@
 #include "alife_space.h"
 #include "phmovementcontrol.h"
 #include "entity.h"
-#include "PHDynamicData.h"
-#include "Physics.h"
-#include "PHAICharacter.h"
-#include "PHActorCharacter.h"
-#include "PHCapture.h"
-#include "iphysicsshellholder.h"
-#include "iphworld.h"
+#include "../xrphysics/phCharacter.h"
+#include "../xrphysics/IPHCapture.h"
+#include "../xrphysics/iphysicsshellholder.h"
+#include "../xrphysics/ElevatorState.h"
+#include "../xrphysics/CalculateTriangle.h"
+#include "../xrphysics/Icolisiondamageinfo.h"
+#include "../xrphysics/phvalide.h"
+#include "../xrphysics/physicsshell.h"
+#include "../xrphysics/iphworld.h"
 #include "detail_path_manager.h"
 #include "../xr_3da/GameMtlLib.h"
 #include "CaptureBoneCallback.h"
@@ -18,8 +20,6 @@
 #ifdef DEBUG
 #include "phdebug.h"
 #endif
-#include "ElevatorState.h"
-#include "CalculateTriangle.h"
 #include "..\include\xrRender\Kinematics.h"
 #define GROUND_FRICTION	10.0f
 #define AIR_FRICTION	0.01f
@@ -324,7 +324,7 @@ void CPHMovementControl::Calculate(const xr_vector<DetailPathManager::STravelPat
 		}
 		else
 		{
-			m_path_distance=dInfinity;
+			m_path_distance=phInfinity;
 			near_line=true;
 			if(m_start_index<m_path_size)
 			{
@@ -479,7 +479,7 @@ void CPHMovementControl::PathNearestPoint(const xr_vector<DetailPathManager::STr
 		}
 	}
 
-	if(m_path_distance==dInfinity)	//after whall path
+	if(m_path_distance==phInfinity)	//after whall path
 	{
 
 		R_ASSERT2(after_line,"Must be after line");
@@ -575,7 +575,7 @@ void CPHMovementControl::PathNearestPointFindUp(const xr_vector<DetailPathManage
 		}
 	}
 
-	if(m_path_distance==dInfinity && i==m_path_size-1)	
+	if(m_path_distance==phInfinity && i==m_path_size-1)	
 	{
 
 		R_ASSERT2															(after_line,"Must be after line");
@@ -665,7 +665,7 @@ void CPHMovementControl::PathNearestPointFindDown(const xr_vector<DetailPathMana
 		}
 	}
 
-	if(m_path_distance==dInfinity && i==1)	
+	if(m_path_distance==phInfinity && i==1)	
 	{
 
 		R_ASSERT2				(after_line,"Must be after line");
@@ -783,7 +783,8 @@ void CPHMovementControl::PathDIrPoint(const xr_vector<DetailPathManager::STravel
 void CPHMovementControl::SetActorRestrictorRadius(ERestrictionType rt,float r)
 {
 	if(m_character&&eCharacterType==actor)
-		static_cast<CPHActorCharacter*>(m_character)->SetRestrictorRadius(rt,r);
+		(m_character)->SetRestrictorRadius(rt,r);
+		//static_cast<CPHActorCharacter*>(m_character)->SetRestrictorRadius(rt,r);
 }
 void CPHMovementControl::Load					(LPCSTR section){
 
@@ -888,7 +889,7 @@ void	CPHMovementControl::SetPosition(const Fvector &P){
 bool		CPHMovementControl::		TryPosition				(Fvector& pos)															
 {
 
-VERIFY_BOUNDARIES2(pos,phBoundaries,m_character->PhysicsRefObject(),"CPHMovementControl::TryPosition	arqument pos");
+VERIFY_BOUNDARIES2(pos,ph_boundaries(), m_character->PhysicsRefObject(), "CPHMovementControl::TryPosition	arqument pos");
 
 #ifdef DEBUG
 		if(ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject)&&(!!pObject->cName())&&stricmp(PH_DBG_ObjectTrack(),*pObject->cName())==0)
@@ -910,7 +911,7 @@ VERIFY_BOUNDARIES2(pos,phBoundaries,m_character->PhysicsRefObject(),"CPHMovement
 
 void		CPHMovementControl::GetPosition		(Fvector &P)
 {	
-VERIFY_BOUNDARIES2(P,phBoundaries,m_character->PhysicsRefObject(),"CPHMovementControl::GetPosition	arqument pos");
+VERIFY_BOUNDARIES2(P,ph_boundaries(),m_character->PhysicsRefObject(),"CPHMovementControl::GetPosition	arqument pos");
 
 #ifdef DEBUG
 	if(ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject)&&(!!pObject->cName())&&stricmp(PH_DBG_ObjectTrack(),*pObject->cName())==0)
@@ -920,7 +921,7 @@ VERIFY_BOUNDARIES2(P,phBoundaries,m_character->PhysicsRefObject(),"CPHMovementCo
 	}
 #endif
 	P.set			(vPosition); 
-VERIFY_BOUNDARIES2(vPosition,phBoundaries,m_character->PhysicsRefObject(),"CPHMovementControl::GetPosition	out pos");
+VERIFY_BOUNDARIES2(vPosition,ph_boundaries(), m_character->PhysicsRefObject(), "CPHMovementControl::GetPosition	out pos");
 }
 
 void	CPHMovementControl::AllocateCharacterObject(CharacterType type)

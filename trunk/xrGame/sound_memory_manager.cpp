@@ -27,7 +27,6 @@
 #include "client_spawn_manager.h"
 #include "memory_manager.h"
 #include "../xr_3da/IGame_Persistent.h"
-#include "tri-colliderknoopc/dTriColliderCommon.h"
 
 #ifndef MASTER_GOLD
 #	include "clsid_game.h"

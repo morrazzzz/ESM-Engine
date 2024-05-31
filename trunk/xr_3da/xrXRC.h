@@ -8,6 +8,8 @@
 
 #include "../xrCDB/xrCDB.h"
 
+#include "device.h" //TODO: remove me!!!
+
 class ENGINE_API xrXRC  
 {
 	CDB::COLLIDER	CL;

@@ -1,18 +1,13 @@
-///////////////////////////////////////////////////////////////
-// ElectricBall.cpp
-// ElectricBall - артефакт электрический шар
-///////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "ElectricBall.h"
-#include "PhysicsShell.h"
+#include "../xrPhysics/PhysicsShell.h"
 
 
-CElectricBall::CElectricBall(void) 
+CElectricBall::CElectricBall() 
 {
 }
 
-CElectricBall::~CElectricBall(void) 
+CElectricBall::~CElectricBall() 
 {
 }
 
