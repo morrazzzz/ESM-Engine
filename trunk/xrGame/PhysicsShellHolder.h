@@ -4,7 +4,7 @@
 #include "GameObject.h"
 #include "ParticlesPlayer.h"
 #include "../xr_3da/iobjectphysicscollision.h"
-#include "iphysicsshellholder.h"
+#include "../xrPhysics/iphysicsshellholder.h"
 
 
 class CPHDestroyable;

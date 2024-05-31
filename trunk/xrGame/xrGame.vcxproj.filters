@@ -1363,9 +1363,6 @@
     <Filter Include="Core\Client\Objects\base\UsableScriptObject">
       <UniqueIdentifier>{d1f4b566-7189-4b07-9047-448956d3d797}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\Client\Objects\base\CollideValidator">
-      <UniqueIdentifier>{e6f8a4e9-245b-4d6c-8288-15f63b5c14b7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core\Client\Objects\physics">
       <UniqueIdentifier>{7bbcef64-c627-4159-875a-b601af618e0e}</UniqueIdentifier>
     </Filter>
@@ -2199,6 +2196,12 @@
     </Filter>
     <Filter Include="Physics\PHCommander">
       <UniqueIdentifier>{86735e2f-5e68-4ea1-b471-483f4ae9695b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Physics\animation_movement_controller">
+      <UniqueIdentifier>{31b8057f-1255-4519-a331-7868e4795971}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Physics\CharacterSupport\interactive_anims">
+      <UniqueIdentifier>{ae20dcbd-6ed4-4502-9f97-2bce3c17eadb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -4773,9 +4776,6 @@
     <ClInclude Include="UsableScriptObject.h">
       <Filter>Core\Client\Objects\base\UsableScriptObject</Filter>
     </ClInclude>
-    <ClInclude Include="PHCollideValidator.h">
-      <Filter>Core\Client\Objects\base\CollideValidator</Filter>
-    </ClInclude>
     <ClInclude Include="PHSkeleton.h">
       <Filter>Core\Client\Objects\physics\PHSkeleton</Filter>
     </ClInclude>
@@ -6204,12 +6204,6 @@
     <ClInclude Include="script_crandom.h">
       <Filter>AI\AScript\ScriptClasses\ScriptCRandom</Filter>
     </ClInclude>
-    <ClInclude Include="iphysics_scripted.h">
-      <Filter>Physics\scripts</Filter>
-    </ClInclude>
-    <ClInclude Include="physics_scripted.h">
-      <Filter>Physics\scripts</Filter>
-    </ClInclude>
     <ClInclude Include="physics_shell_scripted.h">
       <Filter>Physics\scripts</Filter>
     </ClInclude>
@@ -6269,6 +6263,12 @@
     </ClInclude>
     <ClInclude Include="PHSimpleCalls.h">
       <Filter>Physics\PHCommander</Filter>
+    </ClInclude>
+    <ClInclude Include="animation_movement_controller.h">
+      <Filter>Physics\animation_movement_controller</Filter>
+    </ClInclude>
+    <ClInclude Include="physics_shell_animated.h">
+      <Filter>Physics\CharacterSupport\interactive_anims</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -7729,9 +7729,6 @@
     </ClCompile>
     <ClCompile Include="UsableScriptObject.cpp">
       <Filter>Core\Client\Objects\base\UsableScriptObject</Filter>
-    </ClCompile>
-    <ClCompile Include="PHCollideValidator.cpp">
-      <Filter>Core\Client\Objects\base\CollideValidator</Filter>
     </ClCompile>
     <ClCompile Include="PHSkeleton.cpp">
       <Filter>Core\Client\Objects\physics\PHSkeleton</Filter>
@@ -9194,9 +9191,6 @@
     <ClCompile Include="script_crandom_script.cpp">
       <Filter>AI\AScript\ScriptClasses\ScriptCRandom</Filter>
     </ClCompile>
-    <ClCompile Include="physics_scripted.cpp">
-      <Filter>Physics\scripts</Filter>
-    </ClCompile>
     <ClCompile Include="physics_shell_scripted.cpp">
       <Filter>Physics\scripts</Filter>
     </ClCompile>
@@ -9256,6 +9250,12 @@
     </ClCompile>
     <ClCompile Include="PHSimpleCallsScript.cpp">
       <Filter>Physics\PHCommander</Filter>
+    </ClCompile>
+    <ClCompile Include="animation_movement_controller.cpp">
+      <Filter>Physics\animation_movement_controller</Filter>
+    </ClCompile>
+    <ClCompile Include="physics_shell_animated.cpp">
+      <Filter>Physics\CharacterSupport\interactive_anims</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

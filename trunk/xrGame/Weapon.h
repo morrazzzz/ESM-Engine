@@ -1,7 +1,7 @@
 // Weapon.h: interface for the CWeapon class.
 #pragma once
 
-#include "PhysicsShell.h"
+#include "../xrPhysics/PhysicsShell.h"
 #include "weaponammo.h"
 #include "PHShellCreator.h"
 

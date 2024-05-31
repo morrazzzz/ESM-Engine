@@ -1,13 +1,12 @@
 #include "stdafx.h"
 #include "HUDmanager.h"
-#include "Physics.h"
 #include "level.h"
 #include "../xr_3da/x_ray.h"
 #include "../xr_3da/igame_persistent.h"
 #include "PhysicsGamePars.h"
 #include "ai_space.h"
 
-#include "iphworld.h"
+#include "../xrPhysics/iphworld.h"
 #include "PHCommander.h"
 #include "physics_game.h"
 

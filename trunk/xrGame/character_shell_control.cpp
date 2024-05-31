@@ -6,8 +6,8 @@
 #include "../xr_3da/bone.h"
 
 //#include "Physics.h"
-#include "ExtendedGeom.h"
-#include "PhysicsShell.h"
+#include "../xrPhysics/ExtendedGeom.h"
+#include "../xrPhysics/PhysicsShell.h"
 //#include "hit.h"
 #include "level.h"
 #include "CustomZone.h"

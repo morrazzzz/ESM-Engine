@@ -6,7 +6,7 @@
 #include "level.h"
 
 #ifdef DEBUG
-#include "MathUtils.h"
+#include "../xrPhysics/MathUtils.h"
 #endif
 weapon_hud_container* g_pWeaponHUDContainer=0;
 

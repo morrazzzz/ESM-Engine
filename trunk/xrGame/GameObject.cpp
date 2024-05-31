@@ -1,7 +1,7 @@
 #include "pch_script.h"
 #include "GameObject.h"
 #include "..\Include\xrRender\RenderVisual.h"
-#include "PhysicsShell.h"
+#include "../xrPhysics/PhysicsShell.h"
 #include "ai_space.h"
 #include "CustomMonster.h" 
 #include "physicobject.h"
@@ -24,9 +24,8 @@
 #include "animation_movement_controller.h"
 
 #ifdef DEBUG
-#include "MathUtils.h"
-#	include "debug_renderer.h"
-#	include "PHDebug.h"
+#include "debug_renderer.h"
+#include "PHDebug.h"
 #endif
 
 ENGINE_API bool g_dedicated_server;

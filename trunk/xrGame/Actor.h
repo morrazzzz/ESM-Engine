@@ -7,7 +7,7 @@
 #include "actor_defs.h"
 #include "entity_alive.h"
 #include "PHMovementControl.h"
-#include "PhysicsShell.h"
+#include "../xrPhysics/PhysicsShell.h"
 #include "InventoryOwner.h"
 #include "../xr_3da/StatGraph.h"
 #include "PhraseDialogManager.h"

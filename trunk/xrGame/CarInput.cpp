@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #pragma hdrstop
 #ifdef DEBUG
-#include "ode_include.h"
 #include "../xr_3da/StatGraph.h"
 #include "PHDebug.h"
 #endif

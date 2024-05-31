@@ -12,14 +12,14 @@
 #include "../Include/xrRender/KinematicsAnimated.h"
 
 
-#include "PhysicsShell.h"
-#include "iActivationShape.h"
+#include "../xrPhysics/PhysicsShell.h"
+#include "../xrPhysics/iActivationShape.h"
 //#include "../xrphysics/Extendedgeom.h"
-#include "geometry.h"
+#include "../xrPhysics/geometry.h"
 //#include "../xrphysics/phdynamicdata.h"
-#include "IPHCapture.h"
+#include "../xrPhysics/IPHCapture.h"
 //#include "../xrphysics/ICollideValidator.h"
-#include "IPHWorld.h"
+#include "../xrPhysics/IPHWorld.h"
 
 //#include "Physics.h"
 
@@ -30,14 +30,9 @@
 #include "imotion_position.h"
 #include "imotion_velocity.h"
 #include "CustomZone.h"
-#include "Extendedgeom.h"
-#include "Physics.h"
 #include "level.h"
-#include "PHActivationShape.h"
-#include "PHCapture.h"
-#include "PHCollideValidator.h"
 #include "animation_movement_controller.h"
-#include "physics_shell_animated.h" //remove me???
+#include "physics_shell_animated.h"
 
 //const float default_hinge_friction = 5.f;//gray_wolf comment
 #ifdef DEBUG

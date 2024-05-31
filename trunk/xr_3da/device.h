@@ -5,7 +5,7 @@
 // ZFar  - always 1.0f
 
 #include "pure.h"
-#include "ftimer.h"
+#include "../xrCore/ftimer.h"
 #include "stats.h"
 
 #define VIEWPORT_NEAR  0.2f

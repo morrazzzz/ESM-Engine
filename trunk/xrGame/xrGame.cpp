@@ -12,7 +12,6 @@
 #include "xr_level_controller.h"
 #include "profiler.h"
 
-#pragma comment(lib,"ode.lib")
 #pragma comment(lib,"xr_3da.lib")
 
 #ifdef NDEBUG

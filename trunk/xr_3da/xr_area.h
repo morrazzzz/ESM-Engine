@@ -6,6 +6,7 @@
 
 #include "../Include/xrRender/FactoryPtr.h"
 #include "../Include/xrRender/ObjectSpaceRender.h"
+#include "xrXRC.h"
 
 // refs
 class ENGINE_API	ISpatial;

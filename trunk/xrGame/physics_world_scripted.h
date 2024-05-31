@@ -1,7 +1,7 @@
 #pragma once
 
-#include "iphysics_scripted.h"
-#include "iphworld.h"
+#include "../xrPhysics/iphysics_scripted.h"
+#include "../xrPhysics/iphworld.h"
 #include "script_export_space.h"
 
 class CPHCondition;

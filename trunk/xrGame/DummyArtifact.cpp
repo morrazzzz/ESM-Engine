@@ -5,14 +5,14 @@
 
 #include "stdafx.h"
 #include "DummyArtifact.h"
-#include "PhysicsShell.h"
+#include "../xrPhysics/PhysicsShell.h"
 
 
-CDummyArtefact::CDummyArtefact(void) 
+CDummyArtefact::CDummyArtefact() 
 {
 }
 
-CDummyArtefact::~CDummyArtefact(void) 
+CDummyArtefact::~CDummyArtefact() 
 {
 }
 

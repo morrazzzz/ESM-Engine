@@ -3,9 +3,9 @@
 #include "Actor.h"
 #include "ai_sounds.h"
 #include "bolt.h"
-#include "PhysicsShell.h"
+#include "../xrPhysics/PhysicsShell.h"
 
-CBolt::CBolt(void) 
+CBolt::CBolt() 
 {
 	m_weight					= .1f;
 	m_slot						= BOLT_SLOT;
@@ -13,7 +13,7 @@ CBolt::CBolt(void)
 	m_thrower_id				= static_cast<u16>(-1);
 }
 
-CBolt::~CBolt(void) {}
+CBolt::~CBolt() {}
 
 void CBolt::Load(LPCSTR section) {
 	inherited::Load(section);

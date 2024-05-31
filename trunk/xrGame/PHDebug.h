@@ -4,7 +4,7 @@
 struct dContact;
 //#include "FastDelegate.h"
 #include "../xr_3da/StatGraph.h"
-#include "debug_output.h" 
+#include "../xrPhysics/debug_output.h" 
 #define DRAW_CONTACTS
 
 

@@ -1,16 +1,11 @@
-///////////////////////////////////////////////////////////////
-// BastArtifact.cpp
-// BastArtefact - артефакт мочалка
-///////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "BastArtifact.h"
-#include "PhysicsShell.h"
-#include "extendedgeom.h"
+#include "../xrPhysics/PhysicsShell.h"
+#include "../xrPhysics/extendedgeom.h"
 #include "ParticlesObject.h"
 
 
-CBastArtefact::CBastArtefact(void) 
+CBastArtefact::CBastArtefact() 
 {
 	m_fImpulseThreshold = 10.f;
 	
@@ -26,7 +21,7 @@ CBastArtefact::CBastArtefact(void)
 
 }
 
-CBastArtefact::~CBastArtefact(void) 
+CBastArtefact::~CBastArtefact() 
 {
 }
 

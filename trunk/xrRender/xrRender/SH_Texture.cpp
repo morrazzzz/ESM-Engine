@@ -236,7 +236,7 @@ void CTexture::Load		()
 			{
 				// Load another texture
 				u32	mem  = 0;
-				pSurface = ::Render->texture_load	(buffer,mem);
+				pSurface = ::RImplementation.texture_load	(buffer,mem);
 				if (pSurface)	
 				{
 					// pSurface->SetPriority	(PRIORITY_LOW);
@@ -251,7 +251,7 @@ void CTexture::Load		()
 	{
 		// Normal texture
 		u32	mem  = 0;
-		pSurface = ::Render->texture_load	(*cName,mem);
+		pSurface = ::RImplementation.texture_load	(*cName,mem);
 
 		// Calc memory usage and preload into vid-mem
 		if (pSurface) {

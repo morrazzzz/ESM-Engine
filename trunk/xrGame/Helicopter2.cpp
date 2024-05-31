@@ -1,20 +1,18 @@
 #include "pch_script.h"
 #include "helicopter.h"
-#include "level.h"
 #include "script_game_object.h"
 #include "game_object_space.h"
 #include "..\include\xrRender\Kinematics.h"
 #include "../xr_3da/LightAnimLibrary.h"
-#include "PhysicsShell.h"
 #include "clsid_game.h"
 #include "script_callback_ex.h"
 #include "ai/stalker/ai_stalker.h"
 #include "CustomZone.h"
-
+#include "../xrphysics/PhysicsShell.h"
 #include "physics_game.h"
 
 #ifdef DEBUG
-#include "MathUtils.h"
+#include "../xrPhysics/MathUtils.h"
 #endif
 
 bool CHelicopter::isObjectVisible			(CObject* O)
@@ -255,7 +253,7 @@ void CHelicopter::PHHit(SHit &H)
 }
 
 
-#include "extendedgeom.h"
+#include "../xrPhysics/extendedgeom.h"
 void CollisionCallbackDead(bool& do_colide,bool bo1,dContact& c,SGameMtl* material_1,SGameMtl* material_2)
 {	
 	do_colide=true; 

@@ -42,10 +42,10 @@
 #include "engine.h"
 #include "defines.h"
 #ifndef NO_XRLOG
-#include "log.h"
+#include "../xrCore/log.h"
 #endif
 #include "device.h"
-#include "fs.h"
+#include "../xrCore/fs.h"
 
 #include "xrXRC.h"
 

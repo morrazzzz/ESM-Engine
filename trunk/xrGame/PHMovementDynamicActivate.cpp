@@ -11,8 +11,8 @@
 //#include "IPhysicsShellHolder.h"
 //#include "../xrphysics/IPHWorld.h"
 //extern	class CPHWorld	*ph_world;
-#include "phcharacter.h"
-#include "iphysicsshellholder.h"
+#include "../xrPhysics/phcharacter.h"
+#include "../xrPhysics/iphysicsshellholder.h"
 bool CPHMovementControl::ActivateBoxDynamic(DWORD id, int num_it/*=8*/, int num_steps/*5*/, float resolve_depth/*=0.01f*/)
 {
 	bool  character_exist = CharacterExist();

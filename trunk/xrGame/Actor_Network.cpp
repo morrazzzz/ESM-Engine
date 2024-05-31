@@ -8,7 +8,7 @@
 
 #include "ActorEffector.h"
 
-#include "IPHWorld.h"
+#include "../xrPhysics/IPHWorld.h"
 #include "level.h"
 #include "game_cl_base.h"
 #include "alife_registry_wrappers.h"

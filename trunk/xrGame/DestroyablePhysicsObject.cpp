@@ -11,9 +11,9 @@
 #include "game_object_space.h"
 #include "script_callback_ex.h"
 #include "script_game_object.h"
-#include "PhysicsShell.h"
+#include "../xrPhysics/PhysicsShell.h"
 #ifdef DEBUG
-#include "IPHWorld.h"
+#include "../xrPhysics/IPHWorld.h"
 //#include "PHWorld.h"
 //extern CPHWorld			*ph_world;
 #endif

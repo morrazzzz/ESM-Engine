@@ -13,7 +13,7 @@
 #include "../control_animation_base.h"
 #include "../control_movement_base.h"
 #include "../control_path_builder_base.h"
-#include "../../../PhysicsShell.h"
+#include "../../../xrPhysics/PhysicsShell.h"
 
 #define HEIGHT_CHANGE_VELOCITY	0.5f
 #define HEIGHT_CHANGE_MIN_TIME	3000

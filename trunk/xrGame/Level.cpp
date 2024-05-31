@@ -10,7 +10,6 @@
 #include "hudmanager.h"
 #include "ai_space.h"
 #include "ai_debug.h"
-#include "Physics.h"
 #include "ShootingObject.h"
 #include "Level_Bullet_Manager.h"
 #include "script_process.h"
@@ -33,8 +32,9 @@
 
 #include <functional>
 
-
-#include "console_vars.h"//#include "../xrphysics/console_vars.h"
+#include "../xrPhysics/PhysicsShell.h"
+#include "../xrPhysics/iphworld.h"
+#include "../xrPhysics/console_vars.h"
 
 #ifdef DEBUG
 #include "space_restrictor.h"
