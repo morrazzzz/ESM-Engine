@@ -1,6 +1,4 @@
 #include "stdafx.h"
-#pragma hdrstop          
-
 #include "ETextureParams.h"
 
 xr_token					tparam_token							[ ]={
@@ -60,6 +58,7 @@ xr_token					tmtl_token								[ ]={
 xr_token					tbmode_token							[ ]={
 	{ "None",				STextureParams::tbmNone						},
 	{ "Use",				STextureParams::tbmUse						},
+	{ "Use parallax",		STextureParams::tbmUseParallax				},
 	{ 0,					0											}
 };
 
@@ -151,7 +150,7 @@ void STextureParams::Save(IWriter& F)
 
 
 #ifdef _EDITOR
-#include "PropertiesListHelper.h"
+#include "../../xrServerEntities/PropertiesListHelper.h"
 
 void STextureParams::OnTypeChange(PropValue* prop)
 {
@@ -176,16 +175,17 @@ void STextureParams::OnTypeChange(PropValue* prop)
         fmt					= tfDXT1;
     break;
     }
-    if (!OnTypeChangeEvent.empty()) OnTypeChangeEvent(prop);
+    if (!OnTypeChangeEvent.empty())
+        OnTypeChangeEvent(prop);
 }
 
 void STextureParams::FillProp(LPCSTR base_name, PropItemVec& items, PropValue::TOnChange on_type_change)
 {                             
-	OnTypeChangeEvent	= on_type_change;
-    PropValue* P		= PHelper().CreateToken32	(items, "Type",		(u32*)&type,		ttype_token);
-    P->OnChangeEvent.bind(this,&STextureParams::OnTypeChange);
-    PHelper().CreateCaption			(items, "Source\\Width",			shared_str().sprintf("%d",width));
-    PHelper().CreateCaption			(items, "Source\\Height",			shared_str().sprintf("%d",height));
+	OnTypeChangeEvent	            = on_type_change;
+    PropValue* P		            = PHelper().CreateToken32	(items, "Type",		(u32*)&type,		ttype_token);
+    P->OnChangeEvent.bind           (this,&STextureParams::OnTypeChange);
+    PHelper().CreateCaption			(items, "Source\\Width",			shared_str().printf("%d",width));
+    PHelper().CreateCaption			(items, "Source\\Height",			shared_str().printf("%d",height));
     PHelper().CreateCaption			(items, "Source\\Alpha",			HasAlpha	()?"present":"absent"); 
 	switch (type){
     case ttImage:	
@@ -197,7 +197,8 @@ void STextureParams::FillProp(LPCSTR base_name, PropItemVec& items, PropValue::T
 
     	P = PHelper().CreateToken32	(items, "Bump\\Mode",				(u32*)&bump_mode,	tbmode_token);
         P->OnChangeEvent.bind(this,&STextureParams::OnTypeChange);
-        if (tbmUse==bump_mode){
+        if (tbmUse==bump_mode || tbmUseParallax==bump_mode)
+        {
         	AnsiString path;
             path = base_name;
         	PHelper().CreateChoose	(items, "Bump\\Texture",			&bump_name,			smTexture, path.c_str());
@@ -252,6 +253,145 @@ void STextureParams::FillProp(LPCSTR base_name, PropItemVec& items, PropValue::T
     break;
     }
 }
+
+BOOL STextureParams::similar(STextureParams& tp1, xr_vector<AnsiString>& sel_params)
+{
+	BOOL res 				= TRUE;
+    
+    xr_vector<AnsiString>::iterator it = sel_params.begin();
+    xr_vector<AnsiString>::iterator it_e = sel_params.end();
+
+    for(;it!=it_e;++it)
+    {
+       const AnsiString& par_name = *it;
+        if(par_name=="Type")
+        {
+        	res = (type==tp1.type);
+        }else
+        if(par_name=="Source\\Width")
+        {
+        	res = (width==tp1.width);
+        }else
+        if(par_name=="Source\\Height")
+        {
+        	res = (height==tp1.height);
+        }else
+        if(par_name=="Source\\Alpha")
+        {
+        	res = (HasAlpha()==tp1.HasAlpha());
+        }else
+        if(par_name=="Format")
+        {
+        	res = (fmt==tp1.fmt);
+        }else
+        if(par_name=="MipMaps\\Enabled")
+        {
+        	res = (flags.test(flGenerateMipMaps)==tp1.flags.test(flGenerateMipMaps));
+        }else
+        if(par_name=="MipMaps\\Filter")
+        {
+        	res = (mip_filter==tp1.mip_filter);
+        }else
+        if(par_name=="Bump\\Mode")
+        {
+        	res = (bump_mode==tp1.bump_mode);
+        }else
+        if(par_name=="Bump\\Texture")
+        {
+        	res = (bump_name==tp1.bump_name);
+        }else
+        if(par_name=="Details\\Use As Diffuse")
+        {           
+     		res = (flags.test(flDiffuseDetail)==tp1.flags.test(flDiffuseDetail));
+        }else
+        if(par_name=="Details\\Use As Bump (R2)")
+        {
+     		res = (flags.test(flBumpDetail)==tp1.flags.test(flBumpDetail));
+        }else
+        if(par_name=="Details\\Texture")
+        {
+        	res = (detail_name==tp1.detail_name);
+        }else
+        if(par_name=="Details\\Scale")
+        {
+        	res = (fsimilar(detail_scale,tp1.detail_scale) );
+        }else
+        if(par_name=="Material\\Base")
+        {
+        	res = (material==tp1.material);
+        }else
+        if(par_name=="Material\\Weight")
+        {
+        	res = (fsimilar(material_weight,tp1.material_weight) );
+        }else
+        if(par_name=="Flags\\Binary Alpha")
+        {                  
+     		res = (flags.test(flBinaryAlpha)==tp1.flags.test(flBinaryAlpha));
+        }else
+        if(par_name=="Flags\\Dither")
+        {
+     		res = (flags.test(flDitherColor)==tp1.flags.test(flDitherColor));
+        }else
+        if(par_name=="Flags\\Dither Each MIP")
+        {
+     		res = (flags.test(flDitherEachMIPLevel)==tp1.flags.test(flDitherEachMIPLevel));
+        }else
+        if(par_name=="Flags\\Implicit Lighted")
+        {
+     		res = (flags.test(flImplicitLighted)==tp1.flags.test(flImplicitLighted));
+        }else
+        if(par_name=="Fade\\Enable Color")
+        {
+     		res = (flags.test(flFadeToColor)==tp1.flags.test(flFadeToColor));
+        }else
+        if(par_name=="Fade\\Enabled Alpha")
+        {
+     		res = (flags.test(flFadeToAlpha)==tp1.flags.test(flFadeToAlpha));
+        }else
+        if(par_name=="Fade\\Delay 'n' MIP")
+        {
+        	res = (fade_delay==tp1.fade_delay);
+        }else
+        if(par_name=="Fade\\% of color to fade in")
+        {
+        	res = (fade_amount==tp1.fade_amount);
+        }else
+        if(par_name=="Fade\\Color")
+        {
+        	res = (fade_color==tp1.fade_color);
+        }else
+        if(par_name=="Fade\\Alpha")
+        {
+        	res = (color_get_A(fade_color)==color_get_A(tp1.fade_color));
+        }else
+        if(par_name=="Border\\Enabled Color")
+        {
+     		res = (flags.test(flColorBorder)==tp1.flags.test(flColorBorder));
+        }else
+        if(par_name=="Border\\Enabled Alpha")
+        {
+     		res = (flags.test(flAlphaBorder)==tp1.flags.test(flAlphaBorder));
+        }else
+        if(par_name=="Border\\Color")
+        {
+        	res = (border_color==tp1.border_color);
+        }else
+        if(par_name=="Bump\\Special NormalMap")
+        {
+        	res = (ext_normal_map_name==tp1.ext_normal_map_name);
+        }else
+        if(par_name=="Bump\\Virtual Height (m)")
+        {
+        	res = ( fsimilar(bump_virtual_height,tp1.bump_virtual_height));
+        }else
+        	Msg("! unknown filter [%s]", par_name.c_str());
+       if(!res)
+       	break;
+    }
+
+    return res;
+}
+
 LPCSTR STextureParams::FormatString	()
 {
 	return get_token_name(tfmt_token,fmt);

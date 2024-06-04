@@ -67,13 +67,11 @@ void	uber_deffer	(CBlender_Compile& C, bool hq, LPCSTR _vspec, LPCSTR _pspec, BO
 		xr_strcpy			(fnameA,_t.bump_get().c_str());
 		strconcat		(sizeof(fnameB),fnameB,fnameA,"#");
 		xr_strcat			(vs,"_bump");
-//morrazzzz: Перенести полностью из ЗП
-//!!COP!!
-//		if (hq && C.bUseSteepParallax)
-//		{
-//			xr_strcat			(ps,"_steep");
-//		}
-//		else
+		if (hq && C.bUseSteepParallax)
+		{
+			xr_strcat			(ps,"_steep");
+		}
+		else
 		{
 			xr_strcat			(ps,"_bump");
 		}

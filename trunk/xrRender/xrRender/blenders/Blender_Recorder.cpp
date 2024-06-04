@@ -8,6 +8,7 @@
 #include "..\ResourceManager.h"
 #include "Blender_Recorder.h"
 #include "Blender.h"
+
 #include "..\dxRenderDeviceRender.h"
 
 static int ParseName(LPCSTR N)
@@ -24,6 +25,10 @@ static int ParseName(LPCSTR N)
 	return -1;
 }
 
+//////////////////////////////////////////////////////////////////////
+// Construction/Destruction
+//////////////////////////////////////////////////////////////////////
+
 CBlender_Compile::CBlender_Compile		()
 {
 }
@@ -35,6 +40,10 @@ void	CBlender_Compile::_cpp_Compile	(ShaderElement* _SH)
 	SH =			_SH;
 	RS.Invalidate	();
 
+	//	TODO: Check if we need such wired system for
+	//	base texture name detection. Perhapse it's done for
+	//	optimization?
+
 	// Analyze possibility to detail this shader
 	detail_texture	= NULL;
 	detail_scaler	= NULL;
@@ -45,43 +54,78 @@ void	CBlender_Compile::_cpp_Compile	(ShaderElement* _SH)
 		sh_list& lst=	L_textures;
 		int id		=	ParseName(BT->oT_Name);
 		base		=	BT->oT_Name;
-		if (id>=0)	{
+		if (id>=0)	
+		{
 			if (id>=int(lst.size()))	Debug.fatal(DEBUG_INFO,"Not enought textures for shader. Base texture: '%s'.",*lst[0]);
 			base	=	*lst [id];
 		}
-//.		if (!Device.Resources->_GetDetailTexture(base,detail_texture,detail_scaler))	bDetail	= FALSE;
+//.		if (!dxRenderDeviceRender::Instance().Resources->_GetDetailTexture(base,detail_texture,detail_scaler))	bDetail	= FALSE;
 		if (!DEV->m_textures_description.GetDetailTexture(base,detail_texture,detail_scaler))	bDetail	= FALSE;
-	} else 
+	} 
+	else 
 	{
+		////////////////////
+		//	Igor
+		//	Need this to correct base to detect steep parallax.
+		if (BT->canUseSteepParallax())
+		{
+			sh_list& lst=	L_textures;
+			int id		=	ParseName(BT->oT_Name);
+			base		=	BT->oT_Name;
+			if (id>=0)	
+			{
+				if (id>=int(lst.size()))	Debug.fatal(DEBUG_INFO,"Not enought textures for shader. Base texture: '%s'.",*lst[0]);
+				base	=	*lst [id];
+			}
+		}
+		//	Igor
+		////////////////////
+
 		bDetail	= FALSE;
 	}
 
 	// Validate for R1 or R2
 	bDetail_Diffuse	= FALSE;
 	bDetail_Bump	= FALSE;
-	if(bDetail)
-		DEV->m_textures_description.GetTextureUsage(base, bDetail_Diffuse, bDetail_Bump);
-/*
-	if (bDetail && Device.Resources->m_description->line_exist("association",base))	
-	{
-		LPCSTR		descr			=	Device.Resources->m_description->r_string("association",base);
-		if (strstr(descr,"usage[diffuse_or_bump]"))	
-		{ 
-			bDetail_Diffuse	= TRUE; 
-			bDetail_Bump = TRUE; 
-		}
-		
-		if (strstr(descr,"usage[diffuse]"))			
-		{ 
-			bDetail_Diffuse	= TRUE; 
-		}
 
-		if (strstr(descr,"usage[bump]"))			
-		{ 
-			bDetail_Bump		= TRUE; 
+#ifndef _EDITOR
+#if RENDER==R_R1
+	if (RImplementation.o.no_detail_textures)
+		bDetail = FALSE;
+#endif
+#endif
+
+	if(bDetail)
+	{
+		DEV->m_textures_description.GetTextureUsage(base, bDetail_Diffuse, bDetail_Bump);
+
+#ifndef _EDITOR
+#if RENDER!=R_R1
+		//	Detect the alowance of detail bump usage here.
+		if (  !(RImplementation.o.advancedpp && ps_r2_ls_flags.test(R2FLAG_DETAIL_BUMP) ) )
+		{
+			bDetail_Diffuse |= bDetail_Bump;
+			bDetail_Bump = false;
 		}
+#endif
+#endif
+
 	}
-*/
+
+	bUseSteepParallax = DEV->m_textures_description.UseSteepParallax(base) 
+		&& BT->canUseSteepParallax();
+/*
+	if (DEV->m_textures_description.UseSteepParallax(base))
+	{
+		bool bSteep = BT->canUseSteepParallax();
+		DEV->m_textures_description.UseSteepParallax(base);
+		bUseSteepParallax = true;
+	}
+*/	
+#ifdef USE_DX11
+	TessMethod = 0;
+#endif
+
 	// Compile
 	BT->Compile		(*this);
 }
@@ -110,80 +154,57 @@ void	CBlender_Compile::PassBegin		()
 	passTextures.clear		();
 	passMatrices.clear		();
 	passConstants.clear		();
-	strcpy_s					(pass_ps,"null");
-	strcpy_s					(pass_vs,"null");
+	xr_strcpy					(pass_ps,"null");
+	xr_strcpy					(pass_vs,"null");
 	dwStage					= 0;
 }
 
-/*void	CBlender_Compile::PassEnd			()
+void	CBlender_Compile::PassEnd			()
 {
 	// Last Stage - disable
 	RS.SetTSS				(Stage(),D3DTSS_COLOROP,D3DTOP_DISABLE);
 	RS.SetTSS				(Stage(),D3DTSS_ALPHAOP,D3DTOP_DISABLE);
 
-	// Create pass
-	ref_state	state		= DEV->_CreateState		(RS.GetContainer());
-	ref_ps		ps			= DEV->_CreatePS			(pass_ps);
-	ref_vs		vs			= DEV->_CreateVS			(pass_vs);
-	ctable.merge			(&ps->constants);
-	ctable.merge			(&vs->constants);
-	SetMapping				();
-	ref_ctable			ct	= DEV->_CreateConstantTable(ctable);
-	ref_texture_list	T 	= DEV->_CreateTextureList	(passTextures);
-	ref_matrix_list		M	= DEV->_CreateMatrixList	(passMatrices);
-	ref_constant_list	C	= DEV->_CreateConstantList	(passConstants);
-
-//	ref_pass	_pass_		= DEV->_CreatePass			(state,ps,vs,ct,T,M,C);
-	ref_pass	_pass_ = DEV->_CreatePass(proto);
-	SH->passes.push_back	(_pass_);
-}*/
-
-void	CBlender_Compile::PassEnd()
-{
-	// Last Stage - disable
-	RS.SetTSS(Stage(), D3DTSS_COLOROP, D3DTOP_DISABLE);
-	RS.SetTSS(Stage(), D3DTSS_ALPHAOP, D3DTOP_DISABLE);
-
 	SPass	proto;
 	// Create pass
-	proto.state = DEV->_CreateState(RS.GetContainer());
-	proto.ps = DEV->_CreatePS(pass_ps);
-	proto.vs = DEV->_CreateVS(pass_vs);
-	ctable.merge(&proto.ps->constants);
-	ctable.merge(&proto.vs->constants);
+	proto.state		= DEV->_CreateState		(RS.GetContainer());
+	proto.ps		= DEV->_CreatePS			(pass_ps);
+	proto.vs		= DEV->_CreateVS			(pass_vs);
+	ctable.merge	(&proto.ps->constants);
+	ctable.merge	(&proto.vs->constants);
 #if defined(USE_DX10) || defined(USE_DX11)
-	proto.gs = DEV->_CreateGS(pass_gs);
-	ctable.merge(&proto.gs->constants);
+	proto.gs		= DEV->_CreateGS			(pass_gs);
+	ctable.merge	(&proto.gs->constants);
 #	ifdef	USE_DX11
-	proto.hs = DEV->_CreateHS(pass_hs);
-	ctable.merge(&proto.hs->constants);
-	proto.ds = DEV->_CreateDS(pass_ds);
-	ctable.merge(&proto.ds->constants);
-	proto.cs = DEV->_CreateCS(pass_cs);
-	ctable.merge(&proto.cs->constants);
+	proto.hs		= DEV->_CreateHS			(pass_hs);
+	ctable.merge	(&proto.hs->constants);
+	proto.ds		= DEV->_CreateDS			(pass_ds);
+	ctable.merge	(&proto.ds->constants);
+	proto.cs		= DEV->_CreateCS			(pass_cs);
+	ctable.merge	(&proto.cs->constants);
 #	endif
 #endif	//	USE_DX10
-	SetMapping();
-	proto.constants = DEV->_CreateConstantTable(ctable);
-	proto.T = DEV->_CreateTextureList(passTextures);
+	SetMapping				();
+	proto.constants	= DEV->_CreateConstantTable(ctable);
+	proto.T 		= DEV->_CreateTextureList	(passTextures);
 #ifdef _EDITOR
-	proto.M = DEV->_CreateMatrixList(passMatrices);
+	proto.M			= DEV->_CreateMatrixList	(passMatrices);
 #endif
-	proto.C = DEV->_CreateConstantList(passConstants);
+	proto.C			= DEV->_CreateConstantList	(passConstants);
 
-	ref_pass	_pass_ = DEV->_CreatePass(proto);
-	SH->passes.push_back(_pass_);
+	ref_pass	_pass_		= DEV->_CreatePass			(proto);
+	SH->passes.push_back	(_pass_);
 }
 
 void	CBlender_Compile::PassSET_PS		(LPCSTR name)
 {
-	strcpy_s	(pass_ps,name);
+	xr_strcpy	(pass_ps,name);
 	strlwr	(pass_ps);
 }
 
 void	CBlender_Compile::PassSET_VS		(LPCSTR name)
 {
-	strcpy_s	(pass_vs,name);
+	xr_strcpy	(pass_vs,name);
 	strlwr	(pass_vs);
 }
 
@@ -204,6 +225,15 @@ void	CBlender_Compile::PassSET_ablend_mode	(BOOL bABlend,	u32 abSRC, u32 abDST)
 	RS.SetRS(D3DRS_ALPHABLENDENABLE,	BC(bABlend));
 	RS.SetRS(D3DRS_SRCBLEND,			bABlend?abSRC:D3DBLEND_ONE	);
 	RS.SetRS(D3DRS_DESTBLEND,			bABlend?abDST:D3DBLEND_ZERO	);
+
+#if defined(USE_DX10) || defined(USE_DX11)
+	//	Since in our engine D3DRS_SEPARATEALPHABLENDENABLE state is
+	//	always set to false and in DirectX 10 blend functions for 
+	//	color and alpha are always independent, assign blend options for
+	//	alpha in DX10 identical to color.
+	RS.SetRS(D3DRS_SRCBLENDALPHA,		bABlend?abSRC:D3DBLEND_ONE	);
+	RS.SetRS(D3DRS_DESTBLENDALPHA,		bABlend?abDST:D3DBLEND_ZERO	);
+#endif	//	USE_DX10
 }
 void	CBlender_Compile::PassSET_ablend_aref	(BOOL bATest,	u32 aRef)
 {
@@ -261,6 +291,7 @@ void	CBlender_Compile::StageSET_Alpha	(u32 a1, u32 op, u32 a2)
 {
 	RS.SetAlpha	(Stage(),a1,op,a2);
 }
+#if !defined(USE_DX10) && !defined(USE_DX11)
 void	CBlender_Compile::StageSET_TMC		(LPCSTR T, LPCSTR M, LPCSTR C, int UVW_channel)
 {
 	Stage_Texture		(T);
@@ -285,10 +316,11 @@ void	CBlender_Compile::Stage_Texture	(LPCSTR name, u32 ,	u32	 fmin, u32 fmip, u3
 		if (id>=int(lst.size()))	Debug.fatal(DEBUG_INFO,"Not enought textures for shader. Base texture: '%s'.",*lst[0]);
 		N = *lst [id];
 	}
-	passTextures.push_back	(mk_pair( Stage(),ref_texture(DEV->_CreateTexture(N))));
+	passTextures.push_back	(mk_pair( Stage(),ref_texture( DEV->_CreateTexture(N))));
 //	i_Address				(Stage(),address);
 	i_Filter				(Stage(),fmin,fmip,fmag);
 }
+#endif	//	USE_DX10
 void	CBlender_Compile::Stage_Matrix		(LPCSTR name, int iChannel)
 {
 	sh_list& lst	= L_matrices; 

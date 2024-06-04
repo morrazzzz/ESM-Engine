@@ -33,6 +33,7 @@ public:
 		u32		color_mapping		: 1;	// true if SM 1.4 and higher
 		u32		disasm				: 1;	// config
 		u32		forceskinw			: 1;	// config
+		u32		no_detail_textures	: 1;	// config
 	}			o;
 	struct		_stats		{
 		u32		o_queries,	o_culled;
@@ -78,6 +79,7 @@ public:
 	cl_light_C													r1_dlight_binder_color	;
 	cl_light_XFORM												r1_dlight_binder_xform	;
 	shared_str													c_ldynamic_props		;
+	bool														m_bMakeAsyncSS;
 	bool														m_bFirstFrameAfterReset;	// Determines weather the frame is the first after resetting device.
 
 private:
@@ -109,6 +111,9 @@ public:
 public:
 	// feature level
 	virtual	GenerationLevel			get_generation			()	{ return IRender_interface::GENERATION_R1; }
+	virtual DWORD					get_dx_level			()	{ return 0x00090000; }
+
+	virtual bool					is_sun_static			() {return true;}
 
 	// Loading / Unloading
 	virtual	void					create					();
@@ -191,6 +196,9 @@ public:
 	virtual void					Calculate				();
 	virtual void					Render					();
 	virtual void					Screenshot				(ScreenshotMode mode=SM_NORMAL, LPCSTR name = 0);
+	virtual void					Screenshot				(ScreenshotMode mode, CMemoryWriter& memory_writer);
+	virtual void					ScreenshotAsyncBegin	();
+	virtual void					ScreenshotAsyncEnd		(CMemoryWriter& memory_writer);
 	virtual void					OnFrame					();
 	
 	// Render mode
@@ -201,6 +209,9 @@ public:
 	// Constructor/destructor/loader
 	CRender							();
 	virtual ~CRender				();
+protected:
+	virtual	void					ScreenshotImpl			(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer);
+
 private:
 	FS_FileSet						m_file_set;
 };

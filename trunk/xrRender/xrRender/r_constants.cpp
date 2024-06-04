@@ -7,12 +7,23 @@
 
 #include "ResourceManager.h"
 
-#include "xrPool.h"
+#include "../../xrCore/xrPool.h"
 #include "r_constants.h"
 
 #include "../xrRender/dxRenderDeviceRender.h"
 
-R_constant_table::~R_constant_table	()	{	DEV->_DeleteConstantTable(this);	}
+// pool
+//.static	poolSS<R_constant,512>			g_constant_allocator;
+
+//R_constant_table::~R_constant_table	()	{	dxRenderDeviceRender::Instance().Resources->_DeleteConstantTable(this);	}
+
+
+R_constant_table::~R_constant_table	()	
+{	
+	//dxRenderDeviceRender::Instance().Resources->_DeleteConstantTable(this);	
+	DEV->_DeleteConstantTable(this);
+}
+
 
 void	R_constant_table::fatal			(LPCSTR S)
 {
@@ -47,7 +58,9 @@ ref_constant R_constant_table::get	(shared_str& S)
 	}
 	return	0;
 }
-BOOL	R_constant_table::parse	(void* _desc, u16 destination)
+
+#if !defined(USE_DX10) && !defined(USE_DX11)
+BOOL	R_constant_table::parse	(void* _desc, u32 destination)
 {
 	D3DXSHADER_CONSTANTTABLE* desc	= (D3DXSHADER_CONSTANTTABLE*) _desc;
 	D3DXSHADER_CONSTANTINFO* it		= (D3DXSHADER_CONSTANTINFO*) (LPBYTE(desc)+desc->ConstantInfo);
@@ -85,7 +98,8 @@ BOOL	R_constant_table::parse	(void* _desc, u16 destination)
 						{
 						case 2:	r_type	=	RC_2x4;	break;
 						case 3: r_type	=	RC_3x4;	break;
-						default:	
+						default:
+							Msg("Invalid matrix dimension:%dx%d in constant %s", it->RegisterCount, T->Columns, name);
 							fatal		("MATRIX_ROWS: unsupported number of RegisterCount");
 							break;
 						}
@@ -174,7 +188,9 @@ BOOL	R_constant_table::parse	(void* _desc, u16 destination)
 	std::sort	(table.begin(),table.end(),p_sort);
 	return		TRUE;
 }
+#endif	//	USE_DX10
 
+/// !!!!!!!!FIX THIS FOR DX11!!!!!!!!!
 void R_constant_table::merge(R_constant_table* T)
 {
 	if (0==T)		return;
@@ -184,20 +200,32 @@ void R_constant_table::merge(R_constant_table* T)
 	{
 		ref_constant src		=	T->table[it];
 		ref_constant C			=	get	(*src->name);
-		if (!C)	{
+		if (!C)	
+		{
 			C					=	xr_new<R_constant>();//.g_constant_allocator.create();
 			C->name				=	src->name;
 			C->destination		=	src->destination;
 			C->type				=	src->type;
 			C->ps				=	src->ps;
 			C->vs				=	src->vs;
+#if defined(USE_DX10) || defined(USE_DX11)
+			C->gs				=	src->gs;
+#	ifdef USE_DX11
+			C->hs				=	src->hs;
+			C->ds				=	src->ds;
+			C->cs				=	src->cs;
+#	endif
+#endif
 			C->samp				=	src->samp;
 			table.push_back		(C);
-		} else {
+		} 
+		else 
+		{
+			VERIFY2(!(C->destination&src->destination&RC_dest_sampler), "Can't have samplers or textures with the same name for PS, VS and GS.");
 			C->destination		|=	src->destination;
 			VERIFY	(C->type	==	src->type);
-			R_constant_load& sL	=	(src->destination&4)?src->samp:((src->destination&1)?src->ps:src->vs);
-			R_constant_load& dL	=	(src->destination&4)?C->samp:((src->destination&1)?C->ps:C->vs);
+			R_constant_load& sL	=	src->get_load(src->destination);
+			R_constant_load& dL	=	C->get_load(src->destination);
 			dL.index			=	sL.index;
 			dL.cls				=	sL.cls;
 		}
@@ -205,6 +233,13 @@ void R_constant_table::merge(R_constant_table* T)
 
 	// Sort
 	std::sort		(table.begin(),table.end(),p_sort);
+
+#if defined(USE_DX10) || defined(USE_DX11)
+	//	TODO:	DX10:	Implement merge with validity check
+	m_CBTable.reserve( m_CBTable.size() + T->m_CBTable.size());
+	for ( u32 i = 0; i < T->m_CBTable.size(); ++i )
+		m_CBTable.push_back(T->m_CBTable[i]);
+#endif	//	USE_DX10
 }
 
 void R_constant_table::clear	()
@@ -213,6 +248,9 @@ void R_constant_table::clear	()
 	for (u32 it=0; it<table.size(); it++)
 		table[it]	= 0;//.g_constant_allocator.destroy(table[it]);
 	table.clear		();
+#if defined(USE_DX10) || defined(USE_DX11)
+	m_CBTable.clear();
+#endif	//	
 }
 
 BOOL R_constant_table::equal(R_constant_table& C)
@@ -223,5 +261,6 @@ BOOL R_constant_table::equal(R_constant_table& C)
 	{
 		if (!table[it]->equal(&*C.table[it]))	return FALSE;
 	}
+
 	return TRUE;
 }

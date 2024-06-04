@@ -5,9 +5,9 @@
 #pragma once
 
 // refs
-class dxRender_Visual;
+class  dxRender_Visual;
 namespace PS	{ 
-	struct ENGINE_API SEmitter; 
+	struct  SEmitter; 
 };
 
 // defs
@@ -68,6 +68,8 @@ public:
 	void					ClearPool			( BOOL b_complete );
 
 	void					dump 				();
+
+	void					memory_stats		( u32& vb_mem_video, u32& vb_mem_system, u32& ib_mem_video, u32& ib_mem_system );
 #ifdef _EDITOR    
 	void					OnDeviceDestroy		();
 	void 					Render				(dxRender_Visual* m_pVisual, const Fmatrix& mTransform, int priority, bool strictB2F, float m_fLOD);

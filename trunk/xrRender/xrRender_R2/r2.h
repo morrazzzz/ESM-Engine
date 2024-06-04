@@ -120,6 +120,8 @@ public:
 	float														o_sun			;
 	IDirect3DQuery9*											q_sync_point[CHWCaps::MAX_GPUS]	;
 	u32															q_sync_count	;
+
+	bool														m_bMakeAsyncSS;
 	bool														m_bFirstFrameAfterReset;	// Determines weather the frame is the first after resetting device.
 
 	xr_vector<sun::cascade>										m_sun_cascades;
@@ -196,6 +198,9 @@ public:
 public:
 	// feature level
 	virtual	GenerationLevel			get_generation			()	{ return IRender_interface::GENERATION_R2; }
+
+	virtual bool					is_sun_static			()	{ return o.sunstatic;}
+	virtual DWORD					get_dx_level			()	{ return 0x00090000;}
 
 	// Loading / Unloading
 	virtual void					create						();
@@ -275,6 +280,9 @@ public:
 	virtual void					Calculate					();
 	virtual void					Render						();
 	virtual void					Screenshot					(ScreenshotMode mode=SM_NORMAL, LPCSTR name = 0);
+	virtual void					Screenshot					(ScreenshotMode mode, CMemoryWriter& memory_writer);
+	virtual void					ScreenshotAsyncBegin		();
+	virtual void					ScreenshotAsyncEnd			(CMemoryWriter& memory_writer);
 	virtual void					OnFrame					();
 
 	// Render mode
@@ -285,6 +293,8 @@ public:
 	// Constructor/destructor/loader
 	CRender							();
 	virtual ~CRender				();
+protected:
+	virtual	void					ScreenshotImpl				(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer);
 
 private:
 		FS_FileSet m_file_set;

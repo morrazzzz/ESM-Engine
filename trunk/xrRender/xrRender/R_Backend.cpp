@@ -1,6 +1,6 @@
 #include "stdafx.h"
-#pragma hdrstop
 
+#pragma todo("Not to restore DX10???? Check line 161, 162...")
 //#include "../xrRenderDX10/dx10BufferUtils.h"
 
 CBackend			RCache;

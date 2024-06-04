@@ -76,8 +76,8 @@ class cl_texgen : public R_constant_setup
 			0.5f,				0.5f,				0.0f,			1.0f
 		};
 #else	//	USE_DX10
-		float	_w						= float(Device.dwWidth);
-		float	_h						= float(Device.dwHeight);
+		float	_w						= float(RDEVICE.dwWidth);
+		float	_h						= float(RDEVICE.dwHeight);
 		float	o_w						= (.5f / _w);
 		float	o_h						= (.5f / _h);
 		Fmatrix			mTexelAdjust		= 
@@ -111,8 +111,8 @@ class cl_VPtexgen : public R_constant_setup
 			0.5f,				0.5f,				0.0f,			1.0f
 		};
 #else	//	USE_DX10
-		float	_w						= float(Device.dwWidth);
-		float	_h						= float(Device.dwHeight);
+		float	_w						= float(RDEVICE.dwWidth);
+		float	_h						= float(RDEVICE.dwHeight);
 		float	o_w						= (.5f / _w);
 		float	o_h						= (.5f / _h);
 		Fmatrix			mTexelAdjust		= 
@@ -196,7 +196,7 @@ class cl_fog_color	: public R_constant_setup {
 class cl_times		: public R_constant_setup {
 	virtual void setup(R_constant* C)
 	{
-		float 		t	= Device.fTimeGlobal;
+		float 		t	= RDEVICE.fTimeGlobal;
 		RCache.set_c	(C,t,t*10,t/10,_sin(t))	;
 	}
 };
@@ -206,7 +206,7 @@ static cl_times		binder_times;
 class cl_eye_P		: public R_constant_setup {
 	virtual void setup(R_constant* C)
 	{
-		Fvector&		V	= Device.vCameraPosition;
+		Fvector&		V	= RDEVICE.vCameraPosition;
 		RCache.set_c	(C,V.x,V.y,V.z,1);
 	}
 };
@@ -216,7 +216,7 @@ static cl_eye_P		binder_eye_P;
 class cl_eye_D		: public R_constant_setup {
 	virtual void setup(R_constant* C)
 	{
-		Fvector&		V	= Device.vCameraDirection;
+		Fvector&		V	= RDEVICE.vCameraDirection;
 		RCache.set_c	(C,V.x,V.y,V.z,0);
 	}
 };
@@ -226,7 +226,7 @@ static cl_eye_D		binder_eye_D;
 class cl_eye_N		: public R_constant_setup {
 	virtual void setup(R_constant* C)
 	{
-		Fvector&		V	= Device.vCameraTop;
+		Fvector&		V	= RDEVICE.vCameraTop;
 		RCache.set_c	(C,V.x,V.y,V.z,0);
 	}
 };
@@ -300,7 +300,7 @@ static class cl_screen_res : public R_constant_setup
 {	
 	virtual void setup	(R_constant* C)
 	{
-		RCache.set_c	(C, (float)Device.dwWidth, (float)Device.dwHeight, 1.0f/(float)Device.dwWidth, 1.0f/(float)Device.dwHeight);
+		RCache.set_c	(C, (float)RDEVICE.dwWidth, (float)RDEVICE.dwHeight, 1.0f/(float)RDEVICE.dwWidth, 1.0f/(float)RDEVICE.dwHeight);
 	}
 }	binder_screen_res;
 

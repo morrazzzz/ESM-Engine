@@ -2,7 +2,7 @@
 #pragma hdrstop
 
 /*
-#include "xr_resource.h"
+#include "../../xrCore/xr_resource.h"
 
 // res
 class	test_resource	: public xr_resource	{
@@ -25,11 +25,11 @@ BOOL	AAA_test		()
 
 void	CConstant::Calculate()
 {
-	if (dwFrame==Device.dwFrame)	return;
-	dwFrame		= Device.dwFrame;
+	if (dwFrame==RDEVICE.dwFrame)	return;
+	dwFrame		= RDEVICE.dwFrame;
 	if (modeProgrammable==dwMode)	return;
 
-	float	t	= Device.fTimeGlobal;
+	float	t	= RDEVICE.fTimeGlobal;
 	set_float	(_R.Calculate(t),_G.Calculate(t),_B.Calculate(t),_A.Calculate(t));
 }
 

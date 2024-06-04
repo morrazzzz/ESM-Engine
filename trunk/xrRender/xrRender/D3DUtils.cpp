@@ -31,9 +31,9 @@ static const int boxvertcount = 48;
 static Fvector boxvert[boxvertcount];
 
 #ifdef _EDITOR
-#	define DU_DRAW_RS	Device.SetRS
-#	define DU_DRAW_SH_C(a,c){Device.SetShader(a);Device.SetRS(D3DRS_TEXTUREFACTOR,c);}
-#	define DU_DRAW_SH(a){Device.SetShader(a);Device.SetRS(D3DRS_TEXTUREFACTOR,0xFFFFFFFF);}
+#	define DU_DRAW_RS	dxRenderDeviceRender::Instance().SetRS
+#	define DU_DRAW_SH_C(a,c){dxRenderDeviceRender::Instance().SetShader(a);dxRenderDeviceRender::Instance().SetRS(D3DRS_TEXTUREFACTOR,c);}
+#	define DU_DRAW_SH(a){dxRenderDeviceRender::Instance().SetShader(a);dxRenderDeviceRender::Instance().SetRS(D3DRS_TEXTUREFACTOR,0xFFFFFFFF);}
 #else
 #	define DU_DRAW_RS	RCache.dbg_SetRS
 #	define DU_DRAW_SH_C(sh,c){RCache.set_Shader(sh);	RCache.set_c	("tfactor",float(color_get_R(c))/255.f,float(color_get_G(c))/255.f,float(color_get_B(c))/255.f,float(color_get_A(c))/255.f);}
@@ -41,9 +41,9 @@ static Fvector boxvert[boxvertcount];
 #endif
 
 #ifdef _EDITOR
-#	define FILL_MODE Device.dwFillMode
-#	define SHADE_MODE Device.dwShadeMode
-#	define SCREEN_QUALITY Device.m_ScreenQuality
+#	define FILL_MODE dxRenderDeviceRender::Instance().dwFillMode
+#	define SHADE_MODE dxRenderDeviceRender::Instance().dwShadeMode
+#	define SCREEN_QUALITY dxRenderDeviceRender::Instance().m_ScreenQuality
 #else
 #	define FILL_MODE D3DFILL_SOLID
 #	define SHADE_MODE D3DSHADE_GOURAUD
@@ -97,14 +97,19 @@ u32 m_ColorSafeRect = 0xffB040B0;
 
 void SPrimitiveBuffer::CreateFromData(D3DPRIMITIVETYPE _pt, u32 _p_cnt, u32 FVF, LPVOID vertices, u32 _v_cnt, u16* indices, u32 _i_cnt)
 {
-	IDirect3DVertexBuffer9*	pVB=0;
-	IDirect3DIndexBuffer9*	pIB=0;
+#if defined(USE_DX10) || defined(USE_DX11)
+//	TODO: DX10: Implement SPrimitiveBuffer::CreateFromData for DX10
+//	VERIFY(!"SPrimitiveBuffer::CreateFromData not implemented for dx10");
+#else	//	USE_DX10
+	ID3DVertexBuffer*	pVB=0;
+	ID3DIndexBuffer*	pIB=0;
 	p_cnt				= _p_cnt;
 	p_type				= _pt;
 	v_cnt				= _v_cnt;
 	i_cnt				= _i_cnt;
 	u32 stride			= D3DXGetFVFVertexSize(FVF);
 	R_CHK(HW.pDevice->CreateVertexBuffer(v_cnt*stride, D3DUSAGE_WRITEONLY, 0, D3DPOOL_MANAGED, &pVB, 0));
+	HW.stats_manager.increment_stats_vb	(pVB);
 	u8* 				bytes;
 	R_CHK				(pVB->Lock(0,0,(LPVOID*)&bytes,0));
 	FLvertexVec	verts	(v_cnt);
@@ -113,7 +118,8 @@ void SPrimitiveBuffer::CreateFromData(D3DPRIMITIVETYPE _pt, u32 _p_cnt, u32 FVF,
 	Memory.mem_copy		(bytes,&*verts.begin(),v_cnt*stride);
 	R_CHK				(pVB->Unlock());
 	if (i_cnt){ 
-		R_CHK(HW.pDevice->CreateIndexBuffer(i_cnt*sizeof(u16),D3DUSAGE_WRITEONLY,D3DFMT_INDEX16,D3DPOOL_MANAGED,&pIB,NULL));
+		R_CHK(HW.pDevice->CreateIndexBuffer	(i_cnt*sizeof(u16),D3DUSAGE_WRITEONLY,D3DFMT_INDEX16,D3DPOOL_MANAGED,&pIB,NULL));
+		HW.stats_manager.increment_stats_ib	(pIB);
 		R_CHK			(pIB->Lock(0,0,(LPVOID*)&bytes,0));
 		Memory.mem_copy	(bytes,indices,i_cnt*sizeof(u16));
 		R_CHK			(pIB->Unlock());
@@ -122,10 +128,13 @@ void SPrimitiveBuffer::CreateFromData(D3DPRIMITIVETYPE _pt, u32 _p_cnt, u32 FVF,
 		OnRender.bind	(this,&SPrimitiveBuffer::RenderDP);
 	}
 	pGeom.create		(FVF,pVB,pIB);
+#endif	//	USE_DX10
 }
 void SPrimitiveBuffer::Destroy()
 {                       
 	if (pGeom){
+		HW.stats_manager.decrement_stats_vb	(pGeom->vb);
+		HW.stats_manager.decrement_stats_ib	(pGeom->ib);
 		_RELEASE		(pGeom->vb);
 		_RELEASE		(pGeom->ib);
 		pGeom.destroy	();
@@ -335,19 +344,19 @@ void CDrawUtilities::DrawEntity(u32 clr, ref_shader s)
     pv->set			(0.f,.5f,0.f,clr); pv++;
 	Stream->Unlock	(5,vs_L->vb_stride);
 	// render flagshtok
-    DU_DRAW_SH		(dxRenderDeviceRender::Instance().m_WireShader);
+	DU_DRAW_SH		(dxRenderDeviceRender::Instance().m_WireShader);
     DU_DRAW_DP		(D3DPT_LINESTRIP,vs_L,vBase,4);
 
     if (s) DU_DRAW_SH(s);
     {
         // fill VB
-        FVF::LIT*	pvOld	 = (FVF::LIT*)Stream->Lock(6,vs_LIT->vb_stride,vBase);
-        pvOld->set		(0.f,1.f,0.f,clr,0.f,0.f);	pvOld++;
-        pvOld->set		(0.f,1.f,.5f,clr,1.f,0.f);	pvOld++;
-        pvOld->set		(0.f,.5f,.5f,clr,1.f,1.f);	pvOld++;
-        pvOld->set		(0.f,.5f,0.f,clr,0.f,1.f);	pvOld++;
-        pvOld->set		(0.f,.5f,.5f,clr,1.f,1.f);	pvOld++;
-        pvOld->set		(0.f,1.f,.5f,clr,1.f,0.f);	pvOld++;
+        FVF::LIT*	pv	 = (FVF::LIT*)Stream->Lock(6,vs_LIT->vb_stride,vBase);
+        pv->set		(0.f,1.f,0.f,clr,0.f,0.f);	pv++;
+        pv->set		(0.f,1.f,.5f,clr,1.f,0.f);	pv++;
+        pv->set		(0.f,.5f,.5f,clr,1.f,1.f);	pv++;
+        pv->set		(0.f,.5f,0.f,clr,0.f,1.f);	pv++;
+        pv->set		(0.f,.5f,.5f,clr,1.f,1.f);	pv++;
+        pv->set		(0.f,1.f,.5f,clr,1.f,0.f);	pv++;
         Stream->Unlock	(6,vs_LIT->vb_stride);
         // and Render it as line list
         DU_DRAW_DP		(D3DPT_TRIANGLEFAN,vs_LIT,vBase,4);
@@ -369,27 +378,27 @@ void CDrawUtilities::DrawFlag(const Fvector& p, float heading, float height, flo
 		// fill VB
         float rx		= _sin(heading);
         float rz		= _cos(heading);
-		FVF::L*	pvNew	 	= (FVF::L*)Stream->Lock(6,vs_L->vb_stride,vBase);
+		pv = (FVF::L*)Stream->Lock(6,vs_L->vb_stride,vBase);
         sz				*= 0.8f;
-        pvNew->set			(p.x,p.y+height,p.z,clr);											pvNew++;
-        pvNew->set			(p.x+rx*sz,p.y+height,p.z+rz*sz,clr);                               pvNew++;
+        pv->set			(p.x,p.y+height,p.z,clr);											pv++;
+        pv->set			(p.x+rx*sz,p.y+height,p.z+rz*sz,clr);                               pv++;
         sz				*= 0.5f;
-        pvNew->set			(p.x,p.y+height*(1.f-sz_fl*.5f),p.z,clr);                           pvNew++;
-        pvNew->set			(p.x+rx*sz*0.6f,p.y+height*(1.f-sz_fl*.5f),p.z+rz*sz*0.75f,clr);   	pvNew++;
-        pvNew->set			(p.x,p.y+height*(1.f-sz_fl),p.z,clr);                               pvNew++;
-        pvNew->set			(p.x+rx*sz,p.y+height*(1.f-sz_fl),p.z+rz*sz,clr);                   pvNew++;
+        pv->set			(p.x,p.y+height*(1.f-sz_fl*.5f),p.z,clr);                           pv++;
+        pv->set			(p.x+rx*sz*0.6f,p.y+height*(1.f-sz_fl*.5f),p.z+rz*sz*0.75f,clr);   	pv++;
+        pv->set			(p.x,p.y+height*(1.f-sz_fl),p.z,clr);                               pv++;
+        pv->set			(p.x+rx*sz,p.y+height*(1.f-sz_fl),p.z+rz*sz,clr);                   pv++;
 		Stream->Unlock	(6,vs_L->vb_stride);
 		// and Render it as line list
     	DU_DRAW_DP		(D3DPT_LINELIST,vs_L,vBase,3);
     }else{
 		// fill VB
-		FVF::L*	pvL	 	= (FVF::L*)Stream->Lock(6,vs_L->vb_stride,vBase);
-	    pvL->set			(p.x,p.y+height*(1.f-sz_fl),p.z,clr); 								pvL++;
-    	pvL->set			(p.x,p.y+height,p.z,clr); 											pvL++;
-	    pvL->set			(p.x+_sin(heading)*sz,((pvL-2)->p.y+(pvL-1)->p.y)/2,p.z+_cos(heading)*sz,clr); pvL++;
-    	pvL->set			(*(pvL-3)); 															pvL++;
-	    pvL->set			(*(pvL-2)); 															pvL++;
-    	pvL->set			(*(pvL-4)); 															pvL++;
+		pv = (FVF::L*)Stream->Lock(6,vs_L->vb_stride,vBase);
+	    pv->set			(p.x,p.y+height*(1.f-sz_fl),p.z,clr); 								pv++;
+    	pv->set			(p.x,p.y+height,p.z,clr); 											pv++;
+	    pv->set			(p.x+_sin(heading)*sz,((pv-2)->p.y+(pv-1)->p.y)/2,p.z+_cos(heading)*sz,clr); pv++;
+    	pv->set			(*(pv-3)); 															pv++;
+	    pv->set			(*(pv-2)); 															pv++;
+    	pv->set			(*(pv-4)); 															pv++;
 		Stream->Unlock	(6,vs_L->vb_stride);
 		// and Render it as triangle list
     	DU_DRAW_DP		(D3DPT_TRIANGLELIST,vs_L,vBase,2);
@@ -458,10 +467,10 @@ void CDrawUtilities::DrawIdentCone	(BOOL bSolid, BOOL bWire, u32 clr_s, u32 clr_
 {
     if (bWire){
         DU_DRAW_SH_C		(dxRenderDeviceRender::Instance().m_WireShader, clr_w);
-    	m_WireCone.Render	();
+		m_WireCone.Render	();
     }
     if (bSolid){
-        DU_DRAW_SH_C		(color_get_A(clr_s)>=254? dxRenderDeviceRender::Instance().m_WireShader: dxRenderDeviceRender::Instance().m_SelectionShader,	clr_s);
+        DU_DRAW_SH_C		(color_get_A(clr_s)>=254?dxRenderDeviceRender::Instance().m_WireShader:dxRenderDeviceRender::Instance().m_SelectionShader,	clr_s);
     	m_SolidCone.Render	();
     }
 	DU_DRAW_RS	(D3DRS_TEXTUREFACTOR,	0xffffffff);
@@ -474,7 +483,7 @@ void CDrawUtilities::DrawIdentSphere	(BOOL bSolid, BOOL bWire, u32 clr_s, u32 cl
      	m_WireSphere.Render	();
     }
     if (bSolid){
-        DU_DRAW_SH_C	(color_get_A(clr_s)>=254? dxRenderDeviceRender::Instance().m_WireShader: dxRenderDeviceRender::Instance().m_SelectionShader,clr_s);
+        DU_DRAW_SH_C	(color_get_A(clr_s)>=254?dxRenderDeviceRender::Instance().m_WireShader:dxRenderDeviceRender::Instance().m_SelectionShader,clr_s);
     	m_SolidSphere.Render();
     }
 	DU_DRAW_RS	(D3DRS_TEXTUREFACTOR,	0xffffffff);
@@ -487,7 +496,7 @@ void CDrawUtilities::DrawIdentSpherePart(BOOL bSolid, BOOL bWire, u32 clr_s, u32
      	m_WireSpherePart.Render	();
     }
     if (bSolid){
-        DU_DRAW_SH_C	(color_get_A(clr_s)>=254? dxRenderDeviceRender::Instance().m_WireShader: dxRenderDeviceRender::Instance().m_SelectionShader,clr_s);
+        DU_DRAW_SH_C	(color_get_A(clr_s)>=254?dxRenderDeviceRender::Instance().m_WireShader:dxRenderDeviceRender::Instance().m_SelectionShader,clr_s);
     	m_SolidSpherePart.Render();
     }
 	DU_DRAW_RS	(D3DRS_TEXTUREFACTOR,	0xffffffff);
@@ -500,7 +509,7 @@ void CDrawUtilities::DrawIdentCylinder	(BOOL bSolid, BOOL bWire, u32 clr_s, u32 
     	m_WireCylinder.Render	();
     }
     if (bSolid){
-        DU_DRAW_SH_C	(color_get_A(clr_s)>=254? dxRenderDeviceRender::Instance().m_WireShader: dxRenderDeviceRender::Instance().m_SelectionShader,clr_s);
+        DU_DRAW_SH_C	(color_get_A(clr_s)>=254?dxRenderDeviceRender::Instance().m_WireShader:dxRenderDeviceRender::Instance().m_SelectionShader,clr_s);
     	m_SolidCylinder.Render	();
     }
 	DU_DRAW_RS	(D3DRS_TEXTUREFACTOR,	0xffffffff);
@@ -513,7 +522,7 @@ void CDrawUtilities::DrawIdentBox(BOOL bSolid, BOOL bWire, u32 clr_s, u32 clr_w)
     	m_WireBox.Render	();
     }
     if (bSolid){
-        DU_DRAW_SH_C	(color_get_A(clr_s)>=254? dxRenderDeviceRender::Instance().m_WireShader: dxRenderDeviceRender::Instance().m_SelectionShader,clr_s);
+        DU_DRAW_SH_C	(color_get_A(clr_s)>=254?dxRenderDeviceRender::Instance().m_WireShader:dxRenderDeviceRender::Instance().m_SelectionShader,clr_s);
     	m_SolidBox.Render	();
     }
 	DU_DRAW_RS	(D3DRS_TEXTUREFACTOR,	0xffffffff);

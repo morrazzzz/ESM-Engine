@@ -1,7 +1,5 @@
 // file: targasaver.cpp
 #include "stdafx.h"
-#pragma hdrstop
-
 #include "tga.h"
 /*
 void	tga_save	(LPCSTR name, u32 w, u32 h, void* data, BOOL alpha )

@@ -178,7 +178,7 @@ void CSkeletonX::_Load	(const char* N, IReader *data, u32& dwVertCount)
 	u16			hw_bones_cnt		= u16((HW.Caps.geometry.dwRegisters-22-3)/3);
 
 	#if RENDER == R_R1
-//		if ( ps_r1_SoftwareSkinning == 1 )
+		if ( ps_r1_SoftwareSkinning == 1 )
 			hw_bones_cnt = 0;
 	#endif // RENDER == R_R1
 

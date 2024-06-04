@@ -5,6 +5,29 @@
 
 #define STENCIL_CULL 0
 
+void CRenderTarget::DoAsyncScreenshot()
+{
+	if (RImplementation.m_bMakeAsyncSS)
+	{
+		HRESULT hr;
+
+		IDirect3DSurface9*	pFBSrc = HW.pBaseRT;
+
+		//	Don't addref, no need to release.
+	//	ID3DTexture2D *pTex = rt_Color->pSurface;
+
+	//	hr = pTex->GetSurfaceLevel(0, &pFBSrc);
+
+		//	SHould be async function
+		hr = HW.pDevice->GetRenderTargetData( pFBSrc, pFB );
+
+	//	pFBSrc->Release();
+
+		RImplementation.m_bMakeAsyncSS = false;
+	}
+}
+
+
 float	hclip(float v, float dim)		{ return 2.f*v/dim - 1.f; }
 void	CRenderTarget::phase_combine	()
 {
@@ -163,7 +186,7 @@ void	CRenderTarget::phase_combine	()
 	}
 
 	// PP enabled ?
-	BOOL	PP_Complex		= u_need_PP	();
+	BOOL	PP_Complex		= u_need_PP	() | (BOOL)RImplementation.m_bMakeAsyncSS;
 	if (_menu_pp)			PP_Complex	= FALSE;
 
 	// Combine everything + perform AA

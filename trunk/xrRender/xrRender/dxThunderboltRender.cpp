@@ -55,7 +55,6 @@ void dxThunderboltRender::Render(CEffect_Thunderbolt &owner)
 	Fvector				vecSx, vecSy;
 	u32					VS_Offset;
 	FVF::LIT *pv		= (FVF::LIT*) RCache.Vertex.Lock(8,hGeom_gradient.stride(),VS_Offset);
-//morrazzzz: Then change the pointers to the CoP!
 	// top
 	{
 		u32 c_val		= iFloor(owner.current->m_GradientTop->fOpacity*owner.lightning_phase*255.f);

@@ -4,8 +4,6 @@
 #include "../../Include/xrRender/RenderVisual.h"
 
 #define VLOAD_NOVERTICES		(1<<0)
-#define VLOAD_NOINDICES			(1<<1)
-#define VLOAD_FORCESOFTWARE		(1<<2)
 
 struct IRender_Mesh	
 {
@@ -13,12 +11,12 @@ struct IRender_Mesh
 	ref_geom					rm_geom;
 
 	// verts
-	IDirect3DVertexBuffer9*		p_rm_Vertices;
+	ID3DVertexBuffer*		p_rm_Vertices;
 	u32							vBase;
 	u32							vCount;
 
 	// indices
-	IDirect3DIndexBuffer9*		p_rm_Indices;
+	ID3DIndexBuffer*		p_rm_Indices;
 	u32							iBase;
 	u32							iCount;
 	u32							dwPrimitives;

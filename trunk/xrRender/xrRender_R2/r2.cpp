@@ -202,7 +202,7 @@ void					CRender::create					()
 	o.depth16			= (strstr(Core.Params,"-depth16"))?		TRUE	:FALSE	;
 	o.noshadows			= (strstr(Core.Params,"-noshadows"))?	TRUE	:FALSE	;
 	o.Tshadows			= (strstr(Core.Params,"-tsh"))?			TRUE	:FALSE	;
-	o.mblur				= (strstr(Core.Params,"-mblur"))?		TRUE	:FALSE	;
+	o.mblur				= ps_r2_ls_flags.test(R2FLAG_MBLUR);
 	o.distortion_enabled= (strstr(Core.Params,"-nodistort"))?	FALSE	:TRUE	;
 	o.distortion		= o.distortion_enabled;
 	o.disasm			= (strstr(Core.Params,"-disasm"))?		TRUE	:FALSE	;
@@ -213,6 +213,8 @@ void					CRender::create					()
 
 	c_lmaterial					= "L_material";
 	c_sbase						= "s_base";
+
+	m_bMakeAsyncSS				= false;
 
 	Target						= xr_new<CRenderTarget>		();	// Main target
 
@@ -234,6 +236,7 @@ void					CRender::create					()
 
 void					CRender::destroy				()
 {
+	m_bMakeAsyncSS				= false;
 	::PortalTraverser.destroy	();
 	//_RELEASE					(q_sync_point[1]);
 	//_RELEASE					(q_sync_point[0]);
@@ -776,6 +779,30 @@ HRESULT	CRender::shader_compile(
 	sh_name[len] = '0' + char(4 == m_skinning); ++len;
 
 	//	Igor: need restart options
+	if (RImplementation.o.advancedpp && ps_r2_ls_flags.test(R2FLAG_SOFT_WATER))
+	{
+		defines[def_it].Name		=	"USE_SOFT_WATER";
+		defines[def_it].Definition	=	"1";
+		def_it						++;
+		sh_name[len]='1'; ++len;
+	}
+	else
+	{
+		sh_name[len]='0'; ++len;
+	}
+
+	if (RImplementation.o.advancedpp && ps_r2_ls_flags.test(R2FLAG_SOFT_PARTICLES))
+	{
+		defines[def_it].Name		=	"USE_SOFT_PARTICLES";
+		defines[def_it].Definition	=	"1";
+		def_it						++;
+		sh_name[len]='1'; ++len;
+	}
+	else
+	{
+		sh_name[len]='0'; ++len;
+	}
+
 	if (RImplementation.o.advancedpp && ps_r2_ls_flags.test(R2FLAG_DOF))
 	{
 		defines[def_it].Name = "USE_DOF";
@@ -786,6 +813,18 @@ HRESULT	CRender::shader_compile(
 	else
 	{
 		sh_name[len] = '0'; ++len;
+	}
+
+	if (RImplementation.o.advancedpp && ps_r2_ls_flags.test(R2FLAG_STEEP_PARALLAX))
+	{
+		defines[def_it].Name		=	"ALLOW_STEEPPARALLAX";
+		defines[def_it].Definition	=	"1";
+		def_it						++;
+		sh_name[len]='1'; ++len;
+	}
+	else
+	{
+		sh_name[len]='0'; ++len;
 	}
 
 	// finish

@@ -7,7 +7,7 @@
 #ifdef _EDITOR
 #	include "scene.h"
 #	include "sceneobject.h"
-#	include "../../ETools/ETools.h"
+#	include "../utils/ETools/ETools.h"
 #endif
 
 //--------------------------------------------------- Decompression
@@ -19,6 +19,7 @@ IC float	Interpolate			(float* base,		u32 x, u32 y, u32 size)
 
 	float	c01	= base[0]*ifx + base[1]*fx;
 	float	c23	= base[2]*ifx + base[3]*fx;
+
 	float	c02	= base[0]*ify + base[2]*fy;
 	float	c13	= base[1]*ify + base[3]*fy;
 
@@ -39,6 +40,36 @@ IC bool		InterpolateAndDither(float* alpha255,	u32 x, u32 y, u32 sx, u32 sy, u32
 	return	c	> dither[col][row];
 }
 
+#ifndef _EDITOR
+#ifdef	DEBUG
+//#include "../../Include/xrRender/DebugRender.h"
+#include "dxDebugRender.h"
+static void draw_obb		( const Fmatrix &matrix, const u32 &color )
+{
+	Fvector							aabb[8];
+	matrix.transform_tiny			(aabb[0],Fvector().set( -1, -1, -1)); // 0
+	matrix.transform_tiny			(aabb[1],Fvector().set( -1, +1, -1)); // 1
+	matrix.transform_tiny			(aabb[2],Fvector().set( +1, +1, -1)); // 2
+	matrix.transform_tiny			(aabb[3],Fvector().set( +1, -1, -1)); // 3
+	matrix.transform_tiny			(aabb[4],Fvector().set( -1, -1, +1)); // 4
+	matrix.transform_tiny			(aabb[5],Fvector().set( -1, +1, +1)); // 5
+	matrix.transform_tiny			(aabb[6],Fvector().set( +1, +1, +1)); // 6
+	matrix.transform_tiny			(aabb[7],Fvector().set( +1, -1, +1)); // 7
+
+	u16								aabb_id[12*2] = {
+		0,1,  1,2,  2,3,  3,0,  4,5,  5,6,  6,7,  7,4,  1,5,  2,6,  3,7,  0,4
+	};
+
+	rdebug_render->add_lines						(aabb, sizeof(aabb)/sizeof(Fvector), &aabb_id[0], sizeof(aabb_id)/(2*sizeof(u16)), color);
+}
+
+bool det_render_debug = false;
+#endif
+#endif
+
+#include "../../xr_3da/gamemtllib.h"
+
+//#define		DBG_SWITCHOFF_RANDOMIZE
 void		CDetailManager::cache_Decompress(Slot* S)
 {
 	VERIFY				(S);
@@ -53,7 +84,7 @@ void		CDetailManager::cache_Decompress(Slot* S)
 	D.vis.box.get_CD	(bC,bD);
 
 #ifdef _EDITOR
-	ETOOLS::box_options	(CDB::OPT_FULL_TEST); 
+	ETOOLS::box_options	(CDB::OPT_FULL_TEST);
 	// Select polygons
 	SBoxPickInfoVec		pinf;
     Scene->BoxPickObjects(D.vis.box,pinf,GetSnapList());
@@ -100,21 +131,37 @@ void		CDetailManager::cache_Decompress(Slot* S)
 		for (u32 x=0; x<=d_size; x++)
 		{
 			// shift
+#ifndef		DBG_SWITCHOFF_RANDOMIZE
 			u32 shift_x =  r_jitter.randI(16);
 			u32 shift_z =  r_jitter.randI(16);
-
+#else
+			u32 shift_x =  8;
+			u32 shift_z =  8;
+#endif
 			// Iterpolate and dither palette
 			selected.clear();
+
+#ifndef		DBG_SWITCHOFF_RANDOMIZE
 			if ((DS.id0!=DetailSlot::ID_Empty)&& InterpolateAndDither(alpha255[0],x,z,shift_x,shift_z,d_size,dither))	selected.push_back(0);
 			if ((DS.id1!=DetailSlot::ID_Empty)&& InterpolateAndDither(alpha255[1],x,z,shift_x,shift_z,d_size,dither))	selected.push_back(1);
 			if ((DS.id2!=DetailSlot::ID_Empty)&& InterpolateAndDither(alpha255[2],x,z,shift_x,shift_z,d_size,dither))	selected.push_back(2);
 			if ((DS.id3!=DetailSlot::ID_Empty)&& InterpolateAndDither(alpha255[3],x,z,shift_x,shift_z,d_size,dither))	selected.push_back(3);
-
+#else
+			if ((DS.id0!=DetailSlot::ID_Empty))	selected.push_back(0);
+			if ((DS.id1!=DetailSlot::ID_Empty))	selected.push_back(1);
+			if ((DS.id2!=DetailSlot::ID_Empty))	selected.push_back(2);
+			if ((DS.id3!=DetailSlot::ID_Empty))	selected.push_back(3);
+#endif
+			
 			// Select
 			if (selected.empty())	continue;
+#ifndef		DBG_SWITCHOFF_RANDOMIZE
 			u32 index;
 			if (selected.size()==1)	index = selected[0];
 			else					index = selected[r_selection.randI(selected.size())];
+#else
+			u32 index = selected[0];
+#endif
 
 			CDetail*	Dobj	= objects[DS.r_id(index)];
 			SlotItem*	ItemP	= poolSI.create();
@@ -124,7 +171,12 @@ void		CDetailManager::cache_Decompress(Slot* S)
 			float		rx = (float(x)/float(d_size))*dm_slot_size + D.vis.box.min.x;
 			float		rz = (float(z)/float(d_size))*dm_slot_size + D.vis.box.min.z;
 			Fvector		Item_P;
+
+#ifndef		DBG_SWITCHOFF_RANDOMIZE
 			Item_P.set	(rx + r_jitter.randFs(jitter), D.vis.box.max.y, rz + r_jitter.randFs(jitter));
+#else
+			Item_P.set	(rx , D.vis.box.max.y, rz );
+#endif
 
 			// Position (Y)
 			float y		= D.vis.box.min.y-5;
@@ -138,9 +190,9 @@ void		CDetailManager::cache_Decompress(Slot* S)
 				SBoxPickInfo& I=pinf[tid];
 				for (int k=0; k<(int)I.inf.size(); k++){
 					VERIFY(I.s_obj);
-Device.Statistic->TEST0.Begin	();
+RDEVICE.Statistic->TEST0.Begin	();
 					I.e_obj->GetFaceWorld(I.s_obj->_Transform(),I.e_mesh,I.inf[k].id,verts);
-Device.Statistic->TEST0.End		();
+RDEVICE.Statistic->TEST0.End		();
 					if (CDB::TestRayTri(Item_P,dir,verts,r_u,r_v,r_range,TRUE))
 					{
 						if (r_range>=0)	{
@@ -151,6 +203,10 @@ Device.Statistic->TEST0.End		();
 				}
 #else
 				CDB::TRI&	T		= tris[xrc.r_begin()[tid].id];
+				SGameMtl* mtl		= GMLib.GetMaterialByIdx(T.material);
+				if(mtl->Flags.test(SGameMtl::flPassable))	
+					continue;
+
 				Fvector		Tv[3]	= { verts[T.verts[0]],verts[T.verts[1]],verts[T.verts[2]] };
 				if (CDB::TestRayTri(Item_P,dir,Tv,r_u,r_v,r_range,TRUE))
 				{
@@ -165,17 +221,34 @@ Device.Statistic->TEST0.End		();
 			Item_P.y	= y;
 
 			// Angles and scale
+#ifndef		DBG_SWITCHOFF_RANDOMIZE
 			Item.scale	= r_scale.randF		(Dobj->m_fMinScale*0.5f,Dobj->m_fMaxScale*0.9f);
-
+#else
+			Item.scale	= (Dobj->m_fMinScale*0.5f+Dobj->m_fMaxScale*0.9f)/2;
+			//Item.scale	= 0.1f;
+#endif
 			// X-Form BBox
 			Fmatrix		mScale,mXform;
 			Fbox		ItemBB;
+
+#ifndef		DBG_SWITCHOFF_RANDOMIZE
 			Item.mRotY.rotateY				(r_yaw.randF	(0,PI_MUL_2));
+#else
+			Item.mRotY.rotateY				(0);
+#endif
+
 			Item.mRotY.translate_over		(Item_P);
 			mScale.scale					(Item.scale,Item.scale,Item.scale);
 			mXform.mul_43					(Item.mRotY,mScale);
 			ItemBB.xform					(Dobj->bv_bb,mXform);
 			Bounds.merge					(ItemBB);
+
+#ifndef _EDITOR
+#ifdef		DEBUG
+			if(det_render_debug)
+				draw_obb(  mXform, color_rgba		(255,0,0,255) );//Fmatrix().mul_43( mXform, Fmatrix().scale(5,5,5) )
+#endif
+#endif
 
 			// Color
 			/*
@@ -202,6 +275,7 @@ Device.Statistic->TEST0.End		();
 			//? Item.c_rgb.add					(ps_r__Detail_rainbow_hemi*Item.c_hemi);
 
 			// Vis-sorting
+#ifndef		DBG_SWITCHOFF_RANDOMIZE
 			if (!UseVS())
 			{
 				// Always still on CPU pipe
@@ -214,7 +288,9 @@ Device.Statistic->TEST0.End		();
 					else						Item.vis_ID = 1;	// First wave
 				}
 			}
-
+#else
+			Item.vis_ID = 0;
+#endif
 			// Save it
 			D.G[index].items.push_back(ItemP);
 		}
