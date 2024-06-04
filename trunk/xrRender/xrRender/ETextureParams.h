@@ -9,7 +9,6 @@ struct ECORE_API STextureParams{
         ttBumpMap,
         ttNormalMap,
         ttTerrain,
-		tbmUseParallax,
 		ttForceU32	= u32(-1)
 	};
 	enum ETFormat{
@@ -33,6 +32,7 @@ struct ECORE_API STextureParams{
     	tbmResereved	= 0,
         tbmNone,
         tbmUse,
+        tbmUseParallax,
 		tbmForceU32	= u32(-1)
     };
     enum ETMaterial{
@@ -110,16 +110,36 @@ struct ECORE_API STextureParams{
 	{
 		Clear();
 	}
+	
+	IC void destroy_shared_str	(shared_str& object)
+	{
+		object.~shared_str	();
+	}
+
+	IC void construct_shared_str(shared_str& object)
+	{
+		::new	(&object)	shared_str	();
+	}
+
 	IC void Clear		()
 	{
-		ZeroMemory		(this,sizeof(STextureParams));
-		flags.set		(flGenerateMipMaps|flDitherColor,TRUE);
-		mip_filter		= kMIPFilterBox;
-        width			= 0;
-        height			= 0;
-        detail_scale	= 1;
-        bump_mode		= tbmNone;
-		material		= tmBlin_Phong;
+		destroy_shared_str	(detail_name);
+		destroy_shared_str	(bump_name);
+		destroy_shared_str	(ext_normal_map_name);
+		
+		ZeroMemory			(this,sizeof(STextureParams));
+		
+		construct_shared_str(detail_name);
+		construct_shared_str(bump_name);
+		construct_shared_str(ext_normal_map_name);
+
+		flags.set			(flGenerateMipMaps|flDitherColor,TRUE);
+		mip_filter			= kMIPFilterBox;
+        width				= 0;
+        height				= 0;
+        detail_scale		= 1;
+        bump_mode			= tbmNone;
+		material			= tmBlin_Phong;
         bump_virtual_height = 0.05f;
 	}
 
@@ -151,6 +171,8 @@ struct ECORE_API STextureParams{
     void 			FillProp		(LPCSTR base_name, PropItemVec& items, PropValue::TOnChange OnChangeEvent);
     LPCSTR 			FormatString	();
 	u32 			MemoryUsage		(LPCSTR base_name);
+    BOOL			similar			(STextureParams& tp1, xr_vector<AnsiString>& sel_params);
+    
 #endif
 };
 #pragma pack( pop )

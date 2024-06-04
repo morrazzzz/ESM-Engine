@@ -37,6 +37,10 @@ public:
 	virtual void					set_active			(bool)								= 0;
 	virtual bool					get_active			()									= 0;
 	virtual void					set_shadow			(bool)								= 0;
+//	virtual void					set_volumetric		(bool)								= 0;
+//	virtual void					set_volumetric_quality(float)							= 0;
+//	virtual void					set_volumetric_intensity(float)							= 0;
+//	virtual void					set_volumetric_distance(float)							= 0;
 	virtual void					set_indirect		(bool)								{};
 	virtual void					set_position		(const Fvector& P)					= 0;
 	virtual void					set_rotation		(const Fvector& D, const Fvector& R)= 0;
@@ -149,11 +153,13 @@ public:
 		SM_FOR_CUBEMAP				= 1,		// tga,		name used as postfix
 		SM_FOR_GAMESAVE				= 2,		// dds/dxt1,name used as full-path
 		SM_FOR_LEVELMAP				= 3,		// tga,		name used as postfix (level_name)
+		SM_FOR_MPSENDING			= 4,
 		SM_forcedword				= u32(-1)
 	};
 public:
 	// options
 	s32								m_skinning;
+	s32								m_MSAASample;
 
 	// data
 	CFrustum						ViewBase;
@@ -161,6 +167,9 @@ public:
 public:
 	// feature level
 	virtual	GenerationLevel			get_generation			()											= 0;
+
+	virtual bool					is_sun_static			() =0;
+	virtual DWORD					get_dx_level			() =0;
 
 	// Loading / Unloading
 	virtual	void					create					()											= 0;
@@ -207,7 +216,6 @@ public:
 	//	Prefer this function when possible
 	virtual void					add_StaticWallmark(IWallMarkArray* pArray, const Fvector& P, float s, CDB::TRI* T, Fvector* V) = 0;
 	virtual void					clear_static_wallmarks	()=0;
-	virtual void add_SkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm) = 0; //REMOVE ME!!!
 	virtual void					add_SkeletonWallmark(const Fmatrix* xf, IKinematics* obj, IWallMarkArray* pArray, const Fvector& start, const Fvector& dir, float size) = 0;
 
 	virtual IRender_ObjectSpecific*	ros_create				(IRenderable* parent)						= 0;
@@ -239,7 +247,11 @@ public:
 	// Main
 	virtual void					Calculate				()											= 0;
 	virtual void					Render					()											= 0;
+
 	virtual void					Screenshot				(ScreenshotMode mode=SM_NORMAL, LPCSTR name = 0) = 0;
+	virtual	void					Screenshot				(ScreenshotMode mode, CMemoryWriter& memory_writer) = 0;
+	virtual void					ScreenshotAsyncBegin	() = 0;
+	virtual void					ScreenshotAsyncEnd		(CMemoryWriter& memory_writer) = 0;
 
 	// Render mode
 	virtual void					rmNear					()											= 0;
@@ -249,6 +261,8 @@ public:
 
 	// Constructor/destructor
 	virtual ~IRender_interface();
+protected:
+	virtual	void					ScreenshotImpl			(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer) = 0;
 };
 
 //extern ENGINE_API	IRender_interface*	Render;

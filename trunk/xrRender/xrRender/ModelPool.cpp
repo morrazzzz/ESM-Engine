@@ -14,10 +14,12 @@
 	#include "flod.h"
     #include "ftreevisual.h"
     #include "ParticleGroup.h"
+    #include "ParticleEffect.h"
 #else
     #include "fmesh.h"
     #include "fvisual.h"
     #include "fprogressive.h"
+    #include "ParticleEffect.h"
     #include "ParticleGroup.h"
 	#include "fskinned.h"
     #include "fhierrarhyvisual.h"
@@ -86,7 +88,11 @@ dxRender_Visual*	CModelPool::Instance_Duplicate	(dxRender_Visual* V)
 	N->Spawn		();
     // inc ref counter
 	for (xr_vector<ModelDef>::iterator I=Models.begin(); I!=Models.end(); I++) 
-		if (I->model==V){ I->refs++; break;}
+		if (I->model==V)
+		{ 
+			I->refs++; 
+			break;
+		}
 	return N;
 }
 
@@ -98,7 +104,7 @@ dxRender_Visual*	CModelPool::Instance_Load		(const char* N, BOOL allow_register)
 
 	// Add default ext if no ext at all
 	if (0==strext(N))	strconcat	(sizeof(name),name,N,".ogf");
-	else				strcpy_s	(name,sizeof(name),N);
+	else				xr_strcpy	(name,sizeof(name),N);
 
 	// Load data from MESHES or LEVEL
 	if (!FS.exist(N))	{
@@ -112,7 +118,7 @@ dxRender_Visual*	CModelPool::Instance_Load		(const char* N, BOOL allow_register)
 #endif
 			}
 	} else {
-		strcpy			(fn,N);
+		xr_strcpy			(fn,N);
 	}
 	
 	// Actual loading
@@ -166,7 +172,7 @@ void CModelPool::Destroy()
 	// Registry
 	while(!Registry.empty()){
 		REGISTRY_IT it	= Registry.begin();
-		dxRender_Visual* V = it->first;
+		dxRender_Visual* V=(dxRender_Visual*)it->first;
 #ifdef _DEBUG
 		Msg				("ModelPool: Destroy object: '%s'",*V->dbg_name);
 #endif
@@ -222,7 +228,7 @@ dxRender_Visual* CModelPool::Create(const char* name, IReader* data)
 	if (!name||!name[0])	return 0;
 #endif
 	string_path low_name;	VERIFY	(xr_strlen(name)<sizeof(low_name));
-	strcpy(low_name,name);	strlwr	(low_name);
+	xr_strcpy(low_name,name);	strlwr	(low_name);
 	if (strext(low_name))	*strext	(low_name)=0;
 //	Msg						("-CREATE %s",low_name);
 
@@ -259,7 +265,7 @@ dxRender_Visual* CModelPool::Create(const char* name, IReader* data)
 dxRender_Visual* CModelPool::CreateChild(LPCSTR name, IReader* data)
 {
 	string256 low_name;		VERIFY	(xr_strlen(name)<256);
-	strcpy(low_name,name);	strlwr	(low_name);
+	xr_strcpy(low_name,name);	strlwr	(low_name);
 	if (strext(low_name))	*strext	(low_name) = 0;
 
 	// 1. Search for already loaded model
@@ -275,7 +281,7 @@ dxRender_Visual* CModelPool::CreateChild(LPCSTR name, IReader* data)
     return					Model;
 }
 
-extern ENGINE_API BOOL				g_bRendering; 
+extern  BOOL ENGINE_API g_bRendering; 
 void	CModelPool::DeleteInternal	(dxRender_Visual* &V, BOOL bDiscard)
 {
 	VERIFY					(!g_bRendering);
@@ -437,6 +443,71 @@ void CModelPool::dump()
 	Log	("--- model pool --- end.");
 }
 
+void CModelPool::memory_stats		( u32& vb_mem_video, u32& vb_mem_system, u32& ib_mem_video, u32& ib_mem_system )
+{
+	vb_mem_video = 0;
+	vb_mem_system = 0;
+	ib_mem_video = 0;
+	ib_mem_system = 0;
+
+	xr_vector<ModelDef>::iterator		it = Models.begin();
+	xr_vector<ModelDef>::const_iterator	en = Models.end();
+
+	for(; it != en; ++it )
+	{
+		dxRender_Visual* ptr = it->model;
+		Fvisual* vis_ptr = dynamic_cast<Fvisual*> (ptr);
+
+		if( vis_ptr == NULL )
+			continue;
+#if !defined(USE_DX10) && !defined(USE_DX11)
+		D3DINDEXBUFFER_DESC IB_desc;
+		D3DVERTEXBUFFER_DESC VB_desc;
+
+		vis_ptr->m_fast->p_rm_Indices->GetDesc( &IB_desc );
+
+		if( IB_desc.Pool == D3DPOOL_DEFAULT ||
+			IB_desc.Pool == D3DPOOL_MANAGED )
+			ib_mem_video += IB_desc.Size;
+
+		if( IB_desc.Pool == D3DPOOL_MANAGED ||
+			IB_desc.Pool == D3DPOOL_SCRATCH )
+			ib_mem_system += IB_desc.Size;
+
+		vis_ptr->m_fast->p_rm_Vertices->GetDesc( &VB_desc );
+
+		if( VB_desc.Pool == D3DPOOL_DEFAULT ||
+			VB_desc.Pool == D3DPOOL_MANAGED )
+			vb_mem_video += IB_desc.Size;
+
+		if( VB_desc.Pool == D3DPOOL_MANAGED ||
+			VB_desc.Pool == D3DPOOL_SCRATCH )
+			vb_mem_system += IB_desc.Size;
+
+#else
+		D3D_BUFFER_DESC IB_desc;
+		D3D_BUFFER_DESC VB_desc;
+
+		vis_ptr->m_fast->p_rm_Indices->GetDesc( &IB_desc );
+
+		ib_mem_video += IB_desc.ByteWidth;
+		ib_mem_system += IB_desc.ByteWidth;
+
+		vis_ptr->m_fast->p_rm_Vertices->GetDesc( &VB_desc );
+
+		vb_mem_video += IB_desc.ByteWidth;
+		vb_mem_system += IB_desc.ByteWidth;
+
+#endif
+
+
+
+
+
+
+	}
+} 
+
 #ifdef _EDITOR
 IC bool	_IsBoxVisible(dxRender_Visual* visual, const Fmatrix& transform)
 {
@@ -462,7 +533,7 @@ void 	CModelPool::Render(dxRender_Visual* m_pVisual, const Fmatrix& mTransform, 
             CKinematics* pV		= dynamic_cast<CKinematics*>(m_pVisual); VERIFY(pV);
             if (fis_zero(m_fLOD,EPS)&&pV->m_lod){
 		        if (_IsValidShader(pV->m_lod,priority,strictB2F)){
-	                RCache.set_Shader		(pV->m_lod->shader?pV->m_lod->shader:Device.m_WireShader);
+	                RCache.set_Shader		(pV->m_lod->shader?pV->m_lod->shader:EDevice.m_WireShader);
     	            RCache.set_xform_world	(mTransform);
         	        pV->m_lod->Render		(1.f);
                 }
@@ -471,7 +542,7 @@ void 	CModelPool::Render(dxRender_Visual* m_pVisual, const Fmatrix& mTransform, 
                 E = pV->children.end		();
                 for (; I!=E; I++){
                     if (_IsValidShader(*I,priority,strictB2F)){
-                        RCache.set_Shader		((*I)->shader?(*I)->shader:Device.m_WireShader);
+                        RCache.set_Shader		((*I)->shader?(*I)->shader:EDevice.m_WireShader);
                         RCache.set_xform_world	(mTransform);
                         (*I)->Render		 	(m_fLOD);
                     }
@@ -486,7 +557,7 @@ void 	CModelPool::Render(dxRender_Visual* m_pVisual, const Fmatrix& mTransform, 
             E = pV->children.end		();
             for (; I!=E; I++){
 		        if (_IsValidShader(*I,priority,strictB2F)){
-	                RCache.set_Shader		((*I)->shader?(*I)->shader:Device.m_WireShader);
+	                RCache.set_Shader		((*I)->shader?(*I)->shader:EDevice.m_WireShader);
     	            RCache.set_xform_world	(mTransform);
         	        (*I)->Render		 	(m_fLOD);
                 }
@@ -510,7 +581,7 @@ void 	CModelPool::Render(dxRender_Visual* m_pVisual, const Fmatrix& mTransform, 
 //		if (_IsBoxVisible(m_pVisual,mTransform))
         {
             if (_IsValidShader(m_pVisual,priority,strictB2F)){
-                RCache.set_Shader			(m_pVisual->shader?m_pVisual->shader:Device.m_WireShader);
+                RCache.set_Shader			(m_pVisual->shader?m_pVisual->shader:EDevice.m_WireShader);
                 RCache.set_xform_world		(mTransform);
                 m_pVisual->Render		 	(m_fLOD);
             }
@@ -519,7 +590,7 @@ void 	CModelPool::Render(dxRender_Visual* m_pVisual, const Fmatrix& mTransform, 
     default:
         if (_IsBoxVisible(m_pVisual,mTransform)){
             if (_IsValidShader(m_pVisual,priority,strictB2F)){
-                RCache.set_Shader			(m_pVisual->shader?m_pVisual->shader:Device.m_WireShader);
+                RCache.set_Shader			(m_pVisual->shader?m_pVisual->shader:EDevice.m_WireShader);
                 RCache.set_xform_world		(mTransform);
                 m_pVisual->Render		 	(m_fLOD);
             }

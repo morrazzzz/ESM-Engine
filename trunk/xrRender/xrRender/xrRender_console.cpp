@@ -63,8 +63,8 @@ float		ps_r1_pps_v					= 0.f	;
 
 // R1-specific
 int			ps_r1_GlowsPerFrame			= 16	;					// r1-only
-
 float		ps_r1_fog_luminance = 1.1f;
+int			ps_r1_SoftwareSkinning = 0;					// r1-only
 
 // R2
 float		ps_r2_ssaLOD_A				= 48.f	;
@@ -72,7 +72,22 @@ float		ps_r2_ssaLOD_B				= 32.f	;
 float		ps_r2_tf_Mipbias			= 0.0f	;
 
 // R2-specific
-Flags32		ps_r2_ls_flags				= { R2FLAG_SUN | R2FLAG_SUN_IGNORE_PORTALS | R2FLAG_EXP_DONT_TEST_UNSHADOWED | R2FLAG_USE_NVSTENCIL | R2FLAG_EXP_SPLIT_SCENE | R2FLAG_EXP_MT_CALC};	// r2-only
+#pragma todo("Required think about flags R2!!!")
+Flags32		ps_r2_ls_flags				= { R2FLAG_SUN 
+    | R2FLAG_SUN_IGNORE_PORTALS 
+	| R2FLAG_EXP_DONT_TEST_UNSHADOWED 
+	| R2FLAG_USE_NVSTENCIL | R2FLAG_EXP_SPLIT_SCENE 
+	| R2FLAG_EXP_MT_CALC 
+	| R2FLAG_DETAIL_BUMP 
+	//| R2FLAG_DOF
+	| R2FLAG_SOFT_PARTICLES 
+    | R2FLAG_SOFT_WATER 
+	| R2FLAG_STEEP_PARALLAX 
+	//| R2FLAG_SUN_FOCUS
+	//| R2FLAG_SUN_TSM 
+	//| R2FLAG_TONEMAP
+	//| R2FLAG_VOLUMETRIC_LIGHTS
+};	// r2-only
 
 Flags32		ps_r2_ls_flags_ext			= { R2FLAGEXT_SUN_OLD
 		/*R2FLAGEXT_SSAO_OPT_DATA |*/ /*R2FLAGEXT_SSAO_HALF_DATA*/
@@ -465,7 +480,15 @@ void		xrRender_initconsole	()
 
 	// R1-specific
 	CMD4(CCC_Integer,	"r1_glows_per_frame",	&ps_r1_GlowsPerFrame,		2,		32		);
+	CMD3(CCC_Mask,		"r1_detail_textures",	&ps_r2_ls_flags,			R1FLAG_DETAIL_TEXTURES);
+
 	CMD4(CCC_Float, "r1_fog_luminance", &ps_r1_fog_luminance, 0.2f, 5.f);
+
+	// Software Skinning
+	// 0 - disabled (renderer can override)
+	// 1 - enabled
+	// 2 - forced hardware skinning (renderer can not override)
+	CMD4(CCC_Integer,	"r1_software_skinning",	&ps_r1_SoftwareSkinning,	0,		2	);
 
 	// R2
 	CMD4(CCC_Float,		"r2_ssa_lod_a",			&ps_r2_ssaLOD_A,			16,		96		);
@@ -539,6 +562,8 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Integer,	"r2_dhemi_count",		&ps_r2_dhemi_count,			4,		25		);
 	CMD4(CCC_Float,		"r2_dhemi_scale",		&ps_r2_dhemi_scale,			.5f,	3.f		);
 	CMD4(CCC_Float,		"r2_dhemi_smooth",		&ps_r2_lt_smooth,			0.f,	10.f	);
+	CMD3(CCC_Mask,		"rs_hom_depth_draw",	&ps_r2_ls_flags_ext,		R_FLAGEXT_HOM_DEPTH_DRAW);
+
 #endif // DEBUG
 
 	CMD3(CCC_Mask,		"r2_shadow_cascede_zcul",&ps_r2_ls_flags_ext,		R2FLAGEXT_SUN_ZCULLING);
@@ -569,11 +594,20 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float, "r2_dof_sky", &ps_r2_dof_sky, -10000.f, 10000.f);
 	CMD3(CCC_Mask, "r2_dof_enable", &ps_r2_ls_flags, R2FLAG_DOF);
 
+	CMD3(CCC_Mask, "r2_mblur_enable", &ps_r2_ls_flags, R2FLAG_MBLUR);
+
 	//	float		ps_r2_dof_near			= 0.f;					// 0.f
 	//	float		ps_r2_dof_focus			= 1.4f;					// 1.4f
 
+	CMD3(CCC_Mask,		"r2_volumetric_lights",			&ps_r2_ls_flags,			R2FLAG_VOLUMETRIC_LIGHTS);
 //	CMD3(CCC_Mask,		"r2_sun_shafts",				&ps_r2_ls_flags,			R2FLAG_SUN_SHAFTS);
 	CMD3(CCC_Token,		"r2_sun_shafts",				&ps_r_sun_shafts,			qsun_shafts_token);
+	CMD3(CCC_Mask,		"r2_steep_parallax",			&ps_r2_ls_flags,			R2FLAG_STEEP_PARALLAX);
+	CMD3(CCC_Mask,		"r2_detail_bump",				&ps_r2_ls_flags,			R2FLAG_DETAIL_BUMP);
+
+	//	Igor: need restart
+	CMD3(CCC_Mask,		"r2_soft_water",				&ps_r2_ls_flags,			R2FLAG_SOFT_WATER);
+	CMD3(CCC_Mask,		"r2_soft_particles",			&ps_r2_ls_flags,			R2FLAG_SOFT_PARTICLES);
 }
 
 void	xrRender_apply_tf		()

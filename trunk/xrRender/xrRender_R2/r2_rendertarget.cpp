@@ -476,6 +476,15 @@ CRenderTarget::CRenderTarget		()
 	s_menu.create						("distort");
 	g_menu.create						(FVF::F_TL,RCache.Vertex.Buffer(),RCache.QuadIB);
 
+	//	Igor: TMP
+	//	Create an RT for online screenshot makining
+	//u32		w = Device.dwWidth, h = Device.dwHeight;
+	//HW.pDevice->CreateOffscreenPlainSurface(Device.dwWidth,Device.dwHeight,D3DFMT_A8R8G8B8,D3DPOOL_SYSTEMMEM,&pFB,NULL);
+	//HW.pDevice->CreateOffscreenPlainSurface(Device.dwWidth,Device.dwHeight,rt_Color->fmt,D3DPOOL_SYSTEMMEM,&pFB,NULL);
+	D3DSURFACE_DESC	desc;
+	HW.pBaseRT->GetDesc(&desc);
+	HW.pDevice->CreateOffscreenPlainSurface(Device.dwWidth,Device.dwHeight,desc.Format,D3DPOOL_SYSTEMMEM,&pFB,NULL);
+
 	// 
 	dwWidth		= Device.dwWidth;
 	dwHeight	= Device.dwHeight;
@@ -483,6 +492,8 @@ CRenderTarget::CRenderTarget		()
 
 CRenderTarget::~CRenderTarget	()
 {
+	_RELEASE(pFB);
+
 	// Textures
 	t_material->surface_set		(NULL);
 
@@ -495,8 +506,17 @@ CRenderTarget::~CRenderTarget	()
 	t_LUM_dest->surface_set		(NULL);
 
 #ifdef DEBUG
-	_SHOW_REF("t_envmap_0 - #small",t_envmap_0->pSurface);
-	_SHOW_REF("t_envmap_1 - #small",t_envmap_1->pSurface);
+	ID3DBaseTexture*	pSurf = 0;
+
+	pSurf = t_envmap_0->surface_get();
+	if (pSurf) pSurf->Release();
+	_SHOW_REF("t_envmap_0 - #small",pSurf);
+
+	pSurf = t_envmap_1->surface_get();
+	if (pSurf) pSurf->Release();
+	_SHOW_REF("t_envmap_1 - #small",pSurf);
+	//_SHOW_REF("t_envmap_0 - #small",t_envmap_0->pSurface);
+	//_SHOW_REF("t_envmap_1 - #small",t_envmap_1->pSurface);
 #endif // DEBUG
 	t_envmap_0->surface_set		(NULL);
 	t_envmap_1->surface_set		(NULL);

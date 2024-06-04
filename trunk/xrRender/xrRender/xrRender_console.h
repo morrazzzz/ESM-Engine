@@ -42,9 +42,12 @@ extern ECORE_API	float		ps_r1_pps_u;
 extern ECORE_API	float		ps_r1_pps_v;
 
 // R1-specific
-extern ECORE_API	float		ps_r1_fog_luminance;	//1.f r1-only
 extern ECORE_API	int			ps_r1_GlowsPerFrame;	// r1-only
 extern ECORE_API	Flags32		ps_r1_flags;			// r1-only
+
+extern ECORE_API	float		ps_r1_fog_luminance;	//1.f r1-only
+extern ECORE_API	int			ps_r1_SoftwareSkinning;	// r1-only
+
 enum
 {
 	R1FLAG_DLIGHTS				= (1<<0),
@@ -133,7 +136,17 @@ enum
 
 	R2FLAG_EXP_MT_CALC			= (1<<18),
 
-	R2FLAG_DOF                  = (1 << 19),
+	R2FLAG_SOFT_WATER			= (1<<19),	//	Igor: need restart
+	R2FLAG_SOFT_PARTICLES		= (1<<20),	//	Igor: need restart
+	R2FLAG_VOLUMETRIC_LIGHTS	= (1<<21),
+	R2FLAG_STEEP_PARALLAX		= (1<<22),
+	R2FLAG_DOF                  = (1 << 23),
+
+	R2FLAG_MBLUR = 1 << 24,
+
+	R1FLAG_DETAIL_TEXTURES		= (1<<25),
+
+	R2FLAG_DETAIL_BUMP			= (1<<26),
 };
 
 enum
@@ -143,9 +156,9 @@ enum
 //	R2FLAGEXT_SSAO_HALF_DATA		= (1<<2),
 //	R2FLAGEXT_SSAO_HBAO				= (1<<3),
 //	R2FLAGEXT_SSAO_HDAO				= (1<<4),
-//	R2FLAGEXT_ENABLE_TESSELLATION	= (1<<5),
-//	R2FLAGEXT_WIREFRAME				= (1<<6),
-//	R_FLAGEXT_HOM_DEPTH_DRAW		= (1<<7),
+	R2FLAGEXT_ENABLE_TESSELLATION	= (1<<5),
+	R2FLAGEXT_WIREFRAME				= (1<<6),
+	R_FLAGEXT_HOM_DEPTH_DRAW		= (1<<7),
 	R2FLAGEXT_SUN_ZCULLING			= (1<<8),
 	R2FLAGEXT_SUN_OLD				= (1<<9),
 };

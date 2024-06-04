@@ -1,22 +1,18 @@
-// Shader.cpp: implementation of the CShader class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
-#pragma hdrstop
-
 #include "Shader.h"
 #include "ResourceManager.h"
+
 #include "dxRenderDeviceRender.h"
 
-// 
-STextureList::~STextureList				()			{   DEV->_DeleteTextureList	(this);			}
-SMatrixList::~SMatrixList				()			{   DEV->_DeleteMatrixList		(this);			}
-SConstantList::~SConstantList			()			{   DEV->_DeleteConstantList	(this);			}
-SPass::~SPass							()			{   DEV->_DeletePass			(this);			}
-ShaderElement::~ShaderElement			()			{   DEV->_DeleteElement		(this);			}
-SGeometry::~SGeometry					()			{   DEV->DeleteGeom			(this);			}
-Shader::~Shader							()			{   DEV->Delete				(this);			}
+
+//
+STextureList::~STextureList				()			{	DEV->_DeleteTextureList	(this);			}
+SMatrixList::~SMatrixList				()			{	DEV->_DeleteMatrixList		(this);			}
+SConstantList::~SConstantList			()			{	DEV->_DeleteConstantList	(this);			}
+SPass::~SPass							()			{	DEV->_DeletePass			(this);			}
+ShaderElement::~ShaderElement			()			{	DEV->_DeleteElement		(this);			}
+SGeometry::~SGeometry					()			{	DEV->DeleteGeom			(this);			}
+Shader::~Shader							()			{	DEV->Delete				(this);			}
 																							 
 //////////////////////////////////////////////////////////////////////////					 
 void	resptrcode_shader::create		(LPCSTR s_shader, LPCSTR s_textures, LPCSTR s_constants, LPCSTR s_matrices)
@@ -29,11 +25,11 @@ void	resptrcode_shader::create		(IBlender* B, LPCSTR s_shader, LPCSTR s_textures
 }
 
 //////////////////////////////////////////////////////////////////////////
-void	resptrcode_geom::create			(u32 FVF , IDirect3DVertexBuffer9* vb, IDirect3DIndexBuffer9* ib)
+void	resptrcode_geom::create			(u32 FVF , ID3DVertexBuffer* vb, ID3DIndexBuffer* ib)
 {
 	_set(DEV->CreateGeom		(FVF,vb,ib));
 }
-void	resptrcode_geom::create			(D3DVERTEXELEMENT9* decl, IDirect3DVertexBuffer9* vb, IDirect3DIndexBuffer9* ib)
+void	resptrcode_geom::create			(D3DVERTEXELEMENT9* decl, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib)
 {
 	_set(DEV->CreateGeom		(decl,vb,ib));
 }
@@ -43,18 +39,18 @@ void	resptrcode_geom::create			(D3DVERTEXELEMENT9* decl, IDirect3DVertexBuffer9*
 //////////////////////////////////////////////////////////////////////
 BOOL SPass::equal(const SPass& other)
 {
-	if (state != other.state)		return FALSE;
-	if (ps != other.ps)			return FALSE;
-	if (vs != other.vs)			return FALSE;
+	if (state		!= other.state)		return FALSE;
+	if (ps			!= other.ps)			return FALSE;
+	if (vs			!= other.vs)			return FALSE;
 #if defined(USE_DX10) || defined(USE_DX11)
-	if (gs != other.gs)			return FALSE;
+	if (gs			!= other.gs)			return FALSE;
 #	ifdef USE_DX11
-	if (hs != other.hs)			return FALSE;
-	if (ds != other.ds)			return FALSE;
-	if (cs != other.cs)			return FALSE;
+	if (hs			!= other.hs)			return FALSE;
+	if (ds			!= other.ds)			return FALSE;
+	if (cs			!= other.cs)			return FALSE;
 #	endif
 #endif	//	USE_DX10
-	if (constants != other.constants)		return FALSE;	// is this nessesary??? (ps+vs already combines)
+	if (constants	!= other.constants)		return FALSE;	// is this nessesary??? (ps+vs already combines)
 
 	if (T != other.T)					return FALSE;
 	if (C != other.C)					return FALSE;
@@ -125,4 +121,28 @@ void STextureList::clear_not_free()
 		(*it).second.destroy();
 
 	erase(begin(),end());
+}
+
+u32 STextureList::find_texture_stage(const shared_str &TexName) const
+{
+	u32	dwTextureStage	= 0;
+
+	STextureList::const_iterator	_it		= this->begin	();
+	STextureList::const_iterator	_end	= this->end	();
+	for (; _it!=_end; _it++)
+	{
+		const std::pair<u32,ref_texture>&		loader	=	*_it;
+
+		//	Shadowmap texture always uses 0 texture unit
+		if (loader.second->cName==TexName)
+		{
+			//	Assign correct texture
+			dwTextureStage	= loader.first;
+			break;
+		}
+	}
+
+	VERIFY(_it!=_end);
+
+	return dwTextureStage;
 }

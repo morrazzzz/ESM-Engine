@@ -15,9 +15,11 @@
 #	include "igame_persistent.h"
 #	include "environment.h"
 #else
-#	include "..\..\xr_3da\igame_persistent.h"
-#	include "..\..\xr_3da\environment.h"
+#	include "../../xr_3da/igame_persistent.h"
+#	include "../../xr_3da/environment.h"
+#   include <xmmintrin.h>
 #endif
+
 
 const float dbgOffset			= 0.f;
 const int	dbgItems			= 128;
@@ -81,6 +83,10 @@ CDetailManager::CDetailManager	()
 	hw_BatchSize= 0;
 	hw_VB		= 0;
 	hw_IB		= 0;
+	m_time_rot_1 = 0;
+	m_time_rot_2 = 0;
+	m_time_pos	= 0;
+	m_global_time_old = 0;
 }
 
 CDetailManager::~CDetailManager	()
@@ -181,45 +187,70 @@ extern ECORE_API float r_ssaDISCARD;
 
 void CDetailManager::UpdateVisibleM()
 {
-	Fvector		EYE				= Device.vCameraPosition;
-	
-	CFrustum	View;
-	View.CreateFromMatrix		(Device.mFullTransform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
+	Fvector		EYE				= RDEVICE.vCameraPosition_saved;
 
+	CFrustum	View;
+	View.CreateFromMatrix		(RDEVICE.mFullTransform_saved, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
+	
+ 	CFrustum	View_old;
+ 	Fmatrix		Viewm_old = RDEVICE.mFullTransform;
+ 	View_old.CreateFromMatrix		(Viewm_old, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
+	
 	float fade_limit			= dm_fade;	fade_limit=fade_limit*fade_limit;
 	float fade_start			= 1.f;		fade_start=fade_start*fade_start;
 	float fade_range			= fade_limit-fade_start;
-	float		r_ssaCHEAP		= 16*r_ssaDISCARD;
+ 	float		r_ssaCHEAP		= 16*r_ssaDISCARD;
 
 	// Initialize 'vis' and 'cache'
 	// Collect objects for rendering
-	Device.Statistic->RenderDUMP_DT_VIS.Begin	();
+	RDEVICE.Statistic->RenderDUMP_DT_VIS.Begin	();
 	for (int _mz=0; _mz<dm_cache1_line; _mz++){
 		for (int _mx=0; _mx<dm_cache1_line; _mx++){
 			CacheSlot1& MS		= cache_level1[_mz][_mx];
-			if (MS.empty)		continue;
+			if (MS.empty)
+			{
+				continue;
+			}
 			u32 mask			= 0xff;
 			u32 res				= View.testSAABB		(MS.vis.sphere.P,MS.vis.sphere.R,MS.vis.box.data(),mask);
-			if (fcvNone==res)						 	continue;	// invisible-view frustum
+			if (fcvNone==res)
+			{
+				continue;	// invisible-view frustum
+			}
 			// test slots
-			for (int _i=0; _i<dm_cache1_count*dm_cache1_count; _i++){
+			
+			u32 dwCC = dm_cache1_count*dm_cache1_count;
+
+			for (int _i=0; _i < dwCC ; _i++){
 				Slot*	PS		= *MS.slots[_i];
 				Slot& 	S 		= *PS;
 
+//				if ( ( _i + 1 ) < dwCC );
+//					_mm_prefetch( (char *) *MS.slots[ _i + 1 ]  , _MM_HINT_T1 );
+
 				// if slot empty - continue
-				if (S.empty)	continue;
+				if (S.empty)
+				{
+					continue;
+				}
 
 				// if upper test = fcvPartial - test inner slots
 				if (fcvPartial==res){
 					u32 _mask	= mask;
 					u32 _res	= View.testSAABB			(S.vis.sphere.P,S.vis.sphere.R,S.vis.box.data(),_mask);
-					if (fcvNone==_res)						continue;	// invisible-view frustum
+					if (fcvNone==_res)
+					{
+						continue;	// invisible-view frustum
+					}
 				}
 #ifndef _EDITOR
-				if (!RImplementation.HOM.visible(S.vis))	continue;	// invisible-occlusion
+				if (!RImplementation.HOM.visible(S.vis))
+				{
+					continue;	// invisible-occlusion
+				}
 #endif
 				// Add to visibility structures
-				if (Device.dwFrame>S.frame){
+				if (RDEVICE.dwFrame>S.frame){
 					// Calc fade factor	(per slot)
 					float	dist_sq		= EYE.distance_to_sqr	(S.vis.sphere.P);
 					if		(dist_sq>fade_limit)				continue;
@@ -227,7 +258,7 @@ void CDetailManager::UpdateVisibleM()
 					float	alpha_i		= 1.f - alpha;
 					float	dist_sq_rcp	= 1.f / dist_sq;
 
-					S.frame			= Device.dwFrame+Random.randI(15,30);
+					S.frame			= RDEVICE.dwFrame+Random.randI(15,30);
 					for (int sp_id=0; sp_id<dm_obj_in_slot; sp_id++){
 						SlotPart&			sp	= S.G		[sp_id];
 						if (sp.id==DetailSlot::ID_Empty)	continue;
@@ -244,7 +275,10 @@ void CDetailManager::UpdateVisibleM()
 							SlotItem& Item			= *(*siIT);
 							float   scale			= Item.scale_calculated	= Item.scale*alpha_i;
 							float	ssa				= scale*scale*Rq_drcp;
-							if (ssa < r_ssaDISCARD) continue;
+							if (ssa < r_ssaDISCARD)
+							{
+								continue;
+							}
 							u32		vis_id			= 0;
 							if (ssa > r_ssaCHEAP)	vis_id = Item.vis_ID;
 							
@@ -257,14 +291,23 @@ void CDetailManager::UpdateVisibleM()
 				for (int sp_id=0; sp_id<dm_obj_in_slot; sp_id++){
 					SlotPart&			sp	= S.G		[sp_id];
 					if (sp.id==DetailSlot::ID_Empty)	continue;
-					if (!sp.r_items[0].empty()) m_visibles[0][sp.id].push_back(&sp.r_items[0]);
-					if (!sp.r_items[1].empty()) m_visibles[1][sp.id].push_back(&sp.r_items[1]);
-					if (!sp.r_items[2].empty()) m_visibles[2][sp.id].push_back(&sp.r_items[2]);
+					if (!sp.r_items[0].empty())
+					{
+						m_visibles[0][sp.id].push_back(&sp.r_items[0]);
+					}
+					if (!sp.r_items[1].empty())
+					{
+						m_visibles[1][sp.id].push_back(&sp.r_items[1]);
+					}
+					if (!sp.r_items[2].empty())
+					{
+						m_visibles[2][sp.id].push_back(&sp.r_items[2]);
+					}
 				}
 			}
 		}
 	}
-	Device.Statistic->RenderDUMP_DT_VIS.End	();
+	RDEVICE.Statistic->RenderDUMP_DT_VIS.End	();
 }
 
 void CDetailManager::Render	()
@@ -277,9 +320,13 @@ void CDetailManager::Render	()
 	// MT
 	MT_SYNC					();
 
-	Device.Statistic->RenderDUMP_DT_Render.Begin	();
+	RDEVICE.Statistic->RenderDUMP_DT_Render.Begin	();
 
+#ifndef _EDITOR
 	float factor			= g_pGamePersistent->Environment().wind_strength_factor;
+#else
+	float factor			= 0.3f;
+#endif
 	swing_current.lerp		(swing_desc[0],swing_desc[1],factor);
 
 	RCache.set_CullMode		(CULL_NONE);
@@ -287,8 +334,8 @@ void CDetailManager::Render	()
 	if (UseVS())			hw_Render	();
 	else					soft_Render	();
 	RCache.set_CullMode		(CULL_CCW);
-	Device.Statistic->RenderDUMP_DT_Render.End	();
-	m_frame_rendered		= Device.dwFrame;
+	RDEVICE.Statistic->RenderDUMP_DT_Render.End	();
+	m_frame_rendered		= RDEVICE.dwFrame;
 }
 
 void __stdcall	CDetailManager::MT_CALC		()
@@ -300,19 +347,20 @@ void __stdcall	CDetailManager::MT_CALC		()
 #endif    
 
 	MT.Enter					();
-	if (m_frame_calc!=Device.dwFrame)	
-		if ((m_frame_rendered+1)==Device.dwFrame) //already rendered
+	if (m_frame_calc!=RDEVICE.dwFrame)	
+		if ((m_frame_rendered+1)==RDEVICE.dwFrame) //already rendered
 		{
-			Fvector		EYE				= Device.vCameraPosition;
+			Fvector		EYE				= RDEVICE.vCameraPosition_saved;
+
 			int s_x	= iFloor			(EYE.x/dm_slot_size+.5f);
 			int s_z	= iFloor			(EYE.z/dm_slot_size+.5f);
 
-			Device.Statistic->RenderDUMP_DT_Cache.Begin	();
+			RDEVICE.Statistic->RenderDUMP_DT_Cache.Begin	();
 			cache_Update				(s_x,s_z,EYE,dm_max_decompress);
-			Device.Statistic->RenderDUMP_DT_Cache.End	();
+			RDEVICE.Statistic->RenderDUMP_DT_Cache.End	();
 
 			UpdateVisibleM				();
-			m_frame_calc				= Device.dwFrame;
+			m_frame_calc				= RDEVICE.dwFrame;
 		}
 	MT.Leave					        ();
 }
