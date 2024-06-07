@@ -1,10 +1,12 @@
-#ifndef __XR_UIGAMECUSTOM_H__
-#define __XR_UIGAMECUSTOM_H__
 #pragma once
-
 
 #include "script_export_space.h"
 #include "object_interfaces.h"
+#include "UIDialogHolder.h"
+#include "ui/UIPdaWnd.h"
+#include "ui/UIMainIngameWnd.h"
+#include "../xr_3da/CustomHUD.h"
+
 // refs
 class CUI;
 class CTeamBaseZone;
@@ -14,6 +16,8 @@ class CUICaption;
 class CUIStatic;
 class CUIWindow;
 class CUIXml;
+class CUIInventoryWnd;
+class CUIMessagesWindow;
 
 struct SDrawStaticStruct :public IPureDestroyableObject{
 	SDrawStaticStruct	();
@@ -67,44 +71,43 @@ public:
 
 extern CMapListHelper	gMapListHelper;
 
-class CUIGameCustom :public DLL_Pure, public ISheduled
+class CUIGameCustom :public DLL_Pure, public CDialogHolder
 {
-	typedef ISheduled inherited;
 protected:
-	u32					uFlags;
-
-	void				SetFlag					(u32 mask, BOOL flag){if (flag) uFlags|=mask; else uFlags&=~mask; }
-	void				InvertFlag				(u32 mask){if (uFlags&mask) uFlags&=~mask; else uFlags|=mask; }
-	BOOL				GetFlag					(u32 mask){return uFlags&mask;}
+	CUIXml*				m_msgs_xml;
 	CUICaption*			GameCaptions			() {return m_pgameCaptions;}
 	CUICaption*			m_pgameCaptions;
-	CUIXml*				m_msgs_xml;
-	st_vec										m_custom_statics;
+	st_vec m_custom_statics;
+
+	CUIInventoryWnd* m_InventoryMenu;
+	CUIPdaWnd* m_PdaMenu;
+
+	bool				m_bShowGameIndicators;
+
 public:
+	CUIMainIngameWnd*		UIMainIngameWnd;
+	CUIMessagesWindow*		m_pMessagesWnd;
+
 	virtual void		SetClGame				(game_cl_GameState* g){};
 
-	virtual				float					shedule_Scale		();
-	virtual				void					shedule_Update		(u32 dt);
-	
 						CUIGameCustom			();
 	virtual				~CUIGameCustom			();
 
-	virtual	void		Init					()	{};
+	virtual	void		Init					(int stage)	{};
 	
 	virtual void		Render					();
-	virtual void		OnFrame					();
-	virtual	void		reset_ui				();
+	virtual void _BCL	OnFrame					();
 
-	virtual bool		IR_OnKeyboardPress		(int dik);
-	virtual bool		IR_OnKeyboardRelease	(int dik);
-	virtual bool		IR_OnMouseMove			(int dx, int dy);
-	virtual bool		IR_OnMouseWheel			(int direction);
+	IC CUIInventoryWnd&	InventoryMenu			() const { return *m_InventoryMenu; }
+	IC CUIPdaWnd&		PdaMenu					() const { return *m_PdaMenu;   }
+	void ShowHideInventoryMenu() const;
+	void ShowHidePdaMenu(const EPdaTabs tab) const;
+	  
+    void				ShowGameIndicators		(bool b)			{ m_bShowGameIndicators = b;};
+	bool				GameIndicatorsShown		()					{return m_bShowGameIndicators;};
+	void				ShowCrosshair			(bool b)			{psHUD_Flags.set			(HUD_CROSSHAIR_RT, b);}
+	bool				CrosshairShown			()					{return !!psHUD_Flags.test	(HUD_CROSSHAIR_RT);}
 
-
-	void				AddDialogToRender		(CUIWindow* pDialog);
-	void				RemoveDialogToRender	(CUIWindow* pDialog);
-	
-	CUIDialogWnd*		MainInputReceiver		();
 	virtual void		ReInitShownUI			() = 0;
 	virtual void		HideShownDialogs		(){};
 
@@ -117,13 +120,13 @@ public:
 			SDrawStaticStruct*	GetCustomStatic		(LPCSTR id);
 			void				RemoveCustomStatic	(LPCSTR id);
 
-	virtual	shared_str	shedule_Name				() const		{ return shared_str("CUIGameCustom"); };
-	virtual bool		shedule_Needed			()					{return true;};
+    virtual void		UnLoad					();
+	void				Load					();
+
+	void				OnConnected             ();
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 add_to_type_list(CUIGameCustom)
 #undef script_type_list
 #define script_type_list save_type_list(CUIGameCustom)
-
-#endif // __XR_UIGAMECUSTOM_H__

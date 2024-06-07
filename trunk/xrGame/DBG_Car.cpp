@@ -7,8 +7,7 @@
 #include "hit.h"
 #include "PHDestroyable.h"
 #include "Car.h"
-#include "hudmanager.h"
-#include "Level.h"
+#include "ui_base.h"
 
 void CCar::InitDebug()
 {
@@ -115,50 +114,48 @@ void CCar::DbgUbdateCl()
 			m_pPhysicsShell->get_LinearVel(v);
 			string32 s;
 			sprintf_s									(s,"speed, %f km/hour",v.magnitude()/1000.f*3600.f)								;
-			HUD().Font().pFontStat->SetColor		(color_rgba(0xff,0xff,0xff,0xff))												;
-			HUD().Font().pFontStat->OutSet			(120,530)																		;
-			HUD().Font().pFontStat->OutNext		(s)																				;
-			HUD().Font().pFontStat->SetColor		(D3DCOLOR_XRGB(255,!b_transmission_switching*255,!b_transmission_switching*255));
-			HUD().Font().pFontStat->OutNext		("Transmission num:      [%d]",m_current_transmission_num)						;
-			HUD().Font().pFontStat->SetColor		(color_rgba(0xff,0xff,0xff,0xff))												;	
-			HUD().Font().pFontStat->OutNext		("gear ratio:			  [%3.2f]",m_current_gear_ratio)						;
-			HUD().Font().pFontStat->OutNext		("Power:      [%3.2f]",m_current_engine_power/(0.8f*1000.f))					;
-			HUD().Font().pFontStat->OutNext		("rpm:      [%3.2f]",m_current_rpm/(1.f/60.f*2.f*M_PI))							;
-			HUD().Font().pFontStat->OutNext		("wheel torque:      [%3.2f]",RefWheelCurTorque())								;
-			HUD().Font().pFontStat->OutNext		("engine torque:      [%3.2f]",EngineCurTorque())								;
-			HUD().Font().pFontStat->OutNext		("fuel:      [%3.2f]",m_fuel)													;
+			UI().Font().pFontStat->SetColor		(color_rgba(0xff,0xff,0xff,0xff))												;
+			UI().Font().pFontStat->OutSet			(120,530)																		;
+			UI().Font().pFontStat->OutNext		(s)																				;
+			UI().Font().pFontStat->SetColor		(D3DCOLOR_XRGB(255,!b_transmission_switching*255,!b_transmission_switching*255));
+			UI().Font().pFontStat->OutNext		("Transmission num:      [%d]",m_current_transmission_num)						;
+			UI().Font().pFontStat->SetColor		(color_rgba(0xff,0xff,0xff,0xff))												;
+			UI().Font().pFontStat->OutNext		("gear ratio:			  [%3.2f]",m_current_gear_ratio)						;
+			UI().Font().pFontStat->OutNext		("Power:      [%3.2f]",m_current_engine_power/(0.8f*1000.f))					;
+			UI().Font().pFontStat->OutNext		("rpm:      [%3.2f]",m_current_rpm/(1.f/60.f*2.f*M_PI))							;
+			UI().Font().pFontStat->OutNext		("wheel torque:      [%3.2f]",RefWheelCurTorque())								;
+			UI().Font().pFontStat->OutNext		("engine torque:      [%3.2f]",EngineCurTorque())								;
+			UI().Font().pFontStat->OutNext		("fuel:      [%3.2f]",m_fuel)													;
 			if(b_clutch)
 			{
-				HUD().Font().pFontStat->SetColor		(D3DCOLOR_XRGB(0,255,0))														;
-				HUD().Font().pFontStat->OutNext		("CLUTCH")																		;
-				HUD().Font().pFontStat->SetColor		(color_rgba(0xff,0xff,0xff,0xff))												;
+				UI().Font().pFontStat->SetColor		(D3DCOLOR_XRGB(0,255,0))														;
+				UI().Font().pFontStat->OutNext		("CLUTCH")																		;
+				UI().Font().pFontStat->SetColor		(color_rgba(0xff,0xff,0xff,0xff))												;
 			}
 			if(b_engine_on)
 			{
-				HUD().Font().pFontStat->SetColor		(D3DCOLOR_XRGB(0,255,0))														;
-				HUD().Font().pFontStat->OutNext		("ENGINE ON")																		;
-				HUD().Font().pFontStat->SetColor		(color_rgba(0xff,0xff,0xff,0xff))												;
+				UI().Font().pFontStat->SetColor		(D3DCOLOR_XRGB(0,255,0))														;
+				UI().Font().pFontStat->OutNext		("ENGINE ON")																		;
+				UI().Font().pFontStat->SetColor		(color_rgba(0xff,0xff,0xff,0xff))												;
 			}
 			if(b_stalling)
 			{
-				HUD().Font().pFontStat->SetColor		(D3DCOLOR_XRGB(255,0,0))														;
-				HUD().Font().pFontStat->OutNext		("STALLING")																		;
-				HUD().Font().pFontStat->SetColor		(color_rgba(0xff,0xff,0xff,0xff))												;
+				UI().Font().pFontStat->SetColor		(D3DCOLOR_XRGB(255,0,0))														;
+				UI().Font().pFontStat->OutNext		("STALLING")																		;
+				UI().Font().pFontStat->SetColor		(color_rgba(0xff,0xff,0xff,0xff))												;
 			}
 			if(b_starting)
 			{
-				HUD().Font().pFontStat->SetColor		(D3DCOLOR_XRGB(255,0,0))														;
-				HUD().Font().pFontStat->OutNext		("STARTER")																		;
-				HUD().Font().pFontStat->SetColor		(color_rgba(0xff,0xff,0xff,0xff))												;
+				UI().Font().pFontStat->SetColor		(D3DCOLOR_XRGB(255,0,0))														;
+				UI().Font().pFontStat->OutNext		("STARTER")																		;
+				UI().Font().pFontStat->SetColor		(color_rgba(0xff,0xff,0xff,0xff))												;
 			}
 			if(b_breaks)
 			{
-				HUD().Font().pFontStat->SetColor		(D3DCOLOR_XRGB(255,0,0))														;
-				HUD().Font().pFontStat->OutNext		("BREAKS")																		;
-				HUD().Font().pFontStat->SetColor		(color_rgba(0xff,0xff,0xff,0xff))												;
+				UI().Font().pFontStat->SetColor		(D3DCOLOR_XRGB(255,0,0))														;
+				UI().Font().pFontStat->OutNext		("BREAKS")																		;
+				UI().Font().pFontStat->SetColor		(color_rgba(0xff,0xff,0xff,0xff))												;
 			}
-			//HUD().pFontStat->OutNext("Vel Magnitude: [%3.2f]",m_PhysicMovementControl->GetVelocityMagnitude());
-			//HUD().pFontStat->OutNext("Vel Actual:    [%3.2f]",m_PhysicMovementControl->GetVelocityActual());
 		}
 
 		if(ph_dbg_draw_mask.test(phDbgDrawCarPlots)&&b_plots)

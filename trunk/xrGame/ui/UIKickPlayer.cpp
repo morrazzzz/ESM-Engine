@@ -83,14 +83,14 @@ void CUIKickPlayer::InitKick(CUIXml& xml_doc)
 }
 
 #include <dinput.h>
-bool CUIKickPlayer::OnKeyboard(int dik, EUIMessages keyboard_action)
+bool CUIKickPlayer::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {
 	if (dik == DIK_ESCAPE)
 	{
 		OnBtnCancel	();
 		return		true;
 	}
-	return CUIDialogWnd::OnKeyboard(dik, keyboard_action);
+	return CUIDialogWnd::OnKeyboardAction(dik, keyboard_action);
 }
 
 void CUIKickPlayer::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
@@ -128,7 +128,6 @@ void CUIKickPlayer::OnBtnOk()
 		}
 		Console->Execute			(command);
 		game_cl_mp* game			= smart_cast<game_cl_mp*>(&Game());
-		game->StartStopMenu			(this, true);
 	}
 	else
 		return;
@@ -137,7 +136,6 @@ void CUIKickPlayer::OnBtnOk()
 void CUIKickPlayer::OnBtnCancel()
 {
     game_cl_mp* game				= smart_cast<game_cl_mp*>(&Game());
-	game->StartStopMenu				(this, true);
 }
 
 IC bool	DM_Compare_Players(game_PlayerState* v1, game_PlayerState* v2);

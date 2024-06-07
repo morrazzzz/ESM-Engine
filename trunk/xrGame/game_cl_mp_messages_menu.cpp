@@ -155,8 +155,6 @@ void				game_cl_mp::OnSpeechMessage			(NET_Packet& P)
 	if (ps->team == local_player->team)
 	{
 		CStringTable st;
-		if (HUD().GetUI())
-			HUD().GetUI()->m_pMessagesWnd->AddChatMessage(*st.translate(*(pMMessage->pMessage)), ps->getName());
 
 		if (!Level().MapManager().HasMapLocation(FRIEND_RADION_LOCATION, ps->GameID))
 		{
@@ -198,7 +196,5 @@ void				game_cl_mp::HideMessageMenus		()
 	for (u32 i=0; i<m_aMessageMenus.size(); i++)
 	{
 		cl_MessageMenu* pMenu = &(m_aMessageMenus[i]);
-		if (pMenu->m_pSpeechMenu->IsShown())
-			StartStopMenu(pMenu->m_pSpeechMenu, FALSE);
 	};
 };

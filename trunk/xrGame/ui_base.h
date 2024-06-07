@@ -2,6 +2,7 @@
 
 struct CFontManager;
 class CUICursor;
+class CUIGameCustom;
 
 #include "../Include/xrRender/UIRender.h"
 #include "../Include/xrRender/FactoryPtr.h"
@@ -15,6 +16,36 @@ public:
 	virtual				~CDeviceResetNotifier					()	{Device.seqDeviceReset.Remove(this);};
 	virtual void		OnDeviceReset							()	{};
 
+};
+
+struct CFontManager :public pureDeviceReset			{
+							CFontManager			();
+							~CFontManager			();
+
+	typedef xr_vector<CGameFont**>					FONTS_VEC;
+	typedef FONTS_VEC::iterator						FONTS_VEC_IT;
+	FONTS_VEC				m_all_fonts;
+	void					Render					();
+
+	// hud font
+	CGameFont*				pFontMedium;
+	CGameFont*				pFontDI;
+
+	CGameFont*				pFontArial14;
+	CGameFont*				pFontGraffiti19Russian;
+	CGameFont*				pFontGraffiti22Russian;
+	CGameFont*				pFontLetterica16Russian;
+	CGameFont*				pFontLetterica18Russian;
+	CGameFont*				pFontGraffiti32Russian;
+	CGameFont*				pFontGraffiti50Russian;
+	CGameFont*				pFontLetterica25;
+	CGameFont*				pFontStat;
+
+	void					InitializeFonts			();
+	void					InitializeFont			(CGameFont*& F, LPCSTR section, u32 flags = 0);
+	LPCSTR					GetFontTexName			(LPCSTR section);				
+
+	virtual void			OnDeviceReset			();
 };
 
 class ui_core: public CDeviceResetNotifier
@@ -36,8 +67,8 @@ public:
 	
 					ui_core							();
 					~ui_core						();
-	CFontManager*	Font							()							{return m_pFontManager;}
-	CUICursor*		GetUICursor						()							{return m_pUICursor;}
+	CFontManager&	Font							()								{return *m_pFontManager;}
+	CUICursor&		GetUICursor						()								{return *m_pUICursor;}
 
 	void			ClientToScreenScaled			(Fvector2& dest, float left, float top);
 	void			ClientToScreenScaled			(Fvector2& src_and_dest);
@@ -61,5 +92,6 @@ private:
 	bool m_bPostprocess;
 };
 
-extern CUICursor*	GetUICursor						();
-extern ui_core*		UI								();
+extern CUICursor&		GetUICursor				();
+extern ui_core&			UI						();
+extern CUIGameCustom*	CurrentGameUI			();

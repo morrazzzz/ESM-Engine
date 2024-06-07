@@ -15,6 +15,7 @@
 #include "level.h"
 #include "game_base_space.h"
 #include "hudmanager.h"
+#include "ui_base.h"
 #include "xrserver_objects_alife_monsters.h"
 #include "alife_simulator.h"
 #include "alife_graph_registry.h"
@@ -155,7 +156,7 @@ void CLevelGraph::draw_stalkers		(const int &vertex_id)
 	const float					radius = .0105f;
 	const u32					color = D3DCOLOR_XRGB(255,0,0);
 	const CGameGraph			&graph = ai().game_graph();
-	CGameFont					&font = *HUD().Font().pFontDI;
+	CGameFont					&font = *UI().Font().pFontDI;
 	Fvector						position = convert_position(graph.vertex(vertex_id)->game_point());
 
 	font.SetColor				(D3DCOLOR_XRGB(255,255,0));
@@ -299,7 +300,7 @@ void CLevelGraph::draw_objects		(const int &vertex_id)
 	const float					radius = .0105f;
 	const u32					color = D3DCOLOR_XRGB(255,0,0);
 	const CGameGraph			&graph = ai().game_graph();
-	CGameFont					&font = *HUD().Font().pFontDI;
+	CGameFont					&font = *UI().Font().pFontDI;
 	Fvector						position = convert_position(graph.vertex(vertex_id)->game_point());
 
 	font.SetColor				(D3DCOLOR_XRGB(255,255,0));

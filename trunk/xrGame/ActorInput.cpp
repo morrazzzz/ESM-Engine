@@ -156,7 +156,7 @@ void CActor::IR_OnKeyboardPress(int cmd)
 				if(itm)
 				{
 					inventory().Eat				(itm);
-					SDrawStaticStruct* _s		= HUD().GetUI()->UIGame()->AddCustomStatic("item_used", true);
+					SDrawStaticStruct* _s		= CurrentGameUI()->AddCustomStatic("item_used", true);
 					_s->m_endTime				= Device.fTimeGlobal+3.0f;// 3sec
 					string1024					str;
 					strconcat					(sizeof(str),str,*CStringTable().translate("st_item_used"),": ", itm->Name());
@@ -362,7 +362,7 @@ void CActor::ActorUse()
 	
 	if(m_pInvBoxWeLookingAt && m_pInvBoxWeLookingAt->nonscript_usable())
 	{
-		CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
+		CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
 		if(pGameSP) pGameSP->StartCarBody(this, m_pInvBoxWeLookingAt );
 		return;
 	}
@@ -386,7 +386,7 @@ void CActor::ActorUse()
 				else  if(!Level().IR_GetKeyState(DIK_LSHIFT))
 				{
 					//только если находимся в режиме single
-					CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
+					CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
 					if(pGameSP)pGameSP->StartCarBody(this, m_pPersonWeLookingAt );
 				}
 			}

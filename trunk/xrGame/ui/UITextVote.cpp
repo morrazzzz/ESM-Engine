@@ -58,7 +58,6 @@ void CUITextVote::OnBtnOk(){
 		sprintf_s(command, "cl_votestart $%s", name);		
 		Console->Execute(command);
 		game_cl_mp* game = smart_cast<game_cl_mp*>(&Game());
-		game->StartStopMenu(this, true);
 	}
 	else
 		return;
@@ -66,5 +65,4 @@ void CUITextVote::OnBtnOk(){
 
 void CUITextVote::OnBtnCancel(){
     game_cl_mp* game = smart_cast<game_cl_mp*>(&Game());
-	game->StartStopMenu(this, false);
 }

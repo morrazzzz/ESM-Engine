@@ -47,6 +47,7 @@ CUIGameDM::CUIGameDM()
 	m_pPlayerLists					= xr_new<CUIWindow>();
 	m_pStatisticWnds					= xr_new<CUIWindow>();
 
+/*
 	m_time_caption = "timelimit";
 	GameCaptions()->addCustomMessage(m_time_caption, DI2PX(0.0f), DI2PY(-0.8f), SZ(0.03f), HUD().Font().pFontGraffiti19Russian, CGameFont::alCenter, TIME_MSG_COLOR, "");
 	m_spectrmode_caption = "spetatormode";
@@ -66,6 +67,7 @@ CUIGameDM::CUIGameDM()
 	
 	m_warm_up_caption =	"warm_up";
 	GameCaptions()->addCustomMessage(m_warm_up_caption, DI2PX(0.0f), DI2PY(-0.75f), SZ(0.05f), HUD().Font().pFontGraffiti19Russian, CGameFont::alCenter, WARM_UP_COLOR, "");
+*/
 
 	CUIXml							uiXml;
 	uiXml.Init						(CONFIG_PATH, UI_PATH, "ui_game_dm.xml");
@@ -95,7 +97,6 @@ void CUIGameDM::SetClGame (game_cl_GameState* g)
 
 	if (m_pMapDesc && m_pMapDesc->IsShown())
 	{
-		HUD().GetUI()->StartStopMenu(m_pMapDesc, true);
 	}
 	delete_data(m_pMapDesc);
 	m_pMapDesc			= xr_new<CUIMapDesc>		();
@@ -273,7 +274,7 @@ void CUIGameDM::SetVoteTimeResultMsg			(LPCSTR str)
 
 bool		CUIGameDM::IR_OnKeyboardPress		(int dik)
 {
-	if(inherited::IR_OnKeyboardPress(dik)) return true;
+//	if(inherited::IR_OnKeyboardPress(dik)) return true;
 
 	EGameActions cmd  = get_binded_action(dik);
 	switch ( cmd )
@@ -349,7 +350,7 @@ void CUIGameDM::SetFraglimit(int local_frags, int fraglimit)
 
 void CUIGameDM::reset_ui				()
 {
-	inherited::reset_ui		();
+//	inherited::reset_ui		();
 	m_pInventoryMenu->Reset	();
 	m_pPdaMenu->Reset		();
 }

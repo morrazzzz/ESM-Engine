@@ -5,6 +5,7 @@
 #include "../xr_3da/igame_persistent.h"
 #include "PhysicsGamePars.h"
 #include "ai_space.h"
+#include "game_cl_base.h"
 
 #include "../xrPhysics/iphworld.h"
 #include "PHCommander.h"
@@ -173,9 +174,14 @@ bool	CLevel::net_start_client6				()
 {
 	if(connected_to_server){
 		// Sync
-		if(g_hud)
-			g_hud->OnConnected				();
+		if (g_hud)
+		{
+			g_hud->Load();
+			g_hud->OnConnected();
+		}
 
+		if (game)
+			game->OnConnected();
 
 //		g_pGamePersistent->LoadTitle		("st_client_synchronising");
 		g_pGamePersistent->LoadTitle();

@@ -93,7 +93,6 @@ void CActorCondition::LoadCondition(LPCSTR entity_section)
 
 
 //вычисление параметров с ходом времени
-#include "UI.h"
 
 void CActorCondition::UpdateCondition()
 {

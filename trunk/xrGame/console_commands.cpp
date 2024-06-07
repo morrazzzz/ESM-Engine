@@ -436,7 +436,7 @@ public:
 #ifdef DEBUG
 		Msg						("Game save overhead  : %f milliseconds",timer.GetElapsed_sec()*1000.f);
 #endif
-		SDrawStaticStruct* _s		= HUD().GetUI()->UIGame()->AddCustomStatic("game_saved", true);
+		SDrawStaticStruct* _s		= CurrentGameUI()->AddCustomStatic("game_saved", true);
 		_s->m_endTime				= Device.fTimeGlobal+3.0f;// 3sec
 		string_path					save_name;
 		strconcat					(sizeof(save_name),save_name,*CStringTable().translate("st_game_saved"),": ", S);
@@ -806,10 +806,19 @@ public:
 
 
 class CCC_DebugFonts : public IConsole_Command {
+	CUIDebugFonts* UIDebugFont_;
 public:
-	CCC_DebugFonts (LPCSTR N) : IConsole_Command(N) {bEmptyArgsHandled = true; }
-	virtual void Execute				(LPCSTR args) {
-		HUD().GetUI()->StartStopMenu( xr_new<CUIDebugFonts>(), true);		
+	CCC_DebugFonts(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; }
+	~CCC_DebugFonts() { xr_delete(UIDebugFont_); }
+	virtual void Execute(LPCSTR args)
+	{
+		if (!UIDebugFont_)
+			UIDebugFont_ = xr_new<CUIDebugFonts>();
+
+		if (!UIDebugFont_->IsShown())
+			UIDebugFont_->ShowDialog(true);
+		else
+			UIDebugFont_->HideDialog();
 	}
 };
 

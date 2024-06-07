@@ -70,8 +70,8 @@ void CUIChangeWeather::SendMessage(CUIWindow* pWnd, s16 msg, void* pData){
 
 #include <dinput.h>
 
-bool CUIChangeWeather::OnKeyboard(int dik, EUIMessages keyboard_action){
-	CUIDialogWnd::OnKeyboard(dik, keyboard_action);
+bool CUIChangeWeather::OnKeyboardAction(int dik, EUIMessages keyboard_action){
+	CUIDialogWnd::OnKeyboardAction(dik, keyboard_action);
 	if (WINDOW_KEY_PRESSED == keyboard_action){
 		if (DIK_ESCAPE == dik){
 			OnBtnCancel();
@@ -93,12 +93,10 @@ void CUIChangeWeather::OnBtn(int i){
 	string1024				command;
 	sprintf_s					(command, "cl_votestart changeweather %s %s", *m_data[i].m_weather_name, *m_data[i].m_weather_time);
 	Console->Execute		(command);
-	game->StartStopMenu(this, true);
 }
 
 void CUIChangeWeather::OnBtnCancel(){
 	game_cl_mp* game = smart_cast<game_cl_mp*>(&Game());
-	game->StartStopMenu(this, true);
 }
 
 #include "UIMapList.h"

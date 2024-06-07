@@ -22,7 +22,7 @@
 #include "actor_anim_defs.h"
 
 #include "map_manager.h"
-#include "HUDManager.h"
+#include "UIGameCustom.h"
 #include "ui/UIArtefactPanel.h"
 #include "ui/UIMainIngameWnd.h"
 #include "gamepersistent.h"
@@ -722,7 +722,7 @@ void CActor::net_Destroy	()
 	
 	m_ArtefactsOnBelt.clear();
 	if (Level().CurrentViewEntity() == this)
-		HUD().GetUI()->UIMainIngameWnd->m_artefactPanel->InitIcons(m_ArtefactsOnBelt);	
+		CurrentGameUI()->UIMainIngameWnd->m_artefactPanel->InitIcons(m_ArtefactsOnBelt);
 
 	SetDefaultVisualOutfit(NULL);
 	

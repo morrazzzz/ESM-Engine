@@ -213,13 +213,13 @@ void CUITalkWnd::Update()
 	//остановить разговор, если нужно
 	if (g_actor && m_pActor && !m_pActor->IsTalking() )
 	{
-		Game().StartStopMenu(this,true);
+		HideDialog();
 	}else{
 		CGameObject* pOurGO = smart_cast<CGameObject*>(m_pOurInvOwner);
 		CGameObject* pOtherGO = smart_cast<CGameObject*>(m_pOthersInvOwner);
 	
-		if(NULL==pOurGO || NULL==pOtherGO || ((pOurGO->Position().distance_to(pOtherGO->Position())>3.0f)&&!m_pOthersInvOwner->NeedOsoznanieMode()) )
-			Game().StartStopMenu(this,true);
+		if (NULL == pOurGO || NULL == pOtherGO || ((pOurGO->Position().distance_to(pOtherGO->Position()) > 3.0f) && !m_pOthersInvOwner->NeedOsoznanieMode()))
+			HideDialog();
 	}
 
 	if(m_bNeedToUpdateQuestions)
@@ -361,6 +361,8 @@ void CUITalkWnd::SwitchToTrade()
 	}
 }
 
+#pragma todo("required?????")
+/*
 bool CUITalkWnd::IR_OnKeyboardPress(int dik)
 {
 //.	StopSnd						();
@@ -376,14 +378,15 @@ bool CUITalkWnd::IR_OnKeyboardPress(int dik)
 	}
 	return inherited::IR_OnKeyboardPress(dik);
 }
+*/
 
-bool CUITalkWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
+bool CUITalkWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {
 	if (m_pOthersInvOwner&&m_pOthersInvOwner->NeedOsoznanieMode())
 	{
 		return true;
 	}
-	return inherited::OnKeyboard(dik,keyboard_action);
+	return inherited::OnKeyboardAction(dik,keyboard_action);
 }
 
 void CUITalkWnd::PlaySnd(LPCSTR text)

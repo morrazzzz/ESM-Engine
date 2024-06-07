@@ -340,7 +340,6 @@ void game_cl_ArtefactHunt::shedule_Update			(u32 dt)
 {
 	CStringTable st;
 	string1024 msg;
-	if(!m_game_ui && HUD().GetUI() ) m_game_ui = smart_cast<CUIGameAHunt*>( HUD().GetUI()->UIGame() );
 
 	inherited::shedule_Update		(dt);
 
@@ -502,7 +501,6 @@ void game_cl_ArtefactHunt::shedule_Update			(u32 dt)
 	{
 		if (m_phase != GAME_PHASE_INPROGRESS || (!local_player || !local_player->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD)))
 		{
-			StartStopMenu(m_game_ui->m_pBuySpawnMsgBox, true);
 		};
 	};
 	//-------------------------------------------
@@ -557,15 +555,11 @@ bool game_cl_ArtefactHunt::CanBeReady				()
 
 	if (!m_bTeamSelected)
 	{
-		if (CanCallTeamSelectMenu())
-			StartStopMenu(m_game_ui->m_pUITeamSelectWnd,true);
 		return false;
 	};
 
 	if (!m_bSkinSelected)
 	{
-		if (CanCallSkinMenu())
-			StartStopMenu(pCurSkinMenu,true);
 		return false;
 	};
 
@@ -693,9 +687,6 @@ bool game_cl_ArtefactHunt::NeedToSendReady_Spectator(int key, game_PlayerState* 
 		sprintf_s					(BuySpawnText, *st.translate("mp_press_yes2pay"), 
 								abs(local_player->money_for_round), abs(m_iSpawn_Cost));
 		m_game_ui->m_pBuySpawnMsgBox->SetText(BuySpawnText);
-
-		if (m_bTeamSelected && m_bSkinSelected)
-			StartStopMenu(m_game_ui->m_pBuySpawnMsgBox, true);
 		return false;
 	};
 	return res;

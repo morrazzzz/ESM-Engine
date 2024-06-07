@@ -197,7 +197,7 @@ void game_cl_GameState::TranslateGameMessage	(u32 msg, NET_Packet& P)
 			P.r_stringZ(PlayerName);
 			
 			sprintf_s(Text, "%s%s %s%s",Color_Teams[0],PlayerName,Color_Main,*st.translate("mp_connected"));
-			CommonMessageOut(Text);
+//			if (CurrentGameUI()) CurrentGameUI()->CommonMessageOut(Text);
 			//---------------------------------------
 			Msg("%s connected", PlayerName);
 		}break;
@@ -207,7 +207,7 @@ void game_cl_GameState::TranslateGameMessage	(u32 msg, NET_Packet& P)
 			P.r_stringZ(PlayerName);
 
 			sprintf_s(Text, "%s%s %s%s",Color_Teams[0],PlayerName,Color_Main,*st.translate("mp_disconnected"));
-			CommonMessageOut(Text);
+//			if (CurrentGameUI()) CurrentGameUI()->CommonMessageOut(Text);
 			//---------------------------------------
 			Msg("%s disconnected", PlayerName);
 		}break;
@@ -217,7 +217,7 @@ void game_cl_GameState::TranslateGameMessage	(u32 msg, NET_Packet& P)
 			P.r_stringZ(PlayerName);
 
 			sprintf_s(Text, "%s%s %s%s",Color_Teams[0],PlayerName,Color_Main,*st.translate("mp_entered_game"));
-			CommonMessageOut(Text);
+//			if (CurrentGameUI()) CurrentGameUI()->CommonMessageOut(Text);
 		}break;
 	default:
 		{
@@ -264,27 +264,19 @@ ClientID game_cl_GameState::GetClientIDByOrderID	(u32 idx)
 	return I->first;
 }
 
-
-
-void game_cl_GameState::CommonMessageOut (LPCSTR msg)
-{
-	if (!HUD().GetUI()) return;
-	HUD().GetUI()->m_pMessagesWnd->AddLogMessage(msg);
-}
-
 float game_cl_GameState::shedule_Scale		()
 {
 	return 1.0f;
 }
 
-
 void game_cl_GameState::shedule_Update		(u32 dt)
 {
 	ISheduled::shedule_Update	(dt);
 
-	if(!m_game_ui_custom){
-		if( HUD().GetUI() )
-			m_game_ui_custom = HUD().GetUI()->UIGame();
+	if(!m_game_ui_custom)
+	{
+		if( CurrentGameUI() )
+			m_game_ui_custom = CurrentGameUI();
 	} 
 	//---------------------------------------
 	switch (Phase())
@@ -299,11 +291,6 @@ void game_cl_GameState::shedule_Update		(u32 dt)
 		}break;
 	};
 };
-
-void game_cl_GameState::StartStopMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators)
-{
-	HUD().GetUI()->StartStopMenu(pDialog, bDoHideIndicators);
-}
 
 void game_cl_GameState::sv_GameEventGen(NET_Packet& P)
 {
@@ -396,17 +383,8 @@ void game_cl_GameState::set_type_name(LPCSTR s)
 		g_pGamePersistent->OnGameStart();
 	}
 };
-void game_cl_GameState::reset_ui()
+
+void game_cl_GameState::OnConnected()
 {
-	if(g_dedicated_server)	return;
-
-	if(!m_game_ui_custom)
-		m_game_ui_custom = HUD().GetUI()->UIGame();
-
-	m_game_ui_custom->reset_ui					();
-
-	HUD().GetUI()->UIMainIngameWnd->reset_ui	();
-
-	if (HUD().GetUI()->MainInputReceiver())
-		HUD().GetUI()->StartStopMenu			(HUD().GetUI()->MainInputReceiver(),true);
+	m_game_ui_custom = CurrentGameUI();
 }

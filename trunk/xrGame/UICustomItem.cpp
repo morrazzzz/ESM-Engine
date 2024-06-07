@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "uicustomitem.h"
-#include "hudmanager.h"
+#include "ui_base.h"
 
 CUICustomItem::CUICustomItem()
 {    
@@ -34,10 +34,10 @@ void CUICustomItem::Render(const Fvector2& pos, u32 color,
 	Fvector2 LTp,RBp;
 	Fvector2 LTt,RBt;
 	//координаты на экране в пикселях
-	UI()->ClientToScreenScaled	(LTp, x1,y1);
+	UI().ClientToScreenScaled	(LTp, x1,y1);
 	LTp.add						(pos);
 
-	UI()->ClientToScreenScaled	(RBp, x2,y2);
+	UI().ClientToScreenScaled	(RBp, x2,y2);
 	RBp.add						(pos);
 
 	//текстурные координаты
@@ -59,7 +59,7 @@ void CUICustomItem::Render(const Fvector2& pos, u32 color,
 	
 	sPoly2D D;
 
-	sPoly2D* R = UI()->ScreenFrustum().ClipPoly(S, D);
+	sPoly2D* R = UI().ScreenFrustum().ClipPoly(S, D);
 
 	if (R&&R->size()){
 		for (u32 k = 0; k < R->size() - 2; ++k)
@@ -112,7 +112,7 @@ void CUICustomItem::Render(const Fvector2& pos_ns, u32 color, float angle)
 	if (tmMirrorHorisontal == eMirrorMode || tmMirrorBoth == eMirrorMode)	std::swap(LTt.x, RBt.x);
 	if (tmMirrorVertical == eMirrorMode || tmMirrorBoth == eMirrorMode)		std::swap(LTt.y, RBt.y);
 
-	float kx = (UI()->is_16_9_mode()) ? 0.8333f : 1.0f;
+	float kx = (UI().is_16_9_mode()) ? 0.8333f : 1.0f;
 	// clip poly
 	sPoly2D			S; S.resize(4);
 	// LT
@@ -134,10 +134,10 @@ void CUICustomItem::Render(const Fvector2& pos_ns, u32 color, float angle)
 	S[3].pt.add(offset);
 
 	for (int i = 0; i < 4; ++i)
-		UI()->ClientToScreenScaled(S[i].pt);
+		UI().ClientToScreenScaled(S[i].pt);
 
 	sPoly2D D;
-	sPoly2D* R = UI()->ScreenFrustum().ClipPoly(S, D);
+	sPoly2D* R = UI().ScreenFrustum().ClipPoly(S, D);
 	if (R && R->size())
 	{
 		for (u32 k = 0; k < R->size() - 2; k++)

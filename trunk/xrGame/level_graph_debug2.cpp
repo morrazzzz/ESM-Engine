@@ -12,7 +12,7 @@
 
 #include "level_graph.h"
 #include "ai_space.h"
-#include "hudmanager.h"
+#include "ui_base.h"
 #include "game_graph.h"
 #include "custommonster.h"
 #include "cover_point.h"
@@ -42,7 +42,7 @@ void CLevelGraph::draw_nodes	()
 
 	u32 ID				= O->ai_location().level_vertex_id();
 
-	CGameFont* F		= HUD().Font().pFontDI;
+	CGameFont* F		= UI().Font().pFontDI;
 	F->SetHeightI		(.02f);
 	F->OutI				(0.f,0.5f,"%f,%f,%f",VPUSH(P));
 //	float				x,z;

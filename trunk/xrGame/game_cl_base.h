@@ -47,9 +47,6 @@ public:
 
 
 	WeaponUsageStatistic				*m_WeaponUsageStatistic;	
-	virtual		void				reset_ui				();
-	virtual		void				CommonMessageOut		(LPCSTR msg);
-
 private:
 				void				switch_Phase			(u32 new_phase)		{inherited::switch_Phase(new_phase);};
 protected:
@@ -95,8 +92,6 @@ public:
 	virtual		CUIGameCustom*		createGameUI			(){return NULL;};
 	virtual		void				GetMapEntities			(xr_vector<SZoneMapEntityData>& dst)	{};
 
-
-				void				StartStopMenu			(CUIDialogWnd* pDialog, bool bDoHideIndicators);
 	virtual		void				shedule_Update			(u32 dt);
 
 	void							u_EventGen				(NET_Packet& P, u16 type, u16 dest);
@@ -131,4 +126,6 @@ public:
 	virtual		void				OnPlayerFlagsChanged	(game_PlayerState* ps)	{};
 	virtual		void				OnPlayerVoted			(game_PlayerState* ps)	{};
 	virtual		void				SendPickUpEvent			(u16 ID_who, u16 ID_what);
+
+	virtual		void				OnConnected				();
 };

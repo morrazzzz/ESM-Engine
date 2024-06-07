@@ -3,7 +3,6 @@
 #include "UINewsWnd.h"
 #include "xrUIXmlParser.h"
 #include "UIXmlInit.h"
-#include "../UI.h"
 #include "../HUDManager.h"
 #include "../level.h"
 #include "../game_news.h"

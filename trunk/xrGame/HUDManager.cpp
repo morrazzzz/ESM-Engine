@@ -3,10 +3,14 @@
 #include "hudtarget.h"
 
 #include "actor.h"
+#include "MainMenu.h"
 #include "../xr_3da/igame_level.h"
 #include "clsid_game.h"
 #include "GamePersistent.h"
+#include "UIGameCustom.h"
+#include "game_cl_base.h"
 
+extern CUIGameCustom*	CurrentGameUI()	{return HUD().GetGameUI();}
 
 CFontManager::CFontManager()
 {
@@ -52,7 +56,7 @@ void CFontManager::InitializeFonts()
 
 LPCSTR CFontManager::GetFontTexName (LPCSTR section)
 {
-	constexpr const char* tex_names[]={"texture800","texture","texture1600"};
+	constexpr LPCSTR tex_names[]={"texture800","texture","texture1600"};
 	int def_idx		= 1;//default 1024x768
 	int idx			= def_idx;
 
@@ -125,45 +129,49 @@ void CFontManager::OnDeviceReset()
 //--------------------------------------------------------------------
 CHUDManager::CHUDManager()
 { 
-	pUI						= 0;
-	m_pHUDTarget			= xr_new<CHUDTarget>();
-	OnDisconnected			();
+	pUIGame = nullptr;
+	m_pHUDTarget = xr_new<CHUDTarget>();
 }
 //--------------------------------------------------------------------
 CHUDManager::~CHUDManager()
 {
-	xr_delete			(pUI);
-	xr_delete			(m_pHUDTarget);
-	b_online			= false;
+	OnDisconnected();
+
+	if (pUIGame)
+		pUIGame->UnLoad();
+
+	xr_delete(pUIGame);
+	xr_delete(m_pHUDTarget);
 }
 
 //--------------------------------------------------------------------
 
-void CHUDManager::Load()
-{
-	if(pUI){
-		pUI->Load			( pUI->UIGame() );
-		return;
-	}
-	pUI					= xr_new<CUI> (this);
-	pUI->Load			(NULL);
-	OnDisconnected		();
-}
-//--------------------------------------------------------------------
 void CHUDManager::OnFrame()
 {
-	if(!b_online)					return;
-	if (pUI) pUI->UIOnFrame();
+	if (!b_online)					
+		return;
+
+	if (!b_online)
+		return;
+
+	if (pUIGame)
+		pUIGame->OnFrame();
+
 	m_pHUDTarget->CursorOnFrame();
 }
+//--------------------------------------------------------------------
 //--------------------------------------------------------------------
 
 ENGINE_API extern float psHUD_FOV;
 
 void CHUDManager::Render_First()
 {
-	if (!psHUD_Flags.is(HUD_WEAPON|HUD_WEAPON_RT))return;
-	if (0==pUI)						return;
+	if (!psHUD_Flags.is(HUD_WEAPON|HUD_WEAPON_RT))
+		return;
+
+	if (!pUIGame)						
+		return;
+
 	CObject*	O					= g_pGameLevel->CurrentViewEntity();
 	if (0==O)						return;
 	CActor*		A					= smart_cast<CActor*> (O);
@@ -180,7 +188,9 @@ void CHUDManager::Render_First()
 void CHUDManager::Render_Last()
 {
 	if (!psHUD_Flags.is(HUD_WEAPON|HUD_WEAPON_RT))return;
-	if (0==pUI)						return;
+	if (!pUIGame)						
+		return;
+
 	CObject*	O					= g_pGameLevel->CurrentViewEntity();
 	if (0==O)						return;
 	CActor*		A					= smart_cast<CActor*> (O);
@@ -206,11 +216,13 @@ void  CHUDManager::RenderUI()
 	if(!b_online)					return;
 
 	BOOL bAlready					= FALSE;
-	if (true || psHUD_Flags.is(HUD_DRAW | HUD_DRAW_RT))
+	if (true)
 	{
 		HitMarker.Render			();
-		bAlready					= ! (pUI && !pUI->Render());
-		Font().Render();
+		if (pUIGame)
+			pUIGame->Render();
+
+		UI().RenderFont();
 	}
 
 	if (psHUD_Flags.is(HUD_CROSSHAIR|HUD_CROSSHAIR_RT|HUD_CROSSHAIR_RT2) && !bAlready)	
@@ -219,13 +231,13 @@ void  CHUDManager::RenderUI()
 	draw_wnds_rects		();
 
 	if( Device.Paused() && bShowPauseString){
-		CGameFont* pFont	= Font().pFontGraffiti50Russian;
+		CGameFont* pFont	= UI().Font().pFontGraffiti50Russian;
 		pFont->SetColor		(0x80FF0000	);
 		LPCSTR _str			= CStringTable().translate("st_game_paused").c_str();
 		
 		Fvector2			_pos;
 		_pos.set			(UI_BASE_WIDTH/2.0f, UI_BASE_HEIGHT/2.0f);
-		UI()->ClientToScreenScaled(_pos);
+		UI().ClientToScreenScaled(_pos);
 		pFont->SetAligment	(CGameFont::alCenter);
 		pFont->Out			(_pos.x, _pos.y, _str);
 		pFont->OnRender		();
@@ -262,32 +274,46 @@ void CHUDManager::SetHitmarkType		(LPCSTR tex_name)
 {
 	HitMarker.InitShader				(tex_name);
 }
-#include "ui\UIMainInGameWnd.h"
-void CHUDManager::OnScreenRatioChanged()
-{
-	xr_delete							(pUI->UIMainIngameWnd);
 
-	pUI->UIMainIngameWnd				= xr_new<CUIMainIngameWnd>	();
-	pUI->UIMainIngameWnd->Init			();
-	pUI->UnLoad							();
-	pUI->Load							(pUI->UIGame());
+// ------------------------------------------------------------------------------------
+
+#include "ui\UIMainInGameWnd.h"
+void CHUDManager::Load()
+{
+	if (!pUIGame)
+	{
+		pUIGame				= Game().createGameUI();
+	} else
+	{
+		pUIGame->SetClGame	(&Game());
+	}
+}
+
+void CHUDManager::OnScreenResolutionChanged()
+{
+	pUIGame->HideShownDialogs();
+
+	//xr_delete(pWpnScopeXml);
+
+	pUIGame->UnLoad();
+	pUIGame->Load();
+
+	pUIGame->OnConnected();
 }
 
 void CHUDManager::OnDisconnected()
 {
-//.	if(!b_online)			return;
-	b_online				= false;
-	if(pUI)
-		Device.seqFrame.Remove	(pUI);
+    b_online				= false;
+	if(pUIGame)
+		Device.seqFrame.Remove	(pUIGame);
 }
 
 void CHUDManager::OnConnected()
 {
 	if(b_online)			return;
 	b_online				= true;
-	if(pUI){
-		Device.seqFrame.Add	(pUI,REG_PRIORITY_LOW-1000);
-	}
+	if(pUIGame)
+		Device.seqFrame.Add	(pUIGame,REG_PRIORITY_LOW-1000);
 }
 
 void CHUDManager::net_Relcase	(CObject *object)
@@ -296,19 +322,14 @@ void CHUDManager::net_Relcase	(CObject *object)
 	m_pHUDTarget->net_Relcase	(object);
 }
 
-void CHUDManager::OnScreenResolutionChanged()
+CDialogHolder* CurrentDialogHolder()
 {
-/*
-	pUIGame->HideShownDialogs();
-
-	xr_delete(pWpnScopeXml);
-
-	pUIGame->UnLoad();
-	pUIGame->Load();
-
-	pUIGame->OnConnected();
-*/
+	if (MainMenu()->IsActive())
+		return MainMenu();
+	else
+		return HUD().GetGameUI();
 }
+
 
 bool   CHUDManager::RenderActiveItemUIQuery()
 {

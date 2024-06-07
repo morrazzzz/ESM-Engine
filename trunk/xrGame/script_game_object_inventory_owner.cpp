@@ -63,7 +63,7 @@ void  CScriptGameObject::AddIconedTalkMessage		(LPCSTR text, LPCSTR texture_name
 
 void _AddIconedTalkMessage(LPCSTR text, LPCSTR texture_name, const Frect& tex_rect, LPCSTR templ_name)
 {
-	CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
+	CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
 	if(!pGameSP) return;
 
 	if(pGameSP->TalkMenu->IsShown())
@@ -577,7 +577,7 @@ void  CScriptGameObject::SwitchToTrade		()
 	CActor* pActor = smart_cast<CActor*>(&object());	if(!pActor) return;
 
 	//только если находимся в режиме single
-	CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
+	CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
 	if(!pGameSP) return;
 
 	if(pGameSP->TalkMenu->IsShown())

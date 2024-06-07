@@ -9,8 +9,7 @@
 #include "../xr_3da/CameraBase.h"
 
 #include "level.h"
-#include "HUDManager.h"
-#include "UI.h"
+#include "UIGameCustom.h"
 #include "actorcondition.h"
 #include "game_cl_base.h"
 #include "WeaponMagazined.h"
@@ -550,7 +549,7 @@ bool	CActor::CanMove				()
 	{
 		if(mstate_wishful&mcAnyMove)
 		{
-			HUD().GetUI()->AddInfoMessage("cant_walk");
+			CurrentGameUI()->AddCustomStatic("cant_walk", true);
 		}
 		return false;
 	}else
@@ -558,7 +557,7 @@ bool	CActor::CanMove				()
 	{
 		if(mstate_wishful&mcAnyMove)
 		{
-			HUD().GetUI()->AddInfoMessage("cant_walk_weight");
+			CurrentGameUI()->AddCustomStatic("cant_walk_weight", true);
 		}
 		return false;
 	

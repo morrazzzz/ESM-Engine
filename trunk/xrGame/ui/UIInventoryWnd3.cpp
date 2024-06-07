@@ -14,6 +14,7 @@
 #include "../xr_level_controller.h"
 #include "UICellItem.h"
 #include "UIListBoxItem.h"
+#include "../UICursor.h"
 #include "../CustomOutfit.h"
 
 
@@ -213,7 +214,7 @@ void CUIInventoryWnd::ActivatePropertiesBox()
 		Fvector2						cursor_pos;
 		Frect							vis_rect;
 		GetAbsoluteRect					(vis_rect);
-		cursor_pos						= GetUICursor()->GetCursorPosition();
+		cursor_pos						= GetUICursor().GetCursorPosition();
 		cursor_pos.sub					(vis_rect.lt);
 		UIPropertiesBox.Show			(vis_rect, cursor_pos);
 		PlaySnd							(eInvProperties);

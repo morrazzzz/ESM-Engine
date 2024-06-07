@@ -26,11 +26,8 @@ public:
 	CUIGameSP									();
 	virtual				~CUIGameSP				();
 
-	virtual	void		reset_ui				();
-	virtual	void		shedule_Update			(u32 dt);
 	virtual void		SetClGame				(game_cl_GameState* g);
 	virtual bool		IR_OnKeyboardPress		(int dik);
-	virtual bool		IR_OnKeyboardRelease	(int dik);
 
 	void				StartTalk				();
 	void				StartCarBody			(CInventoryOwner* pOurInv, CInventoryOwner* pOthers);
@@ -40,8 +37,6 @@ public:
 
 	virtual void		HideShownDialogs		();
 
-	CUIInventoryWnd*	InventoryMenu;
-	CUIPdaWnd*			PdaMenu;
 	CUITalkWnd*			TalkMenu;
 	CUICarBodyWnd*		UICarBodyMenu;
 	CChangeLevelWnd*	UIChangeLevelWnd;
@@ -69,5 +64,5 @@ public:
 	virtual bool		WorkInPause					()const {return true;}
 	virtual void		Show						();
 	virtual void		Hide						();
-	virtual bool		OnKeyboard					(int dik, EUIMessages keyboard_action);
+	virtual bool		OnKeyboardAction(int dik, EUIMessages keyboard_action);
 };

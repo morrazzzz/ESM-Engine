@@ -3,7 +3,7 @@
 #include "UIFrameWindow.h"
 #include "UIFrameLineWnd.h"
 #include "UIDialogWnd.h"
-#include "../HUDManager.h"
+#include "../UIDialogHolder.h"
 #include "../GamePersistent.h"
 #include "UILabel.h"
 #include "UIMMShniaga.h"
@@ -11,7 +11,7 @@
 #include "UIScrollView.h"
 
 CFontManager& mngr(){
-	return *(UI()->Font());
+	return UI().Font();
 }
 
 // hud font
@@ -128,7 +128,7 @@ void CUIWindow::script_register(lua_State *L)
 //		.def("",						&CUIWindow::)
 		
 		class_<CDialogHolder>("CDialogHolder")
-		.def("MainInputReceiver",		&CDialogHolder::MainInputReceiver)
+		.def("TopInputReceiver",		&CDialogHolder::TopInputReceiver)
 		.def("start_stop_menu",			&CDialogHolder::StartStopMenu)
 		.def("AddDialogToRender",		&CDialogHolder::AddDialogToRender)
 		.def("RemoveDialogToRender",	&CDialogHolder::RemoveDialogToRender),
@@ -248,6 +248,8 @@ void CUIWindow::script_register(lua_State *L)
 
 				value("EDIT_TEXT_CHANGED",				int(EDIT_TEXT_CHANGED)),
 				value("EDIT_TEXT_COMMIT",				int(EDIT_TEXT_COMMIT)),
+    // CMainMenu
+				value("MAIN_MENU_RELOADED",				int(MAIN_MENU_RELOADED)),
 	// CUITalkDialogWnd
 				value("TALK_DIALOG_TRADE_BUTTON_CLICKED",	int(TALK_DIALOG_TRADE_BUTTON_CLICKED)),
 				value("TALK_DIALOG_QUESTION_CLICKED",		int(TALK_DIALOG_QUESTION_CLICKED)),

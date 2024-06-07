@@ -190,27 +190,27 @@ void game_cl_TeamDeathmatch::GetMapEntities(xr_vector<SZoneMapEntityData>& dst)
 
 void game_cl_TeamDeathmatch::OnMapInfoAccept			()
 {
-	if (CanCallTeamSelectMenu())
-		StartStopMenu(m_game_ui->m_pUITeamSelectWnd, true);
+//	if (CanCallTeamSelectMenu())
+//		StartStopMenu(m_game_ui->m_pUITeamSelectWnd, true);
 };
 
 void game_cl_TeamDeathmatch::OnTeamMenuBack			()
 {
 	if (local_player->testFlag(GAME_PLAYER_FLAG_SPECTATOR))
 	{
-		StartStopMenu(m_game_ui->m_pMapDesc, true);
+//		StartStopMenu(m_game_ui->m_pMapDesc, true);
 //        StartStopMenu(pMapDesc, true);
 	}
 };
 
 void game_cl_TeamDeathmatch::OnTeamMenu_Cancel		()
 {
-	StartStopMenu(m_game_ui->m_pUITeamSelectWnd, true);
+//	StartStopMenu(m_game_ui->m_pUITeamSelectWnd, true);
 	if (!m_bTeamSelected && !m_bSpectatorSelected)
 	{
 		if (CanCallTeamSelectMenu() && !m_game_ui->m_pUITeamSelectWnd->IsShown())
 		{
-			StartStopMenu(m_game_ui->m_pUITeamSelectWnd, true);
+//			StartStopMenu(m_game_ui->m_pUITeamSelectWnd, true);
 			return;
 		}
 	}
@@ -219,8 +219,7 @@ void game_cl_TeamDeathmatch::OnTeamMenu_Cancel		()
 
 void game_cl_TeamDeathmatch::OnSkinMenuBack			()
 {
-	if (CanCallTeamSelectMenu())
-		StartStopMenu(m_game_ui->m_pUITeamSelectWnd, true);
+//		StartStopMenu(m_game_ui->m_pUITeamSelectWnd, true);
 };
 
 void game_cl_TeamDeathmatch::OnSpectatorSelect		()
@@ -311,8 +310,8 @@ void game_cl_TeamDeathmatch::SetCurrentSkinMenu	()
 	if (pCurSkinMenu && pCurSkinMenu->GetTeam() == new_team)
 		return;
 
-	if (pCurSkinMenu && new_team != pCurSkinMenu->GetTeam())
-		if (pCurSkinMenu->IsShown()) StartStopMenu(pCurSkinMenu,true);
+//	if (pCurSkinMenu && new_team != pCurSkinMenu->GetTeam())
+//		if (pCurSkinMenu->IsShown()) StartStopMenu(pCurSkinMenu,true);
 
 	xr_delete		(pCurSkinMenu);
 	pCurSkinMenu	= InitSkinMenu(new_team);
@@ -327,8 +326,8 @@ bool game_cl_TeamDeathmatch::CanBeReady				()
 	if (!m_bTeamSelected)
 	{
 		m_bMenuCalledFromReady = FALSE;
-		if (CanCallTeamSelectMenu())
-			StartStopMenu(m_game_ui->m_pUITeamSelectWnd,true);
+//		if (CanCallTeamSelectMenu())
+//			StartStopMenu(m_game_ui->m_pUITeamSelectWnd,true);
 		return false;
 	}
 
@@ -360,13 +359,13 @@ void game_cl_TeamDeathmatch::shedule_Update			(u32 dt)
 	CStringTable st;
 	string512	msg;
 
-	if(!m_game_ui && HUD().GetUI() ) m_game_ui = smart_cast<CUIGameTDM*>( HUD().GetUI()->UIGame() );
+//	if(!m_game_ui && HUD().GetUI() ) m_game_ui = smart_cast<CUIGameTDM*>( CurrentGameUI() );
 	inherited::shedule_Update(dt);
 
 	if (!m_game_ui) return;
 	//---------------------------------------------------------
-	if (m_game_ui->m_pUITeamSelectWnd && m_game_ui->m_pUITeamSelectWnd->IsShown() && !CanCallTeamSelectMenu())
-		StartStopMenu(m_game_ui->m_pUITeamSelectWnd,true);
+//	if (m_game_ui->m_pUITeamSelectWnd && m_game_ui->m_pUITeamSelectWnd->IsShown() && !CanCallTeamSelectMenu())
+//		StartStopMenu(m_game_ui->m_pUITeamSelectWnd,true);
 	//---------------------------------------------------------
 	
 	switch (m_phase)
@@ -385,25 +384,6 @@ void game_cl_TeamDeathmatch::shedule_Update			(u32 dt)
 			
 			SetScore();
 			
-		}break;
-	case GAME_PHASE_INPROGRESS:
-		{
-			if (local_player && !local_player->IsSkip())
-			{			
-				if (Level().CurrentEntity() && Level().CurrentEntity()->CLS_ID == CLSID_SPECTATOR)
-				{
-					if (!(pCurBuyMenu && pCurBuyMenu->IsShown()) && 
-						!(pCurSkinMenu && pCurSkinMenu->IsShown()) &&
-						!(m_game_ui->m_pMapDesc && m_game_ui->m_pMapDesc->IsShown()) &&
-						(HUD().GetUI() && HUD().GetUI()->GameIndicatorsShown())
-						)
-					{
-						if (!m_bTeamSelected)
-							m_game_ui->SetPressJumpMsgCaption("mp_press_jump2select_team");
-					};
-				};
-				SetScore();
-			};
 		}break;
 	default:
 		{
@@ -435,7 +415,6 @@ bool	game_cl_TeamDeathmatch::OnKeyboardPress			(int key)
 		{
 			if (CanCallTeamSelectMenu())
 			{
-				StartStopMenu(m_game_ui->m_pUITeamSelectWnd,true);
 			};
 
 			return true;
@@ -669,7 +648,5 @@ void				game_cl_TeamDeathmatch::OnGameMenuRespond_ChangeTeam	(NET_Packet& P)
 	if (pCurSkinMenu)
 	{
 		pCurSkinMenu->SetCurSkin(local_player->skin);
-		if (CanCallSkinMenu())
-			StartStopMenu(pCurSkinMenu, true);
 	}
 };

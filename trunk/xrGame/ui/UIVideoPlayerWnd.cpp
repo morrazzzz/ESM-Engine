@@ -134,18 +134,18 @@ bool CUIVideoPlayerWnd::IsPlaying	()
 void CUIActorSleepVideoPlayer::Activate	()
 {
 	if(!IsShown())
-		HUD().GetUI()->StartStopMenu	(this,true);
+		HUD().GetUI().StartStopMenu	(this,true);
 }
 
 void CUIActorSleepVideoPlayer::DeActivate	()
 {
 	if(IsShown()){
 		Stop							();
-		HUD().GetUI()->StartStopMenu	(this,true);
+		HUD().GetUI().StartStopMenu	(this,true);
 	}
 }
 
-bool CUIActorSleepVideoPlayer::OnKeyboard(int dik, EUIMessages keyboard_action)
+bool CUIActorSleepVideoPlayer::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {
 	if(keyboard_action==WINDOW_KEY_PRESSED){
 		if(dik==DIK_ESCAPE){
@@ -153,5 +153,5 @@ bool CUIActorSleepVideoPlayer::OnKeyboard(int dik, EUIMessages keyboard_action)
 			return true;
 		}
 	}
-	return inherited::OnKeyboard(dik, keyboard_action);
+	return inherited::OnKeyboardAction(dik, keyboard_action);
 }

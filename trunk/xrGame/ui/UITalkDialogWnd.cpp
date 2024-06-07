@@ -5,8 +5,6 @@
 #include "UIXmlInit.h"
 #include "UIScrollView.h"
 #include "UI3tButton.h"
-#include "../UI.h"
-
 
 #define				TALK_XML				"talk.xml"
 #define				TRADE_CHARACTER_XML		"trade_character.xml"

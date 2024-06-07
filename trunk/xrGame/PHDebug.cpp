@@ -13,7 +13,7 @@
 
 
 #include "Level.h"
-#include "Hudmanager.h"
+#include "ui_base.h"
 
 #include "debug_renderer.h"
 
@@ -278,7 +278,7 @@ bool	 rendered;
 	virtual void render()
 	{
 		//if(rendered) return;
-		HUD().Font().pFontStat->OutNext(s);
+		UI().Font().pFontStat->OutNext(s);
 		rendered=true;
 	}
 };
@@ -433,7 +433,7 @@ void PH_DBG_Render()
 {
 	if(ph_dbg_draw_mask.test(phDbgDrawZDisable))
 		DRender->ZEnable(false);
-	HUD().Font().pFontStat->OutSet	(550,250);
+	UI().Font().pFontStat->OutSet	(550,250);
 
 	DBG_PHAbstructRender();
 
