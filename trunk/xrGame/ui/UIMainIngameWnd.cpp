@@ -892,12 +892,12 @@ bool CUIMainIngameWnd::OnKeyboardPress(int dik)
 		{
 		case DIK_NUMPADMINUS:
 			//.HideAll();
-			HUD().GetUI()->HideGameIndicators();
+			CurrentGameUI()->ShowGameIndicators(false);
 			return true;
 			break;
 		case DIK_NUMPADPLUS:
 			//.ShowAll();
-			HUD().GetUI()->ShowGameIndicators();
+			CurrentGameUI()->ShowGameIndicators(true);
 			return true;
 			break;
 		}
@@ -933,7 +933,7 @@ void CUIMainIngameWnd::ReceiveNews(GAME_NEWS_DATA* news)
 {
 	VERIFY(news->texture_name.size());
 
-	HUD().GetUI()->m_pMessagesWnd->AddIconedPdaMessage(*(news->texture_name), news->tex_rect, news->SingleLineText(), news->show_time);
+	CurrentGameUI()->m_pMessagesWnd->AddIconedPdaMessage(*(news->texture_name), news->tex_rect, news->SingleLineText(), news->show_time);
 }
 
 void CUIMainIngameWnd::SetWarningIconColor(CUIStatic* s, const u32 cl)
@@ -1305,7 +1305,7 @@ void CUIMainIngameWnd::draw_adjust_mode()
 		bool bCamFirstEye = !!m_pWeapon->GetHUDmode();
 		string32 hud_view="HUD view";
 		string32 _3rd_person_view="3-rd person view";
-		CGameFont* F		= UI()->Font()->pFontDI;
+		CGameFont* F		= UI().Font().pFontDI;
 		F->SetAligment		(CGameFont::alCenter);
 //.		F->SetSizeI			(0.02f);
 		F->OutSetI			(0.f,-0.8f);

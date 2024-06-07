@@ -19,6 +19,9 @@
 #include "../xr_3da/CameraManager.h"
 #include "ai_space.h"
 #include "script_engine.h"
+#include "UIGameCustom.h"
+#include "ui/UIMainIngameWnd.h"
+#include "ui/UIPdaWnd.h"
 #include "xr_3da/DiscordSDK.h"
 
 #ifdef DEBUG
@@ -595,6 +598,13 @@ void CGamePersistent::OnEvent(EVENT E, u64 P1, u64 P2)
 		if (Device.Paused())
 			Device.Pause		(FALSE, TRUE, TRUE, "eQuickLoad");
 		
+		if(CurrentGameUI())
+		{
+			CurrentGameUI()->HideShownDialogs();
+			CurrentGameUI()->UIMainIngameWnd->reset_ui();
+			CurrentGameUI()->PdaMenu().Reset();
+		}
+
 		LPSTR		saved_name	= (LPSTR)(P1);
 
 		Level().remove_objects	();

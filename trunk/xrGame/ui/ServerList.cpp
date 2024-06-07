@@ -19,8 +19,6 @@ CGameSpy_Browser* g_gs_browser = NULL;
 
 CServerList::CServerList()
 {
-	m_GSBrowser	= MainMenu()->GetGS()->m_pGS_SB;
-	m_GSBrowser->Init(this);
 
 	for (int i = 0; i<LST_COLUMN_COUNT; i++)
 		AttachChild(&m_header_frames[i]);
@@ -462,7 +460,6 @@ void CServerList::ConnectToSelected()
 		return;
 
 	//-----------------------------------------
-	if (!MainMenu()->ValidateCDKey()) return;	
 	//-----------------------------------------
 
 	CUIListItemServer* item = smart_cast<CUIListItemServer*>(m_list[LST_SERVER].GetItem(sel));
@@ -474,7 +471,6 @@ void CServerList::ConnectToSelected()
 
 	if (xr_strcmp(item->GetInfo()->info.version, MainMenu()->GetGSVer()))
 	{
-		MainMenu()->SetErrorDialog(CMainMenu::ErrDifferentVersion);
 		return;
 	}
 

@@ -87,9 +87,9 @@ void CUIVotingCategory::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 
 #include <dinput.h>
 
-bool CUIVotingCategory::OnKeyboard(int dik, EUIMessages keyboard_action)
+bool CUIVotingCategory::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {
-	CUIDialogWnd::OnKeyboard(dik, keyboard_action);
+	CUIDialogWnd::OnKeyboardAction(dik, keyboard_action);
 	
 	if (WINDOW_KEY_PRESSED == keyboard_action)
 	{
@@ -109,66 +109,10 @@ bool CUIVotingCategory::OnKeyboard(int dik, EUIMessages keyboard_action)
 
 void CUIVotingCategory::OnBtn(int i)
 {
-	game_cl_mp* game = smart_cast<game_cl_mp*>(&Game());
-
-	//check buttons state, based on voting mask
-	u16 flag = 1<<(u16(i+1) & 0xff);
-	if (Game().IsVotingEnabled(flag))
-	{
-		switch (i){
-		case 0:
-			Console->Execute("cl_votestart restart");
-			game->StartStopMenu(this, true);
-			break;
-		case 1:
-			Console->Execute("cl_votestart restart_fast");
-			game->StartStopMenu(this, true);
-			break;
-		case 2:
-			game->StartStopMenu(this, true);
-			if (!kick)
-				kick = xr_new<CUIKickPlayer>();
-			kick->InitKick(*xml_doc);
-			game->StartStopMenu(kick, true);
-			break;
-		case 3:
-			game->StartStopMenu(this, true);
-			if (!kick)
-				kick = xr_new<CUIKickPlayer>();
-			kick->InitBan(*xml_doc);
-			game->StartStopMenu(kick, true);
-			break;
-		case 4:
-			game->StartStopMenu(this, true);
-			if (!change_map)
-				change_map = xr_new<CUIChangeMap>();
-			change_map->Init(*xml_doc);
-			game->StartStopMenu(change_map, true);
-			break;
-		case 5:
-			game->StartStopMenu(this, true);
-			if (!change_weather)
-				change_weather = xr_new<CUIChangeWeather>();
-			change_weather->Init(*xml_doc);
-			game->StartStopMenu(change_weather, true);
-			break;
-		case 6:
-			game->StartStopMenu(this, true);
-			if (!text_vote)
-				text_vote = xr_new<CUITextVote>();
-			text_vote->Init(*xml_doc);
-			game->StartStopMenu(text_vote, true);			
-			break;
-		case 7:
-			break;
-		}
-	}
 }
 
 void CUIVotingCategory::OnBtnCancel()
 {
-	game_cl_mp* game = smart_cast<game_cl_mp*>(&Game());
-	game->StartStopMenu(this, true);
 }
 
 void CUIVotingCategory::Update				()

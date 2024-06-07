@@ -31,7 +31,7 @@ CUILines::CUILines()
 	uFlags.set(flColoringMode,		TRUE);
 	uFlags.set(flCutWordsMode,		FALSE);
 	uFlags.set(flRecognizeNewLine,	TRUE);
-	m_pFont = UI()->Font()->pFontLetterica16Russian;
+	m_pFont = UI().Font().pFontLetterica16Russian;
 	m_cursor_pos.set(0,0);
 	m_iCursorPos = 0;
 }
@@ -75,7 +75,7 @@ void CUILines::Init(float x, float y, float width, float heigt){
 void CUILines::SetText(const char* text){
 	
 	if (!m_pFont)
-        m_pFont = UI()->Font()->pFontLetterica16Russian;
+        m_pFont = UI().Font().pFontLetterica16Russian;
 
 	if (text && text[0] != 0)
 	{
@@ -132,7 +132,7 @@ void CUILines::Reset(){
 float get_str_width(CGameFont*pFont, char ch)
 {
 	float ll = pFont->SizeOf_(ch);
-	UI()->ClientToScreenScaledWidth(ll);
+	UI().ClientToScreenScaledWidth(ll);
 	return ll;
 }
 
@@ -200,7 +200,7 @@ void CUILines::ParseText(){
 		CUILine tmp_line;
 		char szTempLine[ MAX_MB_CHARS ];
 		float fTargetWidth = 1.0f;
-		UI()->ClientToScreenScaledWidth( fTargetWidth );
+		UI().ClientToScreenScaledWidth( fTargetWidth );
 		VERIFY( ( m_wndSize.x > 0 ) && ( fTargetWidth > 0 ) );
 		fTargetWidth = m_wndSize.x / fTargetWidth;
 		int vsz = line->m_subLines.size();
@@ -311,7 +311,7 @@ void CUILines::ParseText(){
 float CUILines::GetVisibleHeight()
 {
 	float _curr_h = m_pFont->CurrentHeight_();
-	UI()->ClientToScreenScaledHeight(_curr_h);
+	UI().ClientToScreenScaledHeight(_curr_h);
 
 	if (uFlags.test(flComplexMode))
 	{
@@ -353,7 +353,7 @@ void CUILines::Draw(float x, float y){
 
 		text_pos.x = x + GetIndentByAlign();
 		text_pos.y = y + GetVIndentByAlign();
-		UI()->ClientToScreenScaled(text_pos);
+		UI().ClientToScreenScaled(text_pos);
 
 		if (uFlags.test(flPasswordMode))
 		{
@@ -378,7 +378,7 @@ void CUILines::Draw(float x, float y){
 		// get vertical indent
 		pos.y			= y + GetVIndentByAlign();
 		float height	= m_pFont->CurrentHeight_();
-		UI()->ClientToScreenScaledHeight(height);
+		UI().ClientToScreenScaledHeight(height);
 
 		u32 size		= m_lines.size();
 

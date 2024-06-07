@@ -92,7 +92,6 @@ void CUISpawnWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 {
 	if (BUTTON_CLICKED == msg)
 	{
-		Game().StartStopMenu(this,true);
 		game_cl_TeamDeathmatch * tdm = smart_cast<game_cl_TeamDeathmatch *>(&(Game()));
 		if (pWnd == m_pImage1)
 			tdm->OnTeamSelect(0);
@@ -111,7 +110,7 @@ void CUISpawnWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool CUISpawnWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
+bool CUISpawnWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {
 	if (WINDOW_KEY_PRESSED != keyboard_action)
 	{
@@ -120,7 +119,6 @@ bool CUISpawnWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 			ShowChildren(true);
 			game_cl_mp* game = smart_cast<game_cl_mp*>(&Game());
 			game->OnKeyboardRelease(kSCORES);
-			UI()->GetUICursor()->Show();
 		}		
 		return false;
 	}
@@ -130,7 +128,6 @@ bool CUISpawnWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
         ShowChildren(false);
 		game_cl_mp* game = smart_cast<game_cl_mp*>(&Game());
 		game->OnKeyboardPress(kSCORES);
-		UI()->GetUICursor()->Hide();
 		return false;
 	}
 
@@ -138,7 +135,6 @@ bool CUISpawnWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 	
 	if (DIK_1 == dik || DIK_2 == dik)
 	{
-		dm->StartStopMenu(this,true);
 		
 		if (DIK_1 == dik)
 			dm->OnTeamSelect(0);
@@ -149,15 +145,12 @@ bool CUISpawnWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 	switch (dik)
 	{
 	case DIK_ESCAPE:
-		dm->StartStopMenu(this,true);
 		dm->OnTeamMenuBack();
 		return true;
 	case DIK_SPACE:
-		dm->StartStopMenu(this,true);
 		dm->OnTeamSelect(-1);
 		return true;
 	case DIK_RETURN:
-		dm->StartStopMenu(this,true);
 		if (m_pImage1->GetSelectedState())
 			dm->OnTeamSelect(0);
 		else if (m_pImage2->GetSelectedState())
@@ -167,7 +160,7 @@ bool CUISpawnWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 		return true;
 	}
 
-	return inherited::OnKeyboard(dik, keyboard_action);
+	return inherited::OnKeyboardAction(dik, keyboard_action);
 }
 
 void CUISpawnWnd::SetVisibleForBtn(ETEAMMENU_BTN btn, bool state){

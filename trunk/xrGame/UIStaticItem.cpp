@@ -66,14 +66,14 @@ void CUIStaticItem::Render()
 		UIRender->SetAlphaRef(alpha_ref);
 	// convert&set pos
 	Fvector2		bp;
-	UI()->ClientToScreenScaled	(bp,float(iPos.x),float(iPos.y));
+	UI().ClientToScreenScaled	(bp,float(iPos.x),float(iPos.y));
 	bp.x						= (float)iFloor(bp.x);
 	bp.y						= (float)iFloor(bp.y);
 
 	// actual rendering
 	Fvector2					pos;
 	Fvector2					f_len;
-	UI()->ClientToScreenScaled	(f_len, iVisRect.x2, iVisRect.y2 );
+	UI().ClientToScreenScaled	(f_len, iVisRect.x2, iVisRect.y2 );
 
 	int tile_x					= fis_zero(iRemX)?iTileX:iTileX+1;
 	int tile_y					= fis_zero(iRemY)?iTileY:iTileY+1;
@@ -90,11 +90,11 @@ void CUIStaticItem::Render()
 	
 	// set scissor
 	Frect clip_rect				= {iPos.x,iPos.y,iPos.x+iVisRect.x2*iTileX+iRemX,iPos.y+iVisRect.y2*iTileY+iRemY};
-	UI()->PushScissor			(clip_rect);
+	UI().PushScissor			(clip_rect);
 	// set geom
 	UIRender->FlushPrimitive();
 
-	UI()->PopScissor			();
+	UI().PopScissor			();
 
 	if (alpha_ref != -1)
 		UIRender->SetAlphaRef(0);

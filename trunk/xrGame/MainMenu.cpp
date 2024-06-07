@@ -34,15 +34,6 @@ CMainMenu::CMainMenu	()
 	CUIXmlInit::InitColorDefs		();
 	g_btnHint						= NULL;
 	m_deactivated_frame				= 0;	
-	
-	m_sPatchURL						= "";
-	m_pGameSpyFull					= NULL;
-
-	m_sPDProgress.IsInProgress		= false;
-
-	//---------------------------------------------------------------
-	m_NeedErrDialog					= ErrNoError;
-	m_start_time					= 0;
 
 	g_btnHint						= xr_new<CUIButtonHint>();
 }
@@ -92,27 +83,18 @@ void CMainMenu::Activate	(bool bActivate)
 	{
 		b_shniaganeed_pp			= true;
 		Device.Pause				(TRUE, FALSE, TRUE, "mm_activate1");
-			m_Flags.set				(flActive|flNeedChangeCapture,TRUE);
+		m_Flags.set				(flActive|flNeedChangeCapture,TRUE);
 
-		{
-			DLL_Pure* dlg = NEW_INSTANCE(TEXT2CLSID("MAIN_MNU"));
-			if(!dlg) 
-			{
-				m_Flags.set				(flActive|flNeedChangeCapture,FALSE);
-				return;
-			}
-			xr_delete					(m_startDialog);
-			m_startDialog				= smart_cast<CUIDialogWnd*>(dlg);
-			VERIFY						(m_startDialog);
-		}
+		m_Flags.set(flRestoreCursor, GetUICursor().IsVisible());
+
+		if (!ReloadUI())				
+			return;
 
 		m_Flags.set					(flRestoreConsole,Console->bVisible);
 		
 		if(b_is_single)	m_Flags.set	(flRestorePause,Device.Paused());
 		
 		Console->Hide				();
-
-		m_Flags.set					(flRestoreCursor,GetUICursor()->IsVisible());
 
 		if(b_is_single)
 		{
@@ -123,7 +105,7 @@ void CMainMenu::Activate	(bool bActivate)
 		}
 
 		m_startDialog->m_bWorkInPause		= true;
-		StartStopMenu						(m_startDialog,true);
+		m_startDialog->ShowDialog(true);
 		
 		if(g_pGameLevel)
 		{
@@ -180,7 +162,7 @@ void CMainMenu::Activate	(bool bActivate)
 		}	
 	
 		if(m_Flags.test(flRestoreCursor))
-			GetUICursor()->Show			();
+			GetUICursor().Show();
 
 		Device.Pause					(FALSE, FALSE, TRUE, "mm_deactivate2");
 
@@ -190,6 +172,30 @@ void CMainMenu::Activate	(bool bActivate)
 			Console->Execute	("vid_restart");
 		}
 	}
+}
+
+bool CMainMenu::ReloadUI()
+{
+	if (m_startDialog)
+	{
+		if (m_startDialog->IsShown())
+			m_startDialog->HideDialog();
+		CleanInternals();
+	}
+	DLL_Pure* dlg = NEW_INSTANCE(TEXT2CLSID("MAIN_MNU"));
+	if (!dlg)
+	{
+		m_Flags.set(flActive | flNeedChangeCapture, FALSE);
+		return false;
+	}
+	xr_delete(m_startDialog);
+	m_startDialog = smart_cast<CUIDialogWnd*>(dlg);
+	VERIFY(m_startDialog);
+	m_startDialog->m_bWorkInPause = true;
+	m_startDialog->ShowDialog(true);
+
+	m_activatedScreenRatio = (float)Device.dwWidth / (float)Device.dwHeight > (UI_BASE_WIDTH / UI_BASE_HEIGHT + 0.01f);
+	return true;
 }
 
 bool CMainMenu::IsActive()
@@ -230,9 +236,7 @@ void	CMainMenu::IR_OnMouseMove(int x, int y)
 {
 	if(!IsActive()) return;
 
-	if(MainInputReceiver())
-		MainInputReceiver()->IR_OnMouseMove(x, y);
-
+	CDialogHolder::IR_UIOnMouseMove(x, y);
 };
 
 void	CMainMenu::IR_OnMouseStop(int x, int y)
@@ -253,8 +257,7 @@ void	CMainMenu::IR_OnKeyboardPress(int dik)
 		return;
 	}
 
-	if(MainInputReceiver())
-		MainInputReceiver()->IR_OnKeyboardPress( dik);
+	CDialogHolder::IR_UIOnKeyboardPress(dik);
 
 };
 
@@ -262,25 +265,21 @@ void	CMainMenu::IR_OnKeyboardRelease			(int dik)
 {
 	if(!IsActive()) return;
 	
-	if(MainInputReceiver())
-		MainInputReceiver()->IR_OnKeyboardRelease(dik);
-
+    CDialogHolder::IR_UIOnKeyboardRelease(dik);
 };
 
 void	CMainMenu::IR_OnKeyboardHold(int dik)	
 {
 	if(!IsActive()) return;
 	
-	if(MainInputReceiver())
-		MainInputReceiver()->IR_OnKeyboardHold(dik);
+	CDialogHolder::IR_UIOnKeyboardHold(dik);
 };
 
 void CMainMenu::IR_OnMouseWheel(int direction)
 {
 	if(!IsActive()) return;
 	
-	if(MainInputReceiver())
-		MainInputReceiver()->IR_OnMouseWheel(direction);
+	CDialogHolder::IR_UIOnMouseWheel(direction);
 }
 
 
@@ -303,7 +302,7 @@ void CMainMenu::OnRender	()
 	if(!OnRenderPPUI_query())
 	{
 		DoRenderDialogs();
-		UI()->RenderFont();
+		UI().RenderFont();
 		draw_wnds_rects();
 	}
 }
@@ -315,15 +314,15 @@ void CMainMenu::OnRenderPPUI_main	()
 	if(m_Flags.test(flGameSaveScreenshot))
 		return;
 
-	UI()->pp_start();
+	UI().pp_start();
 
 	if(OnRenderPPUI_query())
 	{
 		DoRenderDialogs();
-		UI()->RenderFont();
+		UI().RenderFont();
 	}
 
-	UI()->pp_stop();
+	UI().pp_stop();
 }
 
 void CMainMenu::OnRenderPPUI_PP	()
@@ -332,14 +331,14 @@ void CMainMenu::OnRenderPPUI_PP	()
 
 	if(m_Flags.test(flGameSaveScreenshot))	return;
 
-	UI()->pp_start();
+	UI().pp_start();
 	
 	xr_vector<CUIWindow*>::iterator it = m_pp_draw_wnds.begin();
 	for(; it!=m_pp_draw_wnds.end();++it)
 	{
 		(*it)->Draw();
 	}
-	UI()->pp_stop();
+	UI().pp_stop();
 }
 
 void CMainMenu::StartStopMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators)
@@ -374,6 +373,16 @@ void CMainMenu::OnFrame()
 
 		if(m_Flags.test(flRestoreConsole))
 			Console->Show			();
+	}
+
+	if (IsActive())
+	{
+		bool b_is_16_9 = (float)Device.dwWidth / (float)Device.dwHeight > (UI_BASE_WIDTH / UI_BASE_HEIGHT + 0.01f);
+		if (b_is_16_9 != m_activatedScreenRatio)
+		{
+			ReloadUI();
+			m_startDialog->SendMessage(m_startDialog, MAIN_MENU_RELOADED, NULL);
+		}
 	}
 }
 
@@ -418,65 +427,10 @@ void CMainMenu::UnregisterPPDraw				(CUIWindow* w)
 	);
 }
 
-void CMainMenu::SetErrorDialog					(EErrorDlg ErrDlg)	
-{ 
-};
-
-void CMainMenu::CheckForErrorDlg()
-{
-};
-
-void CMainMenu::SwitchToMultiplayerMenu()
-{
-};
-
 void CMainMenu::DestroyInternal(bool bForce)
 {
 	if(m_startDialog && ((m_deactivated_frame < Device.dwFrame+4)||bForce) )
 		xr_delete		(m_startDialog);
-}
-
-void CMainMenu::OnNewPatchFound(LPCSTR VersionName, LPCSTR URL)
-{
-}
-
-void CMainMenu::OnNoNewPatchFound				()
-{
-}
-
-void CMainMenu::OnDownloadPatch(CUIWindow*, void*)
-{
-}
-
-void	CMainMenu::OnDownloadPatchError()
-{
-};
-
-void	CMainMenu::OnDownloadPatchSuccess			()
-{;
-}
-
-void CMainMenu::OnSessionTerminate(LPCSTR reason)
-{
-}
-
-void	CMainMenu::OnLoadError(LPCSTR module)
-{
-}
-
-void	CMainMenu::OnDownloadPatchProgress			(u64 bytesReceived, u64 totalSize)
-{
-};
-
-extern ENGINE_API string512  g_sLaunchOnExit_app;
-extern ENGINE_API string512  g_sLaunchOnExit_params;
-void	CMainMenu::OnRunDownloadedPatch			(CUIWindow*, void*)
-{
-}
-
-void CMainMenu::CancelDownload()
-{
-	
 }
 
 void CMainMenu::SetNeedVidRestart()
@@ -488,23 +442,6 @@ void CMainMenu::OnDeviceReset()
 {
 	if(IsActive() && g_pGameLevel)
 		SetNeedVidRestart();
-}
-
-bool		CMainMenu::ValidateCDKey					()
-{
-	return true;
-}
-
-void		CMainMenu::Show_CTMS_Dialog				()
-{
-}
-
-void		CMainMenu::Hide_CTMS_Dialog()
-{
-}
-
-void CMainMenu::OnConnectToMasterServerOkClicked(CUIWindow*, void*)
-{
 }
 
 LPCSTR CMainMenu::GetGSVer()

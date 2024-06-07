@@ -204,13 +204,12 @@ void			CGameSpy_Browser::RefreshList_Full(bool Local, const char* FilterStr)
 			pRData->pGSBrowser = this;
 
 			m_bTryingToConnectToMasterServer = true;
-			if (MainMenu()) MainMenu()->Show_CTMS_Dialog();
 
 			thread_spawn(RefreshInternetList, "GS Internet Refresh", 0, pRData);
 		}
 		if (error != sbe_noerror || !m_bAbleToConnectToMasterServer)
 		{			
-			MainMenu()->SetErrorDialog(CMainMenu::ErrMasterServerConnectFailed);
+//			MainMenu()->SetErrorDialog(CMainMenu::ErrMasterServerConnectFailed);
 		}
 	}
 	else
@@ -516,10 +515,10 @@ void			CGameSpy_Browser::Update()
 {
 	xrGS_ServerBrowserThink(m_pGSBrowser);	
 	if (!m_bTryingToConnectToMasterServer)
-		if (MainMenu()) MainMenu()->Hide_CTMS_Dialog();
+//		if (MainMenu()) MainMenu()->Hide_CTMS_Dialog();
 	if (m_bShowCMSErr)
 	{
-		if (MainMenu()) MainMenu()->SetErrorDialog(CMainMenu::ErrMasterServerConnectFailed);
+//		if (MainMenu()) MainMenu()->SetErrorDialog(CMainMenu::ErrMasterServerConnectFailed);
 		m_bShowCMSErr = false;
 	}
 };

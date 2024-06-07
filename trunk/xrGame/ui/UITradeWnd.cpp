@@ -240,8 +240,8 @@ void CUITradeWnd::Update()
 	if(m_uidata->UIDealMsg){
 		m_uidata->UIDealMsg->Update();
 		if( !m_uidata->UIDealMsg->IsActual()){
-			HUD().GetUI()->UIGame()->RemoveCustomStatic("not_enough_money_mine");
-			HUD().GetUI()->UIGame()->RemoveCustomStatic("not_enough_money_other");
+			CurrentGameUI()->RemoveCustomStatic("not_enough_money_mine");
+			CurrentGameUI()->RemoveCustomStatic("not_enough_money_other");
 			m_uidata->UIDealMsg			= NULL;
 		}
 	}
@@ -269,9 +269,9 @@ void CUITradeWnd::Hide()
 	
 	m_uidata->UIDealMsg				= NULL;
 
-	if(HUD().GetUI()->UIGame()){
-		HUD().GetUI()->UIGame()->RemoveCustomStatic("not_enough_money_mine");
-		HUD().GetUI()->UIGame()->RemoveCustomStatic("not_enough_money_other");
+	if(CurrentGameUI()){
+		CurrentGameUI()->RemoveCustomStatic("not_enough_money_mine");
+		CurrentGameUI()->RemoveCustomStatic("not_enough_money_other");
 	}
 
 	m_uidata->UIOurBagList.ClearAll		(true);
@@ -419,9 +419,9 @@ void CUITradeWnd::PerformTrade()
 	else
 	{
 		if (others_money < 0)
-			m_uidata->UIDealMsg = HUD().GetUI()->UIGame()->AddCustomStatic("not_enough_money_other", true);
+			m_uidata->UIDealMsg = CurrentGameUI()->AddCustomStatic("not_enough_money_other", true);
 		else
-			m_uidata->UIDealMsg = HUD().GetUI()->UIGame()->AddCustomStatic("not_enough_money_mine", true);
+			m_uidata->UIDealMsg = CurrentGameUI()->AddCustomStatic("not_enough_money_mine", true);
 
 
 		m_uidata->UIDealMsg->m_endTime = Device.fTimeGlobal + 2.0f;// sec

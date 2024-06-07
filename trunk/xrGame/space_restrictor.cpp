@@ -203,7 +203,7 @@ continue_loop:
 #ifdef DEBUG
 
 #include "customzone.h"
-#include "hudmanager.h"
+#include "ui_base.h"
 
 void CSpaceRestrictor::OnRender	()
 {
@@ -276,9 +276,9 @@ void CSpaceRestrictor::OnRender	()
 		float x = (1.f + v_res.x)/2.f * (Device.dwWidth);
 		float y = (1.f - v_res.y)/2.f * (Device.dwHeight) - delta_height;
 
-		HUD().Font().pFontMedium->SetColor	(0xffff0000);
-		HUD().Font().pFontMedium->OutSet	(x, y-=delta_height);
-		HUD().Font().pFontMedium->OutNext	( Name() );
+		UI().Font().pFontMedium->SetColor	(0xffff0000);
+		UI().Font().pFontMedium->OutSet	(x, y-=delta_height);
+		UI().Font().pFontMedium->OutNext	( Name() );
 		CCustomZone* z = smart_cast<CCustomZone*>(this);
 		if(z){
 			string64 str;
@@ -289,7 +289,7 @@ void CSpaceRestrictor::OnRender	()
 				case CCustomZone::eZoneStateAccumulate: strcpy(str,"ACCUMULATE"); break;
 				case CCustomZone::eZoneStateDisabled:	strcpy(str,"DISABLED"); break;
 			};
-			HUD().Font().pFontMedium->OutNext	( str );
+			UI().Font().pFontMedium->OutNext	( str );
 		}
 	}
 

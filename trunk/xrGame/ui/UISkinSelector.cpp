@@ -148,99 +148,21 @@ void CUISkinSelectorWnd::Init(const char* strSectionName)
 
 void CUISkinSelectorWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 {
-	game_cl_Deathmatch * dm = NULL;
-	switch (msg){
-		case BUTTON_CLICKED:
-			dm = smart_cast<game_cl_Deathmatch *>(&(Game()));
-
-			if (pWnd == m_pButtons[0])
-				OnKeyLeft();
-			else if (pWnd == m_pButtons[1])
-				OnKeyRight();
-			else if (pWnd == m_pBtnAutoSelect)
-			{
-				m_iActiveIndex = -1;
-				OnBtnOK();		
-			}
-			else if (pWnd == m_pBtnSpectator)
-			{
-				Game().StartStopMenu(this,true);
-				dm->OnSpectatorSelect();
-			}
-			else if (pWnd == m_pBtnBack)
-			{
-				Game().StartStopMenu(this,true);
-				dm->OnSkinMenuBack();				
-			}
-			else
-                for (int i = 0; i<4; i++)
-					if (pWnd == m_pImage[i])
-					{
-						m_iActiveIndex = m_firstSkin+i;
-						OnBtnOK();					
-					}
-			break;
-		case STATIC_FOCUS_RECEIVED:
-			if (pWnd == m_pButtons[0])
-			{
-				m_pAnims[0]->Rewind(0);
-				m_pAnims[0]->Play();
-			}
-			else if (pWnd == m_pButtons[1])
-			{
-				m_pAnims[1]->Rewind(0);
-				m_pAnims[1]->Play();
-			}
-			
-			break;
-	}
 }
 
 void CUISkinSelectorWnd::OnBtnCancel(){
-    Game().StartStopMenu(this,true);
-	game_cl_mp* mp = smart_cast<game_cl_mp*>(&(Game()));
-	mp->OnSkinMenu_Cancel();
 }
 
 void CUISkinSelectorWnd::OnBtnOK(){
-	Game().StartStopMenu(this,true);
-	game_cl_Deathmatch * dm = smart_cast<game_cl_Deathmatch *>(&(Game()));
-	if (m_iActiveIndex == -1)
-	{
-		m_iActiveIndex	= m_skinsEnabled[::Random.randI(m_skinsEnabled.size())];
-
-	}
-	dm->OnSkinMenu_Ok();
 }
 
-bool CUISkinSelectorWnd::OnMouse(float x, float y, EUIMessages mouse_action)
+bool CUISkinSelectorWnd::OnMouseAction(float x, float y, EUIMessages mouse_action)
 {
-	return CUIWindow::OnMouse(x,y,mouse_action);	
+	return CUIWindow::OnMouseAction(x,y,mouse_action);	
 }
 
-bool CUISkinSelectorWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
+bool CUISkinSelectorWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {
-	if (WINDOW_KEY_PRESSED != keyboard_action)
-	{
-		if (dik == DIK_TAB)
-		{
-			ShowChildren(true);
-			game_cl_mp* game = smart_cast<game_cl_mp*>(&Game());
-			game->OnKeyboardRelease(kSCORES);
-			UI()->GetUICursor()->Show();
-		}
-		
-		return false;
-	}
-
-	if (dik == DIK_TAB)
-	{
-        ShowChildren(false);
-		game_cl_mp* game = smart_cast<game_cl_mp*>(&Game());
-		game->OnKeyboardPress(kSCORES);
-		UI()->GetUICursor()->Hide();
-		return false;
-	}
 
 	int right_border = (int)m_skins.size();
 	if (right_border > 9)

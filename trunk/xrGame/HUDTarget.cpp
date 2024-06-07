@@ -15,7 +15,7 @@
 #include "game_cl_base.h"
 #include "../xr_3da/igame_persistent.h"
 
-
+#include "ui_base.h"
 #include "InventoryOwner.h"
 #include "relation_registry.h"
 #include "character_info.h"
@@ -145,7 +145,7 @@ void CHUDTarget::Render()
 	pt.y = -pt.y;
 	float di_size = C_SIZE / powf(pt.w, .2f);
 
-	CGameFont* F		= HUD().Font().pFontGraffiti19Russian;
+	CGameFont* F		= UI().Font().pFontGraffiti19Russian;
 	F->SetAligment		(CGameFont::alCenter);
 	F->OutSetI			(0.f,0.05f);
 

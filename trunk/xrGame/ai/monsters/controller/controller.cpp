@@ -5,9 +5,7 @@
 #include "../../../actor.h"
 #include "../../../ActorEffector.h"
 #include "../ai_monster_effector.h"
-#include "../../../hudmanager.h"
-#include "../../../ui.h"
-#include "../../../level.h"
+#include "../../../uigamecustom.h"
 #include "../../../sound_player.h"
 #include "../../../ai_monster_space.h"
 #include "../../../UIGameCustom.h"
@@ -409,8 +407,8 @@ void CController::UpdateCL()
 
 		
 		if (percent < TEXTURE_SIZE_PERCENT ) {
-			HUD().GetUI()->UIGame()->RemoveCustomStatic("controller_fx2");
-			SDrawStaticStruct* s = HUD().GetUI()->UIGame()->AddCustomStatic("controller_fx", true);
+			CurrentGameUI()->RemoveCustomStatic("controller_fx2");
+			SDrawStaticStruct* s = CurrentGameUI()->AddCustomStatic("controller_fx", true);
 			
 			float x1 = Device.dwWidth  / 2 - ((Device.dwWidth	/ 2) * percent);
 			float y1 = Device.dwHeight / 2 - ((Device.dwHeight	/ 2) * percent);
@@ -419,8 +417,8 @@ void CController::UpdateCL()
 
 			s->wnd()->SetWndRect				(x1,y1,x2-x1,y2-y1);
 		} else if (percent2 > 0){
-			HUD().GetUI()->UIGame()->RemoveCustomStatic("controller_fx");
-			SDrawStaticStruct* s = HUD().GetUI()->UIGame()->AddCustomStatic("controller_fx2", true);
+			CurrentGameUI()->RemoveCustomStatic("controller_fx");
+			SDrawStaticStruct* s = CurrentGameUI()->AddCustomStatic("controller_fx2", true);
 			
 			float x1 = Device.dwWidth  / 2 - ((Device.dwWidth	/ 2) * percent2);
 			float y1 = Device.dwHeight / 2 - ((Device.dwHeight	/ 2) * percent2);
@@ -430,8 +428,8 @@ void CController::UpdateCL()
 			s->wnd()->SetWndRect				(x1,y1,x2-x1,y2-y1);
 		} else {
 			active_control_fx = false;
-			HUD().GetUI()->UIGame()->RemoveCustomStatic("controller_fx");
-			HUD().GetUI()->UIGame()->RemoveCustomStatic("controller_fx2");
+			CurrentGameUI()->RemoveCustomStatic("controller_fx");
+			CurrentGameUI()->RemoveCustomStatic("controller_fx2");
 		}
 	}
 

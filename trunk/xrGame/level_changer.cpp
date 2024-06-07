@@ -125,7 +125,7 @@ void CLevelChanger::feel_touch_new	(CObject *tpObject)
 	}
 	Fvector			p,r;
 	bool			b = get_reject_pos(p,r);
-	CUIGameSP		*pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
+	CUIGameSP		*pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
 	if (pGameSP)
         pGameSP->ChangeLevel	(m_game_vertex_id,m_level_vertex_id,m_position,m_angles,p,r,b);
 
@@ -175,7 +175,7 @@ void CLevelChanger::update_actor_invitation()
 		VERIFY			(l_tpActor);
 
 		if(m_entrance_time+5.0f < Device.fTimeGlobal){
-			CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
+			CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
 			Fvector p,r;
 			bool b = get_reject_pos(p,r);
 			if(pGameSP)pGameSP->ChangeLevel(m_game_vertex_id,m_level_vertex_id,m_position,m_angles,p,r,b);

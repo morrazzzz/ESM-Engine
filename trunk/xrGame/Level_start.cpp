@@ -10,6 +10,7 @@
 #include "../xr_3da/IGame_Persistent.h"
 #include "../xr_3da/xr_ioconsole.h"
 #include "MainMenu.h"
+#include "UIGameCustom.h"
 
 BOOL CLevel::net_Start	( LPCSTR op_server, LPCSTR op_client )
 {
@@ -231,27 +232,6 @@ struct LevelLoadFinalizer
 {
 bool xr_stdcall net_start_finalizer()
 {
-	if(g_pGameLevel && !g_start_total_res)
-	{
-		shared_str ln	= Level().name();
-		Msg				("! Failed to start client. Check the connection or level existance.");
-		DEL_INSTANCE	(g_pGameLevel);
-		Console->Execute("main_menu on");
-
-		if (g_connect_server_err==xrServer::ErrBELoad)
-		{
-			MainMenu()->OnLoadError("BattlEye/BEServer.dll");
-		}else
-		if(g_connect_server_err==xrServer::ErrConnect && !psNET_direct_connect && !g_dedicated_server) 
-		{
-			MainMenu()->SwitchToMultiplayerMenu();
-		}else
-		if(g_connect_server_err==xrServer::ErrNoLevel)
-		{
-			MainMenu()->SwitchToMultiplayerMenu();
-			MainMenu()->OnLoadError(ln.c_str());
-		}
-	}
 	return true;
 }
 };
@@ -280,10 +260,10 @@ bool CLevel::net_start6()
 			Console->Execute		(buf);
 		}
 
-		if	(!g_dedicated_server)
+		if (!g_dedicated_server)
 		{
-			if (g_hud)
-				HUD().GetUI()->OnConnected();
+			if (CurrentGameUI())
+				CurrentGameUI()->OnConnected();
 		}
 	}
 

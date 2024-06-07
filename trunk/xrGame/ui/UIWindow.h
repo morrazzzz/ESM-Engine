@@ -55,7 +55,7 @@ public:
 	
 
 
-	virtual bool 			OnMouse				(float x, float y, EUIMessages mouse_action);
+	virtual bool 			OnMouseAction(float x, float y, EUIMessages mouse_action);
 	virtual void 			OnMouseMove			();
 	virtual void 			OnMouseScroll		(float iDirection);
 	virtual bool 			OnDbClick			();
@@ -76,7 +76,7 @@ public:
 	CUIWindow*				GetMessageTarget	();
 
 	//реакция на клавиатуру
-	virtual bool			OnKeyboard			(int dik, EUIMessages keyboard_action);
+	virtual bool			OnKeyboardAction			(int dik, EUIMessages keyboard_action);
 	virtual bool			OnKeyboardHold		(int dik);
 	virtual void			SetKeyboardCapture	(CUIWindow* pChildWindow, bool capture_status);
 

@@ -5676,9 +5676,6 @@
     <ClInclude Include="MainMenu.h">
       <Filter>UI</Filter>
     </ClInclude>
-    <ClInclude Include="UI.h">
-      <Filter>UI</Filter>
-    </ClInclude>
     <ClInclude Include="ui_base.h">
       <Filter>UI</Filter>
     </ClInclude>
@@ -8625,9 +8622,6 @@
       <Filter>UI</Filter>
     </ClCompile>
     <ClCompile Include="MainMenu.cpp">
-      <Filter>UI</Filter>
-    </ClCompile>
-    <ClCompile Include="UI.cpp">
       <Filter>UI</Filter>
     </ClCompile>
     <ClCompile Include="ui_base.cpp">

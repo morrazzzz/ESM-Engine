@@ -1333,7 +1333,7 @@ void CActor::RenderText				(LPCSTR Text, Fvector dpos, float* pdup, u32 color)
 	Device.mFullTransform.transform(v0r,v0);
 	Device.mFullTransform.transform(v1r,v1);
 	float size = v1r.distance_to(v0r);
-	CGameFont* pFont = HUD().Font().pFontArial14;
+	CGameFont* pFont = UI().Font().pFontArial14;
 	if (!pFont) return;
 //	float OldFontSize = pFont->GetHeight	();	
 	float delta_up = 0.0f;
@@ -1487,7 +1487,7 @@ void CActor::MoveArtefactBelt(const CArtefact* artefact, bool on_belt)
 		m_ArtefactsOnBelt.erase(it);
 	}	
 	if (Level().CurrentViewEntity() && Level().CurrentViewEntity() == this)
-		HUD().GetUI()->UIMainIngameWnd->m_artefactPanel->InitIcons(m_ArtefactsOnBelt);
+		CurrentGameUI()->UIMainIngameWnd->m_artefactPanel->InitIcons(m_ArtefactsOnBelt);
 }
 
 #define ARTEFACTS_UPDATE_TIME 0.100f
@@ -1581,13 +1581,13 @@ void CActor::AnimTorsoPlayCallBack(CBlend* B)
 
 void CActor::SetActorVisibility(u16 who, float value)
 {
-	CUIMotionIcon		&motion_icon	= HUD().GetUI()->UIMainIngameWnd->MotionIcon();
+	CUIMotionIcon		&motion_icon	= CurrentGameUI()->UIMainIngameWnd->MotionIcon();
 	motion_icon.SetActorVisibility		(who, value);
 }
 
 void CActor::UpdateMotionIcon(u32 mstate_rl)
 {
-	CUIMotionIcon		&motion_icon=HUD().GetUI()->UIMainIngameWnd->MotionIcon();
+	CUIMotionIcon		&motion_icon=CurrentGameUI()->UIMainIngameWnd->MotionIcon();
 	if(mstate_rl&mcClimb)
 	{
 		motion_icon.ShowState(CUIMotionIcon::stClimb);

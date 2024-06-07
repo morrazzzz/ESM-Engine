@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "hudmanager.h"
+#include "uigamecustom.h"
 #include "WeaponHUD.h"
 #include "WeaponMagazinedWGrenade.h"
 #include "WeaponMagazined.h"
@@ -159,9 +159,9 @@ void CWeaponMagazined::FireStart		()
 			const auto* WGrenade = smart_cast<CWeaponMagazinedWGrenade*>(this);
 
 			if (WGrenade && !WGrenade->m_bGrenadeMode && !IsMisfire())
-				HUD().GetUI()->AddInfoMessage("gun_empty");
+				CurrentGameUI()->AddCustomStatic("gun_empty", true);
 			else if (WGrenade && WGrenade->m_bGrenadeMode && !IsMisfire())
-				HUD().GetUI()->AddInfoMessage("gun_empty_grenade");
+				CurrentGameUI()->AddCustomStatic("gun_empty_grenade", true);
 		}
 	}
 }
@@ -389,7 +389,7 @@ void CWeaponMagazined::OnStateSwitch	(u32 S)
 		break;
 	case eMisfire:
 		if(smart_cast<CActor*>(this->H_Parent()) && (Level().CurrentViewEntity()==H_Parent()) )
-			HUD().GetUI()->AddInfoMessage("gun_jammed");
+			CurrentGameUI()->AddCustomStatic("gun_jammed", true);
 		break;
 	case eMagEmpty:
 		switch2_Empty	();

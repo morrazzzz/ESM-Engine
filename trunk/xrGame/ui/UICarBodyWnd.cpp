@@ -20,6 +20,7 @@
 #include "../alife_registry_wrappers.h"
 #include "UI3tButton.h"
 #include "UIListBoxItem.h"
+#include "../UICursor.h"
 #include "../InventoryBox.h"
 #include "../game_object_space.h"
 #include "../script_callback_ex.h"
@@ -389,9 +390,9 @@ void CUICarBodyWnd::TakeAll()
 
 #include "../xr_level_controller.h"
 
-bool CUICarBodyWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
+bool CUICarBodyWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {
-	if( inherited::OnKeyboard(dik,keyboard_action) )return true;
+	if( inherited::OnKeyboardAction(dik,keyboard_action) )return true;
 
 	if(keyboard_action==WINDOW_KEY_PRESSED)
 	{
@@ -451,7 +452,7 @@ void CUICarBodyWnd::ActivatePropertiesBox()
 		Frect							vis_rect;
 
 		GetAbsoluteRect					(vis_rect);
-		cursor_pos						= GetUICursor()->GetCursorPosition();
+		cursor_pos						= GetUICursor().GetCursorPosition();
 		cursor_pos.sub					(vis_rect.lt);
 		m_pUIPropertiesBox->Show		(vis_rect, cursor_pos);
 	}

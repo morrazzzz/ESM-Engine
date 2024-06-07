@@ -2,7 +2,6 @@
 
 #include "UIStatsWnd.h"
 #include "UIXmlInit.h"
-#include "../UI.h"
 #include "../string_table.h"
 
 //////////////////////////////////////////////////////////////////////////

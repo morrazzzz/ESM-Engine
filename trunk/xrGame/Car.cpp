@@ -9,7 +9,7 @@
 #include "alife_space.h"
 #include "PHDestroyable.h"
 #include "car.h"
-#include "hudmanager.h"
+#include "UIGameCustom.h"
 #include "cameralook.h"
 #include "camerafirsteye.h"
 #include "Actor.h"
@@ -466,12 +466,12 @@ void CCar::UpdateCL				( )
 			OwnerActor()->Cameras().ApplyDevice();
 		}
 */
-		if(HUD().GetUI())//
+		if(CurrentGameUI())//
 		{
-			HUD().GetUI()->UIMainIngameWnd->CarPanel().Show(true);
-			HUD().GetUI()->UIMainIngameWnd->CarPanel().SetCarHealth(GetfHealth()/* /100.f*/);
-			HUD().GetUI()->UIMainIngameWnd->CarPanel().SetSpeed(lin_vel.magnitude()/1000.f*3600.f/100.f);
-			HUD().GetUI()->UIMainIngameWnd->CarPanel().SetRPM(m_current_rpm/m_max_rpm/2.f);
+			CurrentGameUI()->UIMainIngameWnd->CarPanel().Show(true);
+			CurrentGameUI()->UIMainIngameWnd->CarPanel().SetCarHealth(GetfHealth()/* /100.f*/);
+			CurrentGameUI()->UIMainIngameWnd->CarPanel().SetSpeed(lin_vel.magnitude()/1000.f*3600.f/100.f);
+			CurrentGameUI()->UIMainIngameWnd->CarPanel().SetRPM(m_current_rpm/m_max_rpm/2.f);
 		}
 	}
 
@@ -507,10 +507,10 @@ void	CCar::OnHUDDraw				(CCustomHUD* /**hud/**/)
 #ifdef DEBUG
 	Fvector velocity;
 	m_pPhysicsShell->get_LinearVel(velocity);
-	HUD().Font().pFontStat->SetColor		(0xffffffff);
-	HUD().Font().pFontStat->OutSet		(120,530);
-	HUD().Font().pFontStat->OutNext		("Position:      [%3.2f, %3.2f, %3.2f]",VPUSH(Position()));
-	HUD().Font().pFontStat->OutNext		("Velocity:      [%3.2f]",velocity.magnitude());
+	UI().Font().pFontStat->SetColor		(0xffffffff);
+	UI().Font().pFontStat->OutSet		(120,530);
+	UI().Font().pFontStat->OutNext		("Position:      [%3.2f, %3.2f, %3.2f]",VPUSH(Position()));
+	UI().Font().pFontStat->OutNext		("Velocity:      [%3.2f]",velocity.magnitude());
 
 
 #endif
@@ -543,7 +543,7 @@ void	CCar::Hit							(SHit* pHDS)
 	}
 	CDamagableItem::HitEffect();
 	if(Owner()&&Owner()->ID()==Level().CurrentEntity()->ID())
-		HUD().GetUI()->UIMainIngameWnd->CarPanel().SetCarHealth(GetfHealth()/* /100.f */);
+		CurrentGameUI()->UIMainIngameWnd->CarPanel().SetCarHealth(GetfHealth()/* /100.f */);
 }
 
 void CCar::ChangeCondition	(float fDeltaCondition)	
@@ -554,7 +554,7 @@ void CCar::ChangeCondition	(float fDeltaCondition)
 	if (Local() && !g_Alive() && !AlreadyDie())
 		KillEntity	(Initiator());
 	if(Owner()&&Owner()->ID()==Level().CurrentEntity()->ID())
-		HUD().GetUI()->UIMainIngameWnd->CarPanel().SetCarHealth(GetfHealth()/* /100.f */);
+		CurrentGameUI()->UIMainIngameWnd->CarPanel().SetCarHealth(GetfHealth()/* /100.f */);
 }
 
 void CCar::PHHit(SHit &H)
@@ -610,7 +610,7 @@ void CCar::detach_Actor()
 	Unclutch();
 	ResetKeys();
 	m_current_rpm=m_min_rpm;
-	HUD().GetUI()->UIMainIngameWnd->CarPanel().Show(false);
+	CurrentGameUI()->UIMainIngameWnd->CarPanel().Show(false);
 	///Break();
 	//H_SetParent(NULL);
 	HandBreak();

@@ -20,12 +20,13 @@ public:
 	Flags8			m_flags;
 };
 
-class CDialogHolder :public ISheduled,public pureFrame
+class CDialogHolder :public pureFrame
 {
 	//dialogs
 	xr_vector<recvItem>										m_input_receivers;
 	xr_vector<dlgItem>										m_dialogsToRender;
-
+	xr_vector<dlgItem>										m_dialogsToRender_new;
+	bool													m_b_in_update;
 
 	void					StartMenu						(CUIDialogWnd* pDialog, bool bDoHideIndicators);
 	void					StopMenu						(CUIDialogWnd* pDialog);
@@ -36,16 +37,22 @@ protected:
 public:
 	CDialogHolder					();
 	virtual					~CDialogHolder					();
-	virtual	shared_str		shedule_Name					() const		{ return shared_str("CDialogHolder"); };
-	virtual	void			shedule_Update					(u32 dt);
-	virtual	float			shedule_Scale					();
-	virtual bool			shedule_Needed					()				{return true;};
 
 	//dialogs
-	CUIDialogWnd*			MainInputReceiver				();
+	CUIDialogWnd*			TopInputReceiver				();
 	virtual void			StartStopMenu					(CUIDialogWnd* pDialog, bool bDoHideIndicators);
 	void					AddDialogToRender				(CUIWindow* pDialog);
 	void					RemoveDialogToRender			(CUIWindow* pDialog);
 	virtual void			OnFrame							();
 	virtual bool			UseIndicators					()						{return true;}
+
+	virtual void			StartDialog						(CUIDialogWnd* pDialog, bool bDoHideIndicators);
+	virtual void			StopDialog						(CUIDialogWnd* pDialog);
+
+	virtual bool 			IR_UIOnKeyboardPress			(int dik);
+	virtual bool 			IR_UIOnKeyboardRelease			(int dik);
+	virtual bool 			IR_UIOnMouseMove				(int dx, int dy);
+	virtual bool 			IR_UIOnMouseWheel				(int direction);
+	virtual bool 			IR_UIOnKeyboardHold				(int dik);
+
 };

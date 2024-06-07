@@ -94,7 +94,6 @@ void CUIMapDesc::SendMessage(CUIWindow* pWnd,s16 msg, void* pData){
 	if (BUTTON_CLICKED == msg)
 	{
 		game_cl_mp * dm = smart_cast<game_cl_mp *>(&(Game()));
-		dm->StartStopMenu(this,true);
 		if (pWnd == m_pBtnSpectator)
 			dm->OnSpectatorSelect();
 		else if (pWnd == m_pBtnNext)
@@ -103,7 +102,7 @@ void CUIMapDesc::SendMessage(CUIWindow* pWnd,s16 msg, void* pData){
 
 }
 
-bool CUIMapDesc::OnKeyboard(int dik, EUIMessages keyboard_action){
+bool CUIMapDesc::OnKeyboardAction(int dik, EUIMessages keyboard_action){
 	if (WINDOW_KEY_RELEASED == keyboard_action) 
 	{
 		if (dik == DIK_TAB)
@@ -111,7 +110,6 @@ bool CUIMapDesc::OnKeyboard(int dik, EUIMessages keyboard_action){
 			ShowChildren(true);
 			game_cl_mp* game = smart_cast<game_cl_mp*>(&Game());
 			game->OnKeyboardRelease(kSCORES);
-			UI()->GetUICursor()->Show();
 		}
 		
 		return false;
@@ -122,7 +120,6 @@ bool CUIMapDesc::OnKeyboard(int dik, EUIMessages keyboard_action){
         ShowChildren(false);
 		game_cl_mp* game = smart_cast<game_cl_mp*>(&Game());
 		game->OnKeyboardPress(kSCORES);
-		UI()->GetUICursor()->Hide();
 		return false;
 	}
 
@@ -130,13 +127,11 @@ bool CUIMapDesc::OnKeyboard(int dik, EUIMessages keyboard_action){
 
 	switch (dik){
 		case DIK_ESCAPE:
-			dm->StartStopMenu(this,true);
 			dm->OnSpectatorSelect();
 			return true;
 			break;
 		case DIK_SPACE:
 		case DIK_RETURN:
-			dm->StartStopMenu(this,true);
 			dm->OnMapInfoAccept();
 			return true;
 			break;

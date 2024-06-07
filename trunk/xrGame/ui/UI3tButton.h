@@ -48,7 +48,7 @@ public:
 	virtual void	Update						();
 	
 	//virtual void Enable(bool bEnable);	
-	virtual bool 	OnMouse						(float x, float y, EUIMessages mouse_action);
+	virtual bool 	OnMouseAction						(float x, float y, EUIMessages mouse_action);
 	virtual bool 	OnMouseDown					(int mouse_btn);
 			void 	SetCheckMode				(bool mode) {m_bCheckMode = mode;}
 

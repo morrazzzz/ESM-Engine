@@ -2,6 +2,7 @@
 #include "UIGameTutorial.h"
 #include "UIWindow.h"
 #include "UIStatic.h"
+#include "../UICursor.h"
 #include "UIXmlInit.h"
 #include "../object_broker.h"
 #include "../../xr_3da/xr_input.h"
@@ -140,13 +141,13 @@ void CUISequenceSimpleItem::Update			()
 	}
 	
 	if (g_pGameLevel){
-	CUIGameSP* ui_game_sp	= smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
+	CUIGameSP* ui_game_sp	= smart_cast<CUIGameSP*>(CurrentGameUI());
 
 	if(ui_game_sp)
 	{
 		if(!m_pda_section || 0 == xr_strlen(m_pda_section) )
-			if ( ui_game_sp->PdaMenu->IsShown()			||
-				ui_game_sp->InventoryMenu->IsShown()	||
+			if ( ui_game_sp->PdaMenu().IsShown() ||
+				ui_game_sp->InventoryMenu().IsShown()	||
 				ui_game_sp->TalkMenu->IsShown()			||
 				ui_game_sp->UICarBodyMenu->IsShown()	||
 				ui_game_sp->UIChangeLevelWnd->IsShown()			)
@@ -173,7 +174,7 @@ void CUISequenceSimpleItem::Start()
 	if(m_flags.test(etiNeedPauseSound))
 		Device.Pause			(TRUE, FALSE, TRUE, "simpleitem_start");
 
-	GetUICursor()->SetUICursorPosition		(m_desired_cursor_pos);
+	GetUICursor().SetUICursorPosition		(m_desired_cursor_pos);
 	m_time_start							= float(Device.dwTimeContinual)/1000.0f;
 	m_owner->MainWnd()->AttachChild	(m_UIWindow);
 
@@ -181,36 +182,36 @@ void CUISequenceSimpleItem::Start()
 
 	if (g_pGameLevel){
 			bool bShowPda			= false;
-			CUIGameSP* ui_game_sp	= smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
+			CUIGameSP* ui_game_sp	= smart_cast<CUIGameSP*>(CurrentGameUI());
 			if(!stricmp(m_pda_section,"pda_contacts")){
-				ui_game_sp->PdaMenu->SetActiveSubdialog(eptContacts);
+				ui_game_sp->PdaMenu().SetActiveSubdialog(eptContacts);
 				bShowPda = true;
 			}else{
 			if(!stricmp(m_pda_section,"pda_map")){
-				ui_game_sp->PdaMenu->SetActiveSubdialog(eptMap);
+				ui_game_sp->PdaMenu().SetActiveSubdialog(eptMap);
 				bShowPda = true;
 			}else if(!stricmp(m_pda_section,"pda_quests")){
-				ui_game_sp->PdaMenu->SetActiveSubdialog(eptQuests);
+				ui_game_sp->PdaMenu().SetActiveSubdialog(eptQuests);
 				bShowPda = true;
 			}else if(!stricmp(m_pda_section,"pda_diary")){
-				ui_game_sp->PdaMenu->SetActiveSubdialog(eptDiary);
+				ui_game_sp->PdaMenu().SetActiveSubdialog(eptDiary);
 				bShowPda = true;
 			}else if(!stricmp(m_pda_section,"pda_ranking")){
-				ui_game_sp->PdaMenu->SetActiveSubdialog(eptRanking);
+				ui_game_sp->PdaMenu().SetActiveSubdialog(eptRanking);
 				bShowPda = true;
 			}else if(!stricmp(m_pda_section,"pda_statistics")){
-				ui_game_sp->PdaMenu->SetActiveSubdialog(eptActorStatistic);
+				ui_game_sp->PdaMenu().SetActiveSubdialog(eptActorStatistic);
 				bShowPda = true;
 			}else if(!stricmp(m_pda_section,"pda_encyclopedia")){
-				ui_game_sp->PdaMenu->SetActiveSubdialog(eptEncyclopedia);
+				ui_game_sp->PdaMenu().SetActiveSubdialog(eptEncyclopedia);
 				bShowPda = true;
 			}
 		}
 		if(ui_game_sp)
 		{
-		if( (!ui_game_sp->PdaMenu->IsShown() && bShowPda) || 
-			(ui_game_sp->PdaMenu->IsShown() && !bShowPda))
-			HUD().GetUI()->StartStopMenu			(ui_game_sp->PdaMenu,true);
+		if( (!ui_game_sp->PdaMenu().IsShown() && bShowPda) ||
+			(ui_game_sp->PdaMenu().IsShown() && !bShowPda))
+			ui_game_sp->PdaMenu().HideDialog();
 		}
 	}
 }
@@ -233,9 +234,9 @@ bool CUISequenceSimpleItem::Stop			(bool bForce)
 		Device.Pause			(FALSE, FALSE, TRUE, "simpleitem_stop");
 
 	if (g_pGameLevel){
-		CUIGameSP* ui_game_sp	= smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
-		if( ui_game_sp && ui_game_sp->PdaMenu->IsShown() ) 
-			HUD().GetUI()->StartStopMenu			(ui_game_sp->PdaMenu, true);
+		CUIGameSP* ui_game_sp	= smart_cast<CUIGameSP*>(CurrentGameUI());
+		if( ui_game_sp && ui_game_sp->PdaMenu().IsShown() ) 
+			ui_game_sp->PdaMenu().HideDialog();
 	}
 	inherited::Stop				();
 	return true;

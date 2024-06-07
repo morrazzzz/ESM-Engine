@@ -390,9 +390,9 @@ void						CLevel::Demo_Update				()
 		};
 	};	
 	//-------------------------------
-	if (HUD().GetUI())
+	if (CurrentGameUI())
 	{
-		CUIGameDM* game_dm_ui = smart_cast<CUIGameDM*>( HUD().GetUI()->UIGame());
+		CUIGameDM* game_dm_ui = smart_cast<CUIGameDM*>( CurrentGameUI());
 		if (game_dm_ui)
 		{
 			if (Pos < m_aDemoData.size())

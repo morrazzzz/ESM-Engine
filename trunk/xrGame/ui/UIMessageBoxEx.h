@@ -17,5 +17,7 @@ public:
 	LPCSTR		 GetHost			();
 	LPCSTR		 GetPassword		();
 
+	virtual bool	NeedCenterCursor()const { return false; }
+
     CUIMessageBox*	m_pMessageBox;
 };

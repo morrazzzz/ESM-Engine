@@ -8,6 +8,7 @@
 #include "customzone.h"
 #include "../xr_3da/GameMtlLib.h"
 #include "ui/UIMainIngameWnd.h"
+#include "UIGameCustom.h"
 #include "Grenade.h"
 #include "clsid_game.h"
 
@@ -142,7 +143,7 @@ void	CActor::PickupModeUpdate_COD	()
 		
 	if (!g_Alive() || eacFirstEye != cam_active) 
 	{
-		HUD().GetUI()->UIMainIngameWnd->SetPickUpItem(NULL);
+		CurrentGameUI()->UIMainIngameWnd->SetPickUpItem(NULL);
 		return;
 	};
 	
@@ -202,7 +203,7 @@ void	CActor::PickupModeUpdate_COD	()
 				pNearestItem = NULL;
 	}
 
-	HUD().GetUI()->UIMainIngameWnd->SetPickUpItem(pNearestItem);
+	CurrentGameUI()->UIMainIngameWnd->SetPickUpItem(pNearestItem);
 
 	if (pNearestItem && m_bPickupMode)
 	{
@@ -238,9 +239,9 @@ void CActor::PickupInfoDraw(CObject* object)
 	float x = (1.f + v_res.x)/2.f * (Device.dwWidth);
 	float y = (1.f - v_res.y)/2.f * (Device.dwHeight);
 
-	HUD().Font().pFontLetterica16Russian->SetAligment	(CGameFont::alCenter);
-	HUD().Font().pFontLetterica16Russian->SetColor		(PICKUP_INFO_COLOR);
-	HUD().Font().pFontLetterica16Russian->Out			(x,y,draw_str);
+    UI().Font().pFontLetterica16Russian->SetAligment	(CGameFont::alCenter);
+	UI().Font().pFontLetterica16Russian->SetColor		(PICKUP_INFO_COLOR);
+	UI().Font().pFontLetterica16Russian->Out			(x,y,draw_str);
 }
 
 void CActor::feel_sound_new(CObject* who, int type, CSound_UserDataPtr user_data, const Fvector& Position, float power)
