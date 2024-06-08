@@ -80,6 +80,7 @@ bool  CUIButton::OnMouse(float x, float y, EUIMessages mouse_action)
 			{
 				m_eButtonState = BUTTON_PUSHED;
 				GetMessageTarget()->SendMessage(this, BUTTON_DOWN, NULL);
+				return true;
 			}
 		}
 		else if(m_eButtonState == BUTTON_PUSHED)
@@ -156,9 +157,9 @@ void CUIButton::DrawTexture()
 			m_UIStaticItem.SetRect(0, 0, rect.width(), rect.height());
 		else
 		{
-			Frect r={0,0,
+			Frect r = { 0,0,
 				m_UIStaticItem.GetOriginalRectScaled().width(),
-				m_UIStaticItem.GetOriginalRectScaled().height()};
+				m_UIStaticItem.GetOriginalRectScaled ().height() };
 			m_UIStaticItem.SetRect(r);
 		}
 

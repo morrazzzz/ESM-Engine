@@ -181,13 +181,36 @@ void CUIStatic::DrawTexture(){
 		GetAbsoluteRect	(rect);
 		m_UIStaticItem.SetPos	(rect.left + m_TextureOffset.x, rect.top + m_TextureOffset.y);
 
-		if(m_bStretchTexture)
+		if (m_bStretchTexture)
+		{
+			if (Heading())
+			{
+					float t1, t2;
+					t1 = rect.width();
+					t2 = rect.height();
+					rect.y2 = rect.y1 + t1;
+					rect.x2 = rect.x1 + t2;
+			}
 			m_UIStaticItem.SetRect(0, 0, rect.width(), rect.height());
-		else{
+		}
+		else
+		{
 			Frect r={0.0f,0.0f,
-				m_UIStaticItem.GetOriginalRectScaled().width(),
-				m_UIStaticItem.GetOriginalRectScaled().height()};
-			if (r.width()&&r.height())	m_UIStaticItem.SetRect(r);
+				m_UIStaticItem.GetOriginalRect().width(),
+				m_UIStaticItem.GetOriginalRect().height()};
+
+			{
+				if (Heading())
+				{
+					float t1, t2;
+					t1 = rect.width();
+					t2 = rect.height();
+					rect.y2 = rect.y1 + t1;
+					rect.x2 = rect.x1 + t2;
+				}
+
+				m_UIStaticItem.SetRect(r);
+			}
 		}
 
 		if( Heading() ){
@@ -353,12 +376,12 @@ void CUIStatic::TextureClipper(float offset_x, float offset_y, Frect* pClipRect,
 	else{
 		Frect r;
 		r.x1 = out_rect.left;
-		r.x2 = out_rect.right<UIStaticItem.GetOriginalRectScaled().width()?
-			out_rect.right:UIStaticItem.GetOriginalRectScaled().width();
+		r.x2 = out_rect.right<UIStaticItem.GetOriginalRect().width()?
+			out_rect.right:UIStaticItem.GetOriginalRect().width();
 
 		r.y1 = out_rect.top;
-		r.y2 = out_rect.bottom<UIStaticItem.GetOriginalRectScaled().height()?
-			out_rect.bottom:UIStaticItem.GetOriginalRectScaled().height();
+		r.y2 = out_rect.bottom<UIStaticItem.GetOriginalRect().height()?
+			out_rect.bottom:UIStaticItem.GetOriginalRect().height();
 
 		UIStaticItem.SetRect(r);
 	}
@@ -384,12 +407,12 @@ void CUIStatic::ClipperOff(CUIStaticItem& UIStaticItem)
 	
 	Frect r;
 	r.x1 = out_rect.left;
-	r.x2 = out_rect.right<UIStaticItem.GetOriginalRectScaled().width()?
-		   out_rect.right:UIStaticItem.GetOriginalRectScaled().width();
+	r.x2 = out_rect.right<UIStaticItem.GetOriginalRect().width()?
+		   out_rect.right:UIStaticItem.GetOriginalRect().width();
 
 	r.y1 = out_rect.top;
-	r.y2 = out_rect.bottom<UIStaticItem.GetOriginalRectScaled().height()?
-		   out_rect.bottom:UIStaticItem.GetOriginalRectScaled().height();
+	r.y2 = out_rect.bottom<UIStaticItem.GetOriginalRect().height()?
+		   out_rect.bottom:UIStaticItem.GetOriginalRect().height();
 	UIStaticItem.SetRect(r);
 }
 

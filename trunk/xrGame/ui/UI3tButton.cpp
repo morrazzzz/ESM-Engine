@@ -185,6 +185,7 @@ void CUI3tButton::DrawTexture()
 {
 	if(m_bTextureEnable)
 	{
+		m_background.SetStretchTexture(true);
 		m_background.Draw();
 	}
 }
