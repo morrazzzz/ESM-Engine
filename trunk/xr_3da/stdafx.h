@@ -16,7 +16,9 @@
 
 #pragma warning(disable:4995)
 #include <d3d9.h>
+#ifndef XRPHYSICS_EXPORTS
 #include <dplay8.h>
+#endif
 #pragma warning(default:4995)
 
 // you must define ENGINE_BUILD then building the engine itself
