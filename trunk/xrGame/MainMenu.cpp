@@ -19,9 +19,6 @@
 extern bool b_shniaganeed_pp;
 
 CMainMenu*	MainMenu()	{return (CMainMenu*)g_pGamePersistent->m_pMainMenu; };
-//----------------------------------------------------------------------------------
-#define INIT_MSGBOX(_box, _template)	{ _box = xr_new<CUIMessageBoxEx>(); _box->Init(_template);}
-//----------------------------------------------------------------------------------
 
 CMainMenu::CMainMenu	()
 {
@@ -36,10 +33,13 @@ CMainMenu::CMainMenu	()
 	m_deactivated_frame				= 0;	
 
 	g_btnHint						= xr_new<CUIButtonHint>();
+
+	Device.seqFrame.Add		(this,REG_PRIORITY_LOW-1000);
 }
 
 CMainMenu::~CMainMenu	()
 {
+	Device.seqFrame.Remove			(this);
 	xr_delete						(g_btnHint);
 	xr_delete						(m_startDialog);
 	g_pGamePersistent->m_pMainMenu	= NULL;
@@ -140,7 +140,9 @@ void CMainMenu::Activate	(bool bActivate)
 			Console->Show					();
 		}
 
-		StartStopMenu						(m_startDialog,true);
+		if (m_startDialog->IsShown())
+			m_startDialog->HideDialog();
+
 		CleanInternals						();
 		if(g_pGameLevel)
 		{
@@ -339,12 +341,6 @@ void CMainMenu::OnRenderPPUI_PP	()
 		(*it)->Draw();
 	}
 	UI().pp_stop();
-}
-
-void CMainMenu::StartStopMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators)
-{
-	pDialog->m_bWorkInPause = true;
-	CDialogHolder::StartStopMenu(pDialog, bDoHideIndicators);
 }
 
 //pureFrame

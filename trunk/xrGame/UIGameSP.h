@@ -27,7 +27,7 @@ public:
 	virtual				~CUIGameSP				();
 
 	virtual void		SetClGame				(game_cl_GameState* g);
-	virtual bool		IR_OnKeyboardPress		(int dik);
+	virtual bool		IR_UIOnKeyboardPress		(int dik);
 
 	void				StartTalk				();
 	void				StartCarBody			(CInventoryOwner* pOurInv, CInventoryOwner* pOthers);

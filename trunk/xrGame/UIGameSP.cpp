@@ -51,8 +51,9 @@ void CUIGameSP::SetClGame (game_cl_GameState* g)
 }
 
 
-bool CUIGameSP::IR_OnKeyboardPress(int dik) 
+bool CUIGameSP::IR_UIOnKeyboardPress(int dik)
 {
+	if(inherited::IR_UIOnKeyboardPress(dik)) return true;
 	if( Device.Paused()		) return false;
 
 	CActor *pActor = smart_cast<CActor*>(Level().CurrentEntity());
@@ -132,7 +133,7 @@ void CUIGameSP::StartCarBody(CInventoryOwner* pOurInv, CInventoryBox* pBox)
 
 void CUIGameSP::ReInitShownUI() 
 { 
-	if (m_InventoryMenu->IsShown()) 
+ 	if (m_InventoryMenu->IsShown())
 		m_InventoryMenu->InitInventory_delayed();
 	else if(UICarBodyMenu->IsShown())
 		UICarBodyMenu->UpdateLists_delayed();

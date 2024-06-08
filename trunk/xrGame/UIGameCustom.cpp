@@ -21,6 +21,13 @@ struct predicate_remove_stat {
 
 CUIGameCustom::CUIGameCustom()
 {
+	m_msgs_xml = nullptr;
+	m_InventoryMenu = nullptr;
+	m_PdaMenu = nullptr;
+	//m_window = nullptr;
+	UIMainIngameWnd = nullptr;
+	m_pMessagesWnd = nullptr;
+
 	ShowGameIndicators(true);
 	ShowCrosshair(true);
 }
@@ -53,11 +60,17 @@ void CUIGameCustom::OnFrame()
 		delete_data				(m_custom_statics);
 		g_b_ClearGameCaptions	= false;
 	}
+
+	//update windows
+	if( GameIndicatorsShown() && psHUD_Flags.is(HUD_DRAW|HUD_DRAW_RT) )
+		UIMainIngameWnd->Update	();
+
+	m_pMessagesWnd->Update();
 }
 
 void CUIGameCustom::Render()
 {
-	GameCaptions()->Draw();
+	//GameCaptions()->Draw();
 	st_vec::iterator it = m_custom_statics.begin();
 	for(;it!=m_custom_statics.end();++it)
 		(*it).Draw();
