@@ -23,36 +23,9 @@ void CUIFrameRect::Init(LPCSTR texture, float x, float y, float w, float h)//, D
 }
 
 void CUIFrameRect::InitTexture(const char* texture){
-	string_path		fn,buf;
+	string_path		buf;
 	strcpy			(buf,texture); if (strext(buf)) *strext(buf)=0;
 
-	if (FS.exist(fn,"$game_textures$",buf,".ini")){
-		Fvector4	v;
-		//uFlags.set	(flSingleTex,TRUE);
-		CInifile* ini= CInifile::Create(fn,TRUE);
-		LPCSTR sh	= ini->r_string("frame","shader");
-		frame[fmBK].CreateShader(texture,sh);
-		frame[fmL].CreateShader	(texture,sh);
-		frame[fmR].CreateShader	(texture,sh);
-		frame[fmT].CreateShader	(texture,sh);
-		frame[fmB].CreateShader	(texture,sh);
-		frame[fmLT].CreateShader(texture,sh);
-		frame[fmRT].CreateShader(texture,sh);
-		frame[fmRB].CreateShader(texture,sh);
-		frame[fmLB].CreateShader(texture,sh);
-		v = ini->r_fvector4("frame","back");	frame[fmBK].SetOriginalRect	(v.x,v.y,v.z,v.w);	frame[fmBK].SetRect	(0,0,v.z,v.w);
-		v = ini->r_fvector4("frame","l");		frame[fmL].SetOriginalRect	(v.x,v.y,v.z,v.w);	frame[fmL].SetRect	(0,0,v.z,v.w);
-		v = ini->r_fvector4("frame","r");		frame[fmR].SetOriginalRect	(v.x,v.y,v.z,v.w);	frame[fmR].SetRect	(0,0,v.z,v.w);
-		v = ini->r_fvector4("frame","t");		frame[fmT].SetOriginalRect	(v.x,v.y,v.z,v.w);	frame[fmT].SetRect	(0,0,v.z,v.w);
-		v = ini->r_fvector4("frame","b");		frame[fmB].SetOriginalRect	(v.x,v.y,v.z,v.w);	frame[fmB].SetRect	(0,0,v.z,v.w);
-		v = ini->r_fvector4("frame","lt");		frame[fmLT].SetOriginalRect	(v.x,v.y,v.z,v.w);	frame[fmLT].SetRect	(0,0,v.z,v.w);
-		v = ini->r_fvector4("frame","rt");		frame[fmRT].SetOriginalRect	(v.x,v.y,v.z,v.w);	frame[fmRT].SetRect	(0,0,v.z,v.w);
-		v = ini->r_fvector4("frame","rb");		frame[fmRB].SetOriginalRect	(v.x,v.y,v.z,v.w);	frame[fmRB].SetRect	(0,0,v.z,v.w);
-		v = ini->r_fvector4("frame","lb");		frame[fmLB].SetOriginalRect	(v.x,v.y,v.z,v.w);	frame[fmLB].SetRect	(0,0,v.z,v.w);
-		CInifile::Destroy(ini);
-	}
-	else
-	{
 		CUITextureMaster::InitTexture(strconcat(sizeof(buf),buf,texture,"_back"),	&frame[CUIFrameRect::fmBK]);
 		CUITextureMaster::InitTexture(strconcat(sizeof(buf),buf,texture,"_l"),		&frame[CUIFrameRect::fmL]);
 		CUITextureMaster::InitTexture(strconcat(sizeof(buf),buf,texture,"_r"),		&frame[CUIFrameRect::fmR]);
@@ -62,12 +35,11 @@ void CUIFrameRect::InitTexture(const char* texture){
 		CUITextureMaster::InitTexture(strconcat(sizeof(buf),buf,texture,"_rt"),		&frame[CUIFrameRect::fmRT]);
 		CUITextureMaster::InitTexture(strconcat(sizeof(buf),buf,texture,"_rb"),		&frame[CUIFrameRect::fmRB]);
 		CUITextureMaster::InitTexture(strconcat(sizeof(buf),buf,texture,"_lb"),		&frame[CUIFrameRect::fmLB]);		
-	}
 }
 
 void CUIFrameRect::UpdateSize()
 {
-	VERIFY(g_bRendering);
+//	VERIFY(g_bRendering);
 	// texture size
 	Fvector2  ts;
 	float rem_x, rem_y;
@@ -96,11 +68,37 @@ void CUIFrameRect::UpdateSize()
 	float size_left		= m_wndSize.y - _lt.y - _lb.y;
 	float size_right	= m_wndSize.y - _rt.y - _rb.y;
 
+	bool resizing = false;
+	Fvector2 new_size = GetWndSize();
+	if (size_top < 0.0f || size_bottom < 0.0f)
+	{
+		Fvector2 n1;
+		n1.x = _lt.x + _rt.x;
+		n1.y = _lb.x + _rb.x;
+		new_size.x = _max(n1.x, n1.y);
+		resizing = true;
+	}
+	if (size_left < 0.0f || size_right < 0.0f)
+	{
+		Fvector2 n2;
+		n2.x = _lt.y + _lb.y;
+		n2.y = _rt.y + _rb.y;
+		new_size.y = _max(n2.x, n2.y);
+		resizing = true;
+	}
+
+	if (resizing)
+	{
+		SetWndSize(new_size);
+		VERIFY(!recall);
+		UpdateSize();
+		return;
+	}
 
 	//Ôîí
 	ts.set			(_bk.x,_bk.y);
-	rem_x  			= fmod(size_top,ts.x);
-	rem_y  			= fmod(size_left,ts.y);
+	rem_x  			= fmod(size_top,ts.x);		rem_x = _max(rem_x, 0.0f);
+	rem_y  			= fmod(size_left,ts.y);		rem_y = _max(rem_y, 0.0f);
 	tile_x 			= iFloor(size_top/ts.x);	tile_x=_max(tile_x, 0);
 	tile_y 			= iFloor(size_left/ts.y);	tile_y=_max(tile_y, 0);
 
@@ -138,8 +136,11 @@ void CUIFrameRect::UpdateSize()
 
 void CUIFrameRect::Draw()
 {
-	if (!uFlags.is(flValidSize)) 
+	if (!uFlags.is(flValidSize))
+	{
+		VERIFY(g_bRendering);
 		UpdateSize();
+	}
 
 	for (int k=0; k<fmMax; ++k) 
 		if(m_itm_mask.test(u16(1<<k)))

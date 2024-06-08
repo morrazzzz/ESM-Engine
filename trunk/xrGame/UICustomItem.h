@@ -16,6 +16,7 @@ protected:
 		flValidRect				=0x0001,
 		flValidOriginalRect		=0x0002,
 		flValidHeadingPivot		=0x0004,
+		flFixedLTWhileHeading =0x0008,
 	};
 
 	//прямоугольник(в пикселях) 
@@ -43,6 +44,7 @@ public:
 	   Frect		GetOriginalRect			() const;
 	   Frect		GetOriginalRectScaled	();
 	
+	   IC bool		GetFixedLTWhileHeading() const { return true; };
 	   void			SetHeadingPivot			(const Fvector2& p)		{iHeadingPivot=p; uFlags|=flValidHeadingPivot;}
 	   Fvector2		GetHeadingPivot			()						{return iHeadingPivot;}
 	   
