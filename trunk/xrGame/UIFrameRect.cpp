@@ -86,7 +86,7 @@ void CUIFrameRect::UpdateSize()
 	_b.set		(frame[fmB].GetOriginalRect().width(),	frame[fmB].GetOriginalRect().height());
 
 	Fvector2 wnd_pos	= GetWndPos();
-	frame[fmLT].SetPos	(wnd_pos.x,						wnd_pos.y);	
+	frame[fmLT].SetPos	(wnd_pos.x, wnd_pos.y);
 	frame[fmRT].SetPos	(wnd_pos.x+m_wndSize.x-_rt.x,	wnd_pos.y);	
 	frame[fmLB].SetPos	(wnd_pos.x,						wnd_pos.y+m_wndSize.y-_lb.y);
 	frame[fmRB].SetPos	(wnd_pos.x+m_wndSize.x-_rb.x,	wnd_pos.y+m_wndSize.y-_rb.y);	
@@ -95,6 +95,7 @@ void CUIFrameRect::UpdateSize()
 	float size_bottom	= m_wndSize.x - _lb.x - _rb.x;
 	float size_left		= m_wndSize.y - _lt.y - _lb.y;
 	float size_right	= m_wndSize.y - _rt.y - _rb.y;
+
 
 	//‘ÓÌ
 	ts.set			(_bk.x,_bk.y);
