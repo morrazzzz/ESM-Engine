@@ -277,3 +277,12 @@ shared_str	ui_core::get_xml_name(LPCSTR fn)
 	}
 	return str;
 }
+
+float ui_core::get_current_kx()
+{
+	float h = float(Device.dwHeight);
+	float w = float(Device.dwWidth);
+
+	float res = (h / w) / (UI_BASE_HEIGHT / UI_BASE_WIDTH);
+	return res;
+}
