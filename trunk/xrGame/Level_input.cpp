@@ -38,9 +38,6 @@ void CLevel::IR_OnMouseWheel(int direction)
 
 	if (game && Game().IR_OnMouseWheel(direction)) return;
 
-	if (CurrentGameUI()->TopInputReceiver())
-		return;
-
 	if (CURRENT_ENTITY()) {
 		IInputReceiver* IR = smart_cast<IInputReceiver*>	(smart_cast<CGameObject*>(CURRENT_ENTITY()));
 		if (IR)				IR->IR_OnMouseWheel(direction);

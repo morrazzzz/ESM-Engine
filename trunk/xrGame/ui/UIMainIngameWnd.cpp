@@ -1148,7 +1148,8 @@ void CUIMainIngameWnd::UpdateActiveItemInfo()
 
 void CUIMainIngameWnd::OnConnected()
 {
-	UIZoneMap->SetupCurrentMap		();
+#pragma todo("Fix me! SoC - CoP Merge!")
+//	UIZoneMap->SetupCurrentMap		();
 }
 
 void CUIMainIngameWnd::reset_ui()
