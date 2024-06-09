@@ -28,6 +28,7 @@ public:
 
 	virtual void		SetClGame				(game_cl_GameState* g);
 	virtual bool		IR_UIOnKeyboardPress		(int dik);
+	virtual void _BCL	OnFrame					();
 
 	void				StartTalk				();
 	void				StartCarBody			(CInventoryOwner* pOurInv, CInventoryOwner* pOthers);
@@ -40,6 +41,8 @@ public:
 	CUITalkWnd*			TalkMenu;
 	CUICarBodyWnd*		UICarBodyMenu;
 	CChangeLevelWnd*	UIChangeLevelWnd;
+
+	SDrawStaticStruct* m_game_objective;
 };
 
 

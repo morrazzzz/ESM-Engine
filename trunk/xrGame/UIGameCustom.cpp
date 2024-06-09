@@ -42,6 +42,7 @@ CUIGameCustom::~CUIGameCustom()
 
 void CUIGameCustom::OnFrame() 
 {
+	CDialogHolder::OnFrame();
 	st_vec::iterator it = m_custom_statics.begin();
 	for(;it!=m_custom_statics.end();++it)
 		(*it).Update();

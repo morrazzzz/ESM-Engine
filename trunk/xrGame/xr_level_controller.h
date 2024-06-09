@@ -141,7 +141,7 @@ struct _binding
 extern _binding g_key_bindings[];
 
 bool				is_binded			(EGameActions action_id, int dik);
-int					get_action_dik		(EGameActions action_id);
+int					get_action_dik		(EGameActions action_id, int idx=-1);
 EGameActions		get_binded_action	(int dik);
 
 extern void		CCC_RegisterInput();
