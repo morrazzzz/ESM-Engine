@@ -1,7 +1,7 @@
 #include "pch_script.h"
 #include "uigamesp.h"
 #include "actor.h"
-#include "level.h"
+#include "../xr_3da/xr_input.h"
 
 #include "game_cl_Single.h"
 #include "ui/UIPdaAux.h"
@@ -50,6 +50,30 @@ void CUIGameSP::SetClGame (game_cl_GameState* g)
 	R_ASSERT							(m_game);
 }
 
+void CUIGameSP::OnFrame()
+{
+	inherited::OnFrame();
+
+	if (Device.Paused())	return;
+
+	if (m_game_objective)
+	{
+		bool b_remove = false;
+		int dik = get_action_dik(kSCORES, 0);
+		if (dik && !pInput->iGetAsyncKeyState(dik))
+			b_remove = true;
+
+		dik = get_action_dik(kSCORES, 1);
+		if (!b_remove && dik && !pInput->iGetAsyncKeyState(dik))
+			b_remove = true;
+
+		if (b_remove)
+		{
+			RemoveCustomStatic("main_task");
+			m_game_objective = NULL;
+		}
+	}
+}
 
 bool CUIGameSP::IR_UIOnKeyboardPress(int dik)
 {
@@ -95,13 +119,9 @@ bool CUIGameSP::IR_UIOnKeyboardPress(int dik)
 
 	case kSCORES:
 		{
-			SDrawStaticStruct* ss	= AddCustomStatic("main_task", true);
+		    m_game_objective = AddCustomStatic("main_task", true);
 			SGameTaskObjective* o	= pActor->GameTaskManager().ActiveObjective();
-			if(!o)
-				ss->m_static->SetTextST	("st_no_active_task");
-			else
-				ss->m_static->SetTextST	(*(o->description));
-
+			m_game_objective->m_static->SetTextST(o ? *o->description : "st_no_active_task");
 		}break;
 	}
 	return false;

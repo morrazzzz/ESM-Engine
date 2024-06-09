@@ -318,16 +318,23 @@ bool is_binded(EGameActions _action_id, int _dik)
 	return false;
 }
 
-int get_action_dik(EGameActions _action_id)
+int get_action_dik(EGameActions _action_id, int idx)
 {
 	_binding* pbinding = &g_key_bindings[_action_id];
 
-	if(pbinding->m_keyboard[0] )
-		return pbinding->m_keyboard[0]->dik;
+	if (idx == -1)
+	{
+		if (pbinding->m_keyboard[0])
+			return pbinding->m_keyboard[0]->dik;
 
-	if(pbinding->m_keyboard[1] )
-		return pbinding->m_keyboard[1]->dik;
-
+		if (pbinding->m_keyboard[1])
+			return pbinding->m_keyboard[1]->dik;
+	}
+	else
+	{
+		if (pbinding->m_keyboard[idx])
+			return pbinding->m_keyboard[idx]->dik;
+	}
 	return 0;
 }
 

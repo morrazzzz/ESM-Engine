@@ -64,7 +64,6 @@ void CDialogHolder::StartMenu (CUIDialogWnd* pDialog, bool bDoHideIndicators)
 		}
 	}
 	pDialog->SetHolder				(this);
-	pDialog->Show					();
 
 	if( pDialog->NeedCursor() )
 		GetUICursor().Show();
