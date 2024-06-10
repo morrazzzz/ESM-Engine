@@ -13,20 +13,20 @@ void CLevel::cl_Process_Spawn(NET_Packet& P)
 {
 	// Begin analysis
 	shared_str			s_name;
-	P.r_stringZ			(s_name);
+	P.r_stringZ(s_name);
 
 	// Create DC (xrSE)
-	CSE_Abstract*	E	= F_entity_Create	(*s_name);
+	CSE_Abstract* E = F_entity_Create(*s_name);
 	R_ASSERT2(E, *s_name);
 
-	E->Spawn_Read		(P);
+	E->Spawn_Read(P);
 	if (E->s_flags.is(M_SPAWN_UPDATE))
-		E->UPDATE_Read	(P);
-//-------------------------------------------------
-//	Msg ("M_SPAWN - %s[%d][%x] - %d", *s_name,  E->ID, E,E->ID_Parent);
-//-------------------------------------------------
-	//force object to be local for server client
-	if (OnServer())		{
+		E->UPDATE_Read(P);
+	//-------------------------------------------------
+	//	Msg ("M_SPAWN - %s[%d][%x] - %d", *s_name,  E->ID, E,E->ID_Parent);
+	//-------------------------------------------------
+		//force object to be local for server client
+	if (OnServer()) {
 		E->s_flags.set(M_SPAWN_OBJECT_LOCAL, TRUE);
 	};
 
@@ -34,9 +34,9 @@ void CLevel::cl_Process_Spawn(NET_Packet& P)
 	game_spawn_queue.push_back(E);
 	if (g_bDebugEvents)		ProcessGameSpawns();
 	/*/
-	g_sv_Spawn					(E);
+	g_sv_Spawn(E);
 
-	F_entity_Destroy			(E);
+	F_entity_Destroy(E);
 	//*/
 };
 
@@ -87,63 +87,58 @@ void CLevel::g_sv_Spawn		(CSE_Abstract* E)
 	//-----------------------------------------------------------------
 //	CTimer		T(false);
 
-#ifdef DEBUG
-//	Msg					("* CLIENT: Spawn: %s, ID=%d", *E->s_name, E->ID);
-#endif
-
 	// Optimization for single-player only	- minimize traffic between client and server
-	if	(GameID()	== GAME_SINGLE)		psNET_Flags.set	(NETFLAG_MINIMIZEUPDATES,TRUE);
-	else								psNET_Flags.set	(NETFLAG_MINIMIZEUPDATES,FALSE);
+	psNET_Flags.set(NETFLAG_MINIMIZEUPDATES, true);
 
 	// Client spawn
 //	T.Start		();
-	CObject*	O		= Objects.Create	(*E->s_name);
-	// Msg				("--spawn--CREATE: %f ms",1000.f*T.GetAsync());
+	CObject* O = Objects.Create(*E->s_name);
 
-//	T.Start		();
+	if (!O)
+	{
+		Msg("! An attempt to spawn a nullptr object.");
+		return;
+	}
+
 #ifdef DEBUG_MEMORY_MANAGER
 	mem_alloc_gather_stats		(false);
 #endif // DEBUG_MEMORY_MANAGER
-	if (0==O || (!O->net_Spawn	(E))) 
+	if (!O->net_Spawn(E))
 	{
-		O->net_Destroy			( );
-		if(!g_dedicated_server)
-			client_spawn_manager().clear(O->ID());
-		Objects.Destroy			(O);
-		Msg						("! Failed to spawn entity '%s'",*E->s_name);
+		O->net_Destroy();
+		client_spawn_manager().clear(O->ID());
+		Objects.Destroy(O);
+		Msg("! Failed to spawn entity '%s'", *E->s_name);
 #ifdef DEBUG_MEMORY_MANAGER
-		mem_alloc_gather_stats	(!!psAI_Flags.test(aiDebugOnFrameAllocs));
+		mem_alloc_gather_stats(!!psAI_Flags.test(aiDebugOnFrameAllocs));
 #endif // DEBUG_MEMORY_MANAGER
-	} else {
+	}
+	else 
+	{
 #ifdef DEBUG_MEMORY_MANAGER
-		mem_alloc_gather_stats	(!!psAI_Flags.test(aiDebugOnFrameAllocs));
+		mem_alloc_gather_stats(!!psAI_Flags.test(aiDebugOnFrameAllocs));
 #endif // DEBUG_MEMORY_MANAGER
-		if(!g_dedicated_server)
-			client_spawn_manager().callback(O);
+		client_spawn_manager().callback(O);
 		//Msg			("--spawn--SPAWN: %f ms",1000.f*T.GetAsync());
-		if ((E->s_flags.is(M_SPAWN_OBJECT_LOCAL)) && (E->s_flags.is(M_SPAWN_OBJECT_ASPLAYER)))	{
-			if (CurrentEntity() != NULL) 
+		if (E->s_flags.is(M_SPAWN_OBJECT_LOCAL) && E->s_flags.is(M_SPAWN_OBJECT_ASPLAYER)) {
+			if (CurrentEntity())
 			{
 				CGameObject* pGO = smart_cast<CGameObject*>(CurrentEntity());
 				if (pGO) pGO->On_B_NotCurrentEntity();
 			}
-			SetEntity			(O);
-			SetControlEntity	(O);
-//			if (net_Syncronised)net_Syncronize	();	// start sync-thread again
+			SetEntity(O);
+			SetControlEntity(O);
 		}
 
-		if (0xffff != E->ID_Parent)	
+		if (0xffff != E->ID_Parent)
 		{
 			NET_Packet	GEN;
 			GEN.write_start();
 			GEN.read_start();
-			GEN.w_u16			(u16(O->ID()));
+			GEN.w_u16(u16(O->ID()));
 			cl_Process_Event(E->ID_Parent, GE_OWNERSHIP_TAKE, GEN);
 		}
 	}
-	//---------------------------------------------------------
-	Game().OnSpawn(O);
-	//---------------------------------------------------------
 #ifdef DEBUG_MEMORY_MANAGER
 	if (g_bMEMO) {
 		lua_gc					(ai().script_engine().lua(),LUA_GCCOLLECT,0);

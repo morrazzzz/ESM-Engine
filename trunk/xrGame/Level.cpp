@@ -377,32 +377,29 @@ void CLevel::cl_Process_Event				(u16 dest, u16 type, NET_Packet& P)
 void CLevel::ProcessGameEvents		()
 {
 	// Game events
+	while (game_events->available())
 	{
 		NET_Packet P{};
-		u32 svT	= timeServer()-NET_Latency;
 
-		while	(game_events->available(svT))
+		u16 ID, dest, type;
+		game_events->get(ID, dest, type, P);
+
+		switch (ID)
 		{
-			u16 ID,dest,type;
-			game_events->get	(ID,dest,type,P);
-
-			switch (ID)
-			{
-			case M_SPAWN:
-				{
-					u16 dummy16;
-					P.r_begin(dummy16);
-					cl_Process_Spawn(P);
-				}break;
-			case M_EVENT:
-				{
-					cl_Process_Event(dest, type, P);
-				}break;
-			default:
-				{
-					VERIFY(0);
-				}break;
-			}			
+		case M_SPAWN:
+		{
+			u16 dummy16;
+			P.r_begin(dummy16);
+			cl_Process_Spawn(P);
+		}break;
+		case M_EVENT:
+		{
+			cl_Process_Event(dest, type, P);
+		}break;
+		default:
+		{
+			VERIFY(0);
+		}break;
 		}
 	}
 }
@@ -437,12 +434,12 @@ void CLevel::OnFrame	()
 	else								psDeviceFlags.set(rsDisableObjectsAsCrows,false);
 
 	// commit events from bullet manager from prev-frame
-	Device.Statistic->TEST0.Begin		();
+	Device.Statistic->BulletManager.Begin		();
 	if (g_mt_config.test(mtBullets))
 		Device.seqParallel.emplace_back(fastdelegate::FastDelegate0(m_pBulletManager, &CBulletManager::CommitEvents));
 	else
 		BulletManager().CommitEvents();
-	Device.Statistic->TEST0.End			();
+	Device.Statistic->BulletManager.End			();
 
 	// Client receive
 	if (net_isDisconnected())	
@@ -461,7 +458,12 @@ void CLevel::OnFrame	()
 		Device.Statistic->netClient1.End	();
 	}
 
+//	CTimer T;
+//	T.Start();
+
 	ProcessGameEvents	();
+
+//	Msg("ProcessGameEvents: %fms", T.GetElapsed_sec() * 1000.f);
 
 
 	if (m_bNeed_CrPr)					make_NetCorrectionPrediction();
@@ -548,9 +550,9 @@ void CLevel::OnFrame	()
 //	autosave_manager().update			();
 
 	//просчитать полет пуль
-	Device.Statistic->TEST0.Begin		();
+	Device.Statistic->BulletManager.Begin		();
 	BulletManager().CommitRenderSet		();
-	Device.Statistic->TEST0.End			();
+	Device.Statistic->BulletManager.End			();
 
 	// update static sounds
 	if(!g_dedicated_server)
