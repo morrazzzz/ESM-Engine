@@ -63,7 +63,8 @@ void CDialogHolder::StartMenu (CUIDialogWnd* pDialog, bool bDoHideIndicators)
 			CurrentGameUI()->ShowGameIndicators(false);
 		}
 	}
-	pDialog->SetHolder				(this);
+	pDialog->SetHolder(this);
+	pDialog->Show();
 
 	if( pDialog->NeedCursor() )
 		GetUICursor().Show();
