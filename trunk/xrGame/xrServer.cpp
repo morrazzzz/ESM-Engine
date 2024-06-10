@@ -247,11 +247,10 @@ void xrServer::Update	()
 		u16					ID;
 		Packet.r_begin		(ID);
 		R_ASSERT(M_SPAWN==ID);
-		ClientID clientID; 
+		ClientID clientID;	
 		clientID.set(0xffff);
 		Process_spawn		(Packet,clientID);
 	}
-
 
 	SendUpdatesToAll();
 
@@ -292,17 +291,20 @@ void xrServer::SendUpdatesToAll()
 	pCurUpdatePacket->B.count = 0;
 	u32	 position;
 
+	R_ASSERT2(net_Players.size() == 1, "Player can only one!!!!");
+
 	for (u32 client=0; client<net_Players.size(); ++client)
 	{// for each client
 		// Initialize process and check for available bandwidth
 		xrClientData*	Client			= (xrClientData*) net_Players	[client];
 		if (!Client->net_Ready)			continue;
-		if ( !HasBandwidth(Client) 
 
+		int ForASSERT_ = 0;
 #ifdef DEBUG
-			&& !g_sv_SendUpdate
+		ForASSERT_ = g_sv_SendUpdate;
 #endif
-			) continue;		
+
+		R_ASSERT2(HasBandwidth(Client) && !ForASSERT_, "This check is also dead. If this R_ASSERT was triggered, most likely you have a multiplayer game.");
 
 		// Send relevant entities to client
 		NET_Packet						Packet;
@@ -318,7 +320,7 @@ void xrServer::SendUpdatesToAll()
 			continue;
 		}
 
-
+		R_ASSERT2(false, "It is not called.");
 		if (m_aUpdatePackets[0].B.count != 0) //not a first client in update cycle
 		{
 			m_aUpdatePackets[0].w_seek(0, Packet.B.data, Packet.B.count);			
@@ -408,9 +410,11 @@ void xrServer::SendUpdatesToAll()
 	g_sv_SendUpdate = 0;
 #endif			
 
-	if (game->sv_force_sync)	Perform_game_export();
+#pragma todo("What is a "double" export? The same code element is in Update (Look at the line 259).")
+	if (game->sv_force_sync)	
+		Perform_game_export();
 
-	VERIFY						(verify_entities());
+	VERIFY(verify_entities());
 }
 
 xr_vector<shared_str>	_tmp_log;
