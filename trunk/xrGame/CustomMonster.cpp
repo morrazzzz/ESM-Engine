@@ -318,7 +318,6 @@ void CCustomMonster::shedule_Update	( u32 DT )
 		// here is monster AI call
 		m_fTimeUpdateDelta				= dt;
 		Device.Statistic->AI_Think.Begin	();
-		Device.Statistic->TEST1.Begin();
 		if (GetScriptControl())
 			ProcessScripts();
 		else {
@@ -326,7 +325,6 @@ void CCustomMonster::shedule_Update	( u32 DT )
 				Think					();
 		}
 		m_dwLastUpdateTime				= Device.dwTimeGlobal;
-		Device.Statistic->TEST1.End();
 		Device.Statistic->AI_Think.End	();
 
 		// Look and action streams

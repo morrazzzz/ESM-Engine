@@ -165,9 +165,9 @@ void CLevel::ClientSend()
 
 		if (P.B.count>2)
 		{
-			Device.Statistic->TEST3.Begin();
-				Send	(P, net_flags(FALSE));
-			Device.Statistic->TEST3.End();
+			Device.Statistic->SendNetExport.Begin();
+			Send(P);
+			Device.Statistic->SendNetExport.End();
 		}else
 			break;
 	}
