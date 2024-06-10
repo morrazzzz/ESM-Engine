@@ -245,8 +245,13 @@ BOOL CSoundRender_Emitter::update_culling(float dt)
 		fade_volume			+=	dt*10.f*fade_scale;
 
 		// Update occlusion
+		//INFO: You can turn it on, but there will be sound bugs with the sound of the arena. You need to change the sound type of the arena.
+#ifdef COP_SOUND_TYPE_WORLD_AMBIENT
 		float occ			= (owner_data->g_type==SOUND_TYPE_WORLD_AMBIENT)?1.0f:SoundRender->get_occlusion	(p_source.position,.2f,occluder);
 		volume_lerp			(occluder_volume,occ,1.f,dt);
+#else
+		volume_lerp(occluder_volume, SoundRender->get_occlusion(p_source.position, .2f, occluder), 1.f, dt);
+#endif
 		clamp				(occluder_volume,0.f,1.f);
 	}
 	clamp				(fade_volume,0.f,1.f);
