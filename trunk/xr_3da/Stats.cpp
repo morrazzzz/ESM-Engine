@@ -113,6 +113,7 @@ void CStats::Show()
 		RenderDUMP_Wait.FrameEnd	();	
 		RenderDUMP_Wait_S.FrameEnd	();	
 		RenderDUMP_HUD.FrameEnd		();	
+		RenderDUMP_Rain.FrameEnd    ();
 		RenderDUMP_Glows.FrameEnd	();	
 		RenderDUMP_Lights.FrameEnd	();	
 		RenderDUMP_WM.FrameEnd		();	
@@ -136,10 +137,9 @@ void CStats::Show()
 		netClientCompressor.FrameEnd();
 		netServerCompressor.FrameEnd();
 
-		TEST0.FrameEnd				();
-		TEST1.FrameEnd				();
-		TEST2.FrameEnd				();
-		TEST3.FrameEnd				();
+		BulletManager.FrameEnd();
+		ActorCameraUpdate.FrameEnd();
+		SendNetExport.FrameEnd				();
 
 		g_SpatialSpace->stat_insert.FrameEnd		();
 		g_SpatialSpace->stat_remove.FrameEnd		();
@@ -272,9 +272,10 @@ void CStats::Show()
 		F.OutNext	("  Lights:    %2.2fms, %d",RenderDUMP_Lights.result,RenderDUMP_Lights.count);
 		F.OutNext	("  RT:        %2.2fms, %d",RenderDUMP_RT.result,RenderDUMP_RT.count);
 		F.OutNext	("  HUD:       %2.2fms",RenderDUMP_HUD.result);	
-		F.OutNext	("  P_calc:    %2.2fms",RenderDUMP_Pcalc.result);
-		F.OutNext	("  S_calc:    %2.2fms",RenderDUMP_Scalc.result);
-		F.OutNext	("  S_render:  %2.2fms, %d",RenderDUMP_Srender.result,RenderDUMP_Srender.count);
+		F.OutNext   ("  Rain:      %2.2fms",RenderDUMP_Rain.result);
+		F.OutNext	("  Projectors calc:    %2.2fms",RenderDUMP_Pcalc.result);
+		F.OutNext	("  Shadow calc:    %2.2fms",RenderDUMP_Scalc.result);
+		F.OutNext	("  Shadow render:  %2.2fms, %d",RenderDUMP_Srender.result,RenderDUMP_Srender.count);
 		F.OutSkip	();
 		F.OutNext	("*** SOUND:   %2.2fms",Sound.result);
 		F.OutNext	("  TGT/SIM/E: %d/%d/%d",  snd_stat._rendered, snd_stat._simulated, snd_stat._events);
@@ -293,10 +294,9 @@ void CStats::Show()
 		F.OutSkip	();
 
 		F.OutSkip	();
-		F.OutNext	("TEST 0:      %2.2fms, %d",TEST0.result,TEST0.count);
-		F.OutNext	("TEST 1:      %2.2fms, %d",TEST1.result,TEST1.count);
-		F.OutNext	("TEST 2:      %2.2fms, %d",TEST2.result,TEST2.count);
-		F.OutNext	("TEST 3:      %2.2fms, %d",TEST3.result,TEST3.count);
+		F.OutNext	("Bullet Manager:      %2.2fms, %d",BulletManager.result,BulletManager.count);
+		F.OutNext	("Actor Camera Update:      %2.2fms, %d", ActorCameraUpdate.result,ActorCameraUpdate.count);
+		F.OutNext	("Send NetExport:      %2.2fms, %d",SendNetExport.result, SendNetExport.count);
 #ifdef DEBUG_MEMORY_MANAGER
 		F.OutSkip	();
 		F.OutNext	("str: cmp[%3d], dock[%3d], qpc[%3d]",Memory.stat_strcmp,Memory.stat_strdock,CPU::qpc_counter);
@@ -449,6 +449,7 @@ void CStats::Show()
 		RenderDUMP_Wait.FrameStart	();	
 		RenderDUMP_Wait_S.FrameStart();	
 		RenderDUMP_HUD.FrameStart	();	
+		RenderDUMP_Rain.FrameStart  ();
 		RenderDUMP_Glows.FrameStart	();	
 		RenderDUMP_Lights.FrameStart();	
 		RenderDUMP_WM.FrameStart	();	
@@ -471,10 +472,9 @@ void CStats::Show()
 		netClientCompressor.FrameStart();
 		netServerCompressor.FrameStart();
 
-		TEST0.FrameStart			();
-		TEST1.FrameStart			();
-		TEST2.FrameStart			();
-		TEST3.FrameStart			();
+		BulletManager.FrameStart();
+		ActorCameraUpdate.FrameStart();
+		SendNetExport.FrameStart			();
 
 		g_SpatialSpace->stat_insert.FrameStart		();
 		g_SpatialSpace->stat_remove.FrameStart		();

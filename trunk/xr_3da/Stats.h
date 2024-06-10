@@ -65,6 +65,7 @@ public:
 	CStatTimer	RenderDUMP_RT;		// ...render-targets
 	CStatTimer	RenderDUMP_SKIN;	// ...skinning
 	CStatTimer	RenderDUMP_HUD;		// ...hud rendering
+	CStatTimer  RenderDUMP_Rain;    // ...rain rendering
 	CStatTimer	RenderDUMP_Glows;	// ...glows vis-testing,sorting,render
 	CStatTimer	RenderDUMP_Lights;	// ...d-lights building/rendering
 	CStatTimer	RenderDUMP_WM;		// ...wallmark sorting, rendering
@@ -78,7 +79,7 @@ public:
 	CStatTimer	RenderDUMP_Pcalc;	// ...projectors	building
 	CStatTimer	RenderDUMP_Scalc;	// ...shadows		building
 	CStatTimer	RenderDUMP_Srender;	// ...shadows		render
-	
+
 	CStatTimer	Sound;				// total time taken by sound subsystem (accurate only in single-threaded mode)
 	CStatTimer	Input;				// total time taken by input subsystem (accurate only in single-threaded mode)
 	CStatTimer	clRAY;				// total: ray-testing
@@ -91,10 +92,9 @@ public:
 	CStatTimer	netClientCompressor;
 	CStatTimer	netServerCompressor;
 	
-	CStatTimer	TEST0;				// debug counter
-	CStatTimer	TEST1;				// debug counter
-	CStatTimer	TEST2;				// debug counter
-	CStatTimer	TEST3;				// debug counter
+	CStatTimer	BulletManager; // debug counter
+	CStatTimer	ActorCameraUpdate;				// debug counter
+	CStatTimer	SendNetExport;				// debug counter
 
 	shared_str	eval_line_1;
 	shared_str	eval_line_2;

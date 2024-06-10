@@ -50,6 +50,8 @@ void dxRainRender::Copy(IRainRender &_in)
 
 void dxRainRender::Render(CEffect_Rain &owner)
 {
+	Device.Statistic->RenderDUMP_Rain.Begin();
+
 	float	factor				= g_pGamePersistent->Environment().CurrentEnv->rain_density;
 	if (factor<EPS_L)			return;
 
@@ -94,7 +96,6 @@ void dxRainRender::Render(CEffect_Rain &owner)
 		float dt		= Device.fTimeDelta;
 		one.P.mad		(one.D,one.fSpeed*dt);
 
-		Device.Statistic->TEST1.Begin();
 		Fvector	wdir;	wdir.set(one.P.x-vEye.x,0,one.P.z-vEye.z);
 		float	wlen	= wdir.square_magnitude();
 		if (wlen>b_radius_wrap_sqr)	{
@@ -131,7 +132,6 @@ void dxRainRender::Render(CEffect_Rain &owner)
 			}
 			//.			Device.Statistic->TEST3.End();
 		}
-		Device.Statistic->TEST1.End();
 
 		// Build line
 		Fvector&	pos_head	= one.P;
@@ -249,6 +249,8 @@ void dxRainRender::Render(CEffect_Rain &owner)
 			RCache.Render			(D3DPT_TRIANGLELIST,v_offset,0,vCount_Lock,i_offset,dwNumPrimitives);
 		}
 	}
+
+	Device.Statistic->RenderDUMP_Rain.End();
 }
 
 const Fsphere& dxRainRender::GetDropBounds() const
