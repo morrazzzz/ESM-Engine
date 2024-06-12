@@ -31,9 +31,6 @@ void CUIDebugFonts::Init(float x, float y, float width, float height){
 }
 
 bool CUIDebugFonts::OnKeyboardAction(int dik, EUIMessages keyboard_action){
-	if (DIK_ESCAPE == dik)
-		this->GetHolder()->StartStopMenu(this, true);
-
 	if (DIK_F12 == dik)
 		return false;
 
