@@ -809,7 +809,6 @@ class CCC_DebugFonts : public IConsole_Command {
 	CUIDebugFonts* UIDebugFont_;
 public:
 	CCC_DebugFonts(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; }
-	~CCC_DebugFonts() { xr_delete(UIDebugFont_); }
 	virtual void Execute(LPCSTR args)
 	{
 		if (!UIDebugFont_)
@@ -818,7 +817,10 @@ public:
 		if (!UIDebugFont_->IsShown())
 			UIDebugFont_->ShowDialog(true);
 		else
+		{
 			UIDebugFont_->HideDialog();
+			xr_delete(UIDebugFont_);
+		}
 	}
 };
 
