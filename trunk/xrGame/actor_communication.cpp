@@ -24,7 +24,7 @@
 #include "ai/monsters/basemonster/base_monster.h"
 #include "ai/trader/ai_trader.h"
 
-void CActor::AddEncyclopediaArticle	 (const CInfoPortion* info_portion) const
+void CActor::AddEncyclopediaArticle(const CInfoPortion* info_portion) const
 {
 	VERIFY(info_portion);
 	ARTICLE_VECTOR& article_vector = encyclopedia_registry->registry().objects();
@@ -33,8 +33,8 @@ void CActor::AddEncyclopediaArticle	 (const CInfoPortion* info_portion) const
 	ARTICLE_VECTOR::iterator B = article_vector.begin();
 	ARTICLE_VECTOR::iterator E = last_end;
 
-	for(ARTICLE_ID_VECTOR::const_iterator it = info_portion->ArticlesDisable().begin();
-									it != info_portion->ArticlesDisable().end(); it++)
+	for (ARTICLE_ID_VECTOR::const_iterator it = info_portion->ArticlesDisable().begin();
+		it != info_portion->ArticlesDisable().end(); it++)
 	{
 		FindArticleByIDPred pred(*it);
 		last_end = std::remove_if(B, last_end, pred);
@@ -42,38 +42,36 @@ void CActor::AddEncyclopediaArticle	 (const CInfoPortion* info_portion) const
 	article_vector.erase(last_end, E);
 
 
-	for(ARTICLE_ID_VECTOR::const_iterator it = info_portion->Articles().begin();
-									it != info_portion->Articles().end(); it++)
+	for (ARTICLE_ID_VECTOR::const_iterator it = info_portion->Articles().begin();
+		it != info_portion->Articles().end(); it++)
 	{
 		FindArticleByIDPred pred(*it);
-		if( std::find_if(article_vector.begin(), article_vector.end(), pred) != article_vector.end() ) continue;
+		if (std::find_if(article_vector.begin(), article_vector.end(), pred) != article_vector.end()) continue;
 
 		CEncyclopediaArticle article;
 
 		article.Load(*it);
 
 		article_vector.push_back(ARTICLE_DATA(*it, Level().GetGameTime(), article.data()->articleType));
-		LPCSTR g,n;
+		LPCSTR g, n;
 		int _atype = article.data()->articleType;
 		g = *(article.data()->group);
 		n = *(article.data()->name);
 		callback(GameObject::eArticleInfo)(lua_game_object(), g, n, _atype);
 
-		if(CurrentGameUI()){
-			CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
+		if (CurrentGameUI()) {
 			pda_section::part p = pda_section::encyclopedia;
-			switch (article.data()->articleType){
-				case ARTICLE_DATA::eEncyclopediaArticle:	p = pda_section::encyclopedia;	break;
-				case ARTICLE_DATA::eJournalArticle:			p = pda_section::journal;		break;
-				case ARTICLE_DATA::eInfoArticle:			p = pda_section::info;			break;
-				case ARTICLE_DATA::eTaskArticle:			p = pda_section::quests;		break;
-				default: NODEFAULT;
+			switch (article.data()->articleType) {
+			case ARTICLE_DATA::eEncyclopediaArticle:	p = pda_section::encyclopedia;	break;
+			case ARTICLE_DATA::eJournalArticle:			p = pda_section::journal;		break;
+			case ARTICLE_DATA::eInfoArticle:			p = pda_section::info;			break;
+			case ARTICLE_DATA::eTaskArticle:			p = pda_section::quests;		break;
+			default: NODEFAULT;
 			};
-			pGameSP->PdaMenu().PdaContentsChanged(p);
+			CurrentGameUI()->PdaMenu().PdaContentsChanged(p);
 		}
 
 	}
-
 }
 
 
@@ -90,18 +88,15 @@ void CActor::AddGameTask			 (const CInfoPortion* info_portion) const
 }
 
 
-void  CActor::AddGameNews			 (GAME_NEWS_DATA& news_data)
+void  CActor::AddGameNews(GAME_NEWS_DATA& news_data)
 {
+	GAME_NEWS_VECTOR& news_vector = game_news_registry->registry().objects();
+	news_data.receive_time = Level().GetGameTime();
+	news_vector.push_back(news_data);
 
-	GAME_NEWS_VECTOR& news_vector	= game_news_registry->registry().objects();
-	news_data.receive_time			= Level().GetGameTime();
-	news_vector.push_back			(news_data);
-
-	if(CurrentGameUI()){
+	if (CurrentGameUI()) {
 		CurrentGameUI()->UIMainIngameWnd->ReceiveNews(&news_data);
-		CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
-		if(pGameSP) 
-			pGameSP->PdaMenu().PdaContentsChanged(pda_section::news);
+		CurrentGameUI()->PdaMenu().PdaContentsChanged(pda_section::news);
 	}
 }
 
@@ -121,15 +116,13 @@ bool CActor::OnReceiveInfo(shared_str info_id) const
 
 	if(!CurrentGameUI())
 		return false;
-	//только если находимся в режиме single
+
 	CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
-	if(!pGameSP) return false;
 
 	if(pGameSP->TalkMenu->IsShown())
 	{
 		pGameSP->TalkMenu->NeedUpdateQuestions();
 	}
-
 
 	return true;
 }
@@ -142,9 +135,7 @@ void CActor::OnDisableInfo(shared_str info_id) const
 	if(!CurrentGameUI())
 		return;
 
-	//только если находимся в режиме single
 	CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
-	if(!pGameSP) return;
 
 	if(pGameSP->TalkMenu->IsShown())
 		pGameSP->TalkMenu->NeedUpdateQuestions();
@@ -152,12 +143,13 @@ void CActor::OnDisableInfo(shared_str info_id) const
 
 void  CActor::ReceivePhrase		(DIALOG_SHARED_PTR& phrase_dialog)
 {
-	//только если находимся в режиме single
-	CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
-	if(!pGameSP) return;
+	if (CurrentGameUI())
+	{
+		CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
 
-	if(pGameSP->TalkMenu->IsShown())
-		pGameSP->TalkMenu->NeedUpdateQuestions();
+		if (pGameSP->TalkMenu->IsShown())
+			pGameSP->TalkMenu->NeedUpdateQuestions();
+	}
 
 	CPhraseDialogManager::ReceivePhrase(phrase_dialog);
 }
@@ -203,18 +195,19 @@ void CActor::TryToTalk()
 void CActor::RunTalkDialog(CInventoryOwner* talk_partner)
 {
 	//предложить поговорить с нами
-	if(talk_partner->OfferTalk(this))
-	{	
+	if (talk_partner->OfferTalk(this))
+	{
 		StartTalk(talk_partner);
-		//только если находимся в режиме single
-		CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
-		if(pGameSP)
-		{
-			if (CurrentGameUI()->TopInputReceiver())
-				CurrentGameUI()->TopInputReceiver()->HideDialog();
 
-			pGameSP->StartTalk();
-		}
+		if (!CurrentGameUI())
+			return;
+
+		CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
+
+		if (CurrentGameUI()->TopInputReceiver())
+			CurrentGameUI()->TopInputReceiver()->HideDialog();
+
+		pGameSP->StartTalk();
 	}
 }
 
@@ -246,41 +239,33 @@ void CActor::UpdateContact		(u16 contact_id)
 	}
 }
 */
-void CActor::NewPdaContact		(CInventoryOwner* pInvOwner)
-{	
-	if(!IsGameTypeSingle()) return;
+void CActor::NewPdaContact(CInventoryOwner* pInvOwner)
+{
+	if (!CurrentGameUI())
+		return;
 
-	bool b_alive = !!(smart_cast<CEntityAlive*>(pInvOwner))->g_Alive();
+	bool b_alive = smart_cast<CEntityAlive*>(pInvOwner)->g_Alive();
 	CurrentGameUI()->UIMainIngameWnd->AnimateContacts(b_alive);
 
-	Level().MapManager().AddRelationLocation		( pInvOwner );
+	Level().MapManager().AddRelationLocation(pInvOwner);
 
-	if(CurrentGameUI()){
-		CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
-
-		if(pGameSP)
-			pGameSP->PdaMenu().PdaContentsChanged(pda_section::contacts);
-	}
+	CurrentGameUI()->PdaMenu().PdaContentsChanged(pda_section::contacts);
 }
 
-void CActor::LostPdaContact		(CInventoryOwner* pInvOwner)
+void CActor::LostPdaContact(CInventoryOwner* pInvOwner)
 {
 	CGameObject* GO = smart_cast<CGameObject*>(pInvOwner);
-	if (GO){
+	if (GO) {
 
-		for(int t = ALife::eRelationTypeFriend; t<ALife::eRelationTypeLast; ++t){
+		for (int t = ALife::eRelationTypeFriend; t < ALife::eRelationTypeLast; ++t) {
 			ALife::ERelationType tt = (ALife::ERelationType)t;
-			Level().MapManager().RemoveMapLocation(RELATION_REGISTRY().GetSpotName(tt),	GO->ID());
+			Level().MapManager().RemoveMapLocation(RELATION_REGISTRY().GetSpotName(tt), GO->ID());
 		}
-		Level().MapManager().RemoveMapLocation("deadbody_location",	GO->ID());
+		Level().MapManager().RemoveMapLocation("deadbody_location", GO->ID());
 	};
 
-	if(CurrentGameUI()){
-		CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
-		if(pGameSP){
-			pGameSP->PdaMenu().PdaContentsChanged(pda_section::contacts);
-		}
-	}
+	if (CurrentGameUI())
+		CurrentGameUI()->PdaMenu().PdaContentsChanged(pda_section::contacts);
 
 }
 

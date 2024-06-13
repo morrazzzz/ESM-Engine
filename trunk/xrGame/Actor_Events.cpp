@@ -54,22 +54,16 @@ void CActor::OnEvent		(NET_Packet& P, u16 type)
 
 				inventory().Take(_GO, false, true);
 
-				CUIGameSP* pGameSP{};
-				if (CurrentGameUI())
-				{
-					pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
+				if (!CurrentGameUI())
+					return;
 		
-					if (Level().CurrentViewEntity() == this)
-						CurrentGameUI()->ReInitShownUI();
-				}
+				if (Level().CurrentViewEntity() == this)
+					CurrentGameUI()->ReInitShownUI();
 				
 				//добавить отсоединенный аддон в инвентарь
-				if(pGameSP)
+				if(CurrentGameUI()->TopInputReceiver() == &CurrentGameUI()->InventoryMenu())
 				{
-					if(pGameSP->TopInputReceiver() == &pGameSP->InventoryMenu())
-					{
-						pGameSP->InventoryMenu().AddItemToBag(smart_cast<CInventoryItem*>(O));
-					}
+					CurrentGameUI()->InventoryMenu().AddItemToBag(smart_cast<CInventoryItem*>(O));
 				}
 				
 				SelectBestWeapon(O);
