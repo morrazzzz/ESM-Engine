@@ -362,33 +362,33 @@ void CActor::ActorUse()
 	
 	if(m_pInvBoxWeLookingAt && m_pInvBoxWeLookingAt->nonscript_usable())
 	{
-		CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
-		if(pGameSP) pGameSP->StartCarBody(this, m_pInvBoxWeLookingAt );
+		if (CurrentGameUI())
+		{
+			CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
+			pGameSP->StartCarBody(this, m_pInvBoxWeLookingAt);
+		}
 		return;
 	}
 
 	if(!m_pUsableObject||m_pUsableObject->nonscript_usable())
 	{
-		if(m_pPersonWeLookingAt)
+		if (m_pPersonWeLookingAt)
 		{
-			CEntityAlive* pEntityAliveWeLookingAt = 
+			CEntityAlive* pEntityAliveWeLookingAt =
 				smart_cast<CEntityAlive*>(m_pPersonWeLookingAt);
 
 			VERIFY(pEntityAliveWeLookingAt);
 
-			if (GameID()==GAME_SINGLE)
-			{			
-				if(pEntityAliveWeLookingAt->g_Alive())
-				{
-					TryToTalk();
-				}
-				//обыск трупа
-				else  if(!Level().IR_GetKeyState(DIK_LSHIFT))
-				{
-					//только если находимся в режиме single
-					CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
-					if(pGameSP)pGameSP->StartCarBody(this, m_pPersonWeLookingAt );
-				}
+			if (pEntityAliveWeLookingAt->g_Alive())
+			{
+				TryToTalk();
+			}
+			//обыск трупа
+			else if (!Level().IR_GetKeyState(DIK_LSHIFT) && CurrentGameUI())
+			{
+				//только если находимся в режиме single
+				CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
+				pGameSP->StartCarBody(this, m_pPersonWeLookingAt);
 			}
 		}
 

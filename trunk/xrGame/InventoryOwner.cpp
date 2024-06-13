@@ -267,13 +267,16 @@ void CInventoryOwner::StartTalk(CInventoryOwner* talk_partner, bool start_trade)
 
 void CInventoryOwner::StopTalk()
 {
-	m_pTalkPartner			= NULL;
-	m_bTalking				= false;
+	m_pTalkPartner = nullptr;
+	m_bTalking = false;
 
-	GetTrade()->StopTrade	();
+	GetTrade()->StopTrade();
+
+	if (!CurrentGameUI())
+		return;
 
 	CUIGameSP* ui_sp = smart_cast<CUIGameSP*>(CurrentGameUI());
-	if(ui_sp && ui_sp->TalkMenu->IsShown())
+	if (ui_sp->TalkMenu->IsShown())
 		ui_sp->TalkMenu->Stop();
 }
 

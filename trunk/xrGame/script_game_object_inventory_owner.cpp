@@ -63,8 +63,10 @@ void  CScriptGameObject::AddIconedTalkMessage		(LPCSTR text, LPCSTR texture_name
 
 void _AddIconedTalkMessage(LPCSTR text, LPCSTR texture_name, const Frect& tex_rect, LPCSTR templ_name)
 {
+	if (!CurrentGameUI())
+		return;
+
 	CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
-	if(!pGameSP) return;
 
 	if(pGameSP->TalkMenu->IsShown())
 		pGameSP->TalkMenu->AddIconedMessage(text, texture_name, tex_rect, templ_name?templ_name:"iconed_answer_item" );
@@ -574,11 +576,11 @@ void CScriptGameObject::SetGameTaskState	(ETaskState state, LPCSTR task_id, int 
 
 void  CScriptGameObject::SwitchToTrade		()
 {
-	CActor* pActor = smart_cast<CActor*>(&object());	if(!pActor) return;
+	if (!CurrentGameUI())
+		return;
 
 	//только если находимся в режиме single
 	CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
-	if(!pGameSP) return;
 
 	if(pGameSP->TalkMenu->IsShown())
 	{
