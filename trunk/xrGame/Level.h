@@ -154,7 +154,7 @@ private:
 	void						UpdateDeltaUpd					( u32 LastTime );
 	void						BlockCheatLoad					()				;
 
-	BOOL						Connect2Server					(LPCSTR options);
+	bool Connect2Server();
 public:	
 	void						OnGameSpyChallenge				(NET_Packet* P);
 	void						OnBuildVersionChallenge			();
@@ -198,8 +198,6 @@ protected:
 	bool	xr_stdcall			net_start_client4				();
 	bool	xr_stdcall			net_start_client5				();
 	bool	xr_stdcall			net_start_client6				();
-
-	bool	xr_stdcall			net_start_finalizer				();
 
 	void						net_OnChangeSelfName			(NET_Packet* P);
 

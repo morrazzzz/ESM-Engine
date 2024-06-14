@@ -20,6 +20,8 @@
 #include "material_manager.h"
 #include "game_base_space.h"
 
+#include "profiler.h"
+
 #define SMALL_ENTITY_RADIUS		0.6f
 #define BLOOD_MARKS_SECT		"bloody_marks"
 
@@ -184,15 +186,26 @@ void CEntityAlive::reload		(LPCSTR section)
 
 void CEntityAlive::shedule_Update(u32 dt)
 {
+	START_PROFILE("entity_alive/schedule_update/inherited");
 	inherited::shedule_Update	(dt);
+	STOP_PROFILE;
 
 	//condition update with the game time pass
+	START_PROFILE("entity_alive/schedule_update/update_codition");
 	conditions().UpdateConditionTime	();
 	conditions().UpdateCondition		();
+	STOP_PROFILE;
+
+	START_PROFILE("entity_alive/schedule_update/update_fire_particles");
 	//Обновление партиклов огня
 	UpdateFireParticles	();
+	STOP_PROFILE;
+
+	START_PROFILE("entity_alive/schedule_update/update_blood_drops");
 	//капли крови
 	UpdateBloodDrops	();
+	STOP_PROFILE;
+
 	//обновить раны
 	conditions().UpdateWounds		();
 

@@ -225,25 +225,8 @@ bool CLevel::net_start5				()
 	return true;
 }
 #include "hudmanager.h"
-BOOL				g_start_total_res		= TRUE;
-xrServer::EConnect	g_connect_server_err	= xrServer::ErrConnect;
-
-struct LevelLoadFinalizer
-{
-bool xr_stdcall net_start_finalizer()
-{
-	return true;
-}
-};
-LevelLoadFinalizer LF;
-
 bool CLevel::net_start6()
 {
-	g_start_total_res			= net_start_result_total;
-	g_connect_server_err		= m_connect_server_err;
-	g_loading_events.pop_front	();
-	g_loading_events.push_front	(LOADING_EVENT(&LF, &LevelLoadFinalizer::net_start_finalizer));
-
 	//init bullet manager
 	BulletManager().Clear		();
 	BulletManager().Load		();
@@ -267,7 +250,7 @@ bool CLevel::net_start6()
 		}
 	}
 
-	return false;
+	return true;
 }
 
 

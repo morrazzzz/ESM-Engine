@@ -568,33 +568,12 @@ void CAI_Stalker::net_Import		(NET_Packet& P)
 	setEnabled						(TRUE);
 }
 
-void CAI_Stalker::update_object_handler	()
+void CAI_Stalker::update_object_handler()
 {
 	if (!g_Alive())
 		return;
 
-	try {
-		try {
-			CObjectHandler::update	();
-		}
-#if defined(DEBUG) && !defined(LUABIND_NO_EXCEPTIONS)
-		catch (luabind::cast_failed &message) {
-			Msg						("! Expression \"%s\" from luabind::object to %s",message.what(),message.info()->name());
-			throw;
-		}
-#endif
-		catch (std::exception &message) {
-			Msg						("! Expression \"%s\"",message.what());
-			throw;
-		}
-		catch(...) {
-			throw;
-		}
-	}
-	catch(...) {
-		CObjectHandler::set_goal(eObjectActionIdle);
-		CObjectHandler::update	();
-	}
+	CObjectHandler::update();
 }
 
 void CAI_Stalker::create_anim_mov_ctrl	(CBlend *b)
@@ -624,38 +603,39 @@ void CAI_Stalker::UpdateCL()
 	VERIFY2						(PPhysicsShell()||getEnabled(), *cName());
 
 	if (g_Alive()) {
-		if (g_mt_config.test(mtObjectHandler) && planner().initialized()) {
-			auto f = fastdelegate::FastDelegate0<>(this,&CAI_Stalker::update_object_handler);
+#pragma todo("Why UpdateCL function update object handler?.Go to update only for Scheduler??? TODO!!!")
+		//TODO: Difference only for initialized planner. What the fuck? Go to update only for Scheduler????
+		if (false)
+		{
+			if (g_mt_config.test(mtObjectHandler) && planner().initialized()) {
+				auto f = fastdelegate::FastDelegate0<>(this, &CAI_Stalker::update_object_handler);
 #ifdef DEBUG
-			xr_vector<fastdelegate::FastDelegate0<> >::const_iterator	I;
-			I	= std::find(Device.seqParallel.begin(),Device.seqParallel.end(),f);
-			VERIFY							(I == Device.seqParallel.end());
+				xr_vector<fastdelegate::FastDelegate0<> >::const_iterator	I;
+				I = std::find(Device.seqParallel.begin(), Device.seqParallel.end(), f);
+				VERIFY(I == Device.seqParallel.end());
 #endif
-			Device.seqParallel.emplace_back(f);
-		}
-		else {
-			START_PROFILE("stalker/client_update/object_handler")
-			update_object_handler			();
-			STOP_PROFILE
-		}
-
-		if	(
-				(movement().speed(character_physics_support()->movement()) > EPS_L)
-				&& 
-				(eMovementTypeStand != movement().movement_type())
-				&&
-				(eMentalStateDanger == movement().mental_state())
-			) {
-			if	(
-					(eBodyStateStand == movement().body_state())
-					&&
-					(eMovementTypeRun == movement().movement_type())
-				) {
-				sound().play	(eStalkerSoundRunningInDanger);
+				Device.seqParallel.emplace_back(f);
 			}
 			else {
-//				sound().play	(eStalkerSoundWalkingInDanger);
+				START_PROFILE("stalker/client_update/object_handler")
+					update_object_handler();
+				STOP_PROFILE
 			}
+		}
+
+		if (
+			(movement().speed(character_physics_support()->movement()) > EPS_L)
+			&&
+			(eMovementTypeStand != movement().movement_type())
+			&&
+			(eMentalStateDanger == movement().mental_state())
+			) {
+			if (
+				(eBodyStateStand == movement().body_state())
+				&&
+				(eMovementTypeRun == movement().movement_type())
+				)
+				sound().play(eStalkerSoundRunningInDanger);
 		}
 	}
 
@@ -710,7 +690,9 @@ void CAI_Stalker::shedule_Update		( u32 DT )
 	START_PROFILE("stalker/schedule_update")
 	VERIFY2				(getEnabled()||PPhysicsShell(), *cName());
 
-	if (!CObjectHandler::planner().initialized()) {
+	//TODO: What is the meaning of these "jumps"? As if there is a difference where to update...
+//	if (!CObjectHandler::planner().initialized())
+    {
 		START_PROFILE("stalker/client_update/object_handler")
 		update_object_handler			();
 		STOP_PROFILE
