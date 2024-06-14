@@ -414,7 +414,9 @@ void xrServer::SendUpdatesToAll()
 	if (game->sv_force_sync)	
 		Perform_game_export();
 
+#ifdef SLOW_VERIFY_ENTITIES
 	VERIFY(verify_entities());
+#endif
 }
 
 xr_vector<shared_str>	_tmp_log;

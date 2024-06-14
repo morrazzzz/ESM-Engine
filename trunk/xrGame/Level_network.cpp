@@ -267,66 +267,19 @@ struct _NetworkProcessor	: public pureFrame
 
 pureFrame*	g_pNetProcessor	= &NET_processor;
 
-const int ConnectionTimeOut = 60000; //1 min
-
-BOOL			CLevel::Connect2Server				(LPCSTR options)
+bool CLevel::Connect2Server()
 {
-	NET_Packet					P;
-	m_bConnectResultReceived	= false	;
-	m_bConnectResult			= true	;
-	if (!Connect(options))		return	FALSE;
-	//---------------------------------------------------------------------------
-	if(psNET_direct_connect) m_bConnectResultReceived = true;
-	u32 EndTime = GetTickCount() + ConnectionTimeOut;
-	while	(!m_bConnectResultReceived)		{ 
-		ClientReceive	();
-		Sleep			(5); 
-		if(Server)
-			Server->Update()	;
-		//-----------------------------------------
-		u32 CurTime = GetTickCount();
-		if (CurTime > EndTime)
-		{
-			NET_Packet	P;
-			P.B.count = 0;
-			P.r_pos = 0;
+	if (!Connect())		
+		return false;
 
-			P.w_u8(0);
-			P.w_u8(0);
-			P.w_stringZ("Data verification failed. Cheater? [1]");
-
-			OnConnectResult(&P);			
-		}
-		if (net_isFails_Connect())
-		{
-			OnConnectRejected	();	
-			Disconnect		()	;
-			return	FALSE;
-		}
-		//-----------------------------------------
-	}
-//	Msg							("%c client : connection %s - <%s>", m_bConnectResult ?'*':'!', m_bConnectResult ? "accepted" : "rejected", m_sConnectResult.c_str());
-	if		(!m_bConnectResult) 
-	{
-		OnConnectRejected	();	
-		Disconnect		()	;
-		return FALSE		;
-	};
-
-	
-	if(psNET_direct_connect)
-		net_Syncronised = TRUE;
-	else
-		net_Syncronize	();
-
-	while (!net_IsSyncronised()) {
-	};
+	net_Syncronised = TRUE;
 
 	//---------------------------------------------------------------------------
-	P.w_begin	(M_CLIENT_REQUEST_CONNECTION_DATA);
-	Send		(P, net_flags(TRUE, TRUE, TRUE, TRUE));
+	NET_Packet P;
+	P.w_begin(M_CLIENT_REQUEST_CONNECTION_DATA);
+	Send(P);
 	//---------------------------------------------------------------------------
-	return TRUE;
+	return true;
 };
 
 void			CLevel::OnBuildVersionChallenge		()

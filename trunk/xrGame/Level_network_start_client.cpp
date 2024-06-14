@@ -49,7 +49,7 @@ bool	CLevel::net_start_client2				()
 		Server->create_direct_client();
 	}
 
-	connected_to_server = Connect2Server(*m_caClientOptions);
+	connected_to_server = Connect2Server();
 	
 	return true;
 }

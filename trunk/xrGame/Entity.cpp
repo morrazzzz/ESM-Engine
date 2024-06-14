@@ -14,6 +14,8 @@
 #include "..\include\xrRender\Kinematics.h"
 #include "monster_community.h"
 
+#include "profiler.h"
+
 #define BODY_REMOVE_TIME		600000
 
 //////////////////////////////////////////////////////////////////////
@@ -316,7 +318,9 @@ const u32 FORGET_KILLER_TIME = 180000;
 
 void CEntity::shedule_Update	(u32 dt)
 {
+	START_PROFILE("entity/schedule_update/inherited");
 	inherited::shedule_Update	(dt);
+	STOP_PROFILE;
 	if (!getDestroy() && !g_Alive() && (m_killer_id != u16(-1))) {
 		if (Device.dwTimeGlobal > m_level_death_time + FORGET_KILLER_TIME) {
 			m_killer_id			= u16(-1);

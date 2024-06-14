@@ -76,7 +76,7 @@ public:
 	virtual ~IPureClient	();
 	HRESULT					net_Handler				(u32 dwMessageType, PVOID pMessage);
 	
-	BOOL					Connect					(LPCSTR server_name);
+	bool Connect();
 	void					Disconnect				();
 
 	void					net_Syncronize			();

@@ -26,6 +26,7 @@
 #ifdef DEBUG
 #include "debug_renderer.h"
 #include "PHDebug.h"
+#include "profiler.h"
 #endif
 
 ENGINE_API bool g_dedicated_server;
@@ -205,11 +206,11 @@ void VisualCallback(IKinematics *tpKinematics);
 
 BOOL CGameObject::net_Spawn		(CSE_Abstract*	DC)
 {
-	VERIFY							(!m_spawned);
-	m_spawned						= true;
-	m_spawn_time					= Device.dwFrame;
-	CSE_Abstract					*E = (CSE_Abstract*)DC;
-	VERIFY							(E);
+	VERIFY(!m_spawned);
+	m_spawned = true;
+	m_spawn_time = Device.dwFrame;
+	CSE_Abstract* E = (CSE_Abstract*)DC;
+	R_ASSERT(E);
 
 	const CSE_Visual				*visual	= smart_cast<const CSE_Visual*>(E);
 	if (visual) {
@@ -254,10 +255,6 @@ BOOL CGameObject::net_Spawn		(CSE_Abstract*	DC)
 
 	// Net params
 	setLocal						(E->s_flags.is(M_SPAWN_OBJECT_LOCAL));
-	if (Level().IsDemoPlay() && OnClient())
-	{
-		setLocal(FALSE);
-	};
 
 	setReady						(TRUE);
 	g_pGameLevel->Objects.net_Register	(this);
@@ -272,12 +269,10 @@ BOOL CGameObject::net_Spawn		(CSE_Abstract*	DC)
 	}
 
 	reload						(*cNameSect());
-	if(!g_dedicated_server)
-		CScriptBinder::reload	(*cNameSect());
+	CScriptBinder::reload	(*cNameSect());
 	
 	reinit						();
-	if(!g_dedicated_server)
-		CScriptBinder::reinit	();
+	CScriptBinder::reinit	();
 #ifdef DEBUG
 	if(ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject)&&stricmp(PH_DBG_ObjectTrack(),*cName())==0)
 	{
@@ -290,10 +285,6 @@ BOOL CGameObject::net_Spawn		(CSE_Abstract*	DC)
 //		Msg				("client data is present for object [%d][%s], load is processed",ID(),*cName());
 		IReader			ireader = IReader(&*E->client_data.begin(), E->client_data.size());
 		net_Load		(ireader);
-	}
-	else
-	{
-//		Msg				("no client data for object [%d][%s], load is skipped",ID(),*cName());
 	}
 
 	// if we have a parent
@@ -346,21 +337,10 @@ BOOL CGameObject::net_Spawn		(CSE_Abstract*	DC)
 	spawn_supplies				();
 #ifdef DEBUG
 	if(ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject)&&stricmp(PH_DBG_ObjectTrack(),*cName())==0)
-	{
 		Msg("CGameObject::net_Spawn obj %s Before CScriptBinder::net_Spawn %f,%f,%f",PH_DBG_ObjectTrack(),Position().x,Position().y,Position().z);
-	}
-	BOOL ret =CScriptBinder::net_Spawn(DC);
-#else
-	return						(CScriptBinder::net_Spawn(DC));
 #endif
 
-#ifdef DEBUG
-	if(ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject)&&stricmp(PH_DBG_ObjectTrack(),*cName())==0)
-	{
-		Msg("CGameObject::net_Spawn obj %s Before CScriptBinder::net_Spawn %f,%f,%f",PH_DBG_ObjectTrack(),Position().x,Position().y,Position().z);
-	}
-return ret;
-#endif
+    return CScriptBinder::net_Spawn(DC);
 }
 
 void CGameObject::net_Save		(NET_Packet &net_packet)
@@ -785,11 +765,14 @@ void CGameObject::shedule_Update	(u32 dt)
 
 	}
 
+	START_PROFILE("game_object/schedule_update/inherited")
 	// Msg							("-SUB-:[%x][%s] CGameObject::shedule_Update",smart_cast<void*>(this),*cName());
 	inherited::shedule_Update	(dt);
+	STOP_PROFILE;
 	
-	if(!g_dedicated_server)
-		CScriptBinder::shedule_Update(dt);
+	START_PROFILE("game_object/schedule_update/script_binder");
+	CScriptBinder::shedule_Update(dt);
+	STOP_PROFILE;
 }
 
 BOOL CGameObject::net_SaveRelevant	()

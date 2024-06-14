@@ -88,26 +88,25 @@ static enum EEnableState
 	stNotDefitnite		
 };
 static u8 st_enable_state=(u8)stNotDefitnite;
-BOOL CPhysicsShellHolder::net_Spawn				(CSE_Abstract*	DC)
+BOOL CPhysicsShellHolder::net_Spawn(CSE_Abstract* DC)
 {
-	CParticlesPlayer::net_SpawnParticles		();
-	st_enable_state=(u8)stNotDefitnite;
-	b_sheduled									=	true;
-	BOOL ret=inherited::net_Spawn				(DC);//load
-		//create_physic_shell			();
-	if(PPhysicsShell()&&PPhysicsShell()->isFullActive())
+	CParticlesPlayer::net_SpawnParticles();
+	st_enable_state = (u8)stNotDefitnite;
+	b_sheduled = true;
+	//create_physic_shell			();
+	if (PPhysicsShell() && PPhysicsShell()->isFullActive())
 	{
 		PPhysicsShell()->GetGlobalTransformDynamic(&XFORM());
 		switch (EEnableState(st_enable_state))
 		{
-		case stEnable		:	PPhysicsShell()->Enable()	;break;
-		case stDisable		:	PPhysicsShell()->Disable()	;break;
-		case stNotDefitnite	:								;break;
+		case stEnable:	PPhysicsShell()->Enable(); break;
+		case stDisable:	PPhysicsShell()->Disable(); break;
+		case stNotDefitnite:; break;
 		}
-		ApplySpawnIniToPhysicShell(pSettings,PPhysicsShell(),false);
-		st_enable_state=(u8)stNotDefitnite;
+		ApplySpawnIniToPhysicShell(pSettings, PPhysicsShell(), false);
+		st_enable_state = (u8)stNotDefitnite;
 	}
-	return ret;
+	return inherited::net_Spawn(DC);
 }
 
 void	CPhysicsShellHolder::PHHit( SHit &H )
