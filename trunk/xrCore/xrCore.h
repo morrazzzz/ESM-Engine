@@ -168,6 +168,7 @@
 #include <list>
 #include <set>
 #include <map>
+#include <unordered_map>
 #include <string>
 #pragma warning (pop)
 #pragma warning (disable : 4100 )		// unreferenced formal parameter

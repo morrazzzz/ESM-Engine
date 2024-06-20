@@ -207,6 +207,10 @@ template	<typename K, class P=std::less<K>, typename allocator = xalloc<K> >				
 template	<typename K, class V, class P=std::less<K>,  typename allocator = xalloc<std::pair<const K,V> > >	class	xr_map 			: public std::map<K,V,P,allocator>		{ public: u32 size() const {return (u32)__super::size(); } };
 template	<typename K, class V, class P=std::less<K>, typename allocator = xalloc<std::pair<const K,V> > >	class	xr_multimap		: public std::multimap<K,V,P,allocator>	{ public: u32 size() const {return (u32)__super::size(); } };
 
+template <typename K, class V, class Hasher = std::hash<K>, class Traits = std::equal_to<K>,
+          typename allocator = xalloc<std::pair<const K, V>>>
+using xr_unordered_map = std::unordered_map<K, V, Hasher, Traits, allocator>;
+
 #endif
 
 #define mk_pair std::make_pair
