@@ -48,6 +48,13 @@ void CUICustomMap::Init	(shared_str name, CInifile& gameLtx, LPCSTR sh_name)
 		tex = "ui\\ui_nomap2";
 		tmp.set(-10000.0f,-10000.0f,10000.0f,10000.0f);
 	}
+
+	if (!Heading())
+	{
+		tmp.x *= UI()->get_current_kx();
+		tmp.z *= UI()->get_current_kx();
+	}
+
 	m_BoundRect.set		(tmp.x, tmp.y, tmp.z, tmp.w);
 	CUIStatic::InitEx	(tex, sh_name, 0, 0, m_BoundRect.width(), m_BoundRect.height() );
 	
@@ -76,7 +83,11 @@ Fvector2 CUICustomMap::ConvertRealToLocal  (const Fvector2& src)// meters->pixel
 {
 	Fvector2 res;
 	if( !Heading() ){
-		return ConvertRealToLocalNoTransform(src);
+		Frect bound_rect = BoundRect();
+		bound_rect.x1 /= UI()->get_current_kx();
+		bound_rect.x2 /= UI()->get_current_kx();
+		res = ConvertRealToLocalNoTransform(src);
+		res.x *= UI()->get_current_kx();
 	}else{
 		Fvector2 heading_pivot = GetStaticItem()->GetHeadingPivot();
 	
@@ -84,8 +95,8 @@ Fvector2 CUICustomMap::ConvertRealToLocal  (const Fvector2& src)// meters->pixel
 		res.sub(heading_pivot);
 		rotation_(res.x, res.y, GetHeading(), res.x, res.y);
 		res.add(heading_pivot);
-		return res;
 	};
+	return res;
 }
 
 Fvector2 CUICustomMap::ConvertRealToLocalNoTransform  (const Fvector2& src)// meters->pixels (relatively own left-top pos)
@@ -364,6 +375,8 @@ void CUILevelMap::Init	(shared_str name, CInifile& gameLtx, LPCSTR sh_name)
 {
 	inherited::Init(name, gameLtx, sh_name);
 	Fvector4 tmp = gameLtx.r_fvector4(MapName(),"global_rect");
+	tmp.x *= UI()->get_current_kx();
+	tmp.z *= UI()->get_current_kx();
 	m_GlobalRect.set(tmp.x, tmp.y, tmp.z, tmp.w);
 
 #ifdef DEBUG
