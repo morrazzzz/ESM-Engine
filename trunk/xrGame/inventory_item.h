@@ -181,7 +181,6 @@ public:
 #endif
 	virtual void				PH_A_CrPr			(); // actions & operations after phisic correction-prediction steps
 
-	virtual void				net_Import			(NET_Packet& P);					// import from server
 	virtual void				net_Export			(NET_Packet& P);					// export to server
 
 public:

@@ -752,16 +752,6 @@ void CWeaponMagazinedWGrenade::net_Export	(NET_Packet& P)
 	inherited::net_Export		(P);
 }
 
-void CWeaponMagazinedWGrenade::net_Import	(NET_Packet& P)
-{
-	bool NewMode				= FALSE;
-	NewMode						= !!P.r_u8();	
-	if (NewMode != m_bGrenadeMode)
-		SwitchMode				();
-
-	inherited::net_Import		(P);
-}
-
 bool CWeaponMagazinedWGrenade::IsNecessaryItem	    (const shared_str& item_sect)
 {
 	return (	std::find(m_ammoTypes.begin(), m_ammoTypes.end(), item_sect) != m_ammoTypes.end() ||

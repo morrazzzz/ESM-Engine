@@ -400,21 +400,3 @@ void	CWeaponShotgun::net_Export	(NET_Packet& P)
 		P.w_u8(l_cartridge.m_LocalAmmoType);
 	}
 }
-
-void	CWeaponShotgun::net_Import	(NET_Packet& P)
-{
-	inherited::net_Import(P);	
-	u8 AmmoCount = P.r_u8();
-	for (u32 i=0; i<AmmoCount; i++)
-	{
-		u8 LocalAmmoType = P.r_u8();
-		if (i>=m_magazine.size()) continue;
-		CCartridge& l_cartridge = *(m_magazine.begin()+i);
-		if (LocalAmmoType == l_cartridge.m_LocalAmmoType) continue;
-#ifdef DEBUG
-		Msg("! %s reload to %s", *l_cartridge.m_ammoSect, *(m_ammoTypes[LocalAmmoType]));
-#endif
-		l_cartridge.Load(*(m_ammoTypes[LocalAmmoType]), LocalAmmoType); 
-//		m_fCurrentCartirdgeDisp = m_DefaultCartridge.m_kDisp;		
-	}
-}

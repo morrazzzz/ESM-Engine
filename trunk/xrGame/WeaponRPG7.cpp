@@ -146,27 +146,21 @@ void CWeaponRPG7::switch2_Fire	()
 	}
 }
 
-void CWeaponRPG7::OnEvent(NET_Packet& P, u16 type) 
+void CWeaponRPG7::OnEvent(NET_Packet& P, u16 type)
 {
-	inherited::OnEvent(P,type);
+	inherited::OnEvent(P, type);
 	u16 id;
 	switch (type) {
-		case GE_OWNERSHIP_TAKE : {
-			P.r_u16(id);
-			CRocketLauncher::AttachRocket(id, this);
-		} break;
-		case GE_OWNERSHIP_REJECT:
-		case GE_LAUNCH_ROCKET	: 
-			{
-			bool bLaunch = (type==GE_LAUNCH_ROCKET);
-			P.r_u16(id);
-			CRocketLauncher::DetachRocket(id, bLaunch);
-		} break;
+	case GE_OWNERSHIP_TAKE: {
+		P.r_u16(id);
+		CRocketLauncher::AttachRocket(id, this);
+	} break;
+	case GE_OWNERSHIP_REJECT:
+	case GE_LAUNCH_ROCKET:
+	{
+		bool bLaunch = (type == GE_LAUNCH_ROCKET);
+		P.r_u16(id);
+		CRocketLauncher::DetachRocket(id, bLaunch);
+	} break;
 	}
-}
-
-void CWeaponRPG7::net_Import( NET_Packet& P)
-{
-	inherited::net_Import		(P);
-	UpdateMissileVisibility		();
 }

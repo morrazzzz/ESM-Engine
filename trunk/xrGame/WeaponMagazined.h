@@ -100,7 +100,6 @@ public:
 	virtual	void	UpdateCL		();
 	virtual void	net_Destroy		();
 	virtual void			net_Export			(NET_Packet& P);
-	virtual void			net_Import			(NET_Packet& P);
 
 	virtual void	OnH_A_Chield		();
 

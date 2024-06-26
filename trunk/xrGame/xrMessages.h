@@ -21,10 +21,6 @@ enum {
 
 	M_EVENT,					// Game Event
 	M_CL_INPUT,					// Client Input Data
-	//----------- for E3 -----------------------------
-	M_CL_UPDATE,
-	M_UPDATE_OBJECTS,
-	//-------------------------------------------------
 	M_CLIENTREADY,				// Client has finished to load level and are ready to play
 	
 	M_CHANGE_LEVEL,				// changing level

@@ -111,11 +111,6 @@ void CEatableItemObject::net_Destroy		()
 	CPhysicItem::net_Destroy			();
 }
 
-void CEatableItemObject::net_Import		(NET_Packet& P) 
-{	
-	CEatableItem::net_Import			(P);
-}
-
 void CEatableItemObject::net_Export		(NET_Packet& P) 
 {	
 	CEatableItem::net_Export			(P);

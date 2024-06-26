@@ -521,59 +521,6 @@ void CWeapon::net_Export(NET_Packet& P)
 	P.w_u8					(m_bZoomMode);
 }
 
-void CWeapon::net_Import(NET_Packet& P)
-{
-	inherited::net_Import(P);
-
-	P.r_float_q8(m_fCondition,0.0f,1.0f);
-
-	u8 flags = 0;
-	P.r_u8(flags);
-
-	u16 ammo_elapsed = 0;
-	P.r_u16(ammo_elapsed);
-
-	u8 NewAddonState;
-	P.r_u8(NewAddonState);
-
-	m_flagsAddOnState = NewAddonState;
-	UpdateAddonsVisibility();
-
-	u8 ammoType, wstate;
-	P.r_u8(ammoType);
-	P.r_u8(wstate);
-
-	u8 Zoom;
-	P.r_u8(Zoom);
-
-	if (H_Parent() && H_Parent()->Remote())
-	{
-		if (Zoom) OnZoomIn();
-		else OnZoomOut();
-	};
-	switch (wstate)
-	{	
-	case eFire:
-	case eFire2:
-	case eSwitch:
-	case eReload:
-		{
-		}break;	
-	default:
-		{
-			if (ammoType >= m_ammoTypes.size())
-				Msg("!! Weapon [%d], State - [%d]", ID(), wstate);
-			else
-			{
-				m_ammoType = ammoType;
-				SetAmmoElapsed((ammo_elapsed));
-			}
-		}break;
-	}
-	
-	VERIFY((u32)iAmmoElapsed == m_magazine.size());
-}
-
 void CWeapon::save(NET_Packet &output_packet)
 {
 	inherited::save	(output_packet);

@@ -82,68 +82,11 @@ void CLevel::ClientReceive()
 			};			
 			break;
 		case M_UPDATE:
-			{
-				game->net_import_update	(*P);
-				//-------------------------------------------
-				if (OnServer()) break;
-				//-------------------------------------------
-			};	// ни в коем случае нельз€ здесь ставить break, т.к. в случае если все объекты не влаз€т в пакет M_UPDATE,
-				// они досылаютс€ через M_UPDATE_OBJECTS
-		case M_UPDATE_OBJECTS:
-			{
-				Objects.net_Import		(P);
-
-				if (OnClient()) UpdateDeltaUpd(timeServer());
-				IClientStatistic pStat = Level().GetStatistic();
-				u32 dTime = 0;
-				
-				if ((Level().timeServer() + pStat.getPing()) < P->timeReceive)
-				{
-					dTime = pStat.getPing();
-				}
-				else
-					dTime = Level().timeServer() - P->timeReceive + pStat.getPing();
-
-				u32 NumSteps = physics_world()->CalcNumSteps(dTime);
-				SetNumCrSteps(NumSteps);
-			}break;
-//		case M_UPDATE_OBJECTS:
-//			{
-//				Objects.net_Import		(P);
-//			}break;
-		//----------- for E3 -----------------------------
-		case M_CL_UPDATE:
-			{
-				if (OnClient()) break;
-				P->r_u16		(ID);
-				u32 Ping = P->r_u32();
-				CGameObject*	O	= smart_cast<CGameObject*>(Objects.net_Find		(ID));
-				if (0 == O)		break;
-				O->net_Import(*P);
-		//---------------------------------------------------
-				UpdateDeltaUpd(timeServer());
-				if (pObjects4CrPr.empty() && pActors4CrPr.empty())
-					break;
-				if (O->CLS_ID != CLSID_OBJECT_ACTOR)
-					break;
-
-				u32 dTime = 0;
-				if ((Level().timeServer() + Ping) < P->timeReceive)
-				{
-#ifdef DEBUG
-//					Msg("! TimeServer[%d] < TimeReceive[%d]", Level().timeServer(), P->timeReceive);
-#endif
-					dTime = Ping;
-				}
-				else					
-					dTime = Level().timeServer() - P->timeReceive + Ping;
-				u32 NumSteps = physics_world()->CalcNumSteps(dTime);
-				SetNumCrSteps(NumSteps);
-
-				O->CrPr_SetActivationStep(u32(physics_world()->StepsNum()) - NumSteps);
-				AddActor_To_Actors4CrPr(O);
-
-			}break;
+		{
+			game->net_import_update(*P);
+			//-------------------------------------------
+			break;
+		};
 		case M_MOVE_PLAYERS:
 			{
 				u8 Count = P->r_u8();
@@ -169,7 +112,6 @@ void CLevel::ClientReceive()
 				P->r_u16		(ID);
 				CObject*	O	= Objects.net_Find		(ID);
 				if (0 == O)		break;
-				O->net_ImportInput(*P);
 			}break;
 		//---------------------------------------------------
 		case 	M_SV_CONFIG_NEW_CLIENT:
@@ -187,7 +129,6 @@ void CLevel::ClientReceive()
 				P->r_u16		(ID);
 				CObject*	O	= Objects.net_Find		(ID);
 				if (0 == O)		break;
-				O->net_MigrateInactive	(*P);
 				if (bDebug)		Log("! MIGRATE_DEACTIVATE",*O->cName());
 			}
 			break;
@@ -196,7 +137,6 @@ void CLevel::ClientReceive()
 				P->r_u16		(ID);
 				CObject*	O	= Objects.net_Find		(ID);
 				if (0 == O)		break;
-				O->net_MigrateActive	(*P);
 				if (bDebug)		Log("! MIGRATE_ACTIVATE",*O->cName());
 			}
 			break;

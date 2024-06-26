@@ -84,7 +84,6 @@ public:
 	virtual void			net_Save						(NET_Packet& P);
 	virtual	BOOL			net_SaveRelevant				();
 	virtual void			net_Export						(NET_Packet& P);
-	virtual void			net_Import						(NET_Packet& P);
 	virtual void			net_Relcase						(CObject *O);
 
 	//save/load server serialization

@@ -30,12 +30,9 @@ void xrServer::Process_update(NET_Packet& P, ClientID sender)
 			E->UPDATE_Read	(P);
 
 			if (g_Dump_Update_Read) Msg("* %s : %d - %d", E->name(), size, P.r_tell() - _pos);
-
-			if ((P.r_tell()-_pos) != size)	{
-				string16	tmp;
-				CLSID2TEXT	(E->m_tClassID,tmp);
-				Debug.fatal	(DEBUG_INFO,"Beer from the creator of '%s'",tmp);
-			}
+			
+			R_ASSERT2(P.r_tell() - _pos == size, make_string("Corruption NET-Packet at update :( Object: [%s], size object: [%d], size packet: [%d]",
+				E->name(), size, P.r_tell() - _pos));
 		}
 		else
 			P.r_advance	(size);

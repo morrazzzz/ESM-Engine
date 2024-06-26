@@ -25,7 +25,6 @@ public:
 	virtual BOOL				net_Spawn				(CSE_Abstract* DC)							{return CInventoryItemObject::net_Spawn(DC);}
 	virtual void				net_Destroy				()											;
 	virtual void				net_Export				(NET_Packet& P)								{CInventoryItemObject::net_Export(P);}
-	virtual void				net_Import				(NET_Packet& P)								{CInventoryItemObject::net_Import(P);}
 	virtual void				net_Relcase				(CObject* O )								;
 	virtual CGameObject			*cast_game_object		()											{return this;}
 	virtual CExplosive*			cast_explosive			()											{return this;}
