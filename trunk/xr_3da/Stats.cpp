@@ -139,6 +139,7 @@ void CStats::Show()
 
 		BulletManager.FrameEnd();
 		ActorCameraUpdate.FrameEnd();
+		CreateListNetExport.FrameEnd();
 		SendNetExport.FrameEnd				();
 
 		g_SpatialSpace->stat_insert.FrameEnd		();
@@ -296,6 +297,7 @@ void CStats::Show()
 		F.OutSkip	();
 		F.OutNext	("Bullet Manager:      %2.2fms, %d",BulletManager.result,BulletManager.count);
 		F.OutNext	("Actor Camera Update:      %2.2fms, %d", ActorCameraUpdate.result,ActorCameraUpdate.count);
+		F.OutNext   ("Create List NetExport: %fms", CreateListNetExport.result);
 		F.OutNext	("Send NetExport:      %2.2fms, %d",SendNetExport.result, SendNetExport.count);
 #ifdef DEBUG_MEMORY_MANAGER
 		F.OutSkip	();
@@ -474,6 +476,7 @@ void CStats::Show()
 
 		BulletManager.FrameStart();
 		ActorCameraUpdate.FrameStart();
+		CreateListNetExport.FrameStart();
 		SendNetExport.FrameStart			();
 
 		g_SpatialSpace->stat_insert.FrameStart		();

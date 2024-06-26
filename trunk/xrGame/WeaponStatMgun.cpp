@@ -129,20 +129,9 @@ void CWeaponStatMgun::net_Destroy()
 
 void CWeaponStatMgun::net_Export(NET_Packet& P)	// export to server
 {
-	inheritedPH::net_Export			(P);
-	P.w_u8							(IsWorking() ? 1 : 0);
-	save_data						(m_destEnemyDir, P);
-}
-
-void CWeaponStatMgun::net_Import(NET_Packet& P)	// import from server
-{
-	inheritedPH::net_Import			(P);
-	u8 state = P.r_u8();
-	load_data						(m_destEnemyDir, P);
-
-	if(TRUE==IsWorking()&&!state)			FireEnd		();
-	if(FALSE==IsWorking()&&state)			FireStart	();
-
+	inheritedPH::net_Export(P);
+	P.w_u8(IsWorking() ? 1 : 0);
+	save_data(m_destEnemyDir, P);
 }
 
 void CWeaponStatMgun::UpdateCL()

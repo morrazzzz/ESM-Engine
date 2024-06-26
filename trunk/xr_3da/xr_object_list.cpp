@@ -160,7 +160,7 @@ void CObjectList::Update		(bool bForce)
 			}
 			CopyMemory	(objects_dup,&*workload->begin(),objects_count*sizeof(CObject*));
 			for (u32 O=0; O<objects_count; O++) 
-				SingleUpdate	(objects_dup[O]);
+ 				SingleUpdate	(objects_dup[O]);
 
 			Device.Statistic->UpdateClient.End		();
 		}
@@ -223,70 +223,37 @@ void CObjectList::net_Unregister	(CObject* O)
 	}
 }
 
-int	g_Dump_Export_Obj = 0;
-
-u32	CObjectList::net_Export			(NET_Packet* _Packet,	u32 start, u32 max_object_size	)
+void CObjectList::CreateListExportObjects()
 {
-	if (g_Dump_Export_Obj) Msg("---- net_export --- ");
+	objects_export = objects_active;
 
-	NET_Packet& Packet	= *_Packet;
-	u32			position;
-	for (; start<objects_active.size() + objects_sleeping.size(); start++)			{
-		CObject* P = (start<objects_active.size()) ? objects_active[start] : objects_sleeping[start-objects_active.size()];
-		if (P->net_Relevant() && !P->getDestroy())	{			
-			Packet.w_u16			(u16(P->ID())	);
-			Packet.w_chunk_open8	(position);
-			//Msg						("cl_export: %d '%s'",P->ID(),*P->cName());
-			P->net_Export			(Packet);
-
-#ifdef DEBUG
-			u32 size				= u32		(Packet.w_tell()-position)-sizeof(u8);
-			if				(size>=256)			{
-				Debug.fatal	(DEBUG_INFO,"Object [%s][%d] exceed network-data limit\n size=%d, Pend=%d, Pstart=%d",
-					*P->cName(), P->ID(), size, Packet.w_tell(), position);
-			}
-#endif
-			if (g_Dump_Export_Obj)
-			{
-				u32 size				= u32		(Packet.w_tell()-position)-sizeof(u8);
-				Msg("* %s : %d", *(P->cNameSect()), size);
-			}
-			Packet.w_chunk_close8	(position);
-//			if (0==(--count))		
-//				break;
-			if (max_object_size > (NET_PacketSizeLimit - Packet.w_tell()))
-				break;
-		}
-	}
-	if (g_Dump_Export_Obj) Msg("------------------- ");
-	return	start+1;
+	std::erase_if(objects_export, [](CObject* O) { return !O->net_Relevant() && O->getDestroy(); });
 }
 
-int	g_Dump_Import_Obj = 0;
-
-void CObjectList::net_Import		(NET_Packet* Packet)
+u32 CObjectList::StartExportObjects(NET_Packet& Packet, u32 start, u32 max_object_size)
 {
-	if (g_Dump_Import_Obj) Msg("---- net_import --- ");
-
-	while (!Packet->r_eof())
+	u32	position;
+	for (; start < objects_export.size(); start++)
 	{
-		u16 ID;		Packet->r_u16	(ID);
-		u8  size;	Packet->r_u8	(size);
-		CObject* P  = net_Find		(u32(ID));
-		if (P)		
-		{
+		CObject* O = objects_export[start];
+		Packet.w_u16(u16(O->ID()));
+		Packet.w_chunk_open8(position);
+		O->net_Export(Packet);
 
-			u32 rsize = Packet->r_tell();			
-			
-			P->net_Import	(*Packet);
-
-			if (g_Dump_Import_Obj) Msg("* %s : %d - %d", *(P->cNameSect()), size, Packet->r_tell() - rsize);
-
+#ifdef DEBUG
+		u32 size = u32(Packet.w_tell() - position) - sizeof(u8);
+		if (size >= 256) {
+			Debug.fatal(DEBUG_INFO, "Object [%s][%d] exceed network-data limit\n size=%d, Pend=%d, Pstart=%d",
+				*O->cName(), O->ID(), size, Packet.w_tell(), position);
 		}
-		else		Packet->r_advance(size);
+#endif
+		Packet.w_chunk_close8(position);
+
+		if (max_object_size > (NET_PacketSizeLimit - Packet.w_tell()))
+			break;
 	}
 
-	if (g_Dump_Import_Obj) Msg("------------------- ");
+   return start++;
 }
 
 CObject* CObjectList::net_Find			(u32 ID)

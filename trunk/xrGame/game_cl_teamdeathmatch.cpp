@@ -81,35 +81,6 @@ game_cl_TeamDeathmatch::~game_cl_TeamDeathmatch()
 //	xr_delete(pInventoryMenu);
 }
 
-void				game_cl_TeamDeathmatch::net_import_state		(NET_Packet& P)
-{
-	bool teamsEqual = (!teams.empty())?(teams[0].score == teams[1].score) : false;
-	inherited::net_import_state	(P);
-	m_bFriendlyIndicators = !!P.r_u8();
-	m_bFriendlyNames = !!P.r_u8();
-	if (!teams.empty())
-	{	
-		if (teamsEqual)
-		{
-			if (teams[0].score != teams[1].score)
-			{
-				if (Level().CurrentViewEntity())
-				{
-					if (teams[0].score > teams[1].score)
-						PlaySndMessage(ID_TEAM1_LEAD);
-					else
-						PlaySndMessage(ID_TEAM2_LEAD);
-				}
-			}
-		}
-		else
-		{
-			if (teams[0].score == teams[1].score)
-				if (Level().CurrentViewEntity())
-					PlaySndMessage(ID_TEAMS_EQUAL);
-		}
-	};
-}
 void game_cl_TeamDeathmatch::TranslateGameMessage	(u32 msg, NET_Packet& P)
 {
 	CStringTable st;

@@ -352,38 +352,3 @@ void CPhantom::net_Export	(NET_Packet& P)					// export to server
 	P.w_u8				(u8(g_Squad()));
 	P.w_u8				(u8(g_Group()));
 }
-
-void CPhantom::net_Import	(NET_Packet& P)
-{
-	// import
-	R_ASSERT			(Remote());
-
-	u8					flags;
-
-	float health;
-	P.r_float			(health);
-	SetfHealth			(health);
-
-	float fDummy;
-	u32 dwDummy;
-	P.r_float			(fDummy);
-	P.r_u32				(dwDummy);
-	P.r_u32				(dwDummy);
-
-	P.r_u32				(dwDummy);
-	P.r_u8				(flags);
-
-	float				yaw, pitch, bank = 0, roll = 0;
-
-	P.r_float /*r_angle8*/			(yaw);
-	P.r_float /*r_angle8*/			(yaw);
-	P.r_float /*r_angle8*/			(pitch);
-	P.r_float /*r_angle8*/			(roll);
-
-	id_Team				= P.r_u8();
-	id_Squad			= P.r_u8();
-	id_Group			= P.r_u8();
-
-	XFORM().setHPB		(yaw,pitch,bank);
-}
-

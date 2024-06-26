@@ -1,5 +1,4 @@
-#ifndef __XR_OBJECT_H__
-#define __XR_OBJECT_H__
+#pragma once
 
 #include "ispatial.h"
 #include "isheduled.h"
@@ -20,8 +19,7 @@ class	CSE_Abstract;
 //-----------------------------------------------------------------------------------------------------------
 //	CObject
 //-----------------------------------------------------------------------------------------------------------
-#pragma pack(push,4)
-class	ENGINE_API						CObject :	
+class ENGINE_API CObject :	
 	public DLL_Pure,
 	public ISpatial,
 	public ISheduled,
@@ -160,19 +158,15 @@ public:
 	virtual void						Load				(LPCSTR section);
 	
 	// Update
-	virtual void						shedule_Update		(u32 dt);							// Called by sheduler
-	virtual void						renderable_Render	();
+	virtual void shedule_Update(u32 dt); // Called by sheduler
+	virtual void renderable_Render();
 
-	virtual void						UpdateCL			();									// Called each frame, so no need for dt
-	virtual BOOL						net_Spawn			(CSE_Abstract* data);
-	virtual void						net_Destroy			();
-	virtual void						net_Export			(NET_Packet& P) {};					// export to server
-	virtual void						net_Import			(NET_Packet& P) {};					// import from server
-	virtual	void						net_ImportInput		(NET_Packet& P)	{};
-	virtual BOOL						net_Relevant		()				{ return FALSE; };	// relevant for export to server
-	virtual void						net_MigrateInactive	(NET_Packet& P)	{ Props.net_Local = FALSE;		};
-	virtual void						net_MigrateActive	(NET_Packet& P)	{ Props.net_Local = TRUE;		};
-	virtual void						net_Relcase			(CObject*	 O) { };				// destroy all links to another objects
+	virtual void UpdateCL(); // Called each frame, so no need for dt
+	virtual BOOL net_Spawn(CSE_Abstract* data);
+	virtual void net_Destroy();
+	virtual void net_Export(NET_Packet& P) {} // export to server
+	virtual BOOL net_Relevant() { return FALSE; } // relevant for export to server
+	virtual void net_Relcase(CObject* O) {} // destroy all links to another objects
 
 	// Position stack
 	IC u32								ps_Size				()			const	{ return PositionStack.size(); }
@@ -191,7 +185,3 @@ public:
 public:
 	virtual bool						register_schedule	() const {return true;}
 };
-
-#pragma pack(pop)
-
-#endif //__XR_OBJECT_H__

@@ -20,7 +20,6 @@ public :
 										game_cl_TeamDeathmatch	();
 	virtual								~game_cl_TeamDeathmatch	();
 	virtual			void				Init					();
-	virtual			void				net_import_state		(NET_Packet& P);
 	virtual			CUIGameCustom*		createGameUI			();
 	virtual			void				GetMapEntities			(xr_vector<SZoneMapEntityData>& dst);
 	

@@ -18,7 +18,8 @@ void xrServer::Perform_game_export	()
 	{
 		ClientID ID						= net_Players[client]->ID;
 		xrClientData*	CL				= (xrClientData*)net_Players[client];
-		if (!CL->net_Accepted) continue;
+		if (!CL->net_Accepted) 
+			continue;
 		P.w_begin						(M_SV_CONFIG_GAME);
 		game->net_Export_State			(P,ID);
 		SendTo							(ID,P,mode);

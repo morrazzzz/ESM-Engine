@@ -228,54 +228,22 @@ void CCustomMonster::mk_orientation(Fvector &dir, Fmatrix& mR)
 
 void CCustomMonster::net_Export(NET_Packet& P)					// export to server
 {
-	R_ASSERT				(Local());
+	R_ASSERT(Local());
 
 	// export last known packet
-	R_ASSERT				(!NET.empty());
-	net_update& N			= NET.back();
-	P.w_float				(GetfHealth());
-	P.w_u32					(N.dwTimeStamp);
-	P.w_u8					(0);
-	P.w_vec3				(N.p_pos);
-	P.w_float /*w_angle8*/				(N.o_model);
-	P.w_float /*w_angle8*/				(N.o_torso.yaw);
-	P.w_float /*w_angle8*/				(N.o_torso.pitch);
-	P.w_float /*w_angle8*/				(N.o_torso.roll);
-	P.w_u8					(u8(g_Team()));
-	P.w_u8					(u8(g_Squad()));
-	P.w_u8					(u8(g_Group()));
-}
-
-void CCustomMonster::net_Import(NET_Packet& P)
-{
-	R_ASSERT				(Remote());
-	net_update				N;
-
-	u8 flags;
-
-	float health;
-	P.r_float				(health);
-	SetfHealth				(health);
-
-	P.r_u32					(N.dwTimeStamp);
-	P.r_u8					(flags);
-	P.r_vec3				(N.p_pos);
-	P.r_float /*r_angle8*/				(N.o_model);
-	P.r_float /*r_angle8*/				(N.o_torso.yaw);
-	P.r_float /*r_angle8*/				(N.o_torso.pitch);
-	P.r_float /*r_angle8*/				(N.o_torso.roll	);
-
-	id_Team					= P.r_u8();
-	id_Squad				= P.r_u8();
-	id_Group				= P.r_u8();
-
-	if (NET.empty() || (NET.back().dwTimeStamp<N.dwTimeStamp))	{
-		NET.push_back			(N);
-		NET_WasInterpolating	= TRUE;
-	}
-
-	setVisible				(TRUE);
-	setEnabled				(TRUE);
+	R_ASSERT(!NET.empty());
+	net_update& N = NET.back();
+	P.w_float(GetfHealth());
+	P.w_u32(N.dwTimeStamp);
+	P.w_u8(0);
+	P.w_vec3(N.p_pos);
+	P.w_float /*w_angle8*/(N.o_model);
+	P.w_float /*w_angle8*/(N.o_torso.yaw);
+	P.w_float /*w_angle8*/(N.o_torso.pitch);
+	P.w_float /*w_angle8*/(N.o_torso.roll);
+	P.w_u8(u8(g_Team()));
+	P.w_u8(u8(g_Squad()));
+	P.w_u8(u8(g_Group()));
 }
 
 void CCustomMonster::shedule_Update	( u32 DT )
@@ -462,6 +430,7 @@ void CCustomMonster::UpdateCL	()
 	STOP_PROFILE
 
 	if (Local() && g_Alive()) {
+#pragma todo("What is the meaning of this message? What does 'network is not supported???'. Require fix? I think - not. Maybe comment this todo?")
 #pragma todo("Dima to All : this is FAKE, network is not supported here!")
 
 		UpdatePositionAnimation();

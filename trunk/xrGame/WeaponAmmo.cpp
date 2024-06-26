@@ -191,18 +191,11 @@ void CWeaponAmmo::UpdateCL()
 
 }
 
-void CWeaponAmmo::net_Export(NET_Packet& P) 
+void CWeaponAmmo::net_Export(NET_Packet& P)
 {
-	inherited::net_Export	(P);
-	
-	P.w_u16					(m_boxCurr);
-}
+	inherited::net_Export(P);
 
-void CWeaponAmmo::net_Import(NET_Packet& P) 
-{
-	inherited::net_Import	(P);
-
-	P.r_u16					(m_boxCurr);
+	P.w_u16(m_boxCurr);
 }
 
 CInventoryItem *CWeaponAmmo::can_make_killing	(const CInventory *inventory) const

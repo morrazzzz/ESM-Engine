@@ -124,7 +124,7 @@ IClient*	xrServer::client_Find_Get	(ClientID ID)
 				csPlayers.Leave();
 
 				Msg							( "# Player found" );
-				return						CLX;
+				return						CLX;	
 			};
 		};
 	};
@@ -370,11 +370,7 @@ void xrServer::SendUpdatesToAll()
 					{
 						m_iCurUpdatePacket++;
 
-						if (m_aUpdatePackets.size() == m_iCurUpdatePacket) m_aUpdatePackets.push_back(NET_Packet());
-
-						PacketType = M_UPDATE_OBJECTS;
-						pCurUpdatePacket = &(m_aUpdatePackets[m_iCurUpdatePacket]);
-						pCurUpdatePacket->w_begin(PacketType);						
+						if (m_aUpdatePackets.size() == m_iCurUpdatePacket) m_aUpdatePackets.push_back(NET_Packet());				
 					}
 					pCurUpdatePacket->w(tmpPacket.B.data, tmpPacket.B.count);
 				}//all entities
@@ -515,21 +511,6 @@ u32 xrServer::OnMessage	(NET_Packet& P, ClientID sender)			// Non-Zero means bro
 
 				OnMessage			(tmpP, sender);
 			};			
-		}break;
-	case M_CL_UPDATE:
-		{
-			xrClientData* CL		= ID_to_client	(sender);
-			if (!CL)				break;
-			CL->net_Ready			= TRUE;
-
-			if (!CL->net_PassUpdates)
-				break;
-			//-------------------------------------------------------------------
-			u32 ClientPing = CL->stats.getPing();
-			P.w_seek(P.r_tell()+2, &ClientPing, 4);
-			//-------------------------------------------------------------------
-			if (SV_Client) 
-				SendTo	(SV_Client->ID, P, net_flags(TRUE, TRUE));
 		}break;
 	case M_MOVE_PLAYERS_RESPOND:
 		{

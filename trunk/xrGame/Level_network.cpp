@@ -110,8 +110,7 @@ void CLevel::net_Stop		()
 		xr_delete				(Server);
 	}
 
-	if (!g_dedicated_server)
-		ai().script_engine().collect_all_garbage	();
+	ai().script_engine().collect_all_garbage	();
 
 #ifdef DEBUG
 	show_animation_stats		();
@@ -121,47 +120,18 @@ void CLevel::net_Stop		()
 
 void CLevel::ClientSend()
 {
-	NET_Packet				P;
-	u32						start	= 0;
-	//----------- for E3 -----------------------------
-//	if () 
+	NET_Packet P;
+
+	Device.Statistic->CreateListNetExport.Begin();
+	Objects.CreateListExportObjects();
+	Device.Statistic->CreateListNetExport.End();
+
+	u32	start = 0;
+
+	while (true)
 	{
-//		if (!(Game().local_player) || Game().local_player->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD)) return;
-		if (CurrentControlEntity()) 
-		{
-			CObject* pObj = CurrentControlEntity();
-			if (!pObj->getDestroy() && pObj->net_Relevant())
-			{				
-				P.w_begin		(M_CL_UPDATE);
-				
-
-				P.w_u16			(u16(pObj->ID())	);
-				P.w_u32			(0);	//reserved place for client's ping
-
-				pObj->net_Export			(P);
-
-				if (P.B.count>9)				
-				{
-					if (OnServer())
-					{
-						if (net_IsSyncronised() && IsDemoSave()) 
-						{
-							DemoCS.Enter();
-							Demo_StoreData(P.B.data, P.B.count, DATA_CLIENT_PACKET);
-							DemoCS.Leave();
-						}						
-					}
-					else
-						Send	(P, net_flags(FALSE));
-				}				
-			}			
-		}		
-	}
-	//-------------------------------------------------
-	while (1)
-	{
-		P.w_begin						(M_UPDATE);
-		start	= Objects.net_Export	(&P, start, max_objects_size);
+		P.w_begin(M_UPDATE);
+		start = Objects.StartExportObjects(P, start, max_objects_size);
 
 		if (P.B.count>2)
 		{
@@ -210,13 +180,14 @@ void CLevel::ClientSave	()
 	NET_Packet		P;
 	u32				start	= 0;
 
-	for (;;) {
+	while(true)
+	{
 		P.w_begin	(M_SAVE_PACKET);
 		
-		start		= Objects_net_Save(&P, start, max_objects_size_in_save);
+		start = Objects_net_Save(&P, start, max_objects_size_in_save);
 
 		if (P.B.count>2)
-			Send	(P, net_flags(FALSE));
+			Send	(P);
 		else
 			break;
 	}
@@ -225,20 +196,13 @@ void CLevel::ClientSave	()
 extern		float		phTimefactor;
 extern		BOOL		g_SV_Disable_Auth_Check;
 
-void CLevel::Send		(NET_Packet& P, u32 dwFlags, u32 dwTimeout)
+void CLevel::Send(NET_Packet& P, u32 dwFlags, u32 dwTimeout)
 {
 	if (IsDemoPlay() && m_bDemoStarted) return;
 	// optimize the case when server located in our memory
-	if(psNET_direct_connect){
-		ClientID	_clid;
-		_clid.set	(1);
-		Server->OnMessage	(P,	_clid );
-	}else
-	if (Server && game_configured && OnServer() )
-	{
-		Server->OnMessage	(P,Game().local_svdpnid	);
-	}else											
-		IPureClient::Send	(P,dwFlags,dwTimeout	);
+	ClientID	_clid;
+	_clid.set(1);
+	Server->OnMessage(P, _clid);
 }
 
 void CLevel::net_Update	()

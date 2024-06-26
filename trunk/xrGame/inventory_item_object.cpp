@@ -123,11 +123,6 @@ void CInventoryItemObject::net_Destroy		()
 	CPhysicItem::net_Destroy			();
 }
 
-void CInventoryItemObject::net_Import		(NET_Packet& P) 
-{	
-	CInventoryItem::net_Import			(P);
-}
-
 void CInventoryItemObject::net_Export		(NET_Packet& P) 
 {	
 	CInventoryItem::net_Export			(P);

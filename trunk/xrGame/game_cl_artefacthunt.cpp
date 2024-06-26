@@ -135,28 +135,6 @@ game_cl_ArtefactHunt::~game_cl_ArtefactHunt()
 	*/
 }
 
-
-BOOL	bBearerCantSprint = TRUE;
-void game_cl_ArtefactHunt::net_import_state	(NET_Packet& P)
-{
-	inherited::net_import_state	(P);
-	
-	P.r_u8	(artefactsNum);
-	P.r_u16	(artefactBearerID);
-	P.r_u8	(teamInPossession);
-	P.r_u16	(artefactID);
-	bBearerCantSprint = !!P.r_u8();
-
-	iReinforcementTime = P.r_s32();
-	if (iReinforcementTime > 0)
-	{
-		P.r_s32	(dReinforcementTime);
-		dReinforcementTime += Level().timeServer();
-	}
-	else
-		dReinforcementTime = 0;
-}
-
 #include "string_table.h"
 
 void game_cl_ArtefactHunt::TranslateGameMessage	(u32 msg, NET_Packet& P)
@@ -593,9 +571,7 @@ char* game_cl_ArtefactHunt::getTeamSection(int Team)
 
 bool	game_cl_ArtefactHunt::PlayerCanSprint			(CActor* pActor)
 {
-	if (artefactBearerID == 0) return true;
-	if (bBearerCantSprint && pActor->ID() == artefactBearerID) return false;
-	return true;
+     return true;
 };
 
 #define ARTEFACT_NEUTRAL "mp_af_neutral_location"

@@ -96,6 +96,7 @@ void	game_cl_GameState::net_import_state	(NET_Packet& P)
 		I = players.find(ID);
 		if( I!=players.end() )
 		{
+			R_ASSERT2(false, "Check not used!!!");
 			IP = I->second;
 			//***********************************************
 			u16 OldFlags = IP->flags__;

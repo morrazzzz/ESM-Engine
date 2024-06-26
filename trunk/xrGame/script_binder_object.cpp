@@ -33,14 +33,10 @@ void CScriptBinderObject::reload			(LPCSTR section)
 
 bool CScriptBinderObject::net_Spawn			(SpawnType DC)
 {
-	return			(true);
+	return true;
 }
 
 void CScriptBinderObject::net_Destroy		()
-{
-}
-
-void CScriptBinderObject::net_Import		(NET_Packet *net_packet)
 {
 }
 
@@ -60,9 +56,9 @@ void CScriptBinderObject::load				(IReader	*input_packet)
 {
 }
 
-bool CScriptBinderObject::net_SaveRelevant	()
+bool CScriptBinderObject::net_SaveRelevant()
 {
-	return		(false);
+	return false;
 }
 
 void CScriptBinderObject::net_Relcase		(CScriptGameObject *object)

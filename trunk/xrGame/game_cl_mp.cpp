@@ -657,52 +657,6 @@ void	game_cl_mp::OnRankChanged	(u8 OldRank)
 #endif
 };
 
-void	game_cl_mp::net_import_update		(NET_Packet& P)
-{
-	u8 OldRank = u8(-1);
-	s16 OldTeam = -1;
-	if (local_player) 
-	{
-		OldRank = local_player->rank;
-		OldTeam = local_player->team;
-	};
-	//---------------------------------------------
-	inherited::net_import_update(P);
-	//---------------------------------------------
-	if (local_player)
-	{
-		if (OldTeam != local_player->team)	OnTeamChanged();
-		if (OldRank != local_player->rank)	OnRankChanged(OldRank);
-	};
-}
-
-void	game_cl_mp::net_import_state		(NET_Packet& P)
-{
-	u8 OldRank = u8(-1);
-	s16 OldTeam = -1;
-	if (local_player) 
-	{
-		OldRank = local_player->rank;
-		OldTeam = local_player->team;
-	};
-
-	inherited::net_import_state(P);
-
-	if (local_player)
-	{
-		if (OldTeam != local_player->team)	OnTeamChanged();
-		if (OldRank != local_player->rank)	OnRankChanged(OldRank);
-	};
-	//-------------------------------------------------------------
-	m_u8SpectatorModes = P.r_u8();
-	
-	m_bSpectator_FreeFly	= (m_u8SpectatorModes & (1<<CSpectator::eacFreeFly	)) != 0;
-	m_bSpectator_FirstEye	= (m_u8SpectatorModes & (1<<CSpectator::eacFirstEye	)) != 0;
-	m_bSpectator_LookAt		= (m_u8SpectatorModes & (1<<CSpectator::eacLookAt	)) != 0;
-	m_bSpectator_FreeLook	= (m_u8SpectatorModes & (1<<CSpectator::eacFreeLook	)) != 0;
-	m_bSpectator_TeamCamera = (m_u8SpectatorModes & (1<<CSpectator::eacMaxCam	)) != 0;
-}
-
 bool	game_cl_mp::Is_Spectator_Camera_Allowed			(CSpectator::EActorCameras Camera)
 {
 	/*
