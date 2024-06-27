@@ -719,7 +719,7 @@ void CStalkerMovementManager::check_for_bad_path	()
 		float							cos_angle = current_direction.dotproduct(next_direction);
 		float							angle = acosf(cos_angle);
 		if (angle > BAD_PATH_ANGLE) {
-#ifdef DEBUG
+#ifdef _DEBUG
 			Msg							("bad path check changed movement type from RUN to WALK");
 #endif // DEBUG
 			m_current.m_movement_type	= eMovementTypeWalk;
