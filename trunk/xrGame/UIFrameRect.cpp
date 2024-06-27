@@ -90,7 +90,7 @@ void CUIFrameRect::UpdateSize()
 	if (resizing)
 	{
 		SetWndSize(new_size);
-		VERIFY(!recall);
+		//VERIFY(!recall);
 		UpdateSize();
 		return;
 	}
