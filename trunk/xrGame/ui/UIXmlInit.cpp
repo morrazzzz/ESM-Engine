@@ -221,6 +221,12 @@ bool CUIXmlInit::InitStatic(CUIXml& xml_doc, LPCSTR path,
 
 bool CUIXmlInit::InitCheck(CUIXml& xml_doc, LPCSTR path, int index, CUICheckButton* pWnd){
 	InitStatic(xml_doc, path, index, pWnd);
+
+	string256 buf;
+	strconcat(sizeof(buf), buf, path, ":texture");
+	LPCSTR texture = xml_doc.Read(buf, index, "ui_checker");
+
+	pWnd->Init(pWnd->GetWndPos(), pWnd->GetWndSize(), texture);
 	InitOptionsItem(xml_doc, path, index, pWnd);
 
 	return true;
