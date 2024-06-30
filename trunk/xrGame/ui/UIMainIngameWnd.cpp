@@ -350,7 +350,7 @@ void CUIMainIngameWnd::SetAmmoIcon (const shared_str& sect_name)
 
 	UIWeaponIcon.SetWndPos	(x, UIWeaponIcon_rect.y1);
 	
-	UIWeaponIcon.SetWidth	(w*UI()->get_current_kx() );
+	UIWeaponIcon.SetWidth	(w*UI().get_current_kx() );
 	UIWeaponIcon.SetHeight	(h);
 };
 
@@ -1148,8 +1148,7 @@ void CUIMainIngameWnd::UpdateActiveItemInfo()
 
 void CUIMainIngameWnd::OnConnected()
 {
-#pragma todo("Fix me! SoC - CoP Merge!")
-//	UIZoneMap->SetupCurrentMap		();
+	UIZoneMap->SetupCurrentMap();
 }
 
 void CUIMainIngameWnd::reset_ui()
