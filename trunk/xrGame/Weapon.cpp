@@ -26,7 +26,7 @@
 #include "object_broker.h"
 #include "../xr_3da/igame_persistent.h"
 #include "EffectorFall.h"
-#include "ui/UIStatix.h"
+#include "ui/UIStatic.h"
 
 #define WEAPON_REMOVE_TIME		60000
 #define ROTATION_TIME			0.25f

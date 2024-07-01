@@ -37,11 +37,6 @@ void	CGameSpy_GCD_Client::LoadGameSpy(HMODULE hGameSpyDLL)
 	GAMESPY_LOAD_FN(xrGS_gcd_compute_response);	
 }
 
-string64	gsCDKey = "";
-extern	void	GetCDKey(char* CDKeyStr);
 void CGameSpy_GCD_Client::CreateRespond	(char* RespondStr, char* ChallengeStr, u8 Reauth)
 {
-	string64 CDKey = "";
-	GetCDKey(CDKey);
-	xrGS_gcd_compute_response(_strupr(CDKey), ChallengeStr, RespondStr, (Reauth == 1));
 }

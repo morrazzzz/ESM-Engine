@@ -7,37 +7,18 @@
 //=============================================================================
 #include "stdafx.h"
 #include "UIGameLog.h"
-#include "UIXmlInit.h"
-#include "UIColorAnimatorWrapper.h"
 #include "UIPdaMsgListItem.h"
-#include "UIPdaKillMessage.h"
-#include "UILines.h"
 
-const char * const	CHAT_LOG_ITEMS_ANIMATION	= "ui_main_msgs_short";
+static const char* const CHAT_LOG_ITEMS_ANIMATION = "ui_main_msgs_short";
 
 CUIGameLog::CUIGameLog()
 {
 	toDelList.reserve				(30);
-	kill_msg_height					= 20;
 	txt_color						= 0xff000000;
 }
 
 CUIGameLog::~CUIGameLog()
 {}
-
-
-CUIStatic* CUIGameLog::AddLogMessage(LPCSTR msg)
-{
-	CUIStatic* pItem				= NULL;
-	ADD_TEXT_TO_VIEW3				(msg, pItem, this);
-	pItem->SetTextComplexMode		(true);
-	pItem->SetFont					(GetFont());
-	pItem->SetTextColor				(txt_color);
-	pItem->SetClrAnimDelay			(5000.0f);
-	pItem->SetClrLightAnim			(CHAT_LOG_ITEMS_ANIMATION, false, true, true, true);
-	ForceUpdate						();
-	return							pItem;
-}
 
 // warning: initialization of item is incomplete!
 // initialization of item's height, text static and icon still necessary
@@ -54,38 +35,6 @@ CUIPdaMsgListItem* CUIGameLog::AddPdaMessage(LPCSTR msg, float delay){
 
 u32 CUIGameLog::GetTextColor(){
 	return txt_color;
-}
-
-CUIPdaKillMessage* CUIGameLog::AddLogMessage(KillMessageStruct& msg){
-	CUIPdaKillMessage* pItem = pItem = xr_new<CUIPdaKillMessage>();	
-	pItem->SetFont(GetFont());
-	pItem->SetWidth(GetDesiredChildWidth());
-	pItem->SetHeight(kill_msg_height);
-	pItem->Init(msg);
-	pItem->SetClrAnimDelay(5000.0f);
-	pItem->SetClrLightAnim(CHAT_LOG_ITEMS_ANIMATION, false, true, true, true);
-	AddWindow(pItem, true);
-	return pItem;
-}
-
-void CUIGameLog::AddChatMessage(LPCSTR msg, LPCSTR author){
-	string256 fullLine;
-	sprintf_s(fullLine, "%s %s", author, msg);
-	_TrimRight	(fullLine);
-    
-	CUIStatic* pItem = NULL;
-
-	pItem = xr_new<CUIStatic>();
-	pItem->SetTextComplexMode		(true);
-	pItem->SetText(fullLine);
-    pItem->m_pLines->SetCutWordsMode(true);
-	pItem->SetFont(GetFont());
-	pItem->SetTextColor(txt_color);
-	pItem->SetClrAnimDelay(5000.0f);
-	pItem->SetClrLightAnim(CHAT_LOG_ITEMS_ANIMATION, false, true, true, true);	
-	pItem->SetWidth(this->GetDesiredChildWidth());
-	pItem->AdjustHeightToText();
-	AddWindow(pItem, true);	
 }
 
 void CUIGameLog::SetTextAtrib(CGameFont* pFont, u32 color){
@@ -142,9 +91,8 @@ void CUIGameLog::Update()
 
 	// Delete elements
 	{
-		xr_vector<CUIWindow*>::iterator it;
-		for (it = toDelList.begin(); it != toDelList.end(); it++)
-			RemoveWindow(*it);
+		for (auto& it: toDelList)
+			RemoveWindow(it);
 	}
 
 	if(m_flags.test	(eNeedRecalc) )

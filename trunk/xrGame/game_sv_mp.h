@@ -3,7 +3,6 @@
 #include "game_sv_mp_team.h"
 #include "game_base_kill_type.h"
 
-class		CItemMgr;
 class		xrClientData;
 #define		VOTE_LENGTH_TIME		1
 #define		VOTE_QUOTA				0.51f
@@ -41,7 +40,6 @@ protected:
 	bool							m_bRankUp_Allowed;
 
 	TEAM_DATA_LIST					TeamList;
-	CItemMgr*						m_strWeaponsData;
 
 	//-------------------------------------------------------
 	bool			m_bVotingActive;

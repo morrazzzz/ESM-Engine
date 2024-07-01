@@ -60,25 +60,20 @@ LPCSTR CFontManager::GetFontTexName (LPCSTR section)
 	int def_idx		= 1;//default 1024x768
 	int idx			= def_idx;
 
-#if 0
-	u32 w = Device.dwWidth;
-
-	if(w<=800)		idx = 0;
-	else if(w<=1280)idx = 1;
-	else 			idx = 2;
-#else
 	u32 h = Device.dwHeight;
 
 	if(h<=600)		idx = 0;
-	else if(h<=900)	idx = 1;
+	else if(h<1024)	idx = 1;
 	else 			idx = 2;
-#endif
 
-	while(idx>=0){
-		if( pSettings->line_exist(section,tex_names[idx]) )
+	while(idx>=0)
+	{
+		if (pSettings->line_exist(section,tex_names[idx]))
 			return pSettings->r_string(section,tex_names[idx]);
+
 		--idx;
 	}
+
 	return pSettings->r_string(section,tex_names[def_idx]);
 }
 
@@ -108,18 +103,14 @@ void CFontManager::InitializeFont(CGameFont*& F, LPCSTR section, u32 flags)
 CFontManager::~CFontManager()
 {
 	Device.seqDeviceReset.Remove(this);
-	FONTS_VEC_IT it		= m_all_fonts.begin();
-	FONTS_VEC_IT it_e	= m_all_fonts.end();
-	for(;it!=it_e;++it)
-		xr_delete(**it);
+	for (auto& it : m_all_fonts)
+		xr_delete(*it);
 }
 
 void CFontManager::Render()
 {
-	FONTS_VEC_IT it		= m_all_fonts.begin();
-	FONTS_VEC_IT it_e	= m_all_fonts.end();
-	for(;it!=it_e;++it)
-		(**it)->OnRender			();
+	for(auto& it: m_all_fonts)
+		(*it)->OnRender();
 }
 void CFontManager::OnDeviceReset()
 {
@@ -129,6 +120,7 @@ void CFontManager::OnDeviceReset()
 //--------------------------------------------------------------------
 CHUDManager::CHUDManager()
 { 
+	b_online = false;
 	pUIGame = nullptr;
 	m_pHUDTarget = xr_new<CHUDTarget>();
 }
@@ -187,25 +179,25 @@ void CHUDManager::Render_First()
 
 void CHUDManager::Render_Last()
 {
-	if (!psHUD_Flags.is(HUD_WEAPON|HUD_WEAPON_RT))return;
-	if (!pUIGame)						
+	if (!psHUD_Flags.is(HUD_WEAPON | HUD_WEAPON_RT))
 		return;
 
-	CObject*	O					= g_pGameLevel->CurrentViewEntity();
-	if (0==O)						return;
-	CActor*		A					= smart_cast<CActor*> (O);
-	if (A && !A->HUDview())			return;
-	if(O->CLS_ID == CLSID_CAR)
+	if (!pUIGame)
 		return;
 
-	if(O->CLS_ID == CLSID_SPECTATOR)
+	CObject* O = g_pGameLevel->CurrentViewEntity();
+	if (0 == O)						return;
+	CActor* A = smart_cast<CActor*> (O);
+	if (A && !A->HUDview())
+		return;
+	if (O->CLS_ID == CLSID_CAR)
 		return;
 
 	// hud itself
-	::Render->set_HUD				(TRUE);
-	::Render->set_Object			(O->H_Root());
-	O->OnHUDDraw					(this);
-	::Render->set_HUD				(FALSE);
+	Render->set_HUD(TRUE);
+	Render->set_Object(O->H_Root());
+	O->OnHUDDraw(this);
+	Render->set_HUD(FALSE);
 }
 extern void draw_wnds_rects();
 extern ENGINE_API BOOL bShowPauseString;

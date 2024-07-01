@@ -1,21 +1,14 @@
 #pragma once
 #include "game_cl_mp.h"
 
-#include "ui\UIBuyWndShared.h"
-#include "ui\UIBuyWndBase.h"
 
-
-class CUISkinSelectorWnd;
 class CUIDialogWnd;
-class CUIGameDM;
 class CUIPdaWnd;
 class CUIInventoryWnd;
-class CUIMapDesc;
 
 class game_cl_Deathmatch :public game_cl_mp
 {
 typedef game_cl_mp inherited;
-	CUIGameDM*						m_game_ui;
 	shared_str						Actor_Spawn_Effect;
 public :
 									game_cl_Deathmatch();
@@ -29,7 +22,6 @@ public :
 	u32								m_cl_dwWarmUp_Time;
 	string64						WinnerName;
 	
-	virtual		CUIGameCustom*		createGameUI			();
 	virtual		void				net_import_state		(NET_Packet& P);
 	virtual		void				net_import_update		(NET_Packet& P);	
 	virtual		void				Init					();
@@ -58,9 +50,7 @@ protected:
 	PRESET_ITEMS					AdditionalPresetItems;
 	PRESET_ITEMS*					pCurPresetItems;
 	PRESET_ITEMS					PlayerDefItems;
-	IBuyWnd*						pCurBuyMenu;
 
-	CUISkinSelectorWnd*				pCurSkinMenu;
 	BOOL							m_bFirstRun;
 	BOOL							m_bMenuCalledFromReady;
 	BOOL							m_bSkinSelected;
@@ -73,10 +63,6 @@ protected:
 	virtual const shared_str		GetBaseCostSect			() {return "deathmatch_base_cost";}
 			void					CheckItem				(PIItem pItem, PRESET_ITEMS* pPresetItems,  BOOL OnlyPreset);
 
-			void					ClearBuyMenu			();
-			IBuyWnd*				InitBuyMenu				(const shared_str& BasePriceSection, s16 Team);
-			CUISkinSelectorWnd*		InitSkinMenu			(s16 Team = -1);
-			void					SetBuyMenuItems			(PRESET_ITEMS* pItems, BOOL OnlyPreset = FALSE);
 	virtual bool					CanBeReady				();
 	virtual BOOL					CanCallBuyMenu			();
 	virtual BOOL					CanCallSkinMenu			();
@@ -89,10 +75,6 @@ protected:
 	virtual		bool				OnKeyboardRelease		(int key);
 
 	virtual		const shared_str	GetTeamMenu				(s16 team);
-	virtual		void				LoadTeamDefaultPresetItems	(const shared_str& caSection, IBuyWnd* pBuyMenu, PRESET_ITEMS* pPresetItems);
-	virtual		void				LoadPlayerDefItems			(char* TeamName, IBuyWnd* pBuyMenu);
-	virtual		void				LoadDefItemsForRank			(IBuyWnd* pBuyMenu);
-	virtual		void				ChangeItemsCosts			(IBuyWnd* pBuyMenu);
 ///	virtual		s16					GetBuyMenuItemIndex			(u8 SlotID, u8 ItemID);
 				s16					GetBuyMenuItemIndex			(u8 Addons, u8 ItemID);
 
@@ -121,9 +103,6 @@ public:
 	virtual		void				OnSkinMenu_Cancel		();
 
 	virtual		void				OnGameMenuRespond_ChangeSkin	(NET_Packet& P);
-
-	virtual CUIDialogWnd*			GetBuyWnd				()	{ return (CUIDialogWnd*) pCurBuyMenu; };
-	virtual CUIDialogWnd*			GetSkinWnd				()	{ return (CUIDialogWnd*) pCurSkinMenu; };
 
 	virtual		void				OnVoteStart				(NET_Packet& P);
 	virtual		void				OnVoteStop				(NET_Packet& P);

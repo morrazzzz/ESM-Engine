@@ -152,7 +152,6 @@
 //#	include "game_cl_ArtefactHunt.h"
 
 #	include "UIGameSP.h"
-#	include "UIGameAHunt.h"
 #	include	"climableobject.h"
 #	include "space_restrictor.h"
 #	include "smart_zone.h"
@@ -190,9 +189,6 @@ void CObjectFactory::register_classes	()
 
 	//Game UI type
 	add<CUIGameSP>												(CLSID_GAME_UI_SINGLE			,"game_ui_single");
-//	add<CUIGameDM>												(CLSID_GAME_UI_DEATHMATCH		,"game_ui_deathmatch");
-//	add<CUIGameTDM>												(CLSID_GAME_UI_TEAMDEATHMATCH	,"game_ui_team_deathmatch");
-//	add<CUIGameAHunt>											(CLSID_GAME_UI_ARTEFACTHUNT		,"game_ui_artefact_hunt");
 #endif // NO_XR_GAME
 
 	ADD(CActor					,CSE_ALifeCreatureActor			,CLSID_OBJECT_ACTOR				,"actor");
