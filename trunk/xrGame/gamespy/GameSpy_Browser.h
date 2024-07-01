@@ -3,7 +3,6 @@
 #include "GameSpy_FuncDefs.h"
 //#include "GameSpy_QR2.h"
 
-class CServerList;
 class CGameSpy_QR2;
 
 struct GameInfo	{
@@ -72,7 +71,7 @@ private:
 	HMODULE	m_hGameSpyDLL;
 	void*	m_pGSBrowser;
 	CGameSpy_QR2*	m_pQR2;
-	CServerList*	m_pServerList;
+//	CServerList*	m_pServerList;
 
 	void	InitInternalData(HMODULE hGameSpyDLL);
 	void	LoadGameSpy(HMODULE hGameSpyDLL);
@@ -91,7 +90,7 @@ public:
 	CGameSpy_Browser(HMODULE hGameSpyDLL);
 	~CGameSpy_Browser();
 
-	bool			Init(CServerList* pServerList);
+	bool			Init();
 	void			Clear();
 
 	void			RefreshList_Full(bool Local, const char* FilterStr = "");

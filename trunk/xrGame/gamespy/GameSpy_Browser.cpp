@@ -3,7 +3,6 @@
 #include "..\Spectator.h"
 #include "GameSpy_Browser.h"
 #include "GameSpy_Base_Defs.h"
-#include "..\ui\ServerList.h"
 #include "..\MainMenu.h"
 
 #include "GameSpy_Available.h"
@@ -24,7 +23,6 @@ CGameSpy_Browser::CGameSpy_Browser()
 	m_hGameSpyDLL = NULL;
 	m_pQR2 = NULL;
 	m_pGSBrowser = NULL;
-	m_pServerList = NULL;
 	//-------------------------
 	LPCSTR			g_name	= "xrGameSpy.dll";
 	Log				("Loading DLL:",g_name);
@@ -47,7 +45,6 @@ CGameSpy_Browser::CGameSpy_Browser(HMODULE hGameSpyDLL)
 	m_hGameSpyDLL = NULL;
 	m_pQR2 = NULL;
 	m_pGSBrowser = NULL;
-	m_pServerList = NULL;
 	//-------------------------
 	LoadGameSpy(hGameSpyDLL);
 	//-------------------------
@@ -143,16 +140,13 @@ void	CGameSpy_Browser::LoadGameSpy(HMODULE hGameSpyDLL)
 
 static bool services_checked = false;
 
-bool	CGameSpy_Browser::Init(CServerList* pServerList)
+bool	CGameSpy_Browser::Init()
 {
-	m_pServerList = pServerList;
-
 	return true;
 };
 
 void			CGameSpy_Browser::Clear()
 {
-	m_pServerList = NULL;
 };
 
 struct RefreshData
@@ -172,7 +166,6 @@ void			CGameSpy_Browser::RefreshListInternet (const char* FilterStr)
 	m_refresh_lock.Enter();
 
 	SBError error = sbe_noerror;
-	error = xrGS_ServerBrowserUpdate(m_pGSBrowser, m_pServerList ? SBTrue : SBFalse, SBFalse, FilterStr);
 	m_bAbleToConnectToMasterServer = (error == sbe_noerror);
 	m_bShowCMSErr = (error != sbe_noerror);
 	m_bTryingToConnectToMasterServer = false;
@@ -212,8 +205,6 @@ void			CGameSpy_Browser::RefreshList_Full(bool Local, const char* FilterStr)
 //			MainMenu()->SetErrorDialog(CMainMenu::ErrMasterServerConnectFailed);
 		}
 	}
-	else
-		error = xrGS_ServerBrowserLANUpdate(m_pGSBrowser, m_pServerList ? SBTrue : SBFalse);
 
 	if (error != sbe_noerror)
 	{
@@ -433,7 +424,7 @@ void	CGameSpy_Browser::ReadServerInfo	(ServerInfo* pServerInfo, void* pServer)
 		ADD_BOOL_INFO(pServerInfo, pServer, *st.translate("mp_si_friendly_indicators"), G_FRIENDLY_INDICATORS_KEY);
 		ADD_BOOL_INFO(pServerInfo, pServer, *st.translate("mp_si_friendly_names"), G_FRIENDLY_NAMES_KEY);
 
-		ADD_INT_INFO_N (pServerInfo, pServer, 1/100.0f, *st.translate("mp_si_friendly_fire"), " %%", G_FRIENDLY_FIRE_KEY);
+//.		ADD_INT_INFO_N (pServerInfo, pServer, 1/100.0f, *st.translate("mp_si_friendly_fire"), " %%", G_FRIENDLY_FIRE_KEY); //Fuck warning.
 	};
 
 	if (pServerInfo->m_GameType == GAME_ARTEFACTHUNT)
@@ -525,13 +516,6 @@ void			CGameSpy_Browser::Update()
 
 void			CGameSpy_Browser::UpdateServerList()
 {
-//	SortBrowserByPing();
-	if (m_pServerList) 
-	{
-//		m_pServerList->SetSortFunc("", false);
-//		m_pServerList->SetSortFunc("ping", false);
-		m_pServerList->RefreshList();
-	}
 }
 
 void			CGameSpy_Browser::SortBrowserByPing	()

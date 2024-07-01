@@ -4,10 +4,10 @@
 #include "script_export_space.h"
 #include "game_cl_mp_snd_messages.h"
 #include "../../xrSound/Sound.h"
-#include "ui/UISpeechMenu.h"
 #include "Spectator.h"
 
-class CUISpeechMenu;
+#define MP_SHIT return false; // xD Lol
+
 class CUIMessageBoxEx;
 
 
@@ -32,93 +32,20 @@ struct SND_Message{
 	}
 };
 
-struct cl_TeamStruct
-{
-	shared_str			caSection;		// имя секции комманды
-	//-----------------------------------
-	ui_shader 			IndicatorShader;
-	ui_shader 			InvincibleShader;
-
-	Fvector				IndicatorPos;
-	float				Indicator_r1;
-	float				Indicator_r2;
-};
-
-DEF_DEQUE(CL_TEAM_DATA_LIST, cl_TeamStruct);
-
-struct cl_Message_Sound
-{
-	ref_sound	mSound_Voice;
-	ref_sound	mSound_Radio;
-};
-
-DEF_VECTOR	(TEAMSOUND, cl_Message_Sound);
-
-struct cl_Menu_Message {
-	shared_str		pMessage;	
-	DEF_VECTOR	(SOUND_VARIANTS, TEAMSOUND);
-	SOUND_VARIANTS		aVariants;
-};
-
 struct cl_MessageMenu
 {
-	CUISpeechMenu*		m_pSpeechMenu;
-	DEF_VECTOR	(MENUMESSAGES, cl_Menu_Message);
-	MENUMESSAGES		m_aMessages;	
-
-	bool operator == (CUISpeechMenu* pMenu){return pMenu == m_pSpeechMenu;}
 };
 
 struct Bonus_Struct
 {
-	shared_str	BonusName;
-	shared_str	BonusTypeName;
-	shared_str	MoneyStr;
-	int			Money;	
-	ui_shader 	IconShader;
-	xr_vector<Frect>	IconRects;
-	Bonus_Struct()
-	{
-		BonusTypeName	= "";
-		BonusName = "";
-		MoneyStr = "";
-		Money = 0;
-		IconRects.clear();
-	}
-	~Bonus_Struct()
-	{
-		IconRects.clear();
-	}
-
-	bool operator == (LPCSTR TypeName){return !xr_strcmp(BonusTypeName.c_str(), TypeName);}
 };
 
-class CUIVotingCategory;
-class CUIVote;
 class CUIMessageBoxEx;
 
 class game_cl_mp :public game_cl_GameState
 {
 	typedef game_cl_GameState	inherited;
 protected:
-
-	CL_TEAM_DATA_LIST				TeamList;
-
-	DEF_VECTOR(SNDMESSAGES, SND_Message);
-	SNDMESSAGES						m_pSndMessages;
-	bool							m_bJustRestarted;
-	DEF_VECTOR(SNDMESSAGESINPLAY, SND_Message*);
-	SNDMESSAGESINPLAY				m_pSndMessagesInPlay;
-
-	DEF_VECTOR(BONUSES, Bonus_Struct);
-	BONUSES							m_pBonusList;
-
-	bool							m_bVotingActive;
-	CUIVotingCategory*				m_pVoteStartWindow;
-	CUIVote*						m_pVoteRespondWindow;
-	CUIMessageBoxEx*				m_pMessageBox;
-	BOOL							m_bSpectatorSelected;
-	
 	virtual void			LoadTeamData			(const shared_str&	TeamName);
 	virtual	void			ChatSayTeam				(const shared_str&	phrase);
 	virtual	void			ChatSayAll				(const shared_str&	phrase);
@@ -127,15 +54,6 @@ protected:
 	virtual	void			OnRadminMessage			(u16 type, NET_Packet* P);
 
 	virtual void			UpdateMapLocations		() {};
-
-	ui_shader m_EquipmentIconsShader;
-	ui_shader m_RankIconsShader;
-
-	virtual const ui_shader& GetEquipmentIconsShader();
-	virtual const ui_shader& GetKillEventIconsShader();
-	virtual const ui_shader& GetRadiationIconsShader();
-	virtual const ui_shader& GetBloodLossIconsShader();
-	virtual const ui_shader& GetRankIconsShader();
 
 	virtual void			OnPlayerKilled			(NET_Packet& P);
 
@@ -160,8 +78,6 @@ public:
 									game_cl_mp();
 	virtual							~game_cl_mp();
 
-
-	void xr_stdcall					OnBuySpawn				(CUIWindow* pWnd, void* p);
 	virtual		void				TranslateGameMessage	(u32 msg, NET_Packet& P);
 	virtual		void				CommonMessageOut		(LPCSTR msg);
 
@@ -173,8 +89,6 @@ public:
 	virtual		void				shedule_Update			(u32 dt);
 
 	//// VOTING
-	virtual		bool				IsVotingActive			()	{ return m_bVotingActive; };
-	virtual		void				SetVotingActive			( bool Active )	{ m_bVotingActive = Active; };
 	virtual		void				SendStartVoteMessage	(LPCSTR args);
 	virtual		void				SendVoteYesMessage		();
 	virtual		void				SendVoteNoMessage		();
@@ -208,7 +122,6 @@ public:
 	virtual		void				OnRankChanged			(u8 OldRank);
 	virtual		void				OnTeamChanged			() {};
 	virtual		void				OnMoneyChanged			() {};
-	virtual		void				OnEventMoneyChanged		(NET_Packet& P);
 
 	virtual		void				OnSwitchPhase_InProgress();
 

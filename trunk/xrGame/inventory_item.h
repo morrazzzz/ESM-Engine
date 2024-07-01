@@ -135,12 +135,6 @@ public:
 			const shared_str&	GetIconName			() const		{return m_icon_name;};
 			int					GetXPos				() const ;
 			int					GetYPos				() const ;
-	//---------------------------------------------------------------------
-			float				GetKillMsgXPos		() const ;
-			float				GetKillMsgYPos		() const ;
-			float				GetKillMsgWidth		() const ;
-			float				GetKillMsgHeight	() const ;
-	//---------------------------------------------------------------------
 			float				GetCondition		() const					{return m_fCondition;}
 	virtual	float				GetConditionToShow	() const					{return GetCondition();}
 			void				ChangeCondition		(float fDeltaCondition);

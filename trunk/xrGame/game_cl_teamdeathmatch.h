@@ -1,7 +1,6 @@
 #pragma once
 #include "game_cl_deathmatch.h"
 
-class CUISpawnWnd;
 class CUIGameTDM;
 
 class game_cl_TeamDeathmatch :public game_cl_Deathmatch
@@ -20,7 +19,6 @@ public :
 										game_cl_TeamDeathmatch	();
 	virtual								~game_cl_TeamDeathmatch	();
 	virtual			void				Init					();
-	virtual			CUIGameCustom*		createGameUI			();
 	virtual			void				GetMapEntities			(xr_vector<SZoneMapEntityData>& dst);
 	
 	virtual BOOL					CanCallBuyMenu			();
