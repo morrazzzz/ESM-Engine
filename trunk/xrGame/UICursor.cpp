@@ -31,8 +31,8 @@ void CUICursor::InitInternal()
 	m_static->SetOriginalRect	(rect);
 	Fvector2					sz;
 	sz.set						(rect.rb);
-	if(UI().is_16_9_mode())
-		sz.x					/= 1.2f;
+	if(UI().is_widescreen())
+		sz.x /= 1.2f;;
 
 	m_static->SetWndSize		(sz);
 	m_static->SetStretchTexture	(true);

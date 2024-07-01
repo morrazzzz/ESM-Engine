@@ -28,64 +28,65 @@ void C2DFrustum::CreateFromRect	(const Frect& rect)
 	planes[3].build	(rect.rb, Fvector2().set( 0,+1));
 }
 
-sPoly2D* C2DFrustum::ClipPoly	(sPoly2D& S, sPoly2D& D) const
+sPoly2D* C2DFrustum::ClipPoly(sPoly2D& S, sPoly2D& D) const
 {
-	bool bFullTest		= false;
-	for (u32 j=0; j<S.size(); j++)
+	bool bFullTest = false;
+	for (u32 j = 0; j < S.size(); j++)
 	{
-		if( !m_rect.in(S[j].pt) ) {
-			bFullTest	= true;
-			break		;
+		if (!m_rect.in(S[j].pt)) {
+			bFullTest = true;
+			break;
 		}
 	}
 
-	sPoly2D*	src		= &D;
-	sPoly2D*	dest	= &S;
-	if(!bFullTest)		return dest;
+	sPoly2D* src = &D;
+	sPoly2D* dest = &S;
+	if (!bFullTest)		return dest;
 
-	for (u32 i=0; i<planes.size(); i++)
+	for (u32 i = 0; i < planes.size(); i++)
 	{
 		// cache plane and swap lists
-		const Fplane2 &P	= planes[i]	;
-		std::swap			(src,dest)	;
-		dest->clear			()			;
+		const Fplane2& P = planes[i];
+		std::swap(src, dest);
+		dest->clear();
 
 		// classify all points relative to plane #i
-		float cls[UI_FRUSTUM_SAFE]	;
-		for (u32 j=0; j<src->size(); j++) cls[j]=P.classify((*src)[j].pt);
+		float cls[UI_FRUSTUM_SAFE];
+		for (u32 j = 0; j < src->size(); j++) cls[j] = P.classify((*src)[j].pt);
 
 		// clip everything to this plane
-		cls[src->size()] = cls[0]	;
-		src->push_back((*src)[0])	;
-		Fvector2 dir_pt,dir_uv;		float denum,t;
-		for (u32 j=0; j<src->size()-1; j++)	{
-			if ((*src)[j].pt.similar((*src)[j+1].pt,EPS_S)) continue;
-			if (negative(cls[j]))	{
-				dest->push_back((*src)[j])	;
-				if (positive(cls[j+1]))	{
+		cls[src->size()] = cls[0];
+		src->push_back((*src)[0]);
+		Fvector2 dir_pt, dir_uv;		float denum, t;
+		for (u32 j = 0; j < src->size() - 1; j++) {
+			if ((*src)[j].pt.similar((*src)[j + 1].pt, EPS_S)) continue;
+			if (negative(cls[j])) {
+				dest->push_back((*src)[j]);
+				if (positive(cls[j + 1])) {
 					// segment intersects plane
-					dir_pt.sub((*src)[j+1].pt,(*src)[j].pt);
-					dir_uv.sub((*src)[j+1].uv,(*src)[j].uv);
+					dir_pt.sub((*src)[j + 1].pt, (*src)[j].pt);
+					dir_uv.sub((*src)[j + 1].uv, (*src)[j].uv);
 					denum = P.n.dotproduct(dir_pt);
-					if (denum!=0) {
-						t = -cls[j]/denum	; //VERIFY(t<=1.f && t>=0);
-						dest->last().pt.mad	((*src)[j].pt,dir_pt,t);
-						dest->last().uv.mad	((*src)[j].uv,dir_uv,t);
+					if (denum != 0) {
+						t = -cls[j] / denum; //VERIFY(t<=1.f && t>=0);
+						dest->last().pt.mad((*src)[j].pt, dir_pt, t);
+						dest->last().uv.mad((*src)[j].uv, dir_uv, t);
 						dest->inc();
 					}
 				}
-			} else {
+			}
+			else {
 				// J - outside
-				if (negative(cls[j+1]))	{
+				if (negative(cls[j + 1])) {
 					// J+1  - inside
 					// segment intersects plane
-					dir_pt.sub((*src)[j+1].pt,(*src)[j].pt);
-					dir_uv.sub((*src)[j+1].uv,(*src)[j].uv);
+					dir_pt.sub((*src)[j + 1].pt, (*src)[j].pt);
+					dir_uv.sub((*src)[j + 1].uv, (*src)[j].uv);
 					denum = P.n.dotproduct(dir_pt);
-					if (denum!=0)	{
-						t = -cls[j]/denum	; //VERIFY(t<=1.f && t>=0);
-						dest->last().pt.mad	((*src)[j].pt,dir_pt,t);
-						dest->last().uv.mad	((*src)[j].uv,dir_uv,t);
+					if (denum != 0) {
+						t = -cls[j] / denum; //VERIFY(t<=1.f && t>=0);
+						dest->last().pt.mad((*src)[j].pt, dir_pt, t);
+						dest->last().uv.mad((*src)[j].uv, dir_uv, t);
 						dest->inc();
 					}
 				}
@@ -93,20 +94,18 @@ sPoly2D* C2DFrustum::ClipPoly	(sPoly2D& S, sPoly2D& D) const
 		}
 
 		// here we end up with complete polygon in 'dest' which is inside plane #i
-		if (dest->size()<3) return 0;
+		if (dest->size() < 3) return 0;
 	}
 	return dest;
 }
 
 void ui_core::OnDeviceReset()
 {
-	m_scale_.set		( float(Device.dwWidth)/UI_BASE_WIDTH, float(Device.dwHeight)/UI_BASE_HEIGHT );
+	m_scale_.set(float(Device.dwWidth) / UI_BASE_WIDTH, float(Device.dwHeight) / UI_BASE_HEIGHT);
 
-	m_2DFrustum.CreateFromRect	(Frect().set(	0.0f,
-												0.0f,
-												float(Device.dwWidth),
-												float(Device.dwHeight)
-												));
+	m_2DFrustum.CreateFromRect(Frect().set(0.0f, 0.0f,
+		static_cast<float>(Device.dwWidth),
+		static_cast<float>(Device.dwHeight)));
 }
 
 void ui_core::ClientToScreenScaled(Fvector2& dest, float left, float top)
@@ -229,8 +228,8 @@ void ui_core::pp_start()
 	m_current_scale			= &m_pp_scale_;
 //.	g_current_font_scale	= m_pp_scale_;
 	
-	g_current_font_scale.set(	float(::Render->getTarget()->get_width())/float(Device.dwWidth),	
-								float(::Render->getTarget()->get_height())/float(Device.dwHeight) );
+	g_current_font_scale.set(	float(Render->getTarget()->get_width())/float(Device.dwWidth),	
+								float(Render->getTarget()->get_height())/float(Device.dwHeight) );
 
 }
 
@@ -247,43 +246,46 @@ void ui_core::RenderFont()
 	Font().Render();
 }
 
-bool ui_core::is_16_9_mode()
+bool ui_core::is_widescreen()
 {
-	return (Device.dwWidth)/float(Device.dwHeight) > (UI_BASE_WIDTH/UI_BASE_HEIGHT +0.01f);
+	return Device.dwWidth / float(Device.dwHeight) > (UI_BASE_WIDTH/UI_BASE_HEIGHT + 0.01f);
 }
 
 shared_str	ui_core::get_xml_name(LPCSTR fn)
 {
 	string_path				str;
-	if(!is_16_9_mode()){
+	if (!is_widescreen())
+	{
 		sprintf_s(str, "%s", fn);
-		if ( NULL==strext(fn) ) strcat(str, ".xml");
-	}else{
+		if (!strext(fn))
+			strcat(str, ".xml");
+	}
+	else
+	{
 
-		string_path			str_;
-		if ( strext(fn) )
+		string_path str_;
+		if (strext(fn))
 		{
-			strcpy	(str, fn);
-			*strext(str)	= 0;
-			strcat	(str, "_16.xml");
-		}else
-			sprintf_s				(str, "%s_16", fn);
+			strcpy(str, fn);
+			*strext(str) = 0;
+			strcat(str, "_16.xml");
+		}
+		else
+			sprintf_s(str, "%s_16", fn);
 
-		if(NULL==FS.exist(str_, "$game_config$", "ui\\" , str) )
+		if (!FS.exist(str_, "$game_config$", "ui\\", str))
 		{
 			sprintf_s(str, "%s", fn);
-			if ( NULL==strext(fn) ) strcat(str, ".xml");
+			if (!strext(fn)) 
+				strcat(str, ".xml");
 		}
-//		Msg("[16-9] get_xml_name for[%s] returns [%s]", fn, str);
+		//		Msg("[16-9] get_xml_name for[%s] returns [%s]", fn, str);
 	}
 	return str;
 }
 
 float ui_core::get_current_kx()
 {
-	float h = float(Device.dwHeight);
-	float w = float(Device.dwWidth);
-
-	float res = (h / w) / (UI_BASE_HEIGHT / UI_BASE_WIDTH);
+	float res = static_cast<float>(Device.dwHeight) / static_cast<float>(Device.dwWidth) / (UI_BASE_HEIGHT / UI_BASE_WIDTH);
 	return res;
 }
