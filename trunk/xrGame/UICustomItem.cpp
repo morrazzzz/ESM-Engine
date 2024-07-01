@@ -112,7 +112,7 @@ void CUICustomItem::Render(const Fvector2& pos_ns, u32 color, float angle)
 	if (tmMirrorHorisontal == eMirrorMode || tmMirrorBoth == eMirrorMode)	std::swap(LTt.x, RBt.x);
 	if (tmMirrorVertical == eMirrorMode || tmMirrorBoth == eMirrorMode)		std::swap(LTt.y, RBt.y);
 
-	float kx = (UI().is_16_9_mode()) ? 0.8333f : 1.0f;
+	float kx = UI().is_widescreen() ? 0.8333f : 1.0f;
 	// clip poly
 	sPoly2D			S; S.resize(4);
 	// LT
