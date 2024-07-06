@@ -36,10 +36,6 @@ void character_hit_animation_controller::SetupHitMotions(IKinematicsAnimated&ca)
 		block_times[i] = 0;
 
 }
-ICF int sign(float x)
-{
-	return x < 0 ? -1 : 1;
-}
 
 IC void set_blend_params(CBlend *B)
 {

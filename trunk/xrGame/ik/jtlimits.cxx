@@ -42,39 +42,6 @@
 // we compare them within an epsilon of tolerance
 //
 
-#if 0
-int inline equal(float x, float y, float eps = 1e-6)
-{
-    return (fabs(x-y) < eps); 
-} 
-
-int inline iszero(float x, float eps = 1e-6) 
-{
-    return fabs(x) < eps;
-}
-
-int inline greater_equal(float x, float y)
-{
-    return (x > y) || equal(x,y);
-}
-
-int inline less_equal(float x, float y)
-{
-    return (x < y) || equal(x,y);
-}
-
-int inline greater(float x, float y)
-{
-    return x > y && !equal(x,y);
-}
-
-int inline less(float x, float y)
-{
-    return x < y && !equal(x,y);
-}
-#endif
-
-
 void SimpleJtLimit::init(int jt_type, 
 	 float a, float b, float c, 
 	 float low, float high)

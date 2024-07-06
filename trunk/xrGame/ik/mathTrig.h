@@ -39,41 +39,10 @@
 
 #ifndef _TRIGH
 #define _TRIGH
-
-
-inline float iszero(float x) 
-{
-    return x*x < 1e-6;
-}
-
-#if 0
-//
-// Normalize an angle to to range -Pi..Pi
-//
-//double angle_normalize(double x);
-
-
-//
-// Returns angle between angles x and y
-//
-double angle_distance(float x, float y);
-
-#endif
+#pragma once
 
 // Solve a*cos(theta) + b*sin(theta) = c
-int   solve_trig1(float a, float b, float c, float theta[2]);
-
-// Solves
-//      a*cos(theta) - b*sin(theta) = c
-//      a*sin(theta) + b*cos(theta) = d
-float solve_trig2(float a, float b, float c, float d);
-
-//
-// Returns both solutions for arcos and arcsin
-//
-int myacos(float x, float solns[2]);
-int myasin(float x, float solns[2]);
-
+int   solve_trig_math(float a, float b, float c, float theta[2]);
 
 //
 // Use formula a^2 + b^2 - 2abcos(theta) = c^2 to get theta
