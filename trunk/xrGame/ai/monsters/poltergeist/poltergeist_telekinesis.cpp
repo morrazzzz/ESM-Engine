@@ -96,52 +96,6 @@ void CPolterTele::update_schedule()
 	}
 }
 
-
-//////////////////////////////////////////////////////////////////////////
-// Выбор подходящих объектов для телекинеза
-//////////////////////////////////////////////////////////////////////////
-class best_object_predicate {
-	Fvector enemy_pos;
-	Fvector monster_pos;
-public:
-	best_object_predicate(const Fvector &m_pos, const Fvector &pos) {
-		monster_pos = m_pos;
-		enemy_pos	= pos;
-	}
-
-	bool operator()	 (const CGameObject *tpObject1, const CGameObject *tpObject2) const
-	{
-
-		float dist1 = monster_pos.distance_to(tpObject1->Position());
-		float dist2 = enemy_pos.distance_to(tpObject2->Position());
-		float dist3 = enemy_pos.distance_to(monster_pos);
-
-		return ((dist1 < dist3) && (dist2 > dist3));
-	};
-};
-
-class best_object_predicate2 {
-	Fvector enemy_pos;
-	Fvector monster_pos;
-public:
-	typedef CObject*	CObject_ptr;
-
-	best_object_predicate2(const Fvector &m_pos, const Fvector &pos) {
-		monster_pos = m_pos;
-		enemy_pos	= pos;
-	}
-
-	bool operator()	 (const CObject_ptr &tpObject1, const CObject_ptr &tpObject2) const
-	{
-		float dist1 = enemy_pos.distance_to(tpObject1->Position());
-		float dist2 = enemy_pos.distance_to(tpObject2->Position());
-
-		return (dist1 < dist2);		
-	};
-};
-
-//////////////////////////////////////////////////////////////////////////
-
 bool CPolterTele::trace_object(CObject *obj, const Fvector &target)
 {
 	Fvector			trace_from;
@@ -215,8 +169,12 @@ bool CPolterTele::tele_raise_objects()
 	tele_find_objects	(tele_objects, pos);	
 
 	// сортировать и оставить только необходимое количество объектов
-	std::sort(tele_objects.begin(),tele_objects.end(),best_object_predicate2(m_object->Position(), Actor()->Position()));
-	
+	std::sort(tele_objects.begin(), tele_objects.end(), [](const CObject* object1, const CObject* object2)
+		{
+			return Actor()->Position().distance_to(object1->Position()) < Actor()->Position().distance_to(object2->Position());
+		});
+
+
 	// оставить уникальные объекты
 	tele_objects.erase	(
 		std::unique(

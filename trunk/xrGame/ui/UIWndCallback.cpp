@@ -4,16 +4,6 @@
 #include "../object_broker.h"
 #include "../callback_info.h"
 
-struct event_comparer{
-	shared_str			name;
-	s16					event;
-
-	event_comparer(shared_str n, s16 e):name(n),event(e){}
-	bool operator ()(SCallbackInfo* i){
-		return( (i->m_controlName==name) && (i->m_event==event) );
-	}
-};
-
 CUIWndCallback::~CUIWndCallback()
 {
 	delete_data(m_callbacks);
@@ -26,12 +16,15 @@ void CUIWndCallback::Register			(CUIWindow* pChild)
 
 void CUIWndCallback::OnEvent(CUIWindow* pWnd, s16 msg, void* pData)
 {
-	if(!pWnd) return;
-	event_comparer ec(pWnd->WindowName(),msg);
+	if(!pWnd) 
+		return;
 
-	CALLBACK_IT it = std::find_if(m_callbacks.begin(),m_callbacks.end(),ec);
-	if(it==m_callbacks.end())
-		return ;
+	CALLBACK_IT it = std::find_if(m_callbacks.begin(), m_callbacks.end(), [pWnd, msg](SCallbackInfo* i) {
+		return i->m_controlName == pWnd->WindowName() && i->m_event == msg;
+		});
+
+	if (it == m_callbacks.end())
+		return;
 
 	(*it)->m_callback();
 	

@@ -59,6 +59,7 @@
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
     <EnableASAN>false</EnableASAN>
+    <EnableUnitySupport>true</EnableUnitySupport>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -284,9 +285,10 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4237;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir);../3rd party/DX9SDK/Include;../3rd party/ode/Public/;../3rd party/DiscordSDK/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir);../xrGame/;../3rd party/DX9SDK/Include;../3rd party/ode/Public/;../3rd party/DiscordSDK/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalOptions Condition="'$(EnableUnitySupport)' == 'true'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -3992,6 +3994,7 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
+      <IncludeInUnityFile Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">false</IncludeInUnityFile>
     </ClCompile>
     <ClCompile Include="script_engine_help.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
@@ -6360,7 +6363,9 @@
     <ClCompile Include="ui\GetRank.cpp" />
     <ClCompile Include="HUDCrosshair.cpp" />
     <ClCompile Include="HUDTarget.cpp" />
-    <ClCompile Include="UICursor.cpp" />
+    <ClCompile Include="UICursor.cpp">
+      <IncludeInUnityFile Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">true</IncludeInUnityFile>
+    </ClCompile>
     <ClCompile Include="ui\UIGameTutorial.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>

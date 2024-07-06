@@ -94,17 +94,17 @@ const typename ITEM_DATA* CSXML_IdToIndex::GetById (const shared_str& str_id, bo
 {
 	T_INIT::InitXmlIdToIndex();
 	T_VECTOR::iterator it = m_pItemDataVector->begin();
-	for(; m_pItemDataVector->end() != it; it++)
+	for (; m_pItemDataVector->end() != it; it++)
 	{
-		if( (*it).id == str_id)
+		if ((*it).id == str_id)
 			break;
 	}
 
-	if(m_pItemDataVector->end() == it)
+	if (m_pItemDataVector->end() == it)
 	{
-		int i=0;
-		for(T_VECTOR::iterator it = m_pItemDataVector->begin();	m_pItemDataVector->end() != it; it++,i++)
-			Msg("[%d]=[%s]",i,*(*it).id );
+		int i = 0;
+		for (auto iterator = m_pItemDataVector->begin(); m_pItemDataVector->end() != iterator; ++iterator, i++)
+			Msg("[%d]=[%s]", i, *(*iterator).id);
 
 		R_ASSERT3(no_assert, "item not found, id", *str_id);
 		return NULL;

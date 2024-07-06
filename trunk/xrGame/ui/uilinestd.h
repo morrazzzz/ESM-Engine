@@ -1,7 +1,9 @@
-typedef xr_string::size_type StrSize;
+#pragma once
 
-#define BEGIN  "%c["
-#define END  "]"
+using StrSize = xr_string::size_type;
+
+#define BEGIN "%c["
+#define END "]"
 //#define xr_string::npos npos
 
-const StrSize npos = (StrSize)xr_string::npos;
+constexpr StrSize npos = (StrSize)xr_string::npos;

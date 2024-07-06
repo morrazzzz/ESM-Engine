@@ -66,28 +66,18 @@ BOOL CBlackGraviArtefact::net_Spawn(CSE_Abstract* DC)
 
 	return TRUE;
 }
-struct SRP
-{
-	const CPhysicsShellHolder* obj;
-		SRP(const CPhysicsShellHolder* O)
-		{
-			obj=O;
-		}
-	bool operator	() (CPhysicsShellHolder* O) const
-	{
-		return obj==O;
-	}
-};
+
 void CBlackGraviArtefact::net_Relcase(CObject* O)
 {
 	inherited::net_Relcase(O);
 	//for vector
-	GAME_OBJECT_LIST_it I=std::remove_if(m_GameObjectList.begin(),m_GameObjectList.end(),SRP(smart_cast<CPhysicsShellHolder*>(O)));
-	m_GameObjectList.erase(I,m_GameObjectList.end());
+	std::erase_if(m_GameObjectList,
+		[O](const CPhysicsShellHolder* Obj) { return smart_cast<CPhysicsShellHolder*>(O) == Obj; });
 	//for list
 	//m_GameObjectList.remove_if(SRP(smart_cast<CPhysicsShellHolder*>(O)));
 }
-void CBlackGraviArtefact::UpdateCLChild() 
+
+void CBlackGraviArtefact::UpdateCLChild()	
 {
 	VERIFY(!physics_world()->Processing());
 	inherited::UpdateCLChild	();

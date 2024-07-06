@@ -487,7 +487,7 @@ bool CAI_Stalker::ready_to_detour		()
 	return				(weapon->GetAmmoElapsed() > weapon->GetAmmoMagSize()/2);
 }
 
-class ray_query_param	{
+class RayQueryParamFire	{
 public:
 	CAI_Stalker				*m_holder;
 	float					m_power;
@@ -497,7 +497,7 @@ public:
 	float					m_pick_distance;
 
 public:
-	IC				ray_query_param		(const CAI_Stalker *holder, float power_threshold, float distance)
+	IC				RayQueryParamFire		(const CAI_Stalker *holder, float power_threshold, float distance)
 	{
 		m_holder			= const_cast<CAI_Stalker*>(holder);
 		m_power_threshold	= power_threshold;
@@ -510,7 +510,7 @@ public:
 
 IC BOOL ray_query_callback	(collide::rq_result& result, LPVOID params)
 {
-	ray_query_param						*param = (ray_query_param*)params;
+	RayQueryParamFire						*param = (RayQueryParamFire*)params;
 	float								power = param->m_holder->feel_vision_mtl_transp(result.O,result.element);
 	param->m_power						*= power;
 
@@ -552,7 +552,7 @@ void CAI_Stalker::can_kill_entity		(const Fvector &position, const Fvector &dire
 	collide::ray_defs				ray_defs(position,direction,distance,CDB::OPT_CULL,collide::rqtBoth);
 	VERIFY							(!fis_zero(ray_defs.dir.square_magnitude()));
 	
-	ray_query_param					params(this,memory().visual().transparency_threshold(),distance);
+	RayQueryParamFire					params(this,memory().visual().transparency_threshold(),distance);
 
 	Level().ObjectSpace.RayQuery	(rq_storage,ray_defs,ray_query_callback,&params,NULL,this);
 	m_can_kill_enemy				= m_can_kill_enemy  || params.m_can_kill_enemy;

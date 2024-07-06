@@ -125,6 +125,6 @@ public:
 #endif
 };
 
-#define		MAX_ANIM_COUNT							8
-typedef		svector<MotionID,MAX_ANIM_COUNT>		MotionSVec;
+constexpr int max_anim_count_weapon = 8;
+typedef		svector<MotionID, max_anim_count_weapon>		MotionSVec;
 MotionID	random_anim								(MotionSVec& v); 

@@ -1,3 +1,5 @@
+#pragma once
+
 #include "../xr_3da/CameraBase.h"
 
 class CCameraFirstEye : public CCameraBase

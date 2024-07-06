@@ -96,10 +96,6 @@ string128	GHTTPResultStr	[] =  {
 
 GHTTPBool	__cdecl	CompletedCallBack	(GHTTPRequest request, GHTTPResult result, char * buffer, GHTTPByteCount bufferLen, void * param )
 {
-	switch (result)
-	{
-	}
-	
 //	CGameSpy_HTTP* pGSHTTP = (CGameSpy_HTTP*) param;
 //	if (pGSHTTP) pGSHTTP->StopDownload();
 	return GHTTPTrue;

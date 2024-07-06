@@ -181,14 +181,6 @@ void CHitMemoryManager::add					(const CHitObject &_hit_object)
 	}
 }
 
-struct CRemoveOfflinePredicate {
-	bool		operator()						(const CHitObject &object) const
-	{
-		VERIFY	(object.m_object);
-		return	(!!object.m_object->getDestroy() || object.m_object->H_Parent());
-	}
-};
-
 void CHitMemoryManager::update()
 {
 	START_PROFILE("Memory Manager/hits::update")
@@ -196,14 +188,11 @@ void CHitMemoryManager::update()
 	clear_delayed_objects		();
 
 	VERIFY						(m_hits);
-	m_hits->erase				(
-		std::remove_if(	
-			m_hits->begin(),
-			m_hits->end(),
-			CRemoveOfflinePredicate()
-		),
-		m_hits->end()
-	);
+	std::erase_if(*m_hits, [](const CHitObject& object)
+		{
+			R_ASSERT(object.m_object);
+			return object.m_object->getDestroy() || object.m_object->H_Parent();
+		});
 
 #ifdef USE_SELECTED_HIT
 	xr_delete					(m_selected_hit);

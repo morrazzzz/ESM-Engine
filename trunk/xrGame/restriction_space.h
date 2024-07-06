@@ -8,6 +8,8 @@
 
 #pragma once
 
+constexpr u32 time_to_delete = 300000;
+
 namespace RestrictionSpace {
 	struct CTimeIntrusiveBase : public intrusive_base {
 		u32			m_last_time_dec;

@@ -289,52 +289,15 @@ bool CStateBurerAttackTeleAbstract::CheckTeleStart()
 
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Выбор подходящих объектов для телекинеза
-//////////////////////////////////////////////////////////////////////////
-class best_object_predicate {
-	Fvector enemy_pos;
-	Fvector monster_pos;
-public:
-	best_object_predicate(const Fvector &m_pos, const Fvector &pos) {
-		monster_pos = m_pos;
-		enemy_pos	= pos;
-	}
-
-	bool operator()	 (const CGameObject *tpObject1, const CGameObject *tpObject2) const
-	{
-
-		float dist1 = monster_pos.distance_to(tpObject1->Position());
-		float dist2 = enemy_pos.distance_to(tpObject2->Position());
-		float dist3 = enemy_pos.distance_to(monster_pos);
-
-		return ((dist1 < dist3) && (dist2 > dist3));
-	};
-};
-
-class best_object_predicate2 {
-	Fvector enemy_pos;
-	Fvector monster_pos;
-public:
-	best_object_predicate2(const Fvector &m_pos, const Fvector &pos) {
-		monster_pos = m_pos;
-		enemy_pos	= pos;
-	}
-
-	bool operator()	 (const CGameObject *tpObject1, const CGameObject *tpObject2) const
-	{
-		float dist1 = enemy_pos.distance_to(tpObject1->Position());
-		float dist2 = enemy_pos.distance_to(tpObject2->Position());
-
-		return (dist1 < dist2);		
-	};
-};
-
-
 TEMPLATE_SPECIALIZATION
 void CStateBurerAttackTeleAbstract::SelectObjects()
 {
-	std::sort(tele_objects.begin(),tele_objects.end(),best_object_predicate2(object->Position(), object->EnemyMan.get_enemy()->Position()));
+	std::sort(tele_objects.begin(), tele_objects.end(), [&](const CGameObject* object1, const CGameObject* object2)
+		{
+			const Fvector& pos = object->EnemyMan.get_enemy()->Position();
+
+			return pos.distance_to(object1->Position()) < pos.distance_to(object2->Position());
+		});
 
 	// выбрать объект
 	for (u32 i=0; i<tele_objects.size(); i++) {

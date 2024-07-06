@@ -13,8 +13,6 @@
 #include "space_restriction_bridge.h"
 #include "object_broker.h"
 
-const u32 time_to_delete = 300000;
-
 struct CSpaceRestrictionManager::CClientRestriction {
 	CRestrictionPtr					m_restriction;
 	shared_str						m_base_out_restrictions;

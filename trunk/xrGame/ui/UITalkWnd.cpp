@@ -284,19 +284,19 @@ void CUITalkWnd::AskQuestion()
 	shared_str					phrase_id;
 
 	//игрок выбрал тему разговора
-	if(TopicMode())
+	if (TopicMode())
 	{
-		if ( (UITalkDialogWnd->m_ClickedQuestionID =="") ||
-			(!m_pOurDialogManager->HaveAvailableDialog(UITalkDialogWnd->m_ClickedQuestionID)) ) 
+		if ((UITalkDialogWnd->m_ClickedQuestionID == "") ||
+			(!m_pOurDialogManager->HaveAvailableDialog(UITalkDialogWnd->m_ClickedQuestionID)))
 		{
 
-			string128	s;
-			sprintf_s		(s,"ID = [%s] of selected question is out of range of available dialogs ",UITalkDialogWnd->m_ClickedQuestionID);
+			string128 s;
+			xr_sprintf(s, "ID = [%s] of selected question is out of range of available dialogs ", UITalkDialogWnd->m_ClickedQuestionID.c_str());
 			VERIFY2(FALSE, s);
 		}
 
-		m_pCurrentDialog = m_pOurDialogManager->GetDialogByID( UITalkDialogWnd->m_ClickedQuestionID);
-		
+		m_pCurrentDialog = m_pOurDialogManager->GetDialogByID(UITalkDialogWnd->m_ClickedQuestionID);
+
 		m_pOurDialogManager->InitDialog(m_pOthersDialogManager, m_pCurrentDialog);
 		phrase_id = "0";
 	}

@@ -4,16 +4,6 @@
 #include "../object_broker.h"
 #include "../callback_info.h"
 
-struct event_comparer{
-	shared_str			name;
-	s16					event;
-
-	event_comparer(shared_str n, s16 e):name(n),event(e){}
-	bool operator ()(SCallbackInfo* i){
-		return( (i->m_controlName==name) && (i->m_event==event) );
-	}
-};
-
 CUIDialogWndEx::CUIDialogWndEx():inherited()
 {
 	Hide();
@@ -40,16 +30,17 @@ void CUIDialogWndEx::Register(CUIWindow* pChild, LPCSTR name)
 
 void CUIDialogWndEx::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
-	event_comparer ec(pWnd->WindowName(),msg);
+	CALLBACK_IT it = std::find_if(m_callbacks.begin(), m_callbacks.end(), [pWnd, msg](SCallbackInfo* i) {
+		return i->m_controlName == pWnd->WindowName() && i->m_event == msg;
+		});
 
-	CALLBACK_IT it = std::find_if(m_callbacks.begin(),m_callbacks.end(),ec);
-	if(it==m_callbacks.end())
+	if (it == m_callbacks.end())
 		return inherited::SendMessage(pWnd, msg, pData);
 
 	((*it)->m_callback)();
 
-//	if ( (*it)->m_cpp_callback )	
-//		(*it)->m_cpp_callback(pData);
+	//	if ( (*it)->m_cpp_callback )	
+	//		(*it)->m_cpp_callback(pData);
 }
 
 bool CUIDialogWndEx::Load(LPCSTR xml_name)

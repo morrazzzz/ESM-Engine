@@ -937,7 +937,7 @@ void CAI_Stalker::dbg_draw_vision	()
 
 typedef xr_vector<Fvector>	COLLIDE_POINTS;
 
-class ray_query_param	{
+class RayQueryParamDebug	{
 public:
 	CCustomMonster			*m_holder;
 	float					m_power;
@@ -948,7 +948,7 @@ public:
 	COLLIDE_POINTS			*m_points;
 
 public:
-	IC				ray_query_param		(CCustomMonster *holder, float power_threshold, float distance, const Fvector &start_position, const Fvector &direction, COLLIDE_POINTS &points)
+	IC				RayQueryParamDebug		(CCustomMonster *holder, float power_threshold, float distance, const Fvector &start_position, const Fvector &direction, COLLIDE_POINTS &points)
 	{
 		m_holder			= holder;
 		m_power				= 1.f;
@@ -962,7 +962,7 @@ public:
 
 BOOL _ray_query_callback	(collide::rq_result& result, LPVOID params)
 {
-	ray_query_param						*param = (ray_query_param*)params;
+	RayQueryParamDebug						*param = (RayQueryParamDebug*)params;
 	param->m_points->push_back			(
 		Fvector().mad(
 			param->m_start_position,
@@ -987,7 +987,7 @@ void fill_points			(CCustomMonster *self, const Fvector &position, const Fvector
 	collide::ray_defs				ray_defs(position,direction,distance,CDB::OPT_CULL,collide::rqtBoth);
 	VERIFY							(!fis_zero(ray_defs.dir.square_magnitude()));
 	
-	ray_query_param					params(self,self->memory().visual().transparency_threshold(),distance,position,direction,points);
+	RayQueryParamDebug					params(self,self->memory().visual().transparency_threshold(),distance,position,direction,points);
 
 	Level().ObjectSpace.RayQuery	(rq_storage,ray_defs,_ray_query_callback,&params,NULL,self);
 

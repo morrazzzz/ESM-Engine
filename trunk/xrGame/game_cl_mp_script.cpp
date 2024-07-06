@@ -15,9 +15,9 @@ using namespace luabind;
 #pragma warning(disable:4709)
 
 template <typename T>
-struct CWrapperBase : public T, public luabind::wrap_base {
+struct CGameClientMPWrapper : public T, public luabind::wrap_base {
 	typedef T inherited;
-	typedef CWrapperBase<T>	self_type;
+	typedef CGameClientMPWrapper<T>	self_type;
 
 	DEFINE_LUA_WRAPPER_METHOD_0(CanBeReady,bool)
 	DEFINE_LUA_WRAPPER_METHOD_V0(Init)
@@ -96,7 +96,7 @@ void game_cl_mp::script_register(lua_State *L)
 
 void game_cl_mp_script::script_register(lua_State *L)
 {
-	typedef CWrapperBase<game_cl_mp_script> WrapType;
+	typedef CGameClientMPWrapper<game_cl_mp_script> WrapType;
 	typedef game_cl_mp_script BaseType;
 
 	module(L)

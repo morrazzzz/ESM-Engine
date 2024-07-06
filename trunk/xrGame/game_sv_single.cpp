@@ -127,24 +127,26 @@ void game_sv_Single::OnDetach(u16 eid_who, u16 eid_what)
 			)
 			alife().graph().detach(*e_who,l_tpALifeInventoryItem,l_tpDynamicObject->m_tGraphID,false,false);
 		else {
-			if (!ai().alife().objects().object(e_what->ID,true)) {
+			if (!ai().alife().objects().object(e_what->ID, true)) {
 				u16				id = l_tpALifeInventoryItem->base()->ID_Parent;
-				l_tpALifeInventoryItem->base()->ID_Parent	= 0xffff;
-				
-				CSE_ALifeDynamicObject *dynamic_object = smart_cast<CSE_ALifeDynamicObject*>(e_what);
-				VERIFY			(dynamic_object);
-				dynamic_object->m_tNodeID		= l_tpDynamicObject->m_tNodeID;
-				dynamic_object->m_tGraphID		= l_tpDynamicObject->m_tGraphID;
-				dynamic_object->m_bALifeControl	= true;
-				dynamic_object->m_bOnline		= true;
-				alife().create	(dynamic_object);
-				l_tpALifeInventoryItem->base()->ID_Parent	= id;
+				l_tpALifeInventoryItem->base()->ID_Parent = 0xffff;
+
+				CSE_ALifeDynamicObject* dynamic_object = smart_cast<CSE_ALifeDynamicObject*>(e_what);
+				VERIFY(dynamic_object);
+				dynamic_object->m_tNodeID = l_tpDynamicObject->m_tNodeID;
+				dynamic_object->m_tGraphID = l_tpDynamicObject->m_tGraphID;
+				dynamic_object->m_bALifeControl = true;
+				dynamic_object->m_bOnline = true;
+				alife().create(dynamic_object);
+				l_tpALifeInventoryItem->base()->ID_Parent = id;
 			}
 #ifdef DEBUG
-			else
-				if (psAI_Flags.test(aiALife)) {
-					Msg			("Cannot detach object [%s][%s][%d] from object [%s][%s][%d]",l_tpALifeInventoryItem->base()->name_replace(),*l_tpALifeInventoryItem->base()->s_name,l_tpALifeInventoryItem->base()->ID,l_tpDynamicObject->base()->name_replace(),l_tpDynamicObject->base()->s_name,l_tpDynamicObject->ID);
-				}
+			else if (psAI_Flags.test(aiALife)) {
+				Msg("Cannot detach object [%s][%s][%d] from object [%s][%s][%d]", l_tpALifeInventoryItem->base()->name_replace(),
+					l_tpALifeInventoryItem->base()->s_name.c_str(), l_tpALifeInventoryItem->base()->ID,
+					l_tpDynamicObject->base()->name_replace(), l_tpDynamicObject->base()->s_name.c_str(),
+					l_tpDynamicObject->ID);
+			}
 #endif
 		}
 	}

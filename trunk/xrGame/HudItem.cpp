@@ -284,12 +284,13 @@ void CHudItem::animGet	(MotionSVec& lst, LPCSTR prefix)
 {
 	const MotionID		&M = m_pHUD->animGet(prefix);
 	if (M)				lst.push_back(M);
-	for (int i=0; i<MAX_ANIM_COUNT; ++i)
+	for (int i = 0; i < max_anim_count_weapon; ++i)
 	{
 		string128		sh_anim;
-		sprintf_s			(sh_anim,"%s%d",prefix,i);
-		const MotionID	&M = m_pHUD->animGet(sh_anim);
-		if (M)			lst.push_back(M);
+		sprintf_s(sh_anim, "%s%d", prefix, i);
+		const MotionID& M = m_pHUD->animGet(sh_anim);
+		if (M)			
+			lst.push_back(M);
 	}
 	R_ASSERT2			(!lst.empty(),prefix);
 }

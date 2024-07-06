@@ -12,6 +12,9 @@ class CMotionDef;
 class CBlend;
 class IKinematicsAnimated;
 
+constexpr int max_anim_count_crow = 8;
+constexpr int max_snd_count_crow = 8;
+
 class CAI_Crow : public CEntity
 {
 	typedef	CEntity inherited;
@@ -23,14 +26,10 @@ class CAI_Crow : public CEntity
 		eFlyUp
 	};
 
-	// constants and types
-	enum			{ MAX_ANIM_COUNT = 8	};
-	enum			{ MAX_SND_COUNT = 8		};
-
 	// animations
 	struct SAnim
 	{
-		typedef			svector<MotionID,MAX_ANIM_COUNT> MotionSVec;
+		typedef			svector<MotionID, max_anim_count_crow> MotionSVec;
 		MotionSVec		m_Animations;
 		const MotionID	&GetRandom	(){return m_Animations[Random.randI(0,m_Animations.size())];}
 		void			Load		(IKinematicsAnimated* visual, LPCSTR prefix);
@@ -38,7 +37,7 @@ class CAI_Crow : public CEntity
 
 	struct SSound
 	{
-		typedef			svector<ref_sound,MAX_SND_COUNT>		SoundSVec;
+		typedef			svector<ref_sound, max_snd_count_crow>		SoundSVec;
 		SoundSVec		m_Sounds;
 		ref_sound&		GetRandom		()	{return m_Sounds[Random.randI(0,m_Sounds.size())];}
 		void			Load			(LPCSTR prefix);

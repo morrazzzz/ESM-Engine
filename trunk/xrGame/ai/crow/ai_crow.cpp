@@ -14,32 +14,33 @@
 #include "..\include\xrRender\Kinematics.h"
 #include "..\include\xrRender\KinematicsAnimated.h"
 
-void CAI_Crow::SAnim::Load	(IKinematicsAnimated* visual, LPCSTR prefix)
+void CAI_Crow::SAnim::Load(IKinematicsAnimated* visual, LPCSTR prefix)
 {
-	const MotionID		&M = visual->ID_Cycle_Safe(prefix);
+	const MotionID& M = visual->ID_Cycle_Safe(prefix);
 	if (M)				m_Animations.push_back(M);
-	for (int i=0; (i<MAX_ANIM_COUNT)&&(m_Animations.size()<MAX_ANIM_COUNT); ++i){
+	for (int i = 0; (i < max_anim_count_crow) && (m_Animations.size() < max_anim_count_crow); ++i) {
 		string128		sh_anim;
-		sprintf_s			(sh_anim,"%s_%d",prefix,i);
-		const MotionID	&M = visual->ID_Cycle_Safe(sh_anim);
-		if (M)			m_Animations.push_back(M);
+		sprintf_s(sh_anim, "%s_%d", prefix, i);
+		const MotionID& M = visual->ID_Cycle_Safe(sh_anim);
+		if (M)			
+			m_Animations.push_back(M);
 	}
-	R_ASSERT			(m_Animations.size());
+	R_ASSERT(m_Animations.size());
 }
 
-void CAI_Crow::SSound::Load	(LPCSTR prefix)
+void CAI_Crow::SSound::Load(LPCSTR prefix)
 {
 	string_path	fn;
-	if (FS.exist(fn,"$game_sounds$",prefix,".ogg")){
-		m_Sounds.push_back	(ref_sound());
-		::Sound->create		(m_Sounds.back(),prefix,st_Effect,sg_SourceType);
+	if (FS.exist(fn, "$game_sounds$", prefix, ".ogg")) {
+		m_Sounds.push_back(ref_sound());
+		Sound->create(m_Sounds.back(), prefix, st_Effect, sg_SourceType);
 	}
-	for (int i=0; (i<MAX_SND_COUNT)&&(m_Sounds.size()<MAX_SND_COUNT); ++i){
+	for (int i = 0; (i < max_snd_count_crow) && (m_Sounds.size() < max_snd_count_crow); ++i) {
 		string64		name;
-		sprintf_s			(name,"%s_%d",prefix,i);
-		if (FS.exist(fn,"$game_sounds$",name,".ogg")){
+		sprintf_s(name, "%s_%d", prefix, i);
+		if (FS.exist(fn, "$game_sounds$", name, ".ogg")) {
 			m_Sounds.push_back(ref_sound());
-			::Sound->create(m_Sounds.back(),name,st_Effect,sg_SourceType);
+			Sound->create(m_Sounds.back(), name, st_Effect, sg_SourceType);
 		}
 	}
 	R_ASSERT(m_Sounds.size());

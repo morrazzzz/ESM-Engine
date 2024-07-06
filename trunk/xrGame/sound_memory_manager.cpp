@@ -293,31 +293,14 @@ void CSoundMemoryManager::add			(const CObject *object, int sound_type, const Fv
 	}
 }
 
-struct CRemoveOfflinePredicate {
-	bool		operator()						(const CSoundObject &object) const
-	{
-		if (!object.m_object)
-			return	(false);
-
-		return		(!!object.m_object->H_Parent());
-	}
-};
-
 void CSoundMemoryManager::update()
 {
 	START_PROFILE("Memory Manager/sounds::update")
 
 	clear_delayed_objects		();
 
-	VERIFY						(m_sounds);
-	m_sounds->erase				(
-		std::remove_if(	
-			m_sounds->begin(),
-			m_sounds->end(),
-			CRemoveOfflinePredicate()
-		),
-		m_sounds->end()
-	);
+	VERIFY(m_sounds);
+	std::erase_if(*m_sounds, [](const CSoundObject& object) { return object.m_object && object.m_object->H_Parent(); });
 
 #ifdef USE_SELECTED_SOUND
 	xr_delete					(m_selected_sound);
