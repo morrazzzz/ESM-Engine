@@ -83,9 +83,9 @@ void hmatmult(Matrix A,Matrix B,Matrix C)
  * A *CAN* point to the same matrix as B or C.
  */
 {
-    register float	*a,*b,*c,*bp,*cp;
-    register float	*bmax,*cmax,*cpmax;
-    register float	*b32,*c00,*c03;
+    float	*a,*b,*c,*bp,*cp;
+    float	*bmax,*cmax,*cpmax;
+    float	*b32,*c00,*c03;
     Matrix		Bt,Ct;
 
     if (A == B) {
@@ -154,7 +154,7 @@ void inverthomomatrix(Matrix N,Matrix M)
  * n = inverse of m
  */
 {
-    register float *n,*m,*nmax,*C,*m3;
+    float *n,*m,*nmax,*C,*m3;
     
     nmax = &N[2][3];
     n = &N[0][0];
@@ -190,7 +190,7 @@ void vecmult0(float y[],float x[],Matrix M)
  * y = x * M, with y[3] = 0
  */
 {
-    register int	i,j;
+    int	i,j;
     float   	Y[3];
     
     for (i=0; i<3; i++) {
@@ -210,7 +210,7 @@ void vecmult(float y[],float x[],Matrix M)
  * y = x * M, with y[3] = 1
  */
 {
-    register	int i,j;
+    int i,j;
     float   	Y[3];
     
     for (i=0; i<3; i++) {
@@ -233,9 +233,9 @@ axisangletomatrix(Matrix m, float axis[], float theta)
  * like the coordinate axes.
  */
 {
-    register float	s,v,c;
-    register float	*p;
-    register float	a01,a02,a12,a0s,a1s,a2s,a01v,a02v,a12v;
+    float	s,v,c;
+    float	*p;
+    float	a01,a02,a12,a0s,a1s,a2s,a01v,a02v,a12v;
     
     c = _cos(theta);
     s = _sin(theta);
@@ -580,9 +580,9 @@ void rmatmult(Matrix A, Matrix B, Matrix C)
     Matrix Temp1;
     Matrix Temp2;
 
-    register float *a = (float *) A; 
-    register float *b;
-    register float *c; 
+    float *a = (float *) A; 
+    float *b;
+    float *c; 
 
     if (A == B)
     {
@@ -640,7 +640,7 @@ void invertrmatrix(Matrix N,Matrix M)
  * n = inverse of m
  */
 {
-    register float *n,*m,*nmax,*C;
+    float *n,*m,*nmax,*C;
     
     nmax = &N[2][3];
     n = &N[0][0];
@@ -783,18 +783,8 @@ linterpmatrix(Matrix R,Matrix A,Matrix B,float t)
     matmult(R,T,A);
     vecinterp(R[3],A[3],B[3],t);
 }
-
-
-#define ATAN2(a,b) ((a==0.0)&&(b==0.0) ? 0.0 : atan2(a,b))
-
-#define EPSILON 0.001f
-#define W q[0]    
-#define X q[1]    
-#define Y q[2]    
-#define Z q[3]    
-
-void
-qtomatrix(Matrix m,Quaternion q)
+         
+void qtomatrix(Matrix m,Quaternion q)
 /*
  * Convert quaterion to rotation sub-matrix of 'm'.
  * The left column of 'm' gets zeroed, and m[3][3]=1.0, but the 
@@ -803,22 +793,22 @@ qtomatrix(Matrix m,Quaternion q)
  * m = q
  */
 {
-    float    x2 = X * X;
-    float    y2 = Y * Y;
-    float    z2 = Z * Z;
+    float    x2 = q[1] * q[1];
+    float    y2 = q[2] * q[2];
+    float    z2 = q[3] * q[3];
     
     m[0][0] = 1 - 2 * (y2 +  z2);
-    m[0][1] = 2 * (X * Y + W * Z);
-    m[0][2] = 2 * (X * Z - W * Y);
+    m[0][1] = 2 * (q[1] * q[2] + q[0] * q[3]);
+    m[0][2] = 2 * (q[1] * q[3] - q[0] * q[2]);
     m[0][3] = 0.0;
     
-    m[1][0] = 2 * (X * Y - W * Z);
+    m[1][0] = 2 * (q[1] * q[2] - q[0] * q[3]);
     m[1][1] = 1 - 2 * (x2 + z2);
-    m[1][2] = 2 * (Y * Z + W * X);
+    m[1][2] = 2 * (q[2] * q[3] + q[0] * q[1]);
     m[1][3] = 0.0;
     
-    m[2][0] = 2 * (X * Z + W * Y);
-    m[2][1] = 2 * (Y * Z - W * X);
+    m[2][0] = 2 * (q[1] * q[3] + q[0] * q[2]);
+    m[2][1] = 2 * (q[2] * q[3] - q[0] * q[1]);
     m[2][2] = 1 - 2 * (x2 + y2);
     m[2][3] = 0.0;
 
@@ -836,27 +826,27 @@ matrixtoq(Quaternion q,Matrix m)
     float    f;
 
     f = (1.0f + m[0][0] + m[1][1] + m[2][2]) / 4.0f;
-    if (f > EPSILON) {
-        W = _sqrt(f);
-        X = (m[1][2] - m[2][1]) / (4 * W);
-        Y = (m[2][0] - m[0][2]) / (4 * W);
-        Z = (m[0][1] - m[1][0]) / (4 * W);
+    if (f > 0.001f) {
+        q[0] = _sqrt(f);
+        q[1] = (m[1][2] - m[2][1]) / (4 * q[0]);
+        q[2] = (m[2][0] - m[0][2]) / (4 * q[0]);
+        q[3] = (m[0][1] - m[1][0]) / (4 * q[0]);
     } else {
-        W = 0.0;
+        q[0] = 0.0;
         f = - (m[1][1] + m[2][2]) / 2.0f;
-        if (f > EPSILON) {
-            X = _sqrt(f);
-            Y = m[0][1] / (2 * X);
-            Z = m[0][2] / (2 * X);
+        if (f > 0.001f) {
+            q[1] = _sqrt(f);
+            q[2] = m[0][1] / (2 * q[1]);
+            q[3] = m[0][2] / (2 * q[1]);
         } else {
-            X = 0.0;
+            q[1] = 0.0;
             f = (1 - m[2][2]) / 2.0f;
-            if (f > EPSILON) {
-                Y = _sqrt(f);
-                Z = m[1][2] / (2 * Y);
+            if (f > 0.001f) {
+                q[2] = _sqrt(f);
+                q[3] = m[1][2] / (2 * q[2]);
             } else {
-                Y = 0.0;
-                Z = 1.0;
+                q[2] = 0.0;
+                q[3] = 1.0;
             }
         }
     }

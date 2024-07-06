@@ -110,7 +110,7 @@ static int solve_R_angle(const float g[3],
     b += b;
     c = rhs - (c+c);
     
-    n = solve_trig1(a, b, c, temp);
+    n = solve_trig_math(a, b, c, temp);
 
     if (n == 2)
     {
