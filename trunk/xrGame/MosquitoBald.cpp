@@ -4,7 +4,9 @@
 #include "ParticlesObject.h"
 #include "level.h"
 #include "physicsshellholder.h"
-CMosquitoBald::CMosquitoBald(void) 
+#include "../xr_3da/xr_collide_form.h"
+
+CMosquitoBald::CMosquitoBald() 
 {
 	m_dwDeltaTime			= 0;
 	m_fHitImpulseScale		= 1.f;
@@ -12,7 +14,7 @@ CMosquitoBald::CMosquitoBald(void)
 	m_bLastBlowoutUpdate	= false;
 }
 
-CMosquitoBald::~CMosquitoBald(void) 
+CMosquitoBald::~CMosquitoBald() 
 {
 }
 

@@ -174,32 +174,33 @@ struct SExpQParams
 	float		shoot_factor		;
 };
 //проверка на попадание "осколком" по объекту
-ICF static BOOL grenade_hit_callback(collide::rq_result& result, LPVOID params)
+ICF static bool grenade_hit_callback(collide::rq_result& result, LPVOID params)
 {
-	SExpQParams& ep	= *(SExpQParams*)params;
-	u16 mtl_idx			= GAMEMTL_NONE_IDX;
-	if(result.O){
-		IKinematics* V  = 0;
-		if (0!=(V=smart_cast<IKinematics*>(result.O->Visual()))){
-			CBoneData& B= V->LL_GetData((u16)result.element);
-			mtl_idx		= B.game_mtl_idx;
+	SExpQParams& ep = *(SExpQParams*)params;
+	u16 mtl_idx = GAMEMTL_NONE_IDX;
+	if (result.O) {
+		IKinematics* V = 0;
+		if (0 != (V = smart_cast<IKinematics*>(result.O->Visual()))) {
+			CBoneData& B = V->LL_GetData((u16)result.element);
+			mtl_idx = B.game_mtl_idx;
 		}
-	}else{
+	}
+	else {
 		//получить треугольник и узнать его материал
-		CDB::TRI* T		= Level().ObjectSpace.GetStaticTris()+result.element;
-		mtl_idx			= T->material;
-	}	
-	SGameMtl* mtl		= GMLib.GetMaterialByIdx(mtl_idx);
-	ep.shoot_factor		*=mtl->fShootFactor;
+		CDB::TRI* T = Level().ObjectSpace.GetStaticTris() + result.element;
+		mtl_idx = T->material;
+	}
+	SGameMtl* mtl = GMLib.GetMaterialByIdx(mtl_idx);
+	ep.shoot_factor *= mtl->fShootFactor;
 #ifdef DEBUG
-	if(ph_dbg_draw_mask.test(phDbgDrawExplosions))
+	if (ph_dbg_draw_mask.test(phDbgDrawExplosions))
 	{
-		Fvector p;p.set(ep.l_dir);p.mul(result.range);p.add(ep.source_p);
-		u8 c	=u8(mtl->fShootFactor*255.f);
-		DBG_DrawPoint(p,0.1f,D3DCOLOR_XRGB(255-c,0,c));
+		Fvector p; p.set(ep.l_dir); p.mul(result.range); p.add(ep.source_p);
+		u8 c = u8(mtl->fShootFactor * 255.f);
+		DBG_DrawPoint(p, 0.1f, D3DCOLOR_XRGB(255 - c, 0, c));
 	}
 #endif
-	return				(ep.shoot_factor>0.01f);
+	return ep.shoot_factor > 0.01f;
 }
 
 

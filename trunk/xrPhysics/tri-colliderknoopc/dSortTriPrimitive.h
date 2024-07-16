@@ -7,7 +7,7 @@
 #include "../MathUtils.h"
 #include "../console_vars.h"
 #include "../phworld.h"
-#include "../../xr_3da/xr_area.h"
+#include "../../xrCDB/xr_area.h"
 #include "../../xr_3da/gamemtllib.h"
 #ifdef DEBUG
 #include "../debug_output.h"

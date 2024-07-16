@@ -2,13 +2,12 @@
 #include "igame_level.h"
 
 #include "xr_object.h"
-#include "xr_area.h"
+#include "../xrCDB/xr_area.h"
 #include "render.h"
 #include "xrLevel.h"
 #include "../Include/xrRender/Kinematics.h"
 
-#include "x_ray.h"
-#include "GameFont.h"
+#include "xr_collide_form.h"
 
 void CObject::MakeMeCrow_internal	()
 {

@@ -2,13 +2,13 @@
 #include "igame_level.h"
 #include "xr_collide_form.h"
 #include "xr_object.h"
-#include "xr_area.h"
+#include "../xrCDB/xr_area.h"
 #include "x_ray.h"
 #include "xrLevel.h"
 #include "fmesh.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "bone.h"
-#include "frustum.h"
+#include "../xrCDB/frustum.h"
 
 using namespace	collide;
 //----------------------------------------------------------------------

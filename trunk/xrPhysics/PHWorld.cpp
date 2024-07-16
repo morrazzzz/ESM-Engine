@@ -21,7 +21,7 @@
 #include "console_vars.h"
 #include "../xr_3da/device.h"
 #include "../xr_3da/defines.h"
-#include "../xr_3da/xr_area.h"
+#include "../xrCDB/xr_area.h"
 #include "../xrcore/fs_internal.h"
 #ifdef	DEBUG
 //				void DBG_ObjAfterPhDataUpdate	( CPHObject *obj );

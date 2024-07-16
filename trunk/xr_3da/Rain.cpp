@@ -7,7 +7,7 @@
 
 #include "render.h"
 #include "igame_level.h"
-#include "xr_area.h"
+#include "../xrCDB/xr_area.h"
 #include "xr_object.h"
 
 //	Warning: duplicated in dxRainRender

@@ -3,7 +3,7 @@
 #include "iinputreceiver.h"
 //#include "CameraManager.h"
 #include "xr_object_list.h"
-#include "xr_area.h"
+#include "../xrCDB/xr_area.h"
 
 // refs
 class ENGINE_API CCameraManager;

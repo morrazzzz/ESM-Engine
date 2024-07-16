@@ -7,14 +7,9 @@
 #include "Thunderbolt.h"
 #include "igame_persistent.h"
 #include "LightAnimLibrary.h"
-
-#ifdef _EDITOR
-    #include "ui_toolscustom.h"
-#else
-	#include "igame_level.h"
-	#include "xr_area.h"
-	#include "xr_object.h"
-#endif
+#include "igame_level.h"
+#include "../xrCDB/xr_area.h"
+#include "xr_object.h"
 
 SThunderboltDesc::SThunderboltDesc	() :
 	m_GradientTop				(0),

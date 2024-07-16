@@ -22,19 +22,19 @@ namespace Feel {
 		float						vis_threshold;
 		SFeelParam(Vision* _parent, Vision::feel_visible_Item* _item, float _vis_threshold):parent(_parent),item(_item),vis(1.f),vis_threshold(_vis_threshold){}
 	};
-	IC BOOL feel_vision_callback(collide::rq_result& result, LPVOID params)
+	IC bool feel_vision_callback(collide::rq_result& result, LPVOID params)
 	{
-		SFeelParam* fp	= (SFeelParam*)params;
-		float vis		= fp->parent->feel_vision_mtl_transp(result.O, result.element);
-		fp->vis			*= vis;
-		if (NULL==result.O && fis_zero(vis)){
-			CDB::TRI* T	= g_pGameLevel->ObjectSpace.GetStaticTris()+result.element;
-			Fvector* V	= g_pGameLevel->ObjectSpace.GetStaticVerts();
-			fp->item->Cache.verts[0].set	(V[T->verts[0]]);
-			fp->item->Cache.verts[1].set	(V[T->verts[1]]);
-			fp->item->Cache.verts[2].set	(V[T->verts[2]]);
+		SFeelParam* fp = (SFeelParam*)params;
+		float vis = fp->parent->feel_vision_mtl_transp(result.O, result.element);
+		fp->vis *= vis;
+		if (!result.O && fis_zero(vis)) {
+			CDB::TRI* T = g_pGameLevel->ObjectSpace.GetStaticTris() + result.element;
+			Fvector* V = g_pGameLevel->ObjectSpace.GetStaticVerts();
+			fp->item->Cache.verts[0].set(V[T->verts[0]]);
+			fp->item->Cache.verts[1].set(V[T->verts[1]]);
+			fp->item->Cache.verts[2].set(V[T->verts[2]]);
 		}
-		return (fp->vis>fp->vis_threshold); 
+		return fp->vis > fp->vis_threshold;
 	}
 	void	Vision::o_new		(CObject* O)
 	{
@@ -200,7 +200,7 @@ namespace Feel {
 					}else{
 						// cache outdated. real query.
 						VERIFY(!fis_zero(RD.dir.square_magnitude()));
-						if (g_pGameLevel->ObjectSpace.RayQuery	(RQR, RD, feel_vision_callback, &feel_params, NULL, NULL))	{
+						if (g_pGameLevel->ObjectSpace.RayQuery(RQR, RD, feel_vision_callback, &feel_params, NULL, NULL))	{
 							I->Cache_vis	= feel_params.vis	;
 							I->Cache.set	(P,D,f,TRUE	)		;
 						}else{

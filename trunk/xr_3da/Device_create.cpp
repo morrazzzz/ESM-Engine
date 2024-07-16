@@ -1,29 +1,15 @@
 #include "stdafx.h"
-#include "..\include\xrRender\RenderFactory.h"
+#include "../include/xrRender/RenderFactory.h"
+#include "../xrcdb/xrcdb.h"
+
+extern XRCDB_API bool cdb_bDebug;
 
 void SetupGPU(IRenderDeviceRender* pRender)
 {
 	// Command line
-	char* lpCmdLine = Core.Params;
-
-	BOOL bForceGPU_SW;
-	BOOL bForceGPU_NonPure;
-	BOOL bForceGPU_REF;
-
-	if (strstr(lpCmdLine, "-gpu_sw") != NULL)
-		bForceGPU_SW = TRUE;
-	else
-		bForceGPU_SW = FALSE;
-
-	if (strstr(lpCmdLine, "-gpu_nopure") != NULL)
-		bForceGPU_NonPure = TRUE;
-	else
-		bForceGPU_NonPure = FALSE;
-
-	if (strstr(lpCmdLine, "-gpu_ref") != NULL)
-		bForceGPU_REF = TRUE;
-	else
-		bForceGPU_REF = FALSE;
+	bool bForceGPU_SW = strstr(Core.Params, "-gpu_sw");
+	bool bForceGPU_NonPure = strstr(Core.Params, "-gpu_nopure");
+	bool bForceGPU_REF = strstr(Core.Params, "-gpu_ref");
 
 	pRender->SetupGPU(bForceGPU_SW, bForceGPU_NonPure, bForceGPU_REF);
 }
@@ -65,16 +51,16 @@ void CRenderDevice::Create	()
 {
 	if (b_is_Ready)		return;		// prevent double call
 	Statistic			= xr_new<CStats>();
+
+#ifdef DEBUG
+	cdb_bDebug = bDebug;
+#endif
+
 	if (!m_pRender)
 		m_pRender = RenderFactory->CreateRenderDeviceRender();
 
 	SetupGPU(m_pRender);
-	Log					("Starting RENDER device...");
-
-#ifdef _EDITOR
-	psCurrentVidMode[0]	= dwWidth;
-	psCurrentVidMode[1] = dwHeight;
-#endif
+	Msg("# Start render device...");
 
 	fFOV				= 90.f;
 	fASPECT				= 1.f;

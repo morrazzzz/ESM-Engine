@@ -1,11 +1,11 @@
 #include "stdafx.h"
 #include "GameFont.h"
-#pragma hdrstop
-
-#include "ISpatial.h"
 #include "IGame_Persistent.h"
 #include "render.h"
 #include "xr_object.h"
+
+#include "../xrCDB/ISpatial.h"
+#include "../xrCDB/xrCDB_Measuring.h"
 
 #include "../Include/xrRender/DrawUtils.h"
 
@@ -126,9 +126,10 @@ void CStats::Show()
 		
 		Sound.FrameEnd				();
 		Input.FrameEnd				();
-		clRAY.FrameEnd				();	
-		clBOX.FrameEnd				();
-		clFRUSTUM.FrameEnd			();
+		
+		CDB_RAY_TIMER(FrameEnd());
+		CDB_BOX_TIMER(FrameEnd());
+		CDB_FRUSTUM_TIMER(FrameEnd());
 		
 		netClient1.FrameEnd			();
 		netClient2.FrameEnd			();
@@ -212,11 +213,6 @@ void CStats::Show()
 	// Show them
 	if (psDeviceFlags.test(rsStatistic))
 	{
-		static float	r_ps		= 0;
-		static float	b_ps		= 0;
-		r_ps						= .99f*r_ps + .01f*(clRAY.count/clRAY.result);
-		b_ps						= .99f*b_ps + .01f*(clBOX.count/clBOX.result);
-
 		CSound_stats				snd_stat;
 		::Sound->statistic			(&snd_stat,0);
 		F.SetColor	(0xFFFFFFFF	);
@@ -283,9 +279,22 @@ void CStats::Show()
 		F.OutNext	("  HIT/MISS:  %d/%d",  snd_stat._cache_hits, snd_stat._cache_misses);
 		F.OutSkip	();
 		F.OutNext	("Input:       %2.2fms",Input.result);
-		F.OutNext	("clRAY:       %2.2fms, %d, %2.0fK",clRAY.result,		clRAY.count,r_ps);
-		F.OutNext	("clBOX:       %2.2fms, %d, %2.0fK",clBOX.result,		clBOX.count,b_ps);
-		F.OutNext	("clFRUSTUM:   %2.2fms, %d",		clFRUSTUM.result,	clFRUSTUM.count	);
+		
+#ifdef DEBUG
+		static float	r_ps = 0;
+		static float	b_ps = 0;
+		r_ps = .99f * r_ps + .01f * (CDB_RAY_TIMER(count) / CDB_RAY_TIMER(result));
+		b_ps = .99f * b_ps + .01f * (CDB_BOX_TIMER(count) / CDB_BOX_TIMER(result));
+
+		F.OutNext("CDB clRAY:       %2.2fms, %d, %2.0fK", CDB_RAY_TIMER(result), CDB_RAY_TIMER(count), r_ps);
+		F.OutNext("CDB clBOX:       %2.2fms, %d, %2.0fK", CDB_BOX_TIMER(result), CDB_BOX_TIMER(count), b_ps);
+		F.OutNext("CDB clFRUSTUM:   %2.2fms, %d", CDB_FRUSTUM_TIMER(result), CDB_FRUSTUM_TIMER(count));
+#else
+		F.OutSkip();
+		F.OutNext("CDB Timers not implemented in not debugging mode!!!");
+		F.OutSkip();
+#endif
+
 		F.OutSkip	();
 		F.OutNext	("netClientRecv:   %2.2fms, %d",	netClient1.result,netClient1.count);
 		F.OutNext	("netClientSend:   %2.2fms, %d",	netClient2.result,netClient2.count);
@@ -464,9 +473,10 @@ void CStats::Show()
 		
 		Sound.FrameStart			();
 		Input.FrameStart			();
-		clRAY.FrameStart			();	
-		clBOX.FrameStart			();
-		clFRUSTUM.FrameStart		();
+
+		CDB_RAY_TIMER(FrameStart());
+		CDB_BOX_TIMER(FrameStart());
+		CDB_FRUSTUM_TIMER(FrameStart());
 		
 		netClient1.FrameStart		();
 		netClient2.FrameStart		();

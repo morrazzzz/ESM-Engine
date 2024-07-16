@@ -181,28 +181,29 @@ struct STranspParam		{
 	float				vis_threshold;
 	STranspParam		(collide::ray_cache	*p, const Fvector& _P, const Fvector& _D, float _f, float _vis_threshold):P(_P),D(_D),f(_f),pray_cache(p),vis(1.f),vis_threshold(_vis_threshold){}
 };
-IC BOOL material_callback(collide::rq_result& result, LPVOID params)
+IC bool material_callback(collide::rq_result& result, LPVOID params)
 {
-	STranspParam* fp= (STranspParam*)params;
-	float vis		= 1.f;
-	if (result.O){
-		vis			= 0.f;
+	STranspParam* fp = (STranspParam*)params;
+	float vis = 1.f;
+	if (result.O) {
+		vis = 0.f;
 		IKinematics* K = PKinematics(result.O->renderable.visual);
-		if (K&&(result.element>0))
-			vis		= g_pGamePersistent->MtlTransparent(K->LL_GetData(u16(result.element)).game_mtl_idx);
-	}else{
-		CDB::TRI* T	= g_pGameLevel->ObjectSpace.GetStaticTris()+result.element;
-		vis			= g_pGamePersistent->MtlTransparent(T->material);
-		if (fis_zero(vis)){
-			Fvector* V	= g_pGameLevel->ObjectSpace.GetStaticVerts();
-			fp->pray_cache->set				(fp->P,fp->D,fp->f,TRUE);
-			fp->pray_cache->verts[0].set	(V[T->verts[0]]);
-			fp->pray_cache->verts[1].set	(V[T->verts[1]]);
-			fp->pray_cache->verts[2].set	(V[T->verts[2]]);
+		if (K && (result.element > 0))
+			vis = g_pGamePersistent->MtlTransparent(K->LL_GetData(u16(result.element)).game_mtl_idx);
+	}
+	else {
+		CDB::TRI* T = g_pGameLevel->ObjectSpace.GetStaticTris() + result.element;
+		vis = g_pGamePersistent->MtlTransparent(T->material);
+		if (fis_zero(vis)) {
+			Fvector* V = g_pGameLevel->ObjectSpace.GetStaticVerts();
+			fp->pray_cache->set(fp->P, fp->D, fp->f, true);
+			fp->pray_cache->verts[0].set(V[T->verts[0]]);
+			fp->pray_cache->verts[1].set(V[T->verts[1]]);
+			fp->pray_cache->verts[2].set(V[T->verts[2]]);
 		}
 	}
-	fp->vis			*=vis;
-	return (fp->vis>fp->vis_threshold); 
+	fp->vis *= vis;
+	return fp->vis > fp->vis_threshold;
 }
 #endif
 

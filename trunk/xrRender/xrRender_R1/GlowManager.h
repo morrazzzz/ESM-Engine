@@ -1,13 +1,7 @@
-// GlowManager.h: interface for the CGlowManager class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#if !defined(AFX_GLOWMANAGER_H__EC35911F_479B_469A_845C_1A64D81D0326__INCLUDED_)
-#define AFX_GLOWMANAGER_H__EC35911F_479B_469A_845C_1A64D81D0326__INCLUDED_
 #pragma once
 
-#include "..\..\xr_3da\ispatial.h"
-#include "..\..\xr_3da\xr_collide_defs.h"
+#include "../../xrCDB/ispatial.h"
+#include "../../xrCDB/xr_collide_defs.h"
 
 class CGlow				: public IRender_Glow, public ISpatial
 {
@@ -72,4 +66,3 @@ public:
 	~CGlowManager			();
 };
 
-#endif // !defined(AFX_GLOWMANAGER_H__EC35911F_479B_469A_845C_1A64D81D0326__INCLUDED_)

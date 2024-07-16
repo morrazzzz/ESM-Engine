@@ -11,6 +11,7 @@
 #include "level.h"
 #include "game_cl_base.h"
 #include "../xr_3da/igame_persistent.h"
+#include "../xr_3da/xr_collide_form.h"
 #include "artifact.h"
 #include "ai_object_location.h"
 #include "..\include\xrRender\Kinematics.h"

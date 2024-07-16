@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ispatial.h"
+#include "../xrCDB/ispatial.h"
 #include "isheduled.h"
 #include "irenderable.h"
 #include "icollidable.h"

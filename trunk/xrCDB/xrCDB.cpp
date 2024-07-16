@@ -1,10 +1,9 @@
-// xrCDB.cpp : Defines the entry point for the DLL application.
-//
-
 #include "stdafx.h"
-#pragma hdrstop
-
 #include "xrCDB.h"
+
+namespace Opcode {
+#	include "OPC_TreeBuilders.h"
+} // namespace Opcode
 
 using namespace CDB;
 using namespace Opcode;
@@ -47,6 +46,7 @@ MODEL::~MODEL()
 	xr_free		(verts);	verts_count= 0;
 }
 
+#pragma todo("delete OGSR kostil for x64!!! TODO X64")
 struct	BTHREAD_params
 {
 	MODEL*				M;
@@ -77,19 +77,19 @@ void MODEL::build(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc, vo
     R_ASSERT					((Vcnt>=4)&&(Tcnt>=2));
 
 	_initialize_cpu_thread		();
-#ifdef _EDITOR    
-	build_internal				(V,Vcnt,T,Tcnt,bc,bcp);
-#else
-	if (!strstr(Core.Params, "-mt_cdb"))
-		build_internal(V, Vcnt, T, Tcnt, bc, bcp, rebuildTrisRequired);
-	else
+
+	if (strstr(Core.Params, "-mt_cdb"))
 	{
 		BTHREAD_params P = { this, V, Vcnt, T, Tcnt, bc, bcp, rebuildTrisRequired };
-		thread_spawn				(build_thread,"CDB-construction",0,&P);
-		while						(S_INIT	== status)	
-			Sleep	(5);
+		thread_spawn(build_thread, "CDB-construction", 0, &P);
+		while (S_INIT == status)
+			Sleep(5);
 	}
-#endif
+	else
+	{
+		build_internal(V, Vcnt, T, Tcnt, bc, bcp, rebuildTrisRequired);
+		status = S_READY;
+	}
 }
 
 void MODEL::build_internal(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc, void* bcp, const bool rebuildTrisRequired)

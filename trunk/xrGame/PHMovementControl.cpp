@@ -1220,25 +1220,26 @@ struct STraceBorderQParams
 	STraceBorderQParams& operator = (STraceBorderQParams& p) {VERIFY(FALSE);return p;}
 };
 
-BOOL CPHMovementControl::BorderTraceCallback(collide::rq_result& result, LPVOID params)
+bool CPHMovementControl::BorderTraceCallback(collide::rq_result& result, LPVOID params)
 {
-	STraceBorderQParams& p	= *(STraceBorderQParams*)params;
-	u16 mtl_idx			=	GAMEMTL_NONE_IDX;
-	CDB::TRI* T			=	NULL;
-	if(result.O){
+	STraceBorderQParams& p = *(STraceBorderQParams*)params;
+	u16 mtl_idx = GAMEMTL_NONE_IDX;
+	CDB::TRI* T = nullptr;
+	if (result.O) {
 		return true;
-	}else{
-		//получить треугольник и узнать его материал
-		T				= Level().ObjectSpace.GetStaticTris()+result.element;
-		mtl_idx			= T->material;
 	}
-	VERIFY	(T);
-	SGameMtl* mtl		= GMLib.GetMaterialByIdx(mtl_idx);
-	if(mtl->Flags.test(SGameMtl::flInjurious))
+	else {
+		//получить треугольник и узнать его материал
+		T = Level().ObjectSpace.GetStaticTris() + result.element;
+		mtl_idx = T->material;
+	}
+	VERIFY(T);
+	SGameMtl* mtl = GMLib.GetMaterialByIdx(mtl_idx);
+	if (mtl->Flags.test(SGameMtl::flInjurious))
 	{
 		Fvector tri_norm;
-		GetNormal(T,tri_norm,Level().ObjectSpace.GetStaticVerts());
-		if(p.m_dir.dotproduct(tri_norm)<0.f)p.m_movement->in_dead_area_count++;
+		GetNormal(T, tri_norm, Level().ObjectSpace.GetStaticVerts());
+		if (p.m_dir.dotproduct(tri_norm) < 0.f)p.m_movement->in_dead_area_count++;
 		else p.m_movement->in_dead_area_count--;
 	}
 	return true;

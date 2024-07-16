@@ -508,41 +508,41 @@ public:
 	}
 };
 
-IC BOOL ray_query_callback	(collide::rq_result& result, LPVOID params)
+IC bool ray_query_callback(collide::rq_result& result, LPVOID params)
 {
-	ray_query_param						*param = (ray_query_param*)params;
-	float								power = param->m_holder->feel_vision_mtl_transp(result.O,result.element);
-	param->m_power						*= power;
+	ray_query_param* param = (ray_query_param*)params;
+	float power = param->m_holder->feel_vision_mtl_transp(result.O, result.element);
+	param->m_power *= power;
 
-//	if (power >= .05f) {
-//		param->m_pick_distance			= result.range;
-//		return							(true);
-//	}
+	//	if (power >= .05f) {
+	//		param->m_pick_distance			= result.range;
+	//		return							(true);
+	//	}
 
 	if (!result.O) {
 		if (param->m_power > param->m_power_threshold)
-			return						(true);
+			return true;
 
-		param->m_pick_distance			= result.range;
-		return							(false);
+		param->m_pick_distance = result.range;
+		return false;
 	}
 
-	CEntityAlive						*entity_alive = smart_cast<CEntityAlive*>(result.O);
+	CEntityAlive* entity_alive = smart_cast<CEntityAlive*>(result.O);
 	if (!entity_alive) {
 		if (param->m_power > param->m_power_threshold)
-			return						(true);
+			return true;
 
-		param->m_pick_distance			= result.range;
-		return							(false);
+		param->m_pick_distance = result.range;
+		return false;
 	}
 
 	if (param->m_holder->is_relation_enemy(entity_alive))
-		param->m_can_kill_enemy			= true;
+		param->m_can_kill_enemy = true;
 	else
-		param->m_can_kill_member		= true;
+		param->m_can_kill_member = true;
 
-	param->m_pick_distance				= result.range;
-	return								(false);
+	param->m_pick_distance = result.range;
+	return false;
 }
 
 void CAI_Stalker::can_kill_entity		(const Fvector &position, const Fvector &direction, float distance, collide::rq_results& rq_storage)

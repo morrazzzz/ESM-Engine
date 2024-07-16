@@ -1,7 +1,7 @@
 #pragma once
 
-#include "..\..\xr_3da\ispatial.h"
-#if RENDER==R_R2
+#include "../../xrCDB/ispatial.h"
+#if RENDER != R_R1
 	#include "light_package.h"
 	#include "light_smapvis.h"
 	#include "light_GI.h"

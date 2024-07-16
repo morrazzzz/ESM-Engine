@@ -7,11 +7,11 @@
     <Filter Include="Opcode">
       <UniqueIdentifier>{acd9fe4b-f7bf-4d39-be10-bc77d2fe304e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="engine">
+      <UniqueIdentifier>{eceefcd8-c8d3-4753-88b3-64e897e5edc0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="cl_raypick.cpp">
-      <Filter>Kernel</Filter>
-    </ClCompile>
     <ClCompile Include="Frustum.cpp">
       <Filter>Kernel</Filter>
     </ClCompile>
@@ -101,6 +101,33 @@
     </ClCompile>
     <ClCompile Include="Opcode.cpp">
       <Filter>Opcode</Filter>
+    </ClCompile>
+    <ClCompile Include="xr_area_raypick.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="xr_area.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="ISpatial.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="ISpatial_q_box.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="ISpatial_q_frustum.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="ISpatial_q_ray.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="ISpatial_verify.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="xrXRC.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="xrCDB_Measuring.cpp">
+      <Filter>Kernel</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -229,6 +256,21 @@
     </ClInclude>
     <ClInclude Include="Opcode.h">
       <Filter>Opcode</Filter>
+    </ClInclude>
+    <ClInclude Include="xr_area.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="xr_collide_defs.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="ISpatial.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="xrXRC.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="xrCDB_Measuring.h">
+      <Filter>Kernel</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

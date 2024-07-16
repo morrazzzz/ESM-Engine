@@ -1,6 +1,6 @@
 #pragma once
 
-#include "frustum.h"
+#include "../xrCDB/frustum.h"
 #include "vis_common.h"
 
 #include "../Include/xrAPI/xrAPI.h"

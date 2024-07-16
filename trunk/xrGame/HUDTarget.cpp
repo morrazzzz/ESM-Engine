@@ -84,20 +84,21 @@ void CHUDTarget::Load		()
 	HUDCrosshair.Load();
 }
 
-ICF static BOOL pick_trace_callback(collide::rq_result& result, LPVOID params)
+ICF static bool pick_trace_callback(collide::rq_result& result, LPVOID params)
 {
 	collide::rq_result* RQ = (collide::rq_result*)params;
-	if(result.O){	
-		*RQ				= result;
-		return FALSE;
-	}else{
-		//получить треугольник и узнать его материал
-		CDB::TRI* T		= Level().ObjectSpace.GetStaticTris()+result.element;
-		if (GMLib.GetMaterialByIdx(T->material)->Flags.is(SGameMtl::flPassable)) 
-			return TRUE;
+	if (result.O) {
+		*RQ = result;
+		return false;
 	}
-	*RQ					= result;
-	return FALSE;
+	else {
+		//получить треугольник и узнать его материал
+		CDB::TRI* T = Level().ObjectSpace.GetStaticTris() + result.element;
+		if (GMLib.GetMaterialByIdx(T->material)->Flags.is(SGameMtl::flPassable))
+			return true;
+	}
+	*RQ = result;
+	return false;
 }
 
 void CHUDTarget::CursorOnFrame ()

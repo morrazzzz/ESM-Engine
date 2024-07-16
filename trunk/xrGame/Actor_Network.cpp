@@ -34,7 +34,7 @@
 #include "actor_statistic_mgr.h"
 #include "game_cl_base_weapon_usage_statistic.h"
 #include "clsid_game.h"
-
+#include "../xr_3da/xr_collide_form.h"
 #ifdef DEBUG
 #include "level_debug.h"
 #include "debug_renderer.h"

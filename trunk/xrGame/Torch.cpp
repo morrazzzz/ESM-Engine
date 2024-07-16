@@ -10,6 +10,7 @@
 #include "level.h"
 #include "../include/xrRender/Kinematics.h"
 #include "../xr_3da/camerabase.h"
+#include "../xr_3da/xr_collide_form.h"
 #include "inventory.h"
 #include "game_base_space.h"
 
