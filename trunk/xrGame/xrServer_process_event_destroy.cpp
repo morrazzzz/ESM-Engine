@@ -34,6 +34,7 @@ void xrServer::Process_event_destroy	(NET_Packet& P, ClientID sender, u32 time, 
 		Msg("sv destroy object %s [%d]", ent_name_safe(id_dest).c_str(), Device.dwFrame);
 #endif
 
+#pragma todo("Why is it so?? e_dest can is nullptr. Is this how it should be??")
 	CSE_Abstract*					e_dest = game->get_entity_from_eid	(id_dest);	// кто должен быть уничтожен
 	if (!e_dest) 
 	{
