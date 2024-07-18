@@ -34,17 +34,9 @@ void xrServer::Process_event_destroy	(NET_Packet& P, ClientID sender, u32 time, 
 		Msg("sv destroy object %s [%d]", ent_name_safe(id_dest).c_str(), Device.dwFrame);
 #endif
 
-#pragma todo("Why is it so?? e_dest can is nullptr. Is this how it should be??")
-	CSE_Abstract*					e_dest = game->get_entity_from_eid	(id_dest);	// кто должен быть уничтожен
-	if (!e_dest) 
-	{
-#ifdef DEBUG
-		Msg							("!SV:ge_destroy: [%d] not found on server",id_dest);
-#endif
-		return;
-	};
+	CSE_Abstract* e_dest = game->get_entity_from_eid(id_dest);	// кто должен быть уничтожен
+	R_ASSERT2(e_dest, "Destroy: [%d] not found on server", id_dest);
 
-	R_ASSERT						(e_dest);
 	xrClientData					*c_dest = e_dest->owner;				// клиент, чей юнит
 	R_ASSERT						(c_dest);
 	xrClientData					*c_from = ID_to_client(sender);	// клиент, кто прислал
