@@ -11,8 +11,9 @@
 #	include "../../xr_3da/environment.h"
 #endif
 
-#pragma todo("Restore DX10")
-//#include "../xrRenderDX10/dx10BufferUtils.h"
+#if defined(USE_DX10) || defined(USE_DX11)
+#include "../xrRenderDX10/dx10BufferUtils.h"
+#endif
 
 const int			quant	= 16384;
 const int			c_hdr	= 10;

@@ -13,6 +13,7 @@ struct R_Light
 	Fvector         direction;			// Direction in world space	
 	float		    range;				// Cutoff range
 	float			range2;				// ^2
+	float			falloff;			// precalc to make light aqal to zero at light range
 	float	        attenuation0;		// Constant attenuation		
 	float	        attenuation1;		// Linear attenuation		
 	float	        attenuation2;		// Quadratic attenuation	

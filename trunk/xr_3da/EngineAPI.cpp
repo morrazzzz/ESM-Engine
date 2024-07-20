@@ -50,8 +50,24 @@ void CEngineAPI::Initialize(void)
 	// render
 	LPCSTR			r1_name	= "xrRender_R1.dll";
 	LPCSTR			r2_name	= "xrRender_R2.dll";
+	LPCSTR			r3_name = "xrRender_R3.dll";
 
 #ifndef DEDICATED_SERVER
+	if (psDeviceFlags.test(rsR3))
+	{
+		// try to initialize R3
+		Log("Loading DLL:", r3_name);
+		hRender = LoadLibrary(r3_name);
+		if (0 == hRender)
+		{
+			// try to load R1
+			Msg("! ...Failed - incompatible hardware/pre-Vista OS.");
+			psDeviceFlags.set(rsR2, TRUE);
+		}
+		else
+			g_current_renderer = 3;
+	}
+
 	if (psDeviceFlags.test(rsR2) )	{
 		// try to initialize R2
 		Log				("Loading DLL:",	r2_name);
@@ -65,6 +81,7 @@ void CEngineAPI::Initialize(void)
 
 	if (0==hRender)		{
 		// try to load R1
+		psDeviceFlags.set(rsR3, FALSE);
 		psDeviceFlags.set	(rsR2,FALSE);
 		renderer_value		= 0; //con cmd
 
@@ -114,6 +131,7 @@ void CEngineAPI::Destroy	(void)
 
 extern "C" {
 	typedef bool __cdecl SupportsAdvancedRendering(void);
+	typedef bool _declspec(dllexport) SupportsDX10Rendering();
 };
 
 void CEngineAPI::CreateRendererList()
@@ -123,13 +141,16 @@ void CEngineAPI::CreateRendererList()
 
 	bool bSupports_r2 = false;
 	bool bSupports_r2_5 = false;
+	bool bSupports_r3 = false;
 
 	LPCSTR			r2_name = "xrRender_R2.dll";
+	LPCSTR			r3_name = "xrRender_R3.dll";
 
 	if (strstr(Core.Params, "-perfhud_hack"))
 	{
 		bSupports_r2 = true;
 		bSupports_r2_5 = true;
+		bSupports_r3 = true;
 	}
 	else
 	{
@@ -144,6 +165,21 @@ void CEngineAPI::CreateRendererList()
 			bSupports_r2_5 = test_rendering();
 			FreeLibrary(hRender);
 		}
+
+		// try to initialize R3
+		Log				("Loading DLL:",	r3_name);
+		//	Hide "d3d10.dll not found" message box for XP
+		SetErrorMode(SEM_FAILCRITICALERRORS);
+		hRender			= LoadLibrary		(r3_name);
+		//	Restore error handling
+		SetErrorMode(0);
+		if (hRender)	
+		{
+			SupportsDX10Rendering *test_dx10_rendering = (SupportsDX10Rendering*) GetProcAddress(hRender,"SupportsDX10Rendering");
+			R_ASSERT(test_dx10_rendering);
+			bSupports_r3 = test_dx10_rendering();
+			FreeLibrary(hRender);
+		}
 	}
 
 	hRender = 0;
@@ -151,7 +187,7 @@ void CEngineAPI::CreateRendererList()
 	xr_vector<LPCSTR>			_tmp;
 	u32 i = 0;
 	bool bBreakLoop = false;
-	for (; i < 4; ++i)
+	for (; i < 5; ++i)
 	{
 		switch (i)
 		{
@@ -161,6 +197,10 @@ void CEngineAPI::CreateRendererList()
 			break;
 		case 3:		//"renderer_r2.5"
 			if (!bSupports_r2_5)
+				bBreakLoop = true;
+			break;
+		case 4:		//"renderer_r_dx10"
+			if (!bSupports_r3)
 				bBreakLoop = true;
 			break;
 		default:;
@@ -175,6 +215,7 @@ void CEngineAPI::CreateRendererList()
 		case 1: val = "renderer_r2a";		break;
 		case 2: val = "renderer_r2";			break;
 		case 3: val = "renderer_r2.5";		break;
+		case 4: val = "renderer_r3";			break; //  -)
 		}
 		if (bBreakLoop) break;
 		_tmp.back() = xr_strdup(val);

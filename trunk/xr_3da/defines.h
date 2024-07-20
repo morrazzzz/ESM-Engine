@@ -38,6 +38,7 @@ enum {
 
 	rsCameraPos						= (1ul<<18ul),
 	rsR2							= (1ul<<19ul),
+	rsR3							= (1ul<<20ul),
 
 	rsDrawMemory = (1ul << 20ul),
 

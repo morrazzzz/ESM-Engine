@@ -1,5 +1,5 @@
 #include "stdafx.h"
-//#include "../../xrEngine/xr_effgamma.h"
+//#include "../../xr_3da/xr_effgamma.h"
 #include "xr_effgamma.h"
 #include "dxRenderDeviceRender.h"
 #include "../xrRender/tga.h"

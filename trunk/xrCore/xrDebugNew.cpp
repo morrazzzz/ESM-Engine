@@ -4,7 +4,9 @@
 #include "os_clipboard.h"
 #include "xrdebug.h"
 
+#ifndef _M_X64
 #include "dxerr9.h"
+#endif
 
 #pragma warning(push)
 #pragma warning(disable:4995)

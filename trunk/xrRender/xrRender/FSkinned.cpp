@@ -14,8 +14,9 @@
 #include "FSkinned.h"
 #include "SkeletonX.h"
 
-#pragma once("Restore DX10!!")
-//#include "../xrRenderDX10/dx10BufferUtils.h"
+#if defined(USE_DX10) || defined(USE_DX11)
+#include "../xrRenderDX10/dx10BufferUtils.h"
+#endif
 
 #include "../../xr_3da/EnnumerateVertices.h"
 //////////////////////////////////////////////////////////////////////

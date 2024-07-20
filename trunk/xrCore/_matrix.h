@@ -531,6 +531,14 @@ public:
 		dest.z	= (v.x*_13 + v.y*_23 + v.z*_33 + _43)*iw;
 	}
 
+	IC	void	transform			(Fvector4 &dest, const Fvector4 &v)	const 	// preferred to use
+	{
+		dest.w = v.x*_14 + v.y*_24 + v.z*_34 + v.w*_44;
+		dest.x = v.x*_11 + v.y*_21 + v.z*_31 + v.w*_41;
+		dest.y = v.x*_12 + v.y*_22 + v.z*_32 + v.w*_42;
+		dest.z = v.x*_13 + v.y*_23 + v.z*_33 + v.w*_43;
+	}
+
 	ICF	void	transform_tiny		(Tvector &v) const
 	{
 		Tvector			res;
