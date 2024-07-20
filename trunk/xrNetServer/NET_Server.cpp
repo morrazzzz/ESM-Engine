@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "dxerr9.h"
 #include "NET_Common.h"
 #include "net_server.h"
 
@@ -364,12 +363,7 @@ if(!psNET_direct_connect)
 	//---------------------------
     // Create the IDirectPlay8Client object.
 	HRESULT CoCreateInstanceRes = CoCreateInstance	(CLSID_DirectPlay8Server, NULL, CLSCTX_INPROC_SERVER, IID_IDirectPlay8Server, (LPVOID*) &NET);
-	//---------------------------	
-	if (CoCreateInstanceRes != S_OK)
-	{
-		DXTRACE_ERR(tmp, CoCreateInstanceRes );
-		CHK_DX(CoCreateInstanceRes );
-	}	
+	//---------------------------		
 	//---------------------------
 	
     // Initialize IDirectPlay8Client object.

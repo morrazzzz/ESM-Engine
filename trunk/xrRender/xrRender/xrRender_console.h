@@ -6,6 +6,24 @@
 extern ECORE_API	u32			ps_r_sun_shafts;	//=	0;
 extern ECORE_API	xr_token	qsun_shafts_token[];
 
+extern ECORE_API	u32			ps_r_ssao;			//	=	0;
+extern ECORE_API	xr_token	qssao_token[];
+
+extern ECORE_API	u32			ps_r_ssao_mode;
+extern ECORE_API	xr_token	qssao_mode_token[];
+
+extern ECORE_API	u32			ps_r_sun_quality;	//	=	0;
+extern ECORE_API	xr_token	qsun_quality_token[];
+
+extern ECORE_API	u32			ps_r3_msaa;	//	=	0;
+extern ECORE_API	xr_token	qmsaa_token[];
+
+extern ECORE_API	u32			ps_r3_msaa_atest; //=	0;
+extern ECORE_API	xr_token	qmsaa__atest_token[];
+
+extern ECORE_API	u32			ps_r3_minmax_sm;//	=	0;
+extern ECORE_API	xr_token	qminmax_sm_token[];
+
 extern ENGINE_API	int			ps_r__Supersample;
 extern ECORE_API	int			ps_r__LightSleepFrames;
 
@@ -100,7 +118,9 @@ extern ECORE_API float			ps_r2_sun_lumscale_hemi;	// 1.0f
 extern ECORE_API float			ps_r2_sun_lumscale_amb;		// 1.0f
 extern ECORE_API float			ps_r2_zfill;				// .1f
 
-extern ECORE_API float			ps_r2_dhemi_scale;			// 1.5f
+extern ECORE_API float			ps_r2_dhemi_sky_scale;		// 1.5f
+extern ECORE_API float			ps_r2_dhemi_light_scale;	// 1.f
+extern ECORE_API float			ps_r2_dhemi_light_flow;		// .1f
 extern ECORE_API int			ps_r2_dhemi_count;			// 5
 extern ECORE_API float			ps_r2_slight_fade;			// 1.f
 extern ECORE_API int			ps_r2_wait_sleep;
@@ -109,6 +129,10 @@ extern ECORE_API int			ps_r2_wait_sleep;
 extern ECORE_API Fvector3		ps_r2_dof;
 extern ECORE_API float			ps_r2_dof_sky;				//	distance to sky
 extern ECORE_API float			ps_r2_dof_kernel_size;		//	7.0f
+
+extern ECORE_API float			ps_r3_dyn_wet_surf_near;	// 10.0f
+extern ECORE_API float			ps_r3_dyn_wet_surf_far;		// 30.0f
+extern ECORE_API int			ps_r3_dyn_wet_surf_sm_res;	// 256
 
 enum
 {
@@ -147,15 +171,25 @@ enum
 	R1FLAG_DETAIL_TEXTURES		= (1<<25),
 
 	R2FLAG_DETAIL_BUMP			= (1<<26),
+
+	R3FLAG_DYN_WET_SURF			= (1<<27),
+	R3FLAG_VOLUMETRIC_SMOKE		= (1<<28),
+
+	//R3FLAG_MSAA					= (1<<28),
+	R3FLAG_MSAA_HYBRID			= (1<<29),
+	R3FLAG_MSAA_OPT				= (1<<30),
+	R3FLAG_GBUFFER_OPT			= (1<<31),
+	//R3FLAG_USE_DX10_1			= (1<<32),
+	//R3FLAG_MSAA_ALPHATEST		= (1<<31),
 };
 
 enum
 {
-//	R2FLAGEXT_SSAO_BLUR				= (1<<0),
-//	R2FLAGEXT_SSAO_OPT_DATA			= (1<<1),
-//	R2FLAGEXT_SSAO_HALF_DATA		= (1<<2),
-//	R2FLAGEXT_SSAO_HBAO				= (1<<3),
-//	R2FLAGEXT_SSAO_HDAO				= (1<<4),
+	R2FLAGEXT_SSAO_BLUR				= (1<<0),
+	R2FLAGEXT_SSAO_OPT_DATA			= (1<<1),
+	R2FLAGEXT_SSAO_HALF_DATA		= (1<<2),
+	R2FLAGEXT_SSAO_HBAO				= (1<<3),
+	R2FLAGEXT_SSAO_HDAO				= (1<<4),
 	R2FLAGEXT_ENABLE_TESSELLATION	= (1<<5),
 	R2FLAGEXT_WIREFRAME				= (1<<6),
 	R_FLAGEXT_HOM_DEPTH_DRAW		= (1<<7),

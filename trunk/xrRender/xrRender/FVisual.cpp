@@ -12,8 +12,9 @@
 #include "../../xr_3da/fmesh.h"
 #include "fvisual.h"
 
-#pragma once("Restore DX10")
-//#include "../xrRenderDX10/dx10BufferUtils.h"
+#if defined(USE_DX10) || defined(USE_DX11)
+#include "../xrRenderDX10/dx10BufferUtils.h"
+#endif
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction

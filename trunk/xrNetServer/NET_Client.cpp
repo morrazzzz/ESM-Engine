@@ -8,7 +8,6 @@
 #pragma warning(push)
 #pragma warning(disable:4995)
 #include <malloc.h>
-#include "dxerr9.h"
 //#pragma warning(pop)
 
 static	INetLog* pClNetLog = NULL; 
@@ -423,11 +422,6 @@ HRESULT	IPureClient::net_Handler(u32 dwMessageType, PVOID pMessage)
 					PDPNMSG_CONNECT_COMPLETE pMsg = (PDPNMSG_CONNECT_COMPLETE)pMessage;
 #ifdef DEBUG
 //					const char* x = DXGetErrorString9(pMsg->hResultCode);
-					if (pMsg->hResultCode != S_OK)
-					{
-						string1024 tmp="";
-						DXTRACE_ERR(tmp, pMsg->hResultCode);
-					}					
 #endif
 					if (pMsg->dwApplicationReplyDataSize)
 					{
@@ -514,13 +508,6 @@ void	IPureClient::SendTo_LL(void* data, u32 size, u32 dwFlags, u32 dwTimeout)
 	HRESULT		hr      = NET->Send( &desc, 1, dwTimeout, 0, &hAsync, dwFlags | DPNSEND_COALESCE );
 		
 //	Msg("- Client::SendTo_LL [%d]", size);
-	if( FAILED(hr) )	
-	{
-		Msg	("! ERROR: Failed to send net-packet, reason: %s",::Debug.error2string(hr));
-//		const char* x = DXGetErrorString9(hr);
-		string1024 tmp="";
-		DXTRACE_ERR(tmp, hr);
-	}
 
 //	UpdateStatistic();
 }

@@ -1,8 +1,9 @@
 #include "StdAfx.h"
-#include "..\..\xr_3da\_d3d_extensions.h"
-#include "..\..\xr_3da\xrLevel.h"
-#include "..\..\xr_3da\igame_persistent.h"
-#include "..\..\xr_3da\environment.h"
+#include "../../xr_3da/_d3d_extensions.h"
+#include "../../xr_3da/xrLevel.h"
+#include "../../xr_3da/igame_persistent.h"
+#include "../../xr_3da/environment.h"
+#include "../../Include/R_light.h"
 #include "light_db.h"
 
 CLight_DB::CLight_DB()
@@ -98,9 +99,67 @@ void CLight_DB::Load			(IReader *fs)
 	*/
 }
 
+#if RENDER != R_R1
+void	CLight_DB::LoadHemi	()
+{
+	string_path fn_game;
+	if ( FS.exist( fn_game, "$level$", "build.lights" ) )
+	{
+		IReader *F	= FS.r_open( fn_game );
+
+		{
+			IReader* chunk = F->open_chunk(1);//Hemispheric light chunk
+			
+			if (chunk)
+			{
+				u32 size		= chunk->length();
+				u32 element		= sizeof(R_Light);
+				u32 count		= size/element;
+				VERIFY			(count*element == size);
+				v_hemi.reserve(count);
+				for (u32 i=0; i<count; i++) 
+				{
+					R_Light		Ldata;
+
+					chunk->r(&Ldata, sizeof(R_Light));
+
+					if (Ldata.type == D3DLIGHT_POINT)
+					//if (Ldata.type!=0)
+					{
+						light*		L				= Create	();
+						L->flags.bStatic			= true;
+						L->set_type					(IRender_Light::POINT);
+
+						Fvector tmp_D,tmp_R;
+						tmp_D.set			(0,0,-1);	// forward
+						tmp_R.set			(1,0,0);	// right
+
+						// point
+						v_hemi.push_back	(L);
+						L->set_position		(Ldata.position		);
+						L->set_rotation		(tmp_D, tmp_R		);
+						L->set_range		(Ldata.range		);
+						L->set_color		(Ldata.diffuse.x, Ldata.diffuse.y, Ldata.diffuse.z);
+						L->set_active		(true				);
+						L->set_attenuation_params(Ldata.attenuation0, Ldata.attenuation1, Ldata.attenuation2, Ldata.falloff);
+						L->spatial.type = STYPE_LIGHTSOURCEHEMI;
+						//				R_ASSERT			(L->spatial.sector	);
+					}
+				}
+
+				chunk->close			();
+			}
+		}
+
+		FS.r_close(F);
+	}
+}
+#endif
+
 void			CLight_DB::Unload	()
 {
 	v_static.clear			();
+	v_hemi.clear			();
 	sun_original.destroy	();
 	sun_adapted.destroy		();
 }
@@ -124,7 +183,7 @@ void			CLight_DB::add_light		(light* L)
 }
 #endif
 
-#if RENDER==R_R2
+#if (RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4)
 void			CLight_DB::add_light		(light* L)
 {
 	if (Device.dwFrame==L->frame_render)	return;
@@ -133,7 +192,7 @@ void			CLight_DB::add_light		(light* L)
 	if (L->flags.bStatic && !ps_r2_ls_flags.test(R2FLAG_R1LIGHTS))	return;
 	L->_export								(package);
 }
-#endif
+#endif // (RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4)
 
 void			CLight_DB::Update			()
 {
@@ -162,6 +221,7 @@ void			CLight_DB::Update			()
 			Log("E.sky_color",E.sky_color);
 		}
 #endif
+
 		VERIFY2						(E.sun_dir.y<0,"Invalid sun direction settings in evironment-config");
 		Fvector						OD,OP,AD,AP;
 		OD.set						(E.sun_dir).normalize			();
@@ -183,6 +243,12 @@ void			CLight_DB::Update			()
 		sun_adapted->set_position	(AP		);
 		sun_adapted->set_color		(E.sun_color.x*ps_r2_sun_lumscale,E.sun_color.y*ps_r2_sun_lumscale,E.sun_color.z*ps_r2_sun_lumscale);
 		sun_adapted->set_range		(600.f	);
+		
+		if (!::Render->is_sun_static())
+		{
+			sun_adapted->set_rotation (OD,_sun_original->right	);
+			sun_adapted->set_position (OP);
+		}
 	}
 
 	// Clear selection

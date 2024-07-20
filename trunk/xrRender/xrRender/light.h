@@ -1,11 +1,13 @@
-#pragma once
+#ifndef LAYERS_XRRENDER_LIGHT_H_INCLUDED
+#define LAYERS_XRRENDER_LIGHT_H_INCLUDED
 
-#include "../../xrCDB/ispatial.h"
-#if RENDER != R_R1
-	#include "light_package.h"
-	#include "light_smapvis.h"
-	#include "light_GI.h"
-#endif
+#include "../../xrcdb/ispatial.h"
+
+#if (RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4)
+#	include "light_package.h"
+#	include "light_smapvis.h"
+#	include "light_GI.h"
+#endif //(RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4)
 
 class	light		:	public IRender_Light, public ISpatial
 {
@@ -15,7 +17,9 @@ public:
 		u32			bStatic	:	1;
 		u32			bActive	:	1;
 		u32			bShadow	:	1;
-		u32			bVolumetric : 1;
+		u32			bVolumetric:1;
+		u32			bHudMode:	1;
+
 	}				flags;
 	Fvector			position	;
 	Fvector			direction	;
@@ -27,7 +31,16 @@ public:
 	vis_data		hom			;
 	u32				frame_render;
 
-#if RENDER==R_R2
+	float			m_volumetric_quality;
+	float			m_volumetric_intensity;
+	float			m_volumetric_distance;
+
+#if (RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4)
+	float			falloff;			// precalc to make light equal to zero at light range
+	float	        attenuation0;		// Constant attenuation		
+	float	        attenuation1;		// Linear attenuation		
+	float	        attenuation2;		// Quadratic attenuation	
+
 	light*						omnipart	[6]	;
 	xr_vector<light_indirect>	indirect		;
 	u32							indirect_photons;
@@ -36,6 +49,13 @@ public:
 
 	ref_shader		s_spot;
 	ref_shader		s_point;
+	ref_shader		s_volumetric;
+
+#if (RENDER==R_R3) || (RENDER==R_R4)
+	ref_shader		s_spot_msaa[8];
+	ref_shader		s_point_msaa[8];
+	ref_shader		s_volumetric_msaa[8];
+#endif	//	(RENDER==R_R3) || (RENDER==R_R4)
 
 	u32				m_xform_frame;
 	Fmatrix			m_xform;
@@ -72,7 +92,7 @@ public:
 			BOOL						transluent	;
 		}	S;
 	}	X;
-#endif
+#endif	//	(RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4)
 
 public:
 	virtual void	set_type				(LT type)						{ flags.type = type;		}
@@ -82,6 +102,15 @@ public:
 	{ 
 		flags.bShadow=b;			
 	}
+	virtual void	set_volumetric			(bool b)						
+	{ 
+		flags.bVolumetric=b;			
+	}
+
+	virtual void	set_volumetric_quality(float fValue) {m_volumetric_quality = fValue;}
+	virtual void	set_volumetric_intensity(float fValue) {m_volumetric_intensity = fValue;}
+	virtual void	set_volumetric_distance(float fValue) {m_volumetric_distance = fValue;}
+	
 	virtual void	set_position			(const Fvector& P);
 	virtual void	set_rotation			(const Fvector& D, const Fvector& R);
 	virtual void	set_cone				(float angle);
@@ -90,6 +119,8 @@ public:
 	virtual void	set_color				(const Fcolor& C)				{ color.set(C);				}
 	virtual void	set_color				(float r, float g, float b)		{ color.set(r,g,b,1);		}
 	virtual void	set_texture				(LPCSTR name);
+	virtual void	set_hud_mode			(bool b)						{flags.bHudMode=b;}
+	virtual bool	get_hud_mode			()								{return flags.bHudMode;};
 
 	virtual	void	spatial_move			();
 	virtual	Fvector	spatial_sector_point	();
@@ -97,16 +128,19 @@ public:
 	virtual IRender_Light*	dcast_Light		()	{ return this; }
 
 	vis_data&		get_homdata				();
-#if RENDER==R_R2
+#if (RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4)
 	void			gi_generate				();
 	void			xform_calc				();
 	void			vis_prepare				();
 	void			vis_update				();
 	void			_export 					(light_Package& dest);
-#endif
+	void			set_attenuation_params	(float a0, float a1, float a2, float fo);
+#endif // (RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4)
 
 	float			get_LOD					();
 
 	light();
 	virtual ~light();
 };
+
+#endif // #define LAYERS_XRRENDER_LIGHT_H_INCLUDED

@@ -13,12 +13,71 @@ xr_token							qpreset_token							[ ]={
 	{ 0,							0											}
 };
 
+u32			ps_r_ssao_mode			=	2;
+xr_token							qssao_mode_token						[ ]={
+	{ "disabled",					0											},
+	{ "default",					1											},
+	{ "hdao",						2											},
+	{ "hbao",						3											},
+	{ 0,							0											}
+};
+
 u32			ps_r_sun_shafts				=	2;
 xr_token							qsun_shafts_token							[ ]={
 	{ "st_opt_off",					0												},
 	{ "st_opt_low",					1												},
 	{ "st_opt_medium",				2												},
 	{ "st_opt_high",				3												},
+	{ 0,							0												}
+};
+
+u32			ps_r_ssao				=	3;
+xr_token							qssao_token									[ ]={
+	{ "st_opt_off",					0												},
+	{ "st_opt_low",					1												},
+	{ "st_opt_medium",				2												},
+	{ "st_opt_high",				3												},
+#if defined(USE_DX10) || defined(USE_DX11)
+	{ "st_opt_ultra",				4												},
+#endif
+	{ 0,							0												}
+};
+
+u32			ps_r_sun_quality		=	1;			//	=	0;
+xr_token							qsun_quality_token							[ ]={
+	{ "st_opt_low",					0												},
+	{ "st_opt_medium",				1												},
+	{ "st_opt_high",				2												},
+#if defined(USE_DX10) || defined(USE_DX11)
+	{ "st_opt_ultra",				3												},
+	{ "st_opt_extreme",				4												},
+#endif	//	USE_DX10
+	{ 0,							0												}
+};
+
+u32			ps_r3_msaa				=	0;			//	=	0;
+xr_token							qmsaa_token							[ ]={
+	{ "st_opt_off",					0												},
+	{ "2x",							1												},
+	{ "4x",							2												},
+//	{ "8x",							3												},
+	{ 0,							0												}
+};
+
+u32			ps_r3_msaa_atest		=	0;			//	=	0;
+xr_token							qmsaa__atest_token					[ ]={
+	{ "st_opt_off",					0												},
+	{ "st_opt_atest_msaa_dx10_0",	1												},
+	{ "st_opt_atest_msaa_dx10_1",	2												},
+	{ 0,							0												}
+};
+
+u32			ps_r3_minmax_sm			=	3;			//	=	0;
+xr_token							qminmax_sm_token					[ ]={
+	{ "off",						0												},
+	{ "on",							1												},
+	{ "auto",						2												},
+	{ "autodetect",					3												},
 	{ 0,							0												}
 };
 
@@ -70,6 +129,10 @@ int			ps_r1_SoftwareSkinning = 0;					// r1-only
 float		ps_r2_ssaLOD_A				= 48.f	;
 float		ps_r2_ssaLOD_B				= 32.f	;
 float		ps_r2_tf_Mipbias			= 0.0f	;
+
+float		ps_r3_dyn_wet_surf_near		= 10.f;				// 10.0f
+float		ps_r3_dyn_wet_surf_far		= 30.f;				// 30.0f
+int			ps_r3_dyn_wet_surf_sm_res	= 256;				// 256
 
 // R2-specific
 #pragma todo("Required think about flags R2!!!")
@@ -139,7 +202,9 @@ Fvector3	ps_r2_dof = Fvector3().set(-1.25f, 1.8f, 600.f);
 float		ps_r2_dof_sky = 30;				//	distance to sky
 float		ps_r2_dof_kernel_size = 5.0f;						//	7.0f
 
-float		ps_r2_dhemi_scale			= 1.f;				// 1.5f
+float		ps_r2_dhemi_sky_scale		= 0.08f;				// 1.5f
+float		ps_r2_dhemi_light_scale     = 0.2f	;
+float		ps_r2_dhemi_light_flow      = 0.1f	;
 int			ps_r2_dhemi_count			= 5;				// 5
 int			ps_r2_wait_sleep			= 0;
 
@@ -162,8 +227,12 @@ public:
 	void	apply	()	{
 		if (0==HW.pDevice)	return	;
 		int	val = *value;	clamp(val,1,16);
+#if defined(USE_DX10) || defined(USE_DX11)
+		SSManager.SetMaxAnisotropy(val);
+#else	//	USE_DX10
 		for (u32 i=0; i<HW.Caps.raster.dwStages; i++)
 			CHK_DX(HW.pDevice->SetSamplerState( i, D3DSAMP_MAXANISOTROPY, val	));
+#endif	//	USE_DX10
 	}
 	CCC_tf_Aniso(LPCSTR N, int*	v) : CCC_Integer(N, v, 1, 16)		{ };
 	virtual void Execute	(LPCSTR args)
@@ -182,8 +251,13 @@ class CCC_tf_MipBias: public CCC_Float
 public:
 	void	apply	()	{
 		if (0==HW.pDevice)	return	;
+#if defined(USE_DX10) || defined(USE_DX11)
+		//	TODO: DX10: Implement mip bias control
+		//VERIFY(!"apply not implmemented.");
+#else	//	USE_DX10
 		for (u32 i=0; i<HW.Caps.raster.dwStages; i++)
 			CHK_DX(HW.pDevice->SetSamplerState( i, D3DSAMP_MIPMAPLODBIAS, *((LPDWORD) value)));
+#endif	//	USE_DX10
 	}
 
 	CCC_tf_MipBias(LPCSTR N, float*	v) : CCC_Float(N, v, -0.5f, +0.5f)	{ };
@@ -238,6 +312,61 @@ public:
 	CCC_ModelPoolStat(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = TRUE; };
 	virtual void Execute(LPCSTR args) {
 		RImplementation.Models->dump();
+	}
+};
+
+class	CCC_SSAO_Mode : public CCC_Token
+{
+public:
+	CCC_SSAO_Mode(LPCSTR N, u32* V, xr_token* T) : CCC_Token(N, V, T) {};
+
+	virtual void	Execute(LPCSTR args) {
+		CCC_Token::Execute(args);
+
+		switch (*value)
+		{
+		case 0:
+		{
+			ps_r_ssao = 0;
+			ps_r2_ls_flags_ext.set(R2FLAGEXT_SSAO_HBAO, 0);
+			ps_r2_ls_flags_ext.set(R2FLAGEXT_SSAO_HDAO, 0);
+			break;
+		}
+		case 1:
+		{
+			if (ps_r_ssao == 0)
+			{
+				ps_r_ssao = 1;
+			}
+			ps_r2_ls_flags_ext.set(R2FLAGEXT_SSAO_HBAO, 0);
+			ps_r2_ls_flags_ext.set(R2FLAGEXT_SSAO_HDAO, 0);
+			ps_r2_ls_flags_ext.set(R2FLAGEXT_SSAO_HALF_DATA, 0);
+			break;
+		}
+		case 2:
+		{
+			if (ps_r_ssao == 0)
+			{
+				ps_r_ssao = 1;
+			}
+			ps_r2_ls_flags_ext.set(R2FLAGEXT_SSAO_HBAO, 0);
+			ps_r2_ls_flags_ext.set(R2FLAGEXT_SSAO_HDAO, 1);
+			ps_r2_ls_flags_ext.set(R2FLAGEXT_SSAO_OPT_DATA, 0);
+			ps_r2_ls_flags_ext.set(R2FLAGEXT_SSAO_HALF_DATA, 0);
+			break;
+		}
+		case 3:
+		{
+			if (ps_r_ssao == 0)
+			{
+				ps_r_ssao = 1;
+			}
+			ps_r2_ls_flags_ext.set(R2FLAGEXT_SSAO_HBAO, 1);
+			ps_r2_ls_flags_ext.set(R2FLAGEXT_SSAO_HDAO, 0);
+			ps_r2_ls_flags_ext.set(R2FLAGEXT_SSAO_OPT_DATA, 1);
+			break;
+		}
+		}
 	}
 };
 //-----------------------------------------------------------------------
@@ -560,7 +689,9 @@ void		xrRender_initconsole	()
 
 #ifdef DEBUG
 	CMD4(CCC_Integer,	"r2_dhemi_count",		&ps_r2_dhemi_count,			4,		25		);
-	CMD4(CCC_Float,		"r2_dhemi_scale",		&ps_r2_dhemi_scale,			.5f,	3.f		);
+	CMD4(CCC_Float,		"r2_dhemi_sky_scale",	&ps_r2_dhemi_sky_scale,		0.0f,	100.f	);
+	CMD4(CCC_Float,		"r2_dhemi_light_scale",	&ps_r2_dhemi_light_scale,	0,		100.f	);
+	CMD4(CCC_Float,		"r2_dhemi_light_flow",	&ps_r2_dhemi_light_flow,	0,		1.f	);
 	CMD4(CCC_Float,		"r2_dhemi_smooth",		&ps_r2_lt_smooth,			0.f,	10.f	);
 	CMD3(CCC_Mask,		"rs_hom_depth_draw",	&ps_r2_ls_flags_ext,		R_FLAGEXT_HOM_DEPTH_DRAW);
 
@@ -602,12 +733,40 @@ void		xrRender_initconsole	()
 	CMD3(CCC_Mask,		"r2_volumetric_lights",			&ps_r2_ls_flags,			R2FLAG_VOLUMETRIC_LIGHTS);
 //	CMD3(CCC_Mask,		"r2_sun_shafts",				&ps_r2_ls_flags,			R2FLAG_SUN_SHAFTS);
 	CMD3(CCC_Token,		"r2_sun_shafts",				&ps_r_sun_shafts,			qsun_shafts_token);
+	CMD3(CCC_SSAO_Mode,	"r2_ssao_mode",					&ps_r_ssao_mode,			qssao_mode_token);
+	CMD3(CCC_Token,		"r2_ssao",						&ps_r_ssao,					qssao_token);
+	CMD3(CCC_Mask,		"r2_ssao_blur",                 &ps_r2_ls_flags_ext,		R2FLAGEXT_SSAO_BLUR);//Need restart
+	CMD3(CCC_Mask,		"r2_ssao_opt_data",				&ps_r2_ls_flags_ext,		R2FLAGEXT_SSAO_OPT_DATA);//Need restart
+	CMD3(CCC_Mask,		"r2_ssao_half_data",			&ps_r2_ls_flags_ext,		R2FLAGEXT_SSAO_HALF_DATA);//Need restart
+	CMD3(CCC_Mask,		"r2_ssao_hbao",					&ps_r2_ls_flags_ext,		R2FLAGEXT_SSAO_HBAO);//Need restart
+	CMD3(CCC_Mask,		"r2_ssao_hdao",					&ps_r2_ls_flags_ext,		R2FLAGEXT_SSAO_HDAO);//Need restart
+	CMD3(CCC_Mask,		"r4_enable_tessellation",		&ps_r2_ls_flags_ext,		R2FLAGEXT_ENABLE_TESSELLATION);//Need restart
+	CMD3(CCC_Mask,		"r4_wireframe",					&ps_r2_ls_flags_ext,		R2FLAGEXT_WIREFRAME);//Need restart
 	CMD3(CCC_Mask,		"r2_steep_parallax",			&ps_r2_ls_flags,			R2FLAG_STEEP_PARALLAX);
 	CMD3(CCC_Mask,		"r2_detail_bump",				&ps_r2_ls_flags,			R2FLAG_DETAIL_BUMP);
+
+	CMD3(CCC_Token,		"r2_sun_quality",				&ps_r_sun_quality,			qsun_quality_token);
 
 	//	Igor: need restart
 	CMD3(CCC_Mask,		"r2_soft_water",				&ps_r2_ls_flags,			R2FLAG_SOFT_WATER);
 	CMD3(CCC_Mask,		"r2_soft_particles",			&ps_r2_ls_flags,			R2FLAG_SOFT_PARTICLES);
+
+	//CMD3(CCC_Mask,		"r3_msaa",						&ps_r2_ls_flags,			R3FLAG_MSAA);
+	CMD3(CCC_Token,		"r3_msaa",						&ps_r3_msaa,				qmsaa_token);
+	//CMD3(CCC_Mask,		"r3_msaa_hybrid",				&ps_r2_ls_flags,			R3FLAG_MSAA_HYBRID);
+	//CMD3(CCC_Mask,		"r3_msaa_opt",					&ps_r2_ls_flags,			R3FLAG_MSAA_OPT);
+	CMD3(CCC_Mask,		"r3_gbuffer_opt",				&ps_r2_ls_flags,			R3FLAG_GBUFFER_OPT);
+	//CMD3(CCC_Mask,		"r3_use_dx10_1",				&ps_r2_ls_flags,			(u32)R3FLAG_USE_DX10_1);
+	//CMD3(CCC_Mask,		"r3_msaa_alphatest",			&ps_r2_ls_flags,			(u32)R3FLAG_MSAA_ALPHATEST);
+	CMD3(CCC_Token,		"r3_msaa_alphatest",			&ps_r3_msaa_atest,			qmsaa__atest_token);
+	CMD3(CCC_Token,		"r3_minmax_sm",					&ps_r3_minmax_sm,			qminmax_sm_token);
+
+	CMD3(CCC_Mask,		"r3_dynamic_wet_surfaces",		&ps_r2_ls_flags,			R3FLAG_DYN_WET_SURF);
+	CMD4(CCC_Float,		"r3_dynamic_wet_surfaces_near",	&ps_r3_dyn_wet_surf_near,	10,	70		);
+	CMD4(CCC_Float,		"r3_dynamic_wet_surfaces_far",	&ps_r3_dyn_wet_surf_far,	30,	100		);
+	CMD4(CCC_Integer,	"r3_dynamic_wet_surfaces_sm_res",&ps_r3_dyn_wet_surf_sm_res,64,	2048	);
+
+	CMD3(CCC_Mask,	"r3_volumetric_smoke",			&ps_r2_ls_flags,			R3FLAG_VOLUMETRIC_SMOKE);
 }
 
 void	xrRender_apply_tf		()
