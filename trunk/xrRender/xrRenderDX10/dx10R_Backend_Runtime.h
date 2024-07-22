@@ -452,21 +452,34 @@ IC void CBackend::ApplyVertexLayout()
 	VERIFY(decl);
 	VERIFY(m_pInputSignature);
 
-	xr_map<ID3DBlob*, ID3DInputLayout*>::iterator	it;
-
-	it = decl->vs_to_layout.find(m_pInputSignature);
+	auto it = decl->vs_to_layout.find(m_pInputSignature);
 
 	if (it==decl->vs_to_layout.end())
 	{
-		ID3DInputLayout* pLayout;
+		ID3DInputLayout* pLayout{};
 
-		CHK_DX(HW.pDevice->CreateInputLayout(
+		HW.pDevice->CreateInputLayout(
 			&decl->dx10_dcl_code[0],
 			decl->dx10_dcl_code.size()-1,
 			m_pInputSignature->GetBufferPointer(),
 			m_pInputSignature->GetBufferSize(),
 			&pLayout
-			));
+			);
+
+		//For SoC this normal. 
+#if 0
+		if (!pLayout)
+		{
+			Msg("! Broken shader vertex layout");
+#ifdef DEBUG
+			Msg("! VS Name: [%s]", vs_name);
+#endif
+			Msg("! Semantic name: [%s]", decl->dx10_dcl_code[0].SemanticName);
+			Msg("! Semantic index: [%x]", decl->dx10_dcl_code[0].SemanticIndex);
+			Msg("! Format: [%x]", decl->dx10_dcl_code[0].Format);
+			Msg("! InputSlot [%x]", decl->dx10_dcl_code[0].InputSlot);
+		}
+#endif
 
 		it = decl->vs_to_layout.insert(
 			std::pair<ID3DBlob*, ID3DInputLayout*>(m_pInputSignature, pLayout)).first;
