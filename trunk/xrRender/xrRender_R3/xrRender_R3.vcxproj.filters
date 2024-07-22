@@ -600,12 +600,6 @@
     <ClInclude Include="..\..\Include\xrRender\RenderDeviceRender.h">
       <Filter>Interfase implementations\RenderDeviceRender</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\xrRender\ConsoleRender.h">
-      <Filter>Interfase implementations\ConsoleRender</Filter>
-    </ClInclude>
-    <ClInclude Include="..\xrRender\dxConsoleRender.h">
-      <Filter>Interfase implementations\ConsoleRender</Filter>
-    </ClInclude>
     <ClInclude Include="..\xrRender\dxObjectSpaceRender.h">
       <Filter>Interfase implementations\ObjectSpaceRender</Filter>
     </ClInclude>
@@ -1112,12 +1106,6 @@
     <ClCompile Include="..\xrRenderDX10\dx10r_constants_cache.cpp">
       <Filter>Refactored\Execution &amp; 3D\Shaders\Resources\dx10_R_shader</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\xrEngine\ai_script_lua_debug.cpp">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\ShaderManager</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\xrEngine\ai_script_lua_extension.cpp">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\ShaderManager</Filter>
-    </ClCompile>
     <ClCompile Include="..\xrRenderDX10\dx10ResourceManager_Resources.cpp">
       <Filter>Refactored\Execution &amp; 3D\Shaders\ShaderManager</Filter>
     </ClCompile>
@@ -1229,9 +1217,6 @@
     <ClCompile Include="..\xrRender\dxRenderDeviceRender.cpp">
       <Filter>Interfase implementations\RenderDeviceRender</Filter>
     </ClCompile>
-    <ClCompile Include="..\xrRender\dxConsoleRender.cpp">
-      <Filter>Interfase implementations\ConsoleRender</Filter>
-    </ClCompile>
     <ClCompile Include="..\xrRender\dxObjectSpaceRender.cpp">
       <Filter>Interfase implementations\ObjectSpaceRender</Filter>
     </ClCompile>
@@ -1312,6 +1297,12 @@
     </ClCompile>
     <ClCompile Include="..\xrRender\Debug\dxPixEventWrapper.cpp">
       <Filter>Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xr_3da\ai_script_lua_debug.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\ShaderManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xr_3da\ai_script_lua_extension.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\ShaderManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
