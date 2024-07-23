@@ -19,6 +19,7 @@ class	CSE_Abstract;
 //-----------------------------------------------------------------------------------------------------------
 //	CObject
 //-----------------------------------------------------------------------------------------------------------
+xr_pure_interface IObjectPhysicsCollision;
 class ENGINE_API CObject :	
 	public DLL_Pure,
 	public ISpatial,
@@ -123,6 +124,8 @@ public:
 	virtual		CObject*				dcast_CObject		()					{ return this;						}
 	virtual		IRenderable*			dcast_Renderable	()					{ return this;						}
 	virtual void						OnChangeVisual		()					{ }
+
+	virtual	const IObjectPhysicsCollision* physics_collision()					{ return  0; }
 
 	// Name management
 	ICF shared_str						cName				()			const	{ return NameObject;				}
