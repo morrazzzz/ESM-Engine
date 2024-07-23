@@ -210,8 +210,7 @@ void dx103DFluidObstacles::ProcessDynamicObstacles( const dx103DFluidData &Fluid
 		CObject*		pObject = spatial->dcast_CObject();
 		if (!pObject) continue;
 
-#pragma once("finish fluid!!!")		
-		const IObjectPhysicsCollision* pCollision = nullptr;//pObject->physics_collision();
+		const IObjectPhysicsCollision* pCollision = pObject->physics_collision();
 		if (!pCollision) continue;
 
 		const IPhysicsShell*		pShell = pCollision->physics_shell();
