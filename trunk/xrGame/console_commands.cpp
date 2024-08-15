@@ -36,10 +36,10 @@
 #include "PHDebug.h"
 #include "level_debug.h"
 #include "ui/UIDebugFonts.h" 
-#include "game_graph.h"
 #include "../include/xrRender/Kinematics.h"
 #endif // DEBUG
 
+#include "game_graph.h"
 #include "ai_object_location.h"
 #include "CameraLook.h"
 #include "hudmanager.h"
@@ -986,7 +986,6 @@ struct CCC_ClearSmartCastStats : public IConsole_Command {
 };
 #endif
 
-#ifdef DEBUG
 struct CCC_JumpToLevel : public IConsole_Command {
 	CCC_JumpToLevel(LPCSTR N) : IConsole_Command(N)  {};
 
@@ -1024,7 +1023,6 @@ struct CCC_JumpToLevel : public IConsole_Command {
 		}
 	}
 };
-#endif
 class CCC_Spawn : public IConsole_Command
 {
 public:
@@ -1593,9 +1591,9 @@ void CCC_RegisterCommands()
 	CMD4(CCC_FloatBlock,		"ph_rigid_break_weapon_factor",	&ph_console::phRigidBreakWeaponFactor	,			0.f		,1000000000.f	);
 	CMD4(CCC_Integer,			"ph_tri_clear_disable_count",	&ph_console::ph_tri_clear_disable_count	,			0,		255				);
 	CMD4(CCC_FloatBlock,		"ph_tri_query_ex_aabb_rate",	&ph_console::ph_tri_query_ex_aabb_rate	,			1.01f	,3.f			);
-	CMD1(CCC_JumpToLevel,	"jump_to_level"		)
 #endif // DEBUG
 
+	CMD1(CCC_JumpToLevel,	"jump_to_level"		)
 	CMD1(CCC_Spawn, "g_spawn")
 	CMD1(CCC_SpawnToInventory, "g_spawn_to_inventory")
 	CMD3(CCC_Mask,			"g_god",			&psActorFlags,	AF_GODMODE	)
