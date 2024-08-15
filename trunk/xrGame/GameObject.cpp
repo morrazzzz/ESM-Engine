@@ -27,8 +27,8 @@
 #ifdef DEBUG
 #include "debug_renderer.h"
 #include "PHDebug.h"
-#include "profiler.h"
 #endif
+#include "profiler.h"
 
 ENGINE_API bool g_dedicated_server;
 
