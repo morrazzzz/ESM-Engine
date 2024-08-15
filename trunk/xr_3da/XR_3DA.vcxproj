@@ -226,10 +226,10 @@
       <AdditionalLibraryDirectories>$(xrLibDir);../3rd party/DX9SDK/Lib_x64;..\3rd party\DiscordSDK\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>
-	    copy /Y "..\..\Resources\Dlls\wrap_oal_x64.dll" "..\..\xr_build\bin\$(xrPlatform)\$(Configuration)\wrap_oal.dll" 
-		copy /Y "..\..\Resources\Dlls\eax.dll" "..\..\xr_build\bin\$(xrPlatform)\$(Configuration)\eax.dll" 
-	  </Command>
+      <Command>copy /Y "..\..\Resources\Dlls\wrap_oal_x64.dll" "..\..\xr_build\bin\$(xrPlatform)\$(Configuration)\wrap_oal.dll"
+copy /Y "..\..\Resources\Dlls\eax.dll" "..\..\xr_build\bin\$(xrPlatform)\$(Configuration)\eax.dll" 
+copy /Y "..\3rd party\DiscordSDK\lib\x64\discord_game_sdk.dll" "..\..\xr_build\bin\$(xrPlatform)\$(Configuration)\discord_game_sdk.dll" 
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">
@@ -317,6 +317,12 @@
       <FixedBaseAddress>false</FixedBaseAddress>
       <AdditionalLibraryDirectories>$(xrLibDir);../3rd party/DX9SDK/Lib_x64;..\3rd party\DiscordSDK\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>copy /Y "..\..\Resources\Dlls\wrap_oal_x64.dll" "..\..\xr_build\bin\$(xrPlatform)\$(Configuration)\wrap_oal.dll"
+copy /Y "..\..\Resources\Dlls\eax.dll" "..\..\xr_build\bin\$(xrPlatform)\$(Configuration)\eax.dll" 
+copy /Y "..\3rd party\DiscordSDK\lib\x64\discord_game_sdk.dll" "..\..\xr_build\bin\$(xrPlatform)\$(Configuration)\discord_game_sdk.dll" 
+</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Midl>
@@ -425,10 +431,10 @@
       <AdditionalLibraryDirectories>$(xrLibDir);../3rd party/DX9SDK/Lib_x64;..\3rd party\DiscordSDK\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>
-	    copy /Y "..\..\Resources\Dlls\wrap_oal_x64.dll" "..\..\xr_build\bin\$(xrPlatform)\$(Configuration)\wrap_oal.dll" 
-		copy /Y "..\..\Resources\Dlls\eax.dll" "..\..\xr_build\bin\$(xrPlatform)\$(Configuration)\eax.dll" 
-	  </Command>
+      <Command>copy /Y "..\..\Resources\Dlls\wrap_oal_x64.dll" "..\..\xr_build\bin\$(xrPlatform)\$(Configuration)\wrap_oal.dll"
+copy /Y "..\..\Resources\Dlls\eax.dll" "..\..\xr_build\bin\$(xrPlatform)\$(Configuration)\eax.dll" 
+copy /Y "..\3rd party\DiscordSDK\lib\x64\discord_game_sdk.dll" "..\..\xr_build\bin\$(xrPlatform)\$(Configuration)\discord_game_sdk.dll" 
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
