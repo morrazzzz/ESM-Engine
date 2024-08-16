@@ -150,7 +150,9 @@ void CHUDTarget::Render()
 	F->SetAligment		(CGameFont::alCenter);
 	F->OutSetI			(0.f,0.05f);
 
-
+	if (psHUD_Flags.test(HUD_CROSSHAIR_DIST))
+		F->OutSkip		();
+	
 	if (psHUD_Flags.test(HUD_INFO)){ 
 		if (RQ.O){
 			CEntityAlive*	E		= smart_cast<CEntityAlive*>	(RQ.O);
@@ -239,6 +241,7 @@ void CHUDTarget::Render()
 
 	if (psHUD_Flags.test(HUD_CROSSHAIR_DIST)) 
 	{
+		F->OutSetI(0.f,0.05f);
 		F->SetColor(C);
 		F->OutNext("%4.1f", RQ.range);
 	}
