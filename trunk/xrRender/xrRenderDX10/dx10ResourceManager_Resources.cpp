@@ -167,18 +167,18 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 		FS.update_path				(cname,	"$game_shaders$", cname);
 		//		LPCSTR						target		= NULL;
 
-		// duplicate and zero-terminate
 		IReader* file			= FS.r_open(cname);
-		//	TODO: DX10: HACK: Implement all shaders. Remove this for PS
+
 		if (!file)
 		{
 			string1024			tmp;
-			xr_sprintf			(tmp, "DX10: %s is missing. Replace with stub_default.vs", cname);
-			Msg					(tmp);
-			strconcat			(sizeof(cname), cname,::Render->getShaderPath(),"stub_default",".vs");
-			FS.update_path		(cname,	"$game_shaders$", cname);
-			file				= FS.r_open(cname);
+			xr_sprintf(tmp, "! [DX10]: %s is missing. Replace with stub_default.vs", cname);
+			Msg(tmp);
+			strconcat(sizeof(cname), cname, ::Render->getShaderPath(), "stub_default", ".vs");
+			FS.update_path(cname, "$game_shaders$", cname);
+			file = FS.r_open(cname);
 		}
+
 		u32	const size			= file->length();
 		char* const data		= (LPSTR)_alloca(size + 1);
 		CopyMemory				( data, file->pointer(), size );
@@ -194,14 +194,9 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 		if (strstr(data, "main_vs_1_1"))	{ c_target = "vs_1_1"; c_entry = "main_vs_1_1";	}
 		if (strstr(data, "main_vs_2_0"))	{ c_target = "vs_2_0"; c_entry = "main_vs_2_0";	}
 
-		HRESULT	const _hr		= ::Render->shader_compile(name,(DWORD const*)data,size, c_entry, c_target, D3D10_SHADER_PACK_MATRIX_ROW_MAJOR, (void*&)_vs );
+		HRESULT	const _hr = Render->shader_compile(name, (DWORD const*)data, size, c_entry, c_target, D3D10_SHADER_PACK_MATRIX_ROW_MAJOR, (void*&)_vs);
 
-		VERIFY(SUCCEEDED(_hr));
-
-		CHECK_OR_EXIT			(
-			!FAILED(_hr),
-			make_string("Your video card doesn't meet game requirements.\n\nTry to lower game settings.")
-		);
+		R_ASSERT2(SUCCEEDED(_hr), "Failed shader`s compilation. Check log for details info.");
 
 		return					_vs;
 	}
@@ -269,22 +264,18 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR _name)
 		strconcat					(sizeof(cname), cname,::Render->getShaderPath(),/*_name*/shName,".ps");
 		FS.update_path				(cname,	"$game_shaders$", cname);
 
-		// duplicate and zero-terminate
-		IReader*		R		= FS.r_open(cname);
-		//	TODO: DX10: HACK: Implement all shaders. Remove this for PS
-		if (!R)
+		IReader* file			= FS.r_open(cname);
+
+		if (!file)
 		{
-			string1024			tmp;
-			//	TODO: HACK: Test failure
-			//Memory.mem_compact();
-			xr_sprintf				(tmp, "DX10: %s is missing. Replace with stub_default.ps", cname);
-			Msg					(tmp);
-			strconcat					(sizeof(cname), cname,::Render->getShaderPath(),"stub_default",".ps");
-			FS.update_path				(cname,	"$game_shaders$", cname);
-			R		= FS.r_open(cname);
+			string512 tmp;
+			xr_sprintf(tmp, "! [DX10]: %s is missing. Replace with stub_default.ps", cname);
+			Msg(tmp);
+			strconcat(sizeof cname, cname, Render->getShaderPath(), "stub_default", ".ps");
+			FS.update_path(cname, "$game_shaders$", cname);
+			file = FS.r_open(cname);
 		}
 
-		IReader* file			= FS.r_open(cname);
 		R_ASSERT2				( file, cname );
 		u32	const size			= file->length();
 		char* const data		= (LPSTR)_alloca(size + 1);
@@ -303,12 +294,7 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR _name)
 
 		HRESULT	const _hr		= ::Render->shader_compile(name,(DWORD const*)data,size, c_entry, c_target, D3D10_SHADER_PACK_MATRIX_ROW_MAJOR, (void*&)_ps );
 		
-		VERIFY(SUCCEEDED(_hr));
-
-		CHECK_OR_EXIT		(
-			!FAILED(_hr),
-			make_string("Your video card doesn't meet game requirements.\n\nTry to lower game settings.")
-			);
+		R_ASSERT2(SUCCEEDED(_hr), "Failed shader`s compilation. Check log for details info.");
 
 		return			_ps;
 	}
@@ -334,50 +320,41 @@ SGS*	CResourceManager::_CreateGS			(LPCSTR name)
 	if (I!=m_gs.end())	return		I->second;
 	else
 	{
-		SGS*	_gs					=	xr_new<SGS>	();
-		_gs->dwFlags				|=	xr_resource_flagged::RF_REGISTERED;
-		m_gs.insert					(mk_pair(_gs->set_name(name),_gs));
-		if (0==stricmp(name,"null"))	{
-			_gs->gs				= NULL;
+		SGS* _gs = xr_new<SGS>();
+		_gs->dwFlags |= xr_resource_flagged::RF_REGISTERED;
+		m_gs.insert(mk_pair(_gs->set_name(name), _gs));
+		if (0 == stricmp(name, "null")) {
+			_gs->gs = NULL;
 			return _gs;
 		}
 
 		// Open file
 		string_path					cname;
-		strconcat					(sizeof(cname), cname,::Render->getShaderPath(),name,".gs");
-		FS.update_path				(cname,	"$game_shaders$", cname);
+		strconcat(sizeof(cname), cname, ::Render->getShaderPath(), name, ".gs");
+		FS.update_path(cname, "$game_shaders$", cname);
 
-		// duplicate and zero-terminate
-		IReader*		R		= FS.r_open(cname);
-		//	TODO: DX10: HACK: Implement all shaders. Remove this for PS
-		if (!R)
+		IReader* file = FS.r_open(cname);
+		R_ASSERT2(file, cname);
+
+		if (!file)
 		{
-			string1024			tmp;
-			//	TODO: HACK: Test failure
-			//Memory.mem_compact();
-			xr_sprintf				(tmp, "DX10: %s is missing. Replace with stub_default.gs", cname);
-			Msg					(tmp);
-			strconcat					(sizeof(cname), cname,::Render->getShaderPath(),"stub_default",".gs");
-			FS.update_path				(cname,	"$game_shaders$", cname);
-			R		= FS.r_open(cname);
+			string512 tmp;
+			xr_sprintf(tmp, "! [DX10]: %s is missing. Replace with stub_default.gs", cname);
+			Msg(tmp);
+			strconcat(sizeof cname, cname, Render->getShaderPath(), "stub_default", ".gs");
+			FS.update_path(cname, "$game_shaders$", cname);
+			file = FS.r_open(cname);
 		}
-		IReader* file			= FS.r_open(cname);
-		R_ASSERT2				( file, cname );
 
 		// Select target
-		LPCSTR						c_target	= "gs_4_0";
-		LPCSTR						c_entry		= "main";
+		LPCSTR						c_target = "gs_4_0";
+		LPCSTR						c_entry = "main";
 
-		HRESULT	const _hr		= ::Render->shader_compile(name,(DWORD const*)file->pointer(),file->length(), c_entry, c_target, D3D10_SHADER_PACK_MATRIX_ROW_MAJOR, (void*&)_gs );
+		HRESULT	const _hr = Render->shader_compile(name, (DWORD const*)file->pointer(), file->length(), c_entry, c_target, D3D10_SHADER_PACK_MATRIX_ROW_MAJOR, (void*&)_gs);
 
-		VERIFY(SUCCEEDED(_hr));
+		FS.r_close(file);
 
-		FS.r_close				( file );
-
-		CHECK_OR_EXIT			(
-			!FAILED(_hr),
-			make_string("Your video card doesn't meet game requirements.\n\nTry to lower game settings.")
-		);
+		R_ASSERT2(SUCCEEDED(_hr), "Failed shader`s compilation. Check log for details info.");
 
 		return					_gs;
 	}
