@@ -357,8 +357,6 @@
     <ClInclude Include="..\xrRender\r_constants.h" />
     <ClInclude Include="..\xrRender\r_constants_cache.h" />
     <ClInclude Include="..\xrRender\R_DStreams.h" />
-    <ClInclude Include="..\xrRender\r_sun_cascades.h" />
-    <ClInclude Include="..\xrRender\r_sun_support.h" />
     <ClInclude Include="..\xrRender\Shader.h" />
     <ClInclude Include="..\xrRender\SH_Atomic.h" />
     <ClInclude Include="..\xrRender\SH_Constant.h" />
@@ -491,7 +489,6 @@
     <ClCompile Include="..\xrRender\R_Backend_xform.cpp" />
     <ClCompile Include="..\xrRender\r_constants.cpp" />
     <ClCompile Include="..\xrRender\R_DStreams.cpp" />
-    <ClCompile Include="..\xrRender\r_sun.cpp" />
     <ClCompile Include="..\xrRender\Shader.cpp" />
     <ClCompile Include="..\xrRender\SH_Atomic.cpp" />
     <ClCompile Include="..\xrRender\SH_Constant.cpp" />
@@ -524,6 +521,7 @@
     <ClCompile Include="r2_R_calculate.cpp" />
     <ClCompile Include="r2_R_lights.cpp" />
     <ClCompile Include="r2_R_render.cpp" />
+    <ClCompile Include="r2_R_sun.cpp" />
     <ClCompile Include="r2_sector_detect.cpp" />
     <ClCompile Include="r2_test_hw.cpp" />
     <ClCompile Include="..\xrRender\r__dsgraph_build.cpp" />
