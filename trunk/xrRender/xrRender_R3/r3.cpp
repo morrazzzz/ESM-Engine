@@ -653,11 +653,12 @@ void					CRender::rmNormal			()
 CRender::CRender()
 :m_bFirstFrameAfterReset(false)
 {
-	init_cacades();
+	init_cascades();
 }
 
 CRender::~CRender()
 {
+	destroy_cascades();
 }
 
 #include "../../xr_3da/GameFont.h"

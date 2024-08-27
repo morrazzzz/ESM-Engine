@@ -137,8 +137,7 @@ int			ps_r3_dyn_wet_surf_sm_res	= 256;				// 256
 
 // R2-specific
 #pragma todo("Required think about flags R2!!!")
-Flags32		ps_r2_ls_flags				= { R2FLAG_SUN 
-    | R2FLAG_SUN_IGNORE_PORTALS 
+Flags32		ps_r2_ls_flags				= { R2FLAG_SUN  
 	| R2FLAG_EXP_DONT_TEST_UNSHADOWED 
 	| R2FLAG_USE_NVSTENCIL | R2FLAG_EXP_SPLIT_SCENE 
 	| R2FLAG_EXP_MT_CALC 
@@ -153,7 +152,7 @@ Flags32		ps_r2_ls_flags				= { R2FLAG_SUN
 	//| R2FLAG_VOLUMETRIC_LIGHTS
 };	// r2-only
 
-Flags32		ps_r2_ls_flags_ext			= { R2FLAGEXT_SUN_OLD
+Flags32		ps_r2_ls_flags_ext = { 0 
 		/*R2FLAGEXT_SSAO_OPT_DATA |*/ /*R2FLAGEXT_SSAO_HALF_DATA*/
 		/* | R2FLAGEXT_ENABLE_TESSELLATION*/
 	};
@@ -722,7 +721,6 @@ void		xrRender_initconsole	()
 #endif // DEBUG
 
 	CMD3(CCC_Mask,		"r2_shadow_cascede_zcul",&ps_r2_ls_flags_ext,		R2FLAGEXT_SUN_ZCULLING);
-	CMD3(CCC_Mask,		"r2_shadow_cascede_old", &ps_r2_ls_flags_ext,		R2FLAGEXT_SUN_OLD);
 
 	CMD4(CCC_Float,		"r2_ls_depth_scale",	&ps_r2_ls_depth_scale,		0.5,	1.5		);
 	CMD4(CCC_Float,		"r2_ls_depth_bias",		&ps_r2_ls_depth_bias,		-0.5,	+0.5	);
