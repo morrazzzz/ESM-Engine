@@ -187,15 +187,16 @@ public:
 	void							render_smap_direct			(Fmatrix& mCombined);
 	void							render_indirect				(light*			L	);
 	void							render_lights				(light_Package& LP	);
+	void							render_sun					();
+	void							render_sun_near				();
+	void							render_sun_filtered			();
 	void							render_menu					();
 	void							render_rain					();
 
-	void init_cascades();
-	void destroy_cascades();
+	void							render_sun_cascade			(u32 cascade_ind);
+	void							init_cacades				();
+	void							render_sun_cascades			();
 
-	void render_sun_cascades();
-	void prepart_render_sun_cascade(u32 cascade_ind, light& light_sun);
-	void render_sun_cascade(u32 cascade_ind, light& light_sun);
 public:
 	ShaderElement*					rimp_select_sh_static		(dxRender_Visual	*pVisual, float cdist_sq);
 	ShaderElement*					rimp_select_sh_dynamic		(dxRender_Visual	*pVisual, float cdist_sq);

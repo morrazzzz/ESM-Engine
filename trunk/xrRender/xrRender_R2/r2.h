@@ -123,9 +123,8 @@ public:
 
 	bool														m_bMakeAsyncSS;
 	bool														m_bFirstFrameAfterReset;	// Determines weather the frame is the first after resetting device.
+
 	xr_vector<sun::cascade>										m_sun_cascades;
-
-
 private:
 	// Loading / Unloading
 	void							LoadBuffers					(CStreamReader	*fs,	BOOL	_alternative);
@@ -147,15 +146,13 @@ public:
 	void							render_smap_direct			(Fmatrix& mCombined);
 	void							render_indirect				(light*			L	);
 	void							render_lights				(light_Package& LP	);
+	void							render_sun					();
+	void							render_sun_near				();
+	void							render_sun_filtered			();
 	void							render_menu					();
-
-	
-	void init_cascades();
-	void destroy_cascades();
-
-	void render_sun_cascades();
-	void prepart_render_sun_cascade(u32 cascade_ind, light& light_sun);
-	void render_sun_cascade(u32 cascade_ind, light& light_sun);
+	void							render_sun_cascade			(u32 cascade_ind);
+	void							init_cacades				();
+	void							render_sun_cascades			();
 
 public:
 	ShaderElement*					rimp_select_sh_static		(dxRender_Visual	*pVisual, float cdist_sq);

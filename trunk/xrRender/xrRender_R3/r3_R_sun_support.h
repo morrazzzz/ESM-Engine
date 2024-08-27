@@ -1,3 +1,5 @@
+#ifndef	r3_R_sun_support_included
+#define	r3_R_sun_support_included
 #pragma once
 
 const u32 LIGHT_CUBOIDSIDEPOLYS_COUNT	= 4;
@@ -462,3 +464,5 @@ public:
 		}
 	}
 };
+
+#endif	//	r3_R_sun_support_included
