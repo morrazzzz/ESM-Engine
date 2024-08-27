@@ -90,28 +90,30 @@ void	CDetailManager::cache_Update	(int v_x, int v_z, Fvector& view, int limit)
 {
 	bool bNeedMegaUpdate	= (cache_cx!=v_x)||(cache_cz!=v_z);
 	// *****	Cache shift
-	while (cache_cx!=v_x)
+	while (cache_cx != v_x)
 	{
-		if (v_x>cache_cx)	{
+		if (v_x > cache_cx) {
 			// shift matrix to left
-			cache_cx ++;
-			for (int z=0; z<dm_cache_line; z++)
+			cache_cx++;
+			for (int z = 0; z < dm_cache_line; z++)
 			{
-				Slot*	S	= cache[z][0];
-				for			(int x=1; x<dm_cache_line; x++)		cache[z][x-1] = cache[z][x];
-				cache		[z][dm_cache_line-1] = S;
-				cache_Task	(dm_cache_line-1, z, S);
+				Slot* S = cache[z][0];
+				for (int x = 1; x < dm_cache_line; x++)		cache[z][x - 1] = cache[z][x];
+				cache[z][dm_cache_line - 1] = S;
+				cache_Task(dm_cache_line - 1, z, S);
 			}
 			// R_ASSERT	(cache_Validate());
-		} else {
+		}
+		else {
 			// shift matrix to right
-			cache_cx --;
-			for (int z=0; z<dm_cache_line; z++)
+			cache_cx--;
+			for (int z = 0; z < dm_cache_line; z++)
 			{
-				Slot*	S	= cache[z][dm_cache_line-1];
-				for			(int x=dm_cache_line-1; x>0; x--)	cache[z][x] = cache[z][x-1];
-				cache		[z][0]	= S;
-				cache_Task	(0,z,S);
+				Slot* S = cache[z][dm_cache_line - 1];
+				for (int x = dm_cache_line - 1; x > 0; x--)	
+					cache[z][x] = cache[z][x - 1];
+				cache[z][0] = S;
+				cache_Task(0, z, S);
 			}
 			// R_ASSERT	(cache_Validate());
 		}
@@ -156,13 +158,12 @@ void	CDetailManager::cache_Update	(int v_x, int v_z, Fvector& view, int limit)
 		} else {
 			for (u32 entry=0; entry<cache_task.size(); entry++){
 				// Gain access to data
-				Slot*		S	= cache_task[entry];
-				VERIFY		(stPending == S->type);
+				Slot* S = cache_task[entry];
 
 				// Estimate
-				Fvector		C;
-				S->vis.box.getcenter	(C);
-				float		D	= view.distance_to_sqr	(C);
+				Fvector C;
+				S->vis.box.getcenter(C);
+				float D = view.distance_to_sqr(C);
 
 				// Select
 				if (D<best_dist)
@@ -185,8 +186,7 @@ void	CDetailManager::cache_Update	(int v_x, int v_z, Fvector& view, int limit)
 				MS.empty		= TRUE;
                 MS.vis.clear	();
                 for (int _i=0; _i<dm_cache1_count*dm_cache1_count; _i++){
-                    Slot*	PS		= *MS.slots[_i];
-                    Slot& 	S 		= *PS;
+					Slot& S = **MS.slots[_i];
                     MS.vis.box.merge(S.vis.box);
 					if (!S.empty)	MS.empty = FALSE;
                 }

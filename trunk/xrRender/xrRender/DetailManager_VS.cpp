@@ -219,6 +219,9 @@ void CDetailManager::hw_Render()
 	RCache.set_c			(&*hwc_wind,	dir2);																					// wind-dir
 	hw_Render_dump			(&*hwc_array,	2, 0, c_hdr );
 
+	if (RImplementation.phase != CRender::PHASE_NORMAL)
+		return;
+
 	// Still
 	RCache.set_c			(&*hwc_s_consts,scale,		scale,		scale,				1.f);
 	RCache.set_c			(&*hwc_s_xform,	RDEVICE.mFullTransform);
@@ -236,95 +239,88 @@ void	CDetailManager::hw_Render_dump		(ref_constant x_array, u32 var_id, u32 lod_
 	vis_list& list	=	m_visibles	[var_id];
 
 	Fvector					c_sun,c_ambient,c_hemi;
-#ifndef _EDITOR
+
 	CEnvDescriptor&	desc	= *g_pGamePersistent->Environment().CurrentEnv;
 	c_sun.set				(desc.sun_color.x,	desc.sun_color.y,	desc.sun_color.z);	c_sun.mul(.5f);
 	c_ambient.set			(desc.ambient.x,	desc.ambient.y,		desc.ambient.z);
-	c_hemi.set				(desc.hemi_color.x, desc.hemi_color.y,	desc.hemi_color.z);
-#else
-	c_sun.set				(1,1,1);	c_sun.mul(.5f);
-	c_ambient.set			(1,1,1);
-	c_hemi.set				(1,1,1);
-#endif    
+	c_hemi.set				(desc.hemi_color.x, desc.hemi_color.y,	desc.hemi_color.z); 
 
 	VERIFY(objects.size()<=list.size());
 
 	// Iterate
-	for (u32 O=0; O<objects.size(); O++){
-		CDetail&	Object				= *objects	[O];
-		xr_vector <SlotItemVec* >& vis	= list		[O];
-		if (!vis.empty()){
+	for (u32 O = 0; O < objects.size(); O++) {
+		if (!m_visibles[var_id][O].empty())
+		{
+			CDetail& Object = *objects[O];
+
 			// Setup matrices + colors (and flush it as nesessary)
-			RCache.set_Element				(Object.shader->E[lod_id]);
-			RImplementation.apply_lmaterial	();
-			u32			c_base				= x_array->vs.index;
-			Fvector4*	c_storage			= RCache.get_ConstantCache_Vertex().get_array_f().access(c_base);
+			RCache.set_Element(Object.shader->E[lod_id]);
+			RImplementation.apply_lmaterial();
+			u32			c_base = x_array->vs.index;
+			Fvector4* c_storage = RCache.get_ConstantCache_Vertex().get_array_f().access(c_base);
 
-			u32 dwBatch	= 0;
+			u32 dwBatch = 0;
 
-			xr_vector <SlotItemVec* >::iterator _vI = vis.begin();
-			xr_vector <SlotItemVec* >::iterator _vE = vis.end();
-			for (; _vI!=_vE; _vI++){
-				SlotItemVec*	items		= *_vI;
-				SlotItemVecIt _iI			= items->begin();
-				SlotItemVecIt _iE			= items->end();
-				for (; _iI!=_iE; _iI++){
-					SlotItem&	Instance	= **_iI;
-					u32			base		= dwBatch*4;
+			for (u32 i = 0, base = 0; i < m_visibles[var_id][O].size(); i++)
+			{
+				SlotItemVec& items = *m_visibles[var_id][O][i];
+				for (u32 k = 0; k < items.size(); k++)
+				{
+					SlotItem& Instance = *items[k];
 
 					// Build matrix ( 3x4 matrix, last row - color )
-					float		scale		= Instance.scale_calculated;
-					Fmatrix&	M			= Instance.mRotY;
-					c_storage[base+0].set	(M._11*scale,	M._21*scale,	M._31*scale,	M._41	);
-					c_storage[base+1].set	(M._12*scale,	M._22*scale,	M._32*scale,	M._42	);
-					c_storage[base+2].set	(M._13*scale,	M._23*scale,	M._33*scale,	M._43	);
+					float		scale = Instance.scale_calculated;
+					Fmatrix& M = Instance.mRotY;
+					c_storage[base + 0].set(M._11 * scale, M._21 * scale, M._31 * scale, M._41);
+					c_storage[base + 1].set(M._12 * scale, M._22 * scale, M._32 * scale, M._42);
+					c_storage[base + 2].set(M._13 * scale, M._23 * scale, M._33 * scale, M._43);
 
 					// Build color
 #if RENDER==R_R1
 					Fvector C;
-					C.set					(c_ambient);
-//					C.mad					(c_lmap,Instance.c_rgb);
-					C.mad					(c_hemi,Instance.c_hemi);
-					C.mad					(c_sun,	Instance.c_sun);
-					c_storage[base+3].set	(C.x,			C.y,			C.z,			1.f		);
+					C.set(c_ambient);
+					//					C.mad					(c_lmap,Instance.c_rgb);
+					C.mad(c_hemi, Instance.c_hemi);
+					C.mad(c_sun, Instance.c_sun);
+					c_storage[base + 3].set(C.x, C.y, C.z, 1.f);
 #else
 					// R2 only needs hemisphere
-					float		h			= Instance.c_hemi;
-					float		s			= Instance.c_sun;
-					c_storage[base+3].set	(s,				s,				s,				h		);
+					float		h = Instance.c_hemi;
+					float		s = Instance.c_sun;
+					c_storage[base + 3].set(s, s, s, h);
 #endif
-					dwBatch	++;
-					if (dwBatch == hw_BatchSize)	{
+					dwBatch++;
+					base += 4;
+					if (dwBatch == hw_BatchSize) {
 						// flush
-						RDEVICE.Statistic->RenderDUMP_DT_Count					+=	dwBatch;
-						u32 dwCNT_verts			= dwBatch * Object.number_vertices;
-						u32 dwCNT_prims			= (dwBatch * Object.number_indices)/3;
-						RCache.get_ConstantCache_Vertex().b_dirty				=	TRUE;
-						RCache.get_ConstantCache_Vertex().get_array_f().dirty	(c_base,c_base+dwBatch*4);
-						RCache.Render			(D3DPT_TRIANGLELIST,vOffset, 0, dwCNT_verts,iOffset,dwCNT_prims);
-						RCache.stat.r.s_details.add	(dwCNT_verts);
+						RDEVICE.Statistic->RenderDUMP_DT_Count += dwBatch;
+						u32 dwCNT_verts = dwBatch * Object.number_vertices;
+						u32 dwCNT_prims = (dwBatch * Object.number_indices) / 3;
+						RCache.get_ConstantCache_Vertex().b_dirty = TRUE;
+						RCache.get_ConstantCache_Vertex().get_array_f().dirty(c_base, c_base + dwBatch * 4);
+						RCache.Render(D3DPT_TRIANGLELIST, vOffset, 0, dwCNT_verts, iOffset, dwCNT_prims);
+						RCache.stat.r.s_details.add(dwCNT_verts);
 
 						// restart
-						dwBatch					= 0;
+						dwBatch = 0;
+						base = 0;
 					}
 				}
 			}
 			// flush if nessecary
 			if (dwBatch)
 			{
-				RDEVICE.Statistic->RenderDUMP_DT_Count	+= dwBatch;
-				u32 dwCNT_verts			= dwBatch * Object.number_vertices;
-				u32 dwCNT_prims			= (dwBatch * Object.number_indices)/3;
-				RCache.get_ConstantCache_Vertex().b_dirty				=	TRUE;
-				RCache.get_ConstantCache_Vertex().get_array_f().dirty	(c_base,c_base+dwBatch*4);
-				RCache.Render				(D3DPT_TRIANGLELIST,vOffset,0,dwCNT_verts,iOffset,dwCNT_prims);
-				RCache.stat.r.s_details.add	(dwCNT_verts);
+				RDEVICE.Statistic->RenderDUMP_DT_Count += dwBatch;
+				u32 dwCNT_verts = dwBatch * Object.number_vertices;
+				u32 dwCNT_prims = (dwBatch * Object.number_indices) / 3;
+				RCache.get_ConstantCache_Vertex().b_dirty = TRUE;
+				RCache.get_ConstantCache_Vertex().get_array_f().dirty(c_base, c_base + dwBatch * 4);
+				RCache.Render(D3DPT_TRIANGLELIST, vOffset, 0, dwCNT_verts, iOffset, dwCNT_prims);
+				RCache.stat.r.s_details.add(dwCNT_verts);
 			}
-			// Clean up
-			vis.clear_not_free			();
 		}
-		vOffset		+=	hw_BatchSize * Object.number_vertices;
-		iOffset		+=	hw_BatchSize * Object.number_indices;
+		vOffset += hw_BatchSize * objects[O]->number_vertices;
+		iOffset += hw_BatchSize * objects[O]->number_indices;
 	}
 }
 
