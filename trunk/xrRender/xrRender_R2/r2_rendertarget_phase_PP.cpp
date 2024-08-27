@@ -85,7 +85,7 @@ BOOL CRenderTarget::u_need_PP	()
 
 bool CRenderTarget::u_need_CM()
 {
-	return (param_color_map_influence > 0.001f);
+	return (param_color_map_influence>0.001f);
 }
 
 struct TL_2c3uv		{

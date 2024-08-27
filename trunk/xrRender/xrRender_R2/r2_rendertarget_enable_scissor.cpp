@@ -1,7 +1,8 @@
 #include "stdafx.h"
-#include "..\..\xr_3da\cl_intersect.h"
+#include "../../xr_3da/cl_intersect.h"
+#include "../xrRender/du_cone.h"
 
-extern Fvector du_cone_vertices			[DU_CONE_NUMVERTEX];
+//extern Fvector du_cone_vertices			[DU_CONE_NUMVERTEX];
 
 BOOL	tri_vs_sphere_intersect			(Fvector& SC, float R, Fvector& v0, Fvector& v1, Fvector& v2)
 {

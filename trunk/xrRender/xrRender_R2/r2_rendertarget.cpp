@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "../xrRender/ResourceManager.h"
+#include "../xrRender/resourcemanager.h"
 #include "blender_light_occq.h"
 #include "blender_light_mask.h"
 #include "blender_light_direct.h"
@@ -10,6 +10,8 @@
 #include "blender_combine.h"
 #include "blender_bloom_build.h"
 #include "blender_luminance.h"
+#include "blender_ssao.h"
+
 #include "../xrRender/dxRenderDeviceRender.h"
 
 void	CRenderTarget::u_setrt			(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, IDirect3DSurface9* zb)
@@ -205,6 +207,7 @@ CRenderTarget::CRenderTarget		()
 	b_accum_spot					= xr_new<CBlender_accum_spot>			();
 	b_accum_reflected				= xr_new<CBlender_accum_reflected>		();
 	b_bloom							= xr_new<CBlender_bloom_build>			();
+	b_ssao							= xr_new<CBlender_SSAO>					();
 	b_luminance						= xr_new<CBlender_luminance>			();
 	b_combine						= xr_new<CBlender_combine>				();
 
@@ -262,8 +265,8 @@ CRenderTarget::CRenderTarget		()
 		rt_smap_depth.create		(r2_RT_smap_depth,			size,size,depth_format	);
 		rt_smap_surf.create			(r2_RT_smap_surf,			size,size,nullrt		);
 		rt_smap_ZB					= NULL;
-		s_accum_mask.create			(b_accum_mask,				"r2\\accum_mask");
-		s_accum_direct.create		(b_accum_direct,			"r2\\accum_direct");
+		s_accum_mask.create				(b_accum_mask,				"r2\\accum_mask");
+		s_accum_direct.create			(b_accum_direct,			"r2\\accum_direct");
 		s_accum_direct_cascade.create	(b_accum_direct_cascade,	"r2\\accum_direct_cascade");
 		if (RImplementation.o.advancedpp)
 		{
@@ -277,8 +280,8 @@ CRenderTarget::CRenderTarget		()
 		rt_smap_surf.create			(r2_RT_smap_surf,			size,size,D3DFMT_R32F);
 		rt_smap_depth				= NULL;
 		R_CHK						(HW.pDevice->CreateDepthStencilSurface	(size,size,D3DFMT_D24X8,D3DMULTISAMPLE_NONE,0,TRUE,&rt_smap_ZB,NULL));
-		s_accum_mask.create			(b_accum_mask,				"r2\\accum_mask");
-		s_accum_direct.create		(b_accum_direct,			"r2\\accum_direct");
+		s_accum_mask.create				(b_accum_mask,				"r2\\accum_mask");
+		s_accum_direct.create			(b_accum_direct,			"r2\\accum_direct");
 		s_accum_direct_cascade.create	(b_accum_direct_cascade,	"r2\\accum_direct_cascade");
 		if (RImplementation.o.advancedpp)
 		{
@@ -303,6 +306,13 @@ CRenderTarget::CRenderTarget		()
 		g_accum_spot.create			(D3DFVF_XYZ,				g_accum_spot_vb, g_accum_spot_ib);
 	}
 
+	{
+		s_accum_volume.create("accum_volumetric", "lights\\lights_spot01");
+		accum_volumetric_geom_create();
+		g_accum_volumetric.create( D3DFVF_XYZ, g_accum_volumetric_vb, g_accum_volumetric_ib);
+	}
+			
+
 	// REFLECTED
 	{
 		s_accum_reflected.create	(b_accum_reflected,			"r2\\accum_refl");
@@ -322,6 +332,35 @@ CRenderTarget::CRenderTarget		()
 		s_bloom_dbg_2.create		("effects\\screen_set",		r2_RT_bloom2);
 		s_bloom.create				(b_bloom,					"r2\\bloom");
 		f_bloom_factor				= 0.5f;
+	}
+
+	//HBAO
+	if (RImplementation.o.ssao_opt_data)
+	{
+		u32		w = 0;
+		u32		h = 0;
+		if (RImplementation.o.ssao_half_data)
+		{
+			w = Device.dwWidth / 2;
+			h = Device.dwHeight / 2;
+		}
+		else
+		{
+			w = Device.dwWidth;
+			h = Device.dwHeight;
+		}
+		D3DFORMAT	fmt = HW.Caps.id_vendor==0x10DE?D3DFMT_R32F:D3DFMT_R16F;
+
+		rt_half_depth.create		(r2_RT_half_depth, w, h, fmt);
+		s_ssao.create				(b_ssao, "r2\\ssao");
+	}
+
+	//SSAO
+	if (RImplementation.o.ssao_blur_on)
+	{
+		u32		w = Device.dwWidth, h = Device.dwHeight;
+		rt_ssao_temp.create			(r2_RT_ssao_temp, w, h, D3DFMT_G16R16F);
+		s_ssao.create				(b_ssao, "r2\\ssao");
 	}
 
 	// TONEMAP
@@ -350,9 +389,12 @@ CRenderTarget::CRenderTarget		()
 		static D3DVERTEXELEMENT9 dwDecl[] =
 		{
 			{ 0, 0,  D3DDECLTYPE_FLOAT4,	D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_POSITION,	0 },	// pos+uv
+			{ 0, 16, D3DDECLTYPE_D3DCOLOR,	D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_COLOR,		0 },
+			{ 0, 20, D3DDECLTYPE_FLOAT2,	D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_TEXCOORD,	0 },
 			D3DDECL_END()
 		};
 		s_combine.create					(b_combine,					"r2\\combine");
+		s_combine_volumetric.create			("combine_volumetric");
 		s_combine_dbg_0.create				("effects\\screen_set",		r2_RT_smap_surf		);	
 		s_combine_dbg_1.create				("effects\\screen_set",		r2_RT_luminance_t8	);
 		s_combine_dbg_Accumulator.create	("effects\\screen_set",		r2_RT_accum			);
@@ -438,33 +480,70 @@ CRenderTarget::CRenderTarget		()
 		{
 			// Surfaces
 			D3DLOCKED_RECT				R[TEX_jitter_count];
-			for (int it=0; it<TEX_jitter_count; it++)
+			for (int it1=0; it1<TEX_jitter_count-1; it1++)
 			{
 				string_path					name;
-				sprintf						(name,"%s%d",r2_jitter,it);
-				R_CHK	(D3DXCreateTexture	(HW.pDevice,TEX_jitter,TEX_jitter,1,0,D3DFMT_Q8W8V8U8,D3DPOOL_MANAGED,&t_noise_surf[it]));
-				t_noise[it]					= dxRenderDeviceRender::Instance().Resources->_CreateTexture	(name);
-				t_noise[it]->surface_set	(t_noise_surf[it]);
-				R_CHK						(t_noise_surf[it]->LockRect	(0,&R[it],0,0));
-			}
+				xr_sprintf						(name,"%s%d",r2_jitter,it1);
+				R_CHK	(D3DXCreateTexture	(HW.pDevice,TEX_jitter,TEX_jitter,1,0,D3DFMT_Q8W8V8U8,D3DPOOL_MANAGED,&t_noise_surf[it1]));
+				t_noise[it1]					= dxRenderDeviceRender::Instance().Resources->_CreateTexture	(name);
+				t_noise[it1]->surface_set	(t_noise_surf[it1]);
+				R_CHK						(t_noise_surf[it1]->LockRect	(0,&R[it1],0,0));
+			}	
 
 			// Fill it,
 			for (u32 y=0; y<TEX_jitter; y++)
 			{
 				for (u32 x=0; x<TEX_jitter; x++)
 				{
-					DWORD	data	[TEX_jitter_count];
-					generate_jitter	(data,TEX_jitter_count);
-					for (u32 it=0; it<TEX_jitter_count; it++)
+					DWORD	data	[TEX_jitter_count-1];
+					generate_jitter	(data,TEX_jitter_count-1);
+					for (u32 it2=0; it2<TEX_jitter_count-1; it2++)
 					{
-						u32*	p	=	(u32*)	(LPBYTE (R[it].pBits) + y*R[it].Pitch + x*4);
-								*p	=	data	[it];
+						u32*	p	=	(u32*)	(LPBYTE (R[it2].pBits) + y*R[it2].Pitch + x*4);
+								*p	=	data	[it2];
 					}
 				}
 			}
-			for (int it=0; it<TEX_jitter_count; it++)	{
-				R_CHK						(t_noise_surf[it]->UnlockRect(0));
-			}
+			
+			for (int it3=0; it3<TEX_jitter_count-1; it3++)	{
+				R_CHK						(t_noise_surf[it3]->UnlockRect(0));
+			}		
+
+			// generate HBAO jitter texture (last)
+			int it = TEX_jitter_count - 1;
+			string_path					name;
+			xr_sprintf						(name,"%s%d",r2_jitter,it);
+			R_CHK	(D3DXCreateTexture	(HW.pDevice,TEX_jitter,TEX_jitter,1,0,D3DFMT_A32B32G32R32F,D3DPOOL_MANAGED,&t_noise_surf[it]));
+			t_noise[it]					= dxRenderDeviceRender::Instance().Resources->_CreateTexture	(name);
+			t_noise[it]->surface_set	(t_noise_surf[it]);
+			R_CHK						(t_noise_surf[it]->LockRect	(0,&R[it],0,0));
+			
+			// Fill it,
+			for (u32 y=0; y<TEX_jitter; y++)
+			{
+				for (u32 x=0; x<TEX_jitter; x++)
+				{
+					float numDir = 1.0f;
+					switch (ps_r_ssao)
+					{
+						case 1: numDir = 4.0f; break;
+						case 2: numDir = 6.0f; break;
+						case 3: numDir = 8.0f; break;
+					}
+					float angle = 2 * PI * ::Random.randF(0.0f, 1.0f) / numDir;
+					float dist = ::Random.randF(0.0f, 1.0f);
+					//float dest[4];
+					
+					float*	p	=	(float*)	(LPBYTE (R[it].pBits) + y*R[it].Pitch + x*4*sizeof(float));
+					*p = (float)(_cos(angle));
+					*(p+1) = (float)(_sin(angle));
+					*(p+2) = (float)(dist);
+					*(p+3) = 0;
+					
+					//generate_hbao_jitter	(data,TEX_jitter*TEX_jitter);
+				}
+			}			
+			R_CHK						(t_noise_surf[it]->UnlockRect(0));
 		}
 	}
 
@@ -538,11 +617,13 @@ CRenderTarget::~CRenderTarget	()
 	accum_spot_geom_destroy		();
 	accum_omnip_geom_destroy	();
 	accum_point_geom_destroy	();
+	accum_volumetric_geom_destroy();
 
 	// Blenders
 	xr_delete					(b_combine				);
 	xr_delete					(b_luminance			);
 	xr_delete					(b_bloom				);
+	xr_delete					(b_ssao					);
 	xr_delete					(b_accum_reflected		);
 	xr_delete					(b_accum_spot			);
 	xr_delete					(b_accum_point			);
@@ -552,16 +633,71 @@ CRenderTarget::~CRenderTarget	()
 	xr_delete					(b_occq					);
 }
 
+void CRenderTarget::reset_light_marker( bool bResetStencil)
+{
+	dwLightMarkerID = 5;
+	if (bResetStencil)
+	{
+		RCache.set_ColorWriteEnable	(FALSE);
+		u32		Offset;
+		float	_w					= float(Device.dwWidth);
+		float	_h					= float(Device.dwHeight);
+		u32		C					= color_rgba	(255,255,255,255);
+		float	eps					= EPS_S;
+		FVF::TL* pv					= (FVF::TL*) RCache.Vertex.Lock	(4,g_combine->vb_stride,Offset);
+		pv->set						(eps,			float(_h+eps),	eps,	1.f, C, 0, 0);	pv++;
+		pv->set						(eps,			eps,			eps,	1.f, C, 0, 0);	pv++;
+		pv->set						(float(_w+eps),	float(_h+eps),	eps,	1.f, C, 0, 0);	pv++;
+		pv->set						(float(_w+eps),	eps,			eps,	1.f, C, 0, 0);	pv++;
+		RCache.Vertex.Unlock		(4,g_combine->vb_stride);
+		RCache.set_CullMode			(CULL_NONE	);
+		//	Clear everything except last bit
+		RCache.set_Stencil	(TRUE,D3DCMP_ALWAYS,dwLightMarkerID,0x00,0xFE, D3DSTENCILOP_ZERO, D3DSTENCILOP_ZERO, D3DSTENCILOP_ZERO);
+		//RCache.set_Stencil	(TRUE,D3DCMP_ALWAYS,dwLightMarkerID,0x00,0xFF, D3DSTENCILOP_ZERO, D3DSTENCILOP_ZERO, D3DSTENCILOP_ZERO);
+		RCache.set_Element			(s_occq->E[1]	);
+		RCache.set_Geometry			(g_combine		);
+		RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
+
+/*
+		u32		Offset;
+		float	_w					= float(Device.dwWidth);
+		float	_h					= float(Device.dwHeight);
+		u32		C					= color_rgba	(255,255,255,255);
+		float	eps					= 0;
+		float	_dw					= 0.5f;
+		float	_dh					= 0.5f;
+		FVF::TL* pv					= (FVF::TL*) RCache.Vertex.Lock	(4,g_combine->vb_stride,Offset);
+		pv->set						(-_dw,		_h-_dh,		eps,	1.f, C, 0, 0);	pv++;
+		pv->set						(-_dw,		-_dh,		eps,	1.f, C, 0, 0);	pv++;
+		pv->set						(_w-_dw,	_h-_dh,		eps,	1.f, C, 0, 0);	pv++;
+		pv->set						(_w-_dw,	-_dh,		eps,	1.f, C, 0, 0);	pv++;
+		RCache.Vertex.Unlock		(4,g_combine->vb_stride);
+		RCache.set_Element			(s_occq->E[2]	);
+		RCache.set_Geometry			(g_combine		);
+		RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
+*/
+	}
+}
+
+void CRenderTarget::increment_light_marker()
+{
+	dwLightMarkerID += 2;
+
+	//if (dwLightMarkerID>10)
+	if (dwLightMarkerID>255)
+		reset_light_marker(true);
+}
+
 bool CRenderTarget::need_to_render_sunshafts()
 {
-	if (!(RImplementation.o.advancedpp && ps_r_sun_shafts))
+	if ( ! (RImplementation.o.advancedpp && ps_r_sun_shafts) )
 		return false;
 
 	{
-		CEnvDescriptor& E = *g_pGamePersistent->Environment().CurrentEnv;
+		CEnvDescriptor&	E = *g_pGamePersistent->Environment().CurrentEnv;
 		float fValue = E.m_fSunShaftsIntensity;
 		//	TODO: add multiplication by sun color here
-		if (fValue < 0.0001) return false;
+		if (fValue<0.0001) return false;
 	}
 
 	return true;
