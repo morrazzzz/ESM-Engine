@@ -630,6 +630,12 @@
     <ClInclude Include="..\xrRender\ColorMapManager.h">
       <Filter>ColorMap</Filter>
     </ClInclude>
+    <ClInclude Include="..\xrRender\r_sun_support.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\r_sun_cascades.h">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -660,9 +666,6 @@
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="r2_R_render.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="r2_R_sun.cpp">
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="r2_sector_detect.cpp">
@@ -1123,6 +1126,9 @@
     </ClCompile>
     <ClCompile Include="..\xrRender\ColorMapManager.cpp">
       <Filter>ColorMap</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\r_sun.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
