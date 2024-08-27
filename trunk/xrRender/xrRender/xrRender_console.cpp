@@ -89,6 +89,7 @@ float		ps_r__Detail_l_ambient		= 0.9f	;
 float		ps_r__Detail_l_aniso		= 0.25f	;
 float		ps_r__Detail_density		= 0.3f	;
 float		ps_r__Detail_rainbow_hemi	= 0.75f	;
+int         ps_r__Detail_radius = 49;
 
 float		ps_r__Tree_w_rot			= 10.0f	;
 float		ps_r__Tree_w_speed			= 1.00f	;
@@ -548,6 +549,28 @@ public:
 		RImplementation.Models->dump();
 	}
 };
+
+class CCC_DetailRadius : public CCC_Integer
+{
+public:
+	CCC_DetailRadius(LPCSTR N, int* V, int _min = 0, int _max = 999) : CCC_Integer(N, V, _min, _max)
+	{
+	};
+
+	virtual void Execute(LPCSTR args) {
+		CCC_Integer::Execute(args);
+
+		dm_current_size = iFloor((float)ps_r__Detail_radius / 2);
+		dm_current_cache1_line = dm_current_size / 2;		// assuming cache1_count = 4
+		dm_current_cache_line = dm_current_size + 1 + dm_current_size;
+		dm_current_cache_size = dm_current_cache_line * dm_current_cache_line;
+		dm_current_fade = float(2 * dm_current_size) - .5f;
+	}
+
+	virtual void Status(TStatus& S) {
+		CCC_Integer::Status(S);
+	}
+};
 //-----------------------------------------------------------------------
 void		xrRender_initconsole	()
 {
@@ -580,6 +603,7 @@ void		xrRender_initconsole	()
 
 //.	CMD4(CCC_Float,		"r__detail_density",	&ps_r__Detail_density,		.05f,	0.99f	);
 	CMD4(CCC_Float,		"r__detail_density",	&ps_r__Detail_density,		.2f,	0.6f	);
+	CMD4(CCC_DetailRadius, "r__detail_radius",  &ps_r__Detail_radius, 49, 250);
 
 #ifdef DEBUG
 	CMD4(CCC_Float,		"r__detail_l_ambient",	&ps_r__Detail_l_ambient,	.5f,	.95f	);

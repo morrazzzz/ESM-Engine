@@ -24,6 +24,19 @@
 const float dbgOffset			= 0.f;
 const int	dbgItems			= 128;
 
+u32			dm_size = 24;
+u32 		dm_cache1_line = 12;
+u32			dm_cache_line = 49;
+u32			dm_cache_size = 2401;
+float		dm_fade = 47.5;
+u32			dm_current_size = 24;
+u32 		dm_current_cache1_line = 12;
+u32			dm_current_cache_line = 49;
+u32			dm_current_cache_size = 2401;
+float		dm_current_fade = 47.5;
+float		ps_current_detail_density = 0.6;
+float		ps_current_detail_scale = 1.f;
+
 //--------------------------------------------------- Decompression
 static int magic4x4[4][4] =
 {
@@ -87,6 +100,54 @@ CDetailManager::CDetailManager	()
 	m_time_rot_2 = 0;
 	m_time_pos	= 0;
 	m_global_time_old = 0;
+
+	dm_size = dm_current_size;
+	dm_cache_line = dm_current_cache_line;
+	dm_cache1_line = dm_current_cache1_line;
+	dm_cache_size = dm_current_cache_size;
+	dm_fade = dm_current_fade;
+	ps_r__Detail_density = ps_current_detail_density;
+#ifdef DEBUG
+	cache_level1 = (CacheSlot1**)Memory.mem_alloc(dm_cache1_line * sizeof(CacheSlot1*), "Cache level 1");
+#else
+	cache_level1 = (CacheSlot1**)Memory.mem_alloc(dm_cache1_line * sizeof(CacheSlot1*));
+#endif
+	for (u32 i = 0; i < dm_cache1_line; ++i)
+	{
+#ifdef DEBUG
+		cache_level1[i] = (CacheSlot1*)Memory.mem_alloc(dm_cache1_line * sizeof(CacheSlot1), "Cache Slot 1");
+#else
+		cache_level1[i] = (CacheSlot1*)Memory.mem_alloc(dm_cache1_line * sizeof(CacheSlot1));
+#endif
+		for (u32 j = 0; j < dm_cache1_line; ++j)
+		{
+			new (&(cache_level1[i][j])) CacheSlot1();
+		}
+	}
+
+#ifdef DEBUG
+	cache = (Slot***)Memory.mem_alloc(dm_cache_line * sizeof(Slot**), "Cache Line 1");
+#else
+	cache = (Slot***)Memory.mem_alloc(dm_cache_line * sizeof(Slot**));
+#endif
+	for (u32 i = 0; i < dm_cache_line; ++i)
+	{
+#ifdef DEBUG
+		cache[i] = (Slot**)Memory.mem_alloc(dm_cache_line * sizeof(Slot*), "Cache Line 2");
+#else
+		cache[i] = (Slot**)Memory.mem_alloc(dm_cache_line * sizeof(Slot*));
+#endif
+	}
+#ifdef DEBUG
+	cache_pool = (Slot*)Memory.mem_alloc(dm_cache_size * sizeof(Slot), "Cache pool");
+#else
+	cache_pool = (Slot*)Memory.mem_alloc(dm_cache_size * sizeof(Slot));
+#endif
+
+	for (u32 i = 0; i < dm_cache_size; ++i)
+	{
+		new (&(cache_pool[i])) Slot();
+	}
 }
 
 CDetailManager::~CDetailManager	()
@@ -142,7 +203,9 @@ void CDetailManager::Load		()
 	m_slots->close		();
 
 	// Initialize 'vis' and 'cache'
-	for (u32 i=0; i<3; ++i)	m_visibles[i].resize(objects.size());
+	for (int i = 0; i < 3; ++i)
+		m_visibles[i].resize(objects.size());
+
 	cache_Initialize	();
 
 	// Make dither matrix
@@ -169,17 +232,21 @@ void CDetailManager::Load		()
 #endif
 void CDetailManager::Unload		()
 {
-	if (UseVS())	hw_Unload	();
-	else			soft_Unload	();
+	if (UseVS())	
+		hw_Unload	();
+	else			
+		soft_Unload	();
 
-	for (DetailIt it=objects.begin(); it!=objects.end(); it++){
-		(*it)->Unload();
-		xr_delete		(*it);
-    }
-	objects.clear		();
-	m_visibles[0].clear	();
-	m_visibles[1].clear	();
-	m_visibles[2].clear	();
+	for (auto& it : objects)
+	{
+		it->Unload();
+		xr_delete(it);
+	}
+	objects.clear();
+	
+	for (int i = 0; i < 3; i++)
+		m_visibles[i].clear();
+
 	FS.r_close			(dtFS);
 }
 
@@ -192,10 +259,6 @@ void CDetailManager::UpdateVisibleM()
 	CFrustum	View;
 	View.CreateFromMatrix		(RDEVICE.mFullTransform_saved, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
 	
- 	CFrustum	View_old;
- 	Fmatrix		Viewm_old = RDEVICE.mFullTransform;
- 	View_old.CreateFromMatrix		(Viewm_old, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
-	
 	float fade_limit			= dm_fade;	fade_limit=fade_limit*fade_limit;
 	float fade_start			= 1.f;		fade_start=fade_start*fade_start;
 	float fade_range			= fade_limit-fade_start;
@@ -204,26 +267,25 @@ void CDetailManager::UpdateVisibleM()
 	// Initialize 'vis' and 'cache'
 	// Collect objects for rendering
 	RDEVICE.Statistic->RenderDUMP_DT_VIS.Begin	();
-	for (int _mz=0; _mz<dm_cache1_line; _mz++){
-		for (int _mx=0; _mx<dm_cache1_line; _mx++){
+	for (u32 _mz=0; _mz<dm_cache1_line; _mz++){
+		for (u32 _mx=0; _mx<dm_cache1_line; _mx++){
 			CacheSlot1& MS		= cache_level1[_mz][_mx];
 			if (MS.empty)
 			{
 				continue;
 			}
 			u32 mask			= 0xff;
-			u32 res				= View.testSAABB		(MS.vis.sphere.P,MS.vis.sphere.R,MS.vis.box.data(),mask);
+			u32 res	= View.testSphere(MS.vis.sphere.P,MS.vis.sphere.R, mask);
 			if (fcvNone==res)
 			{
 				continue;	// invisible-view frustum
 			}
 			// test slots
 			
-			u32 dwCC = dm_cache1_count*dm_cache1_count;
+			constexpr u32 dwCC = dm_cache1_count * dm_cache1_count;
 
-			for (int _i=0; _i < dwCC ; _i++){
-				Slot*	PS		= *MS.slots[_i];
-				Slot& 	S 		= *PS;
+			for (u32 _i=0; _i < dwCC ; _i++){
+				Slot& S = **MS.slots[_i];
 
 //				if ( ( _i + 1 ) < dwCC );
 //					_mm_prefetch( (char *) *MS.slots[ _i + 1 ]  , _MM_HINT_T1 );
@@ -237,7 +299,9 @@ void CDetailManager::UpdateVisibleM()
 				// if upper test = fcvPartial - test inner slots
 				if (fcvPartial==res){
 					u32 _mask	= mask;
-					u32 _res	= View.testSAABB			(S.vis.sphere.P,S.vis.sphere.R,S.vis.box.data(),_mask);
+					//u32 _res	= View.testSAABB			(S.vis.sphere.P,S.vis.sphere.R,S.vis.box.data(),_mask);
+					//u32 _res = View.testSphere(S.vis.sphere.P, S.vis.sphere.R, _mask);
+					u32 _res = View.testAABB(S.vis.box.data(), _mask);
 					if (fcvNone==_res)
 					{
 						continue;	// invisible-view frustum
@@ -308,6 +372,24 @@ void CDetailManager::UpdateVisibleM()
 		}
 	}
 	RDEVICE.Statistic->RenderDUMP_DT_VIS.End	();
+}
+
+void CDetailManager::ClearVisDetails()
+{
+	if (!RImplementation.Details || !psDeviceFlags.is(rsDetails))
+		return;
+
+	if (m_visibles[0].empty() && m_visibles[1].empty() && m_visibles[2].empty()) //If all visibles empty
+		return;
+
+	for (int i = 0; i < 3; i++)
+	{
+		if (m_visibles[i].empty()) //If only one visible empty 
+			continue;
+
+		for (u32 j = 0; j < m_visibles[i].size(); j++)
+			m_visibles[i][j].clear_not_free();
+	}
 }
 
 void CDetailManager::Render	()
