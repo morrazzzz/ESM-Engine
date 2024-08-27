@@ -133,9 +133,10 @@ void					CRender::reset_end				()
 	m_bFirstFrameAfterReset = true;
 }
 
-void					CRender::OnFrame				()
+void CRender::OnFrame()
 {
-	Models->DeleteQueue	();
+	Models->DeleteQueue();
+	Details->ClearVisDetails(); //Cleanup visible objects
 }
 
 // Implementation
