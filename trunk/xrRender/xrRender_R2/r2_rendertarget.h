@@ -4,10 +4,12 @@
 
 class light;
 
-#define DU_SPHERE_NUMVERTEX 92
-#define DU_SPHERE_NUMFACES	180
-#define DU_CONE_NUMVERTEX	18
-#define DU_CONE_NUMFACES	32
+//#define DU_SPHERE_NUMVERTEX 92
+//#define DU_SPHERE_NUMFACES	180
+//#define DU_CONE_NUMVERTEX	18
+//#define DU_CONE_NUMFACES	32
+//	no less than 2
+#define	VOLUMETRIC_SLICES	100
 
 class CRenderTarget		: public IRender_Target
 {
@@ -26,6 +28,7 @@ public:
 	IBlender*					b_accum_spot;
 	IBlender*					b_accum_reflected;
 	IBlender*					b_bloom;
+	IBlender*					b_ssao;
 	IBlender*					b_luminance;
 	IBlender*					b_combine;
 #ifdef DEBUG
@@ -59,9 +62,9 @@ public:
 	//	Igor: for async screenshots
 	IDirect3DSurface9*			pFB;				//32bit		(r,g,b,a) is situated in the system memory
 
-	ref_rt						rt_LUM_pool[CHWCaps::MAX_GPUS*2]	;	// 1xfp32,1x1,		exp-result -> scaler
-	ref_texture				t_LUM_src		;	// source
-	ref_texture				t_LUM_dest		;	// destination & usage for current frame
+	ref_rt						rt_LUM_pool	[CHWCaps::MAX_GPUS*2]	;	// 1xfp32,1x1,		exp-result -> scaler
+	ref_texture					t_LUM_src		;	// source
+	ref_texture					t_LUM_dest		;	// destination & usage for current frame
 
 	// env
 	ref_texture					t_envmap_0		;	// env-0
@@ -91,10 +94,12 @@ private:
 	ref_shader					s_accum_point	;
 	ref_shader					s_accum_spot	;
 	ref_shader					s_accum_reflected;
+	ref_shader					s_accum_volume;
 
 	ref_geom					g_accum_point	;
 	ref_geom					g_accum_spot	;
 	ref_geom					g_accum_omnipart;
+	ref_geom					g_accum_volumetric;
 
 	IDirect3DVertexBuffer9*		g_accum_point_vb;
 	IDirect3DIndexBuffer9*		g_accum_point_ib;
@@ -104,6 +109,14 @@ private:
 
 	IDirect3DVertexBuffer9*		g_accum_spot_vb	;
 	IDirect3DIndexBuffer9*		g_accum_spot_ib	;
+
+	IDirect3DVertexBuffer9*		g_accum_volumetric_vb;
+	IDirect3DIndexBuffer9*		g_accum_volumetric_ib;
+
+	//SSAO
+	ref_shader					s_ssao;
+	ref_rt						rt_ssao_temp;
+	ref_rt						rt_half_depth;
 
 	// Bloom
 	ref_geom					g_bloom_build;
@@ -128,6 +141,7 @@ private:
 	ref_shader					s_combine_dbg_1;
 	ref_shader					s_combine_dbg_Accumulator;
 	ref_shader					s_combine;
+	ref_shader					s_combine_volumetric;
 public:
 	ref_shader					s_postprocess;
 	ref_geom					g_postprocess;
@@ -165,9 +179,13 @@ public:
 	void						accum_omnip_geom_destroy();
 	void						accum_spot_geom_create	();
 	void						accum_spot_geom_destroy	();
+	//	Igor: used for volumetric lights
+	void						accum_volumetric_geom_create();
+	void						accum_volumetric_geom_destroy();
 
 	void						u_stencil_optimize		(BOOL		common_stencil=TRUE);
-	void						u_compute_texgen_screen	(Fmatrix&	dest);
+	void						u_compute_texgen_screen		(Fmatrix&	dest);
+	void						u_compute_texgen_screen_asd	(Fmatrix&	dest);
 	void						u_compute_texgen_jitter	(Fmatrix&	dest);
 	void						u_setrt					(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, IDirect3DSurface9* zb);
 	void						u_setrt					(u32 W, u32 H, IDirect3DSurface9* _1, IDirect3DSurface9* _2, IDirect3DSurface9* _3, IDirect3DSurface9* zb);
@@ -178,6 +196,8 @@ public:
 	BOOL						u_DBT_enable			(float zMin, float zMax);
 	void						u_DBT_disable			();
 
+	void						phase_ssao				();
+	void						phase_downsamp			();
 	void						phase_scene_prepare		();
 	void						phase_scene_begin		();
 	void						phase_scene_end			();
@@ -189,28 +209,32 @@ public:
 	void						phase_smap_spot			(light* L);
 	void						phase_smap_spot_tsh		(light* L);
 	void						phase_accumulator		();
-	void						phase_vol_accumulator();
+	void						phase_vol_accumulator	();
 	void						shadow_direct			(light* L, u32 dls_phase);
 
 	bool						need_to_render_sunshafts();
-	
+
 	BOOL						enable_scissor			(light* L);		// true if intersects near plane
 	void						enable_dbt_bounds		(light* L);
 
 	void						disable_aniso			();
 
 	void						draw_volume				(light* L);
-	void accum_direct_cascade(light& sun_light, u32	sub_phase, Fmatrix& xform, Fmatrix& xform_prev, float fBias);
-	void accum_direct_f(light& sun_light, u32 sub_phase);
-	void accum_direct_lum(light& sun_light);
-	void accum_direct_blend();
-	void accum_direct_volumetric(light& sun_light, u32 sub_phase, const u32 Offset, const Fmatrix& mShadow);
+	void						accum_direct			(u32	sub_phase);
+	void						accum_direct_cascade	(u32 sub_phase, Fmatrix& xform, Fmatrix& xform_prev, float fBias); 
+	void						accum_direct_f			(u32	sub_phase);
+	void						accum_direct_lum		();
+	void						accum_direct_blend		();
+	void						accum_direct_volumetric	(u32	sub_phase, const u32 Offset, const Fmatrix &mShadow);
 	void						accum_point				(light* L);
 	void						accum_spot				(light* L);
 	void						accum_reflected			(light* L);
+	//	Igor: for volumetric lights
+	void						accum_volumetric		(light* L);
 	void						phase_bloom				();
 	void						phase_luminance			();
 	void						phase_combine			();
+	void						phase_combine_volumetric();
 	void						phase_pp				();
 
 	virtual void				set_blur				(float	f)		{ param_blur=f;						}
@@ -231,6 +255,11 @@ public:
 	virtual void				set_cm_interpolate	(float	f)		{ param_color_map_interpolate = f;							}
 	virtual void				set_cm_textures		(const shared_str &tex0, const shared_str &tex1) {color_map_manager.SetTextures(tex0, tex1);}
 
+	//	Need to reset stencil only when marker overflows.
+	//	Don't clear when render for the first time
+	void						reset_light_marker( bool bResetStencil = false);
+	void						increment_light_marker();
+
 	void						DoAsyncScreenshot		();
 
 #ifdef DEBUG
@@ -239,6 +268,42 @@ public:
 		dbg_lines.back().P0		= P0;
 		dbg_lines.back().P1		= P1;
 		dbg_lines.back().color	= c;
+	}
+	IC void						dbg_addbox(const Fbox &box, const u32 &color)
+	{
+		Fvector c, r;
+		box.getcenter(c);
+		box.getradius(r);
+		dbg_addbox(c, r.x, r.y, r.z, color);
+	}
+	IC void						dbg_addbox(const Fvector &c, float rx, float ry, float rz, u32 color)
+	{
+		Fvector p1, p2, p3, p4, p5, p6, p7, p8;
+		
+		p1.set(c.x+rx, c.y+ry, c.z+rz);
+		p2.set(c.x+rx, c.y-ry, c.z+rz);
+		p3.set(c.x-rx, c.y-ry, c.z+rz);
+		p4.set(c.x-rx, c.y+ry, c.z+rz);
+		
+		p5.set(c.x+rx, c.y+ry, c.z-rz);
+		p6.set(c.x+rx, c.y-ry, c.z-rz);
+		p7.set(c.x-rx, c.y-ry, c.z-rz);
+		p8.set(c.x-rx, c.y+ry, c.z-rz);
+
+		dbg_addline(p1, p2, color);
+		dbg_addline(p2, p3, color);
+		dbg_addline(p3, p4, color);
+		dbg_addline(p4, p1, color);
+
+		dbg_addline(p5, p6, color);
+		dbg_addline(p6, p7, color);
+		dbg_addline(p7, p8, color);
+		dbg_addline(p8, p5, color);
+
+		dbg_addline(p1, p5, color);
+		dbg_addline(p2, p6, color);
+		dbg_addline(p3, p7, color);
+		dbg_addline(p4, p8, color);
 	}
 	IC void						dbg_addplane			(Fplane& P0,  u32 c)								{
 		dbg_planes.push_back(P0);

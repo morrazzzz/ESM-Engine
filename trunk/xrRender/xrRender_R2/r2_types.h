@@ -40,6 +40,7 @@
 #define		r2_ds2_fade			"$user$ds2_fade"		// ---
 
 #define		r2_jitter			"$user$jitter_"			// --- dither
+#define		r2_jitter_mipped	"$user$jitter_mipped"			// --- dither
 #define		r2_sunmask			"sunmask"
 
 #define		JITTER(a) r2_jitter #a
@@ -53,7 +54,7 @@ const		u32					SMAP_adapt_max		= 1536	;
 const		u32					TEX_material_LdotN	= 128	;	// diffuse,		X, almost linear = small res
 const		u32					TEX_material_LdotH	= 256	;	// specular,	Y
 const		u32					TEX_jitter			= 64	;
-const		u32					TEX_jitter_count	= 4		;
+const		u32					TEX_jitter_count	= 5		;	// for HBAO
 
 const		u32					BLOOM_size_X		= 256	;
 const		u32					BLOOM_size_Y		= 256	;

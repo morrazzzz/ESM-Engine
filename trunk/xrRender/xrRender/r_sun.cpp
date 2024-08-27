@@ -362,6 +362,7 @@ void CRender::render_sun_cascade(u32 cascade_ind, light& sun_light)
 	PIX_EVENT(SE_SUN_NEAR);
 #endif
 
+#if RENDER != R_R2
 	if (cascade_ind == 0)
 		Target->accum_direct_cascade(sun_light, SE_SUN_NEAR, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind].bias);
 	else
@@ -369,6 +370,15 @@ void CRender::render_sun_cascade(u32 cascade_ind, light& sun_light)
 			Target->accum_direct_cascade(sun_light, SE_SUN_MIDDLE, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind - 1].xform, m_sun_cascades[cascade_ind].bias);
 		else
 			Target->accum_direct_cascade(sun_light, SE_SUN_FAR, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind - 1].xform, m_sun_cascades[cascade_ind].bias);
+#else
+	if (cascade_ind == 0)
+		Target->accum_direct_cascade(SE_SUN_NEAR, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind].bias);
+	else
+		if (cascade_ind < m_sun_cascades.size() - 1)
+			Target->accum_direct_cascade(SE_SUN_MIDDLE, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind - 1].xform, m_sun_cascades[cascade_ind].bias);
+		else
+			Target->accum_direct_cascade(SE_SUN_FAR, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind - 1].xform, m_sun_cascades[cascade_ind].bias);
+#endif
 
 	// Restore XForms
 	RCache.set_xform_world(Fidentity);

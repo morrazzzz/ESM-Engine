@@ -22,6 +22,9 @@
 #include "../../xr_3da/irenderable.h"
 #include "../../xr_3da/fmesh.h"
 
+
+class dxRender_Visual;
+
 // definition
 class CRender													:	public R_dsgraph_structure
 {
@@ -35,6 +38,11 @@ public:
 public:
 	struct		_options	{
 		u32		bug					: 1;
+		
+		u32		ssao_blur_on		: 1;
+		u32		ssao_opt_data		: 1;
+		u32		ssao_half_data		: 1;
+		u32		ssao_hbao			: 1;
 
 		u32		smapsize			: 16;
 		u32		depth16				: 1;
@@ -64,7 +72,7 @@ public:
 		u32		noshadows			: 1;
 		u32		Tshadows			: 1;						// transluent shadows
 		u32		disasm				: 1;
-		u32		advancedpp          : 1;	//	advanced post process (DOF, SSAO, volumetrics, etc.)
+		u32		advancedpp			: 1;	//	advanced post process (DOF, SSAO, volumetrics, etc.)
 
 		u32		forcegloss			: 1;
 		u32		forceskinw			: 1;
@@ -117,14 +125,15 @@ public:
 	shared_str													c_sbase			;
 	shared_str													c_lmaterial		;
 	float														o_hemi			;
+	float														o_hemi_cube[CROS_impl::NUM_FACES]	;
 	float														o_sun			;
-	IDirect3DQuery9*											q_sync_point[CHWCaps::MAX_GPUS]	;
+	IDirect3DQuery9*											q_sync_point[CHWCaps::MAX_GPUS];
 	u32															q_sync_count	;
 
 	bool														m_bMakeAsyncSS;
 	bool														m_bFirstFrameAfterReset;	// Determines weather the frame is the first after resetting device.
-	xr_vector<sun::cascade>										m_sun_cascades;
 
+	xr_vector<sun::cascade>										m_sun_cascades;
 
 private:
 	// Loading / Unloading
@@ -135,10 +144,10 @@ private:
 	void							LoadSectors					(IReader	*fs);
 	void							LoadSWIs					(CStreamReader	*fs);
 
-	BOOL							add_Dynamic					(dxRender_Visual	*pVisual, u32 planes);		// normal processing
-	void							add_Static					(dxRender_Visual	*pVisual, u32 planes);
-	void							add_leafs_Dynamic			(dxRender_Visual	*pVisual);					// if detected node's full visibility
-	void							add_leafs_Static			(dxRender_Visual	*pVisual);					// if detected node's full visibility
+	BOOL							add_Dynamic					(dxRender_Visual*pVisual, u32 planes);		// normal processing
+	void							add_Static					(dxRender_Visual*pVisual, u32 planes);
+	void							add_leafs_Dynamic			(dxRender_Visual*pVisual);					// if detected node's full visibility
+	void							add_leafs_Static			(dxRender_Visual*pVisual);					// if detected node's full visibility
 
 public:
 	IRender_Sector*					rimp_detectSector			(Fvector& P, Fvector& D);
@@ -149,14 +158,12 @@ public:
 	void							render_lights				(light_Package& LP	);
 	void							render_menu					();
 
-	
 	void init_cascades();
 	void destroy_cascades();
 
 	void render_sun_cascades();
 	void prepart_render_sun_cascade(u32 cascade_ind, light& light_sun);
 	void render_sun_cascade(u32 cascade_ind, light& light_sun);
-
 public:
 	ShaderElement*					rimp_select_sh_static		(dxRender_Visual	*pVisual, float cdist_sq);
 	ShaderElement*					rimp_select_sh_dynamic		(dxRender_Visual	*pVisual, float cdist_sq);
@@ -168,6 +175,7 @@ public:
 	IRender_Sector*					getSectorActive				();
 	IRenderVisual*					model_CreatePE				(LPCSTR name);
 	IRender_Sector*					detectSector				(const Fvector& P, Fvector& D);
+	int								translateSector				(IRender_Sector* pSector);
 
 	// HW-occlusion culling
 	IC u32							occq_begin					(u32&	ID		)	{ return HWOCC.occq_begin	(ID);	}
@@ -182,6 +190,7 @@ public:
 		LT.update_smooth			(O)								;
 		o_hemi						= 0.75f*LT.get_hemi			()	;
 		o_sun						= 0.75f*LT.get_sun			()	;
+		CopyMemory(o_hemi_cube, LT.get_hemi_cube(), CROS_impl::NUM_FACES*sizeof(float));
 	}
 	IC void							apply_lmaterial				()
 	{
@@ -195,7 +204,13 @@ public:
 #ifdef	DEBUG
 		if (ps_r2_ls_flags.test(R2FLAG_GLOBALMATERIAL))	mtl=ps_r2_gmaterial;
 #endif
-		RCache.set_c		(c_lmaterial,o_hemi,o_sun,0,(mtl+.5f)/4.f);
+		RCache.hemi.set_material (o_hemi,o_sun,0,(mtl+.5f)/4.f);
+		RCache.hemi.set_pos_faces(o_hemi_cube[CROS_impl::CUBE_FACE_POS_X],
+								  o_hemi_cube[CROS_impl::CUBE_FACE_POS_Y],
+								  o_hemi_cube[CROS_impl::CUBE_FACE_POS_Z]);
+		RCache.hemi.set_neg_faces	(o_hemi_cube[CROS_impl::CUBE_FACE_NEG_X],
+								 o_hemi_cube[CROS_impl::CUBE_FACE_NEG_Y],
+								 o_hemi_cube[CROS_impl::CUBE_FACE_NEG_Z]);
 	}
 
 public:
@@ -215,15 +230,14 @@ public:
 	virtual void					level_Unload				();
 
 	virtual IDirect3DBaseTexture9*	texture_load			(LPCSTR	fname, u32& msize);
-	virtual HRESULT shader_compile(
-		LPCSTR name,
-		DWORD const* pSrcData,
-		UINT SrcDataLen,
-		LPCSTR pFunctionName,
-		LPCSTR pTarget,
-		DWORD Flags,
-		void*& result
-	);
+	virtual HRESULT					shader_compile			(
+		LPCSTR							name,
+		DWORD const*					pSrcData,
+		UINT                            SrcDataLen,
+		LPCSTR                          pFunctionName,
+		LPCSTR                          pTarget,
+		DWORD                           Flags,
+		void*&							result);
 
 	// Information
 	virtual void					Statistics					(CGameFont* F);
@@ -243,12 +257,12 @@ public:
 
 	// wallmarks
 	virtual void					add_StaticWallmark			(ref_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V);
-	virtual void                    add_StaticWallmark(IWallMarkArray* pArray, const Fvector& P, float s, CDB::TRI* T, Fvector* V);
-	virtual void                    add_StaticWallmark(const wm_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V);
+	virtual void					add_StaticWallmark			(IWallMarkArray *pArray, const Fvector& P, float s, CDB::TRI* T, Fvector* V);
+	virtual void					add_StaticWallmark			(const wm_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V);
 	virtual void					clear_static_wallmarks		();
 	virtual void					add_SkeletonWallmark		(intrusive_ptr<CSkeletonWallmark> wm);
 	virtual void					add_SkeletonWallmark		(const Fmatrix* xf, CKinematics* obj, ref_shader& sh, const Fvector& start, const Fvector& dir, float size);
-	virtual void                    add_SkeletonWallmark(const Fmatrix* xf, IKinematics* obj, IWallMarkArray* pArray, const Fvector& start, const Fvector& dir, float size);
+	virtual void					add_SkeletonWallmark		(const Fmatrix* xf, IKinematics* obj, IWallMarkArray *pArray, const Fvector& start, const Fvector& dir, float size);
 
 	//
 	virtual IBlender*				blender_create				(CLASS_ID cls);
@@ -286,7 +300,7 @@ public:
 	virtual void					Screenshot					(ScreenshotMode mode, CMemoryWriter& memory_writer);
 	virtual void					ScreenshotAsyncBegin		();
 	virtual void					ScreenshotAsyncEnd			(CMemoryWriter& memory_writer);
-	virtual void					OnFrame					();
+	virtual void	_BCL			OnFrame						();
 
 	// Render mode
 	virtual void					rmNear						();
@@ -300,7 +314,7 @@ protected:
 	virtual	void					ScreenshotImpl				(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer);
 
 private:
-		FS_FileSet m_file_set;
+	FS_FileSet						m_file_set;
 };
 
 extern CRender						RImplementation;

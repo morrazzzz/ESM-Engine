@@ -1,6 +1,25 @@
 #include "stdafx.h"
 #include "r2.h"
 
+int CRender::translateSector(IRender_Sector* pSector)
+{
+	if (!pSector)
+		return -1;
+
+	for (u32 i=0; i<Sectors.size(); ++i)
+	{
+		if (Sectors[i]==pSector)
+			return i;
+	}
+
+	FATAL			("Sector was not found!");
+	NODEFAULT;
+
+#ifdef DEBUG
+	return			(-1);
+#endif // #ifdef DEBUG
+}
+
 IRender_Sector* CRender::detectSector(const Fvector& P)
 {
 	IRender_Sector*	S	= NULL;	
