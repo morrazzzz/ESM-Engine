@@ -232,7 +232,7 @@ void CRender::render_rain()
 		bool	bNormal							= mapNormalPasses[0][0].size() || mapMatrixPasses[0][0].size();
 		bool	bSpecial						= mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size();
 		if ( bNormal || bSpecial)	{
-			Target->phase_smap_direct			(&RainLight	, SE_SUN_RAIN_SMAP	);
+			Target->phase_smap_direct			(RainLight	, SE_SUN_RAIN_SMAP	);
 			RCache.set_xform_world				(Fidentity					);
 			RCache.set_xform_view				(Fidentity					);
 			RCache.set_xform_project			(RainLight.X.D.combine	);	

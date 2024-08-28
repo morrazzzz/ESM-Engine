@@ -70,16 +70,16 @@ void CRender::render_sun_cascades ( )
 
 	for (u32 i = 0; i < m_sun_cascades.size(); ++i)
 	{
-		prepart_render_sun_cascade(i, *fuckingsun);
+		prepart_render_sun_cascade(*fuckingsun, i);
 
-		render_sun_cascade(i, *fuckingsun);
+		render_sun_cascade(*fuckingsun, i);
 	}
 
 	if ( b_need_to_render_sunshafts )
 		m_sun_cascades[m_sun_cascades.size()-1].reset_chain = last_cascade_chain_mode;
 }
 
-void CRender::prepart_render_sun_cascade(u32 cascade_ind, light& sun)
+void CRender::prepart_render_sun_cascade(light& sun, u32 cascade_ind)
 {
 	// calculate view-frustum bounds in world space
 	Fmatrix	ex_project, ex_full, ex_full_inverse;
@@ -316,7 +316,7 @@ void CRender::prepart_render_sun_cascade(u32 cascade_ind, light& sun)
 	sun.X.D.combine = cull_xform;	//*((Fmatrix*)&m_LightViewProj);
 }
 
-void CRender::render_sun_cascade(u32 cascade_ind, light& sun_light)
+void CRender::render_sun_cascade(light& sun_light, u32 cascade_ind)
 {
 	// Render shadow-map
 	//. !!! We should clip based on shrinked frustum (again)
@@ -324,7 +324,7 @@ void CRender::render_sun_cascade(u32 cascade_ind, light& sun_light)
 		bool	bNormal = mapNormalPasses[0][0].size() || mapMatrixPasses[0][0].size();
 		bool	bSpecial = mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size();
 		if (bNormal || bSpecial) {
-			Target->phase_smap_direct(&sun_light, SE_SUN_FAR);
+			Target->phase_smap_direct(sun_light, SE_SUN_FAR);
 			RCache.set_xform_world(Fidentity);
 			RCache.set_xform_view(Fidentity);
 			RCache.set_xform_project(sun_light.X.D.combine);
@@ -336,7 +336,7 @@ void CRender::render_sun_cascade(u32 cascade_ind, light& sun_light)
 			sun_light.X.D.transluent = false;
 			if (bSpecial) {
 				sun_light.X.D.transluent = true;
-				Target->phase_smap_direct_tsh(&sun_light, SE_SUN_FAR);
+				Target->phase_smap_direct_tsh();
 				r_dsgraph_render_graph(1);			// normal level, secondary priority
 				r_dsgraph_render_sorted();			// strict-sorted geoms
 			}
@@ -359,10 +359,9 @@ void CRender::render_sun_cascade(u32 cascade_ind, light& sun_light)
 		Target->create_minmax_SM();
 	}
 
-	PIX_EVENT(SE_SUN_NEAR);
+	PIX_EVENT(cascade_ind);
 #endif
 
-#if RENDER != R_R2
 	if (cascade_ind == 0)
 		Target->accum_direct_cascade(sun_light, SE_SUN_NEAR, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind].bias);
 	else
@@ -370,15 +369,6 @@ void CRender::render_sun_cascade(u32 cascade_ind, light& sun_light)
 			Target->accum_direct_cascade(sun_light, SE_SUN_MIDDLE, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind - 1].xform, m_sun_cascades[cascade_ind].bias);
 		else
 			Target->accum_direct_cascade(sun_light, SE_SUN_FAR, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind - 1].xform, m_sun_cascades[cascade_ind].bias);
-#else
-	if (cascade_ind == 0)
-		Target->accum_direct_cascade(SE_SUN_NEAR, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind].bias);
-	else
-		if (cascade_ind < m_sun_cascades.size() - 1)
-			Target->accum_direct_cascade(SE_SUN_MIDDLE, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind - 1].xform, m_sun_cascades[cascade_ind].bias);
-		else
-			Target->accum_direct_cascade(SE_SUN_FAR, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind - 1].xform, m_sun_cascades[cascade_ind].bias);
-#endif
 
 	// Restore XForms
 	RCache.set_xform_world(Fidentity);

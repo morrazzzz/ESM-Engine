@@ -203,8 +203,8 @@ public:
 	void						phase_scene_end			();
 	void						phase_occq				();
 	void						phase_wallmarks			();
-	void						phase_smap_direct		(light* L,	u32 sub_phase);
-	void						phase_smap_direct_tsh	(light* L,	u32 sub_phase);
+	void						phase_smap_direct		(const light& light, u32 sub_phase);
+	void						phase_smap_direct_tsh	();
 	void						phase_smap_spot_clear	();
 	void						phase_smap_spot			(light* L);
 	void						phase_smap_spot_tsh		(light* L);
@@ -220,12 +220,11 @@ public:
 	void						disable_aniso			();
 
 	void						draw_volume				(light* L);
-	void						accum_direct			(u32	sub_phase);
-	void						accum_direct_cascade	(u32 sub_phase, Fmatrix& xform, Fmatrix& xform_prev, float fBias); 
-	void						accum_direct_f			(u32	sub_phase);
-	void						accum_direct_lum		();
-	void						accum_direct_blend		();
-	void						accum_direct_volumetric	(u32	sub_phase, const u32 Offset, const Fmatrix &mShadow);
+	void accum_direct_cascade(const light& sun_light, u32	sub_phase, Fmatrix& xform, Fmatrix& xform_prev, float fBias);
+	void accum_direct_f(const light& sun_light, u32 sub_phase);
+	void accum_direct_lum(const light& sun_light);
+	void accum_direct_blend();
+	void accum_direct_volumetric(const light& sun_light, u32 sub_phase, const u32 Offset, const Fmatrix& mShadow);
 	void						accum_point				(light* L);
 	void						accum_spot				(light* L);
 	void						accum_reflected			(light* L);

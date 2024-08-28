@@ -31,7 +31,7 @@ static u16			facetable[16][3]		= {
 	{ 2, 4, 1 },
 };
 
-void CRenderTarget::accum_direct_cascade(light& sun_light, u32 sub_phase, Fmatrix& xform, Fmatrix& xform_prev, float fBias)
+void CRenderTarget::accum_direct_cascade(const light& sun_light, u32 sub_phase, Fmatrix& xform, Fmatrix& xform_prev, float fBias)
 {
 	// Choose normal code-path or filtered
 	phase_accumulator();
@@ -467,7 +467,7 @@ void CRenderTarget::accum_direct_blend	()
 	increment_light_marker();
 }
 
-void CRenderTarget::accum_direct_f(light& sun_light, u32 sub_phase)
+void CRenderTarget::accum_direct_f(const light& sun_light, u32 sub_phase)
 {
 	PIX_EVENT(accum_direct_f);
 	// Select target
@@ -677,7 +677,7 @@ void CRenderTarget::accum_direct_f(light& sun_light, u32 sub_phase)
 	}
 }
 
-void CRenderTarget::accum_direct_lum(light& sun_light)
+void CRenderTarget::accum_direct_lum(const light& sun_light)
 {
 	PIX_EVENT(accum_direct_lum);
 //	TODO: DX10: Remove half pixel offset
@@ -788,7 +788,7 @@ void CRenderTarget::accum_direct_lum(light& sun_light)
       }
 }
 
-void CRenderTarget::accum_direct_volumetric(light& sun_light, u32 sub_phase, const u32 Offset, const Fmatrix& mShadow)
+void CRenderTarget::accum_direct_volumetric(const light& sun_light, u32 sub_phase, const u32 Offset, const Fmatrix& mShadow)
 {
 	PIX_EVENT(accum_direct_volumetric);
 

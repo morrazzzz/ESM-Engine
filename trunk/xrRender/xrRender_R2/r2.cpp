@@ -524,6 +524,7 @@ CRender::CRender()
 
 CRender::~CRender()
 {
+	destroy_cascades();
 }
 
 #include "../../xr_3da/GameFont.h"
