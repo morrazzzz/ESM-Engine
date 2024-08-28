@@ -194,8 +194,8 @@ public:
 	void destroy_cascades();
 
 	void render_sun_cascades();
-	void prepart_render_sun_cascade(u32 cascade_ind, light& light_sun);
-	void render_sun_cascade(u32 cascade_ind, light& light_sun);
+	void prepart_render_sun_cascade(light& light_sun, u32 cascade_ind);
+	void render_sun_cascade(light& light_sun, u32 cascade_ind);
 public:
 	ShaderElement*					rimp_select_sh_static		(dxRender_Visual	*pVisual, float cdist_sq);
 	ShaderElement*					rimp_select_sh_dynamic		(dxRender_Visual	*pVisual, float cdist_sq);

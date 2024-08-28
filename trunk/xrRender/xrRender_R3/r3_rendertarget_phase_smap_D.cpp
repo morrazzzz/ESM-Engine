@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-void	CRenderTarget::phase_smap_direct		(light* L, u32 sub_phase)
+void	CRenderTarget::phase_smap_direct(const light& light, u32 sub_phase)
 {
 	//	TODO: DX10: Check thst we will never need old SMap implementation
 	// Targets
@@ -33,9 +33,9 @@ void	CRenderTarget::phase_smap_direct		(light* L, u32 sub_phase)
 		RImplementation.rmNormal();
 	else
 	{
-		D3D_VIEWPORT VP					=	{L->X.D.minX,L->X.D.minY,
-			(L->X.D.maxX - L->X.D.minX) , 
-			(L->X.D.maxY - L->X.D.minY) , 
+		D3D_VIEWPORT VP					=	{light.X.D.minX,light.X.D.minY,
+			(light.X.D.maxX - light.X.D.minX) , 
+			(light.X.D.maxY - light.X.D.minY) , 
 			0,1 };
 		//CHK_DX								(HW.pDevice->SetViewport(&VP));
 		HW.pDevice->RSSetViewports(1, &VP);
@@ -57,7 +57,7 @@ void	CRenderTarget::phase_smap_direct		(light* L, u32 sub_phase)
 	*/
 }
 
-void	CRenderTarget::phase_smap_direct_tsh	(light* L, u32 sub_phase)
+void CRenderTarget::phase_smap_direct_tsh()
 {
 	VERIFY								(RImplementation.o.Tshadows);
 	//u32		_clr						= 0xffffffff;	//color_rgba(127,127,12,12);
