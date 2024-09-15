@@ -75,11 +75,18 @@ DEFINE_VECTOR(intrusive_ptr<CSkeletonWallmark>,SkeletonWMVec,SkeletonWMVecIt);
 // sanity check
 #ifdef DEBUG
 	struct dbg_marker{
-		BOOL*			lock;
-		dbg_marker		(BOOL* b)	{lock=b; VERIFY(*lock==FALSE); *lock=TRUE;}
-		~dbg_marker		()			{*lock=FALSE;}
+		std::atomic_bool dbgLock_Marker;
+		dbg_marker(bool locked)	
+		{
+			dbgLock_Marker = locked;
+			VERIFY(dbgLock_Marker == false);
+			dbgLock_Marker = true;}
+		~dbg_marker()			
+		{
+			dbgLock_Marker = false;
+		}
 	};
-#	define _DBG_SINGLE_USE_MARKER	dbg_marker	_dbg_marker(&dbg_single_use_marker)
+#	define _DBG_SINGLE_USE_MARKER	dbg_marker	_dbg_marker(dbg_single_use_marker)
 #else
 #	define _DBG_SINGLE_USE_MARKER
 #endif
@@ -91,7 +98,7 @@ class 	CKinematics: public FHierrarhyVisual, public IKinematics
 	friend class				CSkeletonX;
 public: 
 #ifdef DEBUG
-	BOOL						dbg_single_use_marker;
+	bool dbg_single_use_marker{};
 #endif
 			void				Bone_Calculate		(CBoneData* bd, Fmatrix* parent);
 			void				CLBone				(const CBoneData* bd, CBoneInstance &bi, const Fmatrix *parent, u8 mask_channel = (1<<0));
