@@ -52,6 +52,8 @@
 #	include "../../level.h"
 #endif // DEBUG
 
+//#define NO_INTERPOLATION
+
 using namespace StalkerSpace;
 
 extern int g_AI_inactive_time;
@@ -61,11 +63,11 @@ CAI_Stalker::CAI_Stalker			()
 	m_sound_user_data_visitor		= 0;
 	m_movement_manager				= 0;
 	m_group_behaviour				= true;
-	m_boneHitProtection				= NULL;
+	m_boneHitProtection				= nullptr;
 	m_power_fx_factor				= flt_max;
 	m_wounded						= false;
 #ifdef DEBUG
-	m_debug_planner					= 0;
+	m_debug_planner					= nullptr;
 #endif // DEBUG
 	m_registered_in_combat_on_migration	= false;
 }
@@ -418,19 +420,12 @@ void CAI_Stalker::net_Destroy()
 	CInventoryOwner::net_Destroy		();
 	m_pPhysics_support->in_NetDestroy	();
 
-	Device.remove_from_seq_parallel	(
-		fastdelegate::FastDelegate0<>(
-			this,
-			&CAI_Stalker::update_object_handler
-		)
-	);
-
-#ifdef DEBUG
+#if 0
 	fastdelegate::FastDelegate0<>	f = fastdelegate::FastDelegate0<>(this,&CAI_Stalker::update_object_handler);
 	xr_vector<fastdelegate::FastDelegate0<> >::const_iterator	I;
 	I	= std::find(Device.seqParallel.begin(),Device.seqParallel.end(),f);
 	VERIFY							(I == Device.seqParallel.end());
-#endif // DEBUG
+#endif // DEBUG 
 
 	xr_delete						(m_ce_close);
 	xr_delete						(m_ce_far);
@@ -451,13 +446,24 @@ void CAI_Stalker::net_Save			(NET_Packet& P)
 
 BOOL CAI_Stalker::net_SaveRelevant	()
 {
-	return (inherited::net_SaveRelevant() || BOOL(PPhysicsShell()!=NULL));
+	return inherited::net_SaveRelevant() || PPhysicsShell();
 }
 
 void CAI_Stalker::net_Export(NET_Packet& P)
 {
 	R_ASSERT(Local());
 
+#ifdef NO_INTERPOLATION
+	P.w_float(GetfHealth());
+
+	P.w_u32(Level().timeServer());
+	P.w_u8(0);
+	P.w_vec3(Position());
+	P.w_float(movement().m_body.current.yaw);
+	P.w_float(movement().m_head.current.yaw);
+	P.w_float(movement().m_head.current.pitch);
+	P.w_float(movement().m_head.current.roll);
+#else
 	// export last known packet
 	R_ASSERT(!NET.empty());
 	net_update& N = NET.back();
@@ -471,6 +477,7 @@ void CAI_Stalker::net_Export(NET_Packet& P)
 	P.w_float(N.o_torso.yaw);
 	P.w_float(N.o_torso.pitch);
 	P.w_float(N.o_torso.roll);
+#endif
 	P.w_u8(u8(g_Team()));
 	P.w_u8(u8(g_Squad()));
 	P.w_u8(u8(g_Group()));
@@ -570,13 +577,7 @@ void CAI_Stalker::UpdateCL()
 	if (g_Alive()) {
 		START_PROFILE("stalker/client_update/sight_manager")
 		VERIFY						(!m_pPhysicsShell);
-		try {
-			sight().update			();
-		}
-		catch(...) {
-			sight().setup			(CSightAction(SightManager::eSightTypeCurrentDirection));
-			sight().update			();
-		}
+		sight().update();
 
 		Exec_Look					(client_update_fdelta());
 		STOP_PROFILE
@@ -621,9 +622,11 @@ void CAI_Stalker::shedule_Update		( u32 DT )
 //		Msg				("[%6d][SH][%s]",Device.dwTimeGlobal,*cName());
 	// Queue shrink
 	VERIFY				(_valid(Position()));
+#ifndef NO_INTERPOLATION
 	u32	dwTimeCL		= Level().timeServer()-NET_Latency;
 	VERIFY				(!NET.empty());
 	while ((NET.size()>2) && (NET[1].dwTimeStamp<dwTimeCL)) NET.pop_front();
+#endif
 
 	Fvector				vNewPosition = Position();
 	VERIFY				(_valid(Position()));
@@ -641,7 +644,7 @@ void CAI_Stalker::shedule_Update		( u32 DT )
 #if 0//def DEBUG
 		memory().visual().check_visibles();
 #endif
-		if (g_mt_config.test(mtAiVision))
+		if constexpr (false /*&& g_mt_config.test(mtAiVision)*/)
 			Device.seqParallel.emplace_back(fastdelegate::FastDelegate0<>(this,&CCustomMonster::Exec_Visibility));
 		else {
 			START_PROFILE("stalker/schedule_update/vision")
@@ -661,61 +664,50 @@ void CAI_Stalker::shedule_Update		( u32 DT )
 
 		STOP_PROFILE
 	}
-
-	START_PROFILE("stalker/schedule_update/inherited")
-	inherited::inherited::shedule_Update(DT);
-	STOP_PROFILE
 	
-	if (Remote())		{
-	} else {
-		// here is monster AI call
-		VERIFY							(_valid(Position()));
-		m_fTimeUpdateDelta				= dt;
-		Device.Statistic->AI_Think.Begin	();
-		if (GetScriptControl())
-			ProcessScripts				();
-		else
+	START_PROFILE("stalker/schedule_update/inherited")
+		inherited::inherited::shedule_Update(DT);
+	STOP_PROFILE
+
+	// here is monster AI call
+	VERIFY(_valid(Position()));
+	Device.Statistic->AI_Think.Begin();
+	if (GetScriptControl())
+		ProcessScripts();
+	else
 #ifdef DEBUG
-			if (Device.dwFrame > (spawn_time() + g_AI_inactive_time))
+		if (Device.dwFrame > (spawn_time() + g_AI_inactive_time))
 #endif
-				Think					();
-		m_dwLastUpdateTime				= Device.dwTimeGlobal;
-		Device.Statistic->AI_Think.End	();
-		VERIFY							(_valid(Position()));
+			Think();
+	m_dwLastUpdateTime = Device.dwTimeGlobal;
+	Device.Statistic->AI_Think.End();
+	VERIFY(_valid(Position()));
 
-		// Look and action streams
-		float							temp = conditions().health();
-		if (temp > 0) {
-			START_PROFILE("stalker/schedule_update/feel_touch")
+	m_use_torso_look = sight().use_torso_look();
+
+	// Look and action streams
+	float temp = conditions().health();
+	if (temp > 0) {
+		START_PROFILE("stalker/schedule_update/feel_touch")
 			Fvector C; float R;
-			Center(C);
-			R = Radius();
-			feel_touch_update		(C,R);
-			STOP_PROFILE
-
-			START_PROFILE("stalker/schedule_update/net_update")
-			net_update				uNext;
-			uNext.dwTimeStamp		= Level().timeServer();
-			uNext.o_model			= movement().m_body.current.yaw;
-			uNext.o_torso			= movement().m_head.current;
-			uNext.p_pos				= vNewPosition;
-			uNext.fHealth			= GetfHealth();
-			NET.push_back			(uNext);
-			STOP_PROFILE
-		}
-		else 
-		{
-			START_PROFILE("stalker/schedule_update/net_update")
-			net_update			uNext;
-			uNext.dwTimeStamp	= Level().timeServer();
-			uNext.o_model		= movement().m_body.current.yaw;
-			uNext.o_torso		= movement().m_head.current;
-			uNext.p_pos			= vNewPosition;
-			uNext.fHealth		= GetfHealth();
-			NET.push_back		(uNext);
-			STOP_PROFILE
-		}
+		Center(C);
+		R = Radius();
+		feel_touch_update(C, R);
+		STOP_PROFILE
 	}
+
+#ifndef NO_INTERPOLATION
+	START_PROFILE("stalker/schedule_update/net_update")
+	net_update			uNext;
+	uNext.dwTimeStamp	= Level().timeServer();
+	uNext.o_model		= movement().m_body.current.yaw;
+	uNext.o_torso		= movement().m_head.current;
+	uNext.p_pos			= vNewPosition;
+	uNext.fHealth		= GetfHealth();
+	NET.push_back		(uNext);
+	STOP_PROFILE
+#endif
+
 	VERIFY				(_valid(Position()));
 
 	START_PROFILE("stalker/schedule_update/inventory_owner")
@@ -751,7 +743,7 @@ void CAI_Stalker::spawn_supplies	()
 	CObjectHandler::spawn_supplies	();
 }
 
-void CAI_Stalker::Think			()
+void CAI_Stalker::	Think			()
 {
 	START_PROFILE("stalker/schedule_update/think")
 	u32							update_delta = Device.dwTimeGlobal - m_dwLastUpdateTime;
@@ -801,7 +793,7 @@ void CAI_Stalker::net_Relcase				(CObject*	 O)
 
 CMovementManager *CAI_Stalker::create_movement_manager	()
 {
-	return	(m_movement_manager = xr_new<CStalkerMovementManager>(this));
+	return m_movement_manager =	xr_new<CStalkerMovementManager>(this);
 }
 
 CSound_UserDataVisitor *CAI_Stalker::create_sound_visitor		()

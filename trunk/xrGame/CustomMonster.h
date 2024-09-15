@@ -59,6 +59,8 @@ protected:
 	};
 
 private:
+	bool ChangeEyeState_;
+
 	xr_vector<CLASS_ID>	m_killer_clsids;
 
 public:
@@ -70,11 +72,9 @@ public:
 
 	float				m_fCurSpeed;
 
-	u32					eye_pp_stage;
 	u32					eye_pp_timestamp;
 	Fvector				m_tEyeShift;
 	float				m_fEyeShiftYaw;
-	BOOL				NET_WasExtrapolating;
 
 	Fvector				tWatchDirection;
 
@@ -108,19 +108,12 @@ public:
 	};
 	xr_deque<net_update>	NET;
 	net_update				NET_Last;
-	BOOL					NET_WasInterpolating;	// previous update was by interpolation or by extrapolation
-	u32						NET_Time;				// server time of last update
 //------------------------------
 
 	virtual BOOL		feel_touch_on_contact	(CObject *);
 	virtual BOOL		feel_touch_contact		(CObject *);
-	// utils
-	void				mk_orientation			( Fvector& dir, Fmatrix& mR );
-	void				mk_rotation				( Fvector& dir, SRotation &R);
 
 	// stream executors
-	virtual void		Exec_Action				( float dt );
-	virtual void		Exec_Look				( float dt );
 	void	__stdcall	Exec_Visibility			( );
 	void				eye_pp_s0				( );
 	void				eye_pp_s1				( );
@@ -142,7 +135,6 @@ public:
 	virtual BOOL		net_Spawn				( CSE_Abstract* DC);
 	virtual void		Die						( CObject* who);
 
-	virtual void		HitSignal				( float P,	Fvector& vLocalDir, CObject* who);
 	virtual void		g_WeaponBones			(int &/**L/**/, int &/**R1/**/, int &/**R2/**/) {};
 	virtual void		shedule_Update					( u32		DT		);
 	virtual void		UpdateCL				( );
@@ -159,19 +151,15 @@ public:
 	virtual void		OnHUDDraw				(CCustomHUD* hud);
 #endif
 
-	virtual bool		bfExecMovement			(){return(false);};
-
 
 	IC	bool					angle_lerp_bounds		(float &a, float b, float c, float d);
-	IC	void					vfNormalizeSafe			(Fvector& Vector);
 
 public:
 	virtual	float				ffGetFov				()	const								{return eye_fov;}	
 	virtual	float				ffGetRange				()	const								{return eye_range;}
 			void				set_fov					(float new_fov);
 			void				set_range				(float new_range);
-//	virtual	void				feel_touch_new			(CObject	*O);
-	virtual BOOL				feel_visible_isRelevant	(CObject		*O);
+
 	virtual	Feel::Sound*		dcast_FeelSound			()			{ return this;	}
 	virtual	void				Hit						(SHit* pHDS);
 
@@ -194,7 +182,6 @@ public:
 	{
 		return					(false);
 	}
-	virtual	void				PitchCorrection			();
 
 	virtual void				save					(NET_Packet &output_packet);
 	virtual void				load					(IReader &input_packet);
@@ -202,7 +189,7 @@ public:
 	
 	virtual	const MonsterSpace::SBoneRotation &head_orientation	() const;
 	
-	virtual void				UpdatePositionAnimation	();
+    void UpdatePositionAnimation();
 	virtual void				set_ready_to_save		();
 	virtual CPhysicsShellHolder*cast_physics_shell_holder	()	{return this;}
 	virtual CParticlesPlayer*	cast_particles_player	()	{return this;}

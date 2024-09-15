@@ -12,21 +12,6 @@ IC	bool CCustomMonster::angle_lerp_bounds(float &a, float b, float c, float d)
 	return(false);
 };
 
-IC void CCustomMonster::vfNormalizeSafe(Fvector& Vector)
-{
-	float fMagnitude = Vector.magnitude(); 
-	if (fMagnitude > EPS_L) {
-		Vector.x /= fMagnitude;
-		Vector.y /= fMagnitude;
-		Vector.z /= fMagnitude;
-	}
-	else {
-		Vector.x = 1.f;
-		Vector.y = 0.f;
-		Vector.z = 0.f;
-	}
-}
-
 ICF	bool left_angle(float y1, float y2)
 {
 	return			(_sin(y1)*_cos(y2) - _sin(y2)*_cos(y1) <= 0.f);
