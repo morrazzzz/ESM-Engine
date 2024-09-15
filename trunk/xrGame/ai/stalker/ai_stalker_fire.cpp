@@ -564,6 +564,7 @@ void CAI_Stalker::can_kill_entity_from	(const Fvector &position, Fvector directi
 {
 	m_pick_distance			= 0.f;
 	rq_storage.r_clear		();
+
 	can_kill_entity			(position,direction,distance,rq_storage);
 	if (m_can_kill_member && m_can_kill_enemy)
 		return;
@@ -615,10 +616,10 @@ float CAI_Stalker::pick_distance		()
 
 void CAI_Stalker::update_can_kill_info	()
 {
-	if (m_pick_frame_id == Device.dwFrame)
+	if (m_pick_frame_id >= Device.dwFrame)
 		return;
 
-	m_pick_frame_id			= Device.dwFrame;
+	m_pick_frame_id	= Device.dwFrame + 20;
 	m_can_kill_member		= false;
 	m_can_kill_enemy		= false;
 
