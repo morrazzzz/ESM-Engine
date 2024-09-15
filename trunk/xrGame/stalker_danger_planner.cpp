@@ -28,7 +28,6 @@
 #include "stalker_danger_grenade_planner.h"
 #include "stalker_danger_by_sound_planner.h"
 
-using namespace StalkerSpace;
 using namespace StalkerDecisionSpace;
 
 CStalkerDangerPlanner::CStalkerDangerPlanner	(CAI_Stalker *object, LPCSTR action_name) :
@@ -68,7 +67,7 @@ void CStalkerDangerPlanner::update			()
 void CStalkerDangerPlanner::initialize		()
 {
 	inherited::initialize						();
-	object().sound().remove_active_sounds		(u32(eStalkerSoundMaskNoHumming));
+	object().sound().remove_active_sounds		(u32(StalkerSpace::eStalkerSoundMaskNoHumming));
 	object().agent_manager().member().member(m_object).cover(0);
 }
 

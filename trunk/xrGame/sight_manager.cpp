@@ -17,8 +17,6 @@
 #include "ai_space.h"
 #include "profiler.h"
 
-using namespace StalkerSpace;
-
 //#define SIGHT_DEBUG
 
 CSightManager::CSightManager		(CAI_Stalker *object) :

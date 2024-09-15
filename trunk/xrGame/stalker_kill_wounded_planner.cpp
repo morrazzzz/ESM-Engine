@@ -18,7 +18,6 @@
 #include "memory_manager.h"
 #include "enemy_manager.h"
 
-using namespace StalkerSpace;
 using namespace StalkerDecisionSpace;
 
 CStalkerKillWoundedPlanner::CStalkerKillWoundedPlanner	(CAI_Stalker *object, LPCSTR action_name) :

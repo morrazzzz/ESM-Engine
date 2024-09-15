@@ -21,7 +21,6 @@
 #include "agent_enemy_manager.h"
 #include "inventory_item.h"
 
-using namespace StalkerSpace;
 
 const float start_fire_angle_difference	= PI_DIV_8;
 
@@ -33,7 +32,7 @@ CStalkerActionCombatBase::CStalkerActionCombatBase	(CAI_Stalker *object, LPCSTR 
 void CStalkerActionCombatBase::initialize			()
 {
 	inherited::initialize		();
-	object().sound().remove_active_sounds	(u32(eStalkerSoundMaskNoHumming));
+	object().sound().remove_active_sounds	(u32(StalkerSpace::eStalkerSoundMaskNoHumming));
 }
 
 void CStalkerActionCombatBase::finalize				()
@@ -215,8 +214,8 @@ void CStalkerActionCombatBase::play_panic_sound		(u32 max_start_time, u32 min_st
 {
 	object().sound().play	(
 		object().memory().enemy().selected()->human_being() ?
-		eStalkerSoundPanicHuman :
-		eStalkerSoundPanicMonster,
+		StalkerSpace::eStalkerSoundPanicHuman :
+		StalkerSpace::eStalkerSoundPanicMonster,
 		max_start_time,
 		min_start_time,
 		max_stop_time,
@@ -233,7 +232,7 @@ void CStalkerActionCombatBase::play_attack_sound	(u32 max_start_time, u32 min_st
 	if (!object().agent_manager().member().can_cry_noninfo_phrase())
 		return;
 
-	u32						sound_type = eStalkerSoundAttackNoAllies;
+	u32						sound_type = StalkerSpace::eStalkerSoundAttackNoAllies;
 #ifdef DEBUG
 	if (object().agent_manager().member().combat_members().empty())
 		Msg					(
@@ -247,12 +246,12 @@ void CStalkerActionCombatBase::play_attack_sound	(u32 max_start_time, u32 min_st
 
 	if (object().agent_manager().member().combat_members().size() > 1) {
 		if (object().agent_manager().enemy().enemies().size() > 1)
-			sound_type		= eStalkerSoundAttackAlliesSeveralEnemies;
+			sound_type		= StalkerSpace::eStalkerSoundAttackAlliesSeveralEnemies;
 		else
-			sound_type		= eStalkerSoundAttackAlliesSingleEnemy;
+			sound_type		= StalkerSpace::eStalkerSoundAttackAlliesSingleEnemy;
 	}
 	else
-		sound_type			= eStalkerSoundAttackNoAllies;
+		sound_type = StalkerSpace::eStalkerSoundAttackNoAllies;
 
 	object().sound().play	(
 		sound_type,
@@ -283,8 +282,8 @@ void CStalkerActionCombatBase::play_start_search_sound	(u32 max_start_time, u32 
 
 	object().sound().play	(
 		search_with_allies ?
-		eStalkerSoundSearch1WithAllies :
-		eStalkerSoundSearch1NoAllies,
+		StalkerSpace::eStalkerSoundSearch1WithAllies :
+		StalkerSpace::eStalkerSoundSearch1NoAllies,
 		max_start_time,
 		min_start_time,
 		max_stop_time,
