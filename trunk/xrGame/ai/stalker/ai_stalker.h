@@ -146,7 +146,8 @@ public:
 	CCharacterPhysicsSupport		*m_pPhysics_support;
 
 public:
-	bool							m_wounded;
+	std::atomic_bool m_use_torso_look;
+	bool m_wounded;
 
 public:
 										CAI_Stalker					();
@@ -200,7 +201,7 @@ public:
 	virtual void						feel_touch_new						(CObject* O);
 
 	virtual void						renderable_Render					();
-	virtual void						Exec_Look							(float dt);
+	void Exec_Look(float dt);
 	virtual	void						Hit									(SHit* pHDS);
 	virtual	void						PHHit								(SHit &H);
 	virtual BOOL						feel_vision_isRelevant				(CObject* who);

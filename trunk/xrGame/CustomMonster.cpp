@@ -45,6 +45,8 @@
 
 extern int g_AI_inactive_time;
 
+//#define NO_INTERPOLATION
+
 #ifndef MASTER_GOLD
 	Flags32		psAI_Flags	= {0};
 #endif // MASTER_GOLD
@@ -73,10 +75,10 @@ void CCustomMonster::SAnimState::Create(IKinematicsAnimated* K, LPCSTR base)
 
 CCustomMonster::CCustomMonster()
 {
-	m_sound_user_data_visitor	= 0;
-	m_memory_manager			= 0;
-	m_movement_manager			= 0;
-	m_sound_player				= 0;
+	m_sound_user_data_visitor	= nullptr;
+	m_memory_manager			= nullptr;
+	m_movement_manager			= nullptr;
+	m_sound_player				= nullptr;
 	m_already_dead				= false;
 	m_invulnerable				= false;
 }
@@ -174,11 +176,10 @@ void CCustomMonster::reinit		()
 	m_client_update_delta		= 0;
 	m_last_client_update_time	= Device.dwTimeGlobal;
 
-	eye_pp_stage				= 0;
-	m_dwLastUpdateTime			= 0xffffffff;
+	ChangeEyeState_ = false;
+	m_dwLastUpdateTime = 0xffffffff;
 	m_tEyeShift.set				(0,0,0);
 	m_fEyeShiftYaw				= 0.f;
-	NET_WasExtrapolating		= FALSE;
 
 	//////////////////////////////////////////////////////////////////////////
 	// Critical Wounds
@@ -211,21 +212,6 @@ void CCustomMonster::reload		(LPCSTR section)
 	m_panic_threshold			= pSettings->r_float(section,"panic_threshold");
 }
 
-void CCustomMonster::mk_orientation(Fvector &dir, Fmatrix& mR)
-{
-	// orient only in XZ plane
-	dir.y		= 0;
-	float		len = dir.magnitude();
-	if			(len>EPS_S)
-	{
-		// normalize
-		dir.x /= len;
-		dir.z /= len;
-		Fvector up;	up.set(0,1,0);
-		mR.rotation	(dir,up);
-	}
-}
-
 void CCustomMonster::net_Export(NET_Packet& P)					// export to server
 {
 	R_ASSERT(Local());
@@ -236,7 +222,11 @@ void CCustomMonster::net_Export(NET_Packet& P)					// export to server
 	P.w_float(GetfHealth());
 	P.w_u32(N.dwTimeStamp);
 	P.w_u8(0);
+#ifdef NO_INTERPOLATION
+	P.w_vec3(Position());
+#else
 	P.w_vec3(N.p_pos);
+#endif
 	P.w_float /*w_angle8*/(N.o_model);
 	P.w_float /*w_angle8*/(N.o_torso.yaw);
 	P.w_float /*w_angle8*/(N.o_torso.pitch);
@@ -246,93 +236,62 @@ void CCustomMonster::net_Export(NET_Packet& P)					// export to server
 	P.w_u8(u8(g_Group()));
 }
 
-void CCustomMonster::shedule_Update	( u32 DT )
+void CCustomMonster::shedule_Update(u32 DT)
 {
-	VERIFY				(!g_Alive() || processing_enabled());
+	VERIFY(!g_Alive() || processing_enabled());
 	// Queue shrink
-	VERIFY				(_valid(Position()));
-	u32	dwTimeCL		= Level().timeServer()-NET_Latency;
-	VERIFY				(!NET.empty());
-	while ((NET.size()>2) && (NET[1].dwTimeStamp<dwTimeCL)) NET.pop_front();
+	VERIFY(_valid(Position()));
+	u32	dwTimeCL = Level().timeServer() - NET_Latency;
+	VERIFY(!NET.empty());
+	while ((NET.size() > 2) && (NET[1].dwTimeStamp < dwTimeCL)) NET.pop_front();
 
-	float dt			= float(DT)/1000.f;
+	float dt = float(DT) / 1000.f;
 	// *** general stuff
 	if (g_Alive()) {
-		if (g_mt_config.test(mtAiVision))
+		if constexpr (false /*&& g_mt_config.test(mtAiVision)*/ )
 #ifndef DEBUG
-			Device.seqParallel.emplace_back(fastdelegate::FastDelegate0<>(this,&CCustomMonster::Exec_Visibility));
+			Device.seqParallel.emplace_back(fastdelegate::FastDelegate0<>(this, &CCustomMonster::Exec_Visibility));
 #else // DEBUG
 		{
 			if (!psAI_Flags.test(aiStalker) || !!smart_cast<CActor*>(Level().CurrentEntity()))
-				Device.seqParallel.push_back(fastdelegate::FastDelegate0<>(this,&CCustomMonster::Exec_Visibility));
+				Device.seqParallel.push_back(fastdelegate::FastDelegate0<>(this, &CCustomMonster::Exec_Visibility));
 			else
-				Exec_Visibility				();
+				Exec_Visibility();
 		}
 #endif // DEBUG
 		else
-			Exec_Visibility					();
-		memory().update						(dt);
+			Exec_Visibility();
+		memory().update(dt);
 	}
-	inherited::shedule_Update	(DT);
+	inherited::shedule_Update(DT);
 
 	// Queue setup
 	if (dt > 3) return;
 
-	m_dwCurrentTime	= Device.dwTimeGlobal;
+	m_dwCurrentTime = Device.dwTimeGlobal;
 
-	VERIFY				(_valid(Position()));
-	if (Remote())		{
-	} else {
-		// here is monster AI call
-		m_fTimeUpdateDelta				= dt;
-		Device.Statistic->AI_Think.Begin	();
-		if (GetScriptControl())
-			ProcessScripts();
-		else {
-			if (Device.dwFrame > spawn_time() + g_AI_inactive_time)
-				Think					();
-		}
-		m_dwLastUpdateTime				= Device.dwTimeGlobal;
-		Device.Statistic->AI_Think.End	();
+	VERIFY(_valid(Position()));
 
-		// Look and action streams
-		float							temp = conditions().health();
-		if (temp > 0) {
-			Exec_Action				(dt);
-			VERIFY					(_valid(Position()));
-			//Exec_Visibility		();
-			VERIFY					(_valid(Position()));
-			//////////////////////////////////////
-			//Fvector C; float R;
-			//////////////////////////////////////
-			// С Олеся - ПИВО!!!! (Диме :-))))
-			// m_PhysicMovementControl->GetBoundingSphere	(C,R);
-			//////////////////////////////////////
-			//Center(C);
-			//R = Radius();
-			//////////////////////////////////////
-			/// #pragma todo("Oles to all AI guys: perf/logical problem: Only few objects needs 'feel_touch' why to call update for everybody?")
-			///			feel_touch_update		(C,R);
-
-			net_update				uNext;
-			uNext.dwTimeStamp		= Level().timeServer();
-			uNext.o_model			= movement().m_body.current.yaw;
-			uNext.o_torso			= movement().m_body.current;
-			uNext.p_pos				= Position();
-			uNext.fHealth			= GetfHealth();
-			NET.push_back			(uNext);
-		}
-		else 
-		{
-			net_update			uNext;
-			uNext.dwTimeStamp	= Level().timeServer();
-			uNext.o_model		= movement().m_body.current.yaw;
-			uNext.o_torso		= movement().m_body.current;
-			uNext.p_pos			= Position();
-			uNext.fHealth		= GetfHealth();
-			NET.push_back		(uNext);
-		}
+	// here is monster AI call
+	Device.Statistic->AI_Think.Begin();
+	if (GetScriptControl())
+		ProcessScripts();
+	else {
+		if (Device.dwFrame > spawn_time() + g_AI_inactive_time)
+			Think();
 	}
+	m_dwLastUpdateTime = Device.dwTimeGlobal;
+	Device.Statistic->AI_Think.End();
+
+	// Look and action streams
+
+	net_update				uNext;
+	uNext.dwTimeStamp = Level().timeServer();
+	uNext.o_model = movement().m_body.current.yaw;
+	uNext.o_torso = movement().m_body.current;
+	uNext.p_pos = Position();
+	uNext.fHealth = GetfHealth();
+	NET.push_back(uNext);
 }
 
 void CCustomMonster::net_update::lerp(CCustomMonster::net_update& A, CCustomMonster::net_update& B, float f)
@@ -395,8 +354,6 @@ void CCustomMonster::UpdateCL	()
 		NET_Last		= N;
 	}
 	else {
-		// OK.	interpolation
-		NET_WasExtrapolating		= FALSE;
 		// Search 2 keyframes for interpolation
 		int select		= -1;
 		for (u32 id=0; id<NET.size()-1; ++id)
@@ -421,10 +378,6 @@ void CCustomMonster::UpdateCL	()
 				if (!bfScriptAnimation())
 					SelectAnimation	(XFORM().k,movement().detail().direction(),movement().speed());
 			}
-
-			// Signal, that last time we used interpolation
-			NET_WasInterpolating	= TRUE;
-			NET_Time				= dwTime;
 		}
 	}
 	STOP_PROFILE
@@ -436,12 +389,17 @@ void CCustomMonster::UpdateCL	()
 		UpdatePositionAnimation();
 	}
 
+
 	// Use interpolated/last state
 	if (g_Alive()) {
 		if (!animation_movement_controlled() && m_update_rotation_on_frame)
 			XFORM().rotateY			(NET_Last.o_model);
 
+#ifdef NO_INTERPOLATION
+		XFORM().translate_over(Position());
+#else
 		XFORM().translate_over		(NET_Last.p_pos);
+#endif
 
 		if (!animation_movement_controlled() && m_update_rotation_on_frame) {
 			Fmatrix					M;
@@ -463,21 +421,17 @@ void CCustomMonster::UpdateCL	()
 void CCustomMonster::UpdatePositionAnimation()
 {
 	START_PROFILE("CustomMonster/client_update/movement")
-	movement().on_frame			(character_physics_support()->movement(),NET_Last.p_pos);
+#ifdef NO_INTERPOLATION
+	movement().on_frame			(character_physics_support()->movement(), Position());
+#else
+		movement().on_frame(character_physics_support()->movement(), NET_Last.p_pos);
+#endif
 	STOP_PROFILE
 	
 	START_PROFILE("CustomMonster/client_update/animation")
 	if (!bfScriptAnimation())
 		SelectAnimation			(XFORM().k,movement().detail().direction(),movement().speed());
 	STOP_PROFILE
-}
-
-BOOL CCustomMonster::feel_visible_isRelevant (CObject* O)
-{
-	CEntityAlive* E = smart_cast<CEntityAlive*>		(O);
-	if (0==E)								return FALSE;
-	if (E->g_Team() == g_Team())			return FALSE;
-	return TRUE;
 }
 
 void CCustomMonster::eye_pp_s0			( )
@@ -524,7 +478,7 @@ void CCustomMonster::update_range_fov	(float &new_range, float &new_fov, float s
 	;
 }
 
-void CCustomMonster::eye_pp_s1			()
+void CCustomMonster:: eye_pp_s1			()
 {
 	float									new_range = eye_range, new_fov = eye_fov;
 	if (g_Alive()) {
@@ -558,18 +512,22 @@ void CCustomMonster::eye_pp_s2				( )
 
 void CCustomMonster::Exec_Visibility	( )
 {
-	//if (0==Sector())				return;
 	if (!g_Alive())					return;
 
 	Device.Statistic->AI_Vis.Begin	();
-	switch (eye_pp_stage%2)	
+
+	if (!ChangeEyeState_)
 	{
-	case 0:	
-			eye_pp_s0();			
-			eye_pp_s1();			break;
-	case 1:	eye_pp_s2();			break;
+		eye_pp_s0();
+		eye_pp_s1();
+		ChangeEyeState_ = true;
 	}
-	++eye_pp_stage					;
+	else
+	{
+		eye_pp_s2();
+		ChangeEyeState_ = false;
+	}
+
 	Device.Statistic->AI_Vis.End		();
 }
 
@@ -579,10 +537,6 @@ void CCustomMonster::UpdateCamera()
 	if (g_Alive())
 		update_range_fov					(new_range, new_fov, memory().visual().current_state().m_max_view_distance*eye_range, eye_fov);
 	g_pGameLevel->Cameras().Update(eye_matrix.c,eye_matrix.k,eye_matrix.j,new_fov,.75f,new_range,0);
-}
-
-void CCustomMonster::HitSignal(float /**perc/**/, Fvector& /**vLocalDir/**/, CObject* /**who/**/)
-{
 }
 
 void CCustomMonster::Die	(CObject* who)
@@ -681,10 +635,6 @@ void CCustomMonster::OnHUDDraw(CCustomHUD *hud)
 }
 #endif
 
-void CCustomMonster::Exec_Action(float /**dt/**/)
-{
-}
-
 //void CCustomMonster::Hit(float P, Fvector &dir,CObject* who, s16 element,Fvector position_in_object_space, float impulse, ALife::EHitType hit_type)
 void			CCustomMonster::Hit					(SHit* pHDS)
 {
@@ -710,12 +660,16 @@ void CCustomMonster::net_Destroy()
 			&CCustomMonster::update_sound_player
 		)
 	);
-	Device.remove_from_seq_parallel	(
-		fastdelegate::FastDelegate0<>(
-			this,
-			&CCustomMonster::Exec_Visibility
-		)
-	);
+
+	if constexpr (false)
+	{
+		Device.remove_from_seq_parallel(
+			fastdelegate::FastDelegate0<>(
+				this,
+				&CCustomMonster::Exec_Visibility
+			)
+		);
+	}
 	
 #ifdef DEBUG
 	DBG().on_destroy_object(this);
@@ -725,33 +679,6 @@ void CCustomMonster::net_Destroy()
 BOOL CCustomMonster::UsedAI_Locations()
 {
 	return					(TRUE);
-}
-
-void CCustomMonster::PitchCorrection() 
-{
-	CLevelGraph::SContour	contour;
-	ai().level_graph().contour(contour, ai_location().level_vertex_id());
-	
-	Fplane  P;
-	P.build(contour.v1,contour.v2,contour.v3);
-
-	Fvector position_on_plane;
-	P.project(position_on_plane,Position());
-
-	// находим проекцию точки, лежащей на векторе текущего направления
-	Fvector dir_point, proj_point;
-	dir_point.mad(position_on_plane, Direction(), 1.f);
-	P.project(proj_point,dir_point);
-	
-	// получаем искомый вектор направления
-	Fvector target_dir;
-	target_dir.sub(proj_point,position_on_plane);
-
-	float yaw,pitch;
-	target_dir.getHP(yaw,pitch);
-
-	movement().m_body.target.pitch = -pitch;
-
 }
 
 BOOL CCustomMonster::feel_touch_on_contact	(CObject *O)
