@@ -2172,9 +2172,6 @@
     <ClInclude Include="script_action_wrapper_inline.h">
       <Filter>AI\AComponents\DecisionManagement\ActionManagement\ActionBase\ScriptActionWrapper</Filter>
     </ClInclude>
-    <ClInclude Include="action_planner.h">
-      <Filter>AI\AComponents\DecisionManagement\ActionManagement\ActionPlanner</Filter>
-    </ClInclude>
     <ClInclude Include="action_planner_inline.h">
       <Filter>AI\AComponents\DecisionManagement\ActionManagement\ActionPlanner</Filter>
     </ClInclude>
@@ -6063,6 +6060,9 @@
     <ClInclude Include="death_anims.h">
       <Filter>Physics\CharacterSupport\death_anims</Filter>
     </ClInclude>
+    <ClInclude Include="action_planner.h">
+      <Filter>AI\AComponents\DecisionManagement\ActionManagement\ActionPlannerAction</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -6444,9 +6444,6 @@
       <Filter>AI\ALife\saved_game_wrapper</Filter>
     </ClCompile>
     <ClCompile Include="CustomMonster.cpp">
-      <Filter>AI\AMonsters\common\custom</Filter>
-    </ClCompile>
-    <ClCompile Include="CustomMonster_VCPU.cpp">
       <Filter>AI\AMonsters\common\custom</Filter>
     </ClCompile>
     <ClCompile Include="AI\ai_monsters_misc.cpp">
