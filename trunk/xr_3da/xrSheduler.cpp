@@ -6,8 +6,7 @@
 
 float			psShedulerCurrent		= 10.f	;
 float			psShedulerTarget		= 10.f	;
-const	float	psShedulerReaction		= 0.1f	;
-BOOL			g_bSheduleInProgress	= FALSE	;
+constexpr float psShedulerReaction = 0.1f;
 
 //-------------------------------------------------------------------------------------
 void CSheduler::Initialize		()
@@ -30,11 +29,9 @@ void CSheduler::Destroy			()
 #ifdef DEBUG	
 	if (!Items.empty())
 	{
-		string1024		_objects; _objects[0]=0;
-
-		Msg				("! Sheduler work-list is not empty");
-		for (u32 it=0; it<Items.size(); it++)
-			Msg("%s",*Items[it].Object->shedule_Name().c_str());
+		Msg("! Sheduler work-list is not empty");
+		for (u32 it = 0; it < Items.size(); it++)
+			Msg("%s", Items[it].Object->shedule_Name().c_str());
 	}
 #endif // DEBUG
 	ItemsRT.clear		();
@@ -42,6 +39,34 @@ void CSheduler::Destroy			()
 	ItemsProcessed.clear();
 	Registration.clear	();
 }
+
+#ifdef FRAME_SCHEDULER
+#include "igame_level.h"
+
+void CSheduler::AddSchedulerFrame()
+{
+	//if (psDeviceFlags.test(1ul << 23ul))
+		Device.seqFrameMT.Add(this, REG_PRIORITY_HIGH);
+	//else
+	//	Device.seqFrame.Add(this, REG_PRIORITY_HIGH);
+}
+
+void CSheduler::RemoveSchedulerFrame()
+{
+	//if (psDeviceFlags.test(mtScheduler))
+		Device.seqFrameMT.Remove(this);
+	//else
+	//	Device.seqFrame.Remove(this);
+}
+
+void CSheduler::OnFrame()
+{
+	if (Device.Paused() || !g_pGameLevel)
+		return;
+
+	UpdateScheduler();
+}
+#endif
 
 void	CSheduler::internal_Registration()
 {
@@ -65,7 +90,7 @@ void	CSheduler::internal_Registration()
 			// register if non-paired
 			if (!bFoundAndErased)		{
 #ifdef DEBUG_SCHEDULER
-				Msg						("SCHEDULER: internal register [%s][%x][%s]",*R.Object->shedule_Name(),R.Object,R.RT ? "true" : "false");
+				Msg						("SCHEDULER: internal register [%s][%x][%s]", R.Object->shedule_Name().c_str(), R.Object, R.RT ? "true" : "false");
 #endif // DEBUG_SCHEDULER
 				internal_Register		(R.Object,R.RT);
 			}
@@ -84,36 +109,21 @@ void	CSheduler::internal_Registration()
 
 void CSheduler::internal_Register	(ISheduled* O, BOOL RT)
 {
-	VERIFY	(!O->shedule.b_locked)	;
+	Item						TNext;
+	TNext.dwTimeForExecute = Device.dwTimeGlobal;
+	TNext.dwTimeOfLastExecute = Device.dwTimeGlobal;
+	TNext.Object = O;
+	TNext.scheduled_name = O->shedule_Name();
+	O->shedule.b_RT = RT;
+
 	if (RT)
-	{
-		// Fill item structure
-		Item						TNext;
-		TNext.dwTimeForExecute		= Device.dwTimeGlobal;
-		TNext.dwTimeOfLastExecute	= Device.dwTimeGlobal;
-		TNext.Object				= O;
-		TNext.scheduled_name		= O->shedule_Name();
-		O->shedule.b_RT				= TRUE;
-
-		ItemsRT.push_back			(TNext);
-	} else {
-		// Fill item structure
-		Item						TNext;
-		TNext.dwTimeForExecute		= Device.dwTimeGlobal;
-		TNext.dwTimeOfLastExecute	= Device.dwTimeGlobal;
-		TNext.Object				= O;
-		TNext.scheduled_name		= O->shedule_Name();
-		O->shedule.b_RT				= FALSE;
-
-		// Insert into priority Queue
-		Push						(TNext);
-	}
+		ItemsRT.push_back(TNext);
+	else
+		Push(TNext);
 }
 
 bool CSheduler::internal_Unregister	(ISheduled* O, BOOL RT, bool warn_on_not_found)
 {
-	//the object may be already dead
-	//VERIFY	(!O->shedule.b_locked)	;
 	if (RT)
 	{
 		for (u32 i=0; i<ItemsRT.size(); i++)
@@ -131,7 +141,7 @@ bool CSheduler::internal_Unregister	(ISheduled* O, BOOL RT, bool warn_on_not_fou
 		{
 			if (Items[i].Object==O) {
 #ifdef DEBUG_SCHEDULER
-				Msg					("SCHEDULER: internal unregister [%s][%x][%s]",*Items[i].scheduled_name,O,"false");
+				Msg					("SCHEDULER: internal unregister [%s][%x][%s]", Items[i].scheduled_name.c_str(), O, "false");
 #endif // DEBUG_SCHEDULER
 				Items[i].Object	= NULL;
 				return				(true);
@@ -141,7 +151,7 @@ bool CSheduler::internal_Unregister	(ISheduled* O, BOOL RT, bool warn_on_not_fou
 
 #ifdef DEBUG
 	if (warn_on_not_found)
-		Msg							("! scheduled object %s tries to unregister but is not registered",*O->shedule_Name());
+		Msg							("! scheduled object %s tries to unregister but is not registered",O->shedule_Name().c_str());
 #endif // DEBUG
 
 	return							(false);
@@ -221,7 +231,7 @@ void	CSheduler::Register		(ISheduled* A, BOOL RT				)
 	R.Object->shedule.b_RT	= RT	;
 
 #ifdef DEBUG_SCHEDULER
-	Msg			("SCHEDULER: register [%s][%x]",*A->shedule_Name(),A);
+	Msg			("SCHEDULER: register [%s][%x]", A->shedule_Name().c_str(), A);
 #endif // DEBUG_SCHEDULER
 
 	Registration.push_back	(R);
@@ -232,7 +242,7 @@ void	CSheduler::Unregister	(ISheduled* A						)
 	VERIFY		(Registered(A));
 
 #ifdef DEBUG_SCHEDULER
-	Msg			("SCHEDULER: unregister [%s][%x]",*A->shedule_Name(),A);
+	Msg			("SCHEDULER: unregister [%s][%x]",A->shedule_Name().c_str(), A);
 #endif // DEBUG_SCHEDULER
 
 	if (m_processing_now) {
@@ -246,22 +256,6 @@ void	CSheduler::Unregister	(ISheduled* A						)
 	R.Object	= A					;
 
 	Registration.push_back			(R);
-}
-
-void CSheduler::EnsureOrder		(ISheduled* Before, ISheduled* After)
-{
-	VERIFY(Before->shedule.b_RT && After->shedule.b_RT);
-
-	for (u32 i=0; i<ItemsRT.size(); i++)
-	{
-		if (ItemsRT[i].Object==After) 
-		{
-			Item	A			= ItemsRT[i];
-			ItemsRT.erase		(ItemsRT.begin()+i);
-			ItemsRT.push_back	(A);
-			return;
-		}
-	}
 }
 
 void CSheduler::Push				(Item& I)
@@ -282,34 +276,17 @@ void CSheduler::ProcessStep			()
 	u32		dwTime					= Device.dwTimeGlobal;
 	CTimer							eTimer;
 	for (int i=0;!Items.empty() && Top().dwTimeForExecute < dwTime; ++i) {
-		u32		delta_ms			= dwTime - Top().dwTimeForExecute;
-
 		// Update
 		Item	T					= Top	();
 #ifdef DEBUG_SCHEDULER
-		Msg		("SCHEDULER: process step [%s][%x][false]",*T.scheduled_name,T.Object);
+		Msg		("SCHEDULER: process step [%s][%x][false]", T.scheduled_name.c_str(), T.Object);
 #endif // DEBUG_SCHEDULER
 		u32		Elapsed				= dwTime-T.dwTimeOfLastExecute;
-		bool	condition;
-		
-#ifndef DEBUG
-		__try {
-#endif // DEBUG
-			condition				= (NULL==T.Object || !T.Object->shedule_Needed());
-#ifndef DEBUG
-		}
-		__except(EXCEPTION_EXECUTE_HANDLER) {
-			Msg						("Scheduler tried to update object %s",*T.scheduled_name);
-			FlushLog				();
-			T.Object				= 0;
-			continue;
-		}
-#endif // DEBUG
 
-		if (condition) {
+		if (!T.Object || !T.Object->shedule_Needed()) {
 			// Erase element
 #ifdef DEBUG_SCHEDULER
-			Msg						("SCHEDULER: process unregister [%s][%x][%s]",*T.scheduled_name,T.Object,"false");
+			Msg						("SCHEDULER: process unregister [%s][%x][%s]", T.scheduled_name.c_str(), T.Object, "false");
 #endif // DEBUG_SCHEDULER
 //			if (T.Object)
 //				Msg					("0x%08x UNREGISTERS because shedule_Needed() returned false",T.Object);
@@ -322,64 +299,38 @@ void CSheduler::ProcessStep			()
 		// Insert into priority Queue
 		Pop							();
 
-#ifndef DEBUG
-		__try {
-#endif // DEBUG
-			// Real update call
-			// Msg						("------- %d:",Device.dwFrame);
+		// Real update call
+		// Msg						("------- %d:",Device.dwFrame);
 #ifdef DEBUG
-			T.Object->dbg_startframe	= Device.dwFrame;
-			eTimer.Start				();
-			LPCSTR		_obj_name		= T.Object->shedule_Name().c_str();
+		T.Object->dbg_startframe = Device.dwFrame;
+		eTimer.Start();
 #endif // DEBUG
 
-			// Calc next update interval
-			u32		dwMin				= _max(u32(30),T.Object->shedule.t_min);
-			u32		dwMax				= (1000+T.Object->shedule.t_max)/2;
-			float	scale				= T.Object->shedule_Scale	(); 
-			u32		dwUpdate			= dwMin+iFloor(float(dwMax-dwMin)*scale);
-			clamp	(dwUpdate,u32(_max(dwMin,u32(20))),dwMax);
+		// Calc next update interval
+		u32		dwMin				= _max(u32(30),T.Object->shedule.t_min);
+		u32		dwMax				= (1000+T.Object->shedule.t_max)/2;
+		float	scale				= T.Object->shedule_Scale	(); 
+		u32		dwUpdate			= dwMin+iFloor(float(dwMax-dwMin)*scale);
+		clamp	(dwUpdate,u32(_max(dwMin,u32(20))),dwMax);
 
-
-//			try {
-				T.Object->shedule_Update	(clampr(Elapsed,u32(1),u32(_max(u32(T.Object->shedule.t_max),u32(1000)))) );
-//			} catch (...) {
+		T.Object->shedule_Update	(clampr(Elapsed,u32(1),u32(_max(u32(T.Object->shedule.t_max),u32(1000)))) );
 #ifdef DEBUG
-//				Msg		("! xrSheduler: object '%s' raised an exception", _obj_name);
-//				throw	;
-#endif
-//			}
-#ifdef DEBUG
-			u32	execTime				= eTimer.GetElapsed_ms		();
+		u32	execTime = eTimer.GetElapsed_ms();
 #endif
 
-			// Fill item structure
-			Item						TNext;
-			TNext.dwTimeForExecute		= dwTime+dwUpdate;
-			TNext.dwTimeOfLastExecute	= dwTime;
-			TNext.Object				= T.Object;
-			TNext.scheduled_name		= T.Object->shedule_Name();
+		// Fill item structure
+		Item TNext;
+		TNext.dwTimeForExecute = dwTime + dwUpdate;
+		TNext.dwTimeOfLastExecute = dwTime;
+		TNext.Object = T.Object;
+		TNext.scheduled_name = T.scheduled_name;
 
-			ItemsProcessed.push_back	(TNext);
+		ItemsProcessed.push_back	(TNext);
 #ifdef DEBUG
-//		u32	execTime				= eTimer.GetElapsed_ms		();
-			// VERIFY3					(T.Object->dbg_update_shedule == T.Object->dbg_startframe, "Broken sequence of calls to 'shedule_Update'", _obj_name );
-			if (delta_ms> 3*dwUpdate)	{
-				//Msg	("! xrSheduler: failed to shedule object [%s] (%dms)",	_obj_name, delta_ms	);
-			}
-			if (execTime> 15)			{
-				Msg	("* xrSheduler: too much time consumed by object [%s] (%dms)",	_obj_name, execTime	);
-			}
-#endif
-#ifndef DEBUG
+		if (execTime > 15) {
+			Msg("* xrSheduler: too much time consumed by object [%s] (%dms)", T.scheduled_name.c_str(), execTime);
 		}
-		__except(EXCEPTION_EXECUTE_HANDLER) {
-			Msg						("Scheduler tried to update object %s",*T.scheduled_name);
-			FlushLog				();
-			T.Object				= 0;
-			continue;
-		}
-#endif // DEBUG
+#endif
 
 		// 
 		if ((i % 3) != (3 - 1))
@@ -401,25 +352,14 @@ void CSheduler::ProcessStep			()
 	// always try to decrease target
 	psShedulerTarget	-= psShedulerReaction;
 }
-/*
-void CSheduler::Switch				()
-{
-	if (fibered)	
-	{
-		fibered						= FALSE;
-		SwitchToFiber				(fiber_main);
-	}
-}
-*/
-void CSheduler::Update				()
-{
-	R_ASSERT						(Device.Statistic);
+
+void CSheduler::UpdateScheduler()
+{	
 	// Initialize
 	Device.Statistic->Sheduler.Begin();
 	cycles_start					= CPU::QPC			();
 	cycles_limit					= CPU::qpc_freq * u64 (iCeil(psShedulerCurrent)) / 1000i64 + cycles_start;
 	internal_Registration			();
-	g_bSheduleInProgress			= TRUE;
 
 #ifdef DEBUG_SCHEDULER
 	Msg								("SCHEDULER: PROCESS STEP %d",Device.dwFrame);
@@ -432,11 +372,11 @@ void CSheduler::Update				()
 		Item&	T					= ItemsRT[it];
 		R_ASSERT					(T.Object);
 #ifdef DEBUG_SCHEDULER
-		Msg							("SCHEDULER: process step [%s][%x][true]",*T.Object->shedule_Name(),T.Object);
+		Msg							("SCHEDULER: process step [%s][%x][true]", T.scheduled_name.c_str(), T.Object);
 #endif // DEBUG_SCHEDULER
 		if(!T.Object->shedule_Needed()){
 #ifdef DEBUG_SCHEDULER
-			Msg						("SCHEDULER: process unregister [%s][%x][%s]",*T.Object->shedule_Name(),T.Object,"false");
+			Msg						("SCHEDULER: process unregister [%s][%x][%s]", T.scheduled_name.c_str(), T.Object, "false");
 #endif // DEBUG_SCHEDULER
 			T.dwTimeOfLastExecute	= dwTime;
 			continue;
@@ -462,7 +402,6 @@ void CSheduler::Update				()
 	Device.Statistic->fShedulerLoad	= psShedulerCurrent;
 
 	// Finalize
-	g_bSheduleInProgress			= FALSE;
 	internal_Registration			();
 	Device.Statistic->Sheduler.End	();
 }

@@ -173,8 +173,13 @@ ENGINE_API	string_path		g_sLaunchWorkingFolder;
 void InitEngine		()
 {
 	Engine.Initialize			( );
-	while (!g_bIntroFinished)	Sleep	(100);
-	Device.Initialize			( );
+	while (!g_bIntroFinished)
+		Sleep(100);
+	Device.Initialize();
+#ifdef FRAME_SCHEDULER
+	Engine.Sheduler.AddSchedulerFrame();
+#endif
+
 	CheckCopyProtection			( );
 }
 
@@ -262,8 +267,11 @@ void destroyConsole	()
 }
 void destroyEngine	()
 {
-	Device.Destroy				( );
-	Engine.Destroy				( );
+#ifdef FRAME_SCHEDULER
+	Engine.Sheduler.RemoveSchedulerFrame();
+#endif
+	Device.Destroy();
+	Engine.Destroy();
 }
 
 void execUserScript				( )

@@ -2,18 +2,21 @@
 #include "xrSheduler.h"
 #include "xr_object.h"
 
+#ifndef DEBUG
+#pragma todo("Why would he delete something that is not registered? why 'sad'???")
+#define UNREGISTER_IN_DESTRUCTOR
+#endif
+
 ISheduled::ISheduled	()	
 {
 	shedule.t_min		= 20;
 	shedule.t_max		= 1000;
-	shedule.b_locked	= FALSE;
 #ifdef DEBUG
 	dbg_startframe		= 1;
 	dbg_update_shedule	= 0;
 #endif
 }
 
-extern		BOOL		g_bSheduleInProgress;
 ISheduled::~ISheduled	()
 {
 	VERIFY2				(
@@ -21,11 +24,13 @@ ISheduled::~ISheduled	()
 		make_string("0x%08x : %s",this,*shedule_Name())
 	);
 
+	// Strange code: Begin. ????
 	// sad, but true
 	// we need this to become MASTER_GOLD
-#ifndef DEBUG
+#ifdef UNREGISTER_IN_DESTRUCTOR
 	Engine.Sheduler.Unregister				(this);
 #endif // DEBUG
+	// Strange code: End. ????
 }
 
 void	ISheduled::shedule_register			()
