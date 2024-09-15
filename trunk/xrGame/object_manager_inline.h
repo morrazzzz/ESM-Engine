@@ -47,6 +47,7 @@ void CAbstractObjectManager::update					()
 {
 	float					result = flt_max;
 	m_selected				= 0;
+
 	auto	I = m_objects.cbegin();
 	auto	E = m_objects.cend();
 	for ( ; I != E; ++I) {

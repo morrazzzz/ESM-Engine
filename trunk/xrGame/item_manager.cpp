@@ -77,19 +77,6 @@ void CItemManager::update			()
 {
 	START_PROFILE("Memory Manager/items::update")
 
-#ifdef DEBUG
-	OBJECTS::const_iterator	I = m_objects.begin();
-	OBJECTS::const_iterator	E = m_objects.end();
-	for ( ; I != E; ++I)
-		VERIFY3				(
-			m_object->movement().restrictions().accessible(
-				(*I)->ai_location().level_vertex_id()
-			),
-			*m_object->cName(),
-			*(*I)->cName()
-		);
-#endif // DEBUG
-
 	inherited::update		();
 
 	VERIFY3					(

@@ -136,7 +136,7 @@ void CMemoryManager::update			(float time_delta)
 	item().reset		();
 
 	if (visual().enabled())
-		update			(visual().objects(),true);
+		update			(visual().objects(), true);
 
 	update				(sound().objects(),registered_in_combat ? true : false);
 	update				(hit().objects(),registered_in_combat ? true : false);
