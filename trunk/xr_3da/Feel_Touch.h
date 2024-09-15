@@ -3,31 +3,33 @@
 #include "pure_relcase.h"
 
 class ENGINE_API CObject;
+
 namespace Feel
 {
 	class ENGINE_API Touch: private pure_relcase
 	{
 		friend class pure_relcase;
+
+		std::mutex ObjectsFeelLocked;
+
 	public:
 		struct DenyTouch
 		{
-			CObject*	O;
+			CObject* O;
 			DWORD		Expire;
 		};
+	private:
+		xr_vector<DenyTouch> FeelTouchDisableCopy;
+		xr_vector<CObject*> FeelTouchCopy;
 	protected:
-		xr_vector<DenyTouch>	feel_touch_disable;
-
+		xr_vector<DenyTouch> feel_touch_disable;
 	public:
 		xr_vector<CObject*>		feel_touch;
-		xr_vector<CObject*>		q_nearest;
 
-	public:
-		void __stdcall			feel_touch_relcase			(CObject* O);
+		Touch();
+		virtual	~Touch() = default;
 
-	public:
-								Touch						();
-		virtual					~Touch						();
-
+		void __stdcall			feel_touch_relcase(CObject* O);
 		virtual BOOL			feel_touch_contact			(CObject* O);
 		virtual void			feel_touch_update			(Fvector& P, float	R);
 		virtual void			feel_touch_deny				(CObject* O, DWORD	T);
