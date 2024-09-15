@@ -232,10 +232,8 @@ void CScriptEntity::vfFinishAction(CScriptEntityAction *tpEntityAction)
 
 void CScriptEntity::ProcessScripts()
 {
-	CScriptEntityAction	*l_tpEntityAction = 0;
-#ifdef DEBUG
-	bool			empty_queue = m_tpActionQueue.empty();
-#endif
+	CScriptEntityAction* l_tpEntityAction = nullptr;
+
 	while (!m_tpActionQueue.empty()) {
 		l_tpEntityAction= m_tpActionQueue.front();
 		VERIFY		(l_tpEntityAction);
@@ -270,15 +268,13 @@ void CScriptEntity::ProcessScripts()
 
 	if (m_tpActionQueue.empty()) {
 #ifdef DEBUG
-		if (empty_queue)
-			ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeInfo,"Object %s has an empty script queue!",*object().cName());
+		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeInfo,"Object %s has an empty script queue!",*object().cName());
 #endif
 		return;
 	}
 
 	try {
-		bool			l_bCompleted;
-		l_bCompleted	= l_tpEntityAction->m_tWatchAction.m_bCompleted;
+		bool l_bCompleted = l_tpEntityAction->m_tWatchAction.m_bCompleted;
 		bfAssignWatch	(l_tpEntityAction);
 		if (l_tpEntityAction->m_tWatchAction.m_bCompleted && !l_bCompleted)
 			object().callback(GameObject::eActionTypeWatch)(object().lua_game_object(),u32(eActionTypeWatch));
