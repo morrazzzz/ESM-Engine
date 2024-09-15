@@ -29,12 +29,11 @@
 #include "agent_enemy_manager.h"
 #include "..\include\xrRender\Kinematics.h"
 
-const u32 MIN_QUEUE		= 0;
-const u32 MAX_QUEUE		= 1;
-const u32 MIN_INTERVAL	= 1000;
-const u32 MAX_INTERVAL	= 1500;
+constexpr u32 MIN_QUEUE		= 0;
+constexpr u32 MAX_QUEUE		= 1;
+constexpr u32 MIN_INTERVAL	= 1000;
+constexpr u32 MAX_INTERVAL	= 1500;
 
-using namespace StalkerSpace;
 using namespace StalkerDecisionSpace;
 
 CInventoryItem *weapon_to_kill(const CAI_Stalker *object)
@@ -230,7 +229,7 @@ void CStalkerActionPrepareWounded::initialize				()
 	object().movement().set_mental_state		(eMentalStateDanger);
 	object().movement().set_body_state			(eBodyStateStand);
 	object().movement().set_movement_type		(eMovementTypeStand);
-	object().sound().play						(eStalkerSoundKillWounded);
+	object().sound().play						(StalkerSpace::eStalkerSoundKillWounded);
 	object().CObjectHandler::set_goal			(eObjectActionAimReady1,weapon_to_kill(&object()),MIN_QUEUE,MAX_QUEUE,MIN_INTERVAL,MAX_INTERVAL);
 }
 
@@ -249,7 +248,7 @@ void CStalkerActionPrepareWounded::execute					()
 		return;
 
 	if (!should_process(object(),object().memory().enemy().selected())) {
-		object().sound().set_sound_mask	((u32)eStalkerSoundMaskKillWounded);
+		object().sound().set_sound_mask	((u32)StalkerSpace::eStalkerSoundMaskKillWounded);
 		return;
 	}
 

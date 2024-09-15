@@ -52,13 +52,13 @@
 
 using namespace StalkerSpace;
 
-const float DANGER_DISTANCE				= 3.f;
-const u32	DANGER_INTERVAL				= 120000;
+constexpr float DANGER_DISTANCE				= 3.f;
+constexpr u32	DANGER_INTERVAL				= 120000;
 
-const float PRECISE_DISTANCE			= 2.5f;
-const float FLOOR_DISTANCE				= 2.f;
-const float NEAR_DISTANCE				= 2.5f;
-const u32	FIRE_MAKE_SENSE_INTERVAL	= 10000;
+constexpr float PRECISE_DISTANCE			= 2.5f;
+constexpr float FLOOR_DISTANCE				= 2.f;
+constexpr float NEAR_DISTANCE = 2.5f;
+constexpr u32 FIRE_MAKE_SENSE_INTERVAL = 10000;
 
 float CAI_Stalker::GetWeaponAccuracy	() const
 {

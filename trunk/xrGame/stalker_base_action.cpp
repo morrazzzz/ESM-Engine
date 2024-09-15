@@ -12,9 +12,6 @@
 #include "script_game_object.h"
 #include "stalker_animation_manager.h"
 #include "stalker_planner.h"
-#include "ai/stalker/ai_stalker_space.h"
-
-using namespace StalkerSpace;
 
 CStalkerActionBase::CStalkerActionBase		(CAI_Stalker *object, LPCSTR action_name) :
 	inherited				(object,action_name)

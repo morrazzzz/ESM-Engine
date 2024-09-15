@@ -44,12 +44,13 @@ TEMPLATE_SPECIALIZATION
 void _detail::callback		(CBoneInstance *B)
 {
 	auto* A = static_cast<CAI_Stalker*>(B->callback_param());
+
 	VERIFY					(_valid(B->mTransform));
 	Fvector c				= B->mTransform.c;
 	Fmatrix					spin;
 	float					yaw_factor = 0, pitch_factor = 0;
-	if (A->sight().use_torso_look()) {
-		yaw_factor			= yaw_factor_fire/100.f;
+	if (A->m_use_torso_look) {
+		yaw_factor			= yaw_factor_fire/100.f; 
 		pitch_factor		= pitch_factor_fire/100.f;
 	}
 	else {

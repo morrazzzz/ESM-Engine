@@ -30,7 +30,6 @@
 #include "stalker_kill_wounded_planner.h"
 #include "stalker_movement_manager.h"
 
-using namespace StalkerSpace;
 using namespace StalkerDecisionSpace;
 
 CStalkerCombatPlanner::CStalkerCombatPlanner	(CAI_Stalker *object, LPCSTR action_name) :
@@ -141,7 +140,7 @@ void CStalkerCombatPlanner::initialize			()
 			if (object().agent_manager().member().can_cry_noninfo_phrase())
 				if (object().agent_manager().member().members().size() > 1)
 					if (!CScriptActionPlanner::m_storage.property(eWorldPropertyUseSuddenness))
-						object().sound().play	(eStalkerSoundAlarm);
+						object().sound().play(StalkerSpace::eStalkerSoundAlarm);
 	}
 
 	object().agent_manager().member().register_in_combat	(m_object);

@@ -32,7 +32,6 @@
 #include "alife_human_brain.h"
 #include "alife_smart_terrain_task.h"
 
-using namespace StalkerSpace;
 using namespace StalkerDecisionSpace;
 
 //#define GRENADE_TEST
@@ -101,7 +100,7 @@ void CStalkerActionSolveZonePuzzle::finalize	()
 	if (!object().g_Alive())
 		return;
 
-	object().sound().remove_active_sounds		(u32(eStalkerSoundMaskNoHumming));
+	object().sound().remove_active_sounds		(u32(StalkerSpace::eStalkerSoundMaskNoHumming));
 }
 
 void CStalkerActionSolveZonePuzzle::execute		()
@@ -211,7 +210,7 @@ void CStalkerActionSmartTerrain::execute				()
 	if (completed())
 		object().CObjectHandler::set_goal		(eObjectActionStrapped,object().best_weapon());
 
-	object().sound().play						(eStalkerSoundHumming,60000,10000);
+	object().sound().play						(StalkerSpace::eStalkerSoundHumming,60000,10000);
 
 	CSE_ALifeHumanAbstract						*stalker = smart_cast<CSE_ALifeHumanAbstract*>(ai().alife().objects().object(m_object->ID()));
 	VERIFY										(stalker);

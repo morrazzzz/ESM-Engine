@@ -41,14 +41,11 @@
 #	define TEST_MENTAL_STATE
 #endif // DEBUG
 
-const float TEMP_DANGER_DISTANCE	= 5.f;
-const u32	TEMP_DANGER_INTERVAL	= 120000;
+constexpr float TEMP_DANGER_DISTANCE	= 5.f;
+constexpr u32	TEMP_DANGER_INTERVAL	= 120000;
+constexpr float	CLOSE_MOVE_DISTANCE		= -10.f;
+constexpr u32	CROUCH_LOOK_OUT_DELTA	= 5000;
 
-const float	CLOSE_MOVE_DISTANCE		= -10.f;
-
-const u32	CROUCH_LOOK_OUT_DELTA	= 5000;
-
-using namespace StalkerSpace;
 using namespace StalkerDecisionSpace;
 
 typedef CStalkerActionBase::_edge_value_type _edge_value_type;
@@ -70,7 +67,7 @@ void CStalkerActionGetItemToKill::initialize	()
 {
 	inherited::initialize	();
 
-	object().sound().remove_active_sounds(u32(eStalkerSoundMaskNoHumming));
+	object().sound().remove_active_sounds(u32(StalkerSpace::eStalkerSoundMaskNoHumming));
 
 	object().sight().setup	(CSightAction(object().m_best_found_item_to_kill ? &object().m_best_found_item_to_kill->object() : 0,true));
 
@@ -124,7 +121,7 @@ void CStalkerActionMakeItemKilling::initialize	()
 {
 	inherited::initialize			();
 
-	object().sound().remove_active_sounds	(u32(eStalkerSoundMaskNoHumming));
+	object().sound().remove_active_sounds	(u32(StalkerSpace::eStalkerSoundMaskNoHumming));
 
 	object().sight().clear	();
 	object().sight().add_action(eSightActionTypeWatchItem,xr_new<CSightControlAction>(1.f,3000,CSightAction(SightManager::eSightTypePathDirection)));
@@ -454,7 +451,7 @@ void CStalkerActionTakeCover::initialize		()
 		if (object().agent_manager().member().can_cry_noninfo_phrase())
 			if (object().Position().distance_to_sqr(object().memory().enemy().selected()->Position()) < _sqr(10.f))
 				if (object().memory().visual().visible_now(object().memory().enemy().selected()) && object().agent_manager().member().group_behaviour())
-					object().sound().play		(eStalkerSoundBackup,0,0,6000,4000);
+					object().sound().play(StalkerSpace::eStalkerSoundBackup,0,0,6000,4000);
 	}
 #endif
 }
@@ -695,9 +692,9 @@ void CStalkerActionHoldPosition::execute		()
 	}
 
 	if (object().agent_manager().member().cover_detouring() && fire_make_sense()) {
-//		object().sound().play		(eStalkerSoundDetour,3000,3000,10000,10000);
-		object().sound().play		(eStalkerSoundNeedBackup,3000,3000,10000,10000);
-		fire						();
+		//		object().sound().play		(eStalkerSoundDetour,3000,3000,10000,10000);
+		object().sound().play(StalkerSpace::eStalkerSoundNeedBackup, 3000, 3000, 10000, 10000);
+		fire();
 	}
 	else {
 		aim_ready					();
@@ -752,7 +749,7 @@ void CStalkerActionDetourEnemy::initialize		()
 //#ifndef SILENT_COMBAT
 	if (object().memory().enemy().selected()->human_being() && object().agent_manager().member().group_behaviour())
 //		object().sound().play			(eStalkerSoundNeedBackup);
-		object().sound().play			(eStalkerSoundDetour);
+		object().sound().play			(StalkerSpace::eStalkerSoundDetour);
 //#endif
 }
 
@@ -1273,7 +1270,7 @@ void CStalkerActionCriticalHit::initialize					()
 		object().CObjectHandler::set_goal	(eObjectActionIdle,object().best_weapon());
 
 	object().sight().setup					(CSightAction(SightManager::eSightTypeCurrentDirection,true,true));
-	object().sound().play					(eStalkerSoundInjuring);
+	object().sound().play					(StalkerSpace::eStalkerSoundInjuring);
 }
 
 void CStalkerActionCriticalHit::finalize					()

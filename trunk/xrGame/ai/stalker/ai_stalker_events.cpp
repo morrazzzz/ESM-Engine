@@ -16,7 +16,6 @@
 #include "../../level.h"
 #include "../../ai_monster_space.h"
 
-using namespace StalkerSpace;
 using namespace MonsterSpace;
 
 #define SILENCE

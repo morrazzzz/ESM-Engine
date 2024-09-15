@@ -25,8 +25,6 @@
 #include "ai/stalker/ai_stalker_space.h"
 #include "restricted_object.h"
 
-using namespace StalkerSpace;
-
 #ifdef _DEBUG
 //#	define STALKER_DEBUG_MODE
 #endif
@@ -84,14 +82,14 @@ void CStalkerActionNoALife::finalize	()
 	if (!object().g_Alive())
 		return;
 
-	object().sound().remove_active_sounds	(u32(eStalkerSoundMaskNoHumming));
+	object().sound().remove_active_sounds	(u32(StalkerSpace::eStalkerSoundMaskNoHumming));
 }
 
 void CStalkerActionNoALife::execute		()
 {
 	inherited::execute				();
 #ifndef STALKER_DEBUG_MODE
-	object().sound().play			(eStalkerSoundHumming,60000,10000);
+	object().sound().play			(StalkerSpace::eStalkerSoundHumming,60000,10000);
 	if (Device.dwTimeGlobal >= m_stop_weapon_handling_time)
 		if (!object().best_weapon())
 			object().CObjectHandler::set_goal	(eObjectActionIdle);
@@ -122,7 +120,7 @@ void CStalkerActionGatherItems::initialize	()
 	object().movement().set_body_state		(eBodyStateStand);
 	object().movement().set_movement_type		(eMovementTypeWalk);
 	object().movement().set_mental_state		(eMentalStateDanger);
-	object().sound().remove_active_sounds	(u32(eStalkerSoundMaskNoHumming));
+	object().sound().remove_active_sounds	(u32(StalkerSpace::eStalkerSoundMaskNoHumming));
 	if (!object().inventory().ActiveItem())
 		object().CObjectHandler::set_goal	(eObjectActionIdle);
 	else
