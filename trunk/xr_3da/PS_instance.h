@@ -14,7 +14,6 @@ class ENGINE_API CPS_Instance	:
 
 private:
 	bool					m_destroy_on_game_load;
-
 protected:
 	int						m_iLifeTime			;
 	BOOL					m_bAutoRemove		;
@@ -33,13 +32,18 @@ public:
 	IC BOOL					PSI_IsAutomatic		()						{	return m_bAutoRemove;				}
 	IC void					PSI_SetLifeTime		(float life_time)		{	m_iLifeTime=iFloor(life_time*1000);	}
 
-	virtual void			Play				()				= 0;
-	virtual BOOL			Locked				()				{ return FALSE; }
+	virtual void Play()	= 0;
+	virtual void UpdateParticles() = 0;
 
 	virtual	shared_str		shedule_Name		() const		{ return shared_str("particle_instance"); };
+	bool shedule_Needed() override { return true; }
+	float shedule_Scale() override;
+
 
 	virtual void			shedule_Update		(u32 dt);
 	virtual	IRenderable*	dcast_Renderable	()				{ return this;	}
+private:
+	const Fvector& PositionParticle();
 };
 
 #endif

@@ -6,12 +6,15 @@
 
 #include "ps_instance.h"
 #include "IGame_Persistent.h"
+#include "../Include/xrRender/RenderVisual.h"
 
 CPS_Instance::CPS_Instance			(bool destroy_on_game_load)	:
 	ISpatial				(g_SpatialSpace),
 	m_destroy_on_game_load	(destroy_on_game_load)
 {
 	g_pGamePersistent->ps_active.insert		(this);
+	g_pGamePersistent->ps_needtoupdate.emplace_back(this);
+
 	renderable.pROS_Allowed					= FALSE;
 
 	m_iLifeTime								= int_max;
@@ -28,6 +31,8 @@ CPS_Instance::~CPS_Instance					()
 	VERIFY									(it!=g_pGamePersistent->ps_active.end());
 	g_pGamePersistent->ps_active.erase		(it);
 
+	std::erase_if(g_pGamePersistent->ps_needtoupdate, [this](CPS_Instance* particle) { return particle == this; });
+
 	xr_vector<CPS_Instance*>::iterator it2	= std::find( g_pGamePersistent->ps_destroy.begin(),
 													g_pGamePersistent->ps_destroy.end(), this);
 
@@ -37,6 +42,11 @@ CPS_Instance::~CPS_Instance					()
 	shedule_unregister						();
 }
 //----------------------------------------------------
+const Fvector& CPS_Instance::PositionParticle()
+{
+	return renderable.visual->getVisData().sphere.P;
+}
+
 void CPS_Instance::shedule_Update	(u32 dt)
 {
 	if (renderable.pROS)			::Render->ros_destroy	(renderable.pROS);	//. particles doesn't need ROS
@@ -49,6 +59,11 @@ void CPS_Instance::shedule_Update	(u32 dt)
 	if (m_bAutoRemove && m_iLifeTime<=0)
 		PSI_destroy					();
 }
+
+float CPS_Instance::shedule_Scale()
+{
+	return Device.vCameraPosition.distance_to(PositionParticle()) / 200.f;
+}
 //----------------------------------------------------
 void CPS_Instance::PSI_destroy		()
 {
@@ -59,5 +74,5 @@ void CPS_Instance::PSI_destroy		()
 //----------------------------------------------------
 void CPS_Instance::PSI_internal_delete		()
 {
-	delete			(this);
+	delete this;
 }

@@ -49,10 +49,12 @@ public:
 public:
 	xr_set<CPS_Instance*>			ps_active;
 	xr_vector<CPS_Instance*>		ps_destroy;
+	xr_vector<CPS_Instance*> ps_needtoupdate;
 	xr_vector<CPS_Instance*>		ps_needtoplay;
 
 public:
-			void					destroy_particles	(const bool &all_particles);
+	void __stdcall update_particles();
+	void destroy_particles(const bool &all_particles);
 
 public:
 	virtual void					PreStart			(LPCSTR op);
