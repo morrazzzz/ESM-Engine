@@ -161,21 +161,28 @@ void IGame_Persistent::OnFrame		()
 		ps_needtoplay.pop_back	();
 		psi->Play				();
 	}
+
+	if (psDeviceFlags.test(mtParticles))
+		Device.seqParallel.emplace_back(this, &IGame_Persistent::update_particles);
+	else
+		update_particles();
+
 	// Destroy inactive particle systems
 	while (ps_destroy.size())
 	{
 //		u32 cnt					= ps_destroy.size();
 		CPS_Instance*	psi		= ps_destroy.back();
 		VERIFY					(psi);
-		if (psi->Locked())
-		{
-			Log("--locked");
-			break;
-		}
 		ps_destroy.pop_back		();
 		psi->PSI_internal_delete();
 	}
 #endif
+}
+
+void IGame_Persistent::update_particles()
+{
+	for (u32 i = 0; i < ps_needtoupdate.size(); i++)
+		ps_needtoupdate[i]->UpdateParticles();
 }
 
 void IGame_Persistent::destroy_particles		(const bool &all_particles)
@@ -187,7 +194,6 @@ void IGame_Persistent::destroy_particles		(const bool &all_particles)
 	{
 		CPS_Instance*	psi		= ps_destroy.back	();		
 		VERIFY					(psi);
-		VERIFY					(!psi->Locked());
 		ps_destroy.pop_back		();
 		psi->PSI_internal_delete();
 	}
@@ -214,6 +220,6 @@ void IGame_Persistent::destroy_particles		(const bool &all_particles)
 			(*I)->PSI_internal_delete	();
 	}
 
-	VERIFY								(ps_needtoplay.empty() && ps_destroy.empty() && (!all_particles || ps_active.empty()));
+	VERIFY								(ps_needtoplay.empty() && ps_destroy.empty() && ps_needtoupdate.empty() && (!all_particles || ps_active.empty()));
 #endif
 }
