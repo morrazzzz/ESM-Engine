@@ -515,6 +515,16 @@ public:
 	}
 };
 #endif
+
+class CCC_FindInConsole: public IConsole_Command
+{
+public:
+	CCC_FindInConsole(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = false; }
+	void Execute(LPCSTR args) override {
+		Console->FindConsole(args);
+	}
+};
+
 //-----------------------------------------------------------------------
 ENGINE_API float	psHUD_FOV=0.45f;
 
@@ -675,6 +685,8 @@ if(strstr(Core.Params,"designer"))
 
 	CMD4(CCC_Integer, "show_display_engine_information", &DisplayEngineInformation_, 0, 1)
 	CMD4(CCC_Integer, "show_fps_display", &DisplayFPSShow_, 0, 1)
+
+    CMD1(CCC_FindInConsole, "find_in_console")
 
 	extern int g_svTextConsoleUpdateRate;
 	CMD4(CCC_Integer, "sv_console_update_rate", &g_svTextConsoleUpdateRate, 1, 100);
