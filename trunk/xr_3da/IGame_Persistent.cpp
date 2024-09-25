@@ -220,6 +220,6 @@ void IGame_Persistent::destroy_particles		(const bool &all_particles)
 			(*I)->PSI_internal_delete	();
 	}
 
-	VERIFY								(ps_needtoplay.empty() && ps_destroy.empty() && ps_needtoupdate.empty() && (!all_particles || ps_active.empty()));
+	VERIFY								(ps_needtoplay.empty() && ps_destroy.empty() && (!all_particles || ps_active.empty() && ps_needtoupdate.empty()));
 #endif
 }
