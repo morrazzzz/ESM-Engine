@@ -5,7 +5,7 @@
 #include "CharacterPhysicsSupport.h"
 #include "PHMovementControl.h"
 #include "CustomMonster.h"
-
+#include "xrserver_objects_alife.h"
 
 
 #include "../Include/xrRender/Kinematics.h"
@@ -256,6 +256,22 @@ void CCharacterPhysicsSupport::SpawnInitPhysics(CSE_Abstract* e)
 	{
 		ActivateShell( NULL );
 	}
+
+	CSE_PHSkeleton *po		= smart_cast<CSE_PHSkeleton*>(e);
+	VERIFY( po );
+
+	PHNETSTATE_VECTOR& saved_bones=po->saved_bones.bones;
+	if( po->_flags.test(CSE_PHSkeleton::flSavedData) &&
+		saved_bones.size() != m_EntityAlife.PHGetSyncItemsNumber()
+		)
+	{
+#ifdef DEBUG
+		Msg("! saved bones %d , current bones %d, object :%s", saved_bones.size(), m_EntityAlife.PHGetSyncItemsNumber(), m_EntityAlife.cName().c_str() );
+#endif
+		po->_flags.set(CSE_PHSkeleton::flSavedData, FALSE );
+		saved_bones.clear();
+	}
+
 }
 
 void CCharacterPhysicsSupport::destroy_imotion()
