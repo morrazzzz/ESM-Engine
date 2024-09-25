@@ -19,6 +19,10 @@ static float const UI_BASE_HEIGHT	= 768.0f;
 static float const LDIST            = 0.05f;
 static u32   const cmd_history_max  = 64;
 
+static u32 const bad_fps_console_color = color_rgba(255, 0, 0, 255);
+static u32 const normal_fps_console_color = color_rgba(255, 186, 39, 255);
+static u32 const good_fps_console_color = color_rgba(29, 255, 0, 255);
+
 static u32 const prompt_font_color  = color_rgba( 228, 228, 255, 255 );
 static u32 const tips_font_color    = color_rgba( 230, 250, 230, 255 );
 static u32 const cmd_font_color     = color_rgba( 138, 138, 245, 255 );
@@ -120,6 +124,8 @@ void CConsole::Initialize()
 	m_prev_length_str = 0;
 	m_cur_cmd		= NULL;
 	reset_selected_tip();
+
+	FPSInConsole = 30.0f;
 
 	// Commands
 	extern void CCC_Register();
@@ -353,6 +359,23 @@ void CConsole::OnRender()
 	string16 q;
 	itoa( log_line, q, 10 );
 	u32 qn = xr_strlen( q );
+
+	if (Device.fTimeDelta > EPS_S)
+	{
+		float fps = 1.f / Device.fTimeDelta;
+		float fOne = 0.3f;
+		float fInv = 1.f - fOne;
+		FPSInConsole = fInv * FPSInConsole + fOne * fps;
+
+		if (FPSInConsole <= 45.f)
+			pFont->SetColor(bad_fps_console_color);
+		else if (FPSInConsole <= 75.f)
+			pFont->SetColor(normal_fps_console_color);
+		else
+			pFont->SetColor(good_fps_console_color);
+	}
+
+	pFont->OutI(0.82f, -0.96f, "FPS: [%3.1f]", FPSInConsole);
 	pFont->SetColor( total_font_color );
 	pFont->OutI( 0.95f - 0.03f * qn, fMaxY - 2.0f * LDIST, "[%d]", log_line );
 		

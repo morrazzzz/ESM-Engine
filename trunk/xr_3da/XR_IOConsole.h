@@ -102,6 +102,8 @@ private:
 	int				m_start_tip;
 	u32				m_prev_length_str;
 
+	float FPSInConsole;
+
 public:
 					CConsole			();
 	virtual			~CConsole			();
