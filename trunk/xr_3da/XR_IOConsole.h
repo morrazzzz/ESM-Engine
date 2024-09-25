@@ -123,6 +123,8 @@ public:
 	void			Show				();
 	void			Hide				();
 
+	void FindConsole(std::string_view data_string_to_find);
+
 	void			Execute				( LPCSTR cmd );
 	void			ExecuteScript		( LPCSTR str );
 	void			ExecuteCommand		( LPCSTR cmd, bool record_cmd = true );

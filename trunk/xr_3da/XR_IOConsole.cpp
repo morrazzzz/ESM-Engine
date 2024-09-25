@@ -581,7 +581,7 @@ void CConsole::ExecuteCommand( LPCSTR cmd_str, bool record_cmd )
 		IConsole_Command* cc = it->second;
 		if ( cc && cc->bEnabled )
 		{
-			if ( cc->bLowerCaseArgs )
+			if ( cc->bLowerCaseArgs && !ec().get_key_state(text_editor::ks_LShift))
 			{
 				strlwr( last );
 			}
@@ -672,6 +672,42 @@ void CConsole::Hide()
 	Device.seqFrame.Remove( this );
 	Device.seqRender.Remove( this );
 	m_editor->IR_Release();
+}
+
+void CConsole::FindConsole(std::string_view data_string_to_find)
+{
+	u32 LogSize_ = LogFile->size() - 1 - scroll_delta;
+	bool ResultFind_ = false;
+	u32 TotalResultFind_ = 0;
+
+	for (u32 i = 0; i < LogSize_; ++i)
+	{
+		LPCSTR T = ((*LogFile)[i]).c_str();
+
+		if (!T)
+			continue;
+
+		// There is no need to react to past search results and the command entered by the user.
+		if (strstr(T, "find_in_console") || strstr(T, "Finding"))
+			continue;
+
+		if (strstr(T, data_string_to_find.data()))
+		{
+			Msg("# [Finding]: %s", T);
+			TotalResultFind_++;
+
+			if (!ResultFind_)
+				ResultFind_ = true;
+		}
+	}
+
+	if (!ResultFind_)
+	{
+		Msg("# [Finding]: Nothing was found by by the search: %s ", data_string_to_find.data());
+		return;
+	}
+
+	Msg("# [Finding]: Total`s result find: [%d] count string`s finded, search: [%s]", TotalResultFind_, data_string_to_find.data());
 }
 
 void CConsole::SelectCommand()
