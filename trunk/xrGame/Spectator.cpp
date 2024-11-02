@@ -104,12 +104,12 @@ void CSpectator::UpdateCL()
 					}
 				}
 			}
-			// íå íàéäåí îáúåêò ñ òàêèì èíäåêñîì - ñáðîñèì íà ïåðâûé îáúåêò
+			// Ð½Ðµ Ð½Ð°Ð¹Ð´ÐµÐ½ Ð¾Ð±ÑŠÐµÐºÑ‚ Ñ Ñ‚Ð°ÐºÐ¸Ð¼ Ð¸Ð½Ð´ÐµÐºÑÐ¾Ð¼ - ÑÐ±Ñ€Ð¾ÑÐ¸Ð¼ Ð½Ð° Ð¿ÐµÑ€Ð²Ñ‹Ð¹ Ð¾Ð±ÑŠÐµÐºÑ‚
 			look_idx = 0;
-			// íèêîãî íåò çà êåì ñìîòðåòü - ïåðåêëþ÷èìñÿ íà 
+			// Ð½Ð¸ÐºÐ¾Ð³Ð¾ Ð½ÐµÑ‚ Ð·Ð° ÐºÐµÐ¼ ÑÐ¼Ð¾Ñ‚Ñ€ÐµÑ‚ÑŒ - Ð¿ÐµÑ€ÐµÐºÐ»ÑŽÑ‡Ð¸Ð¼ÑÑ Ð½Ð° 
 			if (0==idx) cam_Set(eacFreeFly);
 		}
-		// ïî óìîë÷àíèþ eacFreeFly
+		// Ð¿Ð¾ ÑƒÐ¼Ð¾Ð»Ñ‡Ð°Ð½Ð¸ÑŽ eacFreeFly
 		cam_Update		(0);
 	}
 }
@@ -286,12 +286,6 @@ void CSpectator::FirstEye_ToPlayer(CObject* pObject)
 		if (pActor)
 		{
 			pActor->inventory().Items_SetCurrentEntityHud(true);
-
-			CHudItem* pHudItem = smart_cast<CHudItem*>(pActor->inventory().ActiveItem());
-			if (pHudItem) 
-			{
-				pHudItem->OnStateSwitch(pHudItem->GetState());
-			}
 		}
 	};
 };

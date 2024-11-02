@@ -10,7 +10,9 @@
 
 IC	void CDebugRenderer::render			()
 {
+#ifdef DEBUG
 	DRender->Render();
+#endif
 }
 
 IC	void CDebugRenderer::draw_line		(const Fmatrix &matrix, const Fvector &vertex0, const Fvector &vertex1, const u32 &color)

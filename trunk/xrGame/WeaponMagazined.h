@@ -8,8 +8,8 @@
 
 class ENGINE_API CMotionDef;
 
-//размер очереди считается бесконечность
-//заканчиваем стрельбу, только, если кончились патроны
+//СЂР°Р·РјРµСЂ РѕС‡РµСЂРµРґРё СЃС‡РёС‚Р°РµС‚СЃСЏ Р±РµСЃРєРѕРЅРµС‡РЅРѕСЃС‚СЊ
+//Р·Р°РєР°РЅС‡РёРІР°РµРј СЃС‚СЂРµР»СЊР±Сѓ, С‚РѕР»СЊРєРѕ, РµСЃР»Рё РєРѕРЅС‡РёР»РёСЃСЊ РїР°С‚СЂРѕРЅС‹
 #define WEAPON_ININITE_QUEUE -1
 
 
@@ -24,12 +24,12 @@ protected:
 	HUD_SOUND		sndShot;
 	HUD_SOUND		sndEmptyClick;
 	HUD_SOUND		sndReload;
-	//звук текущего выстрела
+	//Р·РІСѓРє С‚РµРєСѓС‰РµРіРѕ РІС‹СЃС‚СЂРµР»Р°
 	HUD_SOUND*		m_pSndShotCurrent;
 
 	virtual void	StopHUDSounds		();
 
-	//дополнительная информация о глушителе
+	//РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅР°СЏ РёРЅС„РѕСЂРјР°С†РёСЏ Рѕ РіР»СѓС€РёС‚РµР»Рµ
 	LPCSTR			m_sSilencerFlameParticles;
 	LPCSTR			m_sSilencerSmokeParticles;
 	HUD_SOUND		sndSilencerShot;
@@ -39,19 +39,9 @@ protected:
 	ESoundTypes		m_eSoundShot;
 	ESoundTypes		m_eSoundEmptyClick;
 	ESoundTypes		m_eSoundReload;
-	struct SWMmotions{
-		MotionSVec		mhud_idle;
-		MotionSVec		mhud_idle_aim;
-		MotionSVec		mhud_reload;	//
-		MotionSVec		mhud_hide;		//
-		MotionSVec		mhud_show;		//
-		MotionSVec		mhud_shots;		//
-		MotionSVec		mhud_idle_sprint;
-	};
-	SWMmotions			mhud;	
 	
 	// General
-	//кадр момента пересчета UpdateSounds
+	//РєР°РґСЂ РјРѕРјРµРЅС‚Р° РїРµСЂРµСЃС‡РµС‚Р° UpdateSounds
 	u32				dwUpdateSounds_Frame;
 protected:
 	virtual void	OnMagazineEmpty	();
@@ -70,12 +60,11 @@ protected:
 	virtual void	OnEmptyClick	();
 
 	virtual void	OnAnimationEnd	(u32 state);
-	virtual void	OnStateSwitch	(u32 S);
+	virtual void	OnStateSwitch	(u32 S, u32 oldState);
 
 	virtual void	UpdateSounds	();
 
 	bool			TryReload		();
-	bool			TryPlayAnimIdle	();
 
 protected:
 	virtual void	ReloadMagazine	();
@@ -111,7 +100,6 @@ public:
 	virtual void	InitAddons();
 
 	virtual bool	Action			(s32 cmd, u32 flags);
-	virtual void	onMovementChanged	(ACTOR_DEFS::EMoveCommand cmd);
 	bool			IsAmmoAvailable	();
 	virtual void	UnloadMagazine	(bool spawn_ammo = true);
 
@@ -119,7 +107,7 @@ public:
 
 
 	//////////////////////////////////////////////
-	// для стрельбы очередями или одиночными
+	// РґР»СЏ СЃС‚СЂРµР»СЊР±С‹ РѕС‡РµСЂРµРґСЏРјРё РёР»Рё РѕРґРёРЅРѕС‡РЅС‹РјРё
 	//////////////////////////////////////////////
 public:
 	virtual bool	SwitchMode				();
@@ -130,34 +118,34 @@ public:
 	virtual void	StopedAfterQueueFired	(bool value){m_bStopedAfterQueueFired = value; }
 
 protected:
-	//максимальный размер очереди, которой можно стрельнуть
+	//РјР°РєСЃРёРјР°Р»СЊРЅС‹Р№ СЂР°Р·РјРµСЂ РѕС‡РµСЂРµРґРё, РєРѕС‚РѕСЂРѕР№ РјРѕР¶РЅРѕ СЃС‚СЂРµР»СЊРЅСѓС‚СЊ
 	int				m_iQueueSize;
-	//количество реально выстреляных патронов
+	//РєРѕР»РёС‡РµСЃС‚РІРѕ СЂРµР°Р»СЊРЅРѕ РІС‹СЃС‚СЂРµР»СЏРЅС‹С… РїР°С‚СЂРѕРЅРѕРІ
 	int				m_iShotNum;
 	//  [7/20/2005]
-	//после какого патрона, при непрерывной стрельбе, начинается отдача (сделано из-зи Абакана)
+	//РїРѕСЃР»Рµ РєР°РєРѕРіРѕ РїР°С‚СЂРѕРЅР°, РїСЂРё РЅРµРїСЂРµСЂС‹РІРЅРѕР№ СЃС‚СЂРµР»СЊР±Рµ, РЅР°С‡РёРЅР°РµС‚СЃСЏ РѕС‚РґР°С‡Р° (СЃРґРµР»Р°РЅРѕ РёР·-Р·Рё РђР±Р°РєР°РЅР°)
 	int				m_iShootEffectorStart;
 	Fvector			m_vStartPos, m_vStartDir;
 	//  [7/20/2005]
-	//флаг того, что мы остановились после того как выстреляли
-	//ровно столько патронов, сколько было задано в m_iQueueSize
+	//С„Р»Р°Рі С‚РѕРіРѕ, С‡С‚Рѕ РјС‹ РѕСЃС‚Р°РЅРѕРІРёР»РёСЃСЊ РїРѕСЃР»Рµ С‚РѕРіРѕ РєР°Рє РІС‹СЃС‚СЂРµР»СЏР»Рё
+	//СЂРѕРІРЅРѕ СЃС‚РѕР»СЊРєРѕ РїР°С‚СЂРѕРЅРѕРІ, СЃРєРѕР»СЊРєРѕ Р±С‹Р»Рѕ Р·Р°РґР°РЅРѕ РІ m_iQueueSize
 	bool			m_bStopedAfterQueueFired;
-	//флаг того, что хотя бы один выстрел мы должны сделать
-	//(даже если очень быстро нажали на курок и вызвалось FireEnd)
+	//С„Р»Р°Рі С‚РѕРіРѕ, С‡С‚Рѕ С…РѕС‚СЏ Р±С‹ РѕРґРёРЅ РІС‹СЃС‚СЂРµР» РјС‹ РґРѕР»Р¶РЅС‹ СЃРґРµР»Р°С‚СЊ
+	//(РґР°Р¶Рµ РµСЃР»Рё РѕС‡РµРЅСЊ Р±С‹СЃС‚СЂРѕ РЅР°Р¶Р°Р»Рё РЅР° РєСѓСЂРѕРє Рё РІС‹Р·РІР°Р»РѕСЃСЊ FireEnd)
 	bool			m_bFireSingleShot;
-	//режимы стрельбы
+	//СЂРµР¶РёРјС‹ СЃС‚СЂРµР»СЊР±С‹
 	bool			m_bHasDifferentFireModes;
 	xr_vector<int>	m_aFireModes;
 	int				m_iCurFireMode;
 	string16		m_sCurFireMode;
 	int				m_iPrefferedFireMode;
 
-	//переменная блокирует использование
-	//только разных типов патронов
+	//РїРµСЂРµРјРµРЅРЅР°СЏ Р±Р»РѕРєРёСЂСѓРµС‚ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ
+	//С‚РѕР»СЊРєРѕ СЂР°Р·РЅС‹С… С‚РёРїРѕРІ РїР°С‚СЂРѕРЅРѕРІ
 	bool m_bLockType;
 
 	//////////////////////////////////////////////
-	// режим приближения
+	// СЂРµР¶РёРј РїСЂРёР±Р»РёР¶РµРЅРёСЏ
 	//////////////////////////////////////////////
 public:
 	virtual void	OnZoomIn			();
@@ -174,15 +162,15 @@ public:
 protected:
 	virtual bool	AllowFireWhileWorking() {return false;}
 
-	//виртуальные функции для проигрывания анимации HUD
+	//РІРёСЂС‚СѓР°Р»СЊРЅС‹Рµ С„СѓРЅРєС†РёРё РґР»СЏ РїСЂРѕРёРіСЂС‹РІР°РЅРёСЏ Р°РЅРёРјР°С†РёРё HUD
 	virtual void	PlayAnimShow();
 	virtual void	PlayAnimHide();
 	virtual void	PlayAnimReload();
 	virtual void	PlayAnimIdle();
+	virtual void	PlayAnimAim();
 	virtual void	PlayAnimShoot();
 	virtual void	PlayReloadSound		();
 
-	virtual void	StartIdleAnim		();
 	virtual	int		ShotsFired			() { return m_iShotNum; }
 	virtual float	GetWeaponDeterioration	();
 

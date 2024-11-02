@@ -9,6 +9,7 @@
 #include "hud_item_object.h"
 #include "Actor_Flags.h"
 #include "game_cl_single.h"
+#include "firedeps.h"
 
 
 // refs
@@ -51,6 +52,8 @@ public:
 
 	virtual void			renderable_Render	();
 	virtual void			OnDrawUI			();
+	virtual bool			need_renderable		();
+	virtual void			render_hud_mode		();
 
 	virtual void			OnH_B_Chield		();
 	virtual void			OnH_A_Chield		();
@@ -72,9 +75,16 @@ public:
 	virtual void			Hide				();
 	virtual void			Show				();
 
-	//инициализация если вещь в активном слоте или спрятана на OnH_B_Chield
+	//РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РµСЃР»Рё РІРµС‰СЊ РІ Р°РєС‚РёРІРЅРѕРј СЃР»РѕС‚Рµ РёР»Рё СЃРїСЂСЏС‚Р°РЅР° РЅР° OnH_B_Chield
 	virtual void			OnActiveItem		();
 	virtual void			OnHiddenItem		();
+
+	float			m_fLR_MovingFactor; // Р¤Р°РєС‚РѕСЂ Р±РѕРєРѕРІРѕРіРѕ РЅР°РєР»РѕРЅР° С…СѓРґР° РїСЂРё С…РѕРґСЊР±Рµ [-1; +1]
+	float			m_fLR_CameraFactor; // Р¤Р°РєС‚РѕСЂ Р±РѕРєРѕРІРѕРіРѕ РЅР°РєР»РѕРЅР° С…СѓРґР° РїСЂРё РґРІРёР¶РµРЅРёРё РєР°РјРµСЂС‹ [-1; +1]
+	float			m_fLR_InertiaFactor; // Р¤Р°РєС‚РѕСЂ РіРѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅРѕР№ РёРЅРµСЂС†РёРё С…СѓРґР° РїСЂРё РґРІРёР¶РµРЅРёРё РєР°РјРµСЂС‹ [-1; +1]
+	float			m_fUD_InertiaFactor; // Р¤Р°РєС‚РѕСЂ РІРµСЂС‚РёРєР°Р»СЊРЅРѕР№ РёРЅРµСЂС†РёРё С…СѓРґР° РїСЂРё РґРІРёР¶РµРЅРёРё РєР°РјРµСЂС‹ [-1; +1]
+	Fvector			m_strafe_offset[4][2]; //pos,rot,data1,data2/ normal,aim-GL --#SM+#--
+
 
 //////////////////////////////////////////////////////////////////////////
 //  Network
@@ -88,7 +98,7 @@ public:
 	virtual bool			NeedToDestroyObject	() const; 
 	virtual ALife::_TIME_ID	TimePassedAfterIndependant() const;
 protected:
-	//время удаления оружия
+	//РІСЂРµРјСЏ СѓРґР°Р»РµРЅРёСЏ РѕСЂСѓР¶РёСЏ
 	ALife::_TIME_ID			m_dwWeaponRemoveTime;
 	ALife::_TIME_ID			m_dwWeaponIndependencyTime;
 
@@ -111,13 +121,9 @@ public:
 //////////////////////////////////////////////////////////////////////////
 public:
 	enum EWeaponStates {
-		eIdle		= 0,
-		eFire,
+		eFire = eLastBaseState + 1,
 		eFire2,
 		eReload,
-		eShowing,
-		eHiding,
-		eHidden,
 		eMisfire,
 		eMagEmpty,
 		eSwitch,
@@ -160,7 +166,7 @@ protected:
 //////////////////////////////////////////////////////////////////////////
 public:
 	///////////////////////////////////////////
-	// работа с аддонами к оружию
+	// СЂР°Р±РѕС‚Р° СЃ Р°РґРґРѕРЅР°РјРё Рє РѕСЂСѓР¶РёСЋ
 	//////////////////////////////////////////
 
 
@@ -173,13 +179,13 @@ public:
 	virtual bool SilencerAttachable();
 	virtual bool UseScopeTexture() {return true;};
 
-	//обновление видимости для косточек аддонов
+	//РѕР±РЅРѕРІР»РµРЅРёРµ РІРёРґРёРјРѕСЃС‚Рё РґР»СЏ РєРѕСЃС‚РѕС‡РµРє Р°РґРґРѕРЅРѕРІ
 			void UpdateAddonsVisibility();
 			void UpdateHUDAddonsVisibility();
-	//инициализация свойств присоединенных аддонов
+	//РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ СЃРІРѕР№СЃС‚РІ РїСЂРёСЃРѕРµРґРёРЅРµРЅРЅС‹С… Р°РґРґРѕРЅРѕРІ
 	virtual void InitAddons();
 
-	//для отоброажения иконок апгрейдов в интерфейсе
+	//РґР»СЏ РѕС‚РѕР±СЂРѕР°Р¶РµРЅРёСЏ РёРєРѕРЅРѕРє Р°РїРіСЂРµР№РґРѕРІ РІ РёРЅС‚РµСЂС„РµР№СЃРµ
 	int	GetScopeX() {return m_iScopeX;}
 	int	GetScopeY() {return m_iScopeY;}
 	int	GetSilencerX() {return m_iSilencerX;}
@@ -194,23 +200,33 @@ public:
 	u8		GetAddonsState						()		const		{return m_flagsAddOnState;};
 	void	SetAddonsState						(u8 st)	{m_flagsAddOnState=st;}//dont use!!! for buy menu only!!!
 protected:
-	//состояние подключенных аддонов
+	//СЃРѕСЃС‚РѕСЏРЅРёРµ РїРѕРґРєР»СЋС‡РµРЅРЅС‹С… Р°РґРґРѕРЅРѕРІ
 	u8 m_flagsAddOnState;
 
-	//возможность подключения различных аддонов
+	//РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ РїРѕРґРєР»СЋС‡РµРЅРёСЏ СЂР°Р·Р»РёС‡РЅС‹С… Р°РґРґРѕРЅРѕРІ
 	ALife::EWeaponAddonStatus	m_eScopeStatus;
 	ALife::EWeaponAddonStatus	m_eSilencerStatus;
 	ALife::EWeaponAddonStatus	m_eGrenadeLauncherStatus;
 
-	//названия секций подключаемых аддонов
+	//РЅР°Р·РІР°РЅРёСЏ СЃРµРєС†РёР№ РїРѕРґРєР»СЋС‡Р°РµРјС‹С… Р°РґРґРѕРЅРѕРІ
 	shared_str		m_sScopeName;
 	shared_str		m_sSilencerName;
 	shared_str		m_sGrenadeLauncherName;
 
-	//смещение иконов апгрейдов в инвентаре
+	shared_str m_sWpn_scope_bone;
+	shared_str m_sWpn_silencer_bone;
+	shared_str m_sWpn_launcher_bone;
+	shared_str m_sHud_wpn_scope_bone;
+	shared_str m_sHud_wpn_silencer_bone;
+	shared_str m_sHud_wpn_launcher_bone;
+
+	//СЃРјРµС‰РµРЅРёРµ РёРєРѕРЅРѕРІ Р°РїРіСЂРµР№РґРѕРІ РІ РёРЅРІРµРЅС‚Р°СЂРµ
 	int	m_iScopeX, m_iScopeY;
 	int	m_iSilencerX, m_iSilencerY;
 	int	m_iGrenadeLauncherX, m_iGrenadeLauncherY;
+private:
+	std::vector<shared_str> hidden_bones;
+	std::vector<shared_str> hud_hidden_bones;
 
 protected:
 	struct SZoomParams
@@ -224,25 +240,25 @@ protected:
 	} m_zoom_params;
 
 ///////////////////////////////////////////////////
-//	для режима приближения и снайперского прицела
+//	РґР»СЏ СЂРµР¶РёРјР° РїСЂРёР±Р»РёР¶РµРЅРёСЏ Рё СЃРЅР°Р№РїРµСЂСЃРєРѕРіРѕ РїСЂРёС†РµР»Р°
 ///////////////////////////////////////////////////
 protected:
-	//разрешение режима приближения
+	//СЂР°Р·СЂРµС€РµРЅРёРµ СЂРµР¶РёРјР° РїСЂРёР±Р»РёР¶РµРЅРёСЏ
 	bool			m_bZoomEnabled;
-	//текущий фактор приближения
+	//С‚РµРєСѓС‰РёР№ С„Р°РєС‚РѕСЂ РїСЂРёР±Р»РёР¶РµРЅРёСЏ
 	float			m_fZoomFactor;
-	//время приближения
+	//РІСЂРµРјСЏ РїСЂРёР±Р»РёР¶РµРЅРёСЏ
 	float			m_fZoomRotateTime;
-	//текстура для снайперского прицела, в режиме приближения
+	//С‚РµРєСЃС‚СѓСЂР° РґР»СЏ СЃРЅР°Р№РїРµСЂСЃРєРѕРіРѕ РїСЂРёС†РµР»Р°, РІ СЂРµР¶РёРјРµ РїСЂРёР±Р»РёР¶РµРЅРёСЏ
 	CUIStaticItem*	m_UIScope;
-	//коэффициент увеличения прицеливания
+	//РєРѕСЌС„С„РёС†РёРµРЅС‚ СѓРІРµР»РёС‡РµРЅРёСЏ РїСЂРёС†РµР»РёРІР°РЅРёСЏ
 	float			m_fIronSightZoomFactor;
-	//коэффициент увеличения прицела
+	//РєРѕСЌС„С„РёС†РёРµРЅС‚ СѓРІРµР»РёС‡РµРЅРёСЏ РїСЂРёС†РµР»Р°
 	float			m_fScopeZoomFactor;
-	//когда режим приближения включен
+	//РєРѕРіРґР° СЂРµР¶РёРј РїСЂРёР±Р»РёР¶РµРЅРёСЏ РІРєР»СЋС‡РµРЅ
 	bool			m_bZoomMode;
-	//от 0 до 1, показывает насколько процентов
-	//мы перемещаем HUD  
+	//РѕС‚ 0 РґРѕ 1, РїРѕРєР°Р·С‹РІР°РµС‚ РЅР°СЃРєРѕР»СЊРєРѕ РїСЂРѕС†РµРЅС‚РѕРІ
+	//РјС‹ РїРµСЂРµРјРµС‰Р°РµРј HUD  
 	float			m_fZoomRotationFactor;
 	bool			m_bHideCrosshairInZoom;
 public:
@@ -258,10 +274,8 @@ public:
 
 	IC float				GetZoomFactor		() const		{	return m_fZoomFactor;	}
 	virtual	float			CurrentZoomFactor	();
-	//показывает, что оружие находится в соостоянии поворота для приближенного прицеливания
+	//РїРѕРєР°Р·С‹РІР°РµС‚, С‡С‚Рѕ РѕСЂСѓР¶РёРµ РЅР°С…РѕРґРёС‚СЃСЏ РІ СЃРѕРѕСЃС‚РѕСЏРЅРёРё РїРѕРІРѕСЂРѕС‚Р° РґР»СЏ РїСЂРёР±Р»РёР¶РµРЅРЅРѕРіРѕ РїСЂРёС†РµР»РёРІР°РЅРёСЏ
 			bool			IsRotatingToZoom	() const		{	return (m_fZoomRotationFactor<1.f);}
-
-			void			LoadZoomOffset		(LPCSTR section, LPCSTR prefix);
 
 	virtual float				Weight			();		
 
@@ -283,49 +297,40 @@ protected:
 	bool					m_can_be_strapped;
 
 	Fmatrix					m_Offset;
-	// 0-используется без участия рук, 1-одна рука, 2-две руки
+	// 0-РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ Р±РµР· СѓС‡Р°СЃС‚РёСЏ СЂСѓРє, 1-РѕРґРЅР° СЂСѓРєР°, 2-РґРІРµ СЂСѓРєРё
 	EHandDependence			eHandDependence;
 	bool					m_bIsSingleHanded;
 
 public:
-	//загружаемые параметры
+	//Р·Р°РіСЂСѓР¶Р°РµРјС‹Рµ РїР°СЂР°РјРµС‚СЂС‹
 	Fvector					vLoadedFirePoint	;
 	Fvector					vLoadedFirePoint2	;
 
 private:
-	//текущее положение и напрвление для партиклов
-	struct					_firedeps
-	{
-		Fmatrix				m_FireParticlesXForm;	//направление для партиклов огня и дыма
-		Fvector				vLastFP, vLastFP2	;	//огня
-		Fvector				vLastFD				;	// direction
-		Fvector				vLastSP				;	//гильз	
-
-		_firedeps()			{
-			m_FireParticlesXForm.identity();
-			vLastFP.set			(0,0,0);
-			vLastFP2.set		(0,0,0);
-			vLastFD.set			(0,0,0);
-			vLastSP.set			(0,0,0);
-		}
-	}						m_firedeps			;
+	//С‚РµРєСѓС‰РµРµ РїРѕР»РѕР¶РµРЅРёРµ Рё РЅР°РїСЂРІР»РµРЅРёРµ РґР»СЏ РїР°СЂС‚РёРєР»РѕРІ
+	firedeps				m_current_firedeps{};
 protected:
 	virtual void			UpdateFireDependencies_internal	();
 	virtual void			UpdatePosition			(const Fmatrix& transform);	//.
 	virtual void			UpdateXForm				();
+
+	virtual	u8				GetCurrentHudOffsetIdx	() override;
+	virtual bool			MovingAnimAllowedNow	();
 	virtual void			UpdateHudAdditonal		(Fmatrix&);
+	virtual bool			IsHudModeNow			();
+
 	IC		void			UpdateFireDependencies	()			{ if (dwFP_Frame==Device.dwFrame) return; UpdateFireDependencies_internal(); };
 
 	virtual void			LoadFireParams		(LPCSTR section, LPCSTR prefix);
 public:	
-	IC		const Fvector&	get_LastFP				()			{ UpdateFireDependencies(); return m_firedeps.vLastFP;	}
-	IC		const Fvector&	get_LastFP2				()			{ UpdateFireDependencies(); return m_firedeps.vLastFP2;	}
-	IC		const Fvector&	get_LastFD				()			{ UpdateFireDependencies(); return m_firedeps.vLastFD;	}
-	IC		const Fvector&	get_LastSP				()			{ UpdateFireDependencies(); return m_firedeps.vLastSP;	}
+	IC		const Fvector&	get_LastFP				()			{ UpdateFireDependencies(); return m_current_firedeps.vLastFP;	}
+	IC		const Fvector&	get_LastFP2				()			{ UpdateFireDependencies(); return m_current_firedeps.vLastFP2;	}
+	IC		const Fvector&	get_LastFD				()			{ UpdateFireDependencies(); return m_current_firedeps.vLastFD;	}
+	IC		const Fvector&	get_LastSP				()			{ UpdateFireDependencies(); return m_current_firedeps.vLastSP;	}
 
 	virtual const Fvector&	get_CurrentFirePoint	()			{ return get_LastFP();				}
 	virtual const Fvector&	get_CurrentFirePoint2	()			{ return get_LastFP2();				}
-	virtual const Fmatrix&	get_ParticlesXFORM		()			{ UpdateFireDependencies(); return m_firedeps.m_FireParticlesXForm;	}
+	virtual const Fmatrix&	get_ParticlesXFORM		()			{ UpdateFireDependencies(); return m_current_firedeps.m_FireParticlesXForm;	}
 	virtual void			ForceUpdateFireParticles();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -334,9 +339,9 @@ public:
 protected:
 	virtual void			SetDefaults			();
 
-	virtual void			OnStateSwitch(u32 S);
+	virtual void			OnStateSwitch		(u32 S, u32 oldState);
 
-	//трассирование полета пули
+	//С‚СЂР°СЃСЃРёСЂРѕРІР°РЅРёРµ РїРѕР»РµС‚Р° РїСѓР»Рё
 			void			FireTrace			(const Fvector& P, const Fvector& D);
 	virtual float			GetWeaponDeterioration	();
 
@@ -349,26 +354,26 @@ protected:
 			void			StopShooting		();
     
 
-	// обработка визуализации выстрела
+	// РѕР±СЂР°Р±РѕС‚РєР° РІРёР·СѓР°Р»РёР·Р°С†РёРё РІС‹СЃС‚СЂРµР»Р°
 	virtual void			OnShot				(){};
 	virtual void			AddShotEffector		();
 	virtual void			RemoveShotEffector	();
 	virtual	void			ClearShotEffector	();
 
 public:
-	//текущая дисперсия (в радианах) оружия с учетом используемого патрона
+	//С‚РµРєСѓС‰Р°СЏ РґРёСЃРїРµСЂСЃРёСЏ (РІ СЂР°РґРёР°РЅР°С…) РѕСЂСѓР¶РёСЏ СЃ СѓС‡РµС‚РѕРј РёСЃРїРѕР»СЊР·СѓРµРјРѕРіРѕ РїР°С‚СЂРѕРЅР°
 	float					GetFireDispersion	(bool with_cartridge)			;
 	float					GetFireDispersion	(float cartridge_k)				;
 //	const Fvector&			GetRecoilDeltaAngle	();
 	virtual	int				ShotsFired			() { return 0; }
 
-	//параметы оружия в зависимоти от его состояния исправности
+	//РїР°СЂР°РјРµС‚С‹ РѕСЂСѓР¶РёСЏ РІ Р·Р°РІРёСЃРёРјРѕС‚Рё РѕС‚ РµРіРѕ СЃРѕСЃС‚РѕСЏРЅРёСЏ РёСЃРїСЂР°РІРЅРѕСЃС‚Рё
 	float					GetConditionDispersionFactor	() const;
 	float					GetConditionMisfireProbability	() const;
 	virtual	float			GetConditionToShow				() const;
 
 public:
-	//отдача при стрельбе 
+	//РѕС‚РґР°С‡Р° РїСЂРё СЃС‚СЂРµР»СЊР±Рµ 
 	float					camMaxAngle;
 	float					camRelaxSpeed;
 	float					camRelaxSpeed_AI;
@@ -379,13 +384,13 @@ public:
 	float					camStepAngleHorz;
 
 protected:
-	//фактор увеличения дисперсии при максимальной изношености 
-	//(на сколько процентов увеличится дисперсия)
+	//С„Р°РєС‚РѕСЂ СѓРІРµР»РёС‡РµРЅРёСЏ РґРёСЃРїРµСЂСЃРёРё РїСЂРё РјР°РєСЃРёРјР°Р»СЊРЅРѕР№ РёР·РЅРѕС€РµРЅРѕСЃС‚Рё 
+	//(РЅР° СЃРєРѕР»СЊРєРѕ РїСЂРѕС†РµРЅС‚РѕРІ СѓРІРµР»РёС‡РёС‚СЃСЏ РґРёСЃРїРµСЂСЃРёСЏ)
 	float					fireDispersionConditionFactor;
-	//вероятность осечки при максимальной изношености
+	//РІРµСЂРѕСЏС‚РЅРѕСЃС‚СЊ РѕСЃРµС‡РєРё РїСЂРё РјР°РєСЃРёРјР°Р»СЊРЅРѕР№ РёР·РЅРѕС€РµРЅРѕСЃС‚Рё
 	float					misfireProbability;
 	float					misfireConditionK;
-	//увеличение изношености при выстреле
+	//СѓРІРµР»РёС‡РµРЅРёРµ РёР·РЅРѕС€РµРЅРѕСЃС‚Рё РїСЂРё РІС‹СЃС‚СЂРµР»Рµ
 	float					conditionDecreasePerShot;
 
 	//  [8/2/2005]
@@ -397,26 +402,26 @@ protected:
 	//  [8/2/2005]
 
 protected:
-	//для отдачи оружия
+	//РґР»СЏ РѕС‚РґР°С‡Рё РѕСЂСѓР¶РёСЏ
 	Fvector					m_vRecoilDeltaAngle;
 
-	//для сталкеров, чтоб они знали эффективные границы использования 
-	//оружия
+	//РґР»СЏ СЃС‚Р°Р»РєРµСЂРѕРІ, С‡С‚РѕР± РѕРЅРё Р·РЅР°Р»Рё СЌС„С„РµРєС‚РёРІРЅС‹Рµ РіСЂР°РЅРёС†С‹ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ 
+	//РѕСЂСѓР¶РёСЏ
 	float					m_fMinRadius;
 	float					m_fMaxRadius;
 
 //////////////////////////////////////////////////////////////////////////
-// партиклы
+// РїР°СЂС‚РёРєР»С‹
 //////////////////////////////////////////////////////////////////////////
 
 protected:	
-	//для второго ствола
+	//РґР»СЏ РІС‚РѕСЂРѕРіРѕ СЃС‚РІРѕР»Р°
 			void			StartFlameParticles2();
 			void			StopFlameParticles2	();
 			void			UpdateFlameParticles2();
 protected:
 	shared_str					m_sFlameParticles2;
-	//объект партиклов для стрельбы из 2-го ствола
+	//РѕР±СЉРµРєС‚ РїР°СЂС‚РёРєР»РѕРІ РґР»СЏ СЃС‚СЂРµР»СЊР±С‹ РёР· 2-РіРѕ СЃС‚РІРѕР»Р°
 	CParticlesObject*		m_pFlameParticles2;
 
 //////////////////////////////////////////////////////////////////////////
@@ -445,9 +450,9 @@ protected:
 	int						iAmmoElapsed;		// ammo in magazine, currently
 	int						iMagazineSize;		// size (in bullets) of magazine
 
-	//для подсчета в GetAmmoCurrent
+	//РґР»СЏ РїРѕРґСЃС‡РµС‚Р° РІ GetAmmoCurrent
 	mutable int				iAmmoCurrent;
-	mutable u32				m_dwAmmoCurrentCalcFrame;	//кадр на котором просчитали кол-во патронов
+	mutable u32				m_dwAmmoCurrentCalcFrame;	//РєР°РґСЂ РЅР° РєРѕС‚РѕСЂРѕРј РїСЂРѕСЃС‡РёС‚Р°Р»Рё РєРѕР»-РІРѕ РїР°С‚СЂРѕРЅРѕРІ
 	//  [10/5/2005]
 	bool					m_bAmmoWasSpawned;
 	//  [10/5/2005]

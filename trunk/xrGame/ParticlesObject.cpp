@@ -105,10 +105,11 @@ const shared_str CParticlesObject::Name()
 }
 
 //----------------------------------------------------
-void CParticlesObject::Play		()
+void CParticlesObject::Play		(bool hudMode)
 {
 	IParticleCustom* V			= smart_cast<IParticleCustom*>(renderable.visual); 
 	R_ASSERT(V);
+	V->SetHudMode				(hudMode);
 	V->Play						();
 	dwLastTime					= Device.dwTimeGlobal-33ul;
 	PerformAllTheWork			();
@@ -196,8 +197,8 @@ void CParticlesObject::SetAutoRemove		(bool auto_remove)
 	m_bAutoRemove = auto_remove;
 }
 
-//играются ли партиклы, отличается от PSI_Alive, тем что после
-//остановки Stop партиклы могут еще доигрывать анимацию IsPlaying = true
+//РёРіСЂР°СЋС‚СЃСЏ Р»Рё РїР°СЂС‚РёРєР»С‹, РѕС‚Р»РёС‡Р°РµС‚СЃСЏ РѕС‚ PSI_Alive, С‚РµРј С‡С‚Рѕ РїРѕСЃР»Рµ
+//РѕСЃС‚Р°РЅРѕРІРєРё Stop РїР°СЂС‚РёРєР»С‹ РјРѕРіСѓС‚ РµС‰Рµ РґРѕРёРіСЂС‹РІР°С‚СЊ Р°РЅРёРјР°С†РёСЋ IsPlaying = true
 bool CParticlesObject::IsPlaying()
 {
 	IParticleCustom* V = smart_cast<IParticleCustom*>(renderable.visual);

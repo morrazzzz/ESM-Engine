@@ -2,23 +2,19 @@
 #include "hud_item_object.h"
 #include "HudSound.h"
 
-#define MS_HIDDEN	0
-#define MS_SHOWING	1
-#define MS_IDLE		2
-#define MS_THREATEN	3
-#define MS_READY	4
-#define MS_THROW	5
-#define MS_END		6
-#define MS_EMPTY	7
-#define MS_HIDING	8
-#define MS_PLAYING	9
-
 struct dContact;
 struct SGameMtl;
 class CMissile : public CHudItemObject
 {
 	typedef CHudItemObject inherited;
 public:
+	enum EMissileStates
+	{
+		eThrowStart = eLastBaseState + 1,
+		eReady,
+		eThrow,
+		eThrowEnd,
+	};
 							CMissile					();
 	virtual					~CMissile					();
 
@@ -41,41 +37,37 @@ public:
 	virtual void 			OnEvent						(NET_Packet& P, u16 type);
 
 	virtual void 			OnAnimationEnd				(u32 state);
+	virtual void			OnMotionMark				(u32 state, const motion_marks& M);
 
 	virtual void 			Show();
 	virtual void 			Hide();
-	virtual bool 			IsHidden					() const {return GetState() == MS_HIDDEN;}
-	virtual bool 			IsHiding					() const {return GetState() == MS_HIDING;}
-	virtual bool 			IsShowing					() const {return GetState() == MS_SHOWING;}
 
 	virtual void 			Throw();
 	virtual void 			Destroy();
 
 	virtual bool 			Action						(s32 cmd, u32 flags);
 
-//.	IC u32		 			State						()				{return m_state;}
-	virtual void 			State						(u32 state);
-	virtual void 			OnStateSwitch				(u32 S);
+	virtual void 			State						(u32 state, u32 oldState);
+	virtual void 			OnStateSwitch				(u32 S, u32 oldState);
+	virtual void			PlayAnimIdle				();
 	virtual void			GetBriefInfo				(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count);
 
 protected:
-	virtual void			UpdateFireDependencies_internal	();
 	virtual void			UpdateXForm						();
 	void					UpdatePosition					(const Fmatrix& trans);
 	void					spawn_fake_missile				();
 
-	//инициализация если вещь в активном слоте или спрятана на OnH_B_Chield
+	//РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РµСЃР»Рё РІРµС‰СЊ РІ Р°РєС‚РёРІРЅРѕРј СЃР»РѕС‚Рµ РёР»Рё СЃРїСЂСЏС‚Р°РЅР° РЅР° OnH_B_Chield
 	virtual void			OnActiveItem		();
 	virtual void			OnHiddenItem		();
 
-	//для сети
-	virtual void			StartIdleAnim		();
+	//РґР»СЏ СЃРµС‚Рё
 	virtual void			net_Relcase			(CObject* O );
 protected:
 
 	bool					m_throw;
 	
-	//время уничтожения
+	//РІСЂРµРјСЏ СѓРЅРёС‡С‚РѕР¶РµРЅРёСЏ
 	u32						m_dwDestroyTime;
 	u32						m_dwDestroyTimeMax;
 
@@ -84,32 +76,24 @@ protected:
 
 	CMissile				*m_fake_missile;
 
-	//параметры броска
+	//РїР°СЂР°РјРµС‚СЂС‹ Р±СЂРѕСЃРєР°
 	
 	float m_fMinForce, m_fConstForce, m_fMaxForce, m_fForceGrowSpeed;
 //private:
 	bool					m_constpower;
 	float					m_fThrowForce;
 protected:
-	//относительная точка и направление вылета гранаты
+	//РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅР°СЏ С‚РѕС‡РєР° Рё РЅР°РїСЂР°РІР»РµРЅРёРµ РІС‹Р»РµС‚Р° РіСЂР°РЅР°С‚С‹
 	Fvector					m_vThrowPoint;
 	Fvector					m_vThrowDir;
-	//для HUD
+	//РґР»СЏ HUD
 	Fvector					m_vHudThrowPoint;
 	Fvector					m_vHudThrowDir;
 
-	//имена анимаций
-	shared_str				m_sAnimShow;
-	shared_str				m_sAnimHide;
-	shared_str				m_sAnimIdle;
-	shared_str				m_sAnimPlaying;
-	shared_str				m_sAnimThrowBegin;
-	shared_str				m_sAnimThrowIdle;
-	shared_str				m_sAnimThrowAct;
-	shared_str				m_sAnimThrowEnd;
-
-	//звук анимации "играния"
+	//Р·РІСѓРє Р°РЅРёРјР°С†РёРё "РёРіСЂР°РЅРёСЏ"
 	HUD_SOUND				sndPlaying;
+
+	bool					m_throwMotionMarksAvailable;
 
 protected:
 			void			setup_throw_params		();

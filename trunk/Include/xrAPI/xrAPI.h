@@ -25,8 +25,6 @@ extern XRAPI_API IUIRender*	UIRender;
 class CGameMtlLibrary;
 extern XRAPI_API CGameMtlLibrary *			PGMLib;
 
-#ifdef DEBUG
-	class IDebugRender;
-	extern XRAPI_API IDebugRender*	DRender;
-#endif // DEBUG
+class IDebugRender;
+extern XRAPI_API IDebugRender*	DRender;
 

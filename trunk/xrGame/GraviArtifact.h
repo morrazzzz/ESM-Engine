@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////
 // GraviArtifact.h
-// GraviArtefact - гравитационный артефакт, прыгает на месте
-// и парит над землей
+// GraviArtefact - РіСЂР°РІРёС‚Р°С†РёРѕРЅРЅС‹Р№ Р°СЂС‚РµС„Р°РєС‚, РїСЂС‹РіР°РµС‚ РЅР° РјРµСЃС‚Рµ
+// Рё РїР°СЂРёС‚ РЅР°Рґ Р·РµРјР»РµР№
 ///////////////////////////////////////////////////////////////
 
 #pragma once
@@ -16,10 +16,12 @@ public:
 	virtual ~CGraviArtefact(void);
 
 	virtual void Load				(LPCSTR section);
+	virtual void	Hide() {};
+	virtual void	Show() {};
 
 protected:
 	virtual void	UpdateCLChild	();
-	//параметры артефакта
+	//РїР°СЂР°РјРµС‚СЂС‹ Р°СЂС‚РµС„Р°РєС‚Р°
 	float m_fJumpHeight;
 	float m_fEnergy;
 };

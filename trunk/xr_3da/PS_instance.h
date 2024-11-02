@@ -32,7 +32,7 @@ public:
 	IC BOOL					PSI_IsAutomatic		()						{	return m_bAutoRemove;				}
 	IC void					PSI_SetLifeTime		(float life_time)		{	m_iLifeTime=iFloor(life_time*1000);	}
 
-	virtual void Play()	= 0;
+	virtual void			Play				(bool hudMode = false) = 0;
 	virtual void UpdateParticles() = 0;
 
 	virtual	shared_str		shedule_Name		() const		{ return shared_str("particle_instance"); };

@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////
 // GalantineArtifact.h
-// GalantineArtefact - артефакт ведбмин студень
+// GalantineArtefact - Р°СЂС‚РµС„Р°РєС‚ РІРµРґР±РјРёРЅ СЃС‚СѓРґРµРЅСЊ
 ///////////////////////////////////////////////////////////////
 
 #pragma once
@@ -15,6 +15,8 @@ public:
 	virtual ~CGalantineArtefact(void);
 
 	virtual void Load				(LPCSTR section);
+	virtual void	Hide() {};
+	virtual void	Show() {};
 
 protected:
 };

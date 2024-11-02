@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////
 // BlackDrops.h
-// BlackDrops - черные капли
+// BlackDrops - С‡РµСЂРЅС‹Рµ РєР°РїР»Рё
 ///////////////////////////////////////////////////////////////
 
 #pragma once
@@ -15,6 +15,8 @@ public:
 	virtual ~CBlackDrops(void);
 
 	virtual void Load				(LPCSTR section);
+	virtual void	Hide() {};
+	virtual void	Show() {};
 
 protected:
 };

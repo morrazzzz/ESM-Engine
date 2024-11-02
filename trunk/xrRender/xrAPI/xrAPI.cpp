@@ -12,6 +12,4 @@ XRAPI_API IUIRender* UIRender = nullptr;
 //XRAPI_API CSound_manager_interface*	Sound = nullptr;
 XRAPI_API CGameMtlLibrary*	PGMLib = nullptr;
 
-#ifdef DEBUG
-	XRAPI_API IDebugRender*	DRender = nullptr;
-#endif // DEBUG
+XRAPI_API IDebugRender*	DRender = nullptr;

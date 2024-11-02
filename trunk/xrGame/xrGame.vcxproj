@@ -383,7 +383,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4237;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <PreprocessToFile>false</PreprocessToFile>
-      <AdditionalIncludeDirectories>$(SolutionDir);../3rd party/DX9SDK/Include;../3rd party/ode/Public/;../3rd party/DiscordSDK/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../3rd party/dplay;$(SolutionDir);../3rd party/D3dx;../3rd party/ode/Public/;../3rd party/DiscordSDK/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <Optimization>Full</Optimization>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
@@ -429,6 +429,7 @@
     <ClInclude Include="physics_shell_animated.h" />
     <ClInclude Include="physics_shell_scripted.h" />
     <ClInclude Include="physics_world_scripted.h" />
+    <ClInclude Include="player_hud.h" />
     <ClInclude Include="script_crandom.h" />
     <ClInclude Include="ui_defs.h" />
     <ClInclude Include="wrapper_abstract.h" />
@@ -1393,7 +1394,6 @@
     <ClInclude Include="WeaponFORT.h" />
     <ClInclude Include="WeaponRG6.h" />
     <ClInclude Include="weaponBM16.h" />
-    <ClInclude Include="WeaponHUD.h" />
     <ClInclude Include="WeaponMounted.h" />
     <ClInclude Include="WeaponStatMgun.h" />
     <ClInclude Include="Artifact.h" />
@@ -1848,6 +1848,8 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
+    <ClCompile Include="player_hud.cpp" />
+    <ClCompile Include="player_hud_tune.cpp" />
     <ClCompile Include="script_action_wrapper.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
@@ -5049,7 +5051,6 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="WeaponHUD.cpp" />
     <ClCompile Include="WeaponMounted.cpp" />
     <ClCompile Include="WeaponStatMgun.cpp" />
     <ClCompile Include="WeaponStatMgunFire.cpp" />

@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////
 // RustyHairArtifact.h
-// RustyHairArtefact - артефакт ржавые волосы
+// RustyHairArtefact - Р°СЂС‚РµС„Р°РєС‚ СЂР¶Р°РІС‹Рµ РІРѕР»РѕСЃС‹
 ///////////////////////////////////////////////////////////////
 
 #pragma once
@@ -15,6 +15,8 @@ public:
 	virtual ~CRustyHairArtefact(void);
 
 	virtual void Load				(LPCSTR section);
+	virtual void	Hide() {};
+	virtual void	Show() {};
 
 protected:
 };

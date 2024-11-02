@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////
 // ZudaArtifact.h
-// ZudaArtefact - артефакт зуда
+// ZudaArtefact - Р°СЂС‚РµС„Р°РєС‚ Р·СѓРґР°
 ///////////////////////////////////////////////////////////////
 
 #pragma once
@@ -15,6 +15,7 @@ public:
 	virtual ~CZudaArtefact(void);
 
 	virtual void Load				(LPCSTR section);
-
+	virtual void	Hide() {};
+	virtual void	Show() {};
 protected:
 };

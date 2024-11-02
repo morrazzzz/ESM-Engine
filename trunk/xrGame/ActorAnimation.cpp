@@ -16,6 +16,7 @@
 #include "../xr_3da/motion.h"
 #include "artifact.h"
 #include "HUDManager.h"
+#include "player_hud.h"
 
 static const float y_spin0_factor		= 0.0f;
 static const float y_spin1_factor		= 0.4f;
@@ -335,12 +336,12 @@ void CActor::g_SetAnimation( u32 mstate_rl )
 		else
 			moving_idx				= STorsoWpn::eWalk;
 	}
-	// анимации
+	// Р°РЅРёРјР°С†РёРё
 	MotionID 						M_legs;
 	MotionID 						M_torso;
 	MotionID 						M_head;
 
-	//если мы просто стоим на месте
+	//РµСЃР»Рё РјС‹ РїСЂРѕСЃС‚Рѕ СЃС‚РѕРёРј РЅР° РјРµСЃС‚Рµ
 	bool is_standing = false;
 
 	// Legs
@@ -362,13 +363,16 @@ void CActor::g_SetAnimation( u32 mstate_rl )
 	}
 	//---------------------------------------------------------------
 	if (this == Level().CurrentViewEntity())
-	{	
-		if ((mstate_rl&mcSprint) != (mstate_old&mcSprint))
+	{
+		if ((mstate_rl & mcSprint) != (mstate_old & mcSprint))
 		{
-			CHudItem* pHudItem = smart_cast<CHudItem*>(inventory().ActiveItem());	
-			if (pHudItem) pHudItem->onMovementChanged(mcSprint);
-		};
-	};
+			g_player_hud->OnMovementChanged(mcSprint);
+		}
+		else if ((mstate_rl & mcAnyMove) != (mstate_old & mcAnyMove))
+		{
+			g_player_hud->OnMovementChanged(mcAnyMove);
+		}
+	}
 	//-----------------------------------------------------------------------
 	// Torso
 	if(mstate_rl&mcClimb)
@@ -458,29 +462,27 @@ void CActor::g_SetAnimation( u32 mstate_rl )
 						if(is_standing)
 						{
 							switch (M->GetState()){
-							case MS_SHOWING	 :		M_torso	= TW->draw;			break;
-							case MS_HIDING	 :		M_torso	= TW->holster;		break;
-							case MS_IDLE	 :		M_torso	= TW->moving[moving_idx];		break;
-							case MS_EMPTY	 :		M_torso	= TW->zoom;		break;
-							case MS_THREATEN :		M_torso = M_legs = M_head = TW->all_attack_0;	break;
-							case MS_READY	 :		M_torso = M_legs = M_head = TW->all_attack_1;	break;
-							case MS_THROW	 :		M_torso = M_legs = M_head = TW->all_attack_2;	break;
-							case MS_END		 :		M_torso = M_legs = M_head = TW->all_attack_2;	break;
-							default			 :		M_torso	= TW->draw;			break; 
+							case CMissile::eShowing:	M_torso = TW->draw;								break;
+							case CMissile::eHiding:		M_torso = TW->holster;							break;
+							case CMissile::eIdle:		M_torso = TW->moving[moving_idx];				break;
+							case CMissile::eThrowStart:	M_torso = M_legs = M_head = TW->all_attack_0;	break;
+							case CMissile::eReady:		M_torso = M_legs = M_head = TW->all_attack_1;	break;
+							case CMissile::eThrow:		M_torso = M_legs = M_head = TW->all_attack_2;	break;
+							case CMissile::eThrowEnd:	M_torso = M_legs = M_head = TW->all_attack_2;	break;
+							default			 :		M_torso	= TW->draw;			break;
 							}
 						}
 						else
 						{
 							switch (M->GetState()){
-							case MS_SHOWING	 :		M_torso	= TW->draw;						break;
-							case MS_HIDING	 :		M_torso	= TW->holster;					break;
-							case MS_IDLE	 :		M_torso	= TW->moving[moving_idx];		break;
-							case MS_EMPTY	 :		M_torso	= TW->moving[moving_idx];		break;
-							case MS_THREATEN :		M_torso	= TW->attack_zoom;				break;
-							case MS_READY	 :		M_torso	= TW->fire_idle;				break;
-							case MS_THROW	 :		M_torso	= TW->fire_end;					break;
-							case MS_END		 :		M_torso	= TW->fire_end;					break;
-							default			 :		M_torso	= TW->draw;						break; 
+							case CMissile::eShowing:	M_torso = TW->draw;								break;
+							case CMissile::eHiding:		M_torso = TW->holster;							break;
+							case CMissile::eIdle:		M_torso = TW->moving[moving_idx];				break;
+							case CMissile::eThrowStart:	M_torso = TW->attack_zoom;						break;
+							case CMissile::eReady:		M_torso = TW->fire_idle;						break;
+							case CMissile::eThrow:		M_torso = TW->fire_end;							break;
+							case CMissile::eThrowEnd:	M_torso = TW->fire_end;							break;
+							default			 :		M_torso	= TW->draw;						break;
 							}
 						}
 					}
@@ -514,7 +516,7 @@ void CActor::g_SetAnimation( u32 mstate_rl )
 		else						M_torso = ST->m_torso_idle;
 	}
 	
-	// есть анимация для всего - запустим / иначе запустим анимацию по частям
+	// РµСЃС‚СЊ Р°РЅРёРјР°С†РёСЏ РґР»СЏ РІСЃРµРіРѕ - Р·Р°РїСѓСЃС‚РёРј / РёРЅР°С‡Рµ Р·Р°РїСѓСЃС‚РёРј Р°РЅРёРјР°С†РёСЋ РїРѕ С‡Р°СЃС‚СЏРј
 	if (m_current_torso!=M_torso){
 		if (m_bAnimTorsoPlayed)		m_current_torso_blend = smart_cast<IKinematicsAnimated*>	(Visual())->PlayCycle(M_torso,TRUE,AnimTorsoPlayCallBack,this);
 		else						/**/m_current_torso_blend = /**/smart_cast<IKinematicsAnimated*>	(Visual())->PlayCycle(M_torso);

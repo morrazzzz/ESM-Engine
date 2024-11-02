@@ -10,7 +10,6 @@
 #include "level.h"
 #include "ParticlesObject.h"
 #include "actor.h"
-#include "weaponhud.h"
 #include "stalker_animation_data_storage.h"
 #include "stalker_velocity_holder.h"
 #include "string_table.h"
@@ -78,8 +77,6 @@ CGamePersistent::CGamePersistent()
 		eDemoStart			=	NULL;
 	}
 
-	CWeaponHUD::CreateSharedContainer();
-
 	eQuickLoad					= Engine.Event.Handler_Attach("Game:QuickLoad",this);
 	Fvector3* DofValue = Console->GetFVectorPtr("r2_dof");
 	SetBaseDof(*DofValue);
@@ -87,7 +84,6 @@ CGamePersistent::CGamePersistent()
 
 CGamePersistent::~CGamePersistent(void)
 {	
-	CWeaponHUD::DestroySharedContainer();
 	FS.r_close					(pDemoFile);
 	Device.seqFrame.Remove		(this);
 	Engine.Event.Handler_Detach	(eDemoStart,this);
@@ -155,8 +151,6 @@ void CGamePersistent::Start		(LPCSTR op)
 
 void CGamePersistent::Disconnect()
 {
-	CWeaponHUD::CleanSharedContainer();
-
 	// destroy ambient particles
 	CParticlesObject::Destroy(ambient_particles);
 
@@ -208,8 +202,6 @@ void CGamePersistent::OnGameEnd	()
 
 	xr_delete							(g_stalker_animation_data_storage);
 	xr_delete							(g_stalker_velocity_holder);
-
-	CWeaponHUD::CleanSharedContainer	();
 }
 
 void CGamePersistent::WeathersUpdate()
@@ -699,7 +691,7 @@ void CGamePersistent::OnRenderPPUI_PP()
 #include "../xr_3da/x_ray.h"
 void CGamePersistent::LoadTitle(bool change_tip, shared_str map_name)
 {
-	Discord.SetStatus("Çàãðóçêà èãðîâîãî óðîâíÿ");
+	Discord.SetStatus("Ð—Ð°Ð³Ñ€ÑƒÐ·ÐºÐ° Ð¸Ð³Ñ€Ð¾Ð²Ð¾Ð³Ð¾ ÑƒÑ€Ð¾Ð²Ð½Ñ");
 
 	pApp->LoadStage();
 	if (change_tip && EnabledTipsForZone_)
@@ -788,7 +780,7 @@ void CGamePersistent::SetGameDiscordStatus()
 	if (!g_pGameLevel)
 		return;
 
-	xr_string LevelName_ = "Â èãðå:";
+	xr_string LevelName_ = "Ð’ Ð¸Ð³Ñ€Ðµ:";
 	LevelName_ += "\t";
 	LevelName_ += CStringTable().translate(g_pGameLevel->name()).c_str();
 

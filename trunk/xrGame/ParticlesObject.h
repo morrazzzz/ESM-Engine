@@ -14,8 +14,8 @@ class CParticlesObject : public CPS_Instance
 	void				UpdateSpatial();
 
 protected:
-	bool				m_bLooped;			//флаг, что система зациклена
-	bool				m_bStopping;		//вызвана функция Stop()
+	bool				m_bLooped;			//С„Р»Р°Рі, С‡С‚Рѕ СЃРёСЃС‚РµРјР° Р·Р°С†РёРєР»РµРЅР°
+	bool				m_bStopping;		//РІС‹Р·РІР°РЅР° С„СѓРЅРєС†РёСЏ Stop()
 
 	virtual				~CParticlesObject();
 
@@ -31,7 +31,7 @@ public:
 	void				UpdateParent(const Fmatrix& m, const Fvector& vel);
 
 	void				play_at_pos(const Fvector& pos, BOOL xform = false);
-	virtual void		Play();
+	virtual void		Play(bool hudMode = false);
 	void				Stop(BOOL bDefferedStop = true);
 
 	bool				IsLooped() { return m_bLooped; }

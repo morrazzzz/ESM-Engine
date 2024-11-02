@@ -9,6 +9,8 @@
 #include "GamePersistent.h"
 #include "UIGameCustom.h"
 #include "game_cl_base.h"
+#include "Car.h"
+#include "Spectator.h"
 
 extern CUIGameCustom*	CurrentGameUI()	{return HUD().GetGameUI();}
 
@@ -154,6 +156,22 @@ void CHUDManager::OnFrame()
 //--------------------------------------------------------------------
 //--------------------------------------------------------------------
 
+bool need_render_hud()
+{
+	CObject* O = (g_pGameLevel) ? g_pGameLevel->CurrentViewEntity() : nullptr;
+	if (!O)
+		return false;
+
+	CActor* A = smart_cast<CActor*>(O);
+	if (A && (!A->HUDview() || !A->g_Alive()))
+		return false;
+
+	if (smart_cast<CCar*>(O) || smart_cast<CSpectator*>(O))
+		return false;
+
+	return true;
+}
+
 ENGINE_API extern float psHUD_FOV;
 
 void CHUDManager::Render_First()
@@ -161,16 +179,14 @@ void CHUDManager::Render_First()
 	if (!psHUD_Flags.is(HUD_WEAPON|HUD_WEAPON_RT))
 		return;
 
-	if (!pUIGame)						
+	if (pUIGame == nullptr)
+		return;
+	
+	if (!need_render_hud())
 		return;
 
-	CObject*	O					= g_pGameLevel->CurrentViewEntity();
-	if (0==O)						return;
-	CActor*		A					= smart_cast<CActor*> (O);
-	if (!A)							return;
-	if (A && !A->HUDview())			return;
-
 	// only shadow 
+	CObject* O = g_pGameLevel->CurrentViewEntity();
 	::Render->set_Invisible			(TRUE);
 	::Render->set_Object			(O->H_Root());
 	O->renderable_Render			();
@@ -201,7 +217,7 @@ void CHUDManager::Render_Last()
 }
 extern void draw_wnds_rects();
 extern ENGINE_API BOOL bShowPauseString;
-//îòðèñîâêà ýëåìåíòîâ èíòåðôåéñà
+//Ð¾Ñ‚Ñ€Ð¸ÑÐ¾Ð²ÐºÐ° ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚Ð¾Ð² Ð¸Ð½Ñ‚ÐµÑ€Ñ„ÐµÐ¹ÑÐ°
 #include "string_table.h"
 void  CHUDManager::RenderUI()
 {
@@ -322,36 +338,19 @@ CDialogHolder* CurrentDialogHolder()
 		return HUD().GetGameUI();
 }
 
-
-bool   CHUDManager::RenderActiveItemUIQuery()
-{
-	return 0;
-}
-
-void   CHUDManager::RenderActiveItemUI()
-{
-}
-
-//restore????
-/*
 #include "player_hud.h"
-bool   CHUDManager::RenderActiveItemUIQuery()
+bool CHUDManager::RenderActiveItemUIQuery()
 {
-	if (!psHUD_Flags.is(HUD_DRAW_RT2))
+	if (!psHUD_Flags.is(HUD_WEAPON | HUD_WEAPON_RT))
 		return false;
 
-	if (!psHUD_Flags.is(HUD_WEAPON|HUD_WEAPON_RT|HUD_WEAPON_RT2))return false;
+	if (!need_render_hud())
+		return false;
 
-	if(!need_render_hud())			return false;
-
-	return (g_player_hud && g_player_hud->render_item_ui_query() );
+	return (g_player_hud && g_player_hud->render_item_ui_query());
 }
 
-void   CHUDManager::RenderActiveItemUI()
+void CHUDManager::RenderActiveItemUI()
 {
-	if (!psHUD_Flags.is(HUD_DRAW_RT2))
-		return;
-
-	g_player_hud->render_item_ui		();
+	g_player_hud->render_item_ui();
 }
-*/

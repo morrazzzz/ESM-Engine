@@ -49,9 +49,9 @@ protected:
 	//////////////////////////////////////////////////////////////////////////
 	//	Lights
 	//////////////////////////////////////////////////////////////////////////
-	//флаг, что подсветка может быть включена
+	//С„Р»Р°Рі, С‡С‚Рѕ РїРѕРґСЃРІРµС‚РєР° РјРѕР¶РµС‚ Р±С‹С‚СЊ РІРєР»СЋС‡РµРЅР°
 	bool							m_bLightsEnabled;
-	//подсветка во время полета и работы двигателя
+	//РїРѕРґСЃРІРµС‚РєР° РІРѕ РІСЂРµРјСЏ РїРѕР»РµС‚Р° Рё СЂР°Р±РѕС‚С‹ РґРІРёРіР°С‚РµР»СЏ
 	ref_light						m_pTrailLight;
 	Fcolor							m_TrailLightColor;
 	float							m_fTrailLightRange;
@@ -75,12 +75,6 @@ public:
 	float							m_fBleedingRestoreSpeed;
 	CHitImmunity 					m_ArtefactHitImmunities;
 
-protected:
-	MotionSVec						m_anim_idle;
-	MotionSVec						m_anim_idle_sprint;
-	MotionSVec						m_anim_hide;
-	MotionSVec						m_anim_show;
-	MotionSVec						m_anim_activate;
 public:
 	enum EAFHudStates {
 		eIdle		= 0,
@@ -89,14 +83,13 @@ public:
 		eHidden,
 		eActivating,
 	};
-	virtual	void					PlayAnimIdle		();
 public:
 	virtual void					Hide				();
 	virtual void					Show				();
 	virtual	void					UpdateXForm			();
 	virtual bool					Action				(s32 cmd, u32 flags);
-	virtual void					onMovementChanged	(ACTOR_DEFS::EMoveCommand cmd);
-	virtual void					OnStateSwitch		(u32 S);
+	virtual	void					PlayAnimIdle		();
+	virtual void					OnStateSwitch		(u32 S, u32 oldState);
 	virtual void					OnAnimationEnd		(u32 state);
 	virtual bool					IsHidden			()	const	{return GetState()==eHidden;}
 	virtual u16						bone_count_to_synchronize	() const;

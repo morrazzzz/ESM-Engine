@@ -5022,9 +5022,6 @@
     <ClInclude Include="weaponBM16.h">
       <Filter>Core\Client\Objects\items &amp; weapons\Weapons\Various weapons\BM-16</Filter>
     </ClInclude>
-    <ClInclude Include="WeaponHUD.h">
-      <Filter>Core\Client\Objects\items &amp; weapons\Weapons\HUD</Filter>
-    </ClInclude>
     <ClInclude Include="WeaponMounted.h">
       <Filter>Core\Client\Objects\items &amp; weapons\Weapons\Mounted Weapon</Filter>
     </ClInclude>
@@ -6063,6 +6060,7 @@
     <ClInclude Include="action_planner.h">
       <Filter>AI\AComponents\DecisionManagement\ActionManagement\ActionPlannerAction</Filter>
     </ClInclude>
+    <ClInclude Include="player_hud.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -7799,9 +7797,6 @@
     <ClCompile Include="weaponBM16_script.cpp">
       <Filter>Core\Client\Objects\items &amp; weapons\Weapons\Various weapons\BM-16</Filter>
     </ClCompile>
-    <ClCompile Include="WeaponHUD.cpp">
-      <Filter>Core\Client\Objects\items &amp; weapons\Weapons\HUD</Filter>
-    </ClCompile>
     <ClCompile Include="WeaponMounted.cpp">
       <Filter>Core\Client\Objects\items &amp; weapons\Weapons\Mounted Weapon</Filter>
     </ClCompile>
@@ -8900,6 +8895,8 @@
     <ClCompile Include="death_anims_predicates.cpp">
       <Filter>Physics\CharacterSupport\death_anims</Filter>
     </ClCompile>
+    <ClCompile Include="player_hud.cpp" />
+    <ClCompile Include="player_hud_tune.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="graph_abstract.h">

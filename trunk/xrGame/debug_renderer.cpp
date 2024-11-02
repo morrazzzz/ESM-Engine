@@ -7,7 +7,6 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#ifdef DEBUG
 #	include "debug_renderer.h"
 
 CDebugRenderer::CDebugRenderer		()
@@ -21,7 +20,9 @@ CDebugRenderer::CDebugRenderer		()
 
 void CDebugRenderer::add_lines(Fvector const* vertices, u32 const& vertex_count, u16 const* pairs, u32 const& pair_count, u32 const& color)
 {
+#ifdef DEBUG
 	DRender->add_lines(vertices, vertex_count, pairs, pair_count, color);
+#endif
 }
 void CDebugRenderer::draw_obb(const Fmatrix& matrix, const u32& color)
 {
@@ -148,4 +149,3 @@ void CDebugRenderer::draw_ellipse(const Fmatrix& matrix, const u32& color)
 
 	add_lines((Fvector*)&vertices[0], sizeof(vertices) / sizeof(Fvector), &pairs[0], sizeof(pairs) / (2 * sizeof(u16)), color);
 }
-#endif

@@ -1,11 +1,13 @@
 #include "stdafx.h"
 #include "weaponrpg7.h"
-#include "WeaponHUD.h"
 #include "xrserver_objects_alife_items.h"
 #include "explosiverocket.h"
 #include "entity.h"
 #include "level.h"
 #include "../include/xrRender/Kinematics.h"
+#include "player_hud.h"
+
+const char* grenade_def_bone_cop = "grenade";
 
 CWeaponRPG7::CWeaponRPG7() : CWeaponCustomPistol("RPG7") 
 {
@@ -22,8 +24,8 @@ void CWeaponRPG7::Load	(LPCSTR section)
 
 	m_fScopeZoomFactor		= pSettings->r_float	(section,"max_zoom_factor");
 
-	m_sGrenadeBoneName		= pSettings->r_string	(section,"grenade_bone");
-	m_sHudGrenadeBoneName	= pSettings->r_string	(hud_sect,"grenade_bone");
+	m_sGrenadeBoneName		= READ_IF_EXISTS(pSettings, r_string, section, "grenade_bone", grenade_def_bone_cop);
+	m_sHudGrenadeBoneName	= READ_IF_EXISTS(pSettings, r_string, hud_sect, "grenade_bone", grenade_def_bone_cop);
 
 	m_sRocketSection		= pSettings->r_string	(section,"rocket_class");
 }
@@ -31,22 +33,19 @@ void CWeaponRPG7::Load	(LPCSTR section)
 
 void CWeaponRPG7::UpdateMissileVisibility()
 {
-	bool vis_hud,vis_weap;
-	vis_hud		= (!!iAmmoElapsed || GetState() == eReload);
-	vis_weap	= !!iAmmoElapsed;
+	bool vis_hud, vis_weap;
+	vis_hud = (!!iAmmoElapsed || GetState() == eReload);
+	vis_weap = !!iAmmoElapsed;
 
-	IKinematics* pHudVisual = smart_cast<IKinematics*>(m_pHUD->Visual());
-	VERIFY(pHudVisual);
-	if (H_Parent() != Level().CurrentEntity()) pHudVisual = NULL;
-	IKinematics* pWeaponVisual = smart_cast<IKinematics*>(Visual()); 
+	if (GetHUDmode())
+	{
+		HudItemData()->set_bone_visible(m_sHudGrenadeBoneName, vis_hud, TRUE);
+	}
+
+	IKinematics* pWeaponVisual = smart_cast<IKinematics*>(Visual());
 	VERIFY(pWeaponVisual);
-
-	if (pHudVisual) pHudVisual->LL_SetBoneVisible(pHudVisual->LL_BoneID(*m_sHudGrenadeBoneName),vis_hud,TRUE);
-	pWeaponVisual->LL_SetBoneVisible(pWeaponVisual->LL_BoneID(*m_sGrenadeBoneName),vis_weap,TRUE);
-	pWeaponVisual->CalculateBones_Invalidate();
-	pWeaponVisual->CalculateBones();
+	pWeaponVisual->LL_SetBoneVisible(pWeaponVisual->LL_BoneID(m_sGrenadeBoneName), vis_weap, TRUE);
 }
-
 
 BOOL CWeaponRPG7::net_Spawn(CSE_Abstract* DC) 
 {
@@ -61,9 +60,9 @@ BOOL CWeaponRPG7::net_Spawn(CSE_Abstract* DC)
 	return l_res;
 }
 
-void CWeaponRPG7::OnStateSwitch(u32 S) 
+void CWeaponRPG7::OnStateSwitch(u32 S, u32 oldState)
 {
-	inherited::OnStateSwitch(S);
+	inherited::OnStateSwitch(S, oldState);
 	UpdateMissileVisibility();
 }
 
@@ -90,6 +89,12 @@ void CWeaponRPG7::SwitchState(u32 S)
 void CWeaponRPG7::FireStart()
 {
 	inherited::FireStart();
+}
+
+void CWeaponRPG7::on_a_hud_attach()
+{
+	inherited::on_a_hud_attach();
+	UpdateMissileVisibility();
 }
 
 #include "inventory.h"

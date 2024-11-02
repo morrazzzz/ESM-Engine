@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////
 // ElectricBall.h
-// ElectricBall - артефакт электрический шар
+// ElectricBall - Р°СЂС‚РµС„Р°РєС‚ СЌР»РµРєС‚СЂРёС‡РµСЃРєРёР№ С€Р°СЂ
 ///////////////////////////////////////////////////////////////
 
 #pragma once
@@ -15,6 +15,8 @@ public:
 	virtual ~CElectricBall(void);
 
 	virtual void Load				(LPCSTR section);
+	virtual void	Hide() {};
+	virtual void	Show() {};
 
 protected:
 	virtual void	UpdateCLChild	();

@@ -74,7 +74,7 @@ BOOL CPGDef::Load(IReader& F)
             (*it)->m_Time1 	= F.r_float();
             (*it)->m_Flags.assign	(F.r_u32());
         }
-    }else{  //.??? убрать через некоторое время
+    }else{  //.??? СѓР±СЂР°С‚СЊ С‡РµСЂРµР· РЅРµРєРѕС‚РѕСЂРѕРµ РІСЂРµРјСЏ
         R_ASSERT		(F.find_chunk(PGD_CHUNK_EFFECTS2));
         m_Effects.resize(F.r_u32());
         for (EffectIt it=m_Effects.begin(); it!=m_Effects.end(); it++){
@@ -163,6 +163,9 @@ void CParticleGroup::SItem::Clear()
 void CParticleGroup::SItem::StartRelatedChild(CParticleEffect* emitter, LPCSTR eff_name, PAPI::Particle& m)
 {
     CParticleEffect*C		= static_cast<CParticleEffect*>(RImplementation.model_CreatePE(eff_name));
+    	
+	C->SetHudMode			(emitter->GetHudMode());
+
     Fmatrix M; 				M.identity();
     Fvector vel; 			vel.sub(m.pos,m.posB); vel.div(fDT_STEP);
     if (emitter->m_RT_Flags.is(CParticleEffect::flRT_XFORM)){
@@ -188,6 +191,7 @@ void CParticleGroup::SItem::StopRelatedChild(u32 idx)
 void CParticleGroup::SItem::StartFreeChild(CParticleEffect* emitter, LPCSTR nm, PAPI::Particle& m)
 {
     CParticleEffect*C			= static_cast<CParticleEffect*>(RImplementation.model_CreatePE(nm));
+	C->SetHudMode				(emitter->GetHudMode());
     if(!C->IsLooped()){
         Fmatrix M; 				M.identity();
         Fvector vel; 			vel.sub(m.pos,m.posB); vel.div(fDT_STEP);
@@ -494,3 +498,22 @@ u32 CParticleGroup::ParticlesCount()
 	return p_count;
 }
 
+
+void CParticleGroup::SetHudMode(BOOL b)
+{
+    for (SItemVecIt i_it=items.begin(); i_it!=items.end(); ++i_it)
+	{
+		CParticleEffect* E	= static_cast<CParticleEffect*>(i_it->_effect);
+		E->SetHudMode(b);
+	}
+}
+
+BOOL CParticleGroup::GetHudMode()
+{
+	if(items.size())
+	{
+		CParticleEffect* E	= static_cast<CParticleEffect*>(items[0]._effect);
+		return E->GetHudMode();
+	}else
+		return FALSE;
+}

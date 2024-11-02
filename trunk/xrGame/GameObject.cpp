@@ -23,11 +23,11 @@
 #include "game_level_cross_table.h"
 #include "animation_movement_controller.h"
 #include "../xr_3da/xr_collide_form.h"
+#include "profiler.h"
 
 #ifdef DEBUG
 #include "debug_renderer.h"
 #include "PHDebug.h"
-#include "profiler.h"
 #endif
 
 ENGINE_API bool g_dedicated_server;
@@ -756,7 +756,7 @@ void CGameObject::DestroyObject()
 
 void CGameObject::shedule_Update	(u32 dt)
 {
-	//уничтожить
+	//СѓРЅРёС‡С‚РѕР¶РёС‚СЊ
 	if(!IsGameTypeSingle() && OnServer() && NeedToDestroyObject())
 	{
 #ifdef DEBUG
@@ -781,7 +781,7 @@ BOOL CGameObject::net_SaveRelevant	()
 	return	(CScriptBinder::net_SaveRelevant());
 }
 
-//игровое имя объекта
+//РёРіСЂРѕРІРѕРµ РёРјСЏ РѕР±СЉРµРєС‚Р°
 LPCSTR CGameObject::Name () const
 {
 	return	(*cName());

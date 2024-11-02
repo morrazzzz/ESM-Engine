@@ -74,6 +74,8 @@ void CUIGameSP::OnFrame()
 		}
 	}
 }
+void hud_adjust_mode_keyb(int dik);
+void hud_draw_adjust_mode();
 
 bool CUIGameSP::IR_UIOnKeyboardPress(int dik)
 {
@@ -86,6 +88,8 @@ bool CUIGameSP::IR_UIOnKeyboardPress(int dik)
 
 	if(!pActor->g_Alive())	
 		return false;
+
+	hud_adjust_mode_keyb(dik);
 
 	switch ( get_binded_action(dik) )
 	{
@@ -125,6 +129,12 @@ bool CUIGameSP::IR_UIOnKeyboardPress(int dik)
 		}break;
 	}
 	return false;
+}
+
+void CUIGameSP::Render()
+{
+	inherited::Render();
+	hud_draw_adjust_mode();
 }
 
 void CUIGameSP::StartTalk()

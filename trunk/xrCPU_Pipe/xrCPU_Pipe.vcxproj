@@ -194,8 +194,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir);../3rd party/DX9SDK/Include;%(AdditionalIncludeDirectories)
-      </AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../3rd party/Dplay;$(SolutionDir);../3rd party/D3dx;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <ResourceCompile>
@@ -209,7 +208,7 @@
       <GenerateMapFile>false</GenerateMapFile>
       <MapFileName>
       </MapFileName>
-      <AdditionalLibraryDirectories>$(xrLibDir);../3rd party/DX9SDK/Lib_x64;%(AdditionalLibraryDirectories)
+      <AdditionalLibraryDirectories>$(xrLibDir);../3rd party/d3dx/Lib_x64;%(AdditionalLibraryDirectories)
       </AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>

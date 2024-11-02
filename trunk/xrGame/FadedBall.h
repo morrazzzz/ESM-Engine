@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////
 // FadedBall.h
-// FadedBall - артефакт блеклый шар
+// FadedBall - Р°СЂС‚РµС„Р°РєС‚ Р±Р»РµРєР»С‹Р№ С€Р°СЂ
 ///////////////////////////////////////////////////////////////
 
 #pragma once
@@ -15,6 +15,8 @@ public:
 	virtual ~CFadedBall(void);
 
 	virtual void Load				(LPCSTR section);
+	virtual void	Hide() {};
+	virtual void	Show() {};
 
 protected:
 };

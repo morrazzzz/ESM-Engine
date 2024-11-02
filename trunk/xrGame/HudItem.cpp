@@ -1,34 +1,39 @@
 //////////////////////////////////////////////////////////////////////
-// HudItem.cpp: класс родитель для всех предметов имеющих
-//				собственный HUD (CWeapon, CMissile etc)
+// HudItem.cpp: РєР»Р°СЃСЃ СЂРѕРґРёС‚РµР»СЊ РґР»СЏ РІСЃРµС… РїСЂРµРґРјРµС‚РѕРІ РёРјРµСЋС‰РёС…
+//				СЃРѕР±СЃС‚РІРµРЅРЅС‹Р№ HUD (CWeapon, CMissile etc)
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
 #include "HudItem.h"
+#include "HudSound.h"
 #include "physic_item.h"
-#include "WeaponHUD.h"
 #include "actor.h"
 #include "actoreffector.h"
-#include "Missile.h"
 #include "xrmessages.h"
 #include "level.h"
 #include "inventory.h"
+#include "../xr_3da/camerabase.h"
+#include "../Include/xrRender/Kinematics.h"
+#include "player_hud.h"
+#include "ui_base.h"
+#include "../xr_3da/SkeletonMotions.h"
 
-
-CHudItem::CHudItem()
+CHudItem::CHudItem(void)
 {
-	m_pHUD				= NULL;
-	SetHUDmode			(FALSE);
-	m_dwStateTime		= 0;
-	m_bRenderHud		= true;
+	m_huditem_flags.zero();
+	m_animation_slot	= u32(-1);
+	RenderHud			(TRUE);
+	EnableHudInertion	(TRUE);
+	AllowHudInertion	(TRUE);
 
-	m_bInertionEnable	= true;
-	m_bInertionAllow	= true;
+	m_bStopAtEndAnimIsRunning = false;
+	m_current_motion_def = nullptr;
+	m_started_rnd_anim_idx = u8(-1);
+	m_dwStateTime		= 0;
 }
 
-CHudItem::~CHudItem()
+CHudItem::~CHudItem(void)
 {
-	xr_delete			(m_pHUD);
 }
 
 DLL_Pure *CHudItem::_construct	()
@@ -44,65 +49,53 @@ DLL_Pure *CHudItem::_construct	()
 
 void CHudItem::Load(LPCSTR section)
 {
-	//загрузить hud, если он нужен
-	if(pSettings->line_exist(section,"hud"))
-		hud_sect		= pSettings->r_string		(section,"hud");
+	//Р·Р°РіСЂСѓР·РёС‚СЊ hud, РµСЃР»Рё РѕРЅ РЅСѓР¶РµРЅ
+	if (pSettings->line_exist(section, "hud"))
+	{
+		hud_sect		= pSettings->r_string(section, "hud");
 
-	if(*hud_sect){
-		m_pHUD			= xr_new<CWeaponHUD> (this);
-		m_pHUD->Load	(*hud_sect);
-		if(pSettings->line_exist(*hud_sect, "allow_inertion")) 
-			m_bInertionAllow = !!pSettings->r_bool(*hud_sect, "allow_inertion");
-	}else{
-		m_pHUD = NULL;
-		//если hud не задан, но задан слот, то ошибка
-		R_ASSERT2(item().GetSlot() == NO_ACTIVE_SLOT, "active slot is set, but hud for food item is not available");
+		if (pSettings->line_exist(hud_sect, "allow_inertion"))
+			EnableHudInertion(pSettings->r_bool(hud_sect, "allow_inertion"));
 	}
 
 	m_animation_slot	= pSettings->r_u32(section,"animation_slot");
 }
 
+void CHudItem::PlaySound(HUD_SOUND& hud_snd, const Fvector& position, bool overlap)
+{
+	Fvector pos = GetHUDmode() ? Fvector().sub(position, ::Sound->listener_position()) : position;
+	HUD_SOUND::PlaySound(hud_snd, pos, object().H_Root(), !!GetHUDmode(), false);
+}
+
 void CHudItem::net_Destroy()
 {
-	if(m_pHUD)
-		m_pHUD->net_DestroyHud	();
-
-	SetHUDmode			(FALSE);
-	m_dwStateTime		= 0;
+	m_dwStateTime = 0;
 }
 
-void CHudItem::PlaySound	(HUD_SOUND& hud_snd, const Fvector& position)
-{
-	HUD_SOUND::PlaySound	(hud_snd, position, object().H_Root(), !!GetHUDmode());
-}
-
-BOOL  CHudItem::net_Spawn	(CSE_Abstract* DC) 
+BOOL CHudItem::net_Spawn(CSE_Abstract* DC)
 {
 	return TRUE;
 }
 
 void CHudItem::renderable_Render()
 {
-	UpdateXForm	();
-	BOOL _hud_render			= ::Render->get_HUD() && GetHUDmode();
-	if(_hud_render && !m_pHUD->IsHidden() && !item().IsHidden()){ 
-		// HUD render
-		if(m_bRenderHud){
-			::Render->set_Transform		(&m_pHUD->Transform());
-			::Render->add_Visual		(m_pHUD->Visual());
+	UpdateXForm();
+	const bool _hud_render = ::Render->get_HUD() && GetHUDmode();
+
+	if (!(_hud_render && !IsHidden()))
+	{
+		if (!object().H_Parent() || (!_hud_render && !IsHidden()))
+		{
+			on_renderable_Render();
 		}
-	}
-	else {
-		if (!object().H_Parent() || (!_hud_render && m_pHUD && !m_pHUD->IsHidden() && !item().IsHidden()))
-			on_renderable_Render		();
-		else
-			if (object().H_Parent()) {
-				CInventoryOwner	*owner = smart_cast<CInventoryOwner*>(object().H_Parent());
-				VERIFY			(owner);
-				CInventoryItem	*self = smart_cast<CInventoryItem*>(this);
-				if (owner->attached(self))
-					on_renderable_Render();
-			}
+		else if (object().H_Parent())
+		{
+			CInventoryOwner* owner = smart_cast<CInventoryOwner*>(object().H_Parent());
+			VERIFY(owner);
+			CInventoryItem* self = smart_cast<CInventoryItem*>(this);
+			if (owner->attached(self))
+				on_renderable_Render();
+		}
 	}
 }
 
@@ -113,7 +106,9 @@ bool CHudItem::Action(s32 cmd, u32 flags)
 
 void CHudItem::SwitchState(u32 S)
 {
-	if (OnClient()) return;
+	if (OnClient()) 
+		return;
+
 	SetNextState( S );	// Very-very important line of code!!! :)
 
 	if (object().Local() && !object().getDestroy())	
@@ -134,162 +129,294 @@ void CHudItem::OnEvent		(NET_Packet& P, u16 type)
 		{
 			u8				S;
 			P.r_u8			(S);
-			OnStateSwitch	(u32(S));
+			OnStateSwitch	(u32(S), GetState());
 		}
 		break;
 	}
 }
 
-void CHudItem::OnStateSwitch	(u32 S)
+void CHudItem::OnStateSwitch(u32 S, u32 oldState)
 {
 	m_dwStateTime = 0;
-	SetState( S );
-	if(object().Remote()) SetNextState( S );
+	SetState(S);
+	if (object().Remote())
+		SetNextState(S);
 }
 
-
-bool CHudItem::Activate() 
+bool CHudItem::Activate()
 {
-	if(m_pHUD) 
-		m_pHUD->Init();
-
 	Show();
 	OnActiveItem ();
 	return true;
 }
 
-void CHudItem::Deactivate() 
+void CHudItem::Deactivate()
 {
 	Hide();
 	OnHiddenItem ();
-}
-
-
-
-void CHudItem::UpdateHudPosition	()
-{
-	if (m_pHUD && GetHUDmode()){
-		if(item().IsHidden()) 
-			SetHUDmode(FALSE);
-
-		Fmatrix							trans;
-
-		CActor* pActor = smart_cast<CActor*>(object().H_Parent());
-		if(pActor){
-			pActor->Cameras().camera_Matrix				(trans);
-			UpdateHudInertion							(trans);
-			UpdateHudAdditonal							(trans);
-			m_pHUD->UpdatePosition						(trans);
-		}
-	}
-}
-
-void CHudItem::UpdateHudAdditonal		(Fmatrix& hud_trans)
-{
-}
-
-void CHudItem::StartHudInertion()
-{
-	m_bInertionEnable = true;
-}
-void CHudItem::StopHudInertion()
-{
-	m_bInertionEnable = false;
-}
-
-static const float PITCH_OFFSET_R	= 0.017f;
-static const float PITCH_OFFSET_N	= 0.012f;
-static const float PITCH_OFFSET_D	= 0.02f;
-static const float ORIGIN_OFFSET	= -0.05f;
-static const float TENDTO_SPEED		= 5.f;
-
-void CHudItem::UpdateHudInertion		(Fmatrix& hud_trans)
-{
-	if (m_pHUD && m_bInertionAllow && m_bInertionEnable){
-		Fmatrix								xform;//,xform_orig; 
-		Fvector& origin						= hud_trans.c; 
-		xform								= hud_trans;
-
-		static Fvector						m_last_dir={0,0,0};
-
-		// calc difference
-		Fvector								diff_dir;
-		diff_dir.sub						(xform.k, m_last_dir);
-
-		// clamp by PI_DIV_2
-		Fvector last;						last.normalize_safe(m_last_dir);
-		float dot							= last.dotproduct(xform.k);
-		if (dot<EPS){
-			Fvector v0;
-			v0.crossproduct			(m_last_dir,xform.k);
-			m_last_dir.crossproduct	(xform.k,v0);
-			diff_dir.sub			(xform.k, m_last_dir);
-		}
-
-		// tend to forward
-		m_last_dir.mad	(diff_dir,TENDTO_SPEED*Device.fTimeDelta);
-		origin.mad		(diff_dir,ORIGIN_OFFSET);
-
-		// pitch compensation
-		float pitch		= angle_normalize_signed(xform.k.getP());
-		origin.mad		(xform.k,	-pitch * PITCH_OFFSET_D);
-		origin.mad		(xform.i,	-pitch * PITCH_OFFSET_R);
-		origin.mad		(xform.j,	-pitch * PITCH_OFFSET_N);
-
-		// calc moving inertion
-	}
 }
 
 void CHudItem::UpdateCL()
 {
 	m_dwStateTime += Device.dwTimeDelta;
 
-	if(m_pHUD) m_pHUD->Update();
-	UpdateHudPosition	();
-}
-
-void CHudItem::OnH_A_Chield		()
-{
-	SetHUDmode		(FALSE);
-
-	if (m_pHUD) {
-		if(Level().CurrentEntity() == object().H_Parent() && smart_cast<CActor*>(object().H_Parent()))
-			m_pHUD->Visible(true);
-		else
-			m_pHUD->Visible(false);
-	}
-}
-
-void CHudItem::OnH_B_Chield		()
-{
-	OnHiddenItem ();
-}
-
-void CHudItem::OnH_B_Independent	(bool just_before_destroy)
-{
-	SetHUDmode				(FALSE);
-
-	if (m_pHUD)
-		m_pHUD->Visible		(false);
-	
-	StopHUDSounds			();
-
-	UpdateXForm				();
-}
-
-void CHudItem::OnH_A_Independent	()
-{
-}
-void CHudItem::animGet	(MotionSVec& lst, LPCSTR prefix)
-{
-	const MotionID		&M = m_pHUD->animGet(prefix);
-	if (M)				lst.push_back(M);
-	for (int i=0; i<MAX_ANIM_COUNT; ++i)
+	if (m_current_motion_def)
 	{
-		string128		sh_anim;
-		sprintf_s			(sh_anim,"%s%d",prefix,i);
-		const MotionID	&M = m_pHUD->animGet(sh_anim);
-		if (M)			lst.push_back(M);
+		if (m_bStopAtEndAnimIsRunning)
+		{
+			const xr_vector<motion_marks>& marks = m_current_motion_def->marks;
+			if (!marks.empty())
+			{
+				float motion_prev_time = ((float)m_dwMotionCurrTm - (float)m_dwMotionStartTm) / 1000.0f;
+				float motion_curr_time = ((float)Device.dwTimeGlobal - (float)m_dwMotionStartTm) / 1000.0f;
+
+				xr_vector<motion_marks>::const_iterator it = marks.begin();
+				xr_vector<motion_marks>::const_iterator it_e = marks.end();
+				for (; it != it_e; ++it)
+				{
+					const motion_marks& M = (*it);
+					if (M.is_empty())
+						continue;
+
+					const motion_marks::interval* Iprev = M.pick_mark(motion_prev_time);
+					const motion_marks::interval* Icurr = M.pick_mark(motion_curr_time);
+					if (Iprev == nullptr && Icurr != nullptr /* || M.is_mark_between(motion_prev_time, motion_curr_time)*/)
+					{
+						OnMotionMark(m_startedMotionState, M);
+					}
+				}
+			}
+
+			m_dwMotionCurrTm = Device.dwTimeGlobal;
+			if (m_dwMotionCurrTm > m_dwMotionEndTm)
+			{
+				m_current_motion_def = nullptr;
+				m_dwMotionStartTm = 0;
+				m_dwMotionEndTm = 0;
+				m_dwMotionCurrTm = 0;
+				m_bStopAtEndAnimIsRunning = false;
+				OnAnimationEnd(m_startedMotionState);
+			}
+		}
 	}
-	R_ASSERT2			(!lst.empty(),prefix);
+}
+
+void CHudItem::OnH_A_Chield()
+{
+}
+
+void CHudItem::OnH_B_Chield()
+{
+	StopCurrentAnimWithoutCallback();
+}
+
+void CHudItem::OnH_B_Independent(bool just_before_destroy)
+{
+	StopHUDSounds();
+	UpdateXForm();
+}
+
+void CHudItem::OnH_A_Independent()
+{
+	if (HudItemData())
+		g_player_hud->detach_item(this);
+	StopCurrentAnimWithoutCallback();
+}
+
+void CHudItem::on_b_hud_detach()
+{ 
+}
+
+void CHudItem::on_a_hud_attach()
+{
+	if (m_current_motion_def)
+	{
+		PlayHUDMotion_noCB(m_current_motion, FALSE);
+#ifdef DEBUG
+		//		Msg("continue playing [%s][%d]",m_current_motion.c_str(), Device.dwFrame);
+#endif // #ifdef DEBUG
+	}
+	else
+	{
+#ifdef DEBUG
+		//		Msg("no active motion");
+#endif // #ifdef DEBUG
+	}
+}
+
+u32 CHudItem::PlayHUDMotion(const shared_str& M, BOOL bMixIn, CHudItem* W, u32 state, bool randomAnim)
+{
+	u32 anim_time = PlayHUDMotion_noCB(M, bMixIn, randomAnim);
+	if (anim_time > 0)
+	{
+		m_bStopAtEndAnimIsRunning = true;
+		m_dwMotionStartTm = Device.dwTimeGlobal;
+		m_dwMotionCurrTm = m_dwMotionStartTm;
+		m_dwMotionEndTm = m_dwMotionStartTm + anim_time;
+		m_startedMotionState = state;
+	}
+	else
+		m_bStopAtEndAnimIsRunning = false;
+
+	return anim_time;
+}
+
+u32 CHudItem::PlayHUDMotion(const shared_str& M, const shared_str& M2, BOOL bMixIn, CHudItem* W, u32 state, bool randomAnim)
+{
+	u32 time = 0;
+
+	if (AnimationExist(M))
+		time = PlayHUDMotion(M, bMixIn, W, state, randomAnim);
+	else if (AnimationExist(M2))
+		time = PlayHUDMotion(M2, bMixIn, W, state, randomAnim);
+
+	return time;
+}
+
+u32 CHudItem::PlayHUDMotion_noCB(const shared_str& motion_name, BOOL bMixIn, bool randomAnim)
+{
+	m_current_motion = motion_name;
+	m_started_rnd_anim_idx = 0;
+
+	if (HudItemData())
+	{
+		return HudItemData()->anim_play(motion_name, bMixIn, m_current_motion_def, m_started_rnd_anim_idx, randomAnim);
+	}
+	else
+	{
+		return g_player_hud->motion_length(motion_name, HudSection(), m_current_motion_def);
+	}
+}
+
+void CHudItem::StopCurrentAnimWithoutCallback()
+{
+	m_dwMotionStartTm = 0;
+	m_dwMotionEndTm = 0;
+	m_dwMotionCurrTm = 0;
+	m_bStopAtEndAnimIsRunning = false;
+	m_current_motion_def = nullptr;
+	m_dwStateTime = 0;
+}
+
+BOOL CHudItem::GetHUDmode()
+{
+	if (object().H_Parent())
+	{
+		CActor* A = smart_cast<CActor*>(object().H_Parent());
+		return (A && A->HUDview() && HudItemData());
+	}
+	else
+		return FALSE;
+}
+
+void CHudItem::PlayAnimIdle()
+{
+	if (TryPlayAnimIdle())
+		return;
+
+	PlayHUDMotion("anim_idle", "anm_idle", TRUE, nullptr, GetState());
+}
+
+bool CHudItem::TryPlayAnimIdle()
+{
+	if (MovingAnimAllowedNow())
+	{
+		CActor* pActor = smart_cast<CActor*>(object().H_Parent());
+		if (pActor)
+		{
+			CEntity::SEntityState st;
+			pActor->g_State(st);
+			if (st.bSprint)
+			{
+				PlayAnimIdleSprint();
+				return true;
+			}
+				if (Actor()->get_state()&ACTOR_DEFS::mcAnyMove)
+				{
+					if (!st.bCrouch)
+					{
+						if (AnimationExist("anim_idle_moving") || AnimationExist("anm_idle_moving"))
+						{
+							PlayAnimIdleMoving();
+							return true;
+						}
+					}
+				}
+		}
+	}
+	return false;
+}
+
+/*void CHudItem::PlayAnimBore()
+{
+	PlayHUDMotion("anim_idle", "anm_bore", TRUE, this, GetState());
+}*/
+
+bool CHudItem::AnimationExist(const shared_str& anim_name) const
+{
+	if (HudItemData())
+	{
+		string256 anim_name_r;
+		bool is_16x9 = UI().is_widescreen();
+		u16 attach_place_idx = HudItemData()->m_attach_place_idx;
+		xr_sprintf(anim_name_r, "%s%s", anim_name.c_str(), (attach_place_idx == 1 && is_16x9) ? "_16x9" : "");
+		player_hud_motion* anm = HudItemData()->m_hand_motions.find_motion(anim_name_r);
+		if (anm)
+			return true;
+	}
+	else // Third person
+	{
+		const CMotionDef* temp_motion_def;
+		if (g_player_hud->motion_length(anim_name, HudSection(), temp_motion_def) > 100)
+			return true;
+	}
+#ifdef DEBUG
+	Msg("~ [WARNING] ------ Animation [%s] does not exist in [%s]", anim_name, HudSection().c_str());
+#endif
+	return false;
+}
+
+void CHudItem::PlayAnimIdleMoving()
+{ 
+	if (AnimationExist("anm_idle_moving") || AnimationExist("anm_idle"))
+		PlayHUDMotion("anm_idle_moving", "anm_idle", true, nullptr, GetState());
+	else
+		PlayHUDMotion("anim_idle_moving", "anim_idle", true, nullptr, GetState());
+}
+
+void CHudItem::PlayAnimIdleSprint()
+{
+	if (AnimationExist("anm_idle_sprint") || AnimationExist("anm_idle"))
+		PlayHUDMotion("anm_idle_sprint", "anm_idle", true, nullptr, GetState());
+	else
+		PlayHUDMotion("anim_idle_sprint", "anim_idle", true, nullptr, GetState());
+}
+
+void CHudItem::OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd)
+{
+	if (GetState() == eIdle && !m_bStopAtEndAnimIsRunning)
+	{
+		if ((cmd == ACTOR_DEFS::mcSprint) || (cmd == ACTOR_DEFS::mcAnyMove))
+		{
+			PlayAnimIdle();
+			ResetSubStateTime();
+		}
+	}
+}
+
+attachable_hud_item* CHudItem::HudItemData() const
+{
+	attachable_hud_item* hi = nullptr;
+	if (!g_player_hud)
+		return hi;
+
+	hi = g_player_hud->attached_item(0);
+	if (hi && hi->m_parent_hud_item == this)
+		return hi;
+
+	hi = g_player_hud->attached_item(1);
+	if (hi && hi->m_parent_hud_item == this)
+		return hi;
+
+	return nullptr;
 }

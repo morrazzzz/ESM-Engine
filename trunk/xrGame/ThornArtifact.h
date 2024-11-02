@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////
 // ThornArtifact.h
-// ThornArtefact - артефакт колючка
+// ThornArtefact - Р°СЂС‚РµС„Р°РєС‚ РєРѕР»СЋС‡РєР°
 ///////////////////////////////////////////////////////////////
 
 #pragma once
@@ -15,6 +15,8 @@ public:
 	virtual ~CThornArtefact(void);
 
 	virtual void Load				(LPCSTR section);
+	virtual void	Hide() {};
+	virtual void	Show() {};
 
 protected:
 };

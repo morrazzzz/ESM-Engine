@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////
 // DummyArtifact.h
-// DummyArtefact - артефакт пустышка
+// DummyArtefact - Р°СЂС‚РµС„Р°РєС‚ РїСѓСЃС‚С‹С€РєР°
 ///////////////////////////////////////////////////////////////
 
 #pragma once
@@ -15,6 +15,8 @@ public:
 	virtual ~CDummyArtefact(void);
 
 	virtual void Load				(LPCSTR section);
+	virtual void	Hide() {};
+	virtual void	Show() {};
 
 protected:
 };
