@@ -20,6 +20,8 @@ class CExplosive :
 	public IDamageSource
 {
 private:
+	std::mutex GrenadeMutex;
+
 	collide::rq_results			rq_storage;
 
 public:
@@ -34,14 +36,12 @@ public:
 	virtual void 				UpdateCL();
 
 private:
-	virtual void 				Explode();
+	 void __stdcall Explode();
 public:
 	virtual void 				ExplodeParams	(const Fvector& pos, const Fvector& dir);
 
 	static float 				ExplosionEffect	(collide::rq_results& storage,CExplosive*exp_obj,CPhysicsShellHolder*blasted_obj,  const Fvector &expl_centre, const float expl_radius);
 
-
-	virtual void 				OnEvent (NET_Packet& P, u16 type) ;//{inherited::OnEvent( P, type);}
 	virtual void				OnAfterExplosion();
 	virtual void				OnBeforeExplosion();
 	virtual void 				SetCurrentParentID	(u16 parent_id) {m_iCurrentParentID = parent_id; }

@@ -154,28 +154,29 @@ void CBulletManager::Clear		()
 }
 
 void CBulletManager::AddBullet(const Fvector& position,
-							   const Fvector& direction,
-							   float starting_speed,
-							   float power,
-							   float impulse,
-							   u16	sender_id,
-							   u16 sendersweapon_id,
-							   ALife::EHitType e_hit_type,
-							   float maximum_distance,
-							   const CCartridge& cartridge,
-							   bool SendHit,
-							   bool AimBullet)
+	const Fvector& direction,
+	float starting_speed,
+	float power,
+	float impulse,
+	u16	sender_id,
+	u16 sendersweapon_id,
+	ALife::EHitType e_hit_type,
+	float maximum_distance,
+	const CCartridge& cartridge,
+	bool SendHit,
+	bool AimBullet)
 {
-	m_Lock.Enter	();
-	VERIFY		(u16(-1)!=cartridge.bullet_material_idx);
-//	u32 CurID = Level().CurrentControlEntity()->ID();
-//	u32 OwnerID = sender_id;
-	m_Bullets.push_back(SBullet());
-	SBullet& bullet		= m_Bullets.back();
-	bullet.Init			(position, direction, starting_speed, power, impulse, sender_id, sendersweapon_id, e_hit_type, maximum_distance, cartridge, SendHit);
-	bullet.frame_num	= Device.dwFrame;
-	bullet.flags.aim_bullet	=	AimBullet;
-	m_Lock.Leave	();
+	m_Lock.Enter();
+	VERIFY(u16(-1) != cartridge.bullet_material_idx);
+	//	u32 CurID = Level().CurrentControlEntity()->ID();
+	//	u32 OwnerID = sender_id;
+
+	SBullet bullet;
+	bullet.Init(position, direction, starting_speed, power, impulse, sender_id, sendersweapon_id, e_hit_type, maximum_distance, cartridge, SendHit);
+	bullet.frame_num = Device.dwFrame;
+	bullet.flags.aim_bullet = AimBullet;
+	m_Bullets.push_back(bullet);
+	m_Lock.Leave();
 }
 
 void CBulletManager::UpdateWorkload()

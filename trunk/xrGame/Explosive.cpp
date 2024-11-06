@@ -330,8 +330,11 @@ void CExplosive::Explode()
 	Sound->play_at_pos(sndExplode, 0, pos, false);
 	
 	//показываем эффекты
+//	CTimer T; T.Start();
 
 	m_wallmark_manager.PlaceWallmarks		(pos);
+
+//	Msg("PlaceWallmarks in explosive: [%fms]", T.GetElapsed_sec() * 1000.f);
 
 	Fvector									vel;
 	smart_cast<CPhysicsShellHolder*>(cast_game_object())->PHGetLinearVell(vel);
@@ -358,11 +361,6 @@ void CExplosive::Explode()
 	//осколки
 	//////////////////////////////
 	//-------------------------------------
-	bool SendHits = false;
-	if (OnServer()) SendHits = true;
-	else SendHits = false;
-
-
 	for(int i = 0; i < m_iFragsNum; ++i){
 		frag_dir.random_dir	();
 		frag_dir.normalize	();
@@ -379,40 +377,35 @@ void CExplosive::Explode()
 		Level().BulletManager().AddBullet(	pos, frag_dir, m_fFragmentSpeed,
 											m_fFragHit, m_fFragHitImpulse, Initiator(),
 											cast_game_object()->ID(), m_eHitTypeFrag, m_fFragsRadius, 
-											cartridge, SendHits );
+											cartridge, true );
 	}	
 
-	if (cast_game_object()->Remote()) return;
-	
 	/////////////////////////////////
 	//взрывная волна
 	////////////////////////////////
 	//---------------------------------------------------------------------
 	xr_vector<ISpatial*>	ISpatialResult;
+	BLASTED_OBJECTS_V BlastedCopy{};
 	g_SpatialSpace->q_sphere(ISpatialResult,0,STYPE_COLLIDEABLE,pos,m_fBlastRadius);
 
-	m_blasted_objects.clear	();
-	for (u32 o_it=0; o_it<ISpatialResult.size(); o_it++)
+	for (u32 o_it = 0; o_it < ISpatialResult.size(); o_it++)
 	{
-		ISpatial*		spatial	= ISpatialResult[o_it];
+		ISpatial* spatial = ISpatialResult[o_it];
 		//		feel_touch_new(spatial->dcast_CObject());
 
-		CPhysicsShellHolder	*pGameObject = smart_cast<CPhysicsShellHolder*>(spatial->dcast_CObject());
-		if(pGameObject && cast_game_object()->ID() != pGameObject->ID()) 
-			m_blasted_objects.push_back(pGameObject);
+		CPhysicsShellHolder* pGameObject = smart_cast<CPhysicsShellHolder*>(spatial->dcast_CObject());
+		if (pGameObject && cast_game_object()->ID() != pGameObject->ID())
+			BlastedCopy.push_back(pGameObject);
 	}
 
 	GetExplosionBox(m_vExplodeSize);
-START_PROFILE("explosive/activate explosion box")
+    START_PROFILE("Explosive/activate explosion box")
 	ActivateExplosionBox(m_vExplodeSize,m_vExplodePos);
-STOP_PROFILE
+    STOP_PROFILE
 	//---------------------------------------------------------------------
 #ifdef DEBUG
 	if(ph_dbg_draw_mask.test(phDbgDrawExplosions))
-	{
 		DBG_ClosedCashedDraw(100000);
-		
-	}
 #endif
 	//////////////////////////////////////////////////////////////////////////
 	// Explode Effector	//////////////
@@ -425,6 +418,9 @@ STOP_PROFILE
 		if (dist_to_actor < max_dist)
 			AddEffector	(pActor, effExplodeHit, effector.effect_sect_name, (max_dist - dist_to_actor) / max_dist );
 	}
+
+	std::lock_guard mtx(GrenadeMutex);
+	m_blasted_objects = std::move(BlastedCopy);
 }
 
 void CExplosive::PositionUpdate()
@@ -460,6 +456,8 @@ void CExplosive::UpdateCL()
 {
 	//VERIFY(!this->getDestroy());
 	VERIFY(!physics_world()->Processing());
+
+	START_PROFILE("Explosive/client_update")
 	if(!m_explosion_flags.test(flExploding)) return;// !m_bExploding
 	if(m_explosion_flags.test(flExploded))
 	{
@@ -507,6 +505,7 @@ void CExplosive::UpdateCL()
 				StopLight();
 		}		
 	}
+	STOP_PROFILE
 }
 
 void CExplosive::OnAfterExplosion()
@@ -543,25 +542,6 @@ void CExplosive::HideExplosive()
 	m_bAlreadyHidden = true;
 };
 
-void CExplosive::OnEvent(NET_Packet& P, u16 type) 
-{
-	switch (type) {
-		case GE_GRENADE_EXPLODE : {
-			Fvector pos, normal;
-			u16 parent_id;
-			P.r_u16(parent_id);
-			P.r_vec3(pos);
-			P.r_vec3(normal);
-			
-			SetInitiator(parent_id);
-			ExplodeParams(pos,normal);
-			Explode();
-			m_fExplodeDuration = m_fExplodeDurationMax;
-			break;
-		}
-	}
-}
-
 void CExplosive::ExplodeParams(const Fvector& pos, 
 								const Fvector& dir)
 {
@@ -574,19 +554,16 @@ void CExplosive::ExplodeParams(const Fvector& pos,
 
 void CExplosive::GenExplodeEvent (const Fvector& pos, const Fvector& normal)
 {
-	if (OnClient() || cast_game_object()->Remote()) return;
-
-//	if( m_bExplodeEventSent ) 
-//		return;
 	VERIFY(!m_explosion_flags.test(flExplodEventSent));//!m_bExplodeEventSent
 	VERIFY(0xffff != Initiator());
 
-	NET_Packet		P;
-	cast_game_object()->u_EventGen		(P,GE_GRENADE_EXPLODE,cast_game_object()->ID());	
-	P.w_u16			(Initiator());
-	P.w_vec3		(pos);
-	P.w_vec3		(normal);
-	cast_game_object()->u_EventSend		(P);
+	SetInitiator(Initiator());
+	ExplodeParams(pos, normal);
+
+	m_blasted_objects.clear();
+
+	Device.seqParallel.emplace_back(this, &CExplosive::Explode);
+	m_fExplodeDuration = m_fExplodeDurationMax;
 
 	//m_bExplodeEventSent = true;
 	m_explosion_flags.set(flExplodEventSent,TRUE);

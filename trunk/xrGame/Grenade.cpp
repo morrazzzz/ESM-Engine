@@ -164,7 +164,6 @@ bool CGrenade::Useful() const
 void CGrenade::OnEvent(NET_Packet& P, u16 type) 
 {
 	inherited::OnEvent			(P,type);
-	CExplosive::OnEvent			(P,type);
 }
 
 void CGrenade::PutNextToSlot()

@@ -53,9 +53,7 @@ void	CExplosiveItem::StartTimerEffects	()
 }
 void  CExplosiveItem::OnEvent (NET_Packet& P, u16 type)
 {
-	CExplosive::OnEvent (P, type);
 	inherited::OnEvent (P, type);
-
 }
 void CExplosiveItem::UpdateCL()
 {

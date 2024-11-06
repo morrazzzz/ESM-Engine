@@ -1665,7 +1665,6 @@ void CCar::ResetKeys()
 void CCar::OnEvent(NET_Packet& P, u16 type)
 {
 	inherited::OnEvent		(P,type);
-	CExplosive::OnEvent		(P,type);
 
 	//обработка сообщений, нужных для работы с багажником машины
 	u16 id;

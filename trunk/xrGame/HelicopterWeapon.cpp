@@ -26,7 +26,7 @@ CHelicopter::BoneMGunCallbackY(CBoneInstance *B)
 void CHelicopter::OnEvent(	NET_Packet& P, u16 type) 
 {
 	inherited::OnEvent(P,type);
-	CExplosive::OnEvent(P,type);
+
 	u16 id;
 	switch (type) {
 		case GE_OWNERSHIP_TAKE : 

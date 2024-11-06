@@ -99,7 +99,6 @@ enum {
 	GE_ADDON_DETACH,
 	GE_ADDON_CHANGE,
 	
-	GE_GRENADE_EXPLODE,
 	GE_INV_ACTION,				//a action beign taken on inventory
 
 	GE_ZONE_STATE_CHANGE,

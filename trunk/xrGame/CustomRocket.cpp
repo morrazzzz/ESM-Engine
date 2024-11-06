@@ -620,18 +620,3 @@ void CCustomRocket::StopFlying				()
 	StopFlyParticles();
 	StopLights();
 }
-
-void	CCustomRocket::OnEvent(NET_Packet& P, u16 type)
-{
-	switch (type)
-	{
-	case GE_GRENADE_EXPLODE:
-		{
-			if (m_eState != eCollide && OnClient())
-			{
-				CCustomRocket::Contact(Position(), Direction());
-			};
-		}break;
-	}
-	inherited::OnEvent(P,type);
-};

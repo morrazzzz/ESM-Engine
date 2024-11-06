@@ -81,7 +81,6 @@ public:
 													 const Fvector& vel,
 													 const Fvector& angular_vel);
 
-	virtual void			OnEvent					(NET_Packet& P, u16 type);
 	bool					m_bLaunched;
 protected:
 	//указатель на владельца RocketLauncher - который стреляет ракету

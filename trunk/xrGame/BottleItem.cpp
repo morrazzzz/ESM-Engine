@@ -35,18 +35,6 @@ void CBottleItem::Load(LPCSTR section)
 	m_alcohol = READ_IF_EXISTS(pSettings, r_float, section, "eat_alcohol", 0.0f);
 }
 
-void CBottleItem::OnEvent(NET_Packet& P, u16 type) 
-{
-	inherited::OnEvent(P,type);
-
-	switch (type) 
-	{
-		case GE_GRENADE_EXPLODE : 
-			BreakToPieces();
-			break;
-	}
-}
-
 void CBottleItem::BreakToPieces()
 {
 	//играем звук
@@ -62,26 +50,15 @@ void CBottleItem::BreakToPieces()
 	}
 
 	//ликвидировать сам объект 
-	if (Local())
-	{
-		DestroyObject	();
-	}
+	DestroyObject();
 }
 
-void	CBottleItem::Hit					(SHit* pHDS)
+void CBottleItem::Hit(SHit* pHDS)
 {
 	inherited::Hit(pHDS);
-	
-	if(pHDS->damage()>BREAK_POWER)
-	{
-		//Generate Expode event
-		if (Local()) 
-		{
-			NET_Packet		P;
-			u_EventGen		(P,GE_GRENADE_EXPLODE,ID());	
-			u_EventSend		(P);
-		};
-	}
+
+	if (pHDS->damage() > BREAK_POWER)
+		BreakToPieces();
 }
 
 void CBottleItem::UseBy				(CEntityAlive* entity_alive)
