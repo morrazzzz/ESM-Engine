@@ -87,7 +87,7 @@ static void  get_depth( bool& do_colide, bool bo1, dContact& c, SGameMtl * /*mat
 		collide_obj = 0;
 #endif
 }
-static std::string collide_diag()
+static xr_string collide_diag()
 {
 #ifdef	DEBUG
 	if( collide_obj )
@@ -95,7 +95,7 @@ static std::string collide_diag()
 	else
 		return make_string("collide static");
 #else
-	return std::string("");
+	return "";
 #endif
 }
 

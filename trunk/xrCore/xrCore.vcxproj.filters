@@ -222,11 +222,11 @@
     <ClCompile Include="os_clipboard.cpp">
       <Filter>Clipboard</Filter>
     </ClCompile>
-    <ClCompile Include="dump_string.cpp">
-      <Filter>Math</Filter>
-    </ClCompile>
     <ClCompile Include="_cylinder.cpp">
       <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="xrStringUtils.cpp">
+      <Filter>shared memory/string library</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -467,7 +467,6 @@
     <ClInclude Include="rt_miniacc.h">
       <Filter>Compression\lzo</Filter>
     </ClInclude>
-    <ClInclude Include="xrSyncronize.h" />
     <ClInclude Include="string_concatenations.h">
       <Filter>Math\Extensions</Filter>
     </ClInclude>
@@ -483,11 +482,14 @@
     <ClInclude Include="buffer_vector.h">
       <Filter>Math\Extensions\buffer_vector</Filter>
     </ClInclude>
-    <ClInclude Include="dump_string.h">
-      <Filter>Math</Filter>
-    </ClInclude>
     <ClInclude Include="xrASAN_Debug.h">
       <Filter>Memory manager</Filter>
+    </ClInclude>
+    <ClInclude Include="xrSyncronize.h">
+      <Filter>shared memory/string library</Filter>
+    </ClInclude>
+    <ClInclude Include="xrStringUtils.h">
+      <Filter>shared memory/string library</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

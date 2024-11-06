@@ -249,6 +249,8 @@ DEFINE_VECTOR	(xr_rtoken,RTokenVec,RTokenVecIt);
 #include "fastdelegate.h"
 #include "intrusive_ptr.h"
 
+#include "xrStringUtils.h"
+
 // destructor
 template <class T>
 class destructor

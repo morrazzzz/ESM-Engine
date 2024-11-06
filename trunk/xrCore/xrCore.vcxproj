@@ -297,7 +297,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="dump_string.cpp" />
     <ClCompile Include="FTimer.cpp" />
     <ClCompile Include="os_clipboard.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -312,6 +311,7 @@
     </ClCompile>
     <ClCompile Include="string_concatenations.cpp" />
     <ClCompile Include="xrCore.cpp" />
+    <ClCompile Include="xrStringUtils.cpp" />
     <ClCompile Include="_compressed_normal.cpp" />
     <ClCompile Include="_cylinder.cpp" />
     <ClCompile Include="_math.cpp" />
@@ -402,7 +402,6 @@
   <ItemGroup>
     <ClInclude Include="buffer_vector.h" />
     <ClInclude Include="buffer_vector_inline.h" />
-    <ClInclude Include="dump_string.h" />
     <ClInclude Include="FTimer.h" />
     <ClInclude Include="os_clipboard.h" />
     <ClInclude Include="resource.h" />
@@ -412,6 +411,7 @@
     <ClInclude Include="xrASAN_Debug.h" />
     <ClInclude Include="xrCore.h" />
     <ClInclude Include="xrCore_platform.h" />
+    <ClInclude Include="xrStringUtils.h" />
     <ClInclude Include="_bitwise.h" />
     <ClInclude Include="_color.h" />
     <ClInclude Include="_compressed_normal.h" />

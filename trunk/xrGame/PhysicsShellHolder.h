@@ -134,7 +134,7 @@ private://IPhysicsShellHolder
 	virtual	ICollisionDamageReceiver* _BCL				ObjectPhCollisionDamageReceiver		()						;
 	virtual	void					_BCL					BonceDamagerCallback				(float &damage_factor)	;
 #ifdef	DEBUG
-	virtual	std::string				_BCL					dump								(EDumpType type) const  ;
+	virtual	xr_string				_BCL					dump								(EDumpType type) const  ;
 #endif
 };
 

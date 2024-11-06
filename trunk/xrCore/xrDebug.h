@@ -25,7 +25,7 @@ public:
 	LPCSTR			error2string		(long  code	);
 
 	void			fail				(const char *e1, const char *file, int line, const char *function, bool &ignore_always);
-	void			fail				(const char *e1, const std::string &e2, const char *file, int line, const char *function, bool &ignore_always);
+	void			fail				(const char *e1, std::string_view e2, const char *file, int line, const char *function, bool &ignore_always);
 	void			fail				(const char *e1, const char *e2, const char *file, int line, const char *function, bool &ignore_always);
 	void			fail				(const char *e1, const char *e2, const char *e3, const char *file, int line, const char *function, bool &ignore_always);
 	void			fail				(const char *e1, const char *e2, const char *e3, const char *e4, const char *file, int line, const char *function, bool &ignore_always);
@@ -33,23 +33,8 @@ public:
 	void			error				(long  code, const char* e1, const char* e2, const char *file, int line, const char *function, bool &ignore_always);
 	void _cdecl		fatal				(const char *file, int line, const char *function, const char* F,...);
 	void			backend				(const char* reason, const char* expression, const char *argument0, const char *argument1, const char* file, int line, const char *function, bool &ignore_always);
-	void			do_exit				(const std::string &message);
+	void do_exit(std::string_view);
 };
-
-// warning
-// this function can be used for debug purposes only
-IC	std::string __cdecl	make_string(LPCSTR format, ...)
-{
-	va_list		args;
-	va_start(args, format);
-
-	char temp[4096];
-	vsprintf(temp, format, args);
-
-	va_end(args);
-
-	return temp;
-}
 
 extern XRCORE_API	xrDebug		Debug;
 

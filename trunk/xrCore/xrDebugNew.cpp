@@ -53,7 +53,7 @@ extern bool shared_str_initialized;
 #pragma comment(lib, "shlwapi")
 #pragma comment(lib, "dbghelp")
 
-#if 0//def DEBUG
+#if 1//def DEBUG
 #	define USE_OWN_ERROR_MESSAGE_WINDOW
 #else // DEBUG
 #	define USE_OWN_MINI_DUMP
@@ -288,21 +288,21 @@ void gather_info		(const char *expression, const char *description, const char *
 	memory_monitor::flush_each_time	(false);
 #endif // USE_MEMORY_MONITOR
 
-	if (!IsDebuggerPresent() && !strstr(GetCommandLine(),"-no_call_stack_assert")) {
+	if (!IsDebuggerPresent() && !strstr(GetCommandLine(), "-no_call_stack_assert")) {
 		if (shared_str_initialized)
-			Msg			("stack trace:\n");
+			Msg("stack trace:\n");
 
 		xr_vector<xr_string> stackTrace = BuildStackTrace();
 		for (size_t i = 2; i < stackTrace.size(); i++)
 		{
 			if (shared_str_initialized)
 				Msg("%s", stackTrace[i].c_str());
-		}
 
 #ifdef USE_OWN_ERROR_MESSAGE_WINDOW
-			buffer		+= sprintf(buffer,"%s%s",g_stackTrace[i],endline);
+			buffer += sprintf(buffer, "%s%s", stackTrace[i].c_str(), endline);
 #endif // USE_OWN_ERROR_MESSAGE_WINDOW
 		}
+	}
 	
 		if (shared_str_initialized)
 			FlushLog	();
@@ -310,10 +310,10 @@ void gather_info		(const char *expression, const char *description, const char *
 		os_clipboard::copy_to_clipboard	  (assertion_info);
 }
 
-void xrDebug::do_exit	(const std::string &message)
+void xrDebug::do_exit(std::string_view message)
 {
 	FlushLog			();
-	MessageBox			(NULL,message.c_str(),"Error",MB_OK|MB_ICONERROR|MB_SYSTEMMODAL);
+	MessageBox(NULL, message.data(), "Error", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
 	TerminateProcess	(GetCurrentProcess(),1);
 }
 
@@ -352,7 +352,7 @@ void xrDebug::backend	(const char *expression, const char *description, const ch
 #	ifdef USE_OWN_ERROR_MESSAGE_WINDOW
 		int					result = 
 			MessageBox(
-				GetTopWindow(NULL),
+				NULL,
 				assertion_info,
 				"Fatal Error",
 				MB_CANCELTRYCONTINUE|MB_ICONERROR|MB_SYSTEMMODAL
@@ -420,9 +420,9 @@ void xrDebug::fail		(const char *e1, const char *file, int line, const char *fun
 	backend		("assertion failed",e1,0,0,file,line,function,ignore_always);
 }
 
-void xrDebug::fail		(const char *e1, const std::string &e2, const char *file, int line, const char *function, bool &ignore_always)
+void xrDebug::fail		(const char *e1, std::string_view e2, const char *file, int line, const char *function, bool &ignore_always)
 {
-	backend		(e1,e2.c_str(),0,0,file,line,function,ignore_always);
+	backend(e1, e2.data(), 0, 0, file, line, function, ignore_always);
 }
 
 void xrDebug::fail		(const char *e1, const char *e2, const char *file, int line, const char *function, bool &ignore_always)

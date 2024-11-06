@@ -558,7 +558,7 @@ void	CPhysicsShellHolder::BonceDamagerCallback(float& damage_factor)
 }
 
 #ifdef	DEBUG
-std::string	CPhysicsShellHolder::dump(EDumpType type) const
+xr_string CPhysicsShellHolder::dump(EDumpType type) const
 {
 /*
 	switch (type)
