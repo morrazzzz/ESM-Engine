@@ -126,6 +126,9 @@ void CSoundPlayer::update			(float time_delta)
 
 void CSoundPlayer::remove_inappropriate_sounds(u32 sound_mask)
 {
+	if (m_playing_sounds.empty())
+		return;
+
 	m_playing_sounds.erase				(
 		std::remove_if(
 			m_playing_sounds.begin(),
