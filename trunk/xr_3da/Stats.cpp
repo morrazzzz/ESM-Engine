@@ -170,23 +170,6 @@ void CStats::Show()
 		Memory.stat_calls	= 0		;
 	}
 
-	////////////////////////////////////////////////
-	if (g_dedicated_server) return;
-	////////////////////////////////////////////////
-
-	
-
-	int frm = 2000;
-	div_t ddd = div(Device.dwFrame,frm);
-	if( ddd.rem < frm/2.0f ){
-		pFont->SetColor	(0xFFFFFFFF	);
-		pFont->OutSet	(0,0);
-		pFont->OutNext	(*eval_line_1);
-		pFont->OutNext	(*eval_line_2);
-		pFont->OutNext	(*eval_line_3);
-		pFont->OnRender	();
-	}
-
     if (psDeviceFlags.test(rsDrawMemory))
 	{
 		float sz = pFont->GetHeight();
@@ -507,7 +490,7 @@ void	_LogCallback				(LPCSTR string)
 
 void CStats::OnDeviceCreate			()
 {
-	g_bDisableRedText				= strstr(Core.Params,"-xclsx")?TRUE:FALSE;
+	g_bDisableRedText				= strstr(Core.Params,"-xclsx");
 
 //	if (!strstr(Core.Params, "-dedicated"))
 #ifndef DEDICATED_SERVER
@@ -515,16 +498,6 @@ void CStats::OnDeviceCreate			()
 	pFPSFont_ = xr_new<CGameFont>("hud_font_di", CGameFont::fsDeviceIndependent);
 #endif
 	
-	if(!pSettings->section_exist("evaluation")
-		||!pSettings->line_exist("evaluation","line1")
-		||!pSettings->line_exist("evaluation","line2")
-		||!pSettings->line_exist("evaluation","line3") )
-		FATAL	("");
-
-	eval_line_1 = pSettings->r_string_wb("evaluation","line1");
-	eval_line_2 = pSettings->r_string_wb("evaluation","line2");
-	eval_line_3 = pSettings->r_string_wb("evaluation","line3");
-
 	// 
 #ifdef DEBUG
 	if (!g_bDisableRedText)			SetLogCB	(_LogCallback);
