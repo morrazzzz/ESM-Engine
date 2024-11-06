@@ -1,11 +1,6 @@
-#ifndef _vector_included
-#define _vector_included
+#pragma once
 
 // Undef some macros
-#ifdef M_PI
-#undef M_PI
-#endif
-
 #ifdef PI
 #undef PI
 #endif
@@ -25,41 +20,21 @@
 
 // Constants
 #ifdef M_VISUAL
-const	float		EPS_S		= 0.0000001f;
-const	float		EPS			= 0.0000100f;
-const	float		EPS_L		= 0.0010000f;
+constexpr float EPS_S = 0.0000001f;
+constexpr float	EPS = 0.0000100f;
+constexpr float EPS_L = 0.0010000f;
 
-const	float		M_PI		= 3.1415926535897932384626433832795f;
-const	float		PI			= 3.1415926535897932384626433832795f;
-const	float		PI_MUL_2	= 6.2831853071795864769252867665590f;
-const	float		PI_MUL_3	= 9.4247779607693797153879301498385f;
-const	float		PI_MUL_4	= 12.566370614359172953850573533118f;
-const	float		PI_MUL_6	= 18.849555921538759430775860299677f;
-const	float		PI_MUL_8	= 25.132741228718345907701147066236f;
-const	float		PI_DIV_2	= 1.5707963267948966192313216916398f;
-const	float		PI_DIV_3	= 1.0471975511965977461542144610932f;
-const	float		PI_DIV_4	= 0.7853981633974483096156608458199f;
-const	float		PI_DIV_6	= 0.5235987755982988730771072305466f;
-const	float		PI_DIV_8	= 0.3926990816987241548078304229099f;
-#endif
-#ifdef M_BORLAND
-#define				EPS_S		0.0000001f
-#define				EPS			0.0000100f
-#define				EPS_L		0.0010000f
-
-#define				M_PI		3.1415926535897932384626433832795f
-#define				PI			3.1415926535897932384626433832795f
-#define				PI_MUL_2	6.2831853071795864769252867665590f
-#define				PI_MUL_3	9.4247779607693797153879301498385f
-#define				PI_MUL_4	12.566370614359172953850573533118f
-#define				PI_DIV_3	1.0471975511965977461542144610932f
-#define				PI_MUL_6	18.849555921538759430775860299677f
-#define				PI_MUL_8	25.132741228718345907701147066236f
-#define				PI_MUL_2	6.2831853071795864769252867665590f
-#define				PI_DIV_2	1.5707963267948966192313216916398f
-#define				PI_DIV_4	0.7853981633974483096156608458199f
-#define				PI_DIV_6	0.5235987755982988730771072305466f
-#define				PI_DIV_8	0.3926990816987241548078304229099f
+constexpr float	PI = 3.1415926535897932384626433832795f;
+constexpr float PI_MUL_2 = 6.2831853071795864769252867665590f;
+constexpr float PI_MUL_3 = 9.4247779607693797153879301498385f;
+constexpr float PI_MUL_4 = 12.566370614359172953850573533118f;
+constexpr float PI_MUL_6 = 18.849555921538759430775860299677f;
+constexpr float PI_MUL_8 = 25.132741228718345907701147066236f;
+constexpr float PI_DIV_2 = 1.5707963267948966192313216916398f;
+constexpr float	PI_DIV_3 = 1.0471975511965977461542144610932f;
+constexpr float PI_DIV_4 = 0.7853981633974483096156608458199f;
+constexpr float	PI_DIV_6 = 0.5235987755982988730771072305466f;
+constexpr float PI_DIV_8 = 0.3926990816987241548078304229099f;
 #endif
 
 
@@ -78,8 +53,8 @@ IC BOOL  dis_zero		( double	val, double	cmp=EPS_S )					{ return _abs(val)<cmp;	
 
 // degree 2 radians and vice-versa
 namespace implement{
-	template <class T>	ICF T	deg2rad		( T val )						{ return (val*T(M_PI)/T(180));	};
-	template <class T>	ICF T	rad2deg		( T val )						{ return (val*T(180)/T(M_PI));	};
+	template <class T>	ICF T	deg2rad		( T val )						{ return (val*T(PI)/T(180));	};
+	template <class T>	ICF T	rad2deg		( T val )						{ return (val*T(180)/T(PI));	};
 };
 ICF float	deg2rad 	(float val)											{return implement::deg2rad(val);}
 ICF double	deg2rad 	(double val)										{return implement::deg2rad(val);}
@@ -96,10 +71,6 @@ IC T	clampr	( const T& val, const T& _low, const T& _high ){
 	if		( val<_low	)	return _low; 
 	else if	( val>_high )	return _high;
 	else					return val;
-};
-IC float snapto	( float value, float snap )	{
-	if( snap<=0.f ) return value;
-	return float(iFloor((value+(snap*0.5f)) / snap )) * snap;
 };
 
 // pre-definitions
@@ -128,9 +99,6 @@ template <class T> struct _quaternion;
 #include "_plane.h"
 #include "_plane2.h"
 #include "_flags.h"
-#ifdef DEBUG
-#include "dump_string.h"
-#endif
 
 #pragma pack(pop)
 
@@ -153,24 +121,26 @@ ICF float		angle_normalize	(float a)
 }
 
 // -PI .. +PI
-ICF float		angle_normalize_signed(float a)
+ICF float angle_normalize_signed(float a)
 {
-	if (a>=(-PI) && a<=PI)		return		a;
-	float angle = angle_normalize_always	(a);
-	if (angle>PI) angle-=PI_MUL_2;
+	if (a >= (-PI) && a <= PI)		
+		return a;
+	float angle = angle_normalize_always(a);
+	if (angle > PI) angle -= PI_MUL_2;
 	return angle;
 }
 
 // -PI..PI
-ICF float		angle_difference_signed(float a, float b)
+ICF float angle_difference_signed(float a, float b)
 {
-	float diff	= angle_normalize_signed(a) - angle_normalize_signed(b);
-	if (diff>0) {
-		if (diff>PI)
-			diff	-= PI_MUL_2;
-	} else {
-		if (diff<-PI)	
-			diff	+= PI_MUL_2;
+	float diff = angle_normalize_signed(a) - angle_normalize_signed(b);
+	if (diff > 0) {
+		if (diff > PI)
+			diff -= PI_MUL_2;
+	}
+	else {
+		if (diff < -PI)
+			diff += PI_MUL_2;
 	}
 	return diff;
 }
@@ -186,10 +156,10 @@ IC bool			angle_lerp		(float& c, float t, float s, float dt)
 {
 	float diff	= t - c;
 	if (diff>0) {
-		if (diff>PI)	
+		if (diff> PI)
 			diff	-= PI_MUL_2;
 	} else {
-		if (diff<-PI)	
+		if (diff<-PI)
 			diff	+= PI_MUL_2;
 	}
 	float diff_a	= _abs(diff);
@@ -213,7 +183,7 @@ IC bool			angle_lerp		(float& c, float t, float s, float dt)
 ICF float		angle_lerp		(float A, float B, float f)
 {
 	float diff		= B - A;
-	if (diff>PI)		diff	-= PI_MUL_2;
+	if (diff> PI)		diff	-= PI_MUL_2;
 	else if (diff<-PI)	diff	+= PI_MUL_2;
 
 	return			A + diff*f;
@@ -401,4 +371,3 @@ IC _quaternion<T>& _quaternion<T>::set(const _matrix<T>& M)
 	return *this;
 }
 
-#endif
