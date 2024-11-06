@@ -214,10 +214,10 @@ void CObjectList::net_Register		(CObject* O)
 	//Msg			("-------------------------------- Register: %s",O->cName());
 }
 
-void CObjectList::net_Unregister	(CObject* O)
+void CObjectList::net_Unregister(CObject* O)
 {
-	xr_map<u32,CObject*>::iterator	it = map_NETID.find(O->ID());
-	if ((it!=map_NETID.end()) && (it->second == O))	{
+	auto it = map_NETID.find(O->ID());
+	if ((it != map_NETID.end()) && (it->second == O)) {
 		// Msg			("-------------------------------- Unregster: %s",O->cName());
 		map_NETID.erase(it);
 	}
@@ -256,10 +256,10 @@ u32 CObjectList::StartExportObjects(NET_Packet& Packet, u32 start, u32 max_objec
    return start++;
 }
 
-CObject* CObjectList::net_Find			(u32 ID)
+CObject* CObjectList::net_Find(u32 ID)
 {
-	xr_map<u32,CObject*>::iterator	it = map_NETID.find(ID);
-	return (it==map_NETID.end())?0:it->second;
+	auto it = map_NETID.find(ID);
+	return it == map_NETID.end() ? nullptr : it->second;
 }
 
 void CObjectList::Load		()

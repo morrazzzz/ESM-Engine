@@ -9,7 +9,7 @@ class	ENGINE_API 				CObjectList
 {
 private:
 	// data
-	xr_map<u32,CObject*>		map_NETID			;
+	xr_unordered_map<u32,CObject*>		map_NETID			;
 	xr_vector<CObject*>			destroy_queue		;
 	xr_vector<CObject*>			objects_active		;
 	xr_vector<CObject*>			objects_sleeping	;
