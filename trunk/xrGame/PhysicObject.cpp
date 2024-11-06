@@ -194,9 +194,9 @@ void CPhysicObject::AddElement(CPhysicsElement* root_e, int id)
 		J->SetAnchorVsSecondElement	(0,0,0);
 		J->SetAxisDirVsSecondElement	(1,0,0,0);
 		J->SetAxisDirVsSecondElement	(0,1,0,2);
-		J->SetLimits				(-M_PI/2,M_PI/2,0);
-		J->SetLimits				(-M_PI/2,M_PI/2,1);
-		J->SetLimits				(-M_PI/2,M_PI/2,2);
+		J->SetLimits				(-PI/2,PI/2,0);
+		J->SetLimits				(-PI/2,PI/2,1);
+		J->SetLimits				(-PI/2,PI/2,2);
 		m_pPhysicsShell->add_Joint	(J);	
 	}
 

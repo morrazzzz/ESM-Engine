@@ -343,7 +343,7 @@ void CCharacterPhysicsSupport::in_shedule_Update( u32 DT )
 	LPSTR dbg_stalker_death_anim = sdbg_stalker_death_anim;
 #endif
 BOOL  b_death_anim_velocity = TRUE;
-const float cmp_angle = M_PI/10.f;
+const float cmp_angle = PI/10.f;
 const float cmp_ldisp = 0.1f;
 IC bool cmp(const Fmatrix &f0, const Fmatrix &f1 )
 {
@@ -366,7 +366,7 @@ bool is_similar(const Fmatrix &m0,const Fmatrix &m1,float param)
 	Fquaternion q;
 	q.set(tmp2);
 	q.get_axis_angle(ax,ang);
-	return _abs(ang)<M_PI/2.f;
+	return _abs(ang)<PI/2.f;
 	/*
 	return  fsimilar(tmp2._11,1.f,param)&&
 			fsimilar(tmp2._22,1.f,param)&&

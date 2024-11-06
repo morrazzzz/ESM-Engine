@@ -122,7 +122,7 @@ void CCar::DbgUbdateCl()
 			UI().Font().pFontStat->SetColor		(color_rgba(0xff,0xff,0xff,0xff))												;
 			UI().Font().pFontStat->OutNext		("gear ratio:			  [%3.2f]",m_current_gear_ratio)						;
 			UI().Font().pFontStat->OutNext		("Power:      [%3.2f]",m_current_engine_power/(0.8f*1000.f))					;
-			UI().Font().pFontStat->OutNext		("rpm:      [%3.2f]",m_current_rpm/(1.f/60.f*2.f*M_PI))							;
+			UI().Font().pFontStat->OutNext		("rpm:      [%3.2f]",m_current_rpm/(1.f/60.f*2.f*PI))							;
 			UI().Font().pFontStat->OutNext		("wheel torque:      [%3.2f]",RefWheelCurTorque())								;
 			UI().Font().pFontStat->OutNext		("engine torque:      [%3.2f]",EngineCurTorque())								;
 			UI().Font().pFontStat->OutNext		("fuel:      [%3.2f]",m_fuel)													;

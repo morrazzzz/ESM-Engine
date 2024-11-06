@@ -81,9 +81,9 @@ int Limb::check_r_joint(float &v)
     {
 	// Put v in correct range
 	if (v < min[3])
-	    v += 2*M_PI;
+	    v += 2*PI;
 	if (v > max[3])
-	    v -= 2*M_PI;
+	    v -= 2*PI;
 	return 1;
     }
 
@@ -148,7 +148,7 @@ inline float put_angle_in_range(float low, float high, float v)
     else
 		d1 = _min(_abs(v-low),_abs(v-high));
 
-    v2 = v - 2*M_PI;
+    v2 = v - 2*PI;
 
     if (low <= v2 && v2 <= high)
 		return v2;
@@ -645,7 +645,7 @@ int choose_closest_range(float &swivel_angle,
 			 const AngleIntList *f22 = 0)
 {
     int i = 0;
-    float d = 2*M_PI; 
+    float d = 2*PI; 
     float angle; 
 
     if (inspect_range(*f11, swivel_angle, 1, angle, i, d))
@@ -888,9 +888,9 @@ int Limb::SolveByAngle(float swivel_angle, float x[7],
     int success; 
 
     if (swivel_angle < 0)
-	swivel_angle += 2*M_PI;
-    if (swivel_angle > 2*M_PI)
-	swivel_angle -= 2*M_PI;
+	swivel_angle += 2*PI;
+    if (swivel_angle > 2*PI)
+	swivel_angle -= 2*PI;
  
     x[3] = x3;
 
@@ -975,7 +975,7 @@ int Limb::InLimits(const float x[7]) const
 float roundup(float x)
 {
     if (x < 0)
-	x += 2*M_PI;
+	x += 2*PI;
     return x;
 }
 void dump_file(char *file, int euler_type, float min[], float max[], 

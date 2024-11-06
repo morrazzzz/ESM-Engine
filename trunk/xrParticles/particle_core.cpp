@@ -344,7 +344,7 @@ void pDomain::Generate(pVector &pos) const
 		{
 			// For a cone, p2 is the apex of the cone.
 			float dist = drand48(); // Distance between base and tip
-			float theta = drand48() * 2.0f * float(M_PI); // Angle around axis
+			float theta = drand48() * 2.0f * PI; // Angle around axis
 			// Distance from axis
 			float r = radius2 + drand48() * (radius1 - radius2);
 			
@@ -369,7 +369,7 @@ void pDomain::Generate(pVector &pos) const
 		break;
 	case PDDisc:
 		{
-			float theta = drand48() * 2.0f * float(M_PI); // Angle around normal
+			float theta = drand48() * 2.0f * PI; // Angle around normal
 			// Distance from center
 			float r = radius2 + drand48() * (radius1 - radius2);
 			

@@ -731,17 +731,17 @@ void CCar::ParseDefinitions()
 	m_max_power			*=		(0.8f*1000.f);
 
 	m_max_rpm			=		ini->r_float("car_definition","max_engine_rpm");
-	m_max_rpm			*=		(1.f/60.f*2.f*M_PI);
+	m_max_rpm			*=		(1.f/60.f*2.f*PI);
 
 
 	m_min_rpm					=		ini->r_float("car_definition","idling_engine_rpm");
-	m_min_rpm					*=		(1.f/60.f*2.f*M_PI);
+	m_min_rpm					*=		(1.f/60.f*2.f*PI);
 
 	m_power_rpm					=		ini->r_float("car_definition","max_power_rpm");
-	m_power_rpm					*=		(1.f/60.f*2.f*M_PI);//
+	m_power_rpm					*=		(1.f/60.f*2.f*PI);//
 
 	m_torque_rpm				=		ini->r_float("car_definition","max_torque_rpm");
-	m_torque_rpm				*=		(1.f/60.f*2.f*M_PI);//
+	m_torque_rpm				*=		(1.f/60.f*2.f*PI);//
 
 	m_power_increment_factor	=		READ_IF_EXISTS(ini,r_float,"car_definition","power_increment_factor",m_power_increment_factor);
 	m_rpm_increment_factor		=		READ_IF_EXISTS(ini,r_float,"car_definition","rpm_increment_factor",m_rpm_increment_factor);
@@ -778,8 +778,8 @@ void CCar::ParseDefinitions()
 		if(!ini->line_exist("transmission_gear_ratio",rat_num)) break;
 		Fvector gear_rat=ini->r_fvector3("transmission_gear_ratio",rat_num);
 		gear_rat[0]*=main_gear_ratio;
-		gear_rat[1]*=(1.f/60.f*2.f*M_PI);
-		gear_rat[2]*=(1.f/60.f*2.f*M_PI);
+		gear_rat[1]*=(1.f/60.f*2.f*PI);
+		gear_rat[2]*=(1.f/60.f*2.f*PI);
 		m_gear_ratious.push_back(gear_rat);
 	}
 

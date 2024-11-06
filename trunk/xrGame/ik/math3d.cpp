@@ -741,7 +741,7 @@ void rotation_matrix_to_axis(const Matrix R, float axis[], float &angle)
     
 
     // Close to identity. Arbitrarily set solution to z axis rotation of 0 
-    if (_abs(angle) < eps || _abs(angle - M_PI) < eps)
+    if (_abs(angle) < eps || _abs(angle - PI) < eps)
     {
 	angle = 0.0;
 	axis[0] = axis[1] = 0.0; axis[2] = 1.0; 

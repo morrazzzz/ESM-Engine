@@ -62,7 +62,7 @@ float AngleInt::Mid() const
     if (High() > Low())
 	mid = ((High() + Low()) / 2.0f);
     else
-	mid = angle_normalize(M_PI + (High() + Low())/2.0f);
+	mid = angle_normalize(PI + (High() + Low())/2.0f);
 
     return mid;
 }
@@ -76,7 +76,7 @@ float AngleInt::Mid() const
 float AngleInt::Distance(float v) const
 {
     const float eps   = AINT_EPSILON;
-    const float TwoPi = 2*M_PI;
+    const float TwoPi = 2*PI;
 
     float t1, t2;
     v = angle_normalize(v);
@@ -85,7 +85,7 @@ float AngleInt::Distance(float v) const
 	return TwoPi;
 
     if (IsFullRange(eps))
-	return -M_PI;
+	return -PI;
 
     if (iszero(v) || istwopi(v))
     {
@@ -198,10 +198,10 @@ int AngleInt::merge_aux(const AngleInt &a, AngleInt &b, float eps)  const
     {
 	float mid = (Low() + High()) / 2.0f;
 	if (Low() < High())
-	    mid += M_PI;
+	    mid += PI;
 
 	if (a.InRange(mid, eps))
-	    b.Set(0,2*M_PI);
+	    b.Set(0,2*PI);
 	else
 	    b.Set(Low(), High());
     }
@@ -231,7 +231,7 @@ int AngleInt::merge(const AngleInt &a, AngleInt &b, float eps)  const
 // 
 float AngleInt::Range() const
 {
-    return (low < high) ? (high - low) : high + (2*M_PI - low);
+    return (low < high) ? (high - low) : high + (2*PI - low);
 }
 
 void AngleIntList::add(float l, float h)
@@ -286,7 +286,7 @@ void swell(const AngleInt &a,
 	   AngleInt &c)
 {
     if (a.IsFullRange())
-	c.Set(0,2*M_PI);
+	c.Set(0,2*PI);
     else
     {
 	float l = a.Low();
@@ -339,7 +339,7 @@ void AngleIntList::Add(float l, float h, float eps)
     else if (a.IsFullRange())
     {
 	Clear();
-	add(0.0f, 2*M_PI - AINT_EPSILON);
+	add(0.0f, 2*PI - AINT_EPSILON);
     }
     
     // Put a into the list taking into account it may merge with another entry
@@ -395,7 +395,7 @@ void AngleIntList::AddList(AngleIntList &dest, float eps) const
 
 float AngleIntList::Distance(float a) const
 {
-    float dist = 2*M_PI;
+    float dist = 2*PI;
 
     for (AngleIntListNode *t = head; t; t = t->next)
     {
@@ -673,7 +673,7 @@ void AngleIntList::wrap(float eps)
 		break;
 	}
 
-	if (_abs(temp->D.High()-2*M_PI) < eps)
+	if (_abs(temp->D.High()-2*PI) < eps)
 	{
 	    t = temp;
 	    if (s)

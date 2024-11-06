@@ -36,7 +36,7 @@
 
 
 
-#define DTOR(x)  ((x)*M_PI/180.0)
+#define DTOR(x)  ((x)*PI/180.0)
 #define DOT4(u,v)  ((u)[0]*(v)[0]+(u)[1]*(v)[1]+(u)[2]*(v)[2]+(u)[3]*((v)[3]))
 
 

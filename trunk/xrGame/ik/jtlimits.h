@@ -58,7 +58,7 @@ inline float asin2(float x)
 //	printf("Domain error in asin2 %lf\n", x);
 	x = (x > 0) ? 1.0f : -1.0f;
     }
-    return angle_normalize(static_cast<float>(M_PI - asin(static_cast<double>((x)))));
+    return angle_normalize(static_cast<float>(PI - asin(static_cast<double>((x)))));
 }
 
 

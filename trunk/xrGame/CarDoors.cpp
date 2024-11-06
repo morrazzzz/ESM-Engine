@@ -170,8 +170,8 @@ void CCar::SDoor::Init()
 	{
 		pos_open=-1.f;
 		joint->GetLimits(opened_angle,closed_angle,0);
-		opened_angle+=2.f*M_PI/180.f;
-		closed_angle-=2.f*M_PI/180.f;
+		opened_angle+=2.f*PI/180.f;
+		closed_angle-=2.f*PI/180.f;
 	}
 	Fvector shoulder;
 
@@ -675,9 +675,9 @@ void CCar::SDoor::Break()
 		float lo,hi;
 		joint->GetLimits(lo,hi,0);
 		if(pos_open>0.f)
-			joint->SetLimits(lo+M_PI/4.f,hi,0);
+			joint->SetLimits(lo+PI/4.f,hi,0);
 		else
-			joint->SetLimits(lo,hi-M_PI/4.f,0);
+			joint->SetLimits(lo,hi-PI/4.f,0);
 	}
 	//ApplyOpenTorque();
 	state=broken;

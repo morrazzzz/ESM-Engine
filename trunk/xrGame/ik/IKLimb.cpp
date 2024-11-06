@@ -220,15 +220,15 @@ void	CIKLimb::Solve(SCalculateData& cd)
 IC void set_limits( float &min, float &max, SJointLimit& l)
 {
 	min=-l.limit.y  ;max=-l.limit.x  ;
-	min += M_PI; max += M_PI;
-	clamp( min, 0.f, 2 * M_PI ); clamp( max, 0.f, 2 * M_PI );
+	min += PI; max += PI;
+	clamp( min, 0.f, 2 * PI ); clamp( max, 0.f, 2 * PI );
 
 	//min = 0/*-2*M_PI*/; max = 2*M_PI;
 }
 
 IC void free_limits( float &min, float &max)
 {
-	min = 0  ;max = 2 * M_PI  ;
+	min = 0  ;max = 2 * PI  ;
 }
 
 void CIKLimb::Create( u16 id, IKinematics* K, const u16 bones[4], const Fvector& toe_pos, bool collide_ )
@@ -254,7 +254,7 @@ void CIKLimb::Create( u16 id, IKinematics* K, const u16 bones[4], const Fvector&
 	//lmin[0] = M_PI * 3.f/4.f; 
 	lmin[1]+=1.0f; lmax[1]-=0.f;
 	lmin[2]+=1.0f; lmax[2]-=0.f;
-	lmax[0] = 2* M_PI - M_PI * 2.f/3.f;
+	lmax[0] = 2* PI - PI * 2.f/3.f;
 
 //  lmin[2]=-1.f;lmax[2]=1.f;
 
@@ -346,7 +346,7 @@ float CIKLimb::CollideFoot( float angle, const Fmatrix &gl_anim, Fplane &p, Fvec
 			VERIFY( _valid( angle ) );
 		}
 	}
-	clamp( angle, - M_PI/3, 0.f );
+	clamp( angle, - PI/3, 0.f );
 	return angle;
 }
 

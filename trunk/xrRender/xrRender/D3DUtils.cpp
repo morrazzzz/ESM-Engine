@@ -201,7 +201,7 @@ void CDrawUtilities::OnDeviceCreate()
     m_WireCylinder.CreateFromData	(D3DPT_LINELIST,	DU_CYLINDER_NUMLINES,	D3DFVF_XYZ|D3DFVF_DIFFUSE,du_cylinder_vertices,	DU_CYLINDER_NUMVERTEX,		du_cylinder_lines,		DU_CYLINDER_NUMLINES*2);
 
 	for(int i=0;i<LINE_DIVISION;i++){                                
-		float angle = M_PI * 2.f * (i / (float)LINE_DIVISION);
+		float angle = PI * 2.f * (i / (float)LINE_DIVISION);
         float _sa=_sin(angle), _ca=_cos(angle);
 		circledef1[i].x = _ca;
 		circledef1[i].y = _sa;

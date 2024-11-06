@@ -325,7 +325,7 @@ virtual void ApplyDamage(u16 level);
 			joint=NULL;
 			state=closed;
 			torque=500.f;
-			a_vel=M_PI;
+			a_vel=PI;
 		}
 	};
 
