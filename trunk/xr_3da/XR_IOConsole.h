@@ -164,7 +164,7 @@ protected:
 	bool	is_mark				( Console_mark type );
 	u32		get_mark_color		( Console_mark type );
 
-	void	DrawBackgrounds		( bool bGame );
+	void	DrawBackgrounds		();
 	void	DrawRect			( Frect const& r, u32 color );
 	void	OutFont				( LPCSTR text, float& pos_y );
 	void	Register_callbacks	();

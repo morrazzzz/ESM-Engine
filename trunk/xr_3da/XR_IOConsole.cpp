@@ -19,6 +19,7 @@ static float const UI_BASE_HEIGHT	= 768.0f;
 static float const LDIST            = 0.05f;
 static u32   const cmd_history_max  = 64;
 
+static u32 const fps_not_calculated = color_rgba(182, 255, 0, 255);
 static u32 const bad_fps_console_color = color_rgba(255, 0, 0, 255);
 static u32 const normal_fps_console_color = color_rgba(255, 186, 39, 255);
 static u32 const good_fps_console_color = color_rgba(29, 255, 0, 255);
@@ -239,32 +240,10 @@ void CConsole::OnRender()
 		pFont2 = xr_new<CGameFont>( "hud_font_di2", CGameFont::fsDeviceIndependent );
 		pFont2->SetHeightI( 0.025f );
 	}
-
-	bool bGame = false;	
-	if ( ( g_pGameLevel && g_pGameLevel->bReady ) ||
-		 ( g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive() ) )
-	{
-		 bGame = true;
-	}
-	if ( g_dedicated_server )
-	{
-		bGame = false;
-	}
 	
-	DrawBackgrounds( bGame );
+	DrawBackgrounds();
 
-	float fMaxY;
-	float dwMaxY = (float)Device.dwHeight;
-	// float dwMaxX=float(Device.dwWidth/2);
-	if ( bGame )
-	{
-		fMaxY  = 0.0f;
-		dwMaxY /= 2;
-	}
-	else
-	{
-		fMaxY = 1.0f;
-	}
+	float fMaxY = 0.0f;
 
 	float ypos  = fMaxY - LDIST * 1.1f;
 	float scr_x = 1.0f / Device.fWidth_2;
@@ -367,28 +346,28 @@ void CConsole::OnRender()
 		float fInv = 1.f - fOne;
 		FPSInConsole = fInv * FPSInConsole + fOne * fps;
 
-		if (FPSInConsole <= 45.f)
+		if (FPSInConsole <= 35.f)
 			pFont->SetColor(bad_fps_console_color);
-		else if (FPSInConsole <= 75.f)
+		else if (FPSInConsole <= 60.f)
 			pFont->SetColor(normal_fps_console_color);
 		else
 			pFont->SetColor(good_fps_console_color);
 	}
+	else
+		pFont->SetColor(fps_not_calculated);
 
 	pFont->OutI(0.82f, -0.96f, "FPS: [%3.1f]", FPSInConsole);
-	pFont->SetColor( total_font_color );
+	pFont->SetColor(total_font_color);
 	pFont->OutI( 0.95f - 0.03f * qn, fMaxY - 2.0f * LDIST, "[%d]", log_line );
 		
 	pFont->OnRender();
 	pFont2->OnRender();
 }
 
-void CConsole::DrawBackgrounds( bool bGame )
+void CConsole::DrawBackgrounds()
 {
-	float ky = (bGame)? 0.5f : 1.0f;
-
 	Frect r;
-	r.set( 0.0f, 0.0f, float(Device.dwWidth), ky * float(Device.dwHeight) );
+	r.set( 0.0f, 0.0f, float(Device.dwWidth), 0.5f * float(Device.dwHeight) );
 
 	UIRender->SetShader( **m_hShader_back );
 	// 6 = back, 12 = tips, (VIEW_TIPS_COUNT+1)*6 = highlight_words, 12 = scroll
@@ -609,13 +588,12 @@ void CConsole::ExecuteCommand( LPCSTR cmd_str, bool record_cmd )
 		}
 		else
 		{
-			Log("! Command disabled.");
+			Msg("! Disabled command: [%s]", first);
 		}
 	}
 	else
 	{
-		first[CONSOLE_BUF_SIZE-21] = 0;
-		Log( "! Unknown command: ", first );
+		Msg("! Unknown command: [%s]", first);
 	}
 
 	if ( record_cmd )
@@ -693,7 +671,7 @@ void CConsole::FindConsole(std::string_view data_string_to_find)
 
 		if (strstr(T, data_string_to_find.data()))
 		{
-			Msg("# [Finding]: %s", T);
+			Msg("@ [Finding]: %s", T);
 			TotalResultFind_++;
 
 			if (!ResultFind_)
@@ -703,11 +681,11 @@ void CConsole::FindConsole(std::string_view data_string_to_find)
 
 	if (!ResultFind_)
 	{
-		Msg("# [Finding]: Nothing was found by by the search: %s ", data_string_to_find.data());
+		Msg("@ [Finding]: Nothing was found by by the search: %s ", data_string_to_find.data());
 		return;
 	}
 
-	Msg("# [Finding]: Total`s result find: [%d] count string`s finded, search: [%s]", TotalResultFind_, data_string_to_find.data());
+	Msg("@ [Finding]: Total`s result find: [%d] count string`s finded, search: [%s]", TotalResultFind_, data_string_to_find.data());
 }
 
 void CConsole::SelectCommand()
