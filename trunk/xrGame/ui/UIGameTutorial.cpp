@@ -165,8 +165,8 @@ void CUISequencer::OnFrame()
 void CUISequencer::OnRender	()
 {
 	if (m_UIWindow->IsShown())	m_UIWindow->Draw();
-	VERIFY						(m_items.size());
-	m_items.front()->OnRender	();
+	//VERIFY						(m_items.size());
+	//m_items.front()->OnRender	();
 }
 
 void CUISequencer::Next		()
