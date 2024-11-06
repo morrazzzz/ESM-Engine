@@ -24,23 +24,18 @@ xrCriticalSection	UCalc_Mutex
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
-bool	pred_N(const std::pair<shared_str,u32>&	N, LPCSTR B)			{
+bool	pred_N(const std::pair<shared_str,u32>&	N, LPCSTR B) {
 	return xr_strcmp(*N.first,B)<0;
 }
-u16		CKinematics::LL_BoneID		(LPCSTR B)			{
-	accel::iterator I	= std::lower_bound	(bone_map_N->begin(),bone_map_N->end(),B,pred_N);
-	if (I == bone_map_N->end())			return BI_NONE;
-	if (0 != xr_strcmp(*(I->first),B))	return BI_NONE;
+u16	CKinematics::LL_BoneID(LPCSTR B) const {
+	accel::iterator I = std::lower_bound(bone_map_N->begin(), bone_map_N->end(), B, pred_N);
+	if (I == bone_map_N->end())	return BI_NONE;
+	if (0 != xr_strcmp(*(I->first), B))	return BI_NONE;
 	return				u16(I->second);
 }
-bool	pred_P(const std::pair<shared_str,u32>&	N, const shared_str& B)	{
-	return N.first._get() < B._get();
-}
-u16		CKinematics::LL_BoneID		(const shared_str& B)	{
-	accel::iterator I	= std::lower_bound	(bone_map_P->begin(),bone_map_P->end(),B,pred_P);
-	if (I == bone_map_P->end())			return BI_NONE;
-	if (I->first._get() != B._get() )	return BI_NONE;
-	return				u16(I->second);
+
+u16 CKinematics::LL_BoneID(const shared_str& B) const {
+	return LL_BoneID(B.c_str());
 }
 
 //
@@ -138,9 +133,6 @@ void	CKinematics::IBoneInstances_Destroy()
 bool	pred_sort_N(const std::pair<shared_str,u32>& A, const std::pair<shared_str,u32>& B)	{
 	return xr_strcmp(A.first,B.first)<0;
 }
-bool	pred_sort_P(const std::pair<shared_str,u32>& A, const std::pair<shared_str,u32>& B)	{
-	return A.first._get() < B.first._get();
-}
 
 CSkeletonX* CKinematics::LL_GetChild	(u32 idx)
 {
@@ -149,10 +141,14 @@ CSkeletonX* CKinematics::LL_GetChild	(u32 idx)
 	return			B	;
 }
 
+xr_vector<shared_str> ParentsBones{};
+
 void	CKinematics::Load(const char* N, IReader *data, u32 dwFlags)
 {
 	//Msg				("skeleton: %s",N);
 	inherited::Load	(N, data, dwFlags);
+
+	CTimer T; T.Start();
 
     pUserData		= NULL;
     m_lod			= NULL;
@@ -191,19 +187,22 @@ void	CKinematics::Load(const char* N, IReader *data, u32 dwFlags)
 #ifndef _EDITOR    
 	// User data
 	IReader* UD 	= data->open_chunk(OGF_S_USERDATA);
-    pUserData		= UD?xr_new<CInifile>(UD,FS.get_path("$game_config$")->m_Path):0;
-    if (UD)			UD->close();
+
+	if (UD)
+	{
+		pUserData = xr_new<CInifile>(UD, FS.get_path("$game_config$")->m_Path);
+		UD->close();
+	}
 #endif
 
 	// Globals
 	bone_map_N		= xr_new<accel>		();
-	bone_map_P		= xr_new<accel>		();
 	bones			= xr_new<vecBones>	();
 	bone_instances	= NULL;
 
 	// Load bones
-#pragma todo("container is created in stack!")
-	xr_vector<shared_str>	L_parents;
+	// TODO: not critical, but maybe creating vectors but static?
+//#pragma todo("container is created in stack!")
 
 	R_ASSERT		(data->find_chunk(OGF_S_BONE_NAMES));
 
@@ -219,66 +218,67 @@ void	CKinematics::Load(const char* N, IReader *data, u32 dwFlags)
 		u16			ID				= u16(bones->size());
 		data->r_stringZ				(buf,sizeof(buf));	strlwr(buf);
 		CBoneData* pBone 			= CreateBoneData(ID);
-		pBone->name					= shared_str(buf);
+		pBone->name					= buf;
 		pBone->child_faces.resize	(children.size());
 		bones->push_back			(pBone);
 		bone_map_N->push_back		(mk_pair(pBone->name,ID));
-		bone_map_P->push_back		(mk_pair(pBone->name,ID));
 
 		// It's parent
 		data->r_stringZ				(buf,sizeof(buf));	strlwr(buf);
-		L_parents.push_back			(buf);
+		ParentsBones.push_back(buf);
 
 		data->r						(&pBone->obb,sizeof(Fobb));
         visimask.set				(u64(1)<<ID,TRUE);
 	}
 	std::sort	(bone_map_N->begin(),bone_map_N->end(),pred_sort_N);
-	std::sort	(bone_map_P->begin(),bone_map_P->end(),pred_sort_P);
+
+	IReader* IKD = data->open_chunk(OGF_S_IKDATA);
 
 	// Attach bones to their parents
 	iRoot = BI_NONE;
 	for (u32 i=0; i<bones->size(); i++) {
-		shared_str	P 		= L_parents[i];
-		CBoneData* B	= (*bones)[i];
+		shared_str& P = ParentsBones[i];
+		CBoneData* B = (*bones)[i];
 		if (!P||!P[0]) {
 			// no parent - this is root bone
 			R_ASSERT	(BI_NONE==iRoot);
 			iRoot		= u16(i);
 			B->SetParentID(BI_NONE);
-			continue;
+//			continue;
 		} else {
 			u16 ID		= LL_BoneID(P);
 			R_ASSERT	(ID!=BI_NONE);
 			(*bones)[ID]->children.push_back(B);
 			B->SetParentID(ID);
 		}
+
+		if (IKD)
+		{
+			u16 vers = (u16)IKD->r_u32();
+			IKD->r_stringZ(B->game_mtl_name);
+			IKD->r(&B->shape, sizeof(SBoneShape));
+			B->IK_data.Import(*IKD, vers);
+			Fvector vXYZ, vT;
+			IKD->r_fvector3(vXYZ);
+			IKD->r_fvector3(vT);
+			B->bind_transform.setXYZi(vXYZ);
+			B->bind_transform.translate_over(vT);
+			B->mass = IKD->r_float();
+			IKD->r_fvector3(B->center_of_mass);
+		}
 	}
 	R_ASSERT	(BI_NONE != iRoot);
 
 	// Free parents
-    L_parents.clear();
+	ParentsBones.clear();
 
     // IK data
-	IReader* IKD 	= data->open_chunk(OGF_S_IKDATA);
-    if (IKD){
-        for (u32 i=0; i<bones->size(); i++) {
-            CBoneData*	B 	= (*bones)[i];
-            u16 vers		= (u16)IKD->r_u32();
-            IKD->r_stringZ	(B->game_mtl_name);
-            IKD->r			(&B->shape,sizeof(SBoneShape));
-            B->IK_data.Import(*IKD,vers);
-            Fvector vXYZ,vT;
-            IKD->r_fvector3	(vXYZ);
-            IKD->r_fvector3	(vT);
-            B->bind_transform.setXYZi(vXYZ);
-            B->bind_transform.translate_over(vT);
-	        B->mass			= IKD->r_float();
-    	    IKD->r_fvector3	(B->center_of_mass);
-        }
-        // calculate model to bone converting matrix
-        (*bones)[LL_GetBoneRoot()]->CalculateM2B(Fidentity);
-    	IKD->close();
-    }
+	if (IKD) 
+	{
+		// calculate model to bone converting matrix
+		(*bones)[LL_GetBoneRoot()]->CalculateM2B(Fidentity);
+		IKD->close();
+	}
 
 	// after load process
 	{
@@ -291,12 +291,15 @@ void	CKinematics::Load(const char* N, IReader *data, u32 dwFlags)
 		for (u32 bone_idx=0; bone_idx<bones->size(); bone_idx++) {
 			CBoneData*	B 	= (*bones)[bone_idx];
 			for (u32 child_idx=0; child_idx<children.size(); child_idx++){
-				CBoneData::FacesVec faces		= B->child_faces[child_idx];
-				std::sort						(faces.begin(),faces.end());
-				CBoneData::FacesVecIt new_end	= std::unique(faces.begin(),faces.end());
-				faces.erase						(new_end,faces.end());
-				B->child_faces[child_idx].clear_and_free();
-				B->child_faces[child_idx]		= faces;
+				CBoneData::FacesVec& faces = B->child_faces[child_idx];
+				if (faces.empty())
+					continue;
+
+//				std::sort(faces.begin(), faces.end());
+				CBoneData::FacesVecIt new_end = std::unique(faces.begin(), faces.end());
+				faces.erase(new_end, faces.end());
+//				B->child_faces[child_idx].clear_and_free();
+//				B->child_faces[child_idx]		= faces;
 			}
 		}
 	}
@@ -307,6 +310,8 @@ void	CKinematics::Load(const char* N, IReader *data, u32 dwFlags)
 	wm_frame		= u32(-1);
 
     LL_Validate		();
+
+	Msg("@ Load Skeleton CKinematics: [%fms]", T.GetElapsed_sec() * 1000.f);
 }
 
 IC void iBuildGroups(CBoneData* B, U16Vec& tgt, u16 id, u16& last_id)
@@ -319,6 +324,8 @@ IC void iBuildGroups(CBoneData* B, U16Vec& tgt, u16 id, u16& last_id)
 
 void CKinematics::LL_Validate()
 {
+	CTimer T; T.Start();
+
 	// check breakable
     BOOL bCheckBreakable			= FALSE;
     for (u16 k=0; k<LL_BoneCount(); k++){
@@ -331,11 +338,12 @@ void CKinematics::LL_Validate()
     if (bCheckBreakable){
         BOOL bValidBreakable		= TRUE;
 
-#pragma todo("container is created in stack!")
+		//TODO: not critical, but maybe creating vectors but static?
+//#pragma todo("container is created in stack!")
         xr_vector<xr_vector<u16> > 	groups;
         LL_GetBoneGroups			(groups);
 
-#pragma todo("container is created in stack!")
+//#pragma todo("container is created in stack!")
         xr_vector<u16>   			b_parts(LL_BoneCount(),BI_NONE);
         CBoneData* root 			= &LL_GetData(LL_GetBoneRoot());
         u16 last_id					= 0;
@@ -359,19 +367,20 @@ void CKinematics::LL_Validate()
 #endif
         }
     }
+
+	Msg("@ LL_Validate(load skeleton kinematics): [%fms]", T.GetElapsed_sec() * 1000.f);
 }
 
 void CKinematics::Copy(dxRender_Visual *P) 
 {
 	inherited::Copy	(P);
 
-	CKinematics* pFrom = dynamic_cast<CKinematics*>(P);
+	CKinematics* pFrom = static_cast<CKinematics*>(P);
 	VERIFY(pFrom);
 	pUserData  = pFrom->pUserData;
 	bones	   = pFrom->bones;
 	iRoot	   = pFrom->iRoot;
 	bone_map_N = pFrom->bone_map_N;
-	bone_map_P = pFrom->bone_map_P;
 	visimask   = pFrom->visimask;
 
 	IBoneInstances_Create	();
@@ -439,7 +448,6 @@ void CKinematics::Release		()
     xr_delete(pUserData	);
 	xr_delete(bones		);
 	xr_delete(bone_map_N);
-	xr_delete(bone_map_P);
 
 	inherited::Release();
 }
@@ -484,24 +492,44 @@ void CKinematics::Visibility_Update	()
 {
 	Update_Visibility	= FALSE		;
 	// check visible
-	for (u32 c_it=0; c_it<children.size(); c_it++)				{
-		CSkeletonX*		_c	=	dynamic_cast<CSkeletonX*>	(children[c_it]); VERIFY (_c)	;
-		if				(!_c->has_visible_bones())	{
+
+	/*
+	std::copy_if(std::make_move_iterator(children.begin()), std::make_move_iterator(children.end()), std::back_inserter(children_invisible),
+		[](dxRender_Visual* a)
+		{
+			CSkeletonX* _c = dynamic_cast<CSkeletonX*>	(a); VERIFY(_c);
+
+			return !_c->has_visible_bones();
+		});
+
+	std::copy_if(std::make_move_iterator(children_invisible.begin()), std::make_move_iterator(children_invisible.end()), std::back_inserter(children),
+		[](dxRender_Visual* a)
+		{
+			CSkeletonX* _c = dynamic_cast<CSkeletonX*>(a); VERIFY(_c);
+
+			return _c->has_visible_bones();
+		});
+		*/
+
+	// check visible
+	for (u32 c_it = 0; c_it < children.size(); c_it++) {
+		CSkeletonX* _c = dynamic_cast<CSkeletonX*>	(children[c_it]); VERIFY(_c);
+		if (!_c->has_visible_bones()) {
 			// move into invisible list
-			children_invisible.push_back	(children[c_it]);	
-			swap(children[c_it],children.back());
-			children.pop_back				();
+			children_invisible.push_back(children[c_it]);
+			swap(children[c_it], children.back());
+			children.pop_back();
 		}
 	}
 
 	// check invisible
-	for (u32 _it=0; _it<children_invisible.size(); _it++)	{
-		CSkeletonX*		_c	=	dynamic_cast<CSkeletonX*>	(children_invisible[_it]); VERIFY (_c)	;
-		if				(_c->has_visible_bones())	{
+	for (u32 _it = 0; _it < children_invisible.size(); _it++) {
+		CSkeletonX* _c = dynamic_cast<CSkeletonX*>	(children_invisible[_it]); VERIFY(_c);
+		if (_c->has_visible_bones()) {
 			// move into visible list
-			children.push_back				(children_invisible[_it]);	
-			swap(children_invisible[_it],children_invisible.back());
-			children_invisible.pop_back		();
+			children.push_back(children_invisible[_it]);
+			swap(children_invisible[_it], children_invisible.back());
+			children_invisible.pop_back();
 		}
 	}
 }
@@ -514,7 +542,7 @@ IC static void RecursiveBindTransform(CKinematics* K, xr_vector<Fmatrix>& matric
 	BM.mul_43				(parent,BD.bind_transform);
     for (xr_vector<CBoneData*>::iterator C=BD.children.begin(); C!=BD.children.end(); C++)
 		RecursiveBindTransform(K,matrices,(*C)->GetSelfID(),BM);	
-}
+}	
 
 void CKinematics::LL_GetBindTransform(xr_vector<Fmatrix>& matrices)
 {

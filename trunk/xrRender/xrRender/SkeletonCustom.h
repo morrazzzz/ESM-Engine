@@ -126,7 +126,6 @@ protected:
 
 	// Fast search
 	accel*						bone_map_N;		// bones  associations	(shared)	- sorted by name
-	accel*						bone_map_P;		// bones  associations	(shared)	- sorted by name-pointer
 
 	BOOL						Update_Visibility		;
 	u32							UCalc_Time				;
@@ -162,8 +161,8 @@ public:
 	virtual						~CKinematics		();
 
 	// Low level interface
-				u16				_BCL	LL_BoneID			(LPCSTR  B);
-				u16				_BCL	LL_BoneID			(const shared_str& B);
+	u16	_BCL LL_BoneID(LPCSTR  B) const override;
+	u16	_BCL LL_BoneID(const shared_str& B) const override;
 				LPCSTR			_BCL	LL_BoneName_dbg		(u16 ID);
 
 				CInifile*		_BCL	LL_UserData			()						{return pUserData;}
@@ -260,6 +259,8 @@ public:
 	}
 private:
 	bool						m_is_original_lod;
+
+	std::mutex BonesMutex;
 
 };
 IC CKinematics* PCKinematics		(dxRender_Visual* V)		{ return V?(CKinematics*)V->dcast_PKinematics():0; }

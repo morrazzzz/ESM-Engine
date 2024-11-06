@@ -16,8 +16,13 @@ void CKinematics::CalculateBones			(BOOL bForceExact)
 	// check if the info is still relevant
 	// skip all the computations - assume nothing changes in a small period of time :)
 	if		(Device.dwTimeGlobal == UCalc_Time)										return;	// early out for "fast" update
-	UCalc_mtlock	lock	;
-	OnCalculateBones		();
+
+//	UCalc_mtlock	lock;
+//	{
+//		std::lock_guard lock(BonesMutex);
+		OnCalculateBones();
+//	}
+
 	if		(!bForceExact && (Device.dwTimeGlobal < (UCalc_Time + UCalc_Interval)))	return;	// early out for "slow" update
 	if		(Update_Visibility)									Visibility_Update	();
 
@@ -166,8 +171,8 @@ void CKinematics::Bone_Calculate(CBoneData* bd, Fmatrix *parent)
 	CBoneInstance				&BONE_INST			= LL_GetBoneInstance(SelfID);
 	CLBone( bd, BONE_INST, parent, u8(-1) );
 	// Calculate children
-	for (xr_vector<CBoneData*>::iterator C=bd->children.begin(); C!=bd->children.end(); C++)
-		Bone_Calculate( *C, &BONE_INST.mTransform );
+	for (u32 i = 0; i < bd->children.size(); i++)
+		Bone_Calculate(bd->children[i], &BONE_INST.mTransform);
 
 }
 
