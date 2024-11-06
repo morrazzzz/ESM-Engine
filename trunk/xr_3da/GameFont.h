@@ -68,7 +68,16 @@ public:
 
 	void					Initialize		(LPCSTR shader, LPCSTR texture);
 
-	IC void					SetColor		(u32 C)		{dwCurrentColor=C;};
+	//INFO: Ser current color for font.
+	//But it will not be set if equal last current color and argument 
+	IC void	SetColor(u32 C)		
+	{
+		// Do not set current color if equal last set color
+		if (dwCurrentColor == C)
+			return;
+
+		dwCurrentColor = C;
+	}
 
 	IC void					SetHeightI		(float S);
 	IC void					SetHeight		(float S);
