@@ -492,6 +492,8 @@ void CActor::net_Destroy	()
 	};
 	m_pPhysics_support->in_NetDestroy	();
 
+	Device.remove_from_seq_parallel(fastdelegate::FastDelegate0<>(this, &CActor::PickupModeUpdateAll));
+
 	xr_delete		(m_sndShockEffector);
 	xr_delete		(pStatGraph);
 	xr_delete		(m_pActorEffector);
@@ -1498,48 +1500,6 @@ BOOL CActor::net_SaveRelevant()
 
 void	CActor::Check_for_AutoPickUp()
 {
-	if (!psActorFlags.test(AF_AUTOPICKUP)) return;
-	if (GameID() == GAME_SINGLE) return;
-	if (Level().CurrentControlEntity() != this) return;
-	if (!g_Alive()) return;
-
-	Fvector bc; bc.add(Position(), m_AutoPickUp_AABB_Offset);
-	Fbox APU_Box;
-	APU_Box.set(Fvector().sub(bc, m_AutoPickUp_AABB), Fvector().add(bc, m_AutoPickUp_AABB));
-
-	xr_vector<ISpatial*>	ISpatialResult;
-	g_SpatialSpace->q_box   (ISpatialResult,0,STYPE_COLLIDEABLE,bc,m_AutoPickUp_AABB);
-
-	// Determine visibility for dynamic part of scene
-	for (u32 o_it=0; o_it<ISpatialResult.size(); o_it++)
-	{
-		ISpatial*		spatial	= ISpatialResult[o_it];
-		CInventoryItem*	pIItem	= smart_cast<CInventoryItem*> (spatial->dcast_CObject        ());
-		if (0 == pIItem)							continue;
-		if (!pIItem->CanTake())						continue;
-		if (Level().m_feel_deny.is_object_denied(pIItem->cast_game_object()) )	continue;
-
-		CGrenade*	pGrenade	= smart_cast<CGrenade*> (pIItem);
-		if (pGrenade) continue;
-
-		if (APU_Box.Pick(pIItem->object().Position(), pIItem->object().Position()))
-		{
-			if (GameID() == GAME_DEATHMATCH || GameID() == GAME_TEAMDEATHMATCH)
-			{
-				if (pIItem->GetSlot() == PISTOL_SLOT || pIItem->GetSlot() == RIFLE_SLOT )
-				{
-					if (inventory().ItemFromSlot(pIItem->GetSlot()))
-					{
-						continue;
-					}
-				}
-			}			
-			NET_Packet P;
-			u_EventGen(P,GE_OWNERSHIP_TAKE, ID());
-			P.w_u16(pIItem->object().ID());
-			u_EventSend(P);
-		}		
-	}
 }
 
 void				CActor::SetHitInfo				(CObject* who, CObject* weapon, s16 element, Fvector Pos, Fvector Dir)

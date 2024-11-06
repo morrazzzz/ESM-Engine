@@ -412,9 +412,14 @@ protected:
 	//расстояние подсветки предметов
 	float					m_fPickupInfoRadius;
 
-	void					PickupModeUpdate	();
-	void					PickupInfoDraw		(CObject* object);
-	void					PickupModeUpdate_COD ();
+	//for MT
+	std::mutex PickipModeMutex;
+
+	void PickupModeUpdate();
+	void PickupInfoDraw(CObject* object);
+	void PickupModeUpdate_COD ();
+
+	void __stdcall PickupModeUpdateAll();
 
 public:
 	void					PickupModeOn		();
@@ -735,7 +740,7 @@ public:
 private:
 	collide::rq_results			RQR;
 			BOOL				CanPickItem						(const CFrustum& frustum, const Fvector& from, CObject* item);
-	xr_vector<ISpatial*>		ISpatialResult;
+			xr_vector<ISpatial*> ISpatialResultPickup{};
 
 private:
 	CLocationManager				*m_location_manager;

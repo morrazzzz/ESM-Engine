@@ -877,10 +877,10 @@ void CActor::UpdateCL	()
 	m_pPhysics_support->in_UpdateCL	();
 	VERIFY2								(_valid(renderable.xform),*cName());
 
-	if (g_Alive()) 
-		PickupModeUpdate	();	
-
-	PickupModeUpdate_COD();
+	if constexpr (1)
+		Device.seqParallel.emplace_back(fastdelegate::FastDelegate0(this, &CActor::PickupModeUpdateAll));
+	else
+		PickupModeUpdateAll();
 
 	m_bZoomAimingMode = false;
 	CWeapon* pWeapon = smart_cast<CWeapon*>(inventory().ActiveItem());	

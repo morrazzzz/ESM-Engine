@@ -109,6 +109,28 @@ BOOL CActor::CanPickItem(const CFrustum& frustum, const Fvector& from, CObject* 
 	return !bOverlaped;
 }
 
+void CActor::PickupModeUpdateAll()
+{
+	if (g_Alive())
+	{
+		PickupModeUpdate();
+		PickupModeUpdate_COD();
+
+		if (m_bPickupMode)
+		{
+			//. ????? GetNearest ?????
+			feel_touch_update(Position(), /*inventory().GetTakeDist()*/m_fPickupInfoRadius);
+
+			CFrustum frustum;
+			frustum.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB | FRUSTUM_P_FAR);
+
+			//. slow (ray-query test)
+			for (xr_vector<CObject*>::iterator it = feel_touch.begin(); it != feel_touch.end(); it++)
+				if (CanPickItem(frustum, Device.vCameraPosition, *it)) PickupInfoDraw(*it);
+		}
+	}
+}
+
 void CActor::PickupModeUpdate()
 {
 	if(!m_bPickupMode) return;
@@ -124,15 +146,6 @@ void CActor::PickupModeUpdate()
 		P.w_u16(inventory().m_pTarget->object().ID());
 		u_EventSend(P);
 	}
-
-	//. ????? GetNearest ?????
-	feel_touch_update	(Position(), /*inventory().GetTakeDist()*/m_fPickupInfoRadius);
-	
-	CFrustum frustum;
-	frustum.CreateFromMatrix(Device.mFullTransform,FRUSTUM_P_LRTB|FRUSTUM_P_FAR);
-	//. slow (ray-query test)
-	for(xr_vector<CObject*>::iterator it = feel_touch.begin(); it != feel_touch.end(); it++)
-		if (CanPickItem(frustum,Device.vCameraPosition,*it)) PickupInfoDraw(*it);
 }
 
 #include "../xr_3da/CameraBase.h"
@@ -143,6 +156,7 @@ void	CActor::PickupModeUpdate_COD	()
 		
 	if (!g_Alive() || eacFirstEye != cam_active) 
 	{
+		std::lock_guard lock(PickipModeMutex);
 		CurrentGameUI()->UIMainIngameWnd->SetPickUpItem(NULL);
 		return;
 	};
@@ -151,15 +165,15 @@ void	CActor::PickupModeUpdate_COD	()
 	frustum.CreateFromMatrix(Device.mFullTransform,FRUSTUM_P_LRTB|FRUSTUM_P_FAR);
 
 	//---------------------------------------------------------------------------
-	ISpatialResult.clear_not_free	();
-	g_SpatialSpace->q_frustum(ISpatialResult, 0, STYPE_COLLIDEABLE, frustum);
+	ISpatialResultPickup.clear_not_free	();
+	g_SpatialSpace->q_frustum(ISpatialResultPickup, 0, STYPE_COLLIDEABLE, frustum);
 	//---------------------------------------------------------------------------
 
 	float maxlen = 1000.0f;
 	CInventoryItem* pNearestItem = NULL;
-	for (u32 o_it=0; o_it<ISpatialResult.size(); o_it++)
+	for (u32 o_it=0; o_it< ISpatialResultPickup.size(); o_it++)
 	{
-		ISpatial*		spatial	= ISpatialResult[o_it];
+		ISpatial*		spatial	= ISpatialResultPickup[o_it];
 		CInventoryItem*	pIItem	= smart_cast<CInventoryItem*> (spatial->dcast_CObject        ());
 		if (0 == pIItem) continue;
 		if (pIItem->object().H_Parent() != NULL) continue;
@@ -203,7 +217,10 @@ void	CActor::PickupModeUpdate_COD	()
 				pNearestItem = NULL;
 	}
 
-	CurrentGameUI()->UIMainIngameWnd->SetPickUpItem(pNearestItem);
+	{
+		std::lock_guard lock(PickipModeMutex);
+		CurrentGameUI()->UIMainIngameWnd->SetPickUpItem(pNearestItem);
+	}
 
 	if (pNearestItem && m_bPickupMode)
 	{
