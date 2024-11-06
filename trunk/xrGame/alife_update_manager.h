@@ -52,7 +52,7 @@ public:
 			bool		load_game				(LPCSTR game_name, bool no_assert = false);
 	IC		float		update_monster_factor	() const;
 			bool		change_level			(NET_Packet	&net_packet);
-			void		set_process_time		(int microseconds);
+			void set_process_time(const int&);
 			void		objects_per_update		(const u32 &objects_per_update);
 			void		set_switch_online		(ALife::_OBJECT_ID id, bool value);
 			void		set_switch_offline		(ALife::_OBJECT_ID id, bool value);

@@ -537,6 +537,7 @@ void CSE_ALifeGroupAbstract::FillProps		(LPCSTR pref, PropItemVec& items)
 CSE_ALifeDynamicObject::CSE_ALifeDynamicObject(LPCSTR caSection) : CSE_ALifeObject(caSection)
 {
 	m_tTimeID					= 0;
+	m_SyncLocationObject = 0;
 	m_switch_counter			= u64(-1);
 }
 

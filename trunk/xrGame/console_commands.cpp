@@ -781,26 +781,20 @@ public:
 #include "alife_graph_registry.h"
 class CCC_DumpCreatures : public IConsole_Command {
 public:
-	CCC_DumpCreatures	(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
-	virtual void	Execute				(LPCSTR args) {
-		
-		typedef CSafeMapIterator<ALife::_OBJECT_ID,CSE_ALifeDynamicObject>::_REGISTRY::const_iterator const_iterator;
-
-		const_iterator I = ai().alife().graph().level().objects().begin();
-		const_iterator E = ai().alife().graph().level().objects().end();
-		for ( ; I != E; ++I) {
-			CSE_ALifeCreatureAbstract *obj = smart_cast<CSE_ALifeCreatureAbstract *>(I->second);
-			if (obj) {
-				Msg("\"%s\",",obj->name_replace());
-			}
-		}		
-
-	}
-	virtual void	Info	(TInfo& I)		
+	CCC_DumpCreatures(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+	void Execute(LPCSTR args) override
 	{
-		strcpy_s(I,"dumps all creature names"); 
-	}
+		for (auto& i : ai().alife().graph().level().objects())
+		{
+			if (CSE_ALifeCreatureAbstract* obj = smart_cast<CSE_ALifeCreatureAbstract*>(i.second))
+				Msg("\"%s\",", obj->name_replace());
+		}
 
+	}
+	void	Info(TInfo& I) override
+	{
+		strcpy_s(I, "dumps all creature names");
+	}
 };
 
 

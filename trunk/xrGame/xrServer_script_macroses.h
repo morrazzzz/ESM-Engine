@@ -55,8 +55,7 @@ class CALifeSmartTerrainTask;
 	DEFINE_LUA_WRAPPER_METHOD_V0		(on_spawn)\
 	DEFINE_LUA_WRAPPER_METHOD_V0		(on_before_register)\
 	DEFINE_LUA_WRAPPER_METHOD_V0		(on_register)\
-	DEFINE_LUA_WRAPPER_METHOD_V0		(on_unregister)\
-	DEFINE_LUA_WRAPPER_CONST_METHOD_0	(keep_saved_data_anyway,bool)
+	DEFINE_LUA_WRAPPER_METHOD_V0		(on_unregister)
 #else
 #	define INHERIT_DYNAMIC_ALIFE \
 	INHERIT_ALIFE
@@ -204,8 +203,7 @@ struct CWrapperAbstractItem : public T, public luabind::wrap_base {
 	DEFINE_LUABIND_VIRTUAL_FUNCTION(a,b,on_spawn			) \
 	DEFINE_LUABIND_VIRTUAL_FUNCTION(a,b,on_before_register	) \
 	DEFINE_LUABIND_VIRTUAL_FUNCTION(a,b,on_register			) \
-	DEFINE_LUABIND_VIRTUAL_FUNCTION(a,b,on_unregister		) \
-	DEFINE_LUABIND_VIRTUAL_FUNCTION(a,b,keep_saved_data_anyway)
+	DEFINE_LUABIND_VIRTUAL_FUNCTION(a,b,on_unregister		)
 #else
 #	define luabind_virtual_dynamic_alife(a,b)
 #endif

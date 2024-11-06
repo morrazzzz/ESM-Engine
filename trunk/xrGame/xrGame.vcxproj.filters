@@ -2700,27 +2700,6 @@
     <ClInclude Include="alife_space.h">
       <Filter>AI\ALife</Filter>
     </ClInclude>
-    <ClInclude Include="alife_interaction_manager.h">
-      <Filter>AI\ALife\interaction_manager</Filter>
-    </ClInclude>
-    <ClInclude Include="alife_interaction_manager_inline.h">
-      <Filter>AI\ALife\interaction_manager</Filter>
-    </ClInclude>
-    <ClInclude Include="alife_communication_manager.h">
-      <Filter>AI\ALife\interaction_manager\communication_manager</Filter>
-    </ClInclude>
-    <ClInclude Include="alife_communication_manager_inline.h">
-      <Filter>AI\ALife\interaction_manager\communication_manager</Filter>
-    </ClInclude>
-    <ClInclude Include="alife_communication_space.h">
-      <Filter>AI\ALife\interaction_manager\communication_manager</Filter>
-    </ClInclude>
-    <ClInclude Include="alife_combat_manager.h">
-      <Filter>AI\ALife\interaction_manager\combat_manager</Filter>
-    </ClInclude>
-    <ClInclude Include="alife_combat_manager_inline.h">
-      <Filter>AI\ALife\interaction_manager\combat_manager</Filter>
-    </ClInclude>
     <ClInclude Include="alife_human_brain.h">
       <Filter>AI\ALife\interaction_manager\server_entities\human\brain</Filter>
     </ClInclude>
@@ -6292,15 +6271,6 @@
     </ClCompile>
     <ClCompile Include="alife_space.cpp">
       <Filter>AI\ALife</Filter>
-    </ClCompile>
-    <ClCompile Include="alife_interaction_manager.cpp">
-      <Filter>AI\ALife\interaction_manager</Filter>
-    </ClCompile>
-    <ClCompile Include="alife_communication_manager.cpp">
-      <Filter>AI\ALife\interaction_manager\communication_manager</Filter>
-    </ClCompile>
-    <ClCompile Include="alife_combat_manager.cpp">
-      <Filter>AI\ALife\interaction_manager\combat_manager</Filter>
     </ClCompile>
     <ClCompile Include="alife_anomalous_zone.cpp">
       <Filter>AI\ALife\interaction_manager\server_entities\anomalous_zone</Filter>

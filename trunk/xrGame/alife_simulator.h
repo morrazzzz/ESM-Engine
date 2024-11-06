@@ -8,7 +8,6 @@
 
 #pragma once
 
-#include "alife_interaction_manager.h"
 #include "alife_update_manager.h"
 #include "script_export_space.h"
 
@@ -16,8 +15,7 @@
 #pragma warning(disable:4005)
 
 class CALifeSimulator : 
-	public CALifeUpdateManager,
-	public CALifeInteractionManager
+	public CALifeUpdateManager
 {
 protected:
 	virtual void	setup_simulator		(CSE_ALifeObject *object);

@@ -110,16 +110,6 @@ void generate_story_ids		(
 
 }
 
-void kill_entity0			(CALifeSimulator *alife, CSE_ALifeMonsterAbstract *monster, const GameGraph::_GRAPH_ID &game_vertex_id)
-{
-	alife->kill_entity		(monster,game_vertex_id,0);
-}
-
-void kill_entity1			(CALifeSimulator *alife, CSE_ALifeMonsterAbstract *monster)
-{
-	alife->kill_entity		(monster,monster->m_tGraphID,0);
-}
-
 void add_in_restriction		(CALifeSimulator *alife, CSE_ALifeMonsterAbstract *monster, ALife::_OBJECT_ID id)
 {
 	alife->add_restriction	(monster->ID,id,RestrictionSpace::eRestrictorTypeIn);
@@ -344,9 +334,6 @@ void CALifeSimulator::script_register			(lua_State *L)
 			.def("set_switch_online",		(void (CALifeSimulator::*) (ALife::_OBJECT_ID,bool))(&CALifeSimulator::set_switch_online))
 			.def("set_switch_offline",		(void (CALifeSimulator::*) (ALife::_OBJECT_ID,bool))(&CALifeSimulator::set_switch_offline))
 			.def("set_interactive",			(void (CALifeSimulator::*) (ALife::_OBJECT_ID,bool))(&CALifeSimulator::set_interactive))
-			.def("kill_entity",				&CALifeSimulator::kill_entity)
-			.def("kill_entity",				&kill_entity0)
-			.def("kill_entity",				&kill_entity1)
 			.def("add_in_restriction",		&add_in_restriction)
 			.def("add_out_restriction",		&add_out_restriction)
 			.def("remove_in_restriction",	&remove_in_restriction)

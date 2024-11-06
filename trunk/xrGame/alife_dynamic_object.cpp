@@ -32,8 +32,8 @@ void CSE_ALifeDynamicObject::on_register			()
 		VERIFY			(object);
 	}
 
-	if (!alife().graph().level().object(object->ID,true) && !keep_saved_data_anyway())
-		client_data.clear					();
+//	if (!alife().graph().level().object(object->ID,true) && !keep_saved_data_anyway())
+//		client_data.clear					();
 }
 
 void CSE_ALifeDynamicObject::on_before_register		()
@@ -60,12 +60,13 @@ void CSE_ALifeDynamicObject::switch_offline			()
 	R_ASSERT					(m_bOnline);
 	m_bOnline					= false;
 	alife().remove_online		(this);
-#ifdef DEBUG
 	if (!client_data.empty())
-		Msg						("CSE_ALifeDynamicObject::switch_offline: client_data is cleared for [%d][%s]",ID,name_replace());
-#endif // DEBUG
-	if (!keep_saved_data_anyway())
-		client_data.clear		();
+	{
+#ifdef DEBUG
+		Msg("! [%s]: client_data is cleared for [%d][%s]!!!", __FUNCTION__, ID, name_replace());
+#endif
+		client_data.clear();
+	}
 }
 
 void CSE_ALifeDynamicObject::add_online				(const bool &update_registries)
@@ -86,33 +87,31 @@ void CSE_ALifeDynamicObject::add_offline			(const xr_vector<ALife::_OBJECT_ID> &
 	alife().graph().add			(this,m_tGraphID,false);
 }
 
-bool CSE_ALifeDynamicObject::synchronize_location	()
+void CSE_ALifeDynamicObject::synchronize_location()
 {
-	if (!ai().level_graph().valid_vertex_position(o_Position) || ai().level_graph().inside(ai().level_graph().vertex(m_tNodeID),o_Position))
-		return					(true);
+	if (!ai().level_graph().valid_vertex_position(o_Position) || ai().level_graph().inside(ai().level_graph().vertex(m_tNodeID), o_Position))
+		return;
 
-	m_tNodeID					= ai().level_graph().vertex(m_tNodeID,o_Position);
+	m_tNodeID = ai().level_graph().vertex(m_tNodeID, o_Position);
 
 	GameGraph::_GRAPH_ID		tGraphID = ai().cross_table().vertex(m_tNodeID).game_vertex_id();
 	if (tGraphID != m_tGraphID) {
 		if (!m_bOnline) {
 			Fvector					position = o_Position;
 			u32						level_vertex_id = m_tNodeID;
-			alife().graph().change	(this,m_tGraphID,tGraphID);
-			if (ai().level_graph().inside(ai().level_graph().vertex(level_vertex_id),position)) {
-				level_vertex_id		= m_tNodeID;
-				o_Position			= position;
+			alife().graph().change(this, m_tGraphID, tGraphID);
+			if (ai().level_graph().inside(ai().level_graph().vertex(level_vertex_id), position)) {
+				level_vertex_id = m_tNodeID;
+				o_Position = position;
 			}
 		}
 		else {
-			VERIFY				(ai().game_graph().vertex(tGraphID)->level_id() == alife().graph().level().level_id());
-			m_tGraphID			= tGraphID;
+			VERIFY(ai().game_graph().vertex(tGraphID)->level_id() == alife().graph().level().level_id());
+			m_tGraphID = tGraphID;
 		}
 	}
 
-	m_fDistance					= ai().cross_table().vertex(m_tNodeID).distance();
-
-	return						(true);
+	m_fDistance = ai().cross_table().vertex(m_tNodeID).distance();
 }
 
 void CSE_ALifeDynamicObject::try_switch_online		()
@@ -130,12 +129,13 @@ void CSE_ALifeDynamicObject::try_switch_online		()
 	}
 
 	if (!can_switch_online()) {
-#ifdef DEBUG
 		if (!client_data.empty())
-			Msg					("CSE_ALifeDynamicObject::try_switch_online: client_data is cleared for [%d][%s]",ID,name_replace());
+		{
+#ifdef DEBUG
+			Msg("! [%s] [1]: client_data is cleared for [%d][%s]!!!", __FUNCTION__, ID, name_replace());
 #endif // DEBUG
-		if (!keep_saved_data_anyway())
-			client_data.clear	();
+			client_data.clear();
+		}
 		return;
 	}
 	
@@ -145,12 +145,13 @@ void CSE_ALifeDynamicObject::try_switch_online		()
 	}
 
 	if (alife().graph().actor()->o_Position.distance_to(o_Position) > alife().online_distance()) {
-#ifdef DEBUG
 		if (!client_data.empty())
-			Msg					("CSE_ALifeDynamicObject::try_switch_online2: client_data is cleared for [%d][%s]",ID,name_replace());
+		{
+#ifdef DEBUG
+			Msg("! [%s] [2]: client_data is cleared for [%d][%s]!!!", __FUNCTION__, ID, name_replace());
 #endif // DEBUG
-		if (!keep_saved_data_anyway())
-			client_data.clear	();
+			client_data.clear();
+		}
 		return;
 	}
 
@@ -180,40 +181,39 @@ bool CSE_ALifeDynamicObject::redundant				() const
 
 void CSE_InventoryBox::add_online	(const bool &update_registries)
 {
-	CSE_ALifeDynamicObjectVisual		*object = (this);
-
 	NET_Packet					tNetPacket;
 	ClientID					clientID;
-	clientID.set				(object->alife().server().GetServerClient() ? object->alife().server().GetServerClient()->ID.value() : 0);
+	clientID.set				(alife().server().GetServerClient() ? alife().server().GetServerClient()->ID.value() : 0);
 
-	ALife::OBJECT_IT			I = object->children.begin();
-	ALife::OBJECT_IT			E = object->children.end();
+	ALife::OBJECT_IT			I = children.begin();
+	ALife::OBJECT_IT			E = children.end();
 	for ( ; I != E; ++I) {
 		CSE_ALifeDynamicObject	*l_tpALifeDynamicObject = ai().alife().objects().object(*I);
 		CSE_ALifeInventoryItem	*l_tpALifeInventoryItem = smart_cast<CSE_ALifeInventoryItem*>(l_tpALifeDynamicObject);
 		R_ASSERT2				(l_tpALifeInventoryItem,"Non inventory item object has parent?!");
 		l_tpALifeInventoryItem->base()->s_flags.Or(M_SPAWN_UPDATE);
 		CSE_Abstract			*l_tpAbstract = smart_cast<CSE_Abstract*>(l_tpALifeInventoryItem);
-		object->alife().server().entity_Destroy(l_tpAbstract);
+	    alife().server().entity_Destroy(l_tpAbstract);
 
 #ifdef DEBUG
-//		if (psAI_Flags.test(aiALife))
-//			Msg					("[LSS] Spawning item [%s][%s][%d]",l_tpALifeInventoryItem->base()->name_replace(),*l_tpALifeInventoryItem->base()->s_name,l_tpALifeDynamicObject->ID);
-		Msg						(
-			"[LSS][%d] Going online [%d][%s][%d] with parent [%d][%s] on '%s'",
-			Device.dwFrame,
-			Device.dwTimeGlobal,
-			l_tpALifeInventoryItem->base()->name_replace(),
-			l_tpALifeInventoryItem->base()->ID,
-			ID,
-			name_replace(),
-			"*SERVER*"
-		);
+		if (psAI_Flags.test(aiALife))
+		{
+			Msg(
+				"[LSS][%d] Going online [%d][%s][%d] with parent [%d][%s] on '%s'",
+				Device.dwFrame,
+				Device.dwTimeGlobal,
+				l_tpALifeInventoryItem->base()->name_replace(),
+				l_tpALifeInventoryItem->base()->ID,
+				ID,
+				name_replace(),
+				"*SERVER*"
+			);
+		}
 #endif
 
-		l_tpALifeDynamicObject->o_Position		= object->o_Position;
-		l_tpALifeDynamicObject->m_tNodeID		= object->m_tNodeID;
-		object->alife().server().Process_spawn	(tNetPacket,clientID,FALSE,l_tpALifeInventoryItem->base());
+		l_tpALifeDynamicObject->o_Position		= o_Position;
+		l_tpALifeDynamicObject->m_tNodeID		= m_tNodeID;
+		alife().server().Process_spawn	(tNetPacket,clientID,FALSE,l_tpALifeInventoryItem->base());
 		l_tpALifeDynamicObject->s_flags.And		(u16(-1) ^ M_SPAWN_UPDATE);
 		l_tpALifeDynamicObject->m_bOnline		= true;
 	}
@@ -221,55 +221,57 @@ void CSE_InventoryBox::add_online	(const bool &update_registries)
 	CSE_ALifeDynamicObjectVisual::add_online(update_registries);
 }
 
-void CSE_InventoryBox::add_offline	(const xr_vector<ALife::_OBJECT_ID> &saved_children, const bool &update_registries)
+void CSE_InventoryBox::add_offline(const xr_vector<ALife::_OBJECT_ID>& saved_children, const bool& update_registries)
 {
-	CSE_ALifeDynamicObjectVisual		*object = (this);
+	u32 size_saved_children = saved_children.size();
 
-	for (u32 i=0, n=saved_children.size(); i<n; ++i) {
-		CSE_ALifeDynamicObject	*child = smart_cast<CSE_ALifeDynamicObject*>(ai().alife().objects().object(saved_children[i],true));
-		R_ASSERT				(child);
-		child->m_bOnline		= false;
+	for (u32 i = 0; i < size_saved_children; ++i) {
+		CSE_ALifeDynamicObject* child = smart_cast<CSE_ALifeDynamicObject*>(ai().alife().objects().object(saved_children[i], true));
+		R_ASSERT(child);
+		child->m_bOnline = false;
 
-		CSE_ALifeInventoryItem	*inventory_item = smart_cast<CSE_ALifeInventoryItem*>(child);
-		VERIFY2					(inventory_item,"Non inventory item object has parent?!");
+		CSE_ALifeInventoryItem* inventory_item = smart_cast<CSE_ALifeInventoryItem*>(child);
+		VERIFY2(inventory_item, "Non inventory item object has parent?!");
 #ifdef DEBUG
-//		if (psAI_Flags.test(aiALife))
-//			Msg					("[LSS] Destroying item [%s][%s][%d]",inventory_item->base()->name_replace(),*inventory_item->base()->s_name,inventory_item->base()->ID);
-		Msg						(
-			"[LSS][%d] Going offline [%d][%s][%d] with parent [%d][%s] on '%s'",
-			Device.dwFrame,
-			Device.dwTimeGlobal,
-			inventory_item->base()->name_replace(),
-			inventory_item->base()->ID,
-			ID,
-			name_replace(),
-			"*SERVER*"
-		);
+		if (psAI_Flags.test(aiALife))
+		{
+			Msg(
+				"[LSS][%d] Going offline [%d][%s][%d] with parent [%d][%s] on '%s'",
+				Device.dwFrame,
+				Device.dwTimeGlobal,
+				inventory_item->base()->name_replace(),
+				inventory_item->base()->ID,
+				ID,
+				name_replace(),
+				"*SERVER*"
+			);
+		}
 #endif
-		
+
 		ALife::_OBJECT_ID				item_id = inventory_item->base()->ID;
-		inventory_item->base()->ID		= object->alife().server().PerformIDgen(item_id);
+		inventory_item->base()->ID = alife().server().PerformIDgen(item_id);
 
 		if (!child->can_save()) {
-			object->alife().release		(child);
+			alife().release(child);
 			--i;
-			--n;
+			--size_saved_children;
 			continue;
 		}
 
-#ifdef DEBUG
 		if (!client_data.empty())
-			Msg							("CSE_InventoryBox::add_offline: client_data is cleared for [%d][%s]",ID,name_replace());
-#endif // DEBUG
-		if (!child->keep_saved_data_anyway())
-			child->client_data.clear		();
-		object->alife().graph().add		(child,child->m_tGraphID,false);
-//		object->alife().graph().attach	(*object,inventory_item,child->m_tGraphID,true);
-		alife().graph().remove			(child,child->m_tGraphID);
-		children.push_back				(child->ID);
-		child->ID_Parent				= ID;
-	}
+		{
+#ifdef DEBUG
+			Msg("! [%s]: client_data is cleared for [%d][%s]!!!", __FUNCTION__, ID, name_replace());
+#endif
+			child->client_data.clear();
+		}
 
+		alife().graph().add(child, child->m_tGraphID, false);
+		//		object->alife().graph().attach	(*object,inventory_item,child->m_tGraphID,true);
+		alife().graph().remove(child, child->m_tGraphID);
+		children.push_back(child->ID);
+		child->ID_Parent = ID;
+	}
 
 	CSE_ALifeDynamicObjectVisual::add_offline(saved_children, update_registries);
 }

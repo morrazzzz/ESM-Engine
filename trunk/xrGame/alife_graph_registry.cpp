@@ -42,10 +42,11 @@ void CALifeGraphRegistry::on_load			()
 	m_objects.resize				(ai().game_graph().header().vertex_count());
 
 	{
-		GRAPH_REGISTRY::iterator	I = m_objects.begin();
-		GRAPH_REGISTRY::iterator	E = m_objects.end();
-		for ( ; I != E; ++I)
-			(*I).objects().clear	();
+		for (auto& object : m_objects)
+		{
+			object.objects().clear();
+		}
+	
 	}
 }
 

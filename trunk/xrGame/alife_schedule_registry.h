@@ -13,7 +13,7 @@
 #include "ai_debug.h"
 #include "profiler.h"
 
-class CALifeScheduleRegistry : public CSafeMapIterator<ALife::_OBJECT_ID,CSE_ALifeSchedulable,std::less<ALife::_OBJECT_ID>,false> {
+class CALifeScheduleRegistry : public CSafeMapIterator<ALife::_OBJECT_ID,CSE_ALifeSchedulable,std::less<ALife::_OBJECT_ID>> {
 private:
 	struct CUpdatePredicate {
 		u32								m_count;
@@ -25,37 +25,34 @@ private:
 			m_current					= 0;
 		}
 
-		IC	bool	operator()			(_iterator &i, u64 cycle_count, bool) const
+		IC	bool	operator()			(CSE_ALifeSchedulable* i, u64 cycle_count) const
 		{
-			if ((*i).second->m_schedule_counter	== cycle_count)
-				return					(false);
+			if (i->m_schedule_counter == cycle_count)
+				return false;
 
 			if (m_current >= m_count)
-				return					(false);
+				return false;
 
 			++m_current;
-			(*i).second->m_schedule_counter	= cycle_count;
+			i->m_schedule_counter = cycle_count;
 
-			return						(true);
-		}
-
-		IC	void	operator()			(_iterator &i, u64 cycle_count) const
-		{
 			START_PROFILE("ALife/scheduled/update")
-			(*i).second->update			();
+			i->update();
 			STOP_PROFILE
+
+			return true;
 		}
 	};
 
 protected:
-	typedef CSafeMapIterator<ALife::_OBJECT_ID,CSE_ALifeSchedulable,std::less<ALife::_OBJECT_ID>,false> inherited;
+	typedef CSafeMapIterator<ALife::_OBJECT_ID,CSE_ALifeSchedulable,std::less<ALife::_OBJECT_ID>> inherited;
 
 protected:
 	u32		m_objects_per_update;
 
 public:
 	IC								CALifeScheduleRegistry	();
-	virtual							~CALifeScheduleRegistry	();
+	virtual							~CALifeScheduleRegistry() = default;
 			void					add						(CSE_ALifeDynamicObject *object);
 			void					remove					(CSE_ALifeDynamicObject *object, bool no_assert = false);
 	IC		void					update					();

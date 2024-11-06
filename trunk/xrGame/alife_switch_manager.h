@@ -25,7 +25,7 @@ private:
 	OBJECT_VECTOR	m_saved_chidren;
 
 protected:
-			bool	synchronize_location	(CSE_ALifeDynamicObject	*object);
+	void	synchronize_location(CSE_ALifeDynamicObject* object);
 
 public:
 			void	try_switch_online		(CSE_ALifeDynamicObject	*object);
@@ -36,8 +36,8 @@ public:
 			void	add_online				(CSE_ALifeDynamicObject	*object, bool update_registries = true);
 
 public:
-	IC				CALifeSwitchManager		(xrServer *server, LPCSTR section);
-	virtual			~CALifeSwitchManager	();
+	IC CALifeSwitchManager(xrServer* server, LPCSTR section);
+	virtual	~CALifeSwitchManager() = default;
 			void	switch_object			(CSE_ALifeDynamicObject	*object);
 	IC		float	online_distance			() const;
 	IC		float	offline_distance		() const;

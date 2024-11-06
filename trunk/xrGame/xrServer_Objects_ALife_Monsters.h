@@ -100,7 +100,6 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeTrader,CSE_ALifeDynamicObjectVisual,CSE_AL
 	virtual bool					natural_detector		() const {return false;}
 
 #ifdef XRGAME_EXPORTS
-			u32						dwfGetItemCost			(CSE_ALifeInventoryItem *tpALifeInventoryItem);
 	virtual void					spawn_supplies			();
 	virtual	void					add_online				(const bool &update_registries);
 	virtual	void					add_offline				(const xr_vector<ALife::_OBJECT_ID> &saved_children, const bool &update_registries);
@@ -502,7 +501,7 @@ public:
 			MEMBER					*member					(ALife::_OBJECT_ID member_id, bool no_assert = false);
 	virtual void					on_before_register		();
 			void					on_after_game_load		();
-	virtual	bool					synchronize_location	();
+	virtual	void					synchronize_location	();
 	virtual	void					try_switch_online		();
 	virtual	void					try_switch_offline		();
 	virtual	void					switch_online			();

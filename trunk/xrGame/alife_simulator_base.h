@@ -48,8 +48,6 @@ protected:
 	bool										m_initialized;
 	shared_str									*m_server_command_line;
 	bool										m_can_register_objects;
-	// temp
-	ALife::SCHEDULE_P_VECTOR					m_tpaCombatGroups[2];
 
 protected:
 	IC		CALifeSimulatorHeader				&header						();

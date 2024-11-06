@@ -25,8 +25,8 @@ IC	CSSafeMapIterator::CSafeMapIterator			()
 {
 	m_cycle_count			= 0;
 	m_first_update			= use_first_update;
-	m_max_process_time		= 0.f;
-	update_next				();
+	m_max_process_time		= 0;
+//	update_next				();
 }
 
 TEMPLATE_SPEZIALIZATION
@@ -43,12 +43,12 @@ IC	void CSSafeMapIterator::add					(const _key_type &id, _data_type *value, bool
 		return;
 	}
 
-	bool					addition = m_objects.empty();
+//	bool					addition = m_objects.empty();
 
 	m_objects.insert		(std::make_pair(id,value));
 
-	if (addition)
-		m_next_iterator		= m_objects.begin();
+//	if (addition)
+//		m_next_iterator		= m_objects.begin();
 }
 
 TEMPLATE_SPEZIALIZATION
@@ -60,15 +60,15 @@ IC	void CSSafeMapIterator::remove				(const _key_type &id, bool no_assert)
 		return;
 	}
 
-	if (I == m_next_iterator)
-		update_next			();
+	//if (I == m_next_iterator)
+	//	update_next			();
 
 	m_objects.erase			(I);
 
-	if (m_objects.empty())
-		update_next			();
+	//if (m_objects.empty())
+	//	update_next			();
 }
-
+/*
 TEMPLATE_SPEZIALIZATION
 IC	void CSSafeMapIterator::update_next			()
 {
@@ -81,11 +81,13 @@ IC	void CSSafeMapIterator::update_next			()
 	}
 }
 
+
 TEMPLATE_SPEZIALIZATION
 IC	typename CSSafeMapIterator::_iterator	&CSSafeMapIterator::next	()
 {
 	return				(m_next_iterator);
 }
+*/
 
 TEMPLATE_SPEZIALIZATION
 IC	void CSSafeMapIterator::start_timer			()
@@ -96,13 +98,13 @@ IC	void CSSafeMapIterator::start_timer			()
 TEMPLATE_SPEZIALIZATION
 IC	bool CSSafeMapIterator::time_over			()
 {
-	return				(use_time_limit && !m_first_update && (m_timer.GetElapsed_sec() >= m_max_process_time));
+	return use_time_limit && !m_first_update && (m_timer.GetElapsed_ms() >= m_max_process_time);
 }
 
 TEMPLATE_SPEZIALIZATION
-IC	void CSSafeMapIterator::set_process_time	(const float &process_time)
+IC	void CSSafeMapIterator::set_process_time(const int& process_time_millisecond)
 {
-	m_max_process_time	= process_time;
+	m_max_process_time = process_time_millisecond;
 }
 
 TEMPLATE_SPEZIALIZATION
@@ -112,45 +114,40 @@ IC	const typename CSSafeMapIterator::_REGISTRY	&CSSafeMapIterator::objects	() co
 }
 
 TEMPLATE_SPEZIALIZATION
-template <typename _update_predicate>
-IC	u32 CSSafeMapIterator::update				(const _update_predicate &predicate)
+IC void CSSafeMapIterator::clear()
 {
-	if (empty())
-		return			(0);
+	m_objects.clear();
+}
+
+TEMPLATE_SPEZIALIZATION
+template <typename _update_predicate>
+IC void CSSafeMapIterator::update(const _update_predicate &predicate)
+{
+	if (m_objects.empty())
+		return;
 
 	start_timer			();
 	++m_cycle_count;
-	_iterator			I = next();
-	VERIFY				(I != m_objects.end());
-	u32 i = 0;
 
-	for (; (I != m_objects.end()) && !time_over() && predicate(I,m_cycle_count,true); ++i) {
-		update_next		();
-		predicate		(I,m_cycle_count);
-		I				= next();
+	//if (!time_over())
+	{
+		//_iterator I = next();
+		//VERIFY(I != m_objects.end());
+
+		//for (u32 i = 0; I != m_objects.end() && !time_over() && predicate((*I).second, m_cycle_count); ++i)
+		//{
+		//	update_next();
+		//	I = next();
+		//}
+
+		for (auto& i : m_objects)
+		{
+			if (time_over() || !predicate(i.second, m_cycle_count))
+				break;
+		}
 	}
+
 	m_first_update		= false;
-	return				(i);
-}
-
-TEMPLATE_SPEZIALIZATION
-IC	void CSSafeMapIterator::clear	()
-{
-	while (!objects().empty())
-		remove			(objects().begin()->first);
-}
-
-TEMPLATE_SPEZIALIZATION
-IC	bool CSSafeMapIterator::empty	() const
-{
-	return				(objects().empty());
-}
-
-TEMPLATE_SPEZIALIZATION
-IC	void CSSafeMapIterator::begin	()
-{
-	m_next_iterator		= m_objects.begin();
-	m_first_update		= true;
 }
 
 #undef TEMPLATE_SPEZIALIZATION

@@ -129,7 +129,6 @@ public:
 	virtual void					spawn_supplies		();
 			CALifeSimulator			&alife				() const;
 	virtual Fvector					draw_level_position	() const;
-	virtual	bool					keep_saved_data_anyway	() const;
 #endif
 SERVER_ENTITY_DECLARE_END
 add_to_type_list(CSE_ALifeObject)
@@ -149,7 +148,7 @@ SERVER_ENTITY_DECLARE_BEGIN0(CSE_ALifeGroupAbstract)
 	virtual CSE_ALifeGroupAbstract	*cast_group_abstract	() {return this;};
 	virtual CSE_Abstract			*cast_abstract			() {return 0;};
 #ifdef XRGAME_EXPORTS
-	virtual	bool					synchronize_location	();
+	virtual	void					synchronize_location	();
 	virtual	void					try_switch_online		();
 	virtual	void					try_switch_offline		();
 	virtual	void					switch_online			();
@@ -240,9 +239,9 @@ public:
 		inherited2::switch_offline	();
 	}
 
-	virtual	bool					synchronize_location	()
+	virtual	void					synchronize_location()
 	{
-		return						(inherited2::synchronize_location());
+		inherited2::synchronize_location();
 	}
 
 	virtual	void					try_switch_online		()
@@ -264,6 +263,9 @@ public:
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeDynamicObject,CSE_ALifeObject)
 	ALife::_TIME_ID					m_tTimeID;
+
+    u32 m_SyncLocationObject;
+
 	u64								m_switch_counter;
 	
 									CSE_ALifeDynamicObject	(LPCSTR caSection);
@@ -273,7 +275,7 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeDynamicObject,CSE_ALifeObject)
 	virtual void					on_before_register		();
 	virtual void					on_register				();
 	virtual void					on_unregister			();
-	virtual	bool					synchronize_location	();
+	virtual	void					synchronize_location	();
 	virtual	void					try_switch_online		();
 	virtual	void					try_switch_offline		();
 	virtual	void					switch_online			();

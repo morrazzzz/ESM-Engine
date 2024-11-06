@@ -78,18 +78,18 @@ void CSE_ALifeGroupAbstract::switch_offline	()
 	object->alife().graph().add			(object,object->m_tGraphID,false);
 }
 
-bool CSE_ALifeGroupAbstract::synchronize_location	()
+void CSE_ALifeGroupAbstract::synchronize_location	()
 {
 	if (m_tpMembers.empty())
-		return					(true);
+		return;
 
 	CSE_ALifeDynamicObject		*object = smart_cast<CSE_ALifeDynamicObject*>(base());
 	VERIFY						(object);
 	
 	ALife::OBJECT_VECTOR::iterator	I = m_tpMembers.begin();
 	ALife::OBJECT_VECTOR::iterator	E = m_tpMembers.end();
-	for ( ; I != E; ++I)
-		ai().alife().objects().object(*I)->synchronize_location	();
+	for (; I != E; ++I)
+		ai().alife().objects().object(*I)->synchronize_location();
 
 	CSE_ALifeDynamicObject		&member = *ai().alife().objects().object(*I);
 	object->o_Position			= member.o_Position;
@@ -103,7 +103,6 @@ bool CSE_ALifeGroupAbstract::synchronize_location	()
 	}
 
 	object->m_fDistance			= member.m_fDistance;
-	return						(true);
 }
 
 void CSE_ALifeGroupAbstract::try_switch_online		()

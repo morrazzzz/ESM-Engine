@@ -46,15 +46,9 @@ IC	void CALifeLevelRegistry::remove			(CSE_ALifeDynamicObject *object, bool no_a
 template <typename _update_predicate>
 IC	void CALifeLevelRegistry::update			(const _update_predicate &predicate)
 {
-//	u32					object_count = 
-		inherited::update(predicate);
+	inherited::update(predicate);
 #ifdef FULL_LEVEL_UPDATE
 	m_first_update		= true;
-#endif
-#ifdef DEBUG
-	if (psAI_Flags.test(aiALife)) {
-//		Msg				("[LSS][OOS][%d : %d]",object_count, objects().size());
-	}
 #endif
 }
 

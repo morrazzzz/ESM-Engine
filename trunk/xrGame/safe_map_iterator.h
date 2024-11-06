@@ -25,14 +25,13 @@ public:
 protected:
 	_REGISTRY				m_objects;
 	_cycle_type				m_cycle_count;
-	_iterator				m_next_iterator;
 	CTimer					m_timer;
-	float					m_max_process_time;
+	int					    m_max_process_time;
 	bool					m_first_update;
 
 protected:
-	IC		void			update_next			();
-	IC		_iterator		&next				();
+//	IC		void			update_next			();
+//	IC		_iterator		&next				();
 	IC		void			start_timer			();
 	IC		bool			time_over			();
 
@@ -42,12 +41,10 @@ public:
 	IC		void			add					(const _key_type &id, _data_type *value, bool no_assert = false);
 	IC		void			remove				(const _key_type &id, bool no_assert = false);
 	template <typename _update_predicate>
-	IC		u32				update				(const _update_predicate &predicate);
-	IC		void			set_process_time	(const float &process_time);
+	IC		void				update(const _update_predicate& predicate);
+	IC		void			set_process_time	(const int&);
 	IC		const _REGISTRY	&objects			() const;
-	IC		void			clear				();
-	IC		bool			empty				() const;
-	IC		void			begin				();
+	IC void clear();
 };
 
 #include "safe_map_iterator_inline.h"

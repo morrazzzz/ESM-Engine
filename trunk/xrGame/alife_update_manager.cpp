@@ -37,18 +37,16 @@ public:
 		m_switch_manager			= switch_manager;
 	}
 
-	IC	bool	operator()		(CALifeLevelRegistry::_iterator &i, u64 cycle_count, bool) const
+	IC bool operator()(CSE_ALifeDynamicObject* i, u64 cycle_count) const
 	{
-		if ((*i).second->m_switch_counter	== cycle_count)
-			return					(false);
+		if (i->m_switch_counter == cycle_count)
+			return false;
 
-		(*i).second->m_switch_counter	= cycle_count;
-		return						(true);
-	}
+		i->m_switch_counter = cycle_count;
 
-	IC	void	operator()		(CALifeLevelRegistry::_iterator &i, u64 cycle_count) const
-	{
-		m_switch_manager->switch_object((*i).second);
+		m_switch_manager->switch_object(i);
+
+		return true;
 	}
 };
 
@@ -61,7 +59,7 @@ CALifeUpdateManager::CALifeUpdateManager	(xrServer *server, LPCSTR section) :
 	shedule.t_max			= pSettings->r_s32	(section,"schedule_max");
 	shedule_register		();
 
-	m_max_process_time		= pSettings->r_s32	(section,"process_time");
+	m_max_process_time		= pSettings->r_s32	(section,"max_process_time");
 	m_update_monster_factor	= pSettings->r_float(section,"update_monster_factor");
 	m_objects_per_update	= pSettings->r_u32	(section,"objects_per_update");
 	m_changing_level		= false;
@@ -116,6 +114,7 @@ void CALifeUpdateManager::shedule_Update	(u32 dt)
 	if (!initialized())
 		return;
 
+#if 0
 	if (!m_first_time && g_mt_config.test(mtALife)) {
 		Device.seqParallel.emplace_back(
 			fastdelegate::FastDelegate0<>(
@@ -127,15 +126,16 @@ void CALifeUpdateManager::shedule_Update	(u32 dt)
 	}
 
 	m_first_time					= false;
+#endif
 
 	START_PROFILE("ALife/update")
 	update							();
 	STOP_PROFILE
 }
 
-void CALifeUpdateManager::set_process_time	(int microseconds)
+void CALifeUpdateManager::set_process_time	(const int& process_time_millisecond)
 {
-	graph().set_process_time		(float(microseconds) - float(microseconds)*update_monster_factor()/1000000.f);
+	graph().set_process_time(process_time_millisecond);
 }
 
 void CALifeUpdateManager::objects_per_update(const u32 &objects_per_update)

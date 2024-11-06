@@ -617,13 +617,6 @@
     <ClInclude Include="alife_simulator.h" />
     <ClInclude Include="alife_simulator_inline.h" />
     <ClInclude Include="alife_space.h" />
-    <ClInclude Include="alife_interaction_manager.h" />
-    <ClInclude Include="alife_interaction_manager_inline.h" />
-    <ClInclude Include="alife_communication_manager.h" />
-    <ClInclude Include="alife_communication_manager_inline.h" />
-    <ClInclude Include="alife_communication_space.h" />
-    <ClInclude Include="alife_combat_manager.h" />
-    <ClInclude Include="alife_combat_manager_inline.h" />
     <ClInclude Include="alife_human_brain.h" />
     <ClInclude Include="alife_human_brain_inline.h" />
     <ClInclude Include="alife_human_brain_save.h" />
@@ -2287,9 +2280,6 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
     <ClCompile Include="alife_space.cpp" />
-    <ClCompile Include="alife_interaction_manager.cpp" />
-    <ClCompile Include="alife_communication_manager.cpp" />
-    <ClCompile Include="alife_combat_manager.cpp" />
     <ClCompile Include="alife_anomalous_zone.cpp" />
     <ClCompile Include="alife_creature_abstract.cpp" />
     <ClCompile Include="alife_dynamic_object.cpp" />

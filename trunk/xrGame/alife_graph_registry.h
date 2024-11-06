@@ -50,7 +50,7 @@ protected:
 	TERRAIN_REGISTRY					m_terrain[GameGraph::LOCATION_TYPE_COUNT][GameGraph::LOCATION_COUNT];	
 	CALifeLevelRegistry					*m_level;
 	CSE_ALifeCreatureActor				*m_actor;
-	float								m_process_time;
+	int m_process_time;
 	xr_vector<CSE_ALifeDynamicObject*>	m_temp;
 
 protected:
@@ -70,7 +70,7 @@ public:
 			void						remove					(CSE_ALifeDynamicObject		*object,	GameGraph::_GRAPH_ID		game_vertex_id,	bool				bUpdateSwitchObjects = true);
 	IC		void						change					(CSE_ALifeDynamicObject		*object,	GameGraph::_GRAPH_ID		game_vertex_id,	GameGraph::_GRAPH_ID	next_game_vertex_id);
 	IC		CALifeLevelRegistry			&level					() const;
-	IC		void						set_process_time		(const float &process_time);
+	IC		void						set_process_time(const int&);
 	IC		CSE_ALifeCreatureActor		*actor					() const;
 	IC		const GRAPH_REGISTRY		&objects				() const;
 	template <typename F>

@@ -119,29 +119,28 @@ CSE_ALifeOnlineOfflineGroup::MEMBER *CSE_ALifeOnlineOfflineGroup::member(ALife::
 	return						((*I).second);
 }
 
-bool CSE_ALifeOnlineOfflineGroup::synchronize_location	()
+void CSE_ALifeOnlineOfflineGroup::synchronize_location()
 {
 	if (m_members.empty())
-		return					(true);
+		return;
 
 	MEMBERS::iterator			I = m_members.begin();
 	MEMBERS::iterator			E = m_members.end();
-	for ( ; I != E; ++I)
-		(*I).second->synchronize_location	();
+	for (; I != E; ++I)
+		(*I).second->synchronize_location();
 
-	MEMBER						&member = *(*m_members.begin()).second;
-	o_Position					= member.o_Position;
-	m_tNodeID					= member.m_tNodeID;
+	MEMBER& member = *(*m_members.begin()).second;
+	o_Position = member.o_Position;
+	m_tNodeID = member.m_tNodeID;
 
 	if (m_tGraphID != member.m_tGraphID) {
 		if (!m_bOnline)
-			alife().graph().change	(this,m_tGraphID,member.m_tGraphID);
+			alife().graph().change(this, m_tGraphID, member.m_tGraphID);
 		else
-			m_tGraphID			= member.m_tGraphID;
+			m_tGraphID = member.m_tGraphID;
 	}
 
-	m_fDistance					= member.m_fDistance;
-	return						(true);
+	m_fDistance = member.m_fDistance;
 }
 
 void CSE_ALifeOnlineOfflineGroup::try_switch_online		()
