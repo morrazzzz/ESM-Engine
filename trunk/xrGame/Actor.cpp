@@ -54,6 +54,7 @@
 #include "script_callback_ex.h"
 #include "InventoryBox.h"
 #include "location_manager.h"
+//#include "Bolt.h"
 
 #include "../Include/xrRender/UIRender.h"
 
@@ -340,8 +341,6 @@ void CActor::Load	(LPCSTR section )
 
 	//Weapons				= xr_new<CWeaponList> (this);
 
-if(!g_dedicated_server)
-{
 	LPCSTR hit_snd_sect = pSettings->r_string(section,"hit_sounds");
 	for(int hit_type=0; hit_type<(int)ALife::eHitTypeMax; ++hit_type)
 	{
@@ -365,7 +364,7 @@ if(!g_dedicated_server)
 		m_HeavyBreathSnd.create	(pSettings->r_string(section,"heavy_breath_snd"), st_Effect,SOUND_TYPE_MONSTER_INJURING);
 		m_BloodSnd.create		(pSettings->r_string(section,"heavy_blood_snd"), st_Effect,SOUND_TYPE_MONSTER_INJURING);
 	}
-}
+
 	if( psActorFlags.test(AF_PSP) )
 		cam_Set					(eacLookAt);
 	else
@@ -395,7 +394,6 @@ if(!g_dedicated_server)
 	m_AutoPickUp_AABB				= READ_IF_EXISTS(pSettings,r_fvector3,section,"AutoPickUp_AABB",Fvector().set(0.02f, 0.02f, 0.02f));
 	m_AutoPickUp_AABB_Offset		= READ_IF_EXISTS(pSettings,r_fvector3,section,"AutoPickUp_AABB_offs",Fvector().set(0, 0, 0));
 
-	CStringTable string_table;
 	m_sCharacterUseAction			= "character_use";
 	m_sDeadCharacterUseAction		= "dead_character_use";
 	m_sDeadCharacterUseOrDragAction	= "dead_character_use_or_drag";
@@ -949,45 +947,45 @@ void CActor::UpdateCL	()
 }
 
 float	NET_Jump = 0;
-void CActor::shedule_Update	(u32 DT)
+void CActor::shedule_Update(u32 DT)
 {
 	setSVU(OnServer());
 
 	//установить режим показа HUD для текущего активного слота
-	CHudItem* pHudItem = smart_cast<CHudItem*>(inventory().ActiveItem());	
-	if(pHudItem) 
+	CHudItem* pHudItem = smart_cast<CHudItem*>(inventory().ActiveItem());
+	if (pHudItem)
 		pHudItem->SetHUDmode(HUDview());
 
 	//обновление инвентаря
-	UpdateInventoryOwner			(DT);
+	UpdateInventoryOwner(DT);
 	if (GameID() == GAME_SINGLE)
-		GameTaskManager().UpdateTasks	();
+		GameTaskManager().UpdateTasks();
 
-	if(m_holder || !getEnabled() || !Ready())
+	if (m_holder || !getEnabled() || !Ready())
 	{
-		m_sDefaultObjAction				= NULL;
-		inherited::shedule_Update		(DT);
+		m_sDefaultObjAction = NULL;
+		inherited::shedule_Update(DT);
 
-/*		if (OnServer())
-		{
-			Check_Weapon_ShowHideState();
-		};	
-*/
+		/*		if (OnServer())
+				{
+					Check_Weapon_ShowHideState();
+				};
+		*/
 		return;
 	}
 
 	// 
-	clamp					(DT,0u,100u);
-	float	dt	 			=  float(DT)/1000.f;
+	clamp(DT, 0u, 100u);
+	float	dt = float(DT) / 1000.f;
 
 	// Check controls, create accel, prelimitary setup "mstate_real"
-	
+
 	//----------- for E3 -----------------------------
 //	if (Local() && (OnClient() || Level().CurrentEntity()==this))
 	if (Level().CurrentControlEntity() == this && (!Level().IsDemoPlay() || Level().IsServerDemo()))
-	//------------------------------------------------
+		//------------------------------------------------
 	{
-		g_cl_CheckControls		(mstate_wishful,NET_SavedAccel,NET_Jump,dt);
+		g_cl_CheckControls(mstate_wishful, NET_SavedAccel, NET_Jump, dt);
 		{
 			/*
 			if (mstate_real & mcJump)
@@ -1000,28 +998,29 @@ void CActor::shedule_Update	(u32 DT)
 			}
 			*/
 		}
-		g_cl_Orientate			(mstate_real,dt);
-		g_Orientate				(mstate_real,dt);
+		g_cl_Orientate(mstate_real, dt);
+		g_Orientate(mstate_real, dt);
 
-		g_Physics				(NET_SavedAccel,NET_Jump,dt);
-		
-		g_cl_ValidateMState		(dt,mstate_wishful);
-		g_SetAnimation			(mstate_real);
-		
+		g_Physics(NET_SavedAccel, NET_Jump, dt);
+
+		g_cl_ValidateMState(dt, mstate_wishful);
+		g_SetAnimation(mstate_real);
+
 		// Check for game-contacts
-		Fvector C; float R;		
+		Fvector C; float R;
 		//m_PhysicMovementControl->GetBoundingSphere	(C,R);
-		
+
 		Center(C);
-		R=Radius();
-		feel_touch_update		(C,R);
+		R = Radius();
+		feel_touch_update(C, R);
 
 		// Dropping
-		if (b_DropActivated)	{
-			f_DropPower			+= dt*0.1f;
-			clamp				(f_DropPower,0.f,1.f);
-		} else {
-			f_DropPower			= 0.f;
+		if (b_DropActivated) {
+			f_DropPower += dt * 0.1f;
+			clamp(f_DropPower, 0.f, 1.f);
+		}
+		else {
+			f_DropPower = 0.f;
 		}
 		if (!Level().IsDemoPlay())
 		{
@@ -1031,32 +1030,32 @@ void CActor::shedule_Update	(u32 DT)
 				mstate_wishful &= ~mcAccel;
 			if (!psActorFlags.test(AF_SPRINT_TOGGLE))
 				mstate_wishful &= ~mcSprint;
-		//-----------------------------------------------------
-		mstate_wishful &=~mcLStrafe;
-		mstate_wishful &=~mcRStrafe;
-		mstate_wishful &=~mcLLookout;
-		mstate_wishful &=~mcRLookout;
-		mstate_wishful &=~mcFwd;
-		mstate_wishful &=~mcBack;
-		//-----------------------------------------------------
+			//-----------------------------------------------------
+			mstate_wishful &= ~mcLStrafe;
+			mstate_wishful &= ~mcRStrafe;
+			mstate_wishful &= ~mcLLookout;
+			mstate_wishful &= ~mcRLookout;
+			mstate_wishful &= ~mcFwd;
+			mstate_wishful &= ~mcBack;
+			//-----------------------------------------------------
 		}
 	}
-	else 
+	else
 	{
 		make_Interpolation();
-	
+
 		if (NET.size())
 		{
-			
-//			NET_SavedAccel = NET_Last.p_accel;
-//			mstate_real = mstate_wishful = NET_Last.mstate;
 
-			g_sv_Orientate				(mstate_real,dt			);
-			g_Orientate					(mstate_real,dt			);
-			g_Physics					(NET_SavedAccel,NET_Jump,dt	);			
+			//			NET_SavedAccel = NET_Last.p_accel;
+			//			mstate_real = mstate_wishful = NET_Last.mstate;
+
+			g_sv_Orientate(mstate_real, dt);
+			g_Orientate(mstate_real, dt);
+			g_Physics(NET_SavedAccel, NET_Jump, dt);
 			if (!m_bInInterpolation)
-				g_cl_ValidateMState			(dt,mstate_wishful);
-			g_SetAnimation				(mstate_real);
+				g_cl_ValidateMState(dt, mstate_wishful);
+			g_SetAnimation(mstate_real);
 
 			if (NET_Last.mstate & mcCrouch)
 			{
@@ -1065,127 +1064,139 @@ void CActor::shedule_Update	(u32 DT)
 				else
 					character_physics_support()->movement()->ActivateBox(2, true);
 			}
-			else 
+			else
 				character_physics_support()->movement()->ActivateBox(0, true);
-		}	
+		}
 		mstate_old = mstate_real;
 	}
 
 	if (this == Level().CurrentViewEntity())
 	{
-		UpdateMotionIcon		(mstate_real);
+		UpdateMotionIcon(mstate_real);
 	};
 
 	NET_Jump = 0;
 
 
-	inherited::shedule_Update	(DT);
+	inherited::shedule_Update(DT);
 
 	//эффектор включаемый при ходьбе
 	if (!pCamBobbing)
 	{
-		pCamBobbing = xr_new<CEffectorBobbing>	();
-		Cameras().AddCamEffector			(pCamBobbing);
+		pCamBobbing = xr_new<CEffectorBobbing>();
+		Cameras().AddCamEffector(pCamBobbing);
 	}
-	pCamBobbing->SetState						(mstate_real, conditions().IsLimping(), IsZoomAimingMode());
+	pCamBobbing->SetState(mstate_real, conditions().IsLimping(), IsZoomAimingMode());
 
 	//звук тяжелого дыхания при уталости и хромании
-	if(this==Level().CurrentControlEntity() && !g_dedicated_server )
+	if (this == Level().CurrentControlEntity() && !g_dedicated_server)
 	{
-		if(conditions().IsLimping() && g_Alive())
+		if (conditions().IsLimping() && g_Alive())
 		{
-			if(!m_HeavyBreathSnd._feedback())
+			if (!m_HeavyBreathSnd._feedback())
 			{
-				m_HeavyBreathSnd.play_at_pos(this, Fvector().set(0,ACTOR_HEIGHT,0), sm_Looped | sm_2D);
-			}else{
-				m_HeavyBreathSnd.set_position(Fvector().set(0,ACTOR_HEIGHT,0));
+				m_HeavyBreathSnd.play_at_pos(this, Fvector().set(0, ACTOR_HEIGHT, 0), sm_Looped | sm_2D);
 			}
-		}else if(m_HeavyBreathSnd._feedback()){
-			m_HeavyBreathSnd.stop		();
+			else {
+				m_HeavyBreathSnd.set_position(Fvector().set(0, ACTOR_HEIGHT, 0));
+			}
+		}
+		else if (m_HeavyBreathSnd._feedback()) {
+			m_HeavyBreathSnd.stop();
 		}
 
 		float bs = conditions().BleedingSpeed();
-		if(bs>0.6f)
+		if (bs > 0.6f)
 		{
 			Fvector snd_pos;
-			snd_pos.set(0,ACTOR_HEIGHT,0);
-			if(!m_BloodSnd._feedback())
+			snd_pos.set(0, ACTOR_HEIGHT, 0);
+			if (!m_BloodSnd._feedback())
 				m_BloodSnd.play_at_pos(this, snd_pos, sm_Looped | sm_2D);
 			else
 				m_BloodSnd.set_position(snd_pos);
 
-			float v = bs+0.25f;
+			float v = bs + 0.25f;
 
-			m_BloodSnd.set_volume	(v);
-		}else{
-			if(m_BloodSnd._feedback())
+			m_BloodSnd.set_volume(v);
+		}
+		else {
+			if (m_BloodSnd._feedback())
 				m_BloodSnd.stop();
 		}
 
-		if(!g_Alive()&&m_BloodSnd._feedback())
-				m_BloodSnd.stop();
+		if (!g_Alive() && m_BloodSnd._feedback())
+			m_BloodSnd.stop();
 	}
-	
+
 	//если в режиме HUD, то сама модель актера не рисуется
-	if(!character_physics_support()->IsRemoved())
-										setVisible				(!HUDview	());
+	if (!character_physics_support()->IsRemoved())
+		setVisible(!HUDview());
 	//что актер видит перед собой
 	collide::rq_result& RQ = HUD().GetCurrentRayQuery();
-	
 
-	if(!input_external_handler_installed() && RQ.O &&  RQ.range<inventory().GetTakeDist()) 
+	if (inventory().m_pTarget && inventory().m_pTarget->object().getDestroy())
 	{
-		m_pObjectWeLookingAt			= smart_cast<CGameObject*>(RQ.O);
-		
-		CGameObject						*game_object = smart_cast<CGameObject*>(RQ.O);
-		m_pUsableObject					= smart_cast<CUsableScriptObject*>(game_object);
-		m_pInvBoxWeLookingAt			= smart_cast<CInventoryBox*>(game_object);
-		inventory().m_pTarget			= smart_cast<PIItem>(game_object);
-		m_pPersonWeLookingAt			= smart_cast<CInventoryOwner*>(game_object);
-		m_pVehicleWeLookingAt			= smart_cast<CHolderCustom*>(game_object);
-		CEntityAlive* pEntityAlive		= smart_cast<CEntityAlive*>(game_object);
-		
-		if (GameID() == GAME_SINGLE )
+		m_pObjectWeLookingAt = nullptr;
+		m_pUsableObject = nullptr;
+		m_pInvBoxWeLookingAt = nullptr;
+		inventory().m_pTarget = nullptr;
+		m_pPersonWeLookingAt = nullptr;
+		m_pVehicleWeLookingAt = nullptr;
+
+		m_sDefaultObjAction = nullptr;
+	}
+
+	if (!input_external_handler_installed() && RQ.O && RQ.range < inventory().GetTakeDist())
+	{
+		m_pObjectWeLookingAt = smart_cast<CGameObject*>(RQ.O);
+
+		m_pUsableObject = smart_cast<CUsableScriptObject*>(m_pObjectWeLookingAt);
+		m_pInvBoxWeLookingAt = smart_cast<CInventoryBox*>(m_pObjectWeLookingAt);
+		inventory().m_pTarget = smart_cast<PIItem>(m_pObjectWeLookingAt);
+		m_pPersonWeLookingAt = smart_cast<CInventoryOwner*>(m_pObjectWeLookingAt);
+		m_pVehicleWeLookingAt = smart_cast<CHolderCustom*>(m_pObjectWeLookingAt);
+		CEntityAlive* pEntityAlive = smart_cast<CEntityAlive*>(m_pObjectWeLookingAt);
+
+		if (m_pUsableObject && m_pUsableObject->tip_text())
+			m_sDefaultObjAction = CStringTable().translate(m_pUsableObject->tip_text());
+		else
 		{
-			if (m_pUsableObject && m_pUsableObject->tip_text())
+			if (m_pPersonWeLookingAt && pEntityAlive->g_Alive())
+				m_sDefaultObjAction = m_sCharacterUseAction;
+
+			else if (pEntityAlive && !pEntityAlive->g_Alive())
 			{
-				m_sDefaultObjAction = CStringTable().translate( m_pUsableObject->tip_text() );
+				bool b_allow_drag = !!pSettings->line_exist("ph_capture_visuals", pEntityAlive->cNameVisual());
+
+				if (b_allow_drag)
+					m_sDefaultObjAction = m_sDeadCharacterUseOrDragAction;
+				else
+					m_sDefaultObjAction = m_sDeadCharacterUseAction;
+
 			}
+			else if (m_pVehicleWeLookingAt)
+				m_sDefaultObjAction = m_sCarCharacterUseAction;
+
+			else if (inventory().m_pTarget && inventory().m_pTarget->CanTake())
+				//				&& (inventory().m_pTarget->object().CLS_ID != CLSID_OBJECT_G_RPG7 && inventory().m_pTarget->object().CLS_ID != CLSID_OBJECT_G_FAKE)
+				//				&& !smart_cast<const CBolt*>(game_object))
+				m_sDefaultObjAction = m_sInventoryItemUseAction;
+			//.				else if (m_pInvBoxWeLookingAt)
+			//.					m_sDefaultObjAction = m_sInventoryBoxUseAction;
 			else
-			{
-				if (m_pPersonWeLookingAt && pEntityAlive->g_Alive())
-					m_sDefaultObjAction = m_sCharacterUseAction;
-
-				else if (pEntityAlive && !pEntityAlive->g_Alive())
-				{
-					bool b_allow_drag = !!pSettings->line_exist("ph_capture_visuals",pEntityAlive->cNameVisual());
-				
-					if(b_allow_drag)
-						m_sDefaultObjAction = m_sDeadCharacterUseOrDragAction;
-					else
-						m_sDefaultObjAction = m_sDeadCharacterUseAction;
-
-				}else if (m_pVehicleWeLookingAt)
-					m_sDefaultObjAction = m_sCarCharacterUseAction;
-
-				else if (inventory().m_pTarget && inventory().m_pTarget->CanTake() )
-					m_sDefaultObjAction = m_sInventoryItemUseAction;
-//.				else if (m_pInvBoxWeLookingAt)
-//.					m_sDefaultObjAction = m_sInventoryBoxUseAction;
-				else 
-					m_sDefaultObjAction = NULL;
-			}
+				m_sDefaultObjAction = NULL;
 		}
 	}
-	else 
+	else
 	{
-		inventory().m_pTarget	= NULL;
-		m_pPersonWeLookingAt	= NULL;
-		m_sDefaultObjAction		= NULL;
-		m_pUsableObject			= NULL;
-		m_pObjectWeLookingAt	= NULL;
-		m_pVehicleWeLookingAt	= NULL;
-		m_pInvBoxWeLookingAt	= NULL;
+		m_pObjectWeLookingAt = nullptr;
+		m_pUsableObject = nullptr;
+		m_pInvBoxWeLookingAt = nullptr;
+		inventory().m_pTarget = nullptr;
+		m_pPersonWeLookingAt = nullptr;
+		m_pVehicleWeLookingAt = nullptr;
+
+		m_sDefaultObjAction = nullptr;
 	}
 
 //	UpdateSleep									();
@@ -1193,7 +1204,6 @@ void CActor::shedule_Update	(u32 DT)
 	//для свойст артефактов, находящихся на поясе
 	UpdateArtefactsOnBelt						();
 	m_pPhysics_support->in_shedule_Update		(DT);
-	Check_for_AutoPickUp						();
 };
 #include "debug_renderer.h"
 void CActor::renderable_Render	()
