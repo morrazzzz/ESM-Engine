@@ -67,7 +67,7 @@ public:
 };
 #pragma pack(pop)
 
-#pragma pack(push, 4)
+#pragma pack(push, 2)
 struct ENGINE_API vertBoned1W			// (3+3+3+3+2+1)*4 = 15*4 = 60 bytes
 {
     Fvector	P;
