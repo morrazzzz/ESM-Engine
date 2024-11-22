@@ -93,7 +93,7 @@ public:
 
 	void			OnDeviceCreate					();
 
-	void			Screenshot						(IRender_interface::ScreenshotMode mode=IRender_interface::SM_NORMAL, LPCSTR name = 0);
+	void Screenshot(IRender_interface::ScreenshotMode mode=IRender_interface::SM_NORMAL, LPCSTR name = 0, bool NeedHideConsole = true, bool NeedRestoreConsole = true);
 	void			RegisterPPDraw					(CUIWindow* w);
 	void			UnregisterPPDraw				(CUIWindow* w);
 

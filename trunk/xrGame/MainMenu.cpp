@@ -367,8 +367,12 @@ void CMainMenu::OnFrame()
 			Device.seqRender.Remove	(g_pGameLevel);
 		};
 
-		if(m_Flags.test(flRestoreConsole))
-			Console->Show			();
+		if (m_Flags.test(flRestoreConsole))
+		{
+			Console->Show();
+
+			m_Flags.set(flRestoreConsole, FALSE);
+		}
 	}
 
 	if (IsActive())
@@ -387,21 +391,28 @@ void CMainMenu::OnDeviceCreate()
 }
 
 
-void CMainMenu::Screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name)
+void CMainMenu::Screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name, bool NeedHideConsole, bool NeedRestoreConsole)
 {
 	if(mode != IRender_interface::SM_FOR_GAMESAVE)
 	{
 		::Render->Screenshot		(mode,name);
-	}else{
+	}
+	else
+	{
 		m_Flags.set					(flGameSaveScreenshot, TRUE);
-		strcpy(m_screenshot_name,name);
+		xr_strcpy(m_screenshot_name,name);
 		if(g_pGameLevel && m_Flags.test(flActive)){
 			Device.seqFrame.Add		(g_pGameLevel);
 			Device.seqRender.Add	(g_pGameLevel);
 		};
 		m_screenshotFrame			= Device.dwFrame+1;
-		m_Flags.set					(flRestoreConsole,		Console->bVisible);
-		Console->Hide				();
+
+		if (NeedHideConsole && Console->bVisible)
+		{
+			m_Flags.set(flRestoreConsole, NeedRestoreConsole);
+
+			Console->Hide();
+		}
 	}
 }
 

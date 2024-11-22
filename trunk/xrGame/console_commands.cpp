@@ -388,48 +388,69 @@ class CCC_ALifeSave : public IConsole_Command {
 public:
 	CCC_ALifeSave(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
 	virtual void Execute(LPCSTR args) {
-		
-#if 0
-		if (!Level().autosave_manager().ready_for_autosave()) {
-			Msg		("! Cannot save the game right now!");
-			return;
-		}
-#endif
-		if(!IsGameTypeSingle()){
-			Msg("for single-mode only");
-			return;
-		}
 		if(!g_actor || !Actor()->g_Alive())
 		{
 			Msg("cannot make saved game because actor is dead :(");
 			return;
 		}
 
-		string_path				S,S1;
-		S[0]					= 0;
-//.		sscanf					(args ,"%s",S);
-		strcpy_s					(S,args);
-		
+		string_path S1;
+		string_path params[3]{};
+
+		bool NeedHideConsole = true;
+		bool NeedRestoreConsole = true;
+
+		if (int n = _min(3, _GetItemCount(args, '/')))
+		{
+			for (int i = 0; i < n; i++)
+			{
+				_GetItem(args, i, params[i], '/');
+				strlwr(params[i]);
+			}
+		}
+
+		if (xr_strlen(params[1]))
+		{
+			auto CheckString = [](LPCSTR StringArgs) -> bool {
+				if (!xr_strcmp(StringArgs, "false") || !xr_strcmp(StringArgs, "0") || !xr_strcmp(StringArgs, "off"))
+					return true;
+
+				return false;
+			};
+
+			if (CheckString(params[1]))
+			{
+				NeedHideConsole = false;
+				NeedRestoreConsole = false;
+			}
+			else if (xr_strlen(params[2]))
+			{
+				if (CheckString(params[2]))
+					NeedRestoreConsole = false;
+			}
+
+		}
+
 #ifdef DEBUG
 		CTimer					timer;
 		timer.Start				();
 #endif
-		if (!xr_strlen(S)){
-			strconcat			(sizeof(S),S,Core.UserName,"_","quicksave");
+		if (!xr_strlen(params[0])) {
+			strconcat			(sizeof(params[0]), params[0], Core.UserName, "_", "quicksave");
 			NET_Packet			net_packet;
 			net_packet.w_begin	(M_SAVE_GAME);
-			net_packet.w_stringZ(S);
+			net_packet.w_stringZ(params[0]);
 			net_packet.w_u8		(0);
 			Level().Send		(net_packet,net_flags(TRUE));
 		}else{
-			if(!valid_file_name(S)){
+			if(!valid_file_name(params[0])) {
 				Msg("invalid file name");
 				return;
 			}
 
 			NET_Packet			net_packet;
 			net_packet.w_begin	(M_SAVE_GAME);
-			net_packet.w_stringZ(S);
+			net_packet.w_stringZ(params[0]);
 			net_packet.w_u8		(1);
 			Level().Send		(net_packet,net_flags(TRUE));
 		}
@@ -439,16 +460,17 @@ public:
 		SDrawStaticStruct* _s		= CurrentGameUI()->AddCustomStatic("game_saved", true);
 		_s->m_endTime				= Device.fTimeGlobal+3.0f;// 3sec
 		string_path					save_name;
-		strconcat					(sizeof(save_name),save_name,*CStringTable().translate("st_game_saved"),": ", S);
+		strconcat					(sizeof(save_name),save_name,*CStringTable().translate("st_game_saved"),": ", params[0]);
 		_s->wnd()->SetText			(save_name);
 
-		strcat					(S,".dds");
-		FS.update_path			(S1,"$game_saves$",S);
+		strcat					(params[0], ".dds");
+		FS.update_path			(S1,"$game_saves$", params[0]);
 		
 #ifdef DEBUG
 		timer.Start				();
 #endif
-		MainMenu()->Screenshot		(IRender_interface::SM_FOR_GAMESAVE,S1);
+
+		MainMenu()->Screenshot		(IRender_interface::SM_FOR_GAMESAVE, S1, NeedHideConsole, NeedRestoreConsole);
 
 #ifdef DEBUG
 		Msg						("Screenshot overhead : %f milliseconds",timer.GetElapsed_sec()*1000.f);
