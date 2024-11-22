@@ -312,16 +312,14 @@ public:
 class CCC_DemoRecord : public IConsole_Command
 {
 public:
-
-	CCC_DemoRecord(LPCSTR N) : IConsole_Command(N) {};
+	CCC_DemoRecord(LPCSTR N) : IConsole_Command(N) {}
 	virtual void Execute(LPCSTR args) {
-		#ifndef	DEBUG
-		if (GameID() != GAME_SINGLE) 
+		if (!g_pGameLevel)
 		{
-			Msg("For this game type Demo Record is disabled.");
+			Msg("! There are no level(s) started");
 			return;
 		}
-		#endif
+
 		Console->Hide	();
 		string_path		fn_; 
 		strconcat		(sizeof(fn_),fn_, args, ".xrdemo");
@@ -334,36 +332,30 @@ public:
 class CCC_DemoPlay : public IConsole_Command
 {
 public:
-	CCC_DemoPlay(LPCSTR N) : 
-	  IConsole_Command(N) 
-	  { bEmptyArgsHandled = TRUE; };
-	  virtual void Execute(LPCSTR args) {
-		#ifndef	DEBUG
-		if (GameID() != GAME_SINGLE) 
+	CCC_DemoPlay(LPCSTR N) :
+		IConsole_Command(N) {
+		bEmptyArgsHandled = true;
+	}
+	virtual void Execute(LPCSTR args)
+	{
+		if (!g_pGameLevel)
 		{
-			Msg("For this game type Demo Play is disabled.");
+			Msg("! There are no level(s) started");
 			return;
-		};
-		#endif
-		  if (!g_pGameLevel)
-		  {
-			  Msg	("! There are no level(s) started");
-		  }
-	  	else 
-		  {
-			  Console->Hide			();
-			  string_path			fn;
-			  u32		loops	=	0;
-			  LPSTR		comma	=	strchr(const_cast<LPSTR>(args),',');
-			  if (comma)	{
-				  loops			=	atoi	(comma+1);
-				  *comma		=	0;	//. :)
-			  }
-			  strconcat			(sizeof(fn),fn, args, ".xrdemo");
-			  FS.update_path	(fn, "$game_saves$", fn);
-			  g_pGameLevel->Cameras().AddCamEffector(xr_new<CDemoPlay> (fn, 1.0f, loops));
-		  }
-	  }
+		}
+
+		Console->Hide();
+		string_path			fn;
+		u32		loops = 0;
+		LPSTR		comma = strchr(const_cast<LPSTR>(args), ',');
+		if (comma) {
+			loops = atoi(comma + 1);
+			*comma = 0;	//. :)
+		}
+		strconcat(sizeof(fn), fn, args, ".xrdemo");
+		FS.update_path(fn, "$game_saves$", fn);
+		g_pGameLevel->Cameras().AddCamEffector(xr_new<CDemoPlay>(fn, 1.0f, loops));
+	}
 };
 
 bool valid_file_name(LPCSTR file_name)
