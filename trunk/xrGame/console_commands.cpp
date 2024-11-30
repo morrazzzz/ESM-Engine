@@ -392,7 +392,7 @@ public:
 		bool NeedHideConsole = true;
 		bool NeedRestoreConsole = true;
 
-		if (int n = _min(3, _GetItemCount(args, '/')))
+		if (int n = _min(2, _GetItemCount(args, '/')))
 		{
 			for (int i = 0; i < n; i++)
 			{
@@ -403,21 +403,21 @@ public:
 
 		if (xr_strlen(params[1]))
 		{
-			auto CheckString = [](LPCSTR StringArgs) -> bool {
+			auto ChechBoolArguments = [](LPCSTR StringArgs) -> bool {
 				if (!xr_strcmp(StringArgs, "false") || !xr_strcmp(StringArgs, "0") || !xr_strcmp(StringArgs, "off"))
 					return true;
 
 				return false;
 			};
 
-			if (CheckString(params[1]))
+			if (ChechBoolArguments(params[1]))
 			{
 				NeedHideConsole = false;
 				NeedRestoreConsole = false;
 			}
-			else if (xr_strlen(params[2]))
+			else if (ChechBoolArguments(params[2]))
 			{
-				if (CheckString(params[2]))
+				if (ChechBoolArguments(params[2]))
 					NeedRestoreConsole = false;
 			}
 
