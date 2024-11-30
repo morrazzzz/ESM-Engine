@@ -82,33 +82,23 @@ void	R_occlusion::occq_end		(u32&	ID		)
 }
 R_occlusion::occq_result R_occlusion::occq_get		(u32&	ID		)
 {
-	if (!enabled)		return 0xffffffff;
+	if (!enabled || ID == iInvalidHandle)
+		return static_cast<occq_result>(-1);
 
-	//	Igor: prevent release crash if we issue too many queries
-	if (ID == iInvalidHandle) return 0xFFFFFFFF;
-
-	occq_result	fragments	= 0;
+	occq_result	fragments = 0;
 	HRESULT hr;
 	// CHK_DX		(used[ID].Q->GetData(&fragments,sizeof(fragments),D3DGETDATA_FLUSH));
 	// Msg			("get  : [%2d] - %d => %d", used[ID].order, ID, fragments);
-	CTimer	T;
-	T.Start	();
 	Device.Statistic->RenderDUMP_Wait.Begin	();
 	//while	((hr=used[ID].Q->GetData(&fragments,sizeof(fragments),D3DGETDATA_FLUSH))==S_FALSE) {
 	VERIFY2( ID<used.size(),make_string("_Pos = %d, size() = %d ", ID, used.size()));
 	while	((hr=GetData(used[ID].Q, &fragments,sizeof(fragments)))==S_FALSE) 
 	{
-		if (!SwitchToThread())			
-			Sleep(ps_r2_wait_sleep);
-
-		if (T.GetElapsed_ms() > 500)	
-		{
-			fragments	= (occq_result)-1;//0xffffffff;
-			break;
-		}
+        //morrazzzz: The best thing to do is to leave it empty, and that's how it will be.
 	}
 	Device.Statistic->RenderDUMP_Wait.End	();
-	if		(hr == D3DERR_DEVICELOST)	fragments = 0xffffffff;
+	if (hr == D3DERR_DEVICELOST)	
+		fragments = static_cast<occq_result>(-1);
 
 	if (0==fragments)	RImplementation.stats.o_culled	++;
 
