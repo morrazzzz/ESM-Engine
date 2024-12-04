@@ -3,7 +3,6 @@
 
 extern Fvector	c_spatial_offset[8];
 
-template <bool b_first>
 class walker
 {
 public:
@@ -11,18 +10,16 @@ public:
 	Fvector	center;
 	Fvector	size;
 	Fbox box;
-	ISpatial_DB* space;
 
-	walker(ISpatial_DB* _space, u32 _mask, const Fvector& _center, const Fvector& _size)
+	walker(u32 _mask, const Fvector& _center, const Fvector& _size)
 	{
 		mask = _mask;
 		center = _center;
 		size = _size;
 		box.setb(center, size);
-		space = _space;
 	}
 
-	void walk(ISpatial_NODE* N, Fvector& n_C, float n_R)
+	void walk(xr_vector<ISpatial*>& result_spatial, ISpatial_NODE* N, Fvector& n_C, float n_R, bool first)
 	{
 		// box
 		float n_vR = 2 * n_R;
@@ -32,11 +29,9 @@ public:
 			return;
 
 		// test items
-		xr_vector<ISpatial*>::iterator _it = N->items.begin();
-		xr_vector<ISpatial*>::iterator _end = N->items.end();
-		for (; _it != _end; _it++)
+		for (u32 i = 0; i < N->items.size(); i++)
 		{
-			ISpatial* S = *_it;
+			ISpatial* S = N->items[i];
 			if (!(S->spatial.type & mask))	
 				continue;
 
@@ -46,8 +41,8 @@ public:
 			if (!sB.intersect(box))	
 				continue;
 
-			space->q_result->push_back(S);
-			if (b_first)			
+			result_spatial.push_back(S);
+			if (first)			
 				return;
 		}
 
@@ -57,28 +52,19 @@ public:
 		{
 			if (0 == N->children[octant])	continue;
 			Fvector		c_C;			c_C.mad(n_C, c_spatial_offset[octant], c_R);
-			walk(N->children[octant], c_C, c_R);
-			if (b_first && !space->q_result->empty())	return;
+			walk(result_spatial, N->children[octant], c_C, c_R, first);
+			if (first && !result_spatial.empty())
+				return;
 		}
 	}
 };
 
 void ISpatial_DB::q_box(xr_vector<ISpatial*>& R, u32 _o, u32 _mask, const Fvector& _center, const Fvector& _size)
 {
-	cs.Enter();
-	q_result = &R;
-	q_result->clear_not_free();
-	if (_o & O_ONLYFIRST)
-	{
-		walker<true> W(this, _mask, _center, _size);
-		W.walk(m_root, m_center, m_bounds);
-	}
-	else
-	{
-		walker<false> W(this, _mask, _center, _size);
-		W.walk(m_root, m_center, m_bounds);
-	}
-	cs.Leave();
+	R.clear_not_free();
+
+	walker W(_mask, _center, _size);
+	W.walk(R, m_root, m_center, m_bounds, _o & O_ONLYFIRST);
 }
 
 void ISpatial_DB::q_sphere(xr_vector<ISpatial*>& R, u32 _o, u32 _mask, const Fvector& _center, const float _radius)

@@ -191,12 +191,14 @@ public:
 		Fvector& v1	= verts[ T.verts[1] ];	mLeafVerts[1].x = v1.x;	mLeafVerts[1].y = v1.y;	mLeafVerts[1].z = v1.z;
 		Fvector& v2	= verts[ T.verts[2] ];	mLeafVerts[2].x = v2.x;	mLeafVerts[2].y = v2.y;	mLeafVerts[2].z = v2.z;
 		if (!_tri())			return;
-		RESULT& R	= dest->r_add();
-		R.id		= prim;
-		R.verts[0]	= v0;
-		R.verts[1]	= v1;
-		R.verts[2]	= v2;
-		R.dummy		= T.dummy;
+		RESULT result;
+		result.id		= prim;
+		result.verts[0]	= v0;
+		result.verts[1]	= v1;
+		result.verts[2]	= v2;
+		result.dummy = T.dummy;
+
+		dest->r_add(result);
 	}
 	void			_stab		(const AABBNoLeafNode* node)
 	{
@@ -218,8 +220,6 @@ public:
 
 void COLLIDER::box_query(const MODEL *m_def, const Fvector& b_center, const Fvector& b_dim)
 {
-	m_def->syncronize		();
-
 	// Get nodes
 	const AABBNoLeafTree* T = (const AABBNoLeafTree*)m_def->tree->GetTree();
 	const AABBNoLeafNode* N = T->GetNodes();

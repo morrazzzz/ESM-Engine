@@ -260,7 +260,6 @@ void ISpatial_DB::_insert(ISpatial_NODE* N, Fvector& n_C, float n_R)
 
 void ISpatial_DB::insert(ISpatial* S)
 {
-	cs.Enter();
 #ifdef DEBUG
 	stat_insert.Begin();
 
@@ -281,6 +280,7 @@ void ISpatial_DB::insert(ISpatial* S)
 	}
 #endif
 
+	cs.Enter();
 	if (verify_sp(S, m_center, m_bounds))
 	{
 		// Object inside our DB
@@ -295,10 +295,11 @@ void ISpatial_DB::insert(ISpatial* S)
 		S->spatial.node_center.set(m_center);
 		S->spatial.node_radius = m_bounds;
 	}
+	cs.Leave();
+
 #ifdef DEBUG
 	stat_insert.End();
 #endif
-	cs.Leave();
 }
 
 void ISpatial_DB::_remove(ISpatial_NODE* N, ISpatial_NODE* N_sub)
@@ -324,8 +325,14 @@ void ISpatial_DB::_remove(ISpatial_NODE* N, ISpatial_NODE* N_sub)
 		octant = 6;
 	else if (N_sub == N->children[7])		
 		octant = 7;
-	VERIFY(octant < 8);
+
 	VERIFY(N_sub->_empty());
+
+	if (octant >= 8)
+	{
+		R_ASSERT2(false, make_string("Spatial node children >= 8. Details: [%d]", octant));
+		return;
+	}
 	_node_destroy(N->children[octant]);
 
 	// Recurse
@@ -335,29 +342,30 @@ void ISpatial_DB::_remove(ISpatial_NODE* N, ISpatial_NODE* N_sub)
 
 void ISpatial_DB::remove(ISpatial* S)
 {
-	cs.Enter();
 #ifdef DEBUG
 	stat_remove.Begin();
 #endif
 	ISpatial_NODE* N = S->spatial.node_ptr;
+
+	cs.Enter();
 	N->_remove(S);
 
 	// Recurse
 	if (N->_empty())					
 		_remove(N->parent, N);
+	cs.Leave();
+
 #ifdef DEBUG
 	stat_remove.End();
 #endif
-	cs.Leave();
 }
 
-void ISpatial_DB::update(u32 nodes/* =8 */)
+void ISpatial_DB::update()
 {
 #ifdef DEBUG
 	if (!m_root)
 		return;
-	cs.Enter();
+
 	VERIFY(verify());
-	cs.Leave();
 #endif
 }

@@ -127,7 +127,7 @@ public:
 class XRCDB_API ISpatial_DB
 {
 private:
-	xrCriticalSection cs;
+	xrCriticalSection cs; //TODO: I think you can delete it. Not very thread-unsafe
 	poolSS<ISpatial_NODE, 128> allocator;
 	xr_vector<ISpatial_NODE*> allocator_pool;
 	ISpatial* rt_insert_object;
@@ -135,14 +135,13 @@ public:
 	ISpatial_NODE* m_root;
 	Fvector m_center;
 	float m_bounds;
-	xr_vector<ISpatial*>* q_result;
 	u32	stat_nodes;
 	u32	stat_objects;
 	CStatTimer stat_insert;
 	CStatTimer stat_remove;
 private:
-	IC u32							_octant(u32 x, u32 y, u32 z) { return z * 4 + y * 2 + x; }
-	IC u32							_octant(Fvector& base, Fvector& rel)
+	IC u32 _octant(u32 x, u32 y, u32 z) { return z * 4 + y * 2 + x; }
+	IC u32 _octant(Fvector& base, Fvector& rel)
 	{
 		u32 o = 0;
 		if (rel.x > base.x) o += 1;
@@ -164,7 +163,7 @@ public:
 	void initialize(Fbox& BB);
 	void insert(ISpatial* S);
 	void remove(ISpatial* S);
-	void update(u32 nodes = 8);
+	void update();
 	bool verify();
 
 	enum

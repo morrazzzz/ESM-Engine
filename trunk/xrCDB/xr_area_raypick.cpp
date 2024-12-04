@@ -10,6 +10,8 @@ bool bDebug()
 	return cdb_bDebug;
 }
 #endif
+
+using namespace CObjectSpaceThreadSafe;
 using namespace	collide;
 
 //--------------------------------------------------------------------------------
@@ -17,10 +19,8 @@ using namespace	collide;
 //--------------------------------------------------------------------------------
 bool CObjectSpace::RayTest(const Fvector& start, const Fvector& dir, float range, collide::rq_target tgt, collide::ray_cache* cache, CObject* ignore_object)
 {
-	Lock.Enter();
 	bool _ret = _RayTest(start, dir, range, tgt, cache, ignore_object);
 	r_spatial.clear();
-	Lock.Leave();
 	return _ret;
 }
 bool CObjectSpace::_RayTest(const Fvector& start, const Fvector& dir, float range, collide::rq_target tgt, collide::ray_cache* cache, CObject* ignore_object)
@@ -96,10 +96,8 @@ bool CObjectSpace::_RayTest(const Fvector& start, const Fvector& dir, float rang
 //--------------------------------------------------------------------------------
 bool CObjectSpace::RayPick(const Fvector& start, const Fvector& dir, float range, rq_target tgt, rq_result& R, CObject* ignore_object)
 {
-	Lock.Enter();
 	bool _res = _RayPick(start, dir, range, tgt, R, ignore_object);
 	r_spatial.clear();
-	Lock.Leave();
 	return _res;
 }
 bool CObjectSpace::_RayPick(const Fvector& start, const Fvector& dir, float range, rq_target tgt, rq_result& R, CObject* ignore_object)
@@ -149,10 +147,8 @@ bool CObjectSpace::_RayPick(const Fvector& start, const Fvector& dir, float rang
 //--------------------------------------------------------------------------------
 bool CObjectSpace::RayQuery(collide::rq_results& dest, const collide::ray_defs& R, collide::rq_callback* CB, LPVOID user_data, collide::test_callback* tb, CObject* ignore_object)
 {
-	Lock.Enter();
 	bool res = _RayQuery2(dest, R, CB, user_data, tb, ignore_object);
 	r_spatial.clear_not_free();
-	Lock.Leave();
 	return res;
 }
 bool CObjectSpace::_RayQuery2(collide::rq_results& r_dest, const collide::ray_defs& R, collide::rq_callback* CB, LPVOID user_data, collide::test_callback* tb, CObject* ignore_object)
@@ -172,10 +168,8 @@ bool CObjectSpace::_RayQuery2(collide::rq_results& r_dest, const collide::ray_de
 		xrc.ray_options(R.flags);
 		xrc.ray_query(&Static, R.start, R.dir, R.range);
 		if (xrc.r_count()) {
-			CDB::RESULT* _I = xrc.r_begin();
-			CDB::RESULT* _E = xrc.r_end();
-			for (; _I != _E; _I++)
-				r_temp.append_result(rq_result().set(0, _I->range, _I->id));
+			for (size_t i = 0; i < xrc.r_count(); i++)
+				r_temp.append_result(rq_result().set(0, xrc[i].range, xrc[i].id));
 		}
 	}
 	// Test dynamic
@@ -196,11 +190,10 @@ bool CObjectSpace::_RayQuery2(collide::rq_results& r_dest, const collide::ray_de
 	}
 	if (r_temp.r_count()) {
 		r_temp.r_sort();
-		collide::rq_result* _I = r_temp.r_begin();
-		collide::rq_result* _E = r_temp.r_end();
-		for (; _I != _E; _I++) {
-			r_dest.append_result(*_I);
-			if (!(CB ? CB(*_I, user_data) : true))						
+		for (size_t i = 0; i < r_temp.r_count(); i++) 
+		{
+			r_dest.append_result(r_temp[i]);
+			if (!(CB ? CB(r_temp[i], user_data) : true))
 				return r_dest.r_count();
 			if (R.flags & (CDB::OPT_ONLYNEAREST | CDB::OPT_ONLYFIRST))	
 				return r_dest.r_count();

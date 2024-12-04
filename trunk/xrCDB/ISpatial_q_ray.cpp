@@ -188,7 +188,6 @@ ICF bool isect_sse(const aabb_t& box, const ray_t& ray, float& dist) {
 
 extern Fvector	c_spatial_offset[8];
 
-template <bool b_use_sse, bool b_first, bool b_nearest>
 class _MM_ALIGN16 walker
 {
 public:
@@ -196,15 +195,14 @@ public:
 	u32 mask;
 	float range;
 	float range2;
-	ISpatial_DB* space;
 public:
-	walker(ISpatial_DB* _space, u32 _mask, const Fvector& _start, const Fvector& _dir, float _range)
+	walker(u32 _mask, const Fvector& _start, const Fvector& _dir, float _range)
 	{
 		mask = _mask;
 		ray.pos.set(_start);
 		ray.inv_dir.set(1.f, 1.f, 1.f).div(_dir);
 		ray.fwd_dir.set(_dir);
-		if (!b_use_sse) {
+		if (~CPU::ID.feature & _CPU_FEATURE_SSE) {
 			// for FPU - zero out inf
 			if (_abs(_dir.x) > flt_eps) {}
 			else ray.inv_dir.x = 0;
@@ -215,7 +213,6 @@ public:
 		}
 		range = _range;
 		range2 = _range * _range;
-		space = _space;
 	}
 	// fpu
 	ICF bool _box_fpu(const Fvector& n_C, const float n_R, Fvector& coord)
@@ -230,7 +227,6 @@ public:
 	ICF bool _box_sse(const Fvector& n_C, const float n_R, float& dist)
 	{
 		aabb_t box;
-		float n_vR = 2 * n_R;
 		__m128 NR = _mm_load_ss((float*)&n_R);
 		__m128 NC = _mm_unpacklo_ps(_mm_load_ss((float*)&n_C.x), _mm_load_ss((float*)&n_C.y));
 		NR = _mm_add_ss(NR, NR);
@@ -241,10 +237,10 @@ public:
 		_mm_store_ps((float*)&box.max, _mm_add_ps(NC, NR));
 		return isect_sse(box, ray, dist);
 	}
-	void walk(ISpatial_NODE* N, Fvector& n_C, float n_R)
+	void walk(xr_vector<ISpatial*>& result_spatial, ISpatial_NODE* N, Fvector& n_C, float n_R, bool first, bool nearest)
 	{
 		// Actual ray/aabb test
-		if (b_use_sse) {
+		if (CPU::ID.feature & _CPU_FEATURE_SSE) {
 			// use SSE
 			float		d;
 			if (!_box_sse(n_C, n_R, d))				
@@ -262,11 +258,9 @@ public:
 		}
 
 		// test items
-		xr_vector<ISpatial*>::iterator _it = N->items.begin();
-		xr_vector<ISpatial*>::iterator _end = N->items.end();
-		for (; _it != _end; _it++)
+		for (u32 i = 0; i < N->items.size(); i++)
 		{
-			ISpatial* S = *_it;
+			ISpatial* S = N->items[i];
 			if (mask != (S->spatial.type & mask))	continue;
 			Fsphere& sS = S->spatial.sphere;
 			int				quantity;
@@ -275,7 +269,7 @@ public:
 
 			if (result == Fsphere::rpOriginInside || result == Fsphere::rpOriginOutside && afT[0] < range)
 			{
-				if (b_nearest) {
+				if (nearest) {
 					switch (result) {
 					case Fsphere::rpOriginInside:	
 						range = afT[0] < range ? afT[0] : range;	
@@ -286,8 +280,8 @@ public:
 					}
 					range2 = range * range;
 				}
-				space->q_result->push_back(S);
-				if (b_first)				
+				result_spatial.push_back(S);
+				if (first)				
 					return;
 			}
 		}
@@ -300,8 +294,8 @@ public:
 				continue;
 			Fvector	c_C;		
 			c_C.mad(n_C, c_spatial_offset[octant], c_R);
-			walk(N->children[octant], c_C, c_R);
-			if (b_first && !space->q_result->empty())	
+			walk(result_spatial, N->children[octant], c_C, c_R, first, nearest);
+			if (first && !result_spatial.empty())
 				return;
 		}
 	}
@@ -309,30 +303,8 @@ public:
 
 void ISpatial_DB::q_ray(xr_vector<ISpatial*>& R, u32 _o, u32 _mask_and, const Fvector& _start, const Fvector& _dir, float _range)
 {
-	cs.Enter();
-	q_result = &R;
-	q_result->clear_not_free();
-	if (CPU::ID.feature & _CPU_FEATURE_SSE) {
-		if (_o & O_ONLYFIRST)
-		{
-			if (_o & O_ONLYNEAREST) { walker<true, true, true>	W(this, _mask_and, _start, _dir, _range);	W.walk(m_root, m_center, m_bounds); }
-			else { walker<true, true, false>	W(this, _mask_and, _start, _dir, _range);	W.walk(m_root, m_center, m_bounds); }
-		}
-		else {
-			if (_o & O_ONLYNEAREST) { walker<true, false, true>	W(this, _mask_and, _start, _dir, _range);	W.walk(m_root, m_center, m_bounds); }
-			else { walker<true, false, false>	W(this, _mask_and, _start, _dir, _range);	W.walk(m_root, m_center, m_bounds); }
-		}
-	}
-	else {
-		if (_o & O_ONLYFIRST)
-		{
-			if (_o & O_ONLYNEAREST) { walker<false, true, true>	W(this, _mask_and, _start, _dir, _range);	W.walk(m_root, m_center, m_bounds); }
-			else { walker<false, true, false>	W(this, _mask_and, _start, _dir, _range);	W.walk(m_root, m_center, m_bounds); }
-		}
-		else {
-			if (_o & O_ONLYNEAREST) { walker<false, false, true>	W(this, _mask_and, _start, _dir, _range);	W.walk(m_root, m_center, m_bounds); }
-			else { walker<false, false, false>	W(this, _mask_and, _start, _dir, _range);	W.walk(m_root, m_center, m_bounds); }
-		}
-	}
-	cs.Leave();
+	R.clear_not_free();
+
+	walker W(_mask_and, _start, _dir, _range);
+	W.walk(R, m_root, m_center, m_bounds, _o & O_ONLYFIRST, _o & O_ONLYNEAREST);
 }

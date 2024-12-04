@@ -31,6 +31,7 @@ public:
 	}
 	void			_prim		(DWORD prim)
 	{
+		RESULT result;
 		if (bClass3)	{
 			sPoly		src,dst;
 			src.resize	(3);
@@ -39,21 +40,21 @@ public:
 			src[2]		= verts[ tris[prim].verts[2] ];
 			if (F->ClipPoly(src,dst))
 			{
-				RESULT& R	= dest->r_add();
-				R.id		= prim;
-				R.verts[0]	= verts[ tris[prim].verts[0] ];
-				R.verts[1]	= verts[ tris[prim].verts[1] ];
-				R.verts[2]	= verts[ tris[prim].verts[2] ];
-				R.dummy		= tris[prim].dummy;
+				result.id		= prim;
+				result.verts[0]	= verts[ tris[prim].verts[0] ];
+				result.verts[1]	= verts[ tris[prim].verts[1] ];
+				result.verts[2]	= verts[ tris[prim].verts[2] ];
+				result.dummy		= tris[prim].dummy;
 			}
 		} else {
-			RESULT& R	= dest->r_add();
-			R.id		= prim;
-			R.verts[0]	= verts[ tris[prim].verts[0] ];
-			R.verts[1]	= verts[ tris[prim].verts[1] ];
-			R.verts[2]	= verts[ tris[prim].verts[2] ];
-			R.dummy		= tris[prim].dummy;
+			result.id		= prim;
+			result.verts[0]	= verts[ tris[prim].verts[0] ];
+			result.verts[1]	= verts[ tris[prim].verts[1] ];
+			result.verts[2]	= verts[ tris[prim].verts[2] ];
+			result.dummy		= tris[prim].dummy;
 		}
+
+		dest->r_add(result);
 	}
 	
 	void			_stab		(const AABBNoLeafNode* node, u32 mask)
@@ -77,8 +78,6 @@ public:
 
 void COLLIDER::frustum_query(const MODEL *m_def, const CFrustum& F)
 {
-	m_def->syncronize		();
-
 	// Get nodes
 	const AABBNoLeafTree*	T	= (const AABBNoLeafTree*)m_def->tree->GetTree();
 	const AABBNoLeafNode*	N	= T->GetNodes();

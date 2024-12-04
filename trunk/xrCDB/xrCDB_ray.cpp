@@ -167,11 +167,9 @@ ICF BOOL isect_sse			(const aabb_t &box, const ray_t &ray, float &dist)	{
 	return  ret;
 }
 
-template <bool bUseSSE, bool bCull, bool bFirst, bool bNearest>
 class _MM_ALIGN16	ray_collider
 {
 public:
-	COLLIDER*		dest;
 	TRI*			tris;
 	Fvector*		verts;
 	
@@ -179,9 +177,8 @@ public:
 	float			rRange;
 	float			rRange2;
 
-	IC void			_init		(COLLIDER* CL, Fvector* V, TRI* T, const Fvector& C, const Fvector& D, float R)
+	IC void	_init(Fvector* V, TRI* T, const Fvector& C, const Fvector& D, float R)
 	{
-		dest			= CL;
 		tris			= T;
 		verts			= V;
 		ray.pos.set		(C);
@@ -189,7 +186,8 @@ public:
 		ray.fwd_dir.set	(D);
 		rRange			= R;
 		rRange2			= R*R;
-		if (!bUseSSE)	{
+		if (~CPU::ID.feature & _CPU_FEATURE_SSE)	
+		{
 			// for FPU - zero out inf
 			if (_abs(D.x)>flt_eps){}	else ray.inv_dir.x=0;
 			if (_abs(D.y)>flt_eps){}	else ray.inv_dir.y=0;
@@ -214,7 +212,7 @@ public:
         return 		isect_sse	(box,ray,dist);
 	}
 	
-	IC bool			_tri		(u32* p, float& u, float& v, float& range)
+	IC bool _tri(u32* p, float& u, float& v, float& range, bool culling)
 	{
 		Fvector edge1, edge2, tvec, pvec, qvec;
 		float	det,inv_det;
@@ -229,7 +227,7 @@ public:
 		// if determinant is near zero, ray lies in plane of triangle
 		pvec.crossproduct	(ray.fwd_dir, edge2);
 		det = edge1.dotproduct(pvec);
-		if (bCull)
+		if (culling)
 		{						
 			if (det < EPS)  return false;
 			tvec.sub(ray.pos, p0);						// calculate distance from vert0 to ray origin
@@ -259,17 +257,19 @@ public:
 		return true;
 	}
 	
-	void			_prim		(DWORD prim)
+	void _prim(COLLIDER* collide, DWORD prim, bool culling, bool nearest)
 	{
 		float	u,v,r;
-		if (!_tri(tris[prim].verts, u, v, r))	return;
-		if (r<=0 || r>rRange)					return;
+		if (!_tri(tris[prim].verts, u, v, r, culling))	
+			return;
+		if (r<=0 || r>rRange)					
+			return;
 		
-		if (bNearest)	
+		if (nearest)	
 		{
-			if (dest->r_count())	
+			if (collide->r_count())	
 			{
-				RESULT& R = *dest->r_begin();
+				RESULT& R = *collide->r_begin();
 				if (r<R.range)	{
 					R.id		= prim;
 					R.range		= r;
@@ -282,164 +282,70 @@ public:
 					rRange		= r;
 					rRange2		= r*r;
 				}
-			} else {
-				RESULT& R	= dest->r_add();
-				R.id		= prim;
-				R.range		= r;
-				R.u			= u;
-				R.v			= v;
-				R.verts	[0]	= verts[tris[prim].verts[0]];
-				R.verts	[1]	= verts[tris[prim].verts[1]];
-				R.verts	[2]	= verts[tris[prim].verts[2]];
-				R.dummy		= tris[prim].dummy;
-				rRange		= r;
-				rRange2		= r*r;
+
+				return;
 			}
-		} else {
-			RESULT& R	= dest->r_add();
-			R.id		= prim;
-			R.range		= r;
-			R.u			= u;
-			R.v			= v;
-			R.verts	[0]	= verts[tris[prim].verts[0]];
-			R.verts	[1]	= verts[tris[prim].verts[1]];
-			R.verts	[2]	= verts[tris[prim].verts[2]];
-			R.dummy		= tris[prim].dummy;
+		}
+
+
+		RESULT result;
+		result.id = prim;
+		result.range = r;
+		result.u = u;
+		result.v = v;
+		result.verts[0] = verts[tris[prim].verts[0]];
+		result.verts[1] = verts[tris[prim].verts[1]];
+		result.verts[2] = verts[tris[prim].verts[2]];
+		result.dummy = tris[prim].dummy;
+		collide->r_add(result);
+
+		if (nearest)
+		{
+			rRange = r;
+			rRange2 = r * r;
 		}
 	}
-	void			_stab		(const AABBNoLeafNode* node)
+
+	void _stab(const AABBNoLeafNode* node, COLLIDER* collide, bool culling, bool first, bool nearest)
 	{
 		// Actual ray/aabb test
-		if (bUseSSE)			{
+		if (CPU::ID.feature & _CPU_FEATURE_SSE)			
+		{
 			// use SSE
 			float		d;
 			if (!_box_sse((Fvector&)node->mAABB.mCenter,(Fvector&)node->mAABB.mExtents,d))	return;
 			if (d>rRange)																	return;
-		} else {
+		}
+		else
+		{
 			// use FPU
 			Fvector		P;
-			if (!_box_fpu((Fvector&)node->mAABB.mCenter,(Fvector&)node->mAABB.mExtents,P))	return;
-			if (P.distance_to_sqr(ray.pos)>rRange2)											return;
+			if (!_box_fpu((Fvector&)node->mAABB.mCenter, (Fvector&)node->mAABB.mExtents, P))	return;
+			if (P.distance_to_sqr(ray.pos) > rRange2)											return;
 		}
 		
 		// 1st chield
-		if (node->HasLeaf())	_prim	(node->GetPrimitive());
-		else					_stab	(node->GetPos());
+		if (node->HasLeaf())	_prim	(collide, node->GetPrimitive(), culling, nearest);
+		else					_stab	(node->GetPos(), collide, culling, first, nearest);
 		
 		// Early exit for "only first"
-		if (bFirst && dest->r_count())														return;
+		if (first && collide->r_count())														return;
 		
 		// 2nd chield
-		if (node->HasLeaf2())	_prim	(node->GetPrimitive2());
-		else					_stab	(node->GetNeg());
+		if (node->HasLeaf2())	_prim	(collide, node->GetPrimitive2(), culling, nearest);
+		else					_stab	(node->GetNeg(), collide, culling, first, nearest);
 	}
 };
 
 void	COLLIDER::ray_query	(const MODEL *m_def, const Fvector& r_start,  const Fvector& r_dir, float r_range)
 {
-	m_def->syncronize		();
-
 	// Get nodes
 	const AABBNoLeafTree* T = (const AABBNoLeafTree*)m_def->tree->GetTree();
 	const AABBNoLeafNode* N = T->GetNodes();
-	r_clear					();
-	
-	if (CPU::ID.feature&_CPU_FEATURE_SSE)	{
-		// SSE
-		// Binary dispatcher
-		if (ray_mode&OPT_CULL)		{
-			if (ray_mode&OPT_ONLYFIRST)		{
-				if (ray_mode&OPT_ONLYNEAREST)		{
-					ray_collider<true,true,true,true>		RC;
-					RC._init(this,m_def->verts,m_def->tris,r_start,r_dir,r_range);
-					RC._stab(N);
-				} else {
-					ray_collider<true,true,true,false>		RC;
-					RC._init(this,m_def->verts,m_def->tris,r_start,r_dir,r_range);
-					RC._stab(N);
-				}
-			} else {
-				if (ray_mode&OPT_ONLYNEAREST)		{
-					ray_collider<true,true,false,true>		RC;
-					RC._init(this,m_def->verts,m_def->tris,r_start,r_dir,r_range);
-					RC._stab(N);
-				} else {
-					ray_collider<true,true,false,false>		RC;
-					RC._init(this,m_def->verts,m_def->tris,r_start,r_dir,r_range);
-					RC._stab(N);
-				}
-			}
-		} else {
-			if (ray_mode&OPT_ONLYFIRST)		{
-				if (ray_mode&OPT_ONLYNEAREST)		{
-					ray_collider<true,false,true,true>		RC;
-					RC._init(this,m_def->verts,m_def->tris,r_start,r_dir,r_range);
-					RC._stab(N);
-				} else {
-					ray_collider<true,false,true,false>		RC;
-					RC._init(this,m_def->verts,m_def->tris,r_start,r_dir,r_range);
-					RC._stab(N);
-				}
-			} else {
-				if (ray_mode&OPT_ONLYNEAREST)		{
-					ray_collider<true,false,false,true>		RC;
-					RC._init(this,m_def->verts,m_def->tris,r_start,r_dir,r_range);
-					RC._stab(N);
-				} else {
-					ray_collider<true,false,false,false>	RC;
-					RC._init(this,m_def->verts,m_def->tris,r_start,r_dir,r_range);
-					RC._stab(N);
-				}
-			}
-		}
-	} else {
-		// FPU
-		// Binary dispatcher
-		if (ray_mode&OPT_CULL)		{
-			if (ray_mode&OPT_ONLYFIRST)		{
-				if (ray_mode&OPT_ONLYNEAREST)		{
-					ray_collider<false,true,true,true>		RC;
-					RC._init(this,m_def->verts,m_def->tris,r_start,r_dir,r_range);
-					RC._stab(N);
-				} else {
-					ray_collider<false,true,true,false>		RC;
-					RC._init(this,m_def->verts,m_def->tris,r_start,r_dir,r_range);
-					RC._stab(N);
-				}
-			} else {
-				if (ray_mode&OPT_ONLYNEAREST)		{
-					ray_collider<false,true,false,true>		RC;
-					RC._init(this,m_def->verts,m_def->tris,r_start,r_dir,r_range);
-					RC._stab(N);
-				} else {
-					ray_collider<false,true,false,false>	RC;
-					RC._init(this,m_def->verts,m_def->tris,r_start,r_dir,r_range);
-					RC._stab(N);
-				}
-			}
-		} else {
-			if (ray_mode&OPT_ONLYFIRST)		{
-				if (ray_mode&OPT_ONLYNEAREST)		{
-					ray_collider<false,false,true,true>		RC;
-					RC._init(this,m_def->verts,m_def->tris,r_start,r_dir,r_range);
-					RC._stab(N);
-				} else {
-					ray_collider<false,false,true,false>	RC;
-					RC._init(this,m_def->verts,m_def->tris,r_start,r_dir,r_range);
-					RC._stab(N);
-				}
-			} else {
-				if (ray_mode&OPT_ONLYNEAREST)		{
-					ray_collider<false,false,false,true>	RC;
-					RC._init(this,m_def->verts,m_def->tris,r_start,r_dir,r_range);
-					RC._stab(N);
-				} else {
-					ray_collider<false,false,false,false>	RC;
-					RC._init(this,m_def->verts,m_def->tris,r_start,r_dir,r_range);
-					RC._stab(N);
-				}
-			}
-		}
-	}
+	r_clear();
+
+	ray_collider RC;
+	RC._init(m_def->verts, m_def->tris, r_start, r_dir, r_range);
+	RC._stab(N, this, ray_mode & OPT_CULL, ray_mode & OPT_ONLYFIRST, ray_mode & OPT_ONLYNEAREST);
 }
 

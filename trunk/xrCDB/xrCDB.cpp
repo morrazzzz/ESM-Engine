@@ -39,7 +39,6 @@ MODEL::MODEL	()
 }
 MODEL::~MODEL()
 {
-	syncronize	();		// maybe model still in building
 	status		= S_INIT;
 	xr_delete	(tree);
 	xr_free		(tris);		tris_count = 0;
@@ -47,49 +46,14 @@ MODEL::~MODEL()
 }
 
 #pragma todo("delete OGSR kostil for x64!!! TODO X64")
-struct	BTHREAD_params
-{
-	MODEL*				M;
-	Fvector*			V;
-	int					Vcnt;
-	TRI*				T;
-	int					Tcnt;
-	build_callback*		BC;
-	void*				BCP;
-	bool rebuildTrisRequired;
-};
-
-void	MODEL::build_thread		(void *params)
-{
-	_initialize_cpu_thread		();
-	FPU::m64r					();
-	BTHREAD_params	P			= *( (BTHREAD_params*)params );
-	P.M->cs.Enter				();
-	P.M->build_internal(P.V, P.Vcnt, P.T, P.Tcnt, P.BC, P.BCP, P.rebuildTrisRequired);
-	P.M->status					= S_READY;
-	P.M->cs.Leave				();
-	//Msg						("* xrCDB: cform build completed, memory usage: %d K",P.M->memory()/1024);
-}
 
 void MODEL::build(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc, void* bcp, const bool rebuildTrisRequired)
 {
 	R_ASSERT					(S_INIT == status);
     R_ASSERT					((Vcnt>=4)&&(Tcnt>=2));
 
-	_initialize_cpu_thread		();
-
-	if (strstr(Core.Params, "-mt_cdb"))
-	{
-		BTHREAD_params P = { this, V, Vcnt, T, Tcnt, bc, bcp, rebuildTrisRequired };
-		thread_spawn(build_thread, "CDB-construction", 0, &P);
-		while (S_INIT == status)
-			Sleep(5);
-	}
-	else
-	{
-		build_internal(V, Vcnt, T, Tcnt, bc, bcp, rebuildTrisRequired);
-		status = S_READY;
-	}
+	build_internal(V, Vcnt, T, Tcnt, bc, bcp, rebuildTrisRequired);
+	status = S_READY;
 }
 
 void MODEL::build_internal(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc, void* bcp, const bool rebuildTrisRequired)
@@ -186,10 +150,9 @@ COLLIDER::~COLLIDER()
 	r_free			();
 }
 
-RESULT& COLLIDER::r_add	()
+void COLLIDER::r_add(const RESULT& result)
 {
-	rd.push_back		(RESULT());
-	return rd.back		();
+	rd.emplace_back(result);
 }
 
 void COLLIDER::r_free	()

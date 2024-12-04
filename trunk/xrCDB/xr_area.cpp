@@ -4,9 +4,8 @@
 #include "../xr_3da/xrLevel.h"
 #include "../xr_3da/xr_collide_form.h"
 
+using namespace CObjectSpaceThreadSafe;
 using namespace	collide;
-
-extern	BOOL g_bLoaded;
 
 //----------------------------------------------------------------------
 // Class	: CObjectSpace
@@ -36,13 +35,14 @@ int CObjectSpace::GetNearest		( xr_vector<ISpatial*>& q_spatial, xr_vector<CObje
 	g_SpatialSpace->q_box(r_spatial,0,STYPE_COLLIDEABLE,point,B);
 
 	// Iterate
-	xr_vector<ISpatial*>::iterator	it	= r_spatial.begin	();
-	xr_vector<ISpatial*>::iterator	end	= r_spatial.end		();
-	for (; it!=end; it++)		{
-		CObject* O				= (*it)->dcast_CObject		();
-		if (0==O)				continue;
-		if (O==ignore_object)	continue;
-		Fsphere mS				= { O->spatial.sphere.P, O->spatial.sphere.R	};
+	for (u32 i = 0; i < r_spatial.size(); i++)
+	{
+		CObject* O = r_spatial[i]->dcast_CObject();
+		if (0 == O)				
+			continue;
+		if (O == ignore_object)
+			continue;
+		Fsphere mS = { O->spatial.sphere.P, O->spatial.sphere.R };
 		if (Q.intersect(mS))	q_nearest.push_back(O);
 	}
 

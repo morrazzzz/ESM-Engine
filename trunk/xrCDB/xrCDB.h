@@ -59,24 +59,14 @@ namespace CDB
 	public:
 		u32				verts	[3];		// 3*4 = 12b
 		union	{
-			size_t dummy; // 4b
+			u32 dummy; // 4b
 			struct
 			{
 				size_t material : 14;
 				size_t suppress_shadows : 1;
 				size_t suppress_wm : 1;
 				size_t sector : 16;
-#ifdef _M_X64
-				size_t dumb : 32;
-#endif
 			};
-
-#ifdef _M_X64
-			struct {
-				u32 dummy_low;
-				u32 dummy_high;
-			};
-#endif
 		};
 #ifdef _M_X64
 		TRI(TRI_DEPRECATED& oldTri)
@@ -85,7 +75,6 @@ namespace CDB
 			verts[1] = oldTri.verts[1];
 			verts[2] = oldTri.verts[2];
 			dummy = oldTri.dummy;
-			dumb = 0;
 		}
 
 		TRI()
@@ -102,7 +91,6 @@ namespace CDB
 			verts[1] = oldTri.verts[1];
 			verts[2] = oldTri.verts[2];
 			dummy = oldTri.dummy;
-			dumb = 0;
 			return *this;
 		}
 #endif
@@ -115,7 +103,7 @@ namespace CDB
 	typedef		void __stdcall	build_callback	(Fvector* V, int Vcnt, TRI* T, int Tcnt, void* params);
 
 	// Model definition
-	class		XRCDB_API		MODEL
+	class XRCDB_API MODEL
 	{
 		friend class COLLIDER;
 		enum
@@ -126,7 +114,6 @@ namespace CDB
 			S_forcedword		= u32(-1)
 		};
 	private:
-		xrCriticalSection		cs;
 		Opcode::OPCODE_Model*	tree;
 		u32						status;		// 0=ready, 1=init, 2=building
 
@@ -143,18 +130,7 @@ namespace CDB
 		IC int					get_verts_count	()	const	{ return verts_count;}
 		IC TRI*					get_tris		()			{ return tris;		}
 		IC int					get_tris_count	()	const	{ return tris_count;}
-		IC void					syncronize		()	const
-		{
-			if (S_READY!=status)
-			{
-				Log						("! WARNING: syncronized CDB::query");
-				xrCriticalSection*	C	= (xrCriticalSection*) &cs;
-				C->Enter				();
-				C->Leave				();
-			}
-		}
 
-		static	void			build_thread	(void*);
 		void build_internal(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc = nullptr, void* bcp = nullptr, const bool rebuildTrisRequired = true);
 		void build(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc = nullptr, void* bcp = nullptr, const bool rebuildTrisRequired = true);
 		u32						memory			();
@@ -165,23 +141,14 @@ namespace CDB
 	{
 		Fvector			verts	[3];
 		union	{
-			size_t dummy; // 4b
+			u32 dummy; // 4b
 			struct
 			{
 				size_t material : 14;
 				size_t suppress_shadows : 1;
 				size_t suppress_wm : 1;
 				size_t sector : 16;
-#ifdef _M_X64
-				u64	stub : 32;
-#endif
 			};
-#ifdef _M_X64
-			struct {
-				u32 dummy_h;
-				u32 dummy_l;
-			};
-#endif
 		};
 		int				id;
 		float			range;
@@ -189,7 +156,7 @@ namespace CDB
 	};
 
 	// Collider Options
-	enum {
+	enum ColliderOptions : u8 {
 		OPT_CULL		= (1<<0),
 		OPT_ONLYFIRST	= (1<<1),
 		OPT_ONLYNEAREST	= (1<<2),
@@ -200,9 +167,9 @@ namespace CDB
 	class XRCDB_API COLLIDER
 	{
 		// Ray data and methods
-		u32				ray_mode;
-		u32				box_mode;
-		u32				frustum_mode;
+		u8 ray_mode;
+		u8 box_mode;
+		u8 frustum_mode;
 
 		// Result management
 		xr_vector<RESULT>	rd;
@@ -210,19 +177,20 @@ namespace CDB
 		COLLIDER		();
 		~COLLIDER		();
 
-		ICF void		ray_options		(u32 f)	{	ray_mode = f;		}
+		ICF void		ray_options		(u8 f)	{	ray_mode = f;		}
 		void			ray_query		(const MODEL *m_def, const Fvector& r_start,  const Fvector& r_dir, float r_range = 10000.f);
 
-		ICF void		box_options		(u32 f)	{	box_mode = f;		}
+		ICF void		box_options		(u8 f)	{	box_mode = f;		}
 		void			box_query		(const MODEL *m_def, const Fvector& b_center, const Fvector& b_dim);
 
-		ICF void		frustum_options	(u32 f)	{	frustum_mode = f;	}
+		ICF void		frustum_options	(u8 f)	{	frustum_mode = f;	}
 		void			frustum_query	(const MODEL *m_def, const CFrustum& F);
 
+		ICF RESULT& r_index(size_t index) { return rd[index]; }
 		ICF RESULT*		r_begin			()	{	return &*rd.begin();		};
 		ICF RESULT*		r_end			()	{	return &*rd.end();			};
-		RESULT&			r_add			()	;
-		void			r_free			()	;
+		void r_add(const RESULT& result);
+		void r_free();
 		ICF size_t			r_count			()	{	return rd.size();			};
 		ICF void		r_clear			()	{	rd.clear_not_free();		};
 		ICF void		r_clear_compact	()	{	rd.clear_and_free();		};
@@ -237,10 +205,8 @@ namespace CDB
 		u32				VPack				( const Fvector& V, float eps);
 	public:
 		void			add_face			( const Fvector& v0, const Fvector& v1, const Fvector& v2, u16 material, u16 sector	);
-		void			add_face_D			( const Fvector& v0, const Fvector& v1, const Fvector& v2, size_t dummy );
 		void			add_face_packed		( const Fvector& v0, const Fvector& v1, const Fvector& v2, u16 material, u16 sector, float eps = EPS );
 		void			add_face_packed_D	( const Fvector& v0, const Fvector& v1, const Fvector& v2, size_t dummy, float eps = EPS );
-        void			remove_duplicate_T	( );
 		void			calc_adjacency		( xr_vector<u32>& dest		);
 
 		Fvector*		getV			()	{ return &*verts.begin();		}
@@ -249,47 +215,6 @@ namespace CDB
 		size_t			getTS			()	{ return faces.size();			}
 		void			clear			()	{ verts.clear(); faces.clear();	}
 	};
-
-	struct non_copyable {
-						non_copyable	() {}
-	private:
-						non_copyable	(const non_copyable &) {}
-						non_copyable	&operator=		(const non_copyable &) {}
-	};
-
-#pragma warning(push)
-#pragma warning(disable:4275)
-	const u32 clpMX = 24, clpMY=16, clpMZ=24;
-	class XRCDB_API CollectorPacked : public non_copyable {
-		typedef xr_vector<u32>		DWORDList;
-		typedef DWORDList::iterator	DWORDIt;
-
-		xr_vector<Fvector>	verts;
-		xr_vector<TRI>		faces;
-
-		Fvector				VMmin, VMscale;
-		DWORDList			VM		[clpMX+1][clpMY+1][clpMZ+1];
-		Fvector				VMeps;
-
-		u32					VPack		( const Fvector& V);
-	public:
-		CollectorPacked	(const Fbox &bb, int apx_vertices=5000, int apx_faces=5000);
-
-		//		__declspec(noinline) CollectorPacked &operator=	(const CollectorPacked &object)
-		//		{
-		//			verts
-		//		}
-
-		void				add_face	( const Fvector& v0, const Fvector& v1, const Fvector& v2, u16 material, u16 sector );
-		void				add_face_D	( const Fvector& v0, const Fvector& v1, const Fvector& v2, size_t dummy );
-		xr_vector<Fvector>& getV_Vec()	{ return verts;				}
-		Fvector*			getV()		{ return &*verts.begin();	}
-		size_t				getVS()		{ return verts.size();		}
-		TRI*				getT()		{ return &*faces.begin();	}
-		size_t				getTS()		{ return faces.size();		}
-		void				clear();
-	};
-#pragma warning(pop)
 };
 
 #pragma pack(pop)

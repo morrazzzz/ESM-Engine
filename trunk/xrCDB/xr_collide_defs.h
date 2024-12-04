@@ -66,14 +66,14 @@ namespace collide
 		rqtBoth = rqtObject | rqtStatic,
 		rqtDyn = rqtObject | rqtShape | rqtObstacle
 	};
-	struct			ray_defs
+	struct ray_defs
 	{
-		Fvector		start;
-		Fvector		dir;
-		float		range;
-		u32			flags;
-		rq_target	tgt;
-		ray_defs(const Fvector& _start, const Fvector& _dir, float _range, u32 _flags, rq_target _tgt)
+		Fvector	start;
+		Fvector dir;
+		float range;
+		u8 flags;
+		rq_target tgt;
+		ray_defs(const Fvector& _start, const Fvector& _dir, float _range, u8 _flags, rq_target _tgt)
 		{
 			start = _start;
 			dir = _dir;
@@ -148,13 +148,16 @@ namespace collide
 				}
 				return false;
 			}
-			results.push_back(rq_result());
-			rq_result& rq = results.back();
+			rq_result rq;
 			rq.range = _range;
 			rq.element = _element;
 			rq.O = _who;
+			results.emplace_back(rq);
 			return true;
 		}
+
+		rq_result& operator[](size_t index) { return results[index]; }
+
 		IC void append_result(rq_result& res)
 		{
 			if (!results.capacity())

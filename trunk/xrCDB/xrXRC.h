@@ -7,9 +7,9 @@ class XRCDB_API xrXRC
 {
 	CDB::COLLIDER CL;
 public:
-	IC void	ray_options(u32 f)
+	IC void	ray_options(u8 option)
 	{
-		CL.ray_options(f);
+		CL.ray_options(option);
 	}
 
 	IC void ray_query(const CDB::MODEL* m_def, const Fvector& r_start, const Fvector& r_dir, float r_range = 10000.f)
@@ -21,9 +21,9 @@ public:
 		CDB_RAY_TIMER(End());
 	}
 
-	IC void	box_options(u32 f)
+	IC void	box_options(u8 option)
 	{
-		CL.box_options(f);
+		CL.box_options(option);
 	}
 
 	IC void	box_query(const CDB::MODEL* m_def, const Fvector& b_center, const Fvector& b_dim)
@@ -35,9 +35,9 @@ public:
 		CDB_BOX_TIMER(End());
 	}
 
-	IC void frustum_options(u32 f)
+	IC void frustum_options(u8 option)
 	{
-		CL.frustum_options(f);
+		CL.frustum_options(option);
 	}
 
 	IC void frustum_query(const CDB::MODEL* m_def, const CFrustum& F)
@@ -48,6 +48,8 @@ public:
 
 		CDB_FRUSTUM_TIMER(End());
 	}
+
+	CDB::RESULT& operator[](size_t index) { return CL.r_index(index); }
 
 	IC CDB::RESULT* r_begin() { return CL.r_begin(); };
 	IC CDB::RESULT* r_end() { return CL.r_end(); };
