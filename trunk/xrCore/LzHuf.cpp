@@ -596,7 +596,48 @@ void Encode(void)  /* compression */
 	tim_size = textsize;
 }
 
-void Decode(void)  /* recover */
+void Decode()  /* recover */
+{
+	int  i, j, k, r, c;
+	unsigned int  count;
+
+	textsize = (fs._getb());
+	textsize |= (fs._getb() << 8);
+	textsize |= (fs._getb() << 16);
+	textsize |= (fs._getb() << 24);
+	if (textsize == 0)
+		return;
+
+	fs.Init_Output(textsize);
+
+	StartHuff();
+	for (i = 0; i < N - F; i++)
+		text_buf[i] = 0x20;
+	r = N - F;
+	for (count = 0; count < textsize; ) {
+		c = DecodeChar();
+		if (c < 256) {
+			fs._putb(c);
+			text_buf[r++] = (unsigned char)c;
+			r &= (N - 1);
+			count++;
+		}
+		else {
+			i = (r - DecodePosition() - 1) & (N - 1);
+			j = c - 255 + THRESHOLD;
+			for (k = 0; k < j; k++) {
+				c = text_buf[(i + k) & (N - 1)];
+				fs._putb(c);
+				text_buf[r++] = (unsigned char)c;
+				r &= (N - 1);
+				count++;
+			}
+		}
+	}
+	tim_size = count;
+}
+
+bool Decode(u32 sizeArchive)  /* recover */
 {
     int  i, j, k, r, c;
     unsigned int  count;
@@ -605,7 +646,8 @@ void Decode(void)  /* recover */
     textsize |= (fs._getb() << 8);
     textsize |= (fs._getb() << 16);
     textsize |= (fs._getb() << 24);
-    if (textsize == 0) return;
+	if (textsize == 0 || sizeArchive != static_cast<u32>(-1) && textsize > sizeArchive)
+		return false;
 	
 	fs.Init_Output(textsize);
 	
@@ -633,6 +675,8 @@ void Decode(void)  /* recover */
         }
     }
 	tim_size = count;
+
+	return true;
 }
 
 unsigned _writeLZ	(int hf, void* d, unsigned size)
@@ -662,12 +706,27 @@ void _decompressLZ	(u8** dest, unsigned* dest_sz, void* src, unsigned src_sz)
 {
 	u8*	start = (u8*) src;
 	fs.Init_Input(start,start+src_sz);
-    Decode();
+	Decode();
+
 	*dest		= fs.OutPointer();
 	*dest_sz	= fs.OutSize();
 }
 
-unsigned _readLZ	(int hf, void* &d, unsigned size)
+bool _decompressLZ(u8** dest, unsigned* dest_sz, void* src, unsigned src_sz, u32 sizeArchive)
+{
+	u8* start = (u8*)src;
+	fs.Init_Input(start, start + src_sz);
+
+	if (!Decode(sizeArchive))
+		return false;
+	
+	*dest = fs.OutPointer();
+	*dest_sz = fs.OutSize();
+
+	return true;
+}
+
+unsigned _readLZ(int hf, void* &d, unsigned size)
 {
 	// Read file in memory
 	u8*	data	= (u8*)xr_malloc(size);

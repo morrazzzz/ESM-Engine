@@ -559,12 +559,6 @@ BOOL IsOutOfVirtualMemory()
 
 #include "xr_ioc_cmd.h"
 
-typedef void DUMMY_STUFF (const void*,const u32&,void*);
-XRCORE_API DUMMY_STUFF	*g_temporary_stuff;
-
-#define TRIVIAL_ENCRYPTOR_DECODER
-#include "trivial_encryptor.h"
-
 //#define RUSSIAN_BUILD
 
 ENGINE_API	bool g_dedicated_server	= false;
@@ -672,8 +666,6 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 		int						sz = xr_strlen(fsgame_ltx_name);
 		sscanf					(strstr(lpCmdLine,fsgame_ltx_name)+sz,"%[^ ] ",fsgame);
 	}
-
-	g_temporary_stuff			= &trivial_encryptor::decode;
 	
 	compute_build_id			();
 	Core._initialize			("xray",NULL, TRUE, fsgame[0] ? fsgame : NULL);

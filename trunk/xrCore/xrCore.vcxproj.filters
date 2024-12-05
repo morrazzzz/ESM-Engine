@@ -491,6 +491,9 @@
     <ClInclude Include="xrStringUtils.h">
       <Filter>shared memory/string library</Filter>
     </ClInclude>
+    <ClInclude Include="TrivialArchiveEncryptor.h">
+      <Filter>FS</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="xrCore.rc">
