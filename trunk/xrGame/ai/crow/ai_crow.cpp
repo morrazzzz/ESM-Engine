@@ -281,7 +281,6 @@ void CAI_Crow::renderable_Render	()
 void CAI_Crow::shedule_Update		(u32 DT)
 {
 	float fDT				= float(DT)/1000.F;
-	spatial.type			&=~STYPE_VISIBLEFORAI;
 
 	inherited::shedule_Update(DT);
 
