@@ -467,17 +467,17 @@ IC void CBackend::ApplyVertexLayout()
 			);
 
 		//For SoC this normal. 
-#if 0
+#if DEBUG
 		if (!pLayout)
 		{
 			Msg("! Broken shader vertex layout");
-#ifdef DEBUG
 			Msg("! VS Name: [%s]", vs_name);
-#endif
 			Msg("! Semantic name: [%s]", decl->dx10_dcl_code[0].SemanticName);
 			Msg("! Semantic index: [%x]", decl->dx10_dcl_code[0].SemanticIndex);
 			Msg("! Format: [%x]", decl->dx10_dcl_code[0].Format);
 			Msg("! InputSlot [%x]", decl->dx10_dcl_code[0].InputSlot);
+
+			Msg("!! [%s]: Failed CreateInputLayout!!! Check log for detail info.", __FUNCTION__);
 		}
 #endif
 
