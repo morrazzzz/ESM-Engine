@@ -416,8 +416,8 @@ protected:
 	std::mutex PickipModeMutex;
 
 	void PickupModeUpdate();
-	void PickupInfoDraw(CObject* object);
-	void PickupModeUpdate_COD ();
+	void PickupInfoDraw(LPCSTR item_name, const Fmatrix& item_xform);
+	void PickupModeUpdate_COD(const CFrustum& frustum);
 
 	void __stdcall PickupModeUpdateAll();
 
@@ -668,9 +668,6 @@ protected:
 #endif
 		Fvector							m_AutoPickUp_AABB;
 		Fvector							m_AutoPickUp_AABB_Offset;
-
-		void							Check_for_AutoPickUp			();
-		void							SelectBestWeapon				(CObject* O);
 public:
 		void							SetWeaponHideState				(u32 State, bool bSet);
 		virtual CCustomOutfit*			GetOutfit() const;
@@ -739,9 +736,8 @@ public:
 
 private:
 	collide::rq_results			RQR;
-			BOOL				CanPickItem						(const CFrustum& frustum, const Fvector& from, CObject* item);
-			xr_vector<ISpatial*> ISpatialResultPickup{};
-
+	bool CanPickItem(const CFrustum& frustum, const Fvector& from, CObject* item);
+	xr_vector<ISpatial*> ISpatialResultPickup{};
 private:
 	CLocationManager				*m_location_manager;
 

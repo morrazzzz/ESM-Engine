@@ -91,19 +91,19 @@ ICF static bool info_trace_callback(collide::rq_result& result, LPVOID params)
 	return false;
 }
 
-BOOL CActor::CanPickItem(const CFrustum& frustum, const Fvector& from, CObject* item)
+bool CActor::CanPickItem(const CFrustum& frustum, const Fvector& from, CObject* item)
 {
-	BOOL	bOverlaped		= FALSE;
-	Fvector dir,to; 
-	item->Center			(to);
-	float range				= dir.sub(to,from).magnitude();
-	if (range>0.25f){
-		if (frustum.testSphere_dirty(to,item->Radius())){
-			dir.div						(range);
+	bool bOverlaped = false;
+	Fvector dir, to;
+	item->Center(to);
+	float range = dir.sub(to, from).magnitude();
+	if (range > 0.25f) {
+		if (frustum.testSphere_dirty(to, item->Radius())) {
+			dir.div(range);
 			collide::ray_defs			RD(from, dir, range, CDB::OPT_CULL, collide::rqtBoth);
-			VERIFY						(!fis_zero(RD.dir.square_magnitude()));
-			RQR.r_clear					();
-			Level().ObjectSpace.RayQuery(RQR,RD, info_trace_callback, &bOverlaped, NULL, item);
+			VERIFY(!fis_zero(RD.dir.square_magnitude()));
+			RQR.r_clear();
+			Level().ObjectSpace.RayQuery(RQR, RD, info_trace_callback, &bOverlaped, NULL, item);
 		}
 	}
 	return !bOverlaped;
@@ -114,28 +114,38 @@ void CActor::PickupModeUpdateAll()
 	if (g_Alive())
 	{
 		PickupModeUpdate();
-		PickupModeUpdate_COD();
+
+		CFrustum frustum;
+		frustum.CreateFromMatrix(Device.mFullTransform_saved, FRUSTUM_P_LRTB | FRUSTUM_P_FAR);
+
+		PickupModeUpdate_COD(frustum);
 
 		if (m_bPickupMode)
 		{
 			//. ????? GetNearest ?????
 			feel_touch_update(Position(), /*inventory().GetTakeDist()*/m_fPickupInfoRadius);
 
-			CFrustum frustum;
-			frustum.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB | FRUSTUM_P_FAR);
-
 			//. slow (ray-query test)
-			for (xr_vector<CObject*>::iterator it = feel_touch.begin(); it != feel_touch.end(); it++)
-				if (CanPickItem(frustum, Device.vCameraPosition, *it)) PickupInfoDraw(*it);
+			for (u32 i = 0; i < feel_touch.size(); i++)
+			{
+				if (auto item = smart_cast<CInventoryItem*>(feel_touch[i]))
+				{
+					if (CanPickItem(frustum, Device.vCameraPosition_saved, feel_touch[i]))
+						PickupInfoDraw(item->Name(), feel_touch[i]->XFORM());
+				}
+			}
 		}
 	}
 }
 
 void CActor::PickupModeUpdate()
 {
-	if(!m_bPickupMode) return;
-	if (GameID() != GAME_SINGLE) return;
+	if(!m_bPickupMode) 
+		return;
 
+//	if (inventory().m_pTarget && inventory().m_pTarget->object().getDestroy())
+//		return;
+		
 	//подбирание объекта
 	if(inventory().m_pTarget && inventory().m_pTarget->Useful() &&
 		m_pUsableObject && m_pUsableObject->nonscript_usable() &&
@@ -149,20 +159,16 @@ void CActor::PickupModeUpdate()
 }
 
 #include "../xr_3da/CameraBase.h"
-BOOL	g_b_COD_PickUpMode = TRUE;
-void	CActor::PickupModeUpdate_COD	()
+bool g_b_COD_PickUpMode = true;
+void CActor::PickupModeUpdate_COD(const CFrustum& frustum)
 {
 	if (Level().CurrentViewEntity() != this || !g_b_COD_PickUpMode) return;
 		
 	if (!g_Alive() || eacFirstEye != cam_active) 
 	{
-		std::lock_guard lock(PickipModeMutex);
 		CurrentGameUI()->UIMainIngameWnd->SetPickUpItem(NULL);
 		return;
 	};
-	
-	CFrustum frustum;
-	frustum.CreateFromMatrix(Device.mFullTransform,FRUSTUM_P_LRTB|FRUSTUM_P_FAR);
 
 	//---------------------------------------------------------------------------
 	ISpatialResultPickup.clear_not_free	();
@@ -205,9 +211,7 @@ void	CActor::PickupModeUpdate_COD	()
 
 	if(pNearestItem)
 	{
-		CFrustum					frustum;
-		frustum.CreateFromMatrix	(Device.mFullTransform,FRUSTUM_P_LRTB|FRUSTUM_P_FAR);
-		if (!CanPickItem(frustum,Device.vCameraPosition,&pNearestItem->object()))
+		if (!CanPickItem(frustum,Device.vCameraPosition_saved, &pNearestItem->object()))
 			pNearestItem = NULL;
 	}
 
@@ -217,10 +221,8 @@ void	CActor::PickupModeUpdate_COD	()
 				pNearestItem = NULL;
 	}
 
-	{
-		std::lock_guard lock(PickipModeMutex);
-		CurrentGameUI()->UIMainIngameWnd->SetPickUpItem(pNearestItem);
-	}
+	CurrentGameUI()->UIMainIngameWnd->SetPickUpItem(pNearestItem);
+	
 
 	if (pNearestItem && m_bPickupMode)
 	{
@@ -231,34 +233,27 @@ void	CActor::PickupModeUpdate_COD	()
 	}
 };
 
-void CActor::PickupInfoDraw(CObject* object)
+void CActor::PickupInfoDraw(LPCSTR item_name, const Fmatrix& item_xform)
 {
-	LPCSTR draw_str = NULL;
-	
-	CInventoryItem* item = smart_cast<CInventoryItem*>(object);
-//.	CInventoryOwner* inventory_owner = smart_cast<CInventoryOwner*>(object);
-//.	VERIFY(item || inventory_owner);
-	if(!item)		return;
+	Fmatrix	res;
+	res.mul(Device.mFullTransform_saved, item_xform);
+	Fvector4 v_res;
+	Fvector	shift;
 
-	Fmatrix			res;
-	res.mul			(Device.mFullTransform,object->XFORM());
-	Fvector4		v_res;
-	Fvector			shift;
+	shift.set(0, 0, 0);
 
-	draw_str = item->Name/*Complex*/();
-	shift.set(0,0,0);
-
-	res.transform(v_res,shift);
+	res.transform(v_res, shift);
 
 	if (v_res.z < 0 || v_res.w < 0)	return;
-	if (v_res.x < -1.f || v_res.x > 1.f || v_res.y<-1.f || v_res.y>1.f) return;
+	if (v_res.x < -1.f || v_res.x > 1.f || v_res.y < -1.f || v_res.y>1.f) return;
 
-	float x = (1.f + v_res.x)/2.f * (Device.dwWidth);
-	float y = (1.f - v_res.y)/2.f * (Device.dwHeight);
+	float x = (1.f + v_res.x) / 2.f * (Device.dwWidth);
+	float y = (1.f - v_res.y) / 2.f * (Device.dwHeight);
 
-    UI().Font().pFontLetterica16Russian->SetAligment	(CGameFont::alCenter);
-	UI().Font().pFontLetterica16Russian->SetColor		(PICKUP_INFO_COLOR);
-	UI().Font().pFontLetterica16Russian->Out			(x,y,draw_str);
+	std::lock_guard lock(PickipModeMutex);
+	UI().Font().pFontLetterica16Russian->SetAligment(CGameFont::alCenter);
+	UI().Font().pFontLetterica16Russian->SetColor(PICKUP_INFO_COLOR);
+	UI().Font().pFontLetterica16Russian->Out(x, y, item_name);
 }
 
 void CActor::feel_sound_new(CObject* who, int type, CSound_UserDataPtr user_data, const Fvector& Position, float power)

@@ -100,50 +100,6 @@ void CActor::SetWeaponHideState (u32 State, bool bSet)
 		u_EventSend	(P);
 	};
 }
-static	u16 BestWeaponSlots [] = {
-	RIFLE_SLOT		,		// 2
-	PISTOL_SLOT		,		// 1
-	GRENADE_SLOT	,		// 3
-	KNIFE_SLOT		,		// 0
-};
-void CActor::SelectBestWeapon	(CObject* O)
-{
-	if (!O) return;
-	if ( IsGameTypeSingle() ) return;
-	if (OnClient()) return;
-	//-------------------------------------------------
-	CWeapon* pWeapon = smart_cast<CWeapon*>(O);
-	CGrenade* pGrenade = smart_cast<CGrenade*>(O);
-	CArtefact* pArtefact = smart_cast<CArtefact*>(O);
-	CInventoryItem*	pIItem	= smart_cast<CInventoryItem*> (O);
-	bool NeedToSelectBestWeapon = false;
-	if ((pWeapon || pGrenade || pArtefact) && pIItem)
-	{
-		NeedToSelectBestWeapon = true;
-		if (GameID() == GAME_ARTEFACTHUNT)
-		{
-			if (pIItem->GetSlot() == PISTOL_SLOT || pIItem->GetSlot() == RIFLE_SLOT)
-			{
-				CInventoryItem* pIItemInSlot = inventory().ItemFromSlot(pIItem->GetSlot());
-				if (pIItemInSlot != NULL && pIItemInSlot != pIItem)				
-					NeedToSelectBestWeapon = false;
-			}
-		}
-	}
-	if (!NeedToSelectBestWeapon) return;
-	//-------------------------------------------------
-	for (int i=0; i<4; i++)
-	{
-		if (inventory().m_slots[BestWeaponSlots[i]].m_pIItem)
-		{
-			if (inventory().GetActiveSlot() != BestWeaponSlots[i])
-			{
-				inventory().Activate(BestWeaponSlots[i]);
-			}
-			return;
-		};
-	};
-}
 
 #define ENEMY_HIT_SPOT	"mp_hit_sector_location"
 BOOL	g_bShowHitSectors	= TRUE;

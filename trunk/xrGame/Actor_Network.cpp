@@ -1498,10 +1498,6 @@ BOOL CActor::net_SaveRelevant()
 	return TRUE;
 }
 
-void	CActor::Check_for_AutoPickUp()
-{
-}
-
 void				CActor::SetHitInfo				(CObject* who, CObject* weapon, s16 element, Fvector Pos, Fvector Dir)
 {
 	m_iLastHitterID = (who!= NULL) ? who->ID() : u16(-1);
