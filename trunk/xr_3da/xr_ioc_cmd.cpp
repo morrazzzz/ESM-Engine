@@ -525,6 +525,39 @@ public:
 	}
 };
 
+#ifdef OPTICK_ENABLE
+class CCC_CaptureOptick : public IConsole_Command
+{
+	bool ProfileStarting = false;
+public:
+	CCC_CaptureOptick(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; }
+	void Execute(LPCSTR args) override
+	{
+		if (!ProfileStarting)
+		{
+			
+			OPTICK_START_CAPTURE();
+			ProfileStarting = true;
+			Msg("~ [Console]: Optick profile: start");
+			return;
+		}
+
+		OPTICK_STOP_CAPTURE();
+		Msg("~ [Console]: Optick profile: stop");
+
+#pragma todo("Create in fsgame.ltx for opticks capture save. Need save in userdata!!")
+		string512 string;
+		strconcat(sizeof string, string, xr_strlen(args) > 0 ? args : "new_capture", ".opt");
+
+		OPTICK_SAVE_CAPTURE(string);
+
+		Msg("~ [Console]: Optick profile: save capture: [%s]", string);
+
+		ProfileStarting = false;
+	}
+};
+#endif
+
 //-----------------------------------------------------------------------
 ENGINE_API float	psHUD_FOV=0.45f;
 
@@ -688,6 +721,9 @@ if(strstr(Core.Params,"designer"))
 
     CMD1(CCC_FindInConsole, "find_in_console")
 
+#ifdef OPTICK_ENABLE
+	CMD1(CCC_CaptureOptick, "optick_capture")
+#endif
 	extern int g_svTextConsoleUpdateRate;
 	CMD4(CCC_Integer, "sv_console_update_rate", &g_svTextConsoleUpdateRate, 1, 100);
 

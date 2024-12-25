@@ -187,6 +187,29 @@
 #include "xrDebug.h"
 #include "vector.h"
 
+#define OPTICK_ENABLE
+#ifdef OPTICK_ENABLE
+#include <optick.h>
+#pragma comment(lib, "OptickCore.lib")
+#    define PROF_THREAD(Name) OPTICK_THREAD(Name)
+#    define PROF_FRAME(Name) OPTICK_FRAME(Name)
+#    define PROF_EVENT(Name) OPTICK_EVENT(Name)
+#    define PROF_EVENT_DYNAMIC(...)     static ::Optick::EventDescription* OPTICK_CONCAT(autogen_description_, __LINE__) = nullptr; \
+                             OPTICK_CONCAT(autogen_description_, __LINE__) = ::Optick::CreateDescription(OPTICK_FUNC, __FILE__, __LINE__, ##__VA_ARGS__); \
+                             ::Optick::Event OPTICK_CONCAT(autogen_event_, __LINE__)( *(OPTICK_CONCAT(autogen_description_, __LINE__)) ); 
+#    define PROF_TAG(Name, ...) OPTICK_TAG(Name, __VA_ARGS__)
+//#    define START_PROFILE(a) { PROF_EVENT(a)
+//#    define STOP_PROFILE        }
+#else
+# define PROF_THREAD(Name) Name;
+# define PROF_FRAME(Name) Name;
+# define PROF_EVENT(Name) Name;
+
+# define PROF_EVENT_DYNAMIC(...) {};
+# define START_PROFILE(a) {a;
+# define STOP_PROFILE        }
+#endif
+
 #include "clsid.h"
 #include "xrSyncronize.h"
 #include "xrMemory.h"

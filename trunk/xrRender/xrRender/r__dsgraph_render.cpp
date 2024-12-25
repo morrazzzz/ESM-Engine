@@ -685,6 +685,9 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 
 	if (_dynamic)
 	{
+#if RENDER != R_R1
+		PIX_EVENT(FRUSTUM_DYNAMIC_SCENE);
+#endif
 		set_Object						(0);
 
 		// Traverse object database

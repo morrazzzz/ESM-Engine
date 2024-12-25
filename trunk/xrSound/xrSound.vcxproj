@@ -179,7 +179,7 @@ copy /Y "$(SolutionDir)\..\Resources\Dlls\soft_oal_x86.dll" "$(OutDir)soft_oal.d
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir);../3rd party/libogg/include;../3rd party/libvorbis/include;../3rd party/OpenAL/include/AL</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);../3rd party/libogg/include;../3rd party/libvorbis/include;../3rd party/OpenAL/include/AL;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
@@ -255,7 +255,7 @@ copy /Y "$(SolutionDir)\..\Resources\Dlls\soft_oal_x86.dll" "$(OutDir)soft_oal.d
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir);../3rd party/libogg/include;../3rd party/libvorbis/include;../3rd party/OpenAL/include/AL</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);../3rd party/libogg/include;../3rd party/libvorbis/include;../3rd party/OpenAL/include/AL;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
@@ -320,7 +320,7 @@ copy /Y "$(SolutionDir)\..\Resources\Dlls\soft_oal_x86.dll" "$(OutDir)soft_oal.d
       </BrowseInformation>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir);../3rd party/libogg/include;../3rd party/libvorbis/include;../3rd party/OpenAL/include/AL</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);../3rd party/libogg/include;../3rd party/libvorbis/include;../3rd party/OpenAL/include/AL;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>

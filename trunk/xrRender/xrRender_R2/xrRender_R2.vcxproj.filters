@@ -160,6 +160,9 @@
     <Filter Include="ColorMap">
       <UniqueIdentifier>{c0d30526-a11d-4d77-b097-e850d67166f8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Debug">
+      <UniqueIdentifier>{b378e030-abc9-4198-afe6-642718d34fdf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -638,6 +641,9 @@
     </ClInclude>
     <ClInclude Include="blender_ssao.h">
       <Filter>Shading templates</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\Debug\dxPixEventWrapper.h">
+      <Filter>Debug</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1138,6 +1144,9 @@
     </ClCompile>
     <ClCompile Include="r2_rendertarget_phase_ssao.cpp">
       <Filter>Core_Target</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\Debug\dxPixEventWrapper.cpp">
+      <Filter>Debug</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

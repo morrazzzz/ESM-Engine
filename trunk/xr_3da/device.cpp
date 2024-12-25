@@ -137,6 +137,7 @@ void CRenderDevice::End		(void)
 
 volatile u32	mt_Thread_marker		= 0x12345678;
 void 			mt_Thread	(void *ptr)	{
+	PROF_THREAD("XRay Secondary thread");
 	while (true) {
 		// waiting for Device permission to execute
 		Device.mt_csEnter.Enter	();
@@ -151,10 +152,17 @@ void 			mt_Thread	(void *ptr)	{
  
 		Discord.UpdateSDK();
 
-		for (u32 pit=0; pit<Device.seqParallel.size(); pit++)
-			Device.seqParallel[pit]	();
-		Device.seqParallel.clear_not_free	();
-		Device.seqFrameMT.Process	(rp_Frame);
+		{
+			PROF_EVENT("seqParallel");
+			for (u32 pit = 0; pit < Device.seqParallel.size(); pit++)
+				Device.seqParallel[pit]();
+			Device.seqParallel.clear_not_free();
+		}
+
+		{
+			PROF_EVENT("pr_Frame");
+			Device.seqFrameMT.Process(rp_Frame);
+		}
 
 		// now we give control to device - signals that we are ended our work
 		Device.mt_csEnter.Leave	();
@@ -336,6 +344,8 @@ void CRenderDevice::Run			()
 	g_bLoaded		= FALSE;
 	Log				("Starting engine...");
 	thread_name		("X-RAY Primary thread");
+
+	PROF_THREAD("XRay Primary thread");
 
 	// Startup timers and calculate timer delta
 	dwTimeGlobal				= 0;

@@ -81,6 +81,8 @@ void CRender::render_sun_cascades ( )
 
 void CRender::prepart_render_sun_cascade(light& sun, u32 cascade_ind)
 {
+	PIX_EVENT(PREPART_RENDER_SUN_CASCADE);
+
 	// calculate view-frustum bounds in world space
 	Fmatrix	ex_project, ex_full, ex_full_inverse;
 	{
@@ -97,6 +99,7 @@ void CRender::prepart_render_sun_cascade(light& sun, u32 cascade_ind)
 	CSector* cull_sector;
 	Fmatrix						cull_xform;
 	{
+		PIX_EVENT(CALC_RENDER_SUN_CASCADE)
 		FPU::m64r();
 		// Lets begin from base frustum
 		Fmatrix		fullxform_inv = ex_full_inverse;
@@ -298,6 +301,7 @@ void CRender::prepart_render_sun_cascade(light& sun, u32 cascade_ind)
 		FPU::m24r();
 	}
 
+	PIX_EVENT("SMAP_RENDER_SUN_CASCADES")
 	// Begin SMAP-render
 	{
 		bool	bSpecialFull = mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size();
@@ -358,17 +362,23 @@ void CRender::render_sun_cascade(light& sun_light, u32 cascade_ind)
 		PIX_EVENT(SE_SUN_NEAR_MINMAX_GENERATE);
 		Target->create_minmax_SM();
 	}
-
-	PIX_EVENT(cascade_ind);
 #endif
 
 	if (cascade_ind == 0)
+	{
+		PIX_EVENT(SE_SUN_NEAR);
 		Target->accum_direct_cascade(sun_light, SE_SUN_NEAR, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind].bias);
+	}
+	else if (cascade_ind < m_sun_cascades.size() - 1)
+	{
+		PIX_EVENT(SE_SUN_MIDDLE);
+		Target->accum_direct_cascade(sun_light, SE_SUN_MIDDLE, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind - 1].xform, m_sun_cascades[cascade_ind].bias);
+	}
 	else
-		if (cascade_ind < m_sun_cascades.size() - 1)
-			Target->accum_direct_cascade(sun_light, SE_SUN_MIDDLE, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind - 1].xform, m_sun_cascades[cascade_ind].bias);
-		else
-			Target->accum_direct_cascade(sun_light, SE_SUN_FAR, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind - 1].xform, m_sun_cascades[cascade_ind].bias);
+	{
+		PIX_EVENT(SE_SUN_FAR);
+		Target->accum_direct_cascade(sun_light, SE_SUN_FAR, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind - 1].xform, m_sun_cascades[cascade_ind].bias);
+	}
 
 	// Restore XForms
 	RCache.set_xform_world(Fidentity);
