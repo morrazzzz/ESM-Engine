@@ -234,7 +234,8 @@ void CRender::Render		()
 	// HOM
 	ViewBase.CreateFromMatrix					(Device.mFullTransform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
 	View										= 0;
-	if (!ps_r2_ls_flags.test(R2FLAG_EXP_MT_CALC))	{
+	if (!ps_r2_flags_parallel.test(ParallelRenderFlags::R2FLAG_MT_HOM))	
+	{
 		HOM.Enable									();
 		HOM.Render									(ViewBase);
 	}

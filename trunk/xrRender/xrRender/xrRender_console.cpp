@@ -140,7 +140,6 @@ int			ps_r3_dyn_wet_surf_sm_res	= 256;				// 256
 Flags32		ps_r2_ls_flags				= { R2FLAG_SUN  
 	| R2FLAG_EXP_DONT_TEST_UNSHADOWED 
 	| R2FLAG_USE_NVSTENCIL | R2FLAG_EXP_SPLIT_SCENE 
-	| R2FLAG_EXP_MT_CALC 
 	| R2FLAG_DETAIL_BUMP 
 	//| R2FLAG_DOF
 	| R2FLAG_SOFT_PARTICLES 
@@ -156,6 +155,8 @@ Flags32		ps_r2_ls_flags_ext = { 0
 		/*R2FLAGEXT_SSAO_OPT_DATA |*/ /*R2FLAGEXT_SSAO_HALF_DATA*/
 		/* | R2FLAGEXT_ENABLE_TESSELLATION*/
 	};
+
+Flags32 ps_r2_flags_parallel = { ParallelRenderFlags::R2FLAG_MT_HOM | ParallelRenderFlags::R2FLAG_MT_DETAILS };
 
 float		ps_r2_df_parallax_h			= 0.02f;
 float		ps_r2_df_parallax_range		= 75.f;
@@ -675,7 +676,6 @@ void		xrRender_initconsole	()
 
 #ifdef DEBUG
 	CMD3(CCC_Mask,		"r2_use_nvdbt",			&ps_r2_ls_flags,			R2FLAG_USE_NVDBT);
-	CMD3(CCC_Mask,		"r2_mt",				&ps_r2_ls_flags,			R2FLAG_EXP_MT_CALC);
 #endif // DEBUG
 
 	CMD3(CCC_Mask,		"r2_sun",				&ps_r2_ls_flags,			R2FLAG_SUN		);
@@ -709,6 +709,9 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float,		"r2_gi_refl",			&ps_r2_GI_refl,				EPS_L,	0.99f	);
 
 	CMD4(CCC_Integer,	"r2_wait_sleep",		&ps_r2_wait_sleep,			0,		1		);
+
+	CMD3(CCC_Mask, "r2_mt_hom", &ps_r2_flags_parallel, ParallelRenderFlags::R2FLAG_MT_HOM);
+	CMD3(CCC_Mask, "r2_mt_details", &ps_r2_flags_parallel, ParallelRenderFlags::R2FLAG_MT_DETAILS);
 
 #ifdef DEBUG
 	CMD4(CCC_Integer,	"r2_dhemi_count",		&ps_r2_dhemi_count,			4,		25		);

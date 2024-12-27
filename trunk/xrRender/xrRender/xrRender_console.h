@@ -79,6 +79,7 @@ extern ECORE_API	float		ps_r2_tf_Mipbias;
 // R2-specific
 extern ECORE_API Flags32		ps_r2_ls_flags;				// r2-only
 extern ECORE_API Flags32		ps_r2_ls_flags_ext;
+extern Flags32 ps_r2_flags_parallel;
 extern ECORE_API float			ps_r2_df_parallax_h;		// r2-only
 extern ECORE_API float			ps_r2_df_parallax_range;	// r2-only
 extern ECORE_API float			ps_r2_gmaterial;			// r2-only
@@ -157,28 +158,32 @@ enum
 	R2FLAG_USE_NVDBT			= (1<<15),
 	R2FLAG_USE_NVSTENCIL		= (1<<16),
 
-	R2FLAG_EXP_MT_CALC			= (1<<17),
+	R2FLAG_SOFT_WATER			= (1<<17),	//	Igor: need restart
+	R2FLAG_SOFT_PARTICLES		= (1<<18),	//	Igor: need restart
+	R2FLAG_VOLUMETRIC_LIGHTS	= (1<<19),
+	R2FLAG_STEEP_PARALLAX		= (1<<20),
+	R2FLAG_DOF                  = (1 << 21),
 
-	R2FLAG_SOFT_WATER			= (1<<18),	//	Igor: need restart
-	R2FLAG_SOFT_PARTICLES		= (1<<19),	//	Igor: need restart
-	R2FLAG_VOLUMETRIC_LIGHTS	= (1<<20),
-	R2FLAG_STEEP_PARALLAX		= (1<<21),
-	R2FLAG_DOF                  = (1 << 22),
+	R2FLAG_MBLUR = 1 << 22,
 
-	R2FLAG_MBLUR = 1 << 23,
+	R1FLAG_DETAIL_TEXTURES		= (1<<23),
 
-	R1FLAG_DETAIL_TEXTURES		= (1<<24),
+	R2FLAG_DETAIL_BUMP			= (1<<24),
 
-	R2FLAG_DETAIL_BUMP			= (1<<25),
+	R3FLAG_DYN_WET_SURF			= (1<<25),
+	R3FLAG_VOLUMETRIC_SMOKE		= (1<<26),
 
-	R3FLAG_DYN_WET_SURF			= (1<<26),
-	R3FLAG_VOLUMETRIC_SMOKE		= (1<<27),
-
-	R3FLAG_MSAA_HYBRID			= (1<<28),
-	R3FLAG_MSAA_OPT				= (1<<29),
-	R3FLAG_GBUFFER_OPT			= (1<<30),
+	R3FLAG_MSAA_HYBRID			= (1<<27),
+	R3FLAG_MSAA_OPT				= (1<<28),
+	R3FLAG_GBUFFER_OPT			= (1<<29),
 	//R3FLAG_USE_DX10_1			= (1<<32),
 	//R3FLAG_MSAA_ALPHATEST		= (1<<31),
+};
+
+enum ParallelRenderFlags: u32
+{
+	R2FLAG_MT_HOM = 1 << 0,
+	R2FLAG_MT_DETAILS = 1 << 1,
 };
 
 enum
