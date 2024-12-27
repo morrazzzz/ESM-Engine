@@ -49,27 +49,6 @@ public:
 	R_dsgraph::mapSorted_T										mapHUDEmissive;
 #endif
 
-	// Runtime structures 
-	xr_vector<R_dsgraph::mapNormalVS::TNode*,render_alloc<R_dsgraph::mapNormalVS::TNode*> >				nrmVS;
-#if defined(USE_DX10) || defined(USE_DX11)
-	xr_vector<R_dsgraph::mapNormalGS::TNode*,render_alloc<R_dsgraph::mapNormalGS::TNode*> >				nrmGS;
-#endif	//	USE_DX10
-	xr_vector<R_dsgraph::mapNormalPS::TNode*,render_alloc<R_dsgraph::mapNormalPS::TNode*> >				nrmPS;
-	xr_vector<R_dsgraph::mapNormalCS::TNode*,render_alloc<R_dsgraph::mapNormalCS::TNode*> >				nrmCS;
-	xr_vector<R_dsgraph::mapNormalStates::TNode*,render_alloc<R_dsgraph::mapNormalStates::TNode*> >		nrmStates;
-	xr_vector<R_dsgraph::mapNormalTextures::TNode*,render_alloc<R_dsgraph::mapNormalTextures::TNode*> >	nrmTextures;
-	xr_vector<R_dsgraph::mapNormalTextures::TNode*,render_alloc<R_dsgraph::mapNormalTextures::TNode*> >	nrmTexturesTemp;
-
-	xr_vector<R_dsgraph::mapMatrixVS::TNode*,render_alloc<R_dsgraph::mapMatrixVS::TNode*> >				matVS;
-#if defined(USE_DX10) || defined(USE_DX11)
-	xr_vector<R_dsgraph::mapMatrixGS::TNode*,render_alloc<R_dsgraph::mapMatrixGS::TNode*> >				matGS;
-#endif	//	USE_DX10
-	xr_vector<R_dsgraph::mapMatrixPS::TNode*,render_alloc<R_dsgraph::mapMatrixPS::TNode*> >				matPS;
-	xr_vector<R_dsgraph::mapMatrixCS::TNode*,render_alloc<R_dsgraph::mapMatrixCS::TNode*> >				matCS;
-	xr_vector<R_dsgraph::mapMatrixStates::TNode*,render_alloc<R_dsgraph::mapMatrixStates::TNode*> >		matStates;
-	xr_vector<R_dsgraph::mapMatrixTextures::TNode*,render_alloc<R_dsgraph::mapMatrixTextures::TNode*> >	matTextures;
-	xr_vector<R_dsgraph::mapMatrixTextures::TNode*,render_alloc<R_dsgraph::mapMatrixTextures::TNode*> >	matTexturesTemp;
-
 	xr_vector<R_dsgraph::_LodItem,render_alloc<R_dsgraph::_LodItem> >	lstLODs		;
 	xr_vector<int,render_alloc<int> >									lstLODgroups;
 	xr_vector<ISpatial* /**,render_alloc<ISpatial*>/**/>				lstRenderables;
@@ -108,20 +87,6 @@ public:
 
 	void		r_dsgraph_destroy()
 	{
-		nrmVS.clear				();
-		nrmPS.clear				();
-		nrmCS.clear				();
-		nrmStates.clear			();
-		nrmTextures.clear		();
-		nrmTexturesTemp.clear	();
-
-		matVS.clear				();
-		matPS.clear				();
-		matCS.clear				();
-		matStates.clear			();
-		matTextures.clear		();
-		matTexturesTemp.clear	();
-
 		lstLODs.clear			();
 		lstLODgroups.clear		();
 		lstRenderables.clear	();
