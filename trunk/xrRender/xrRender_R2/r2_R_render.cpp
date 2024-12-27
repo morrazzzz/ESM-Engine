@@ -255,15 +255,12 @@ void CRender::Render		()
 	Device.Statistic->RenderDUMP_Wait_S.Begin	();
 	if (1)
 	{
-		CTimer	T;							T.Start	();
-		BOOL	result						= FALSE;
-		HRESULT	hr							= S_FALSE;
-		while	((hr=q_sync_point[q_sync_count]->GetData	(&result,sizeof(result),D3DGETDATA_FLUSH))==S_FALSE) {
-			if (!SwitchToThread())			Sleep(ps_r2_wait_sleep);
-			if (T.GetElapsed_ms() > 500)	{
-				result	= FALSE;
-				break;
-			}
+		PIX_EVENT(CPUWaitGPU);
+		BOOL	result = FALSE;
+		HRESULT	hr = S_FALSE;
+		while ((hr = q_sync_point[q_sync_count]->GetData(&result, sizeof(result), D3DGETDATA_FLUSH)) == S_FALSE)
+		{
+			//morrazzzz: The best thing to do is to leave it empty, and that's how it will be.
 		}
 	}
 	Device.Statistic->RenderDUMP_Wait_S.End		();
