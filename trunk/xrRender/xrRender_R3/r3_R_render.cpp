@@ -190,31 +190,27 @@ void CRender::render_menu	()
 	RCache.Render					(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
 }
 
-extern u32 g_r;
-void CRender::Render		()
+void CRender::RenderMenu()
 {
-	PIX_EVENT(CRender_Render);
-
-	g_r						= 1;
-	VERIFY					(0==mapDistort.size());
+	PIX_EVENT(RENDER_MENU);
 
 	rmNormal();
 
-	bool	_menu_pp		= g_pGamePersistent?g_pGamePersistent->OnRenderPPUI_query():false;
-	if (_menu_pp)			{
-		render_menu			()	;
-		return					;
-	};
-
-	IMainMenu*	pMainMenu = g_pGamePersistent?g_pGamePersistent->m_pMainMenu:0;
-	bool	bMenu = pMainMenu?pMainMenu->CanSkipSceneRendering():false;
-
-	if( !(g_pGameLevel && g_hud)
-		|| bMenu)	
-	{
-		Target->u_setrt				( Device.dwWidth,Device.dwHeight,HW.pBaseRT,NULL,NULL,HW.pBaseZB);
+	bool	_menu_pp = g_pGamePersistent ? g_pGamePersistent->OnRenderPPUI_query() : false;
+	if (_menu_pp) {
+		render_menu();
 		return;
-	}
+	};
+}
+
+extern u32 g_r;
+void CRender::RenderFrame()
+{
+	PIX_EVENT(RENDER_FRAME);
+
+	g_r	= 1;
+
+	rmNormal();
 
 	if( m_bFirstFrameAfterReset )
 	{
@@ -487,8 +483,6 @@ void CRender::Render		()
 		PIX_EVENT(DEFER_LIGHT_COMBINE);
 		Target->phase_combine					();
 	}
-
-	VERIFY	(0==mapDistort.size());
 }
 
 void CRender::render_forward				()

@@ -542,8 +542,19 @@ void	CRender::rmNormal	()
 	CHK_DX				(HW.pDevice->SetViewport(&VP));
 }
 
+//#define TEST_NEW_MENU_R1
+
+void CRender::RenderMenu()
+{
+#ifdef TEST_NEW_MENU_R1
+	VERIFY2(false, "Not implemented for DX9 new menu.");
+#else
+	RenderFrame(); //???
+#endif
+}
+
 extern u32 g_r;
-void	CRender::Render		()
+void CRender::RenderFrame()
 {
 	if( m_bFirstFrameAfterReset )
 	{

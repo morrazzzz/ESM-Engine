@@ -184,22 +184,21 @@ void CRender::render_menu	()
 	RCache.Render					(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
 }
 
+void CRender::RenderMenu()
+{
+	PIX_EVENT(RENDER_MENU);
+
+	bool	_menu_pp = g_pGamePersistent ? g_pGamePersistent->OnRenderPPUI_query() : false;
+	if (_menu_pp) {
+		render_menu();
+		return;
+	};
+}
+
 extern u32 g_r;
-void CRender::Render		()
+void CRender::RenderFrame()
 {
 	g_r						= 1;
-	VERIFY					(0==mapDistort.size());
-
-	bool	_menu_pp		= g_pGamePersistent?g_pGamePersistent->OnRenderPPUI_query():false;
-	if (_menu_pp)			{
-		render_menu			()	;
-		return					;
-	};
-
-	IMainMenu*	pMainMenu = g_pGamePersistent?g_pGamePersistent->m_pMainMenu:0;
-	bool	bMenu = pMainMenu?pMainMenu->CanSkipSceneRendering():false;
-
-	if( !(g_pGameLevel && g_hud) || bMenu)	return;
 
 	if( m_bFirstFrameAfterReset )
 	{
@@ -423,7 +422,6 @@ void CRender::Render		()
 
 	// Postprocess
 	Target->phase_combine					();
-	VERIFY	(0==mapDistort.size());
 }
 
 void CRender::render_forward				()

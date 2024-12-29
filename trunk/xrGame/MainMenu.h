@@ -64,7 +64,6 @@ public:
 
 	virtual void	Activate						(bool bActive); 
 	virtual	bool	IsActive						(); 
-	virtual	bool	CanSkipSceneRendering			(); 
 	
 	virtual bool	IgnorePause						()	{return true;}
 
