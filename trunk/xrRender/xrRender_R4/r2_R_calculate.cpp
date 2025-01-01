@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "../../xrEngine/customhud.h"
+#include "../../xr_3da/customhud.h"
 
 float				g_fSCREEN		;
 
@@ -30,9 +30,6 @@ void CRender::Calculate		()
 	if (!vLastCameraPos.similar(Device.vCameraPosition,EPS_S)) 
 	{
 		CSector* pSector		= (CSector*)detectSector(Device.vCameraPosition);
-		if (pSector && (pSector!=pLastSector))
-			g_pGamePersistent->OnSectorChanged( translateSector(pSector) );
-
 		if (0==pSector) pSector = pLastSector;
 		pLastSector = pSector;
 		vLastCameraPos.set(Device.vCameraPosition);

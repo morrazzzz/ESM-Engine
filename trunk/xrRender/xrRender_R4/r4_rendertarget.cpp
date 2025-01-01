@@ -18,7 +18,7 @@
 
 #include "../xrRender/dxRenderDeviceRender.h"
 
-#include <d3dx/D3DX10Tex.h>
+#include <D3DX10Tex.h>
 
 void	CRenderTarget::u_setrt			(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, ID3DDepthStencilView* zb)
 {
@@ -873,8 +873,8 @@ CRenderTarget::CRenderTarget		()
 			//for (int it=0; it<TEX_jitter_count; it++)	{
 			//	R_CHK						(t_noise_surf[it]->UnlockRect(0));
 			//}
-
-			for (int it=0; it<TEX_jitter_count-1; it++)
+			int it = 0;
+			for (; it<TEX_jitter_count-1; it++)
 			{
 				string_path					name;
 				xr_sprintf						(name,"%s%d",r2_jitter,it);

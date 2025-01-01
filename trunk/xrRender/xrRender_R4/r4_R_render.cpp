@@ -1,8 +1,8 @@
 #include "stdafx.h"
-#include "../../xrEngine/igame_persistent.h"
+#include "../../xr_3da/igame_persistent.h"
 #include "../xrRender/FBasicVisual.h"
-#include "../../xrEngine/customhud.h"
-#include "../../xrEngine/xr_object.h"
+#include "../../xr_3da/customhud.h"
+#include "../../xr_3da/xr_object.h"
 
 #include "../xrRender/QueryHelper.h"
 
@@ -13,12 +13,13 @@ IC	bool	pred_sp_sort	(ISpatial*	_1, ISpatial* _2)
 	return	d1<d2	;
 }
 
-void CRender::render_main	(Fmatrix&	m_ViewProjection, bool _fportals)
+void CRender::render_main	(Fmatrix& m_ViewProjection, bool first_calc)
 {
 	PIX_EVENT(render_main);
 //	Msg						("---begin");
 	marker					++;
 
+	CObject* O = g_pGameLevel->CurrentViewEntity();
 	// Calculate sector(s) and their objects
 	if (pLastSector)		{
 		//!!!
@@ -38,26 +39,29 @@ void CRender::render_main	(Fmatrix&	m_ViewProjection, bool _fportals)
 			std::sort			(lstRenderables.begin(),lstRenderables.end(),pred_sp_sort);
 
 			// Determine visibility for dynamic part of scene
-			set_Object							(0);
-			u32 uID_LTRACK						= 0xffffffff;
-			if (phase==PHASE_NORMAL)			{
-				uLastLTRACK	++;
-				if (lstRenderables.size())		uID_LTRACK	= uLastLTRACK%lstRenderables.size();
+			if (phase==PHASE_NORMAL)			
+			{
+				u32 uID_LTRACK = 0xffffffff;
+				uLastLTRACK++;
 
 				// update light-vis for current entity / actor
-				CObject*	O					= g_pGameLevel->CurrentViewEntity();
-				if (O)		{
-					CROS_impl*	R					= (CROS_impl*) O->ROS();
-					if (R)		R->update			(O);
+				if (O) {
+					CROS_impl* R = (CROS_impl*)O->ROS();
+					R->update(O);
 				}
 
 				// update light-vis for selected entity
 				// track lighting environment
 				if (lstRenderables.size())		{
+					uID_LTRACK = uLastLTRACK % lstRenderables.size();
+
 					IRenderable*	renderable		= lstRenderables[uID_LTRACK]->dcast_Renderable	();
-					if (renderable)	{
-						CROS_impl*		T = (CROS_impl*)renderable->renderable_ROS	();
-						if (T)			T->update	(renderable);
+					if (renderable) {
+						CROS_impl* T = (CROS_impl*)renderable->renderable_ROS();
+
+						if (T)
+							T->update(renderable);
+
 					}
 				}
 			}
@@ -128,20 +132,15 @@ void CRender::render_main	(Fmatrix&	m_ViewProjection, bool _fportals)
 					if (!bVisible)					break;	// exit loop on frustums
 
 					// Rendering
-					set_Object						(renderable);
 					renderable->renderable_Render	();
-					set_Object						(0);
 				}
 				break;	// exit loop on frustums
 			}
 		}
-		if (g_pGameLevel && (phase==PHASE_NORMAL))	g_hud->Render_Last();		// HUD
 	}
-	else
-	{
-		set_Object									(0);
-		if (g_pGameLevel && (phase==PHASE_NORMAL))	g_hud->Render_Last();		// HUD
-	}
+
+	if (first_calc && g_hud->NeedRenderHUD(O))
+		g_hud->Render_Last(O); // HUD
 }
 
 void CRender::render_menu	()
@@ -190,31 +189,28 @@ void CRender::render_menu	()
 	RCache.Render					(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
 }
 
-extern u32 g_r;
-void CRender::Render		()
+void CRender::RenderMenu()
 {
-	PIX_EVENT(CRender_Render);
-
-	g_r						= 1;
-	VERIFY					(0==mapDistort.size());
+	PIX_EVENT(RENDER_MENU);
 
 	rmNormal();
 
-	bool	_menu_pp		= g_pGamePersistent?g_pGamePersistent->OnRenderPPUI_query():false;
-	if (_menu_pp)			{
-		render_menu			()	;
-		return					;
-	};
-
-	IMainMenu*	pMainMenu = g_pGamePersistent?g_pGamePersistent->m_pMainMenu:0;
-	bool	bMenu = pMainMenu?pMainMenu->CanSkipSceneRendering():false;
-
-	if( !(g_pGameLevel && g_hud)
-		|| bMenu)	
+	if (g_pGamePersistent)
 	{
-		Target->u_setrt				( Device.dwWidth,Device.dwHeight,HW.pBaseRT,NULL,NULL,HW.pBaseZB);
-		return;
+		bool _menu_pp = g_pGamePersistent->OnRenderPPUI_query();
+		if (_menu_pp)
+			render_menu();
 	}
+}
+
+extern u32 g_r;
+void CRender::RenderFrame()
+{
+	PIX_EVENT(CRender_Render);
+
+	g_r = 1;
+
+	rmNormal();
 
 	if( m_bFirstFrameAfterReset )
 	{
@@ -234,7 +230,8 @@ void CRender::Render		()
 	// HOM
 	ViewBase.CreateFromMatrix					(Device.mFullTransform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
 	View										= 0;
-	if (!ps_r2_ls_flags.test(R2FLAG_EXP_MT_CALC))	{
+	if (!ps_r2_flags_parallel.test(ParallelRenderFlags::R2FLAG_MT_HOM))	
+	{
 		HOM.Enable									();
 		HOM.Render									(ViewBase);
 	}
@@ -252,7 +249,6 @@ void CRender::Render		()
 			z_distance * g_pGamePersistent->Environment().CurrentEnv->far_plane);
 		m_zfill.mul	(m_project,Device.mView);
 		r_pmask										(true,false);	// enable priority "0"
-		set_Recorder								(NULL)		;
 		phase										= PHASE_SMAP;
 		render_main									(m_zfill,false)	;
 		r_pmask										(true,false);	// disable priority "1"
@@ -274,17 +270,13 @@ void CRender::Render		()
 	Device.Statistic->RenderDUMP_Wait_S.Begin	();
 	if (1)
 	{
-		CTimer	T;							T.Start	();
+		PIX_EVENT(CPUWaitGPU);
 		BOOL	result						= FALSE;
 		HRESULT	hr							= S_FALSE;
 		//while	((hr=q_sync_point[q_sync_count]->GetData	(&result,sizeof(result),D3DGETDATA_FLUSH))==S_FALSE) {
 		while	((hr=GetData (q_sync_point[q_sync_count], &result,sizeof(result)))==S_FALSE) 
 		{
-			if (!SwitchToThread())			Sleep(ps_r2_wait_sleep);
-			if (T.GetElapsed_ms() > 500)	{
-				result	= FALSE;
-				break;
-			}
+			//morrazzzz: The best thing to do is to leave it empty, and that's how it will be.
 		}
 	}
 	Device.Statistic->RenderDUMP_Wait_S.End		();
@@ -296,11 +288,8 @@ void CRender::Render		()
 	// Main calc
 	Device.Statistic->RenderCALC.Begin			();
 	r_pmask										(true,false,true);	// enable priority "0",+ capture wmarks
-	if (bSUN)									set_Recorder	(&main_coarse_structure);
-	else										set_Recorder	(NULL);
 	phase										= PHASE_NORMAL;
 	render_main									(Device.mFullTransform,true);
-	set_Recorder								(NULL);
 	r_pmask										(true,false);	// disable priority "1"
 	Device.Statistic->RenderCALC.End			();
 
@@ -426,12 +415,7 @@ void CRender::Render		()
 		u32 it=0;
 		for (it=0; it<Lights_LastFrame.size(); it++)	{
 			if (0==Lights_LastFrame[it])	continue	;
-			try {
-				Lights_LastFrame[it]->svis.flushoccq()	;
-			} catch (...)
-			{
-				Msg	("! Failed to flush-OCCq on light [%d] %X",it,*(u32*)(&Lights_LastFrame[it]));
-			}
+			Lights_LastFrame[it]->svis.flushoccq();
 		}
 		Lights_LastFrame.clear	();
 	}
@@ -451,19 +435,12 @@ void CRender::Render		()
 	}
 
 	// Directional light - fucking sun
-	if (bSUN)	
+	if (bSUN)
 	{
 		PIX_EVENT(DEFER_SUN);
-		RImplementation.stats.l_visible		++;
-		if( !ps_r2_ls_flags_ext.is(R2FLAGEXT_SUN_OLD))
-			render_sun_cascades					();
-		else
-		{
-			render_sun_near						();
-			render_sun							();
-			render_sun_filtered					();
-		}
-		Target->accum_direct_blend			();
+		RImplementation.stats.l_visible++;
+		render_sun_cascades();
+		Target->accum_direct_blend();
 	}
 
 	{
@@ -502,8 +479,6 @@ void CRender::Render		()
 		PIX_EVENT(DEFER_LIGHT_COMBINE);
 		Target->phase_combine					();
 	}
-
-	VERIFY	(0==mapDistort.size());
 }
 
 void CRender::render_forward				()

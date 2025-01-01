@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "r4.h"
 #include "../xrRender/fbasicvisual.h"
-#include "../../xrEngine/xr_object.h"
-#include "../../xrEngine/CustomHUD.h"
-#include "../../xrEngine/igame_persistent.h"
-#include "../../xrEngine/environment.h"
+#include "../../xr_3da/xr_object.h"
+#include "../../xr_3da/CustomHUD.h"
+#include "../../xr_3da/igame_persistent.h"
+#include "../../xr_3da/environment.h"
 #include "../xrRender/SkeletonCustom.h"
 #include "../xrRender/LightTrack.h"
 #include "../xrRender/dxRenderDeviceRender.h"
@@ -14,7 +14,7 @@
 #include "../xrRenderDX10/3DFluid/dx103DFluidManager.h"
 #include "../xrRender/ShaderResourceTraits.h"
 
-#include <d3dx/D3DX10Core.h>
+#include <D3DX10Core.h>
 
 CRender										RImplementation;
 
@@ -298,8 +298,11 @@ void					CRender::create					()
     if( o.ssao_hdao )
         o.ssao_opt_data = false;
 
-	o.dx10_sm4_1		= ps_r2_ls_flags.test((u32)R3FLAG_USE_DX10_1);
-	o.dx10_sm4_1		= o.dx10_sm4_1 && ( HW.FeatureLevel >= D3D_FEATURE_LEVEL_10_1 );
+#pragma todo("morrazzzz: Delete?")
+//	o.dx10_sm4_1		= ps_r2_ls_flags.test((u32)R3FLAG_USE_DX10_1);
+//	o.dx10_sm4_1		= o.dx10_sm4_1 && ( HW.FeatureLevel >= D3D_FEATURE_LEVEL_10_1 );
+
+	o.dx10_sm4_1 = false;
 
 	//	MSAA option dependencies
 
@@ -311,8 +314,10 @@ void					CRender::create					()
 			|| o.dx10_msaa && (HW.FeatureLevel >= D3D_FEATURE_LEVEL_11_0);
 
 	//o.dx10_msaa_hybrid	= ps_r2_ls_flags.test(R3FLAG_MSAA_HYBRID);
-	o.dx10_msaa_hybrid	= ps_r2_ls_flags.test((u32)R3FLAG_USE_DX10_1);
-	o.dx10_msaa_hybrid	&= !o.dx10_msaa_opt && o.dx10_msaa && ( HW.FeatureLevel >= D3D_FEATURE_LEVEL_10_1 ) ;
+#pragma todo("Maybe false?")
+	o.dx10_msaa_hybrid = false;
+	//o.dx10_msaa_hybrid	= ps_r2_ls_flags.test((u32)R3FLAG_USE_DX10_1);
+	//o.dx10_msaa_hybrid	&= !o.dx10_msaa_opt && o.dx10_msaa && ( HW.FeatureLevel >= D3D_FEATURE_LEVEL_10_1 ) ;
 
 	//	Allow alpha test MSAA for DX10.0
 
@@ -499,14 +504,19 @@ void CRender::OnFrame()
 void CRender::OnFrame()
 {
 	Models->DeleteQueue			();
-	if (ps_r2_ls_flags.test(R2FLAG_EXP_MT_CALC))	{
-		// MT-details (@front)
-		Device.seqParallel.insert	(Device.seqParallel.begin(),
-			fastdelegate::FastDelegate0<>(Details,&CDetailManager::MT_CALC));
+	Details->ClearVisDetails(); //Cleanup visible objects
 
+	if (ps_r2_flags_parallel.test(ParallelRenderFlags::R2FLAG_MT_DETAILS)) {
+		// MT-details (@front)
+		Device.seqParallel.insert(Device.seqParallel.begin(),
+			fastdelegate::FastDelegate0<>(Details, &CDetailManager::MT_CALC));
+
+	}
+	if (ps_r2_flags_parallel.test(ParallelRenderFlags::R2FLAG_MT_HOM))
+	{
 		// MT-HOM (@front)
-		Device.seqParallel.insert	(Device.seqParallel.begin(),
-			fastdelegate::FastDelegate0<>(&HOM,&CHOM::MT_RENDER));
+		Device.seqParallel.insert(Device.seqParallel.begin(),
+			fastdelegate::FastDelegate0<>(&HOM, &CHOM::MT_RENDER));
 	}
 }
 
@@ -585,7 +595,14 @@ BOOL					CRender::occ_visible			(vis_data& P)		{ return HOM.visible(P);								}
 BOOL					CRender::occ_visible			(sPoly& P)			{ return HOM.visible(P);								}
 BOOL					CRender::occ_visible			(Fbox& P)			{ return HOM.visible(P);								}
 
-void					CRender::add_Visual				(IRenderVisual*		V )	{ add_leafs_Dynamic((dxRender_Visual*)V);								}
+void CRender::add_Visual(IRenderable* pRenderable, IRenderVisual* visual, Fmatrix* xform, bool hud)
+{ 
+	Fmatrix& used_xform = xform ? *xform : pRenderable->renderable.xform;
+	dxRender_Visual* used_visual = static_cast<dxRender_Visual*>(visual ? visual : pRenderable->renderable.visual);
+
+	add_leafs_Dynamic((phase == PHASE_SMAP) ? nullptr : pRenderable,
+		used_visual, used_xform, hud);
+}
 void					CRender::add_Geometry			(IRenderVisual*		V )	{ add_Static((dxRender_Visual*)V,View->getMask());					}
 void					CRender::add_StaticWallmark		(ref_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* verts)
 {
@@ -630,10 +647,6 @@ void					CRender::add_Occluder			(Fbox2&	bb_screenspace	)
 {
 	HOM.occlude			(bb_screenspace);
 }
-void					CRender::set_Object				(IRenderable*	O )	
-{ 
-	val_pObject				= O;
-}
 void					CRender::rmNear				()
 {
 	IRender_Target* T	=	getTarget	();
@@ -665,14 +678,15 @@ void					CRender::rmNormal			()
 CRender::CRender()
 :m_bFirstFrameAfterReset(false)
 {
-	init_cacades();
+	init_cascades();
 }
 
 CRender::~CRender()
 {
+	destroy_cascades();
 }
 
-#include "../../xrEngine/GameFont.h"
+#include "../../xr_3da/GameFont.h"
 void	CRender::Statistics	(CGameFont* _F)
 {
 	CGameFont&	F	= *_F;
@@ -967,8 +981,6 @@ public:
 		return	D3D_OK;
 	}
 };
-
-#include <boost/crc.hpp>
 
 static inline bool match_shader_id		( LPCSTR const debug_shader_id, LPCSTR const full_shader_id, FS_FileSet const& file_set, string_path& result );
 
@@ -1482,18 +1494,23 @@ HRESULT	CRender::shader_compile			(
 
 	if (FS.exist(file_name))
 	{
+		//		Msg				( "opening library or cache shader..." );
 		IReader* file = FS.r_open(file_name);
-		if (file->length()>4)
+		if (file->length() > 4)
 		{
 			u32 crc = 0;
 			crc = file->r_u32();
 
-			boost::crc_32_type		processor;
-			processor.process_block	( file->pointer(), ((char*)file->pointer()) + file->elapsed() );
-			u32 const real_crc		= processor.checksum( );
+			u32 const real_crc = crc32(file->pointer(), file->elapsed());
 
-			if ( real_crc == crc ) {
-				_result				= create_shader(pTarget, (DWORD*)file->pointer(), file->elapsed(), file_name, result, o.disasm);
+			if (real_crc == crc) {
+				_result = create_shader(pTarget, (DWORD*)file->pointer(), file->elapsed(), file_name, result, o.disasm);
+				//if ( !SUCCEEDED(_result) ) {
+				//	Msg				("! create shader failed");
+				//}
+				//else {
+				//	Msg				( "create shaders succeeded" );
+				//}
 			}
 		}
 		file->close();
@@ -1504,14 +1521,15 @@ HRESULT	CRender::shader_compile			(
 		includer					Includer;
 		LPD3DBLOB					pShaderBuf	= NULL;
 		LPD3DBLOB					pErrorBuf	= NULL;
-		_result						= 
-			D3DCompile( 
+		_result						=
+			D3DCompile(
 				pSrcData, 
 				SrcDataLen,
 				"",//NULL, //LPCSTR pFileName,	//	NVPerfHUD bug workaround.
 				defines, &Includer, pFunctionName,
 				pTarget,
-				Flags, 0,
+				Flags,
+				0,
 				&pShaderBuf,
 				&pErrorBuf
 			);
@@ -1520,14 +1538,12 @@ HRESULT	CRender::shader_compile			(
 		{
 			IWriter* file = FS.w_open(file_name);
 
-			boost::crc_32_type		processor;
-			processor.process_block	( pShaderBuf->GetBufferPointer(), ((char*)pShaderBuf->GetBufferPointer()) + pShaderBuf->GetBufferSize() );
-			u32 const crc			= processor.checksum( );
+			u32 const crc = crc32(pShaderBuf->GetBufferPointer(), pShaderBuf->GetBufferSize());
 
 			file->w_u32				(crc);
 			file->w					(pShaderBuf->GetBufferPointer(), (u32)pShaderBuf->GetBufferSize());
 			FS.w_close				(file);
-
+			
 			_result					= create_shader(pTarget, (DWORD*)pShaderBuf->GetBufferPointer(), (u32)pShaderBuf->GetBufferSize(), file_name, result, o.disasm);
 		}
 		else {

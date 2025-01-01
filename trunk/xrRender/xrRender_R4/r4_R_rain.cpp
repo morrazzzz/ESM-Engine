@@ -1,9 +1,8 @@
 #include "stdafx.h"
-#include "../../xrEngine/igame_persistent.h"
-#include "../../xrEngine/irenderable.h"
+#include "../../xr_3da/igame_persistent.h"
+#include "../../xr_3da/irenderable.h"
 #include "../xrRender/FBasicVisual.h"
-
-#include "r4_R_sun_support.h"
+#include "../xrRender/r_sun_support.h"
 
 const	float	tweak_rain_COP_initial_offs			= 1200.f;
 const	float	tweak_rain_ortho_xform_initial_offs	= 1000.f	;	//. ?
@@ -233,7 +232,7 @@ void CRender::render_rain()
 		bool	bNormal							= mapNormalPasses[0][0].size() || mapMatrixPasses[0][0].size();
 		bool	bSpecial						= mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size();
 		if ( bNormal || bSpecial)	{
-			Target->phase_smap_direct			(&RainLight	, SE_SUN_RAIN_SMAP	);
+			Target->phase_smap_direct			(RainLight	, SE_SUN_RAIN_SMAP	);
 			RCache.set_xform_world				(Fidentity					);
 			RCache.set_xform_view				(Fidentity					);
 			RCache.set_xform_project			(RainLight.X.D.combine	);	

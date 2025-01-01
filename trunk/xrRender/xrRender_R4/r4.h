@@ -19,8 +19,8 @@
 #include "../xrRender/LightTrack.h"
 #include "../xrRender/r_sun_cascades.h"
 
-#include "../../xrEngine/irenderable.h"
-#include "../../xrEngine/fmesh.h"
+#include "../../xr_3da/irenderable.h"
+#include "../../xr_3da/fmesh.h"
 
 class dxRender_Visual;
 
@@ -152,8 +152,6 @@ public:
 	light_Package												LP_normal;
 	light_Package												LP_pending;
 
-	xr_vector<Fbox3,render_alloc<Fbox3> >						main_coarse_structure;
-
 	shared_str													c_sbase			;
 	shared_str													c_lmaterial		;
 	float														o_hemi			;
@@ -176,9 +174,8 @@ private:
 	void							LoadSWIs					(CStreamReader	*fs);
 	void							Load3DFluid					();
 
-	BOOL							add_Dynamic					(dxRender_Visual*pVisual, u32 planes);		// normal processing
 	void							add_Static					(dxRender_Visual*pVisual, u32 planes);
-	void							add_leafs_Dynamic			(dxRender_Visual*pVisual);					// if detected node's full visibility
+	void							add_leafs_Dynamic(IRenderable* pRenderable, dxRender_Visual* pVisual, Fmatrix& xform, bool hud);				// if detected node's full visibility
 	void							add_leafs_Static			(dxRender_Visual*pVisual);					// if detected node's full visibility
 
 public:
@@ -194,10 +191,12 @@ public:
 	void							render_menu					();
 	void							render_rain					();
 
-	void							render_sun_cascade			(u32 cascade_ind);
-	void							init_cacades				();
-	void							render_sun_cascades			();
+	void init_cascades();
+	void destroy_cascades();
 
+	void render_sun_cascades();
+	void prepart_render_sun_cascade(light& light_sun, u32 cascade_ind);
+	void render_sun_cascade(light& light_sun, u32 cascade_ind);
 public:
 	ShaderElement*					rimp_select_sh_static		(dxRender_Visual	*pVisual, float cdist_sq);
 	ShaderElement*					rimp_select_sh_dynamic		(dxRender_Visual	*pVisual, float cdist_sq);
@@ -285,9 +284,8 @@ public:
 
 	// Main 
 	virtual void					flush						();
-	virtual void					set_Object					(IRenderable*		O	);
 	virtual	void					add_Occluder				(Fbox2&	bb_screenspace	);			// mask screen region as oclluded
-	virtual void					add_Visual					(IRenderVisual*	V	);			// add visual leaf	(no culling performed at all)
+	virtual void add_Visual(IRenderable* V, IRenderVisual* visual = nullptr, Fmatrix* xform = nullptr, bool hud = false);	// add visual leaf	(no culling performed at all)
 	virtual void					add_Geometry				(IRenderVisual*	V	);			// add visual(s)	(all culling performed)
 
 	// wallmarks
@@ -329,8 +327,9 @@ public:
 	virtual BOOL					occ_visible					(sPoly&		P);
 
 	// Main
-	virtual void					Calculate					();
-	virtual void					Render						();
+	virtual void					Calculate();
+	virtual void RenderMenu();
+	virtual void RenderFrame();
 	virtual void					Screenshot					(ScreenshotMode mode=SM_NORMAL, LPCSTR name = 0);
 	virtual void					Screenshot					(ScreenshotMode mode, CMemoryWriter& memory_writer);
 	virtual void					ScreenshotAsyncBegin		();
