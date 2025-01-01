@@ -51,8 +51,22 @@ void CEngineAPI::Initialize(void)
 	LPCSTR			r1_name	= "xrRender_R1.dll";
 	LPCSTR			r2_name	= "xrRender_R2.dll";
 	LPCSTR			r3_name = "xrRender_R3.dll";
+	LPCSTR			r4_name = "xrRender_R4.dll";
 
 #ifndef DEDICATED_SERVER
+	if (psDeviceFlags.test(rsR4))
+	{
+		// try to initialize R4
+		Log("Loading DLL:", r4_name);
+		hRender = LoadLibrary(r4_name);
+		if (0 == hRender)
+		{
+			// try to load R1
+			Msg("! ...Failed - incompatible hardware/pre-Vista OS.");
+			psDeviceFlags.set(rsR2, TRUE);
+		}
+	}
+
 	if (psDeviceFlags.test(rsR3))
 	{
 		// try to initialize R3
@@ -69,6 +83,8 @@ void CEngineAPI::Initialize(void)
 	}
 
 	if (psDeviceFlags.test(rsR2) )	{
+		psDeviceFlags.set(rsR4, FALSE);
+		psDeviceFlags.set(rsR3, FALSE);
 		// try to initialize R2
 		Log				("Loading DLL:",	r2_name);
 		hRender			= LoadLibrary		(r2_name);
@@ -81,8 +97,9 @@ void CEngineAPI::Initialize(void)
 
 	if (0==hRender)		{
 		// try to load R1
+		psDeviceFlags.set(rsR4, FALSE);
 		psDeviceFlags.set(rsR3, FALSE);
-		psDeviceFlags.set	(rsR2,FALSE);
+		psDeviceFlags.set(rsR2, FALSE);
 		renderer_value		= 0; //con cmd
 
 		Log				("Loading DLL:",	r1_name);
@@ -132,6 +149,7 @@ void CEngineAPI::Destroy	(void)
 extern "C" {
 	typedef bool __cdecl SupportsAdvancedRendering(void);
 	typedef bool _declspec(dllexport) SupportsDX10Rendering();
+	typedef bool _declspec(dllexport) SupportsDX11Rendering();
 };
 
 void CEngineAPI::CreateRendererList()
@@ -142,15 +160,18 @@ void CEngineAPI::CreateRendererList()
 	bool bSupports_r2 = false;
 	bool bSupports_r2_5 = false;
 	bool bSupports_r3 = false;
+	bool bSupports_r4 = false;
 
 	LPCSTR			r2_name = "xrRender_R2.dll";
 	LPCSTR			r3_name = "xrRender_R3.dll";
+	LPCSTR			r4_name = "xrRender_R4.dll";
 
 	if (strstr(Core.Params, "-perfhud_hack"))
 	{
 		bSupports_r2 = true;
 		bSupports_r2_5 = true;
 		bSupports_r3 = true;
+		bSupports_r4 = true;
 	}
 	else
 	{
@@ -180,6 +201,21 @@ void CEngineAPI::CreateRendererList()
 			bSupports_r3 = test_dx10_rendering();
 			FreeLibrary(hRender);
 		}
+
+		// try to initialize R4
+		Log("Loading DLL:", r4_name);
+		//	Hide "d3d10.dll not found" message box for XP
+		SetErrorMode(SEM_FAILCRITICALERRORS);
+		hRender = LoadLibrary(r4_name);
+		//	Restore error handling
+		SetErrorMode(0);
+		if (hRender)
+		{
+			SupportsDX11Rendering* test_dx11_rendering = (SupportsDX11Rendering*)GetProcAddress(hRender, "SupportsDX11Rendering");
+			R_ASSERT(test_dx11_rendering);
+			bSupports_r4 = test_dx11_rendering();
+			FreeLibrary(hRender);
+		}
 	}
 
 	hRender = 0;
@@ -187,7 +223,7 @@ void CEngineAPI::CreateRendererList()
 	xr_vector<LPCSTR>			_tmp;
 	u32 i = 0;
 	bool bBreakLoop = false;
-	for (; i < 5; ++i)
+	for (; i < 6; ++i)
 	{
 		switch (i)
 		{
@@ -203,6 +239,10 @@ void CEngineAPI::CreateRendererList()
 			if (!bSupports_r3)
 				bBreakLoop = true;
 			break;
+		case 5:		//"renderer_r_dx11"
+			if (!bSupports_r4)
+				bBreakLoop = true;
+			break;
 		default:;
 		}
 
@@ -216,6 +256,7 @@ void CEngineAPI::CreateRendererList()
 		case 2: val = "renderer_r2";			break;
 		case 3: val = "renderer_r2.5";		break;
 		case 4: val = "renderer_r3";			break; //  -)
+		case 5: val = "renderer_r4";			break; //  -)
 		}
 		if (bBreakLoop) break;
 		_tmp.back() = xr_strdup(val);
