@@ -216,19 +216,6 @@ void remap_keys()
 	}
 }
 
-LPCSTR id_to_action_name(int _id)
-{
-	int idx				= 0;
-	while( actions[idx].action_name )
-	{
-		if(_id==actions[idx].id )
-			return actions[idx].action_name;
-		++idx;
-	}
-	Msg				("! cant find corresponding [action_name] for id");
-	return			NULL;
-}
-
 EGameActions action_name_to_id(LPCSTR _name)
 {
 	_action* action = action_name_to_ptr(_name);
@@ -247,8 +234,8 @@ _action* action_name_to_ptr(LPCSTR _name)
 			return &actions[idx];
 		++idx;
 	}
-	Msg				("! cant find corresponding [id] for action_name", _name);
-	return			NULL;
+	Msg("! cant find corresponding [%s] for action_name", _name);
+	return nullptr;
 }
 
 LPCSTR	dik_to_keyname			(int _dik)
@@ -257,7 +244,7 @@ LPCSTR	dik_to_keyname			(int _dik)
 	if(kb)
 		return kb->key_name;
 	else
-		return NULL;
+		return nullptr;
 }
 
 _keyboard* dik_to_ptr(int _dik, bool bSafe)
@@ -271,8 +258,8 @@ _keyboard* dik_to_ptr(int _dik, bool bSafe)
 		++idx;
 	}	
 	if (!bSafe)
-		Msg			("! cant find corresponding [_keyboard] for dik");
-	return			NULL;
+		Msg("! cant find corresponding [_keyboard] for dik: [%d]", _dik);
+	return nullptr;
 }
 
 int	keyname_to_dik (LPCSTR _name)
@@ -292,7 +279,7 @@ _keyboard*	keyname_to_ptr(LPCSTR _name)
 		++idx;
 	}	
 
-	Msg				("! cant find corresponding [_keyboard*] for keyname %s", _name);
+	Msg("! cant find corresponding [_keyboard*] for keyname: [%s]", _name);
 	return			NULL;
 }
 

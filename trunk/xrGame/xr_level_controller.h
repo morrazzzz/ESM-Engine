@@ -123,7 +123,6 @@ int				keyname_to_dik			(LPCSTR _name);
 _keyboard*		keyname_to_ptr			(LPCSTR _name);
 _keyboard*		dik_to_ptr				(int _dik, bool bSafe);
 
-LPCSTR			id_to_action_name		(EGameActions _id);
 EGameActions	action_name_to_id		(LPCSTR _name);
 _action*		action_name_to_ptr		(LPCSTR _name);
 
