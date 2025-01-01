@@ -39,8 +39,8 @@ public:
 public:
 	// general
 	u32						MODE				;
-	u32						dwFrame				;
-	u32						dwFrameSmooth		;
+	u32 LightFrame;
+	u32 LightFrameSmooth;
 
 	// 
 	xr_vector<Item>			track				;	// everything what touches
@@ -84,20 +84,20 @@ public:
 	void					update_smooth		(IRenderable*	O=0);
 	
 	ICF	float				get_hemi			()	{
-		if (dwFrameSmooth!=Device.dwFrame)		update_smooth();
+		if (LightFrameSmooth !=Device.dwFrame)		update_smooth();
 		return									hemi_smooth;
 	}
 	ICF	float				get_sun				()	{
-		if (dwFrameSmooth!=Device.dwFrame)		update_smooth();
+		if (LightFrameSmooth !=Device.dwFrame)		update_smooth();
 		return									sun_smooth;
 	}
 	ICF Fvector3&			get_approximate		()	{
-		if (dwFrameSmooth!=Device.dwFrame)		update_smooth();
+		if (LightFrameSmooth !=Device.dwFrame)		update_smooth();
 		return									approximate;
 	}
 
 	const float*			get_hemi_cube		(){
-		if (dwFrameSmooth!=Device.dwFrame)		update_smooth();
+		if (LightFrameSmooth !=Device.dwFrame)		update_smooth();
 		return									hemi_cube_smooth;
 	}
 
@@ -117,7 +117,7 @@ private:
 	void calc_sky_hemi_value(Fvector& position, CObject* _object);
 
 	//prepares static or hemisphere lights for ambient occlusion calculations
-	void prepare_lights(Fvector& position, IRenderable* O);
+	void prepare_lights(Fvector& position, CObject* O);
 
 #if RENDER!=R_R1
 	//	Updates only if makes a desizion that update is necessary

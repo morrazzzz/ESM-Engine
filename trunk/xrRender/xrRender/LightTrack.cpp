@@ -6,14 +6,8 @@
 #include "LightTrack.h"
 #include "../../include/xrRender/RenderVisual.h"
 #include "../../xr_3da/xr_object.h"
-
-#ifdef _EDITOR
-#	include "igame_persistent.h"
-#	include "environment.h"
-#else
-#	include "../../xr_3da/igame_persistent.h"
-#	include "../../xr_3da/environment.h"
-#endif
+#include "../../xr_3da/igame_persistent.h"
+#include "../../xr_3da/environment.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -21,7 +15,8 @@
 CROS_impl::CROS_impl	()
 {
 	approximate.set		( 0,0,0 );
-	dwFrame				= u32(-1);
+	LightFrame = u32(-1);
+	LightFrameSmooth = static_cast<u32>(-1);
 	shadow_recv_frame	= u32(-1);
 	shadow_recv_slot	= -1;
 
@@ -45,24 +40,32 @@ CROS_impl::CROS_impl	()
 //#else
 //	MODE				= IRender_ObjectSpecific::TRACE_HEMI + IRender_ObjectSpecific::TRACE_SUN	;
 //#endif
+
+	std::fill_n(hemi_cube, 6, 0.1f);
+	std::fill_n(hemi_cube_smooth, 6, 0.1f);
 }
 
-void	CROS_impl::add		(light* source)
-{
-	// Search
-	for (xr_vector<Item>::iterator I=track.begin(); I!=track.end(); I++)	
-		if (source == I->source)	{ I->frame_touched = Device.dwFrame; return; }
+void	CROS_impl::add(light* lightSource)
+{	
+	for (u32 i = 0; i < track.size(); i++)
+	{
+		if (track[i].source == lightSource)
+		{
+			track[i].frame_touched = Device.dwFrame;
+			return;
+		}
+	}
 
 	// Register _new_
-	track.push_back		(Item());
-	Item&	L			= track.back();
+	Item L;
 	L.frame_touched		= Device.dwFrame;
-	L.source			= source;
+	L.source			= lightSource;
 	L.cache.verts[0].set(0,0,0);
 	L.cache.verts[1].set(0,0,0);
 	L.cache.verts[2].set(0,0,0);
 	L.test				= 0.f;
 	L.energy			= 0.f;
+	track.emplace_back(L);
 }
 
 IC bool	pred_energy			(const CROS_impl::Light& L1, const CROS_impl::Light& L2)	{ return L1.energy>L2.energy; }
@@ -176,11 +179,14 @@ inline void CROS_impl::accum_hemi(float* hemi_cube, Fvector3& dir, float scale)
 void	CROS_impl::update	(IRenderable* O)
 {
 	// clip & verify
-	if					(dwFrame==Device.dwFrame)			return;
-	dwFrame				= Device.dwFrame;
-	if					(0==O)								return;
-	if					(0==O->renderable.visual)			return;
-	VERIFY				(dynamic_cast<CROS_impl*>			(O->renderable_ROS()));
+	if (LightFrame == Device.dwFrame)			
+		return;
+
+	LightFrame = Device.dwFrame;
+	if (!O)								
+		return;
+	if (!O->renderable.visual)			
+		return;
 	//float	dt			=	Device.fTimeDelta;
 
 	CObject*	_object	= dynamic_cast<CObject*>	(O);
@@ -193,17 +199,13 @@ void	CROS_impl::update	(IRenderable* O)
 //.			position.mad(direction,0.25f*radius);
 //.			position.mad(direction,0.025f*radius);
 
-	//function call order is important at least for r1
-	for (size_t i = 0; i < NUM_FACES; ++i)
-	{
-		hemi_cube[i] = 0;
-	}
+	std::fill_n(hemi_cube, 6, 0.0f);
 
 	bool	bFirstTime	=	(0==result_count);
 	calc_sun_value			(position, _object)	;
 	calc_sky_hemi_value		(position, _object)	;
 
-	prepare_lights			(position, O)	;
+	prepare_lights			(position, _object)	;
 
 	// Process ambient lighting and approximate average lighting
 	// Process our lights to find average luminescences
@@ -298,7 +300,6 @@ void 	CROS_impl::smart_update(IRenderable* O)
 
 	//	Acquire current position
 	Fvector	position;
-	VERIFY(dynamic_cast<CROS_impl*>	(O->renderable_ROS()));
 	vis_data &vis = O->renderable.visual->getVisData();
 	O->renderable.xform.transform_tiny( position, vis.sphere.P );
 
@@ -337,10 +338,10 @@ extern float ps_r2_lt_smooth;
 // hemi & sun: update and smooth
 void	CROS_impl::update_smooth	(IRenderable* O)
 {
-	if (dwFrameSmooth == Device.dwFrame)
+	if (LightFrameSmooth == Device.dwFrame)
 		return;
 
-	dwFrameSmooth			=	Device.dwFrame;
+	LightFrameSmooth = Device.dwFrame;
 
 #if RENDER==R_R1
 	if (O && (0==result_count)) 
@@ -417,10 +418,9 @@ void CROS_impl::calc_sky_hemi_value(Fvector& position, CObject* _object)
 	}
 }
 
-void CROS_impl::prepare_lights(Fvector& position, IRenderable* O)
+void CROS_impl::prepare_lights(Fvector& position, CObject* O)
 {
-	CObject*	_object	= dynamic_cast<CObject*>	(O);
-	float	dt			=	Device.fTimeDelta;
+	float dt = Device.fTimeDelta;
 
 	vis_data &vis = O->renderable.visual->getVisData();
 	float	radius;		radius	= vis.sphere.R;
@@ -453,16 +453,15 @@ void CROS_impl::prepare_lights(Fvector& position, IRenderable* O)
 #if RENDER==R_R1 
 		float traceR	= radius*.5f;
 #endif
-		for (s32 id=0; id<s32(track.size()); id++)
-		{
-			// remove untouched lights
-			xr_vector<CROS_impl::Item>::iterator I	= track.begin()+id;
-			if (I->frame_touched!=Device.dwFrame)	{ track.erase(I) ; id--	; continue ; }
+		//Remove all untouched lights
+		std::erase_if(track, [](Item& item) { return item.frame_touched != Device.dwFrame; });
 
+		for (u32 id = 0; id < track.size(); id++)
+		{
 			// Trace visibility
 			Fvector				P,D;
 			float		amount	= 0;
-			light*		xrL		= I->source;
+			light*		xrL		= track[id].source;
 			Fvector&	LP		= xrL->position;
 #if RENDER==R_R1
 			P.mad				(position,P.random_dir(),traceR);		// Random point inside range
@@ -472,20 +471,24 @@ void CROS_impl::prepare_lights(Fvector& position, IRenderable* O)
 
 			// point/spot
 			float	f			=	D.sub(P,LP).magnitude();
-			if (g_pGameLevel->ObjectSpace.RayTest(LP,D.div(f),f,collide::rqtStatic,&I->cache,_object))	amount -=	lt_dec;
-			else																						amount +=	lt_inc;
-			I->test				+=	amount * dt;	clamp	(I->test,-.5f,1.f);
-			I->energy			=	.9f*I->energy + .1f*I->test;
+			if (g_pGameLevel->ObjectSpace.RayTest(LP,D.div(f),f,collide::rqtStatic,&track[id].cache, O))
+				amount -= lt_dec;
+			else																						
+				amount += lt_inc;
+
+			track[id].test += amount * dt;
+			clamp(track[id].test, -.5f, 1.f);
+			track[id].energy = .9f * track[id].energy + .1f * track[id].test;
 
 			// 
-			float	E			=	I->energy * xrL->color.intensity	();
+			float	E = track[id].energy * xrL->color.intensity	();
 			if (E > EPS)		{
 				// Select light
 				lights.push_back			(CROS_impl::Light())		;
 				CROS_impl::Light&	L		= lights.back()				;
 				L.source					= xrL						;
-				L.color.mul_rgb				(xrL->color,I->energy/2)	;
-				L.energy					= I->energy/2				;
+				L.color.mul_rgb				(xrL->color, track[id].energy/2)	;
+				L.energy					= track[id].	energy/2				;
 				if (!xrL->flags.bStatic)	{ L.color.mul_rgb(.5f); L.energy *= .5f; }
 			}
 		}
@@ -503,9 +506,10 @@ void CROS_impl::prepare_lights(Fvector& position, IRenderable* O)
 			L.color.mul_rgb				(sun->color,sun_smooth/2)	;
 			L.energy					= sun_smooth				;
 		}
-#endif
-		// Sort lights by importance - important for R1-shadows
-		std::sort	(lights.begin(),lights.end(), pred_energy);
 
+		// Sort lights by importance - important for R1-shadows
+		// important ONLY for R1. Not using sorting for R2, R3, R4.
+		std::sort(lights.begin(), lights.end(), pred_energy);
+#endif
 	}
 }
