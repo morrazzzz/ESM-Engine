@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "*.vs" : "hlsl",
+        "*.ps" : "hlsl",
+        "*.h" : "hlsl",
+        "*.s" : "lua"
+    }
+}

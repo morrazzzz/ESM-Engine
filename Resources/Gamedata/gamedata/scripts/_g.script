@@ -14,7 +14,7 @@ function log3(fmt, ...)
 	if not res then --Если произошла ошибка
 		msg = "!!log3 failed: "..msg.."\n"..debug.traceback()
 	end
-	log1(msg)
+	engine_log(msg)
 end
 --===================================================================
 
@@ -1249,6 +1249,8 @@ function get_texture_info(id_name, id_default)
 end
 
 function start_game_callback()
+	engine_log("--LUAJIT version: ["..(jit.version).."]")
+
 	printf	("start_game_callback called")
 	task_manager.clear_task_manager()
 	treasure_manager.clear_treasure_manager()
