@@ -11,6 +11,7 @@ class ENGINE_API DiscordSDK final
 
 	discord::Activity ActivityDiscord_{};
 	discord::Core* core{};
+	bool discordAlreadyDeleted;
 public:
 	DiscordSDK() = default;
 	~DiscordSDK();

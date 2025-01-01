@@ -7,6 +7,12 @@ ENGINE_API DiscordSDK Discord;
 
 DiscordSDK::~DiscordSDK()
 {
+	if (discordAlreadyDeleted)
+	{
+		core = nullptr;
+		return;
+	}
+
 	delete core;
 }
 
@@ -37,10 +43,15 @@ void DiscordSDK::UpdateSDK()
 	if (!core)
 		return;
 
+	if (discordAlreadyDeleted)
+		return;
+
 	if (NeedUpdateActivity_)
 		UpdateActivity();
 
-	core->RunCallbacks();
+	discord::Result result = core->RunCallbacks();
+
+	discordAlreadyDeleted = result != discord::Result::Ok;
 }
 
 void DiscordSDK::UpdateActivity()
