@@ -26,7 +26,6 @@ enum {
 	rsConstantFPS					= (1ul<<8ul),
 	rsDrawStatic					= (1ul<<9ul),
 	rsDrawDynamic					= (1ul<<10ul),
-	rsDisableObjectsAsCrows			= (1ul<<11ul),
 
 	rsOcclusionDraw					= (1ul<<12ul),
 	rsOcclusionStats				= (1ul<<13ul),

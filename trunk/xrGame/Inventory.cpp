@@ -58,7 +58,6 @@ CInventory::CInventory()
 	m_iNextActiveSlot							= NO_ACTIVE_SLOT;
 	m_iPrevActiveSlot							= NO_ACTIVE_SLOT;
 	m_iLoadActiveSlot							= NO_ACTIVE_SLOT;
-	m_ActivationSlotReason						= eGeneral;
 	m_pTarget									= NULL;
 
 	string256 temp;
@@ -132,7 +131,8 @@ void CInventory::Take(CGameObject *pObj, bool bNotActivate, bool strict_placemen
 	if(!strict_placement)
 		pIItem->m_eItemPlace			= eItemPlaceUndefined;
 
-	bool result							= false;
+	bool result	= false;
+	bool resultCanPutSlot = false;
 	switch(pIItem->m_eItemPlace)
 	{
 	case eItemPlaceBelt:
@@ -152,9 +152,9 @@ void CInventory::Take(CGameObject *pObj, bool bNotActivate, bool strict_placemen
 
 		break;
 	case eItemPlaceSlot:
-		result							= Slot(pIItem, bNotActivate); 
+		resultCanPutSlot = Slot(pIItem, bNotActivate);
 #ifdef DEBUG
-		if(!result) 
+		if(!resultCanPutSlot)
 			Msg("cant slot in ruck item %s", *pIItem->object().cName());
 #endif
 
@@ -162,7 +162,8 @@ void CInventory::Take(CGameObject *pObj, bool bNotActivate, bool strict_placemen
 	default:
 		if(CanPutInSlot(pIItem))
 		{
-			result						= Slot(pIItem, bNotActivate); VERIFY(result);
+			resultCanPutSlot = Slot(pIItem, bNotActivate); 
+			VERIFY(resultCanPutSlot);
 		} 
 		else if ( !pIItem->RuckDefault() && CanPutInBelt(pIItem))
 		{
@@ -179,7 +180,10 @@ void CInventory::Take(CGameObject *pObj, bool bNotActivate, bool strict_placemen
 	CalcTotalWeight						();
 	InvalidateState						();
 
-	pIItem->object().processing_deactivate();
+	if (pIItem->object().getDestroy() ||
+		(pIItem->m_eItemPlace == eItemPlaceSlot || resultCanPutSlot) && m_slots[pIItem->GetSlot()].m_bVisible)
+		pIItem->object().processing_deactivate();
+
 	VERIFY								(pIItem->m_eItemPlace != eItemPlaceUndefined);
 }
 
@@ -200,15 +204,12 @@ bool CInventory::DropItem(CGameObject *pObj)
 	R_ASSERT							(pIItem->m_pCurrentInventory);
 	R_ASSERT							(pIItem->m_pCurrentInventory==this);
 	VERIFY								(pIItem->m_eItemPlace!=eItemPlaceUndefined);
-
-	pIItem->object().processing_activate(); 
 	
 	switch(pIItem->m_eItemPlace)
 	{
 	case eItemPlaceBelt:{
 			R_ASSERT(InBelt(pIItem));
 			m_belt.erase(std::find(m_belt.begin(), m_belt.end(), pIItem));
-			pIItem->object().processing_deactivate();
 		}break;
 	case eItemPlaceRuck:{
 			R_ASSERT(InRuck(pIItem));
@@ -216,11 +217,10 @@ bool CInventory::DropItem(CGameObject *pObj)
 		}break;
 	case eItemPlaceSlot:{
 			R_ASSERT			(InSlot(pIItem));
-			if(m_iActiveSlot == pIItem->GetSlot()) 
-				Activate	(NO_ACTIVE_SLOT);
+			if (m_iActiveSlot == pIItem->GetSlot())
+				Activate(NO_ACTIVE_SLOT);
 
 			m_slots[pIItem->GetSlot()].m_pIItem = NULL;							
-			pIItem->object().processing_deactivate();
 		}break;
 	default:
 		NODEFAULT;
@@ -276,15 +276,15 @@ bool CInventory::Slot(PIItem pIItem, bool bNotActivate)
 
 
 
-	if (( (m_iActiveSlot==pIItem->GetSlot())||(m_iActiveSlot==NO_ACTIVE_SLOT) && m_iNextActiveSlot==NO_ACTIVE_SLOT) && (!bNotActivate))
-		Activate				(pIItem->GetSlot());
+	if (m_iActiveSlot==pIItem->GetSlot())
+		Activate(pIItem->GetSlot());
 
 	
 	m_pOwner->OnItemSlot		(pIItem, pIItem->m_eItemPlace);
 	pIItem->m_eItemPlace		= eItemPlaceSlot;
 	pIItem->OnMoveToSlot		();
-	
-	pIItem->object().processing_activate();
+
+//	pIItem->object().processing_activate();
 
 	return						true;
 }
@@ -343,7 +343,7 @@ bool CInventory::Ruck(PIItem pIItem)
 		if(m_belt.end() != it) m_belt.erase(it);
 	}
 	
-	m_ruck.insert									(m_ruck.end(), pIItem); 
+	m_ruck.emplace_back(pIItem); 
 	
 	CalcTotalWeight									();
 	InvalidateState									();
@@ -351,9 +351,6 @@ bool CInventory::Ruck(PIItem pIItem)
 	m_pOwner->OnItemRuck							(pIItem, pIItem->m_eItemPlace);
 	pIItem->m_eItemPlace							= eItemPlaceRuck;
 	pIItem->OnMoveToRuck							();
-
-	if(in_slot)
-		pIItem->object().processing_deactivate();
 
 	return true;
 }
@@ -416,38 +413,20 @@ void  CInventory::ActivateNextItemInActiveSlot()
 	Msg("CHANGE");
 }
 
-bool CInventory::Activate(u32 slot, EActivationReason reason, bool bForce) 
+bool CInventory::Activate(u32 slot, bool bForce)
 {	
-	if(	m_ActivationSlotReason==eKeyAction	&& reason==eImportUpdate )
-		return false;
-
-	bool res = false;
-
 	if(Device.dwFrame == m_iLoadActiveSlotFrame) 
 	{
-		 if( (m_iLoadActiveSlot == slot) && m_slots[slot].m_pIItem )
+		if ((m_iLoadActiveSlot == slot) && m_slots[slot].m_pIItem)
 			m_iLoadActiveSlotFrame = u32(-1);
-		 else
-			{
-			 res = false;
-			 goto _finish;
-			}
-
+		else
+			return false;
 	}
 
-	if( (slot!=NO_ACTIVE_SLOT && m_slots[slot].IsBlocked()) && !bForce)
-	{
-		res = false;
-		goto _finish;
-	}
+	R_ASSERT2(slot == NO_ACTIVE_SLOT || slot < m_slots.size(), "wrong slot number");
 
-	R_ASSERT2(slot == NO_ACTIVE_SLOT || slot<m_slots.size(), "wrong slot number");
-
-	if(slot != NO_ACTIVE_SLOT && !m_slots[slot].m_bVisible) 
-	{
-		res = false;
-		goto _finish;
-	}
+	if(slot != NO_ACTIVE_SLOT && (!m_slots[slot].m_bVisible || m_slots[slot].IsBlocked() && !bForce))
+		return false;
 	
 	if(m_iActiveSlot == slot && m_iActiveSlot != NO_ACTIVE_SLOT && m_slots[m_iActiveSlot].m_pIItem)
 	{
@@ -460,62 +439,41 @@ bool CInventory::Activate(u32 slot, EActivationReason reason, bool bForce)
 		 m_slots[m_iActiveSlot].m_pIItem &&
 		 m_slots[m_iActiveSlot].m_pIItem->IsHiding()
 		 )
-	   )
-	{
-		res = false;
-		goto _finish;
-	}
+		)
+		return false;
 
 	//активный слот не выбран
 	if(m_iActiveSlot == NO_ACTIVE_SLOT)
 	{
 		if(m_slots[slot].m_pIItem)
 		{
-			m_iNextActiveSlot		= slot;
-			m_ActivationSlotReason	= reason;
-			res = true;
-			goto _finish;
+			m_iNextActiveSlot = slot;
+			return true;
 		}
 		else 
 		{
-			if(slot==GRENADE_SLOT)//fake for grenade
+			if (slot == GRENADE_SLOT)//fake for grenade
 			{
-				PIItem gr = SameSlot(GRENADE_SLOT, NULL, true);
-				if(gr)
-				{
+				PIItem gr = SameSlot(GRENADE_SLOT, nullptr, true);
+				if (gr)
 					Slot(gr);
-					goto _finish;
-				}else
-				{
-					res = false;
-					goto _finish;
-				}
-
-			}else
-			{
-				res = false;
-				goto _finish;
 			}
+
+			return false;
 		}
 	}
 	//активный слот задействован
 	else if(slot == NO_ACTIVE_SLOT || m_slots[slot].m_pIItem)
 	{
-		if(m_slots[m_iActiveSlot].m_pIItem)
+		if (m_slots[m_iActiveSlot].m_pIItem)
 			m_slots[m_iActiveSlot].m_pIItem->Deactivate();
 
 		m_iNextActiveSlot		= slot;
-		m_ActivationSlotReason	= reason;
-	
-		res = true;
-		goto _finish;
+
+		return true;
 	}
 
-	_finish:
-
-	if(res)
-		m_ActivationSlotReason	= reason;
-	return res;
+	return false;
 }
 
 
@@ -619,7 +577,7 @@ bool CInventory::Action(s32 cmd, u32 flags)
 					if ((int)m_iActiveSlot == cmd - kWPN_1 && !IsGameTypeSingle())
 						break;
 
-					b_send_event = Activate(cmd - kWPN_1, eKeyAction);
+					b_send_event = Activate(cmd - kWPN_1);
 				}
 			}
 		}break;
@@ -662,10 +620,18 @@ void CInventory::Update()
 
 	if(m_iNextActiveSlot != m_iActiveSlot && !bActiveSlotVisible)
 	{
-		if(m_iNextActiveSlot != NO_ACTIVE_SLOT &&
+		if (m_iNextActiveSlot != NO_ACTIVE_SLOT &&
 			m_slots[m_iNextActiveSlot].m_pIItem)
+		{
+			m_slots[m_iNextActiveSlot].m_pIItem->object().processing_activate();
 			m_slots[m_iNextActiveSlot].m_pIItem->Activate();
+		}
 
+		if (m_iActiveSlot != NO_ACTIVE_SLOT)
+		{
+			if (m_slots[m_iActiveSlot].m_pIItem)
+				m_slots[m_iActiveSlot].m_pIItem->object().processing_deactivate();
+		}
 		m_iActiveSlot = m_iNextActiveSlot;
 	}
 	UpdateDropTasks	();

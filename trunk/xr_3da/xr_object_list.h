@@ -16,13 +16,10 @@ private:
 
 	xr_vector<CObject*> objects_export;
 
-	xr_vector<CObject*>			crows_0				;
-	xr_vector<CObject*>			crows_1				;
-	xr_vector<CObject*>*		crows				;
-
-	CObject**					objects_dup			;
-	u32							objects_dup_memsz	;
-
+//	xr_vector<CObject*> ObjectsUpdateCL{};
+	xr_vector<CObject*>	crows_0;
+	xr_vector<CObject*>	crows_1;
+	xr_vector<CObject*>* crows = &crows_0;
 public:
 	typedef fastdelegate::FastDelegate1<CObject*>	RELCASE_CALLBACK;
 	struct SRelcasePair{
@@ -39,12 +36,11 @@ public:
 
 public:
 	// methods
-								CObjectList			( );
-								~CObjectList		( );
+	CObjectList() = default;
+	~CObjectList();
 
-	CObject*					FindObjectByName	( shared_str	name	);
-	CObject*					FindObjectByName	( LPCSTR		name	);
-	CObject*					FindObjectByCLS_ID	( CLASS_ID		cls		);
+	CObject*					FindObjectByName	(LPCSTR     	name	);
+	CObject*					FindObjectByName	(shared_str		name	);
 
 	void						Load				( );
 	void						Unload				( );
@@ -63,8 +59,9 @@ public:
 
 	CObject* net_Find(u32 ID);
 
-	void						o_crow				(CObject*	O)			{
-		crows->push_back(O)		;
+	void AddToUpdateCL(CObject* O) {
+//		ObjectsUpdateCL.emplace_back(O);
+		crows->push_back(O);
 	}
 
 	void						o_remove			( xr_vector<CObject*>&	v,  CObject*	O);

@@ -144,7 +144,7 @@ void CPHDestroyable::Destroy(u16 source_id/*=u16(-1)*/,LPCSTR section/*="ph_skel
 	CPHSkeleton *phs= obj->PHSkeleton();
 	if(phs)phs->SetNotNeedSave();
 	if(obj->PPhysicsShell())	obj->PPhysicsShell()->Enable()	;
-	obj->processing_activate();
+	
 	if(source_id==obj->ID())
 	{
 		m_flags.set(fl_released,FALSE);

@@ -6,13 +6,8 @@
 #include "render.h"
 #include "xrLevel.h"
 #include "../Include/xrRender/Kinematics.h"
-
+ 
 #include "xr_collide_form.h"
-
-void CObject::MakeMeCrow_internal	()
-{
-	g_pGameLevel->Objects.o_crow	(this);
-}
 
 void CObject::cName_set			(shared_str N)
 { 
@@ -55,35 +50,51 @@ void CObject::cNameVisual_set	(shared_str N)
 // flagging
 void CObject::processing_activate	()
 {
-	VERIFY3	(255!= Props.bActiveCounter, "Invalid sequence of processing enable/disable calls: overflow",*cName());
-	Props.bActiveCounter			++;
-	if (0==(Props.bActiveCounter-1))	g_pGameLevel->Objects.o_activate	(this);
+	VERIFY2(!bActiveCounter, "UpdateCL has already been activated.");
+
+	if (!bActiveCounter)
+	{
+		bActiveCounter = true;
+		g_pGameLevel->Objects.o_activate(this);
+	}
 }
 void CObject::processing_deactivate	()
 {
-	VERIFY3	(0	!= Props.bActiveCounter, "Invalid sequence of processing enable/disable calls: underflow",*cName());
-	Props.bActiveCounter			--;
-	if (0==Props.bActiveCounter)		g_pGameLevel->Objects.o_sleep		(this);
+	VERIFY2(bActiveCounter, "UpdateCL has already been deactivated.");
+
+	if (bActiveCounter)
+	{
+		bActiveCounter = false;
+		g_pGameLevel->Objects.o_sleep(this);
+	}
 }
 
 void CObject::setEnabled			(BOOL _enabled)
 {
+	if ((BOOL)bEnabled == _enabled)
+		return;
+
 	if (_enabled){
-		Props.bEnabled							=	1;	
-		if (collidable.model)	spatial.type	|=	STYPE_COLLIDEABLE;
+		bEnabled = true;
+		if (collidable.model)	
+			spatial.type |=	STYPE_COLLIDEABLE;
 	}else{
-		Props.bEnabled							=	0;
-		spatial.type							&=	~STYPE_COLLIDEABLE;
+		bEnabled = false;
+		spatial.type &=	~STYPE_COLLIDEABLE;
 	}
 }
 void CObject::setVisible			(BOOL _visible)
 {
+	if ((BOOL)bVisible == _visible)
+		return;
+
 	if (_visible){				// Parent should control object visibility itself (??????)
-		Props.bVisible							= 1;
-		if (renderable.visual)	spatial.type	|=	STYPE_RENDERABLE;
+		bVisible = true;
+		if (renderable.visual)	
+			spatial.type |=	STYPE_RENDERABLE;
 	}else{
-		Props.bVisible							= 0;
-		spatial.type							&=	~STYPE_RENDERABLE;
+		bVisible = false;
+		spatial.type &= ~STYPE_RENDERABLE;
 	}
 }
 
@@ -97,8 +108,14 @@ const	Fbox&	CObject::BoundingBox	()				const	{ VERIFY2(renderable.visual,*cName(
 //----------------------------------------------------------------------
 CObject::CObject		( )		: ISpatial(g_SpatialSpace)
 {
-	// Transform
-	Props.storage				= 0;
+	net_ID = 0;
+	bActiveCounter = false;
+	bEnabled = false;
+	bVisible = false;
+	bDestroy = false;
+	net_Ready = false;
+	crow = false;
+	bPreDestroy = false;
 
 	Parent						= NULL;
 
@@ -161,7 +178,6 @@ BOOL CObject::net_Spawn			(CSE_Abstract* data)
 
 	// reinitialize flags
 	processing_activate			();
-	setDestroy					(FALSE);
 
 	MakeMeCrow					();
 
@@ -335,20 +351,25 @@ void CObject::OnH_A_Independent	()
 void CObject::OnH_B_Independent	(bool just_before_destroy)
 {
 }
-void CObject::MakeMeCrow			()
+void CObject::MakeMeCrow()
 {
-		if (Props.crow)					return	;
-		if (!processing_enabled())		return	;
-		Props.crow						= true	;
-		MakeMeCrow_internal				()		;
+	if (crow)					
+		return;
+
+	if (!processing_enabled())		
+		return;
+
+	crow = true;
+	
+	g_pGameLevel->Objects.AddToUpdateCL(this);
 }
 
 void CObject::setDestroy			(BOOL _destroy)
 {
-	if (_destroy == (BOOL)Props.bDestroy)
+	if (_destroy == (BOOL)bDestroy)
 		return;
 
-	Props.bDestroy	= _destroy?1:0;
+	bDestroy = _destroy?1:0;
 	if (_destroy)
 	{
 		g_pGameLevel->Objects.register_object_to_destroy	(this);

@@ -98,7 +98,7 @@ void CAttachmentOwner::attach(CInventoryItem *inventory_item)
 		m_attached_objects.push_back		(smart_cast<CAttachableItem*>(inventory_item));
 
 		inventory_item->object().setVisible	(true);
-		attachable_item->afterAttach		();
+//		attachable_item->afterAttach		();
 	}
 }
 
@@ -108,10 +108,10 @@ void CAttachmentOwner::detach(CInventoryItem *inventory_item)
 		xr_vector<CAttachableItem*>::iterator	E = m_attached_objects.end();
 		for ( ; I != E; ++I) {
 			if ((*I)->item().object().ID() == inventory_item->object().ID()) {
-				m_attached_objects.erase	(I);
+				m_attached_objects.erase(I);
 				if (!m_attached_objects.empty())
 				{
-					(*I)->afterDetach();
+//					(*I)->afterDetach();
 					break;
 				}
 

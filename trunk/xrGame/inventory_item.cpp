@@ -354,8 +354,6 @@ BOOL CInventoryItem::net_Spawn			(CSE_Abstract* DC)
 
 	//!!!
 	m_fCondition = pSE_InventoryItem->m_fCondition;
-	if (GameID() != GAME_SINGLE)
-		object().processing_activate();
 
 	m_dwItemIndependencyTime		= 0;
 

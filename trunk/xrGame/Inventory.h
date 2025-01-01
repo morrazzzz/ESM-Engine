@@ -20,11 +20,6 @@ public:
 	bool					m_bVisible;
 	int						m_blockCounter;
 };
-enum EActivationReason{
-	eGeneral,
-	eKeyAction,
-	eImportUpdate,
-};
 
 typedef xr_vector<CInventorySlot> TISlotArr;
 
@@ -58,7 +53,7 @@ public:
 	bool					CanTakeItem			(CInventoryItem *inventory_item) const;
 
 
-	bool					Activate			(u32 slot, EActivationReason reason=eGeneral, bool bForce=false);
+	bool					Activate			(u32 slot, bool bForce=false);
 	void					Activate_deffered	(u32 slot, u32 _frame);
 	PIItem					ActiveItem			()const					{return m_iActiveSlot==NO_ACTIVE_SLOT ? NULL :m_slots[m_iActiveSlot].m_pIItem;}
 	PIItem					ItemFromSlot		(u32 slot) const;
@@ -143,7 +138,6 @@ protected:
 	u32 				m_iPrevActiveSlot;
 	u32 				m_iLoadActiveSlot;
 	u32 				m_iLoadActiveSlotFrame;
-	EActivationReason	m_ActivationSlotReason;
 
 	CInventoryOwner*	m_pOwner;
 

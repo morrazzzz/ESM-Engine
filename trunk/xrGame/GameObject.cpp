@@ -254,9 +254,6 @@ BOOL CGameObject::net_Spawn		(CSE_Abstract*	DC)
 	if (O)
 		m_story_id					= O->m_story_id;
 
-	// Net params
-	setLocal						(E->s_flags.is(M_SPAWN_OBJECT_LOCAL));
-
 	setReady						(TRUE);
 	g_pGameLevel->Objects.net_Register	(this);
 

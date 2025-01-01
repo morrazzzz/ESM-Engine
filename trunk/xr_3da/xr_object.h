@@ -33,26 +33,17 @@ public:
 		u32			dwTime;
 		Fvector		vPosition;
 	};
-	union	ObjectProperties
-	{
-		struct 
-		{
-			u32	net_ID			:	16;
-			u32	bActiveCounter	:	8;
-			u32	bEnabled		:	1;
-			u32	bVisible		:	1;
-			u32	bDestroy		:	1;
-			u32	net_Local		:	1;
-			u32	net_Ready		:	1;
-			u32 net_SV_Update	:	1;
-			u32 crow			:	1;
-			u32	bPreDestroy		:	1;
-		};
-		u32	storage;
-	};
+
+	u32	net_ID : 16;
+	u32	bActiveCounter : 1;
+	u32	bEnabled : 1;
+	u32	bVisible : 1;
+	u32	bDestroy : 1;
+	u32	net_Ready : 1;
+	u32 crow : 1;
+	u32	bPreDestroy : 1;
 private:
 	// Some property variables
-	ObjectProperties					Props;
 	shared_str							NameObject;
 	shared_str							NameSection;
 	shared_str							NameVisual;
@@ -67,26 +58,24 @@ public:
 	u32									dbg_update_cl;
 #endif
 	u32									dwFrame_UpdateCL;
-	u32									dwFrame_AsCrow;
 
 	// Crow-MODE
 	// if (object_is_visible)
 	// if (object_is_near)
 	// if (object_is_crow_always)
-		void							MakeMeCrow_internal	();
 		void							MakeMeCrow			();
 
-	ICF	void							IAmNotACrowAnyMore	()					{ Props.crow = false;	}
+	ICF	void							IAmNotACrowAnyMore	()					{ crow = false;	}
 	virtual BOOL						AlwaysTheCrow		()					{ return FALSE; }
 
 	// Network
-	ICF BOOL							Local				()			const	{ return Props.net_Local;	}
-	ICF BOOL							Remote				()			const	{ return !Props.net_Local;	}
-	ICF u16								ID					()			const	{ return Props.net_ID;		}
-	ICF void							setID				(u16 _ID)			{ Props.net_ID = _ID;		}
-	virtual BOOL						Ready				()					{ return Props.net_Ready;	}
-	BOOL								GetTmpPreDestroy		()		const	{ return Props.bPreDestroy;	}
-	void								SetTmpPreDestroy	(BOOL b)			{ Props.bPreDestroy = b;}
+	ICF BOOL							Local				()			const	{ return true;	}
+	ICF BOOL							Remote				()			const	{ return false;	}
+	ICF u16								ID					()			const	{ return net_ID; }
+	ICF void							setID				(u16 _ID)			{ net_ID = _ID;		}
+	virtual BOOL						Ready				()					{ return net_Ready;	}
+	BOOL								GetTmpPreDestroy		()		const	{ return bPreDestroy;	}
+	void								SetTmpPreDestroy	(BOOL b)			{ bPreDestroy = b;}
 	virtual float						shedule_Scale		()					{ return Device.vCameraPosition.distance_to(Position())/200.f; }
 	virtual bool						shedule_Needed		()					{return processing_enabled();};
 
@@ -139,20 +128,17 @@ public:
 	// Properties
 	void								processing_activate		();				// request	to enable	UpdateCL
 	void								processing_deactivate	();				// request	to disable	UpdateCL
-	bool								processing_enabled		()				{ return 0!=Props.bActiveCounter;	}
+	bool								processing_enabled		()				{ return 0!=bActiveCounter;	}
 
 	void								setVisible			(BOOL _visible);
-	ICF BOOL							getVisible			()			const	{ return Props.bVisible;			}
+	ICF BOOL							getVisible			()			const	{ return bVisible;			}
 	void								setEnabled			(BOOL _enabled);
-	ICF BOOL							getEnabled			()			const	{ return Props.bEnabled;			}
+	ICF BOOL							getEnabled			()			const	{ return bEnabled;			}
 		void							setDestroy			(BOOL _destroy);
-	ICF BOOL							getDestroy			()			const	{ return Props.bDestroy;			}
-	ICF void							setLocal			(BOOL _local)		{ Props.net_Local = _local?1:0;		}
-	ICF BOOL							getLocal			()			const	{ return Props.net_Local;			}
-	ICF void							setSVU				(BOOL _svu)			{ Props.net_SV_Update	= _svu?1:0;	}
-	ICF BOOL							getSVU				()			const	{ return Props.net_SV_Update;		}
-	ICF void							setReady			(BOOL _ready)		{ Props.net_Ready = _ready?1:0;		}
-	ICF BOOL							getReady			()			const	{ return Props.net_Ready;			}
+	ICF BOOL							getDestroy			()			const	{ return bDestroy;			}
+	ICF BOOL							getLocal			()			const	{ return true;			}
+	ICF void							setReady			(BOOL _ready)		{ net_Ready = _ready?1:0;		}
+	ICF BOOL							getReady			()			const	{ return net_Ready;			}
 
 	//---------------------------------------------------------------------
 										CObject				();

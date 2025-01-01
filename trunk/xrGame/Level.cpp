@@ -430,9 +430,6 @@ void CLevel::OnFrame	()
 
 	m_feel_deny.update					();
 
-	if (GameID()!=GAME_SINGLE)			psDeviceFlags.set(rsDisableObjectsAsCrows,true);
-	else								psDeviceFlags.set(rsDisableObjectsAsCrows,false);
-
 	// commit events from bullet manager from prev-frame
 	Device.Statistic->BulletManager.Begin		();
 	if (g_mt_config.test(mtBullets))

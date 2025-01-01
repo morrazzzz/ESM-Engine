@@ -22,9 +22,6 @@ extern bool	g_b_ClearGameCaptions;
 
 void CLevel::remove_objects	()
 {
-	if (!IsGameTypeSingle()) Msg("CLevel::remove_objects - Start");
-	BOOL						b_stored = psDeviceFlags.test(rsDisableObjectsAsCrows);
-
 	if (OnServer()) {
 		VERIFY					(Server);
 		Server->SLS_Clear		();
@@ -36,7 +33,6 @@ void CLevel::remove_objects	()
 		// ugly hack for checks that update is twice on frame
 		// we need it since we do updates for checking network messages
 		++(Device.dwFrame);
-		psDeviceFlags.set		(rsDisableObjectsAsCrows,TRUE);
 		ClientReceive			();
 		ProcessGameEvents		();
 		Objects.Update			(true);
@@ -53,7 +49,6 @@ void CLevel::remove_objects	()
 	if(!g_dedicated_server)
 		space_restriction_manager().clear	();
 
-	psDeviceFlags.set			(rsDisableObjectsAsCrows, b_stored);
 	g_b_ClearGameCaptions		= true;
 
 	if (!g_dedicated_server)

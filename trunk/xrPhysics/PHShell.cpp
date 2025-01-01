@@ -130,10 +130,7 @@ void CPHShell::vis_update_activate()
 	++m_active_count;
 	IPhysicsShellHolder* ref_object=(*elements.begin())->PhysicsRefObject();
 	if(ref_object&&m_active_count>0)
-	{
 		m_active_count=0;
-		ref_object->ObjectProcessingActivate();
-	}
 }
 
 void CPHShell::vis_update_deactivate()
@@ -1172,7 +1169,6 @@ void CPHShell::InterpolateGlobalTransform(Fmatrix* m)
 	IPhysicsShellHolder* ref_object=(*elements.begin())->PhysicsRefObject();
 	if(ref_object&&m_active_count<0)
 	{
-		ref_object->ObjectProcessingDeactivate();
 		ref_object->ObjectSpatialMove();
 		m_active_count=0;
 	}

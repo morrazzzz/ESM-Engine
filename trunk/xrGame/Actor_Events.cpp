@@ -87,7 +87,7 @@ void CActor::OnEvent		(NET_Packet& P, u16 type)
 			}
 			bool just_before_destroy	= !P.r_eof() && P.r_u8();
 			O->SetTmpPreDestroy				(just_before_destroy);
-			if (inventory().DropItem(smart_cast<CGameObject*>(O)) && !O->getDestroy()) 
+			if (!O->getDestroy() && inventory().DropItem(smart_cast<CGameObject*>(O)))
 			{
 				O->H_SetParent(0,just_before_destroy);
 //.				feel_touch_deny(O,2000);

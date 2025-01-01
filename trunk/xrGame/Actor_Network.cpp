@@ -379,9 +379,9 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 	m_bInterpolate = false;
 
 //	if (GameID() != GAME_SINGLE)
-	{
-		processing_activate();
-	}
+//	{
+//		processing_activate();
+//	}
 
 #ifdef DEBUG
 	LastPosS.clear();
@@ -460,11 +460,7 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 
 	spatial.type |=STYPE_REACTTOSOUND;
 	psHUD_Flags.set(HUD_WEAPON_RT,TRUE);
-	
-	if (Level().IsDemoPlay() && OnClient())
-	{
-		setLocal(FALSE);
-	};
+
 	return					TRUE;
 }
 
@@ -547,14 +543,7 @@ void CActor::net_Relcase	(CObject* O)
 
 BOOL	CActor::net_Relevant		()				// relevant for export to server
 { 
-	if (OnServer())
-	{
-		return getSVU() | getLocal(); 
-	}
-	else
-	{
-		return Local() & g_Alive();
-	};
+	return true;
 };
 
 void	CActor::SetCallbacks()

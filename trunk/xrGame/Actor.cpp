@@ -949,8 +949,6 @@ void CActor::UpdateCL	()
 float	NET_Jump = 0;
 void CActor::shedule_Update(u32 DT)
 {
-	setSVU(OnServer());
-
 	//установить режим показа HUD для текущего активного слота
 	CHudItem* pHudItem = smart_cast<CHudItem*>(inventory().ActiveItem());
 	if (pHudItem)

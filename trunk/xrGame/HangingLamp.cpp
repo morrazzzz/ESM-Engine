@@ -141,7 +141,7 @@ BOOL CHangingLamp::net_Spawn(CSE_Abstract* DC)
 //.	if (lamp->flags.is(CSE_ALifeObjectHangingLamp::flPhysic)&&Visual()&&!guid_physic_bone)	fHealth=0.f;
 	if (Alive())			TurnOn	();
 	else{
-		processing_activate		();	// temporal enable
+//		processing_activate		();	// temporal enable
 		TurnOff					();	// -> and here is disable :)
 	}
 	
@@ -254,7 +254,7 @@ void CHangingLamp::TurnOn	()
 		K->CalculateBones_Invalidate();
 		K->CalculateBones			();
 	}
-	processing_activate		();
+//	processing_activate		();
 }
 
 void CHangingLamp::TurnOff	()

@@ -8,27 +8,13 @@
 
 #include "CustomHUD.h"
 
-class fClassEQ {
-	CLASS_ID cls;
-public:
-	fClassEQ(CLASS_ID C) : cls(C) {};
-	IC bool operator() (CObject* O) { return cls==O->CLS_ID; }
-};
-
-CObjectList::CObjectList	( )
-{
-	objects_dup_memsz		= 512;
-	objects_dup				= xr_alloc	<CObject*>	(objects_dup_memsz);
-	crows					= &crows_0	;
-}
-
 CObjectList::~CObjectList	( )
 {
-	R_ASSERT				( objects_active.empty()	);
-	R_ASSERT				( objects_sleeping.empty()	);
-	R_ASSERT				( destroy_queue.empty()		);
-	R_ASSERT				( map_NETID.empty()			);
-	xr_free					( objects_dup);
+//	R_ASSERT(ObjectsUpdateCL.empty());
+	R_ASSERT(objects_active.empty());
+	R_ASSERT(objects_sleeping.empty());
+	R_ASSERT(destroy_queue.empty());
+	R_ASSERT(map_NETID.empty());
 }
 
 CObject*	CObjectList::FindObjectByName	( shared_str name )
@@ -39,25 +25,10 @@ CObject*	CObjectList::FindObjectByName	( shared_str name )
 		if ((*I)->cName().equal(name))	return (*I);
 	return	NULL;
 }
-CObject*	CObjectList::FindObjectByName	( LPCSTR name )
+CObject* CObjectList::FindObjectByName(LPCSTR name)
 {
-	return	FindObjectByName				(shared_str(name));
+	return	FindObjectByName(shared_str(name));
 }
-
-CObject*	CObjectList::FindObjectByCLS_ID	( CLASS_ID cls )
-{
-	{
-		xr_vector<CObject*>::iterator O	= std::find_if(objects_active.begin(),objects_active.end(),fClassEQ(cls));
-		if (O!=objects_active.end())	return *O;
-	}
-	{
-		xr_vector<CObject*>::iterator O	= std::find_if(objects_sleeping.begin(),objects_sleeping.end(),fClassEQ(cls));
-		if (O!=objects_sleeping.end())	return *O;
-	}
-
-	return	NULL;
-}
-
 
 void	CObjectList::o_remove		( xr_vector<CObject*>&	v,  CObject* O)
 {
@@ -90,25 +61,23 @@ void	CObjectList::SingleUpdate	(CObject* O)
 {
 	if (O->processing_enabled() && (Device.dwFrame != O->dwFrame_UpdateCL))
 	{
-		if (O->H_Parent())		SingleUpdate(O->H_Parent());
+		if (O->H_Parent())
+		{
+			if (O->H_Parent()->getDestroy() || O->H_Root()->getDestroy())
+			{
+				Msg("! ERROR: incorrect destroy sequence for object[%d:%s], section[%s], parent[%d:%s]", O->ID(), *O->cName(), *O->cNameSect(),
+					O->H_Parent()->ID(), *O->H_Parent()->cName());				
+			}
+
+			SingleUpdate(O->H_Parent());
+		}
+
+
 		Device.Statistic->UpdateClient_updated	++;
 		O->dwFrame_UpdateCL		=				Device.dwFrame;
 		O->IAmNotACrowAnyMore	()				;
 		O->UpdateCL				()				;
 		VERIFY3					(O->dbg_update_cl == Device.dwFrame, "Broken sequence of calls to 'UpdateCL'",*O->cName());
-//		if (O->getDestroy())
-//		{
-//			destroy_queue.push_back(O);
-//.			Msg				("- destroy_queue.push_back %s[%d] frame [%d]",O->cName().c_str(), O->ID(), Device.dwFrame);
-//		}
-//		else
-		if (O->H_Parent() && (O->H_Parent()->getDestroy() || O->H_Root()->getDestroy()) )	
-		{
-			// Push to destroy-queue if it isn't here already
-			Msg	("! ERROR: incorrect destroy sequence for object[%d:%s], section[%s], parent[%d:%s]",O->ID(),*O->cName(),*O->cNameSect(),O->H_Parent()->ID(),*O->H_Parent()->cName());
-//			if (std::find(destroy_queue.begin(),destroy_queue.end(),O)==destroy_queue.end())
-//				destroy_queue.push_back	(O);
-		}
 	}
 	if (O->getDestroy() && (Device.dwFrame != O->dwFrame_UpdateCL))
 	{
@@ -117,9 +86,9 @@ void	CObjectList::SingleUpdate	(CObject* O)
 	}
 }
 
-void clear_crow_vec	(xr_vector<CObject*>& o)
+void clear_crow_vec(xr_vector<CObject*>& o)
 {
-	for (u32 _it=0; _it<o.size(); _it++)	o[_it]->IAmNotACrowAnyMore();
+	for (u32 _it = 0; _it < o.size(); _it++)	o[_it]->IAmNotACrowAnyMore();
 	o.clear_not_free();
 }
 
@@ -132,36 +101,23 @@ void CObjectList::Update		(bool bForce)
 		{
 			// Select Crow-Mode
 			Device.Statistic->UpdateClient_updated	= 0;
-			Device.Statistic->UpdateClient_crows	= crows->size	();
-			xr_vector<CObject*>*		workload	= 0;
-			if (!psDeviceFlags.test(rsDisableObjectsAsCrows))	
-			{
-				workload = crows			;
-				if (crows==&crows_0)		crows=&crows_1;
-				else						crows=&crows_0;
-				clear_crow_vec				(*crows);
-			} else 
-			{
-				workload	= &objects_active;
-				clear_crow_vec				(crows_0);
-				clear_crow_vec				(crows_1);
-			}
+			Device.Statistic->UpdateClient_crows = crows->size();
 
-			Device.Statistic->UpdateClient.Begin		();
-			Device.Statistic->UpdateClient_active		= objects_active.size	();
-			Device.Statistic->UpdateClient_total		= objects_active.size	() + objects_sleeping.size();
+			Device.Statistic->UpdateClient.Begin();
+			Device.Statistic->UpdateClient_active = objects_active.size();
+			Device.Statistic->UpdateClient_total = objects_active.size() + objects_sleeping.size();
 
-			u32 objects_count	= workload->size();
-			if (objects_count > objects_dup_memsz)	
-			{
-				// realloc
-				while (objects_count > objects_dup_memsz)	objects_dup_memsz	+= 32;
-				objects_dup	= (CObject**)xr_realloc(objects_dup,objects_dup_memsz*sizeof(CObject*));
-			}
-			CopyMemory	(objects_dup,&*workload->begin(),objects_count*sizeof(CObject*));
-			for (u32 O=0; O<objects_count; O++) 
- 				SingleUpdate	(objects_dup[O]);
+			xr_vector<CObject*>* workload = 0;
 
+			workload = crows;
+			if (crows == &crows_0)		crows = &crows_1;
+			else						crows = &crows_0;
+			clear_crow_vec(*crows);
+
+			for (u32 O=0; O < workload->size(); O++)
+ 				SingleUpdate((*workload)[O]);
+
+//			ObjectsUpdateCL.clear();
 			Device.Statistic->UpdateClient.End		();
 		}
 	}
@@ -313,10 +269,12 @@ void		CObjectList::Destroy			( CObject*	O		)
 	net_Unregister							(O);
 
 	// crows
-	xr_vector<CObject*>::iterator _i0		= std::find(crows_0.begin(),crows_0.end(),O);
-	if	(_i0!=crows_0.end())				crows_0.erase	(_i0);
-	xr_vector<CObject*>::iterator _i1		= std::find(crows_1.begin(),crows_1.end(),O);
-	if	(_i1!=crows_1.end())				crows_1.erase	(_i1);
+
+//	std::erase_if(ObjectsUpdateCL, [O](CObject* object) {return object == O; });
+	xr_vector<CObject*>::iterator _i0 = std::find(crows_0.begin(), crows_0.end(), O);
+	if (_i0 != crows_0.end())				crows_0.erase(_i0);
+	xr_vector<CObject*>::iterator _i1 = std::find(crows_1.begin(), crows_1.end(), O);
+	if (_i1 != crows_1.end())				crows_1.erase(_i1);
 
 	// active/inactive
 	xr_vector<CObject*>::iterator _i		= std::find(objects_active.begin(),objects_active.end(),O);
@@ -369,9 +327,10 @@ bool CObjectList::dump_all_objects()
 	dump_list(destroy_queue,"destroy_queue");
 	dump_list(objects_active,"objects_active");
 	dump_list(objects_sleeping,"objects_sleeping");
+//	dump_list(ObjectsUpdateCL, "objects_update_cl");
 
-	dump_list(crows_0,"crows_0");
-	dump_list(crows_1,"crows_1");
+	dump_list(crows_0, "crows_0");
+	dump_list(crows_1, "crows_1");
 	return false;
 }
 
