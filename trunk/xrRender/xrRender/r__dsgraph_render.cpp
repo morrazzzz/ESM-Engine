@@ -241,12 +241,12 @@ void R_dsgraph_structure::r_dsgraph_render_graph	(u32	_priority, bool _clear)
 	}
 }
 
+extern ENGINE_API float	psHUD_FOV;
+
 //////////////////////////////////////////////////////////////////////////
 // HUD render
 void R_dsgraph_structure::r_dsgraph_render_hud	()
 {
-	extern ENGINE_API float		psHUD_FOV;
-
 	//PIX_EVENT(r_dsgraph_render_hud);
 	
 								   
@@ -311,8 +311,6 @@ void R_dsgraph_structure::r_dsgraph_render_hud_ui()
 {
 	VERIFY(g_hud && g_hud->RenderActiveItemUIQuery());
 
-	extern ENGINE_API float		psHUD_FOV;
-
 	// Change projection
 	Fmatrix Pold				= Device.mProject;
 	Fmatrix FTold				= Device.mFullTransform;
@@ -373,10 +371,6 @@ void	R_dsgraph_structure::r_dsgraph_render_emissive	()
 	// Sorted (back to front)
 	mapEmissive.traverseLR	(sorted_L1);
 	mapEmissive.clear		();
-
-	//	HACK: Calculate this only once
-
-	extern ENGINE_API float		psHUD_FOV;
 
 	// Change projection
 	Fmatrix Pold				= Device.mProject;
@@ -475,8 +469,6 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 #if RENDER != R_R1
 		PIX_EVENT(FRUSTUM_DYNAMIC_SCENE);
 #endif
-		set_Object						(0);
-
 		// Traverse object database
 		g_SpatialSpace->q_frustum
 			(
@@ -495,8 +487,9 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 			if	(PortalTraverser.i_marker != sector->r_marker)	continue;	// inactive (untouched) sector
 			for (u32 v_it=0; v_it<sector->r_frustums.size(); v_it++)
 			{
-				set_Frustum			(&(sector->r_frustums[v_it]));
-				if (!View->testSphere_dirty(spatial->spatial.sphere.P,spatial->spatial.sphere.R))	continue;
+				auto& frustum = sector->r_frustums[v_it];
+				if (!frustum.testSphere_dirty(spatial->spatial.sphere.P,spatial->spatial.sphere.R))
+					continue;
 
 				// renderable
 				IRenderable*	renderable		= spatial->dcast_Renderable	();
@@ -517,72 +510,66 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 #include "../../xr_3da/fmesh.h"
 #include "flod.h"
 
-void	R_dsgraph_structure::r_dsgraph_render_R1_box	(IRender_Sector* _S, Fbox& BB, int sh)
+void	R_dsgraph_structure::r_dsgraph_render_R1_box	(dxRender_Visual* V, Fbox& BB, int sh)
 {
-	CSector*	S			= (CSector*)_S;
-	lstVisuals.clear		();
-	lstVisuals.push_back	(S->root());
-	
-	for (u32 test=0; test<lstVisuals.size(); test++)
+	// Visual is 100% visible - simply add it
+	xr_vector<dxRender_Visual*>::iterator I,E;	// it may be usefull for 'hierrarhy' visuals
+		
+	switch (V->Type) {
+	case MT_HIERRARHY:
 	{
-		dxRender_Visual*	V		= 	lstVisuals[test];
-		
-		// Visual is 100% visible - simply add it
-		xr_vector<dxRender_Visual*>::iterator I,E;	// it may be usefull for 'hierrarhy' visuals
-		
-		switch (V->Type) {
-		case MT_HIERRARHY:
-			{
-				// Add all children
-				FHierrarhyVisual* pV = (FHierrarhyVisual*)V;
-				I = pV->children.begin	();
-				E = pV->children.end		();
-				for (; I!=E; I++)		{
-					dxRender_Visual* T			= *I;
-					if (BB.intersect(T->vis.box))	lstVisuals.push_back(T);
-				}
-			}
-			break;
-		case MT_SKELETON_ANIM:
-		case MT_SKELETON_RIGID:
-			{
-				// Add all children	(s)
-				CKinematics * pV		= (CKinematics*)V;
-				pV->CalculateBones		(TRUE);
-				I = pV->children.begin	();
-				E = pV->children.end		();
-				for (; I!=E; I++)		{
-					dxRender_Visual* T				= *I;
-					if (BB.intersect(T->vis.box))	lstVisuals.push_back(T);
-				}
-			}
-			break;
-		case MT_LOD:
-			{
-				FLOD		* pV		=	(FLOD*) V;
-				I = pV->children.begin		();
-				E = pV->children.end		();
-				for (; I!=E; I++)		{
-					dxRender_Visual* T				= *I;
-					if (BB.intersect(T->vis.box))	lstVisuals.push_back(T);
-				}
-			}
-			break;
-		default:
-			{
-				// Renderable visual
-				ShaderElement* E	= V->shader->E[sh]._get();
-				if (E && !(E->flags.bDistort))
-				{
-					for (u32 pass=0; pass<E->passes.size(); pass++)
-					{
-						RCache.set_Element			(E,pass);
-						V->Render					(-1.f);
-					}
-				}
-			}
-			break;
+		// Add all children
+		FHierrarhyVisual* pV = (FHierrarhyVisual*)V;
+		I = pV->children.begin();
+		E = pV->children.end();
+		for (; I != E; I++) {
+			dxRender_Visual* T = *I;
+			if (BB.intersect(T->vis.box))
+				r_dsgraph_render_R1_box(T, BB, sh);
 		}
+	}
+	break;
+	case MT_SKELETON_ANIM:
+	case MT_SKELETON_RIGID:
+	{
+		// Add all children	(s)
+		CKinematics* pV = (CKinematics*)V;
+		pV->CalculateBones(TRUE);
+		I = pV->children.begin();
+		E = pV->children.end();
+		for (; I != E; I++) {
+			dxRender_Visual* T = *I;
+			if (BB.intersect(T->vis.box))
+				r_dsgraph_render_R1_box(T, BB, sh);
+		}
+	}
+	break;
+	case MT_LOD:
+	{
+		FLOD* pV = (FLOD*)V;
+		I = pV->children.begin();
+		E = pV->children.end();
+		for (; I != E; I++) {
+			dxRender_Visual* T = *I;
+			if (BB.intersect(T->vis.box))
+				r_dsgraph_render_R1_box(T, BB, sh);
+		}
+	}
+	break;
+	default:
+	{
+		// Renderable visual
+		ShaderElement* E = V->shader->E[sh]._get();
+		if (E && !(E->flags.bDistort))
+		{
+			for (u32 pass = 0; pass < E->passes.size(); pass++)
+			{
+				RCache.set_Element(E, pass);
+				V->Render(-1.f);
+			}
+		}
+	}
+	break;
 	}
 }
 

@@ -16,6 +16,7 @@ void CRender::render_main	(Fmatrix&	m_ViewProjection, bool _fportals)
 //	Msg						("---begin");
 	marker					++;
 
+	CObject* O = g_pGameLevel->CurrentViewEntity();
 	// Calculate sector(s) and their objects
 	if (pLastSector)		{
 		//!!!
@@ -35,14 +36,12 @@ void CRender::render_main	(Fmatrix&	m_ViewProjection, bool _fportals)
 			std::sort			(lstRenderables.begin(),lstRenderables.end(),pred_sp_sort);
 
 			// Determine visibility for dynamic part of scene
-			set_Object							(0);
 			u32 uID_LTRACK						= 0xffffffff;
 			if (phase==PHASE_NORMAL)			{
 				uLastLTRACK	++;
 				if (lstRenderables.size())		uID_LTRACK	= uLastLTRACK%lstRenderables.size();
 
 				// update light-vis for current entity / actor
-				CObject*	O					= g_pGameLevel->CurrentViewEntity();
 				if (O)		{
 					CROS_impl*	R					= (CROS_impl*) O->ROS();
 					if (R)		R->update			(O);
@@ -125,20 +124,15 @@ void CRender::render_main	(Fmatrix&	m_ViewProjection, bool _fportals)
 					if (!bVisible)					break;	// exit loop on frustums
 
 					// Rendering
-					set_Object						(renderable);
 					renderable->renderable_Render	();
-					set_Object						(0);
 				}
 				break;	// exit loop on frustums
 			}
 		}
-		if (g_pGameLevel && (phase==PHASE_NORMAL))	g_hud->Render_Last();		// HUD
 	}
-	else
-	{
-		set_Object									(0);
-		if (g_pGameLevel && (phase==PHASE_NORMAL))	g_hud->Render_Last();		// HUD
-	}
+
+	if (g_hud->NeedRenderHUD(O))
+		g_hud->Render_Last(O); // HUD
 }
 
 void CRender::render_menu	()
@@ -234,7 +228,6 @@ void CRender::RenderFrame()
 			z_distance * g_pGamePersistent->Environment().CurrentEnv->far_plane);
 		m_zfill.mul	(m_project,Device.mView);
 		r_pmask										(true,false);	// enable priority "0"
-		set_Recorder								(NULL)		;
 		phase										= PHASE_SMAP;
 		render_main									(m_zfill,false)	;
 		r_pmask										(true,false);	// disable priority "1"
@@ -270,11 +263,8 @@ void CRender::RenderFrame()
 	// Main calc
 	Device.Statistic->RenderCALC.Begin			();
 	r_pmask										(true,false,true);	// enable priority "0",+ capture wmarks
-	if (bSUN)									set_Recorder	(&main_coarse_structure);
-	else										set_Recorder	(NULL);
 	phase										= PHASE_NORMAL;
 	render_main									(Device.mFullTransform,true);
-	set_Recorder								(NULL);
 	r_pmask										(true,false);	// disable priority "1"
 	Device.Statistic->RenderCALC.End			();
 

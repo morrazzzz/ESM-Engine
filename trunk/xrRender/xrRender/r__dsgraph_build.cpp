@@ -32,7 +32,7 @@ ICF	float	CalcSSA				(float& distSQ, Fvector& C, float R)
 	return	R/distSQ;
 }
 
-void R_dsgraph_structure::r_dsgraph_insert_dynamic	(dxRender_Visual *pVisual, Fvector& Center)
+void R_dsgraph_structure::r_dsgraph_insert_dynamic(IRenderable* pRenderable, dxRender_Visual* pVisual, Fmatrix& xform, bool hud)
 {
 	CRender&	RI			=	RImplementation;
 
@@ -45,8 +45,11 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic	(dxRender_Visual *pVisual, Fv
 #endif
 
 	float distSQ			;
-	float SSA				=	CalcSSA		(distSQ,Center,pVisual);
-	if (SSA<=r_ssaDISCARD)		return;
+	Fvector	Center;
+	xform.transform_tiny(Center, pVisual->vis.sphere.P);
+	float SSA =	CalcSSA(distSQ, Center,pVisual);
+	if (SSA<=r_ssaDISCARD)		
+		return;
 
 	// Distortive geometry should be marked and R2 special-cases it
 	// a) Allow to optimize RT order
@@ -56,9 +59,9 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic	(dxRender_Visual *pVisual, Fv
 	if (RImplementation.o.distortion && sh_d && sh_d->flags.bDistort && pmask[sh_d->flags.iPriority/2]) {
 		mapSorted_Node* N		= mapDistort.insertInAnyWay	(distSQ);
 		N->val.ssa				= SSA;
-		N->val.pObject			= RI.val_pObject;
+		N->val.pObject			= pRenderable;
 		N->val.pVisual			= pVisual;
-		N->val.Matrix			= *RI.val_pTransform;
+		N->val.Matrix			= xform;
 		N->val.se				= sh_d;		// 4=L_special
 	}
 
@@ -69,18 +72,18 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic	(dxRender_Visual *pVisual, Fv
 
 	// Create common node
 	// NOTE: Invisible elements exist only in R1
-	_MatrixItem		item	= {SSA,RI.val_pObject,pVisual,*RI.val_pTransform};
+	_MatrixItem		item = { SSA,pRenderable,pVisual,xform };
 
 	// HUD rendering
-	if (RI.val_bHUD)			
+	if (hud)			
 	{
 		if (sh->flags.bStrictB2F)	
 		{
 			mapSorted_Node* N		= mapSorted.insertInAnyWay	(distSQ);
 			N->val.ssa				= SSA;
-			N->val.pObject			= RI.val_pObject;
+			N->val.pObject			= pRenderable;
 			N->val.pVisual			= pVisual;
-			N->val.Matrix			= *RI.val_pTransform;
+			N->val.Matrix			= xform;
 			N->val.se				= sh;
 			return;
 		} 
@@ -88,18 +91,18 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic	(dxRender_Visual *pVisual, Fv
 		{
 			mapHUD_Node* N			= mapHUD.insertInAnyWay		(distSQ);
 			N->val.ssa				= SSA;
-			N->val.pObject			= RI.val_pObject;
+			N->val.pObject			= pRenderable;
 			N->val.pVisual			= pVisual;
-			N->val.Matrix			= *RI.val_pTransform;
+			N->val.Matrix			= xform;
 			N->val.se				= sh;
 #if RENDER!=R_R1
 			if (sh->flags.bEmissive) 
 			{
 				mapSorted_Node* N		= mapHUDEmissive.insertInAnyWay	(distSQ);
 				N->val.ssa				= SSA;
-				N->val.pObject			= RI.val_pObject;
+				N->val.pObject			= pRenderable;
 				N->val.pVisual			= pVisual;
-				N->val.Matrix			= *RI.val_pTransform;
+				N->val.Matrix			= xform;
 				N->val.se				= &*pVisual->shader->E[4];		// 4=L_special
 			}
 #endif	//	RENDER!=R_R1
@@ -117,9 +120,9 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic	(dxRender_Visual *pVisual, Fv
 	if (sh->flags.bStrictB2F)	{
 		mapSorted_Node* N		= mapSorted.insertInAnyWay	(distSQ);
 		N->val.ssa				= SSA;
-		N->val.pObject			= RI.val_pObject;
+		N->val.pObject			= pRenderable;
 		N->val.pVisual			= pVisual;
-		N->val.Matrix			= *RI.val_pTransform;
+		N->val.Matrix			= xform;
 		N->val.se				= sh;
 		return;
 	}
@@ -133,17 +136,17 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic	(dxRender_Visual *pVisual, Fv
 	if (sh->flags.bEmissive) {
 		mapSorted_Node* N		= mapEmissive.insertInAnyWay	(distSQ);
 		N->val.ssa				= SSA;
-		N->val.pObject			= RI.val_pObject;
+		N->val.pObject			= pRenderable;
 		N->val.pVisual			= pVisual;
-		N->val.Matrix			= *RI.val_pTransform;
+		N->val.Matrix			= xform;
 		N->val.se				= &*pVisual->shader->E[4];		// 4=L_special
 	}
 	if (sh->flags.bWmark	&& pmask_wmark)	{
 		mapSorted_Node* N		= mapWmark.insertInAnyWay		(distSQ);
 		N->val.ssa				= SSA;
-		N->val.pObject			= RI.val_pObject;
+		N->val.pObject			= pRenderable;
 		N->val.pVisual			= pVisual;
-		N->val.Matrix			= *RI.val_pTransform;
+		N->val.Matrix			= xform;
 		N->val.se				= sh;							
 		return					;
 	}
@@ -215,15 +218,6 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic	(dxRender_Visual *pVisual, Fv
 		} } } } }
 #endif	//	USE_DX10
 	}
-
-#if RENDER!=R_R1
-	if (val_recorder)			{
-		Fbox3		temp		;
-		Fmatrix&	xf			= *RI.val_pTransform;
-		temp.xform	(pVisual->vis.box,xf);
-		val_recorder->push_back	(temp);
-	}
-#endif
 }
 
 void R_dsgraph_structure::r_dsgraph_insert_static	(dxRender_Visual *pVisual)
@@ -379,24 +373,21 @@ void R_dsgraph_structure::r_dsgraph_insert_static	(dxRender_Visual *pVisual)
 				} } } } }
 		#endif	//	USE_DX10
 			}
-
-#if RENDER!=R_R1
-		if (val_recorder) {
-			val_recorder->push_back(pVisual->vis.box);
-		}
-#endif
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void CRender::add_leafs_Dynamic	(dxRender_Visual *pVisual)
+void CRender::add_leafs_Dynamic	(IRenderable* pRenderable, dxRender_Visual *pVisual, Fmatrix& xform, bool hud)
 {
-	if (0==pVisual)				return;
+	if (!pVisual) return;
 
 	// Visual is 100% visible - simply add it
 	xr_vector<dxRender_Visual*>::iterator I,E;	// it may be useful for 'hierrarhy' visual
+
+	if (hud)
+		R_ASSERT(pVisual->Type != MT_PARTICLE_GROUP && pVisual->Type != MT_HIERRARHY);
 
 	switch (pVisual->Type) {
 	case MT_PARTICLE_GROUP:
@@ -405,9 +396,12 @@ void CRender::add_leafs_Dynamic	(dxRender_Visual *pVisual)
 			PS::CParticleGroup* pG	= (PS::CParticleGroup*)pVisual;
 			for (PS::CParticleGroup::SItemVecIt i_it=pG->items.begin(); i_it!=pG->items.end(); i_it++)	{
 				PS::CParticleGroup::SItem&			I		= *i_it;
-				if (I._effect)		add_leafs_Dynamic		(I._effect);
-				for (xr_vector<dxRender_Visual*>::iterator pit = I._children_related.begin();	pit!=I._children_related.end(); pit++)	add_leafs_Dynamic(*pit);
-				for (xr_vector<dxRender_Visual*>::iterator pit = I._children_free.begin();		pit!=I._children_free.end();	pit++)	add_leafs_Dynamic(*pit);
+				if (I._effect)		
+					add_leafs_Dynamic(pRenderable, I._effect, xform, hud);
+				for (xr_vector<dxRender_Visual*>::iterator pit = I._children_related.begin();	pit!=I._children_related.end(); pit++)	
+					add_leafs_Dynamic(pRenderable, *pit, xform, hud);
+				for (xr_vector<dxRender_Visual*>::iterator pit = I._children_free.begin();		pit!=I._children_free.end();	pit++)	
+					add_leafs_Dynamic(pRenderable, *pit, xform, hud);
 			}
 		}
 		return;
@@ -417,14 +411,15 @@ void CRender::add_leafs_Dynamic	(dxRender_Visual *pVisual)
 			FHierrarhyVisual* pV = (FHierrarhyVisual*)pVisual;
 			I = pV->children.begin	();
 			E = pV->children.end	();
-			for (; I!=E; I++)	add_leafs_Dynamic	(*I);
+			for (; I != E; I++)	
+				add_leafs_Dynamic(pRenderable, *I, xform, hud);
 		}
 		return;
 	case MT_SKELETON_ANIM:
 	case MT_SKELETON_RIGID:
 		{
 			// Add all children, doesn't perform any tests
-			CKinematics * pV			= (CKinematics*)pVisual;
+			CKinematics* pV = (CKinematics*)pVisual;
 
 			if (phase == PHASE_NORMAL)
 			{
@@ -432,33 +427,33 @@ void CRender::add_leafs_Dynamic	(dxRender_Visual *pVisual)
 
 				if (pV->m_lod)
 				{
-					Fvector							Tpos;	float		D;
-					val_pTransform->transform_tiny(Tpos, pV->vis.sphere.P);
+					Fvector	Tpos; float D;
+					xform.transform_tiny(Tpos, pV->vis.sphere.P);
 					float		ssa = CalcSSA(D, Tpos, pV->vis.sphere.R / 2.f);	// assume dynamics never consume full sphere
 					if (ssa < r_ssaLOD_A)	
 						_use_lod = true;
 				}
 				if (_use_lod)
 				{
-					add_leafs_Dynamic(pV->m_lod);
+					add_leafs_Dynamic(pRenderable, pV->m_lod, xform, hud);
 					break;
 				}
 			}
 
 			pV->CalculateBones(TRUE);
-			pV->CalculateWallmarks();		//. bug?
+
+			if (!hud) //not calc for hud
+				pV->CalculateWallmarks();
+
 			I = pV->children.begin();
 			E = pV->children.end();
-			for (; I != E; I++)	add_leafs_Dynamic(*I);
+			for (; I != E; I++)	
+				add_leafs_Dynamic(pRenderable, *I, xform, hud);
 		}
 		return;
 	default:
 		{
-			// General type of visual
-			// Calculate distance to it's center
-			Fvector							Tpos;
-			val_pTransform->transform_tiny	(Tpos, pVisual->vis.sphere.P);
-			r_dsgraph_insert_dynamic		(pVisual,Tpos);
+			r_dsgraph_insert_dynamic		(pRenderable, pVisual, xform, hud);
 		}
 		return;
 	}

@@ -22,8 +22,9 @@ public:
 
 	virtual		void		Load				();
 	
-	virtual		void		Render_First		();
-	virtual		void		Render_Last			();	   
+	bool NeedRenderHUD(CObject* object) override;
+	void Render_First(CObject* object) override;
+	void Render_Last(CObject* object) override;
 	virtual		void		OnFrame				();
 
 	virtual		void		RenderUI			();

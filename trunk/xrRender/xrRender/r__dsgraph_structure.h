@@ -20,14 +20,9 @@ public:
 class	R_dsgraph_structure										: public IRender_interface, public pureFrame
 {
 public:
-	IRenderable*												val_pObject;
-	Fmatrix*													val_pTransform;
-	BOOL														val_bHUD;
 	BOOL														val_bInvisible;
-	BOOL														val_bRecordMP;		// record nearest for multi-pass
 	R_feedback*													val_feedback;		// feedback for geometry being rendered
 	u32															val_feedback_breakp;// breakpoint
-	xr_vector<Fbox3,render_alloc<Fbox3> >*						val_recorder;		// coarse structure recorder
 	u32															phase;
 	u32															marker;
 	bool														pmask		[2]		;
@@ -53,33 +48,20 @@ public:
 	xr_vector<int,render_alloc<int> >									lstLODgroups;
 	xr_vector<ISpatial* /**,render_alloc<ISpatial*>/**/>				lstRenderables;
 	xr_vector<ISpatial* /**,render_alloc<ISpatial*>/**/>				lstSpatial	;
-	xr_vector<dxRender_Visual*,render_alloc<dxRender_Visual*> >			lstVisuals	;
-
-	xr_vector<dxRender_Visual*,render_alloc<dxRender_Visual*> >			lstRecorded	;
 
 	u32															counter_S	;
-	u32															counter_D	;
 	BOOL														b_loaded	;
 public:
-	virtual		void					set_Transform			(Fmatrix*	M	)				{ VERIFY(M);	val_pTransform = M;	}
-	virtual		void					set_HUD					(BOOL 		V	)				{ val_bHUD		= V;				}
-	virtual		BOOL					get_HUD					()								{ return		val_bHUD;			}
 	virtual		void					set_Invisible			(BOOL 		V	)				{ val_bInvisible= V;				}
 				void					set_Feedback			(R_feedback*V, u32	id)			{ val_feedback_breakp = id; val_feedback = V;		}
-				void					set_Recorder			(xr_vector<Fbox3,render_alloc<Fbox3> >* dest)		{ val_recorder	= dest;	if (dest) dest->clear();	}
-				void					get_Counters			(u32&	s,	u32& d)				{ s=counter_S; d=counter_D;			}
-				void					clear_Counters			()								{ counter_S=counter_D=0; 			}
+				void					get_Counters			(u32&	s,	u32& d)				{ s=counter_S;			}
+				void					clear_Counters			()								{ counter_S=0; 			}
 public:
 	R_dsgraph_structure	()
 	{
-		val_pObject			= NULL	;
-		val_pTransform		= NULL	;
-		val_bHUD			= FALSE	;
 		val_bInvisible		= FALSE	;
-		val_bRecordMP		= FALSE	;
 		val_feedback		= 0;
 		val_feedback_breakp	= 0;
-		val_recorder		= 0;
 		marker				= 0;
 		r_pmask				(true,true);
 		b_loaded			= FALSE	;
@@ -91,9 +73,6 @@ public:
 		lstLODgroups.clear		();
 		lstRenderables.clear	();
 		lstSpatial.clear		();
-		lstVisuals.clear		();
-
-		lstRecorded.clear		();
 
 		//mapNormal[0].destroy	();
 		//mapNormal[1].destroy	();
@@ -119,7 +98,7 @@ public:
 
 	void		r_pmask											(bool _1, bool _2, bool _wm=false)				{ pmask[0]=_1; pmask[1]=_2;	pmask_wmark = _wm; }
 
-	void		r_dsgraph_insert_dynamic						(dxRender_Visual	*pVisual, Fvector& Center);
+	void		r_dsgraph_insert_dynamic						(IRenderable* pRenderable, dxRender_Visual *pVisual, Fmatrix& xform, bool hud);
 	void		r_dsgraph_insert_static							(dxRender_Visual	*pVisual);
 
 	void		r_dsgraph_render_graph							(u32	_priority,	bool _clear=true);
@@ -132,15 +111,5 @@ public:
 	void		r_dsgraph_render_distort						();
 	void		r_dsgraph_render_subspace						(IRender_Sector* _sector, CFrustum* _frustum, Fmatrix& mCombined, Fvector& _cop, BOOL _dynamic, BOOL _precise_portals=FALSE	);
 	void		r_dsgraph_render_subspace						(IRender_Sector* _sector, Fmatrix& mCombined, Fvector& _cop, BOOL _dynamic, BOOL _precise_portals=FALSE	);
-	void		r_dsgraph_render_R1_box							(IRender_Sector* _sector, Fbox& _bb, int _element);
-
-public:
-	virtual		u32						memory_usage			()
-	{
-#ifdef USE_DOUG_LEA_ALLOCATOR_FOR_RENDER
-		return	(g_render_lua_allocator.get_allocated_size());
-#else // USE_DOUG_LEA_ALLOCATOR_FOR_RENDER
-		return	(0);
-#endif // USE_DOUG_LEA_ALLOCATOR_FOR_RENDER
-	}
+	void		r_dsgraph_render_R1_box							(dxRender_Visual* _sector, Fbox& _bb, int _element);
 };

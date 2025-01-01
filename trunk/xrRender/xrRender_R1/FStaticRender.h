@@ -83,6 +83,8 @@ public:
 	bool														m_bFirstFrameAfterReset;	// Determines weather the frame is the first after resetting device.
 
 private:
+	void set_Object(IRenderable* O);
+
 	// Loading / Unloading
 	void								LoadBuffers				(CStreamReader	*fs);
 	void								LoadVisuals				(IReader *fs);
@@ -91,7 +93,7 @@ private:
 	void								LoadSWIs				(CStreamReader	*fs);
 
 	void								add_Static				(dxRender_Visual	*pVisual, u32 planes);
-	void								add_leafs_Dynamic		(dxRender_Visual	*pVisual);					// if detected node's full visibility
+	void add_leafs_Dynamic(IRenderable* pRenderable, dxRender_Visual* pVisual, Fmatrix& xform, bool hud);			// if detected node's full visibility
 	void								add_leafs_Static		(dxRender_Visual	*pVisual);					// if detected node's full visibility
 
 public:
@@ -145,9 +147,8 @@ public:
 	
 	// Main 
 	virtual void					flush					();
-	virtual void					set_Object				(IRenderable*		O	);
 	virtual	void					add_Occluder			(Fbox2&	bb_screenspace	);			// mask screen region as oclluded
-	virtual void					add_Visual				(IRenderVisual*	V	);			// add visual leaf (no culling performed at all)
+	virtual void					add_Visual(IRenderable* pRenderable, IRenderVisual* visual, Fmatrix* xform, bool hud);			// add visual leaf (no culling performed at all)
 	virtual void					add_Geometry			(IRenderVisual*	V	);			// add visual(s)	(all culling performed)
 
 	// wallmarks

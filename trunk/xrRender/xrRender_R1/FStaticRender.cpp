@@ -206,10 +206,13 @@ BOOL					CRender::occ_visible			(vis_data& P)		{ return HOM.visible(P);								}
 BOOL					CRender::occ_visible			(sPoly& P)			{ return HOM.visible(P);								}
 BOOL					CRender::occ_visible			(Fbox& P)			{ return HOM.visible(P);								}
 ENGINE_API	extern BOOL g_bRendering;
-void					CRender::add_Visual				(IRenderVisual* V )
+void CRender::add_Visual(IRenderable* pRenderable, IRenderVisual* visual, Fmatrix* xform, bool hud)
 {
-	VERIFY				(g_bRendering);
-	add_leafs_Dynamic	((dxRender_Visual*)V);
+	VERIFY(g_bRendering); //Wtf?
+	Fmatrix& used_xform = xform ? *xform : pRenderable->renderable.xform;
+	dxRender_Visual* used_visual = static_cast<dxRender_Visual*>(visual ? visual : pRenderable->renderable.visual);
+
+	add_leafs_Dynamic(pRenderable, used_visual, used_xform, hud);
 }
 void CRender::add_Geometry(IRenderVisual* V) { add_Static((dxRender_Visual*)V, View->getMask()); }
 void					CRender::add_StaticWallmark		(ref_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* verts)
@@ -262,14 +265,9 @@ void					CRender::add_Occluder			(Fbox2&	bb_screenspace	)
 }
 
 #include "../../xr_3da/PS_instance.h"
-void					CRender::set_Object				(IRenderable*		O )	
+void CRender::set_Object(IRenderable* O)	
 {
-	VERIFY					(g_bRendering);
-	val_pObject				= O;		// NULL is OK, trust me :)
-	if (val_pObject)		{
-		VERIFY(dynamic_cast<CObject*>(O)||dynamic_cast<CPS_Instance*>(O));
-		if (O->renderable.pROS) { VERIFY(dynamic_cast<CROS_impl*>(O->renderable.pROS)); }
-	}
+	VERIFY(g_bRendering);
 	if (PHASE_NORMAL==phase)	{
 		if (L_Shadows)
 			L_Shadows->set_object	(O);
@@ -430,19 +428,34 @@ void CRender::Calculate				()
 			std::sort							(lstRenderables.begin(),lstRenderables.end(),pred_sp_sort);
 
 			// Determine visibility for dynamic part of scene
-			set_Object							(0);
-			g_pGameLevel->pHUD->Render_First	( );	// R1 shadows
-			g_pGameLevel->pHUD->Render_Last		( );	
+			CObject* O = g_pGameLevel->CurrentViewEntity();
+
+			if (g_hud->NeedRenderHUD(O))
+			{
+				//Make sure to keep the set_object order!!!
+
+				L_Shadows->set_object(O);
+
+				g_pGameLevel->pHUD->Render_First(O);	// R1 shadows
+
+				L_Shadows->set_object(nullptr);
+
+				L_Projector->set_object(O);
+
+				g_pGameLevel->pHUD->Render_Last(O);
+
+				L_Projector->set_object(nullptr);
+			}
 			u32 uID_LTRACK						= 0xffffffff;
 			if (phase==PHASE_NORMAL)			{
 				uLastLTRACK	++;
 				if (lstRenderables.size())		uID_LTRACK	= uLastLTRACK%lstRenderables.size();
 
 				// update light-vis for current entity / actor
-				CObject*	O					= g_pGameLevel->CurrentViewEntity();
-				if (O)		{
-					CROS_impl*	R					= (CROS_impl*) O->ROS();
-					if (R)		R->update			(O);
+				if (O)
+				{
+					CROS_impl* R = (CROS_impl*)O->ROS();
+					if (R)		R->update(O);
 				}
 			}
 			for (u32 o_it=0; o_it<lstRenderables.size(); o_it++)

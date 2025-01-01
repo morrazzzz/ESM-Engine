@@ -156,48 +156,39 @@ void CHUDManager::OnFrame()
 
 ENGINE_API extern float psHUD_FOV;
 
-void CHUDManager::Render_First()
-{
-	if (!psHUD_Flags.is(HUD_WEAPON|HUD_WEAPON_RT))
-		return;
-
-	if (!pUIGame)						
-		return;
-
-	CObject*	O					= g_pGameLevel->CurrentViewEntity();
-	if (0==O)						return;
-	CActor*		A					= smart_cast<CActor*> (O);
-	if (!A)							return;
-	if (A && !A->HUDview())			return;
-
-	// only shadow 
-	::Render->set_Invisible			(TRUE);
-	::Render->set_Object			(O->H_Root());
-	O->renderable_Render			();
-	::Render->set_Invisible			(FALSE);
-}
-
-void CHUDManager::Render_Last()
+bool CHUDManager::NeedRenderHUD(CObject* object)
 {
 	if (!psHUD_Flags.is(HUD_WEAPON | HUD_WEAPON_RT))
-		return;
+		return false;
 
 	if (!pUIGame)
-		return;
+		return false;
 
-	CObject* O = g_pGameLevel->CurrentViewEntity();
-	if (0 == O)						return;
-	CActor* A = smart_cast<CActor*> (O);
-	if (A && !A->HUDview())
-		return;
-	if (O->CLS_ID == CLSID_CAR)
+	if (!object)	
+		return false;
+	CActor* A = smart_cast<CActor*>(object);
+
+	if (!A || !A->HUDview())							
+		return false;
+
+	return true;
+}
+
+void CHUDManager::Render_First(CObject* object)
+{
+	// only shadow 
+	::Render->set_Invisible(TRUE);
+	object->renderable_Render();
+	::Render->set_Invisible(FALSE);
+}
+
+void CHUDManager::Render_Last(CObject* object)
+{
+	if (object->CLS_ID == CLSID_CAR)
 		return;
 
 	// hud itself
-	Render->set_HUD(TRUE);
-	Render->set_Object(O->H_Root());
-	O->OnHUDDraw(this);
-	Render->set_HUD(FALSE);
+	object->OnHUDDraw(this);
 }
 extern void draw_wnds_rects();
 extern ENGINE_API BOOL bShowPauseString;

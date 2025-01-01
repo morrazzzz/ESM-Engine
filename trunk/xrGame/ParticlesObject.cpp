@@ -182,8 +182,7 @@ void CParticlesObject::UpdateParent		(const Fmatrix& m, const Fvector& vel)
 void CParticlesObject::renderable_Render	()
 {
 	R_ASSERT(renderable.visual);
-	::Render->set_Transform	(&renderable.xform);
-	::Render->add_Visual	(renderable.visual);
+	::Render->add_Visual(this);
 }
 bool CParticlesObject::IsAutoRemove			()
 {

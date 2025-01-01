@@ -20,7 +20,8 @@ CHudItem::CHudItem()
 	m_pHUD				= NULL;
 	SetHUDmode			(FALSE);
 	m_dwStateTime		= 0;
-	m_bRenderHud		= true;
+	NotRenderHud = false;
+	AllowRenderHud = false;
 
 	m_bInertionEnable	= true;
 	m_bInertionAllow	= true;
@@ -83,14 +84,15 @@ BOOL  CHudItem::net_Spawn	(CSE_Abstract* DC)
 
 void CHudItem::renderable_Render()
 {
-	UpdateXForm	();
-	BOOL _hud_render			= ::Render->get_HUD() && GetHUDmode();
+	UpdateXForm	();	
+	BOOL _hud_render = GetAllowRenderHUD() && GetHUDmode();
 	if(_hud_render && !m_pHUD->IsHidden() && !item().IsHidden()){ 
 		// HUD render
-		if(m_bRenderHud){
-			::Render->set_Transform		(&m_pHUD->Transform());
-			::Render->add_Visual		(m_pHUD->Visual());
+		if(!NotRenderHud){
+			Render->add_Visual(object().H_Root(), m_pHUD->Visual(), &m_pHUD->Transform(), true);
 		}
+
+		SetAllowRenderHUD(false);
 	}
 	else {
 		if (!object().H_Parent() || (!_hud_render && m_pHUD && !m_pHUD->IsHidden() && !item().IsHidden()))

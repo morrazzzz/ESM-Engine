@@ -287,7 +287,12 @@ void CLightProjector::calculate	()
 		ISpatial*	spatial		= dynamic_cast<ISpatial*>	(O);
 		if (spatial)			{
 			spatial->spatial_updatesector			();
-			if (spatial->spatial.sector)			RImplementation.r_dsgraph_render_R1_box	(spatial->spatial.sector,BB,SE_R1_LMODELS);
+
+			if (spatial->spatial.sector)
+			{
+				CSector* sector = static_cast<CSector*>(spatial->spatial.sector);
+				RImplementation.r_dsgraph_render_R1_box(sector->root(), BB, SE_R1_LMODELS);
+			}
 		}
 		//if (spatial)		RImplementation.r_dsgraph_render_subspace	(spatial->spatial.sector,mCombine,v_C,FALSE);
 	}

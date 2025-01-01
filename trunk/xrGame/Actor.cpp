@@ -1248,7 +1248,8 @@ void CActor::OnHUDDraw	(CCustomHUD* /**hud/**/)
 	if (pHudItem && pHudItem->GetHUDmode())
 //	if(inventory().ActiveItem()  ) 
 	{
-		inventory().ActiveItem()->renderable_Render();
+		pHudItem->SetAllowRenderHUD(true);
+		pHudItem->renderable_Render();
 	}
 
 #if 0//ndef NDEBUG

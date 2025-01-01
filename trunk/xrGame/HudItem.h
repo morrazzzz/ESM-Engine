@@ -36,6 +36,9 @@ public:
 	IC void			SetHUDmode			(BOOL H)		{	hud_mode = H;								}
 	IC BOOL			GetHUDmode			()				{	return hud_mode;							}
 	
+	IC void SetAllowRenderHUD(bool value) { AllowRenderHud = true; }
+	IC bool GetAllowRenderHUD() { return AllowRenderHud; }
+
 	virtual bool	IsPending			()		const	{   return m_bPending;}
 	virtual void	StopHUDSounds		()				{};
 	
@@ -101,7 +104,8 @@ protected:
 	CWeaponHUD*				m_pHUD;
 	BOOL					hud_mode;
 	shared_str				hud_sect;
-	bool					m_bRenderHud;
+	bool NotRenderHud;
+	bool AllowRenderHud; 
 
 	//время нахождения в текущем состоянии
 	u32						m_dwStateTime;

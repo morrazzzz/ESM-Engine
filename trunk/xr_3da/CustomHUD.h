@@ -25,8 +25,9 @@ public:
 					CCustomHUD				();
 	virtual			~CCustomHUD				();
 
-	virtual		void		Render_First			(){;}
-	virtual		void		Render_Last				(){;}
+	virtual bool NeedRenderHUD(CObject* object) = 0;
+	virtual		void		Render_First (CObject* object){;}
+	virtual		void		Render_Last	(CObject* object){;}
 	
 	virtual		void		OnFrame					(){;}
 	virtual		void		OnEvent					(EVENT E, u64 P1, u64 P2){;}
