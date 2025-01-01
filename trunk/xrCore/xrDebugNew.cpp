@@ -54,7 +54,7 @@ extern bool shared_str_initialized;
 #pragma comment(lib, "dbghelp")
 
 #if 1//def DEBUG
-#	define USE_OWN_ERROR_MESSAGE_WINDOW
+//#	define USE_OWN_ERROR_MESSAGE_WINDOW
 #else // DEBUG
 #	define USE_OWN_MINI_DUMP
 #endif // DEBUG
