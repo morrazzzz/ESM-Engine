@@ -13,6 +13,11 @@ CSoundRender_CoreA::CSoundRender_CoreA	():CSoundRender_Core()
 	pContext					= 0;
     eaxSet						= 0;
     eaxGet						= 0;
+
+	Listener.position.set(0, 0, 0);
+
+	for (int i = 0; i < 2; i++)
+		Listener.orientation[i].set(0, 0, 0);
 }
 
 CSoundRender_CoreA::~CSoundRender_CoreA	()
