@@ -72,17 +72,11 @@ void	CObjectList::SingleUpdate	(CObject* O)
 			SingleUpdate(O->H_Parent());
 		}
 
-
 		Device.Statistic->UpdateClient_updated	++;
 		O->dwFrame_UpdateCL		=				Device.dwFrame;
 		O->IAmNotACrowAnyMore	()				;
 		O->UpdateCL				()				;
 		VERIFY3					(O->dbg_update_cl == Device.dwFrame, "Broken sequence of calls to 'UpdateCL'",*O->cName());
-	}
-	if (O->getDestroy() && (Device.dwFrame != O->dwFrame_UpdateCL))
-	{
-//		destroy_queue.push_back(O);
-		Msg				("- !!!processing_enabled ->destroy_queue.push_back %s[%d] frame [%d]",O->cName().c_str(), O->ID(), Device.dwFrame);
 	}
 }
 
@@ -339,7 +333,10 @@ void CObjectList::register_object_to_destroy(CObject *object_to_destroy)
 	VERIFY					(!registered_object_to_destroy(object_to_destroy));
 	destroy_queue.push_back	(object_to_destroy);
 
-	xr_vector<CObject*>::iterator it	= objects_active.begin();
+	if (object_to_destroy->processing_enabled())
+		object_to_destroy->processing_deactivate();
+
+	xr_vector<CObject*>::iterator it	= objects_active.begin();	
 	xr_vector<CObject*>::iterator it_e	= objects_active.end();
 	for(;it!=it_e;++it)
 	{
