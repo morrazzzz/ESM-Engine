@@ -116,7 +116,9 @@ void clean_game_globals()
 	xr_delete										(g_sound_collection_storage);
 	
 #ifdef DEBUG
+#ifdef GSC_PROFILER
 	xr_delete										(g_profiler);
+#endif
 	release_smart_cast_stats						();
 #endif
 

@@ -29,6 +29,10 @@
 #include "script_callback_ex.h"
 #include "game_object_space.h"
 
+#ifdef DEBUG
+#include "ai_debug.h"
+#endif
+
 void __stdcall ActionCallback(IKinematics *tpKinematics);
 
 CScriptEntity::CScriptEntity()
@@ -249,11 +253,6 @@ void CScriptEntity::ProcessScripts()
 
 		if (!l_tpEntityAction->CheckIfActionCompleted())
 			break;
-
-#ifdef _DEBUG
-//		if (!xr_strcmp("m_stalker_wounded",*object().cName()))
-//			Msg			("%6d Action completed : %s",Device.dwTimeGlobal,*l_tpEntityAction->m_tAnimationAction.m_caAnimationToPlay);
-#endif
 
 		vfFinishAction(l_tpEntityAction);
 

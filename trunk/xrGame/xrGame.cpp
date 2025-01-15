@@ -51,7 +51,7 @@ BOOL APIENTRY DllMain(HANDLE hModule, u32 ul_reason_for_call, LPVOID lpReserved)
 			CCC_RegisterCommands();
 			// keyboard binding
 			CCC_RegisterInput			();
-#ifdef DEBUG
+#ifdef GSC_PROFILER
 			g_profiler			= xr_new<CProfiler>();
 #endif
 			break;

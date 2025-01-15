@@ -7,6 +7,9 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
+#ifdef GSC_PROFILER
+
 #include "profiler.h"
 #include "../xr_3da/gamefont.h"
 
@@ -270,3 +273,4 @@ void CProfiler::add_profile_portion	(const CProfileResultPortion &profile_portio
 	InterlockedExchange			(&critical_section_counter,0);
 #endif // PROFILE_CRITICAL_SECTIONS
 }
+#endif

@@ -8,14 +8,14 @@
 
 #pragma once
 
-#ifdef XRGAME_EXPORTS
-#	ifdef DEBUG
-#		define	USE_PROFILER
-#	endif // DEBUG
+#ifndef XRGAME_EXPORTS
+#define NO_PROFILER
 #endif // XRGAME_EXPORTS
 
-#ifdef USE_PROFILER
-#	include "ai_debug.h"
+#if defined(OPTICK_ENABLE) && !defined(NO_PROFILER)
+#define START_PROFILE(a) { PROF_EVENT(a)
+#define STOP_PROFILE }
+#elif defined(DEBUG) && !defined(NO_PROFILER)
 
 #ifdef PROFILE_CRITICAL_SECTIONS
 	extern void add_profile_portion(LPCSTR id, const u64 &time);
@@ -78,7 +78,6 @@ public:
 };
 
 extern 	CProfiler *g_profiler;
-extern Flags32 psAI_Flags;
 
 IC	CProfiler&	profiler();
 		
@@ -86,6 +85,8 @@ IC	CProfiler&	profiler();
 #	define STOP_PROFILE     }
 
 #	include "profiler_inline.h"
+
+#define GSC_PROFILER
 
 #else // DEBUG
 #	define START_PROFILE(a) {

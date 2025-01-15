@@ -159,16 +159,21 @@ void CLevel::IR_OnKeyboardPress(int key)
 		return;
 	}
 
-#ifndef MASTER_GOLD
+#if defined(DEBUG) || defined(OPTICK_ENABLE)
 	switch (key) {
+	case DIK_NUMPAD0:
+	{
+		Console->Hide();
+		Console->Execute("optick_capture");
+	}
+	break;
+#ifdef DEBUG
 	case DIK_NUMPAD5:
 	{
 		Console->Hide();
 		Console->Execute("demo_record 1");
 	}
 	break;
-#endif // MASTER_GOLD
-#ifdef DEBUG
 	case DIK_RETURN:
 		bDebug = !bDebug;
 		return;
@@ -258,7 +263,6 @@ void CLevel::IR_OnKeyboardPress(int key)
 		break;
 	}
 #endif
-#ifndef MASTER_GOLD
 	}
 #endif // MASTER_GOLD
 
