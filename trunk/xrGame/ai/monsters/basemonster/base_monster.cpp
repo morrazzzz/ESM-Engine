@@ -142,6 +142,8 @@ void CBaseMonster::Die(CObject* who)
 	monster_squad().remove_member	((u8)g_Team(),(u8)g_Squad(),(u8)g_Group(),this);
 	
 	if (m_controlled)			m_controlled->on_die();
+
+#pragma todo("Delete GE_KILL_SOMEONE and add on_kill_enemy here?")
 }
 
 
