@@ -323,27 +323,19 @@ void InventoryUtilities::UpdateWeight(CUIStatic &wnd, bool withPrefix)
 	ZeroMemory(cl, sizeof(cl));
 
 	if (total > max)
-	{
-		strcpy(cl, "%c[red]");
-	}
+		xr_strcpy(cl, "%c[red]");
 	else
-	{
-		strcpy(cl, "%c[UI_orange]");
-	}
+		xr_strcpy(cl, "%c[UI_orange]");
 
 	string32 prefix;
 	ZeroMemory(prefix, sizeof(prefix));
 
 	if (withPrefix)
-	{
-		sprintf_s(prefix, "%%c[default]%s ", *CStringTable().translate("ui_inv_weight"));
-	}
+		xr_sprintf(prefix, "%%c[default]%s ", *CStringTable().translate("ui_inv_weight"));
 	else
-	{
-		strcpy(prefix, "");
-	}
+		xr_strcpy(prefix, "");
 
-	sprintf_s(buf, "%s%s%3.1f %s/%5.1f", prefix, cl, total, "%c[UI_orange]", max);
+	xr_sprintf(buf, "%s%s%g %s/%g", prefix, cl, total, "%c[UI_orange]", max);
 	wnd.SetText(buf);
 	//	UIStaticWeight.ClipperOff();
 }

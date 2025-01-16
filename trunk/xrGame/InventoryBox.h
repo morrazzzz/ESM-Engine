@@ -5,7 +5,9 @@
 class CInventoryBox :public CGameObject
 {
 	typedef CGameObject									inherited;
-	xr_vector<u16>										m_items;
+	xr_vector<PIItem> m_items;
+
+	float InventoryBoxAllWeight;
 public:
 				bool	m_in_use;
 						CInventoryBox					();
@@ -14,4 +16,6 @@ public:
 	virtual		void	net_Relcase						(CObject* O	);
 				void	AddAvailableItems				(TIItemContainer& items_container) const;
 				bool	IsEmpty							() {return m_items.empty();}
+
+				IC float GetBoxWeight() const { return InventoryBoxAllWeight; }
 };

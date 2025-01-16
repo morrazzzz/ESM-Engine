@@ -26,6 +26,7 @@
 #include "../script_callback_ex.h"
 #include "../script_game_object.h"
 #include "../BottleItem.h"
+#include "../string_table.h"
 #include <dinput.h>
 
 #define				CAR_BODY_XML		"carbody_new.xml"
@@ -258,7 +259,10 @@ void CUICarBodyWnd::UpdateLists()
 		m_pUIOthersBagList->SetItem					(itm);
 	}
 
-	InventoryUtilities::UpdateWeight				(*m_pUIOurBagWnd);
+	InventoryUtilities::UpdateWeight				(*m_pUIOurBagWnd, true);
+
+	ShowWeight();
+
 	m_b_need_update									= false;
 }
 
@@ -322,7 +326,9 @@ void CUICarBodyWnd::Show()
 	InventoryUtilities::SendInfoToActor		("ui_car_body");
 	inherited::Show							();
 	SetCurrentItem							(NULL);
-	InventoryUtilities::UpdateWeight		(*m_pUIOurBagWnd);
+	InventoryUtilities::UpdateWeight		(*m_pUIOurBagWnd, true);
+
+	ShowWeight();
 }
 
 void CUICarBodyWnd::DisableAll()
@@ -456,6 +462,40 @@ void CUICarBodyWnd::ActivatePropertiesBox()
 		cursor_pos.sub					(vis_rect.lt);
 		m_pUIPropertiesBox->Show		(vis_rect, cursor_pos);
 	}
+}
+
+void CUICarBodyWnd::ShowWeight()
+{
+	float totalWeight{};
+	string128 buff{};
+	string32 translate;
+	string16 cl{};
+
+	xr_strcpy(cl, "%c[UI_orange]");
+
+	if (m_pOthersObject)
+	{
+		totalWeight = m_pOthersObject->inventory().TotalWeight();
+
+		for (u32 i = 0; i < m_pOthersObject->inventory().m_slots.size(); i++)
+		{
+			if (!m_pOthersObject->inventory().m_slots[i].m_pIItem)
+				continue;
+
+			totalWeight -= m_pOthersObject->inventory().m_slots[i].m_pIItem->Weight();
+		}
+
+		xr_strcpy(translate, "ui_inv_dead_weight");
+	}
+	else if (m_pInventoryBox)
+	{
+		totalWeight = m_pInventoryBox->GetBoxWeight();
+
+		xr_strcpy(translate, "ui_inv_box_weight");
+	}
+
+	xr_sprintf(buff, "%s%s %g", cl, *CStringTable().translate(translate), totalWeight);
+	m_pUIOthersBagWnd->SetText(buff);
 }
 
 void CUICarBodyWnd::EatItem()
@@ -606,7 +646,7 @@ bool CUICarBodyWnd::TransferItem(PIItem itm, CInventoryOwner* owner_from, CInven
 	if(smart_cast<CBaseMonster*>(go_to))	return false;
 	if(b_check)
 	{
-		float invWeight						= owner_to->inventory().CalcTotalWeight();
+		float invWeight						= owner_to->inventory().TotalWeight();
 		float maxWeight						= owner_to->inventory().GetMaxWeight();
 		float itmWeight						= itm->Weight();
 		if(invWeight+itmWeight >=maxWeight)	return false;

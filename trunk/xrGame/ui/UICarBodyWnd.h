@@ -41,6 +41,8 @@ public:
 
 	void					UpdateLists_delayed			();
 
+	void ShowWeight();
+
 protected:
 	CInventoryOwner*		m_pOurObject;
 
