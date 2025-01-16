@@ -351,13 +351,6 @@ void CUIInventoryWnd::AttachAddon(PIItem item_to_upgrade)
 {
 	PlaySnd										(eInvAttachAddon);
 	R_ASSERT									(item_to_upgrade);
-	if (OnClient())
-	{
-		NET_Packet								P;
-		item_to_upgrade->object().u_EventGen	(P, GE_ADDON_ATTACH, item_to_upgrade->object().ID());
-		P.w_u32									(CurrentIItem()->object().ID());
-		item_to_upgrade->object().u_EventSend	(P);
-	};
 
 	item_to_upgrade->Attach						(CurrentIItem(), true);
 
@@ -375,13 +368,7 @@ void CUIInventoryWnd::AttachAddon(PIItem item_to_upgrade)
 void CUIInventoryWnd::DetachAddon(const char* addon_name)
 {
 	PlaySnd										(eInvDetachAddon);
-	if (OnClient())
-	{
-		NET_Packet								P;
-		CurrentIItem()->object().u_EventGen		(P, GE_ADDON_DETACH, CurrentIItem()->object().ID());
-		P.w_stringZ								(addon_name);
-		CurrentIItem()->object().u_EventSend	(P);
-	};
+
 	CurrentIItem()->Detach						(addon_name, true);
 
 	//спрятать вещь из активного слота в инвентарь на время вызова менюшки
@@ -432,16 +419,8 @@ void	CUIInventoryWnd::SendEvent_Item2Ruck			(PIItem	pItem)
 
 void	CUIInventoryWnd::SendEvent_Item_Drop(PIItem	pItem)
 {
-	pItem->SetDropManual			(TRUE);
-
-	if( OnClient() )
-	{
-		NET_Packet					P;
-		pItem->object().u_EventGen	(P, GE_OWNERSHIP_REJECT, pItem->object().H_Parent()->ID());
-		P.w_u16						(pItem->object().ID());
-		pItem->object().u_EventSend(P);
-	}
-	g_pInvWnd->PlaySnd				(eInvDropItem);
+	pItem->DropItem();
+	g_pInvWnd->PlaySnd(eInvDropItem);
 };
 
 void	CUIInventoryWnd::SendEvent_Item_Eat			(PIItem	pItem)

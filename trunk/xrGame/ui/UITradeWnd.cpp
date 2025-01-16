@@ -302,7 +302,7 @@ bool CUITradeWnd::CanMoveToOther(PIItem pItem)
 	float r2				= CalcItemsWeight(&m_uidata->UIOthersTradeList);	// other
 
 	float itmWeight			= pItem->Weight();
-	float otherInvWeight	= m_pOthersInv->CalcTotalWeight();
+	float otherInvWeight	= m_pOthersInv->TotalWeight();
 	float otherMaxWeight	= m_pOthersInv->GetMaxWeight();
 
 	if (!m_pOthersInvOwner->trade_parameters().enabled(

@@ -45,7 +45,7 @@ class CInventoryItem :
 private:
 	typedef CAttachableItem inherited;
 protected:
-	enum EIIFlags{				FdropManual			=(1<<0),
+	enum EIIFlags{				FDropped    			=(1<<0),
 								FCanTake			=(1<<1),
 								FCanTrade			=(1<<2),
 								Fbelt				=(1<<3),
@@ -107,12 +107,14 @@ public:
 
 	virtual	void				Hit					(SHit* pHDS);
 
-			BOOL				GetDropManual		() const	{ return m_flags.test(FdropManual);}
-			void				SetDropManual		(BOOL val)	{ m_flags.set(FdropManual, val);}
+	void DropItem();
 
-			BOOL				IsInvalid			() const;
+	void SetDroppedItem(bool ValueDropped) { m_flags.set(FDropped, ValueDropped); }
+	bool GetDroppedItem() const { return m_flags.is(FDropped); }
 
-			BOOL				IsQuestItem			()	const	{return m_flags.test(FIsQuestItem);}			
+	bool IsInvalid() const;
+	bool IsQuestItem() const { return m_flags.is(FIsQuestItem); }
+
 			u32					Cost				() const	{ return m_cost; }
 	virtual float				Weight				() 			{ return m_weight;}		
 

@@ -694,68 +694,34 @@ void CActor::Die(CObject* who)
 	inherited::Die		(who);
 
 	if (OnServer())
-	{	
+	{
 		xr_vector<CInventorySlot>::iterator I = inventory().m_slots.begin();
 		xr_vector<CInventorySlot>::iterator E = inventory().m_slots.end();
 
-
-		for (u32 slot_idx=0 ; I != E; ++I,++slot_idx)
+		for (u32 slot_idx = 0; I != E; ++I, ++slot_idx)
 		{
-			if (slot_idx == inventory().GetActiveSlot()) 
+			if (slot_idx == inventory().GetActiveSlot())
 			{
-				if((*I).m_pIItem)
-				{
-					if (IsGameTypeSingle())
-						(*I).m_pIItem->SetDropManual(TRUE);
-					else
-					{
-						if ((*I).m_pIItem->object().CLS_ID!=CLSID_OBJECT_W_KNIFE && slot_idx!=GRENADE_SLOT)
-						{
-							(*I).m_pIItem->SetDropManual(TRUE);
-						}							
-					}
-				};
-			continue;
+				if ((*I).m_pIItem)
+					(*I).m_pIItem->DropItem();
+
+				continue;
 			}
 			else
 			{
-				CCustomOutfit *pOutfit = smart_cast<CCustomOutfit *> ((*I).m_pIItem);
+				CCustomOutfit* pOutfit = smart_cast<CCustomOutfit*>((*I).m_pIItem);
 				if (pOutfit) continue;
-			};
-			if((*I).m_pIItem) 
+			}
+			if ((*I).m_pIItem)
 				inventory().Ruck((*I).m_pIItem);
-		};
+		}
 
 
 		///!!! чистка пояса
-		TIItemContainer &l_blist = inventory().m_belt;
-		while (!l_blist.empty())	
+		TIItemContainer& l_blist = inventory().m_belt;
+		while (!l_blist.empty())
 			inventory().Ruck(l_blist.front());
-
-		if (!IsGameTypeSingle())
-		{
-			//if we are on server and actor has PDA - destroy PDA
-			TIItemContainer &l_rlist	= inventory().m_ruck;
-			for(TIItemContainer::iterator l_it = l_rlist.begin(); l_rlist.end() != l_it; ++l_it)
-			{
-				if (GameID() == GAME_ARTEFACTHUNT)
-				{
-					CArtefact* pArtefact = smart_cast<CArtefact*> (*l_it);
-					if (pArtefact)
-					{
-						(*l_it)->SetDropManual(TRUE);
-						continue;
-					};
-				};
-
-				if ((*l_it)->object().CLS_ID == CLSID_OBJECT_PLAYERS_BAG)
-				{
-					(*l_it)->SetDropManual(TRUE);
-					continue;
-				};
-			};
-		};
-	};
+	}
 
 	cam_Set					(eacFreeLook);
 	mstate_wishful	&=		~mcAnyMove;
@@ -1232,7 +1198,7 @@ void CActor::g_PerformDrop	( )
 	u32 s					= inventory().GetActiveSlot();
 	if(inventory().m_slots[s].m_bPersistent)	return;
 
-	pItem->SetDropManual	(TRUE);
+	pItem->DropItem();
 }
 
 

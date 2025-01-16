@@ -99,7 +99,7 @@ void CStalkerActionDead::execute		()
 			continue;
 
 		if ((I - B) == (int)object().inventory().GetActiveSlot()) {
-			(*I).m_pIItem->SetDropManual	(TRUE);
+			(*I).m_pIItem->DropItem();
 			continue;
 		}
 

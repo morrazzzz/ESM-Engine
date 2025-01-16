@@ -236,7 +236,7 @@ void CScriptGameObject::MarkItemDropped		(CScriptGameObject *item)
 		return;
 	}
 
-	inventory_item->SetDropManual	(TRUE);
+	inventory_item->DropItem();
 }
 
 bool CScriptGameObject::MarkedDropped		(CScriptGameObject *item)
@@ -253,7 +253,7 @@ bool CScriptGameObject::MarkedDropped		(CScriptGameObject *item)
 		return				(false);
 	}
 
-	return					(!!inventory_item->GetDropManual());
+	return inventory_item->GetDroppedItem();
 }
 
 void CScriptGameObject::UnloadMagazine		()

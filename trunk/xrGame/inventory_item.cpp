@@ -82,7 +82,7 @@ CInventoryItem::CInventoryItem()
 	m_flags.set			(FRuckDefault,TRUE);
 	m_pCurrentInventory	= NULL;
 
-	SetDropManual		(FALSE);
+	SetDroppedItem(false);
 
 	m_flags.set			(FCanTake,TRUE);
 	m_flags.set			(FCanTrade,TRUE);
@@ -819,7 +819,15 @@ void CInventoryItem::UpdateXForm	()
 	object().Position().set(mRes.c);
 }
 
+void CInventoryItem::DropItem()
+{
+	SetDroppedItem(true);
 
+	NET_Packet					P;
+	object().u_EventGen(P, GE_OWNERSHIP_REJECT, object().H_Parent()->ID());
+	P.w_u16(u16(object().ID()));
+    object().u_EventSend(P);
+}
 
 #ifdef DEBUG
 
@@ -835,70 +843,6 @@ void CInventoryItem::OnRender()
 		Fmatrix	M = object().XFORM();
 		M.c.add (bc);
 		Level().debug_renderer().draw_obb			(M,bd,color_rgba(0,0,255,255));
-/*
-		u32 Color;
-		if (processing_enabled())
-		{
-			if (m_bInInterpolation)
-				Color = color_rgba(0,255,255, 255);
-			else
-				Color = color_rgba(0,255,0, 255);
-		}
-		else
-		{
-			if (m_bInInterpolation)
-				Color = color_rgba(255,0,255, 255);
-			else
-				Color = color_rgba(255, 0, 0, 255);
-		};
-
-//		Level().debug_renderer().draw_obb			(M,bd,Color);
-		float size = 0.01f;
-		if (!H_Parent())
-		{
-			Level().debug_renderer().draw_aabb			(Position(), size, size, size, color_rgba(0, 255, 0, 255));
-
-			Fvector Pos1, Pos2;
-			VIS_POSITION_it It = LastVisPos.begin();
-			Pos1 = *It;
-			for (; It != LastVisPos.end(); It++)
-			{
-				Pos2 = *It;
-				Level().debug_renderer().draw_line(Fidentity, Pos1, Pos2, color_rgba(255, 255, 0, 255));
-				Pos1 = Pos2;
-			};
-
-		}
-		//---------------------------------------------------------
-		if (OnClient() && !H_Parent() && m_bInInterpolation)
-		{
-
-			Fmatrix xformI;
-
-			xformI.rotation(IRecRot);
-			xformI.c.set(IRecPos);
-			Level().debug_renderer().draw_aabb			(IRecPos, size, size, size, color_rgba(255, 0, 255, 255));
-
-			xformI.rotation(IEndRot);
-			xformI.c.set(IEndPos);
-			Level().debug_renderer().draw_obb			(xformI,bd,color_rgba(0, 255, 0, 255));
-
-			///////////////////////////////////////////////////////////////////////////
-			Fvector point0 = IStartPos, point1;			
-			
-			float c = 0;
-			for (float i=0.1f; i<1.1f; i+= 0.1f)
-			{
-				c = i;// * 0.1f;
-				for (u32 k=0; k<3; k++)
-				{
-					point1[k] = c*(c*(c*SCoeff[k][0]+SCoeff[k][1])+SCoeff[k][2])+SCoeff[k][3];
-				};
-				Level().debug_renderer().draw_line(Fidentity, point0, point1, color_rgba(0, 0, 255, 255));
-				point0.set(point1);
-			};
-		};
-		*/
 	};
 }
 #endif
@@ -962,9 +906,9 @@ bool CInventoryItem::IsNecessaryItem(CInventoryItem* item)
 	return IsNecessaryItem(item->object().cNameSect());
 };
 
-BOOL CInventoryItem::IsInvalid() const
+bool CInventoryItem::IsInvalid() const
 {
-	return object().getDestroy() || GetDropManual();
+	return object().getDestroy() || GetDroppedItem();
 }
 
 u16 CInventoryItem::bone_count_to_synchronize	() const

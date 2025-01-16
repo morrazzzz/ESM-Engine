@@ -47,7 +47,6 @@ void CAI_Trader::Load(LPCSTR section)
 	float max_weight = pSettings->r_float	(section,"max_item_mass");
 	inventory().SetMaxWeight(max_weight*1000);
 	//	inventory().SetMaxRuck(1000000);
-	inventory().CalcTotalWeight();
 }
 
 void CAI_Trader::reinit	()

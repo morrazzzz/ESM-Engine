@@ -360,8 +360,8 @@ void CWeaponMagazined::ReloadMagazine()
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
 
 	//выкинуть коробку патронов, если она пустая
-	if(m_pAmmo && !m_pAmmo->m_boxCurr && OnServer()) 
-		m_pAmmo->SetDropManual(TRUE);
+	if(m_pAmmo && !m_pAmmo->m_boxCurr) 
+		m_pAmmo->DropItem();
 
 	if(iMagazineSize > iAmmoElapsed) 
 	{ 

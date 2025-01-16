@@ -28,10 +28,9 @@ class CInventory
 {				
 public:
 							CInventory			();
-	virtual					~CInventory			();
+	virtual					~CInventory			() = default;
 
-	float 					TotalWeight			() const;
-	float 					CalcTotalWeight		();
+	float TotalWeight() const;
 
 	void					Take				(CGameObject *pObj, bool bNotActivate, bool strict_placement);
 	bool					DropItem			(CGameObject *pObj);
@@ -57,7 +56,6 @@ public:
 	void					Activate_deffered	(u32 slot, u32 _frame);
 	PIItem					ActiveItem			()const					{return m_iActiveSlot==NO_ACTIVE_SLOT ? NULL :m_slots[m_iActiveSlot].m_pIItem;}
 	PIItem					ItemFromSlot		(u32 slot) const;
-	void					ActivateNextItemInActiveSlot();
 	bool					Action				(s32 cmd, u32 flags);
 	void					Update				();
 	// Ищет на поясе аналогичный IItem
@@ -129,7 +127,6 @@ public:
 	bool				isBeautifulForActiveSlot	(CInventoryItem *pIItem);
 protected:
 	void					UpdateDropTasks		();
-	void					UpdateDropItem		(PIItem pIItem);
 
 	// Активный слот и слот который станет активным после смены
     //значения совпадают в обычном состоянии (нет смены слотов)
@@ -161,6 +158,4 @@ protected:
 	u32					m_dwModifyFrame;
 
 	bool				m_drop_last_frame;
-
-	void				SendActionEvent		(s32 cmd, u32 flags);
 };
