@@ -307,11 +307,16 @@ void CStalkerActionKillWounded::execute					()
 	if (object().memory().visual().visible_now(enemy) && object().can_kill_enemy() && !object().can_kill_member())
 		return;
 
+#pragma todo("Is this even possible? We need to analyze!!!")
 	// this is fake
 	// but sometimes enemy can not be visible
 	// when it plays animation inside another object
 	// therefore we should use this ugly workaround
 	// and hit enemy virtually
+	Msg("!! AHTUNG KILL WOUNDED!!!!!");
+	for (int i = 0; i < 100; i++)
+		Msg("!! Fake hit for kill wounded!!!");
+	Msg("!! AHTUNG KILL WOUNDED END!!!!!");
 	NET_Packet				P;
 	SHit					HS;
 	HS.GenHeader			(GE_HIT, enemy->ID());
