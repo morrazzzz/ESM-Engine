@@ -129,109 +129,19 @@ void					CRender::create					()
 	o.mrt				= (HW.Caps.raster.dwMRT_count >= 3);
 	o.mrtmixdepth		= (HW.Caps.raster.b_MRT_mixdepth);
 
-	// Check for NULL render target support
-	//	DX10 disabled
-	//D3DFORMAT	nullrt	= (D3DFORMAT)MAKEFOURCC('N','U','L','L');
-	//o.nullrt			= HW.support	(nullrt,			D3DRTYPE_SURFACE, D3DUSAGE_RENDERTARGET);
-	o.nullrt = false;
-	/*
-	if (o.nullrt)		{
-	Msg				("* NULLRT supported and used");
-	};
-	*/
-	if (o.nullrt)		{
-		Msg				("* NULLRT supported");
+	//	For ATI it's much faster on DX10 to use D32F format
+	if (HW.Caps.id_vendor==0x1002)
+		o.HW_smap_FORMAT	= D3DFMT_D32F_LOCKABLE;
+	else
+		o.HW_smap_FORMAT	= D3DFMT_D24X8;
 
-		//.	    _tzset			();
-		//.		??? _strdate	( date, 128 );	???
-		//.		??? if (date < 22-march-07)		
-		if (0)
-		{
-			u32 device_id	= HW.Caps.id_device;
-			bool disable_nullrt = false;
-			switch (device_id)	
-			{
-			case 0x190:
-			case 0x191:
-			case 0x192:
-			case 0x193:
-			case 0x194:
-			case 0x197:
-			case 0x19D:
-			case 0x19E:{
-				disable_nullrt = true;	//G80
-				break;
-					   }
-			case 0x400:
-			case 0x401:
-			case 0x402:
-			case 0x403:
-			case 0x404:
-			case 0x405:
-			case 0x40E:
-			case 0x40F:{
-				disable_nullrt = true;	//G84
-				break;
-					   }
-			case 0x420:
-			case 0x421:
-			case 0x422:
-			case 0x423:
-			case 0x424:
-			case 0x42D:
-			case 0x42E:
-			case 0x42F:{
-				disable_nullrt = true;	// G86
-				break;
-					   }
-			}
-			if (disable_nullrt)	o.nullrt=false;
-		};
-		if (o.nullrt)	Msg				("* ...and used");
-	};
-
-
-	// SMAP / DST
-	o.HW_smap_FETCH4	= FALSE;
-	//	DX10 disabled
-	//o.HW_smap			= HW.support	(D3DFMT_D24X8,			D3DRTYPE_TEXTURE,D3DUSAGE_DEPTHSTENCIL);
-	o.HW_smap			= true;
-	o.HW_smap_PCF		= o.HW_smap		;
-	if (o.HW_smap)		
-	{
-		//	For ATI it's much faster on DX10 to use D32F format
-		if (HW.Caps.id_vendor==0x1002)
-			o.HW_smap_FORMAT	= D3DFMT_D32F_LOCKABLE;
-		else
-			o.HW_smap_FORMAT	= D3DFMT_D24X8;
-		Msg				("* HWDST/PCF supported and used");
-	}
+	Msg("* HWDST/PCF supported and used");
 
 	//	DX10 disabled
 	//o.fp16_filter		= HW.support	(D3DFMT_A16B16G16R16F,	D3DRTYPE_TEXTURE,D3DUSAGE_QUERY_FILTER);
 	//o.fp16_blend		= HW.support	(D3DFMT_A16B16G16R16F,	D3DRTYPE_TEXTURE,D3DUSAGE_QUERY_POSTPIXELSHADER_BLENDING);
 	o.fp16_filter		= true;
 	o.fp16_blend		= true;
-
-	// search for ATI formats
-	if (!o.HW_smap && (0==strstr(Core.Params,"-nodf24")) )		{
-		o.HW_smap		= HW.support	((D3DFORMAT)(MAKEFOURCC('D','F','2','4')),	D3DRTYPE_TEXTURE,D3DUSAGE_DEPTHSTENCIL);
-		if (o.HW_smap)	{
-			o.HW_smap_FORMAT= MAKEFOURCC	('D','F','2','4');
-			o.HW_smap_PCF	= FALSE			;
-			o.HW_smap_FETCH4= TRUE			;
-		}
-		Msg				("* DF24/F4 supported and used [%X]", o.HW_smap_FORMAT);
-	}
-
-	// emulate ATI-R4xx series
-	if (strstr(Core.Params,"-r4xx"))	{
-		o.mrtmixdepth	= FALSE;
-		o.HW_smap		= FALSE;
-		o.HW_smap_PCF	= FALSE;
-		o.fp16_filter	= FALSE;
-		o.fp16_blend	= FALSE;
-	}
 
 	VERIFY2				(o.mrt && (HW.Caps.raster.dwInstructions>=256),"Hardware doesn't meet minimum feature-level");
 	if (o.mrtmixdepth)		o.albedo_wo		= FALSE	;
@@ -1032,27 +942,6 @@ HRESULT	CRender::shader_compile			(
 	}
 	sh_name[len]='0'+char(o.fp16_blend); ++len;
 
-	if (o.HW_smap)			{
-		defines[def_it].Name		=	"USE_HWSMAP";
-		defines[def_it].Definition	=	"1";
-		def_it						++	;
-	}
-	sh_name[len]='0'+char(o.HW_smap); ++len;
-
-	if (o.HW_smap_PCF)			{
-		defines[def_it].Name		=	"USE_HWSMAP_PCF";
-		defines[def_it].Definition	=	"1";
-		def_it						++	;
-	}
-	sh_name[len]='0'+char(o.HW_smap_PCF); ++len;
-
-	if (o.HW_smap_FETCH4)			{
-		defines[def_it].Name		=	"USE_FETCH4";
-		defines[def_it].Definition	=	"1";
-		def_it						++	;
-	}
-	sh_name[len]='0'+char(o.HW_smap_FETCH4); ++len;
-
 	if (o.sjitter)			{
 		defines[def_it].Name		=	"USE_SJITTER";
 		defines[def_it].Definition	=	"1";
@@ -1550,7 +1439,7 @@ HRESULT	CRender::shader_compile			(
 //			Msg						( "! shader compilation failed" );
 			Log						("! ", file_name);
 			if ( pErrorBuf )
-				Log					("! error: ",(LPCSTR)pErrorBuf->GetBufferPointer());
+				Msg("! error: %s", static_cast<LPCSTR>(pErrorBuf->GetBufferPointer()));
 			else
 				Msg					("Can't compile shader hr=0x%08x", _result);
 		}

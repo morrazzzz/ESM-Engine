@@ -237,8 +237,6 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 		C.r_End			();
 		break;
 	case SE_R2_SHADOW:			// smap
-		//if (RImplementation.o.HW_smap)	C.r_Pass	("shadow_direct_base","dumb",	FALSE,TRUE,TRUE,FALSE);
-		//else							C.r_Pass	("shadow_direct_base","shadow_direct_base",FALSE);
 		C.r_Pass	("shadow_direct_base","dumb",	FALSE,TRUE,TRUE,FALSE);
 		//C.r_Sampler		("s_base",C.L_textures[0]);
 		C.r_dx10Texture		("s_base",C.L_textures[0]);

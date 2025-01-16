@@ -172,7 +172,7 @@ void CRenderTarget::accum_direct_cascade(const light& sun_light, u32 sub_phase, 
 			m_shadow.mul(xf_project, xf_invview);
 
 			// tsm-bias
-			if ((SE_SUN_FAR == sub_phase) && (RImplementation.o.HW_smap))
+			if (SE_SUN_FAR == sub_phase)
 			{
 				Fvector		bias;	bias.mul(L_dir, ps_r2_sun_tsm_bias);
 				Fmatrix		bias_t;	bias_t.translate(bias);
@@ -816,14 +816,8 @@ void CRenderTarget::accum_direct_volumetric(const light& sun_light, u32 sub_phas
 	//	Set correct depth surface
 	//	It's slow. Make this when shader is created
 	{
-		LPCSTR pszSMapName;
-		BOOL		b_HW_smap = RImplementation.o.HW_smap;
-		BOOL		b_HW_PCF = RImplementation.o.HW_smap_PCF;
-		if (b_HW_smap) {
-			if (b_HW_PCF)	pszSMapName = r2_RT_smap_depth;
-			else			pszSMapName = r2_RT_smap_depth;
-		}
-		else				pszSMapName = r2_RT_smap_surf;
+		LPCSTR pszSMapName = r2_RT_smap_depth;
+
 		//s_smap
 		STextureList* _T = &*Element->passes[0]->T;
 
