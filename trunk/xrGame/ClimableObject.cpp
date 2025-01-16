@@ -308,8 +308,8 @@ BOOL CClimableObject::UsedAI_Locations()
 
 void CClimableObject::ObjectContactCallback(bool&	do_colide,bool bo1,dContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/)
 {
-	dxGeomUserData* usr_data_1= retrieveGeomUserData(c.geom.g1);
-	dxGeomUserData* usr_data_2=retrieveGeomUserData(c.geom.g2);
+	dxGeomUserData* usr_data_1= PHRetrieveGeomUserData(c.geom.g1);
+	dxGeomUserData* usr_data_2=PHRetrieveGeomUserData(c.geom.g2);
 	dxGeomUserData* usr_data_ch=NULL;
 	dxGeomUserData* usr_data_lad=NULL;
 	CClimableObject* this_object=NULL;

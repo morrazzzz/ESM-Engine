@@ -65,14 +65,18 @@ IC bool is_imotion(interactive_motion *im)
 
 CCharacterPhysicsSupport::~CCharacterPhysicsSupport()
 {
-	if(m_flags.test(fl_skeleton_in_shell))
+	set_collision_hit_callback( 0 );
+	if( m_flags.test( fl_skeleton_in_shell ) )
 	{
-		if(m_physics_skeleton)
+		if( m_physics_skeleton )
 			m_physics_skeleton->Deactivate();
-		xr_delete(m_physics_skeleton);//!b_skeleton_in_shell
+		xr_delete( m_physics_skeleton );//!b_skeleton_in_shell
 	}
-	xr_delete(m_PhysicMovementControl);
-	VERIFY(!m_interactive_motion);
+	xr_delete( m_PhysicMovementControl );
+	//xr_delete(m_collision_activating_delay);
+	VERIFY( !m_interactive_motion );
+	//xr_delete( m_collision_activating_delay );
+	//bone_fix_clear();
 }
 
 CCharacterPhysicsSupport::CCharacterPhysicsSupport(EType atype,CEntityAlive* aentity) 
@@ -81,15 +85,16 @@ CCharacterPhysicsSupport::CCharacterPhysicsSupport(EType atype,CEntityAlive* aen
 	mXFORM(aentity->XFORM()),
 	m_ph_sound_player(aentity),
 	m_interactive_motion(0),
-	m_physics_shell_animated(NULL),
-	m_physics_shell_animated_time_destroy(u32(-1)),
-	m_hit_valide_time(u32(-1))
+	//m_interactive_animation( NULL ),
+	m_physics_shell_animated( NULL ),
+	m_physics_shell_animated_time_destroy( u32(-1) )
 {
 	m_PhysicMovementControl=xr_new<CPHMovementControl>(aentity);
 	m_flags.assign(0);
 	m_eType=atype;
 	m_eState=esAlive;
 	//b_death_anim_on					= false;
+	m_flags.assign( 0 );
 	m_flags.set(fl_death_anim_on,FALSE);
 	m_pPhysicsShell					=	NULL;
 	//m_saved_impulse					= 0.f;
@@ -299,7 +304,11 @@ void CCharacterPhysicsSupport::in_NetDestroy( )
 	CPHSkeleton::RespawnInit( );
 	CPHDestroyable::RespawnInit( );
 	m_eState = esAlive;
+	
+	//xr_delete( m_interactive_animation );
+	destroy_animation_collision();
 	DestroyIKController( );
+	//xr_delete( m_collision_activating_delay );
 }
 
 void	CCharacterPhysicsSupport::in_NetSave( NET_Packet& P )
@@ -318,7 +327,12 @@ void CCharacterPhysicsSupport::in_Init( )
 
 void CCharacterPhysicsSupport::in_shedule_Update( u32 DT )
 {
+	///VERIFY( 0 );
+
 	//CPHSkeleton::Update(DT);
+	//if(m_collision_activating_delay)
+	//		UpdateCollisionActivatingDellay();
+
 	if( !m_EntityAlife.use_simplified_visual	( ) )
 		CPHDestroyable::SheduleUpdate( DT );
 	else	if( m_pPhysicsShell&&m_pPhysicsShell->isFullActive( ) && !m_pPhysicsShell->isEnabled( ) )
@@ -480,20 +494,24 @@ void CCharacterPhysicsSupport::in_Hit( SHit &H, bool is_killing )
 	if(!m_pPhysicsShell&&is_killing)
 		KillHit( H );
 
-	if(!(m_pPhysicsShell&&m_pPhysicsShell->isActive()))
+	if( /*m_flags.test(fl_use_hit_anims)*/false && Type() != etBitting && !m_flags.test(fl_death_anim_on)) //&& Type() == etStalker
 	{
-		if(!is_killing&&m_EntityAlife.g_Alive())
+		m_hit_animations.PlayHitMotion( H.direction( ), H.bone_space_position(), H.bone( ), m_EntityAlife );
+	}
+
+	if( !( m_pPhysicsShell && m_pPhysicsShell->isActive( ) ) )
+	{
+		if( !is_killing && m_EntityAlife.g_Alive( ) )
 			m_PhysicMovementControl->ApplyHit( H.direction( ), H.phys_impulse( ), H.type( ) );
-
-#ifdef USE_SMART_HITS
-		if(Type()==etStalker)
+	} else {
+#ifdef	DEBUG
+		if( is_killing && death_anim_debug &&  !is_imotion( m_interactive_motion ) )
 		{
-				m_hit_animations.PlayHitMotion(dir,p_in_object_space,element,m_EntityAlife);
+				Msg( "death anim: applied fatal impulse dir: (%f,%f,%f), value: (%f) ", H.dir.x,H.dir.y,H.dir.z, H.impulse );
 		}
-#endif // USE_SMART_HITS
-
-	}else 
+#endif
 		m_pPhysicsShell->applyHit( H.bone_space_position( ), H.direction( ), H.phys_impulse( ), H.bone(), H.type( ) );
+	}
 }
 
 
@@ -503,6 +521,7 @@ IC		void	CCharacterPhysicsSupport::						UpdateDeathAnims				()
 
 	if(!m_flags.test(fl_death_anim_on) && !is_imotion(m_interactive_motion))//!m_flags.test(fl_use_death_motion)//!b_death_anim_on&&m_pPhysicsShell->isFullActive()
 	{
+		DestroyIKController( );
 		smart_cast<IKinematicsAnimated*>(m_EntityAlife.Visual())->PlayCycle("death_init");
 		m_flags.set(fl_death_anim_on,TRUE);
 	}
@@ -555,8 +574,10 @@ void CCharacterPhysicsSupport::in_UpdateCL( )
 	//	m_PhysicMovementControl->DestroyCharacter( );
 	//} 
 	else if( ik_controller( ) )
+	{
+		//update_interactive_anims();
 		ik_controller( )->Update();
-
+	}
 
 #ifdef DEBUG
 	if(Type()==etStalker && ph_dbg_draw_mask1.test(phDbgHitAnims))
@@ -959,10 +980,13 @@ void CCharacterPhysicsSupport::in_ChangeVisual()
 			m_physics_skeleton->Deactivate()		;
 			xr_delete(m_physics_skeleton)			;
 		}
-		CreateSkeleton(m_physics_skeleton);
-		if(m_pPhysicsShell)m_pPhysicsShell->Deactivate();
+		if( m_EntityAlife.Visual( ) )
+			CreateSkeleton( m_physics_skeleton );
+		if(m_pPhysicsShell)
+			m_pPhysicsShell->Deactivate();
 		xr_delete(m_pPhysicsShell);
-		ActivateShell(NULL);
+		if( m_EntityAlife.Visual( ) )
+			ActivateShell(NULL);
 	}
 }
 

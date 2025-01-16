@@ -13,7 +13,7 @@
 #include "CustomZone.h"
 
 #ifdef DEBUG
-//extern	BOOL death_anim_debug;
+extern	BOOL death_anim_debug;
 #endif // DEBUG
 
 character_shell_control::character_shell_control():
@@ -123,11 +123,11 @@ void character_shell_control::TestForWounded(const Fmatrix& xform,  IKinematics*
 		m_was_wounded=true;
 	}
 #ifdef	DEBUG
-//*		if( death_anim_debug )
-//		{
-//			Msg( "death anim: test for wounded %s ", m_was_wounded ? "true" : "false" );
-//			
-//		}
+		if( death_anim_debug )
+		{
+			Msg( "death anim: test for wounded %s ", m_was_wounded ? "true" : "false" );
+			
+		}
 #endif
 };
 
