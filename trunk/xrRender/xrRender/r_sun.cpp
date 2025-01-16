@@ -96,7 +96,7 @@ void CRender::prepart_render_sun_cascade(light& sun, u32 cascade_ind)
 	CFrustum					cull_frustum;
 	xr_vector<Fplane>			cull_planes;
 	Fvector3					cull_COP;
-	CSector* cull_sector;
+	CSector* cull_sector = DefaultSector;
 	Fmatrix						cull_xform;
 	{
 		PIX_EVENT(CALC_RENDER_SUN_CASCADE)
@@ -108,23 +108,6 @@ void CRender::prepart_render_sun_cascade(light& sun, u32 cascade_ind)
 #else
 		typedef		DumbConvexVolume<false>	t_volume;
 #endif
-
-		//******************************* Need to be placed after cuboid built **************************
-		// Search for default sector - assume "default" or "outdoor" sector is the largest one
-		//. hack: need to know real outdoor sector
-		CSector* largest_sector = 0;
-		float		largest_sector_vol = 0;
-		for (u32 s = 0; s < Sectors.size(); s++)
-		{
-			CSector* S = (CSector*)Sectors[s];
-			dxRender_Visual* V = S->root();
-			float				vol = V->vis.box.getvolume();
-			if (vol > largest_sector_vol) {
-				largest_sector_vol = vol;
-				largest_sector = S;
-			}
-		}
-		cull_sector = largest_sector;
 
 		// COP - 100 km away
 		cull_COP.mad(Device.vCameraPosition, sun.direction, -tweak_COP_initial_offs);

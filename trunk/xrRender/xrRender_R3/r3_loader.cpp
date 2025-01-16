@@ -332,6 +332,8 @@ void CRender::LoadSectors(IReader* fs)
 	for (u32 c=0; c<count; c++)
 		Portals[c]	= xr_new<CPortal> ();
 
+    float VolumeLastSector = 0.0f;
+
 	// load sectors
 	IReader* S = fs->open_chunk(fsL_SECTORS);
 	for (u32 i=0; ; i++)
@@ -341,6 +343,15 @@ void CRender::LoadSectors(IReader* fs)
 
 		CSector* __S		= xr_new<CSector> ();
 		__S->load			(*P);
+
+		dxRender_Visual* rootSector = __S->root();
+
+		if (VolumeLastSector < rootSector->vis.box.getvolume())
+		{
+			VolumeLastSector = rootSector->vis.box.getvolume();
+			DefaultSector = __S;
+		}
+
 		Sectors.push_back	(__S);
 
 		P->close();
