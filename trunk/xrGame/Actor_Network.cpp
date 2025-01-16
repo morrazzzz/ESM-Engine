@@ -501,7 +501,6 @@ void CActor::net_Destroy	()
 	LastPosL.clear();
 #endif
 
-	processing_deactivate();
 	m_holder=NULL;
 	m_holderID=u16(-1);
 	
