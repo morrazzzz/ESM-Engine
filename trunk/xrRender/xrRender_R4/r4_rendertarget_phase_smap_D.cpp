@@ -50,6 +50,13 @@ void	CRenderTarget::phase_smap_direct(const light& light, u32 sub_phase)
 	if (RImplementation.o.HW_smap)		RCache.set_ColorWriteEnable	( FALSE		);
 	else								RCache.set_ColorWriteEnable	( );
 	*/
+
+	//if (SE_SUN_FAR == sub_phase)
+		RCache.set_CullMode(CULL_CW);
+	//else
+	//	RCache.set_CullMode(CULL_CCW);
+
+	RCache.set_ColorWriteEnable(FALSE);
 }
 
 void CRenderTarget::phase_smap_direct_tsh()
