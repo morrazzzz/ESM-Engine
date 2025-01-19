@@ -7,6 +7,7 @@
 #include "../xr_3da/igame_level.h"
 #include "clsid_game.h"
 #include "GamePersistent.h"
+#include "Car.h"
 #include "UIGameCustom.h"
 #include "game_cl_base.h"
 
@@ -158,17 +159,14 @@ ENGINE_API extern float psHUD_FOV;
 
 bool CHUDManager::NeedRenderHUD(CObject* object)
 {
-	if (!psHUD_Flags.is(HUD_WEAPON | HUD_WEAPON_RT))
-		return false;
-
-	if (!pUIGame)
-		return false;
-
 	if (!object)	
 		return false;
-	CActor* A = smart_cast<CActor*>(object);
 
-	if (!A || !A->HUDview())							
+	CActor* A = smart_cast<CActor*>(object);
+	if (A && (!A->HUDview() || !A->g_Alive()))
+		return false;
+
+	if (smart_cast<CCar*>(object))
 		return false;
 
 	return true;
@@ -176,6 +174,15 @@ bool CHUDManager::NeedRenderHUD(CObject* object)
 
 void CHUDManager::Render_First(CObject* object)
 {
+	if (!psHUD_Flags.is(HUD_WEAPON | HUD_WEAPON_RT))
+		return;
+
+	if (!pUIGame)
+		return;
+
+	if (!NeedRenderHUD(object))
+		return;
+
 	// only shadow 
 	::Render->set_Invisible(TRUE);
 	object->renderable_Render();
@@ -184,7 +191,13 @@ void CHUDManager::Render_First(CObject* object)
 
 void CHUDManager::Render_Last(CObject* object)
 {
-	if (object->CLS_ID == CLSID_CAR)
+	if (!psHUD_Flags.is(HUD_WEAPON | HUD_WEAPON_RT))
+		return;
+
+	if (!pUIGame)
+		return;
+
+	if (!NeedRenderHUD(object))
 		return;
 
 	// hud itself
@@ -313,36 +326,24 @@ CDialogHolder* CurrentDialogHolder()
 		return HUD().GetGameUI();
 }
 
-
-bool   CHUDManager::RenderActiveItemUIQuery()
-{
-	return 0;
-}
-
-void   CHUDManager::RenderActiveItemUI()
-{
-}
-
-//restore????
-/*
+#pragma todo("Maybe merge RT2???")
 #include "player_hud.h"
 bool   CHUDManager::RenderActiveItemUIQuery()
 {
-	if (!psHUD_Flags.is(HUD_DRAW_RT2))
-		return false;
+	//if (!psHUD_Flags.is(HUD_DRAW_RT2))
+	//	return false;
 
-	if (!psHUD_Flags.is(HUD_WEAPON|HUD_WEAPON_RT|HUD_WEAPON_RT2))return false;
+	if (!psHUD_Flags.is(HUD_WEAPON|HUD_WEAPON_RT/*|HUD_WEAPON_RT2*/))return false;
 
-	if(!need_render_hud())			return false;
+	if(!NeedRenderHUD(Level().CurrentViewEntity()))			return false;
 
 	return (g_player_hud && g_player_hud->render_item_ui_query() );
 }
 
 void   CHUDManager::RenderActiveItemUI()
 {
-	if (!psHUD_Flags.is(HUD_DRAW_RT2))
-		return;
+	//if (!psHUD_Flags.is(HUD_DRAW_RT2))
+	//	return;
 
 	g_player_hud->render_item_ui		();
 }
-*/

@@ -25,7 +25,7 @@ public:
 					CCustomHUD				();
 	virtual			~CCustomHUD				();
 
-	virtual bool NeedRenderHUD(CObject* object) = 0;
+	//virtual bool NeedRenderHUD(CObject* object) = 0;
 	virtual		void		Render_First (CObject* object){;}
 	virtual		void		Render_Last	(CObject* object){;}
 	

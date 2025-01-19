@@ -54,7 +54,7 @@
 #include "script_callback_ex.h"
 #include "InventoryBox.h"
 #include "location_manager.h"
-//#include "Bolt.h"
+#include "player_hud.h"
 
 #include "../Include/xrRender/UIRender.h"
 
@@ -915,10 +915,39 @@ void CActor::UpdateCL	()
 float	NET_Jump = 0;
 void CActor::shedule_Update(u32 DT)
 {
-	//установить режим показа HUD для текущего активного слота
-	CHudItem* pHudItem = smart_cast<CHudItem*>(inventory().ActiveItem());
-	if (pHudItem)
-		pHudItem->SetHUDmode(HUDview());
+	if (IsFocused())
+	{
+		BOOL bHudView = HUDview();
+		if (bHudView)
+		{
+			CInventoryItem* pInvItem = inventory().ActiveItem();
+			if (pInvItem)
+			{
+				CHudItem* pHudItem = smart_cast<CHudItem*>(pInvItem);
+				if (pHudItem)
+				{
+					if (pHudItem->IsHidden())
+					{
+						g_player_hud->detach_item(pHudItem);
+					}
+					else
+					{
+						g_player_hud->attach_item(pHudItem);
+					}
+				}
+			}
+			else
+			{
+				g_player_hud->detach_item_idx(0);
+				//Msg("---No active item in inventory(), item 0 detached.");
+			}
+		}
+		else
+		{
+			g_player_hud->detach_all_items();
+			//Msg("---No hud view found, all items detached.");
+		}
+	}
 
 	//обновление инвентаря
 	UpdateInventoryOwner(DT);
@@ -1208,13 +1237,9 @@ extern	BOOL	g_ShowAnimationInfo		;
 // HUD
 void CActor::OnHUDDraw	(CCustomHUD* /**hud/**/)
 {
-	CHudItem* pHudItem = smart_cast<CHudItem*>(inventory().ActiveItem());
-	if (pHudItem && pHudItem->GetHUDmode())
-//	if(inventory().ActiveItem()  ) 
-	{
-		pHudItem->SetAllowRenderHUD(true);
-		pHudItem->renderable_Render();
-	}
+	R_ASSERT(IsFocused());
+	if (!((mstate_real & mcLookout) && !IsGameTypeSingle()))
+		g_player_hud->render_hud(this);
 
 #if 0//ndef NDEBUG
 	if (Level().CurrentControlEntity() == this && g_ShowAnimationInfo)

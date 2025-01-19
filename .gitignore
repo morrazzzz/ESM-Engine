@@ -20,6 +20,9 @@ xr_build/
 *.VC.db
 *.VC.VC.opendb
 
+# WinMerge files
+*.bak
+
 # files ending in .cache can be ignored
 *.[Cc]ache
 # but keep track of directories ending in .cache

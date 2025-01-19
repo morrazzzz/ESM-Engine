@@ -1,7 +1,6 @@
 #include "stdafx.h"
 
 #include "WeaponKnife.h"
-#include "WeaponHUD.h"
 #include "Entity.h"
 #include "Actor.h"
 #include "level.h"
@@ -15,15 +14,12 @@
 
 CWeaponKnife::CWeaponKnife() : CWeapon("KNIFE") 
 {
-	m_attackStart			= false;
 	SetState				( eHidden );
 	SetNextState			( eHidden );
 	knife_material_idx		= (u16)-1;
 }
 CWeaponKnife::~CWeaponKnife()
 {
-	HUD_SOUND::DestroySound(m_sndShot);
-
 }
 
 void CWeaponKnife::Load	(LPCSTR section)
@@ -32,19 +28,8 @@ void CWeaponKnife::Load	(LPCSTR section)
 	inherited::Load		(section);
 
 	fWallmarkSize = pSettings->r_float(section,"wm_size");
+	m_sounds.LoadSound(section,"snd_shoot"		, "sndShot"		, false, SOUND_TYPE_WEAPON_SHOOTING		);
 
-	// HUD :: Anims
-	R_ASSERT			(m_pHUD);
-	animGet				(mhud_idle,		pSettings->r_string(*hud_sect,"anim_idle"));
-	animGet				(mhud_hide,		pSettings->r_string(*hud_sect,"anim_hide"));
-	animGet				(mhud_show,		pSettings->r_string(*hud_sect,"anim_draw"));
-	animGet				(mhud_attack,	pSettings->r_string(*hud_sect,"anim_shoot1_start"));
-	animGet				(mhud_attack2,	pSettings->r_string(*hud_sect,"anim_shoot2_start"));
-	animGet				(mhud_attack_e,	pSettings->r_string(*hud_sect,"anim_shoot1_end"));
-	animGet				(mhud_attack2_e,pSettings->r_string(*hud_sect,"anim_shoot2_end"));
-
-	HUD_SOUND::LoadSound(section,"snd_shoot"		, m_sndShot		, ESoundTypes(SOUND_TYPE_WEAPON_SHOOTING)		);
-	
 	knife_material_idx =  GMLib.GetMaterialIdx(KNIFE_MATERIAL_NAME);
 }
 
@@ -135,7 +120,7 @@ void CWeaponKnife::KnifeStrike(const Fvector& pos, const Fvector& dir)
 	iAmmoElapsed					= m_magazine.size();
 	bool SendHit					= SendHitAllowed(H_Parent());
 
-	PlaySound						(m_sndShot,pos);
+	PlaySound						("sndShot",pos);
 
 	Level().BulletManager().AddBullet(	pos, 
 										dir, 
@@ -150,6 +135,44 @@ void CWeaponKnife::KnifeStrike(const Fvector& pos, const Fvector& dir)
 										SendHit);
 }
 
+void CWeaponKnife::OnMotionMark(u32 state, const motion_marks& M)
+{
+	inherited::OnMotionMark(state, M);
+		/*
+	if (state == eFire)
+	{
+		m_hit_dist		=	m_Hit1Distance;
+		m_splash_dir	=	m_Hit1SpashDir;
+		m_splash_radius	=	m_Hit1SplashRadius;
+		m_hits_count	=	m_Splash1HitsCount;
+		m_perv_hits_count = m_Splash1PerVictimsHCount;
+	} else if (state == eFire2)
+	{
+		m_hit_dist		=	m_Hit2Distance;
+		m_splash_dir	=	m_Hit2SpashDir;
+		m_splash_radius	=	m_Hit2SplashRadius;
+		m_hits_count	=	m_Splash2HitsCount;
+		m_perv_hits_count = 0;
+	} else
+	{
+		return;
+	}
+	*/
+
+	if (state != eFire && state != eFire2)
+		return;
+
+	Fvector	p1, d; 
+	p1.set			(get_LastFP()); 
+	d.set			(get_LastFD());
+	//fireDistance	= m_hit_dist + m_splash_radius;
+
+	if(H_Parent())
+	{
+		smart_cast<CEntity*>(H_Parent())->g_fireParams(this, p1,d);
+		KnifeStrike(p1,d);
+	}
+}
 
 void CWeaponKnife::OnAnimationEnd(u32 state)
 {
@@ -157,32 +180,12 @@ void CWeaponKnife::OnAnimationEnd(u32 state)
 	{
 	case eHiding:	SwitchState(eHidden);	break;
 	case eFire: 
-	case eFire2: 
-		{
-            if(m_attackStart) 
-			{
-				m_attackStart = false;
-				if(GetState()==eFire)
-					m_pHUD->animPlay(random_anim(mhud_attack_e), TRUE, this, GetState());
-				else
-					m_pHUD->animPlay(random_anim(mhud_attack2_e), TRUE, this, GetState());
+	case eFire2: 	SwitchState(eIdle);		break;
 
-				Fvector	p1, d; 
-				p1.set(get_LastFP()); 
-				d.set(get_LastFD());
-
-				if(H_Parent()) 
-					smart_cast<CEntity*>(H_Parent())->g_fireParams(this, p1,d);
-				else break;
-
-				KnifeStrike(p1,d);
-			} 
-			else 
-				SwitchState(eIdle);
-		}break;
 	case eShowing:
-	case eIdle:	
-		SwitchState(eIdle);		break;	
+	case eIdle:		SwitchState(eIdle);		break;	
+
+	default:		inherited::OnAnimationEnd(state);
 	}
 }
 
@@ -192,44 +195,41 @@ void CWeaponKnife::state_Attacking	(float)
 
 void CWeaponKnife::switch2_Attacking	(u32 state)
 {
-	if(m_bPending)	return;
+	if(IsPending())	return;
 
 	if(state==eFire)
-		m_pHUD->animPlay(random_anim(mhud_attack),		FALSE, this, state);
+		PlayHUDMotion("anm_attack",		FALSE, this, state);
 	else //eFire2
-		m_pHUD->animPlay(random_anim(mhud_attack2),		FALSE, this, state);
+		PlayHUDMotion("anm_attack2",	FALSE, this, state);
 
-	m_attackStart	= true;
-	m_bPending		= true;
+	SetPending			(TRUE);
 }
 
 void CWeaponKnife::switch2_Idle	()
 {
 	VERIFY(GetState()==eIdle);
 
-	m_pHUD->animPlay(random_anim(mhud_idle), TRUE, this, GetState());
-	m_bPending = false;
+	PlayAnimIdle		();
+	SetPending			(FALSE);
 }
 
 void CWeaponKnife::switch2_Hiding	()
 {
 	FireEnd					();
 	VERIFY(GetState()==eHiding);
-	m_pHUD->animPlay		(random_anim(mhud_hide), TRUE, this, GetState());
-//	m_bPending				= true;
+	PlayHUDMotion("anm_hide", TRUE, this, GetState());
 }
 
 void CWeaponKnife::switch2_Hidden()
 {
 	signal_HideComplete		();
-	m_bPending = false;
+	SetPending				(FALSE);
 }
 
 void CWeaponKnife::switch2_Showing	()
 {
 	VERIFY(GetState()==eShowing);
-	m_pHUD->animPlay		(random_anim(mhud_show), FALSE, this, GetState());
-//	m_bPending				= true;
+	PlayHUDMotion("anm_show", FALSE, this, GetState());
 }
 
 
@@ -253,16 +253,17 @@ bool CWeaponKnife::Action(s32 cmd, u32 flags)
 	{
 
 		case kWPN_ZOOM : 
-			if(flags&CMD_START) Fire2Start();
-			else Fire2End();
+			if(flags&CMD_START) 
+				Fire2Start			();
+
 			return true;
 	}
 	return false;
 }
 
-void CWeaponKnife::LoadFireParams(LPCSTR section, LPCSTR prefix)
+void CWeaponKnife::LoadFireParams(LPCSTR section)
 {
-	inherited::LoadFireParams(section, prefix);
+	inherited::LoadFireParams(section);
 
 	string256			full_name;
 	string32			buffer;
@@ -273,12 +274,14 @@ void CWeaponKnife::LoadFireParams(LPCSTR section, LPCSTR prefix)
 	m_eHitType_1		= ALife::g_tfString2HitType(pSettings->r_string(section, "hit_type"));
 
 	//fHitPower_2			= pSettings->r_float	(section,strconcat(full_name, prefix, "hit_power_2"));
-	s_sHitPower_2		= pSettings->r_string_wb	(section,strconcat(sizeof(full_name),full_name, prefix, "hit_power_2"));
-	fvHitPower_2[egdMaster]	= (float)atof(_GetItem(*s_sHitPower_2,0,buffer));//первый параметр - это хит для уровня игры мастер
+	s_sHitPower_2			= pSettings->r_string_wb	(section, "hit_power_2" );
+	//s_sHitPowerCritical_2	= pSettings->r_string_wb	(section, "hit_power_critical_2" );
+	
+	fvHitPower_2[egdMaster]			= (float)atof(_GetItem(*s_sHitPower_2,0,buffer));//первый параметр - это хит для уровня игры мастер
+	//fvHitPowerCritical_2[egdMaster]	= (float)atof(_GetItem(*s_sHitPowerCritical_2,0,buffer));//первый параметр - это хит для уровня игры мастер
 
-	fvHitPower_2[egdVeteran]	= fvHitPower_2[egdMaster];//изначально параметры для других уровней
-	fvHitPower_2[egdStalker]	= fvHitPower_2[egdMaster];//сложности
-	fvHitPower_2[egdNovice]		= fvHitPower_2[egdMaster];//такие же
+	fvHitPower_2[egdNovice] = fvHitPower_2[egdStalker] = fvHitPower_2[egdVeteran] = fvHitPower_2[egdMaster];//изначально параметры для других уровней сложности такие же
+	//fvHitPowerCritical_2[egdNovice] = fvHitPowerCritical_2[egdStalker] = fvHitPowerCritical_2[egdVeteran] = fvHitPowerCritical_2[egdMaster];//изначально параметры для других уровней сложности такие же
 
 	int num_game_diff_param=_GetItemCount(*s_sHitPower_2);//узнаём колличество параметров для хитов
 	if (num_game_diff_param>1)//если задан второй параметр хита
@@ -294,14 +297,10 @@ void CWeaponKnife::LoadFireParams(LPCSTR section, LPCSTR prefix)
 		fvHitPower_2[egdNovice]	= (float)atof(_GetItem(*s_sHitPower_2,3,buffer));//то вычитываем его для уровня новичка
 	}
 
-	fHitImpulse_2		= pSettings->r_float	(section,strconcat(sizeof(full_name),full_name, prefix, "hit_impulse_2"));
+	fHitImpulse_2		= pSettings->r_float	(section, "hit_impulse_2" );
 	m_eHitType_2		= ALife::g_tfString2HitType(pSettings->r_string(section, "hit_type_2"));
 }
 
-void CWeaponKnife::StartIdleAnim()
-{
-	m_pHUD->animDisplay(mhud_idle[Random.randI(mhud_idle.size())], TRUE);
-}
 void CWeaponKnife::GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count)
 {
 	str_name		= NameShort();

@@ -139,7 +139,7 @@ void CRender::render_main	(Fmatrix& m_ViewProjection, bool first_calc)
 		}
 	}
 
-	if (first_calc && g_hud->NeedRenderHUD(O))
+	if (first_calc /*&& g_hud->NeedRenderHUD(O)*/)
 		g_hud->Render_Last(O); // HUD
 }
 

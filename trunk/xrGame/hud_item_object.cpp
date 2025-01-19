@@ -47,6 +47,12 @@ void CHudItemObject::OnStateSwitch		(u32 S)
 	CHudItem::OnStateSwitch		(S);
 }
 
+void CHudItemObject::OnMoveToRuck(const SInvItemPlace& prev)
+{
+	CInventoryItemObject::OnMoveToRuck(prev);
+	CHudItem::OnMoveToRuck			(prev);
+}
+
 void CHudItemObject::OnEvent			(NET_Packet& P, u16 type)
 {
 	CInventoryItemObject::OnEvent(P,type);
@@ -91,14 +97,14 @@ void CHudItemObject::net_Destroy		()
 	CInventoryItemObject::net_Destroy	();
 }
 
-bool CHudItemObject::Activate			()
+bool CHudItemObject::ActivateItem			()
 {
-	return						(CHudItem::Activate());
+	return			(CHudItem::ActivateItem());
 }
 
-void CHudItemObject::Deactivate			()
+void CHudItemObject::DeactivateItem			()
 {
-	CHudItem::Deactivate		();
+	CHudItem::DeactivateItem		();
 }
 
 void CHudItemObject::UpdateCL			()

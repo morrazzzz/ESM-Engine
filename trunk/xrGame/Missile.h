@@ -2,28 +2,24 @@
 #include "hud_item_object.h"
 #include "HudSound.h"
 
-#define MS_HIDDEN	0
-#define MS_SHOWING	1
-#define MS_IDLE		2
-#define MS_THREATEN	3
-#define MS_READY	4
-#define MS_THROW	5
-#define MS_END		6
-#define MS_EMPTY	7
-#define MS_HIDING	8
-#define MS_PLAYING	9
-
 struct dContact;
 struct SGameMtl;
 class CMissile : public CHudItemObject
 {
 	typedef CHudItemObject inherited;
 public:
+	enum EMissileStates{
+		eThrowStart = eLastBaseState+1,
+		eReady,
+		eThrow,
+		eThrowEnd,
+	};
 							CMissile					();
 	virtual					~CMissile					();
 
 	virtual BOOL			AlwaysTheCrow				()				{ return TRUE; }
-	virtual void			OnDrawUI					();
+	virtual void			render_item_ui					();
+	virtual bool			render_item_ui_query					();
 
 	virtual void			reinit						();
 	virtual CMissile*		cast_missile				()				{return this;}
@@ -42,11 +38,8 @@ public:
 
 	virtual void 			OnAnimationEnd				(u32 state);
 
-	virtual void 			Show();
-	virtual void 			Hide();
-	virtual bool 			IsHidden					() const {return GetState() == MS_HIDDEN;}
-	virtual bool 			IsHiding					() const {return GetState() == MS_HIDING;}
-	virtual bool 			IsShowing					() const {return GetState() == MS_SHOWING;}
+	void            PlayAnimBore() override;
+	void PlaySndBore() override;
 
 	virtual void 			Throw();
 	virtual void 			Destroy();
@@ -97,20 +90,6 @@ protected:
 	//для HUD
 	Fvector					m_vHudThrowPoint;
 	Fvector					m_vHudThrowDir;
-
-	//имена анимаций
-	shared_str				m_sAnimShow;
-	shared_str				m_sAnimHide;
-	shared_str				m_sAnimIdle;
-	shared_str				m_sAnimPlaying;
-	shared_str				m_sAnimThrowBegin;
-	shared_str				m_sAnimThrowIdle;
-	shared_str				m_sAnimThrowAct;
-	shared_str				m_sAnimThrowEnd;
-
-	//звук анимации "играния"
-	HUD_SOUND				sndPlaying;
-
 protected:
 			void			setup_throw_params		();
 public:

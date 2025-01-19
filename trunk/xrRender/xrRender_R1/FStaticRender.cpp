@@ -430,7 +430,7 @@ void CRender::Calculate				()
 			// Determine visibility for dynamic part of scene
 			CObject* O = g_pGameLevel->CurrentViewEntity();
 
-			if (g_hud->NeedRenderHUD(O))
+			//if (g_hud->NeedRenderHUD(O))
 			{
 				//Make sure to keep the set_object order!!!
 

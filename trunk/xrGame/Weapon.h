@@ -8,6 +8,8 @@
 #include "ShootingObject.h"
 #include "hud_item_object.h"
 #include "Actor_Flags.h"
+#include "../Include/xrRender/KinematicsAnimated.h"
+#include "firedeps.h"
 #include "game_cl_single.h"
 
 
@@ -111,13 +113,9 @@ public:
 //////////////////////////////////////////////////////////////////////////
 public:
 	enum EWeaponStates {
-		eIdle		= 0,
-		eFire,
+		eFire		= eLastBaseState+1,
 		eFire2,
 		eReload,
-		eShowing,
-		eHiding,
-		eHidden,
 		eMisfire,
 		eMagEmpty,
 		eSwitch,
@@ -126,8 +124,6 @@ public:
 		eSubstateReloadBegin		=0,
 		eSubstateReloadInProcess,
 		eSubstateReloadEnd,
-		eSubstateIdleMoving,
-		eSubstateIdleSprint,
 	};
 
 	virtual bool			IsHidden			()	const		{	return GetState() == eHidden;}						// Does weapon is in hidden state
@@ -147,23 +143,18 @@ public:
 	bool					IsTriStateReload	() const		{ return m_bTriStateReload;}
 	EWeaponSubStates		GetReloadState		() const		{ return (EWeaponSubStates)m_sub_state;}
 protected:
+	BOOL					m_bAutoSpawnAmmo;
+
 	bool					m_bTriStateReload;
 	u8						m_sub_state;
 	// Weapon fires now
 	bool					bWorking2;
 	// a misfire happens, you'll need to rearm weapon
 	bool					bMisfire;				
-
-	BOOL					m_bAutoSpawnAmmo;
-//////////////////////////////////////////////////////////////////////////
-//  Weapon Addons
-//////////////////////////////////////////////////////////////////////////
+	bool AllowBoreAnm;
+	
+	virtual bool			AllowBore		();
 public:
-	///////////////////////////////////////////
-	// работа с аддонами к оружию
-	//////////////////////////////////////////
-
-
 			bool IsGrenadeLauncherAttached	() const;
 			bool IsScopeAttached			() const;
 			bool IsSilencerAttached			() const;
@@ -180,8 +171,8 @@ public:
 	virtual void InitAddons();
 
 	//для отоброажения иконок апгрейдов в интерфейсе
-	int	GetScopeX() {return m_iScopeX;}
-	int	GetScopeY() {return m_iScopeY;}
+	int	GetScopeX() {return /*pSettings->r_s32(m_scopes[m_cur_scope], "scope_x")*/ m_iScopeX; }
+	int	GetScopeY() {return /*pSettings->r_s32(m_scopes[m_cur_scope], "scope_y")*/ m_iScopeY; }
 	int	GetSilencerX() {return m_iSilencerX;}
 	int	GetSilencerY() {return m_iSilencerY;}
 	int	GetGrenadeLauncherX() {return m_iGrenadeLauncherX;}
@@ -261,8 +252,6 @@ public:
 	//показывает, что оружие находится в соостоянии поворота для приближенного прицеливания
 			bool			IsRotatingToZoom	() const		{	return (m_fZoomRotationFactor<1.f);}
 
-			void			LoadZoomOffset		(LPCSTR section, LPCSTR prefix);
-
 	virtual float				Weight			();		
 
 public:
@@ -289,26 +278,12 @@ protected:
 
 public:
 	//загружаемые параметры
-	Fvector					vLoadedFirePoint	;
-	Fvector					vLoadedFirePoint2	;
+	Fvector					vLoadedFirePoint;
+	Fvector					vLoadedFirePoint2;
 
 private:
-	//текущее положение и напрвление для партиклов
-	struct					_firedeps
-	{
-		Fmatrix				m_FireParticlesXForm;	//направление для партиклов огня и дыма
-		Fvector				vLastFP, vLastFP2	;	//огня
-		Fvector				vLastFD				;	// direction
-		Fvector				vLastSP				;	//гильз	
+	firedeps				m_current_firedeps;
 
-		_firedeps()			{
-			m_FireParticlesXForm.identity();
-			vLastFP.set			(0,0,0);
-			vLastFP2.set		(0,0,0);
-			vLastFD.set			(0,0,0);
-			vLastSP.set			(0,0,0);
-		}
-	}						m_firedeps			;
 protected:
 	virtual void			UpdateFireDependencies_internal	();
 	virtual void			UpdatePosition			(const Fmatrix& transform);	//.
@@ -316,17 +291,18 @@ protected:
 	virtual void			UpdateHudAdditonal		(Fmatrix&);
 	IC		void			UpdateFireDependencies	()			{ if (dwFP_Frame==Device.dwFrame) return; UpdateFireDependencies_internal(); };
 
-	virtual void			LoadFireParams		(LPCSTR section, LPCSTR prefix);
+	virtual void			LoadFireParams		(LPCSTR section);
 public:	
-	IC		const Fvector&	get_LastFP				()			{ UpdateFireDependencies(); return m_firedeps.vLastFP;	}
-	IC		const Fvector&	get_LastFP2				()			{ UpdateFireDependencies(); return m_firedeps.vLastFP2;	}
-	IC		const Fvector&	get_LastFD				()			{ UpdateFireDependencies(); return m_firedeps.vLastFD;	}
-	IC		const Fvector&	get_LastSP				()			{ UpdateFireDependencies(); return m_firedeps.vLastSP;	}
+	IC		const Fvector&	get_LastFP				()			{ UpdateFireDependencies(); return m_current_firedeps.vLastFP;	}
+	IC		const Fvector&	get_LastFP2				()			{ UpdateFireDependencies(); return m_current_firedeps.vLastFP2;	}
+	IC		const Fvector&	get_LastFD				()			{ UpdateFireDependencies(); return m_current_firedeps.vLastFD;	}
+	IC		const Fvector&	get_LastSP				()			{ UpdateFireDependencies(); return m_current_firedeps.vLastSP;	}
 
 	virtual const Fvector&	get_CurrentFirePoint	()			{ return get_LastFP();				}
 	virtual const Fvector&	get_CurrentFirePoint2	()			{ return get_LastFP2();				}
-	virtual const Fmatrix&	get_ParticlesXFORM		()			{ UpdateFireDependencies(); return m_firedeps.m_FireParticlesXForm;	}
+	virtual const Fmatrix&	get_ParticlesXFORM		()			{ UpdateFireDependencies(); return m_current_firedeps.m_FireParticlesXForm;	}
 	virtual void			ForceUpdateFireParticles();
+	virtual void			debug_draw_firedeps		();
 
 	//////////////////////////////////////////////////////////////////////////
 	// Weapon fire

@@ -19,6 +19,8 @@ public:
 	virtual void ReloadMagazine	();
 	virtual void Load			(LPCSTR section);
 	virtual void switch2_Fire	();
+	virtual	void FireTrace		(const Fvector& P, const Fvector& D);
+	virtual void on_a_hud_attach();
 
 	virtual void FireStart		();
 	virtual void SwitchState	(u32 S);
@@ -26,9 +28,10 @@ public:
 			void UpdateMissileVisibility	();
 	virtual void UnloadMagazine				(bool spawn_ammo = true);
 protected:
-	shared_str	m_sGrenadeBoneName;
-	shared_str	m_sHudGrenadeBoneName;
+	virtual bool	AllowBore		();
+	virtual void	PlayAnimReload	();
 
+    shared_str	m_sGrenadeBoneName;
 	shared_str	m_sRocketSection;
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION

@@ -1576,9 +1576,6 @@
     <Filter Include="Core\Client\Objects\items &amp; weapons\Weapons\Various weapons\BM-16">
       <UniqueIdentifier>{c8122da5-05cb-42b8-ac3d-4b470c5d303c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\Client\Objects\items &amp; weapons\Weapons\HUD">
-      <UniqueIdentifier>{b3d3ad54-2f10-40d1-a3e0-26afe699e60d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core\Client\Objects\items &amp; weapons\Weapons\Mounted Weapon">
       <UniqueIdentifier>{0f417768-6301-42a2-89eb-e1fe47e995f5}</UniqueIdentifier>
     </Filter>
@@ -2130,6 +2127,9 @@
     </Filter>
     <Filter Include="UI\Multiplayer\GameLog">
       <UniqueIdentifier>{2f8c72e0-ba7e-4259-89e9-6f7b11c9d0b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Client\Objects\items &amp; weapons\Weapons\HudItem">
+      <UniqueIdentifier>{50247808-9ec6-4882-bc9d-ca9f3d6d0697}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -5001,9 +5001,6 @@
     <ClInclude Include="weaponBM16.h">
       <Filter>Core\Client\Objects\items &amp; weapons\Weapons\Various weapons\BM-16</Filter>
     </ClInclude>
-    <ClInclude Include="WeaponHUD.h">
-      <Filter>Core\Client\Objects\items &amp; weapons\Weapons\HUD</Filter>
-    </ClInclude>
     <ClInclude Include="WeaponMounted.h">
       <Filter>Core\Client\Objects\items &amp; weapons\Weapons\Mounted Weapon</Filter>
     </ClInclude>
@@ -6041,6 +6038,9 @@
     </ClInclude>
     <ClInclude Include="action_planner.h">
       <Filter>AI\AComponents\DecisionManagement\ActionManagement\ActionPlannerAction</Filter>
+    </ClInclude>
+    <ClInclude Include="player_hud.h">
+      <Filter>Core\Client\Objects\items &amp; weapons\Weapons\HudItem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -7769,9 +7769,6 @@
     <ClCompile Include="weaponBM16_script.cpp">
       <Filter>Core\Client\Objects\items &amp; weapons\Weapons\Various weapons\BM-16</Filter>
     </ClCompile>
-    <ClCompile Include="WeaponHUD.cpp">
-      <Filter>Core\Client\Objects\items &amp; weapons\Weapons\HUD</Filter>
-    </ClCompile>
     <ClCompile Include="WeaponMounted.cpp">
       <Filter>Core\Client\Objects\items &amp; weapons\Weapons\Mounted Weapon</Filter>
     </ClCompile>
@@ -8869,6 +8866,12 @@
     </ClCompile>
     <ClCompile Include="death_anims_predicates.cpp">
       <Filter>Physics\CharacterSupport\death_anims</Filter>
+    </ClCompile>
+    <ClCompile Include="player_hud.cpp">
+      <Filter>Core\Client\Objects\items &amp; weapons\Weapons\HudItem</Filter>
+    </ClCompile>
+    <ClCompile Include="player_hud_tune.cpp">
+      <Filter>Core\Client\Objects\items &amp; weapons\Weapons\HudItem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

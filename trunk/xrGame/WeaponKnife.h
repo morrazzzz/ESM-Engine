@@ -6,18 +6,6 @@
 class CWeaponKnife: public CWeapon {
 private:
 	typedef CWeapon inherited;
-protected:
-	MotionSVec			mhud_idle;
-	MotionSVec			mhud_hide;
-	MotionSVec			mhud_show;
-	MotionSVec			mhud_attack;
-	MotionSVec			mhud_attack2;
-	MotionSVec			mhud_attack_e;
-	MotionSVec			mhud_attack2_e;
-
-	HUD_SOUND			m_sndShot;
-
-	bool				m_attackStart;
 
 protected:
 
@@ -28,6 +16,7 @@ protected:
 			void		switch2_Attacking			(u32 state);
 
 	virtual void		OnAnimationEnd				(u32 state);
+	virtual void		OnMotionMark				(u32 state, const motion_marks&);
 	virtual void		OnStateSwitch				(u32 S);
 
 	void				state_Attacking				(float dt);
@@ -51,20 +40,21 @@ protected:
 	float				fCurrentHit;
 	float				fHitImpulse_2;
 protected:
-	virtual void		LoadFireParams					(LPCSTR section, LPCSTR prefix);
+	virtual void		LoadFireParams					(LPCSTR section);
 public:
 						CWeaponKnife(); 
 	virtual				~CWeaponKnife(); 
 
 	void				Load							(LPCSTR section);
 
-	virtual void		Fire2Start						();
+
+			void		Fire2Start						();
 	virtual void		FireStart						();
+
 
 
 	virtual bool		Action							(s32 cmd, u32 flags);
 
-	virtual void		StartIdleAnim					();
 	virtual void		GetBriefInfo					(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count);
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION

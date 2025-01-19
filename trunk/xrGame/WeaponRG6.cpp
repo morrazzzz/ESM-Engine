@@ -67,7 +67,6 @@ void CWeaponRG6::FireStart ()
 			{
 			Log("current_state", GetState() );
 			Log("next_state", GetNextState());
-			Log("state_time", m_dwStateTime);
 			Log("item_sect", cNameSect().c_str());
 			Log("H_Parent", H_Parent()->cNameSect().c_str());
 			}

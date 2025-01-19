@@ -131,7 +131,7 @@ void CRender::render_main	(Fmatrix&	m_ViewProjection, bool _fportals)
 		}
 	}
 
-	if (g_hud->NeedRenderHUD(O))
+	//if (g_hud->NeedRenderHUD(O))
 		g_hud->Render_Last(O); // HUD
 }
 

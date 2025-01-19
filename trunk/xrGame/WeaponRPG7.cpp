@@ -5,7 +5,7 @@
 #include "explosiverocket.h"
 #include "entity.h"
 #include "level.h"
-#include "../include/xrRender/Kinematics.h"
+#include "player_hud.h"
 
 CWeaponRPG7::CWeaponRPG7() : CWeaponCustomPistol("RPG7") 
 {
@@ -21,32 +21,43 @@ void CWeaponRPG7::Load	(LPCSTR section)
 	CRocketLauncher::Load	(section);
 
 	m_fScopeZoomFactor		= pSettings->r_float	(section,"max_zoom_factor");
-
 	m_sGrenadeBoneName		= pSettings->r_string	(section,"grenade_bone");
-	m_sHudGrenadeBoneName	= pSettings->r_string	(hud_sect,"grenade_bone");
 
 	m_sRocketSection		= pSettings->r_string	(section,"rocket_class");
 }
 
+bool CWeaponRPG7::AllowBore()
+{
+	return inherited::AllowBore() && 0!=iAmmoElapsed;
+}
+
+void CWeaponRPG7::FireTrace(const Fvector& P, const Fvector& D)
+{
+	inherited::FireTrace	(P, D);
+	UpdateMissileVisibility	();
+}
+
+void CWeaponRPG7::on_a_hud_attach()
+{
+	inherited::on_a_hud_attach		();
+	UpdateMissileVisibility			();
+}
 
 void CWeaponRPG7::UpdateMissileVisibility()
 {
 	bool vis_hud,vis_weap;
-	vis_hud		= (!!iAmmoElapsed || GetState() == eReload);
+	vis_hud		= (!!iAmmoElapsed || GetState()==eReload);
 	vis_weap	= !!iAmmoElapsed;
 
-	IKinematics* pHudVisual = smart_cast<IKinematics*>(m_pHUD->Visual());
-	VERIFY(pHudVisual);
-	if (H_Parent() != Level().CurrentEntity()) pHudVisual = NULL;
-	IKinematics* pWeaponVisual = smart_cast<IKinematics*>(Visual()); 
-	VERIFY(pWeaponVisual);
+	if(GetHUDmode())
+	{
+		HudItemData()->set_bone_visible(m_sGrenadeBoneName.c_str(), vis_hud, TRUE);
+	}
 
-	if (pHudVisual) pHudVisual->LL_SetBoneVisible(pHudVisual->LL_BoneID(*m_sHudGrenadeBoneName),vis_hud,TRUE);
-	pWeaponVisual->LL_SetBoneVisible(pWeaponVisual->LL_BoneID(*m_sGrenadeBoneName),vis_weap,TRUE);
-	pWeaponVisual->CalculateBones_Invalidate();
-	pWeaponVisual->CalculateBones();
+	IKinematics* pWeaponVisual	= smart_cast<IKinematics*>(Visual()); 
+	VERIFY						(pWeaponVisual);
+	pWeaponVisual->LL_SetBoneVisible(pWeaponVisual->LL_BoneID(m_sGrenadeBoneName.c_str()), vis_weap, TRUE);
 }
-
 
 BOOL CWeaponRPG7::net_Spawn(CSE_Abstract* DC) 
 {
@@ -78,9 +89,7 @@ void CWeaponRPG7::ReloadMagazine()
 	inherited::ReloadMagazine();
 
 	if(iAmmoElapsed && !getRocketCount()) 
-	{
-		CRocketLauncher::SpawnRocket(*m_sRocketSection, this);
-	}
+		CRocketLauncher::SpawnRocket(m_sRocketSection.c_str(), this);
 }
 void CWeaponRPG7::SwitchState(u32 S) 
 {
@@ -102,22 +111,29 @@ void CWeaponRPG7::switch2_Fire	()
 
 	if(GetState() == eFire	&& getRocketCount()) 
 	{
-		Fvector p1, d; 
+		Fvector p1, d1, p; 
+		Fvector p2, d2, d; 
 		p1.set								(get_LastFP()); 
-		d.set								(get_LastFD());
-
+		d1.set								(get_LastFD());
+		p = p1;
+		d = d1;
 		CEntity* E = smart_cast<CEntity*>	(H_Parent());
-		if (E){
-			CInventoryOwner* io		= smart_cast<CInventoryOwner*>(H_Parent());
-			if(NULL == io->inventory().ActiveItem())
+		if(E)
+		{
+			E->g_fireParams				(this, p2,d2);
+			p = p2;
+			d = d2;
+
+			if(IsHudModeNow())
 			{
-			Log("current_state", GetState() );
-			Log("next_state", GetNextState());
-			Log("state_time", m_dwStateTime);
-			Log("item_sect", cNameSect().c_str());
-			Log("H_Parent", H_Parent()->cNameSect().c_str());
+				Fvector		p0;
+				float dist	= HUD().GetCurrentRayQuery().range;
+				p0.mul		(d2,dist);
+				p0.add		(p1);
+				p			= p1;
+				d.sub		(p0,p1);
+				d.normalize_safe();
 			}
-			E->g_fireParams				(this, p1,d);
 		}
 
 		Fmatrix								launch_matrix;
@@ -125,7 +141,7 @@ void CWeaponRPG7::switch2_Fire	()
 		launch_matrix.k.set					(d);
 		Fvector::generate_orthonormal_basis(launch_matrix.k,
 											launch_matrix.j, launch_matrix.i);
-		launch_matrix.c.set					(p1);
+		launch_matrix.c.set					(p);
 
 		d.normalize							();
 		d.mul								(m_fLaunchSpeed);
@@ -146,21 +162,29 @@ void CWeaponRPG7::switch2_Fire	()
 	}
 }
 
-void CWeaponRPG7::OnEvent(NET_Packet& P, u16 type)
+void CWeaponRPG7::PlayAnimReload()
 {
-	inherited::OnEvent(P, type);
+	VERIFY(GetState()==eReload);
+	PlayHUDMotion("anm_reload", FALSE, this, GetState());
+}
+
+void CWeaponRPG7::OnEvent(NET_Packet& P, u16 type) 
+{
+	inherited::OnEvent(P,type);
 	u16 id;
 	switch (type) {
-	case GE_OWNERSHIP_TAKE: {
-		P.r_u16(id);
-		CRocketLauncher::AttachRocket(id, this);
-	} break;
-	case GE_OWNERSHIP_REJECT:
-	case GE_LAUNCH_ROCKET:
-	{
-		bool bLaunch = (type == GE_LAUNCH_ROCKET);
-		P.r_u16(id);
-		CRocketLauncher::DetachRocket(id, bLaunch);
-	} break;
+		case GE_OWNERSHIP_TAKE : {
+			P.r_u16(id);
+			CRocketLauncher::AttachRocket(id, this);
+		} break;
+		case GE_OWNERSHIP_REJECT:
+		case GE_LAUNCH_ROCKET	: 
+			{
+			bool bLaunch = (type==GE_LAUNCH_ROCKET);
+			P.r_u16(id);
+			CRocketLauncher::DetachRocket(id, bLaunch);
+			if(bLaunch)
+				UpdateMissileVisibility();
+		} break;
 	}
 }

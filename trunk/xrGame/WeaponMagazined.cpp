@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "uigamecustom.h"
-#include "WeaponHUD.h"
 #include "WeaponMagazinedWGrenade.h"
 #include "WeaponMagazined.h"
 #include "entity.h"
@@ -18,14 +17,15 @@
 
 CWeaponMagazined::CWeaponMagazined(LPCSTR name, ESoundTypes eSoundType) : CWeapon(name)
 {
-	m_eSoundShow		= ESoundTypes(SOUND_TYPE_ITEM_TAKING | eSoundType);
-	m_eSoundHide		= ESoundTypes(SOUND_TYPE_ITEM_HIDING | eSoundType);
-	m_eSoundShot		= ESoundTypes(SOUND_TYPE_WEAPON_SHOOTING | eSoundType);
-	m_eSoundEmptyClick	= ESoundTypes(SOUND_TYPE_WEAPON_EMPTY_CLICKING | eSoundType);
-	m_eSoundReload		= ESoundTypes(SOUND_TYPE_WEAPON_RECHARGING | eSoundType);
+	m_eSoundShow				= ESoundTypes(SOUND_TYPE_ITEM_TAKING | eSoundType);
+	m_eSoundHide				= ESoundTypes(SOUND_TYPE_ITEM_HIDING | eSoundType);
+	m_eSoundShot				= ESoundTypes(SOUND_TYPE_WEAPON_SHOOTING | eSoundType);
+	m_eSoundEmptyClick			= ESoundTypes(SOUND_TYPE_WEAPON_EMPTY_CLICKING | eSoundType);
+	m_eSoundReload				= ESoundTypes(SOUND_TYPE_WEAPON_RECHARGING | eSoundType);
+	m_sounds_enabled			= true;
 	
-	m_pSndShotCurrent = NULL;
-	m_sSilencerFlameParticles = m_sSilencerSmokeParticles = NULL;
+	m_sSndShotCurrent			= NULL;
+	m_sSilencerFlameParticles	= m_sSilencerSmokeParticles = NULL;
 
 	m_bFireSingleShot = false;
 	m_iShotNum = 0;
@@ -36,27 +36,6 @@ CWeaponMagazined::CWeaponMagazined(LPCSTR name, ESoundTypes eSoundType) : CWeapo
 CWeaponMagazined::~CWeaponMagazined()
 {
 	// sounds
-	HUD_SOUND::DestroySound(sndShow);
-	HUD_SOUND::DestroySound(sndHide);
-	HUD_SOUND::DestroySound(sndShot);
-	HUD_SOUND::DestroySound(sndEmptyClick);
-	HUD_SOUND::DestroySound(sndReload);
-}
-
-
-void CWeaponMagazined::StopHUDSounds		()
-{
-	HUD_SOUND::StopSound(sndShow);
-	HUD_SOUND::StopSound(sndHide);
-	
-	HUD_SOUND::StopSound(sndEmptyClick);
-	HUD_SOUND::StopSound(sndReload);
-
-	HUD_SOUND::StopSound(sndShot);
-//.	if(sndShot.enable && sndShot.snd.feedback)
-//.		sndShot.snd.feedback->switch_to_3D();
-
-	inherited::StopHUDSounds();
 }
 
 void CWeaponMagazined::net_Destroy()
@@ -70,30 +49,14 @@ void CWeaponMagazined::Load	(LPCSTR section)
 	inherited::Load		(section);
 		
 	// Sounds
-	HUD_SOUND::LoadSound(section,"snd_draw"		, sndShow		, m_eSoundShow		);
-	HUD_SOUND::LoadSound(section,"snd_holster"	, sndHide		, m_eSoundHide		);
-	HUD_SOUND::LoadSound(section,"snd_shoot"	, sndShot		, m_eSoundShot		);
-	HUD_SOUND::LoadSound(section,"snd_empty"	, sndEmptyClick	, m_eSoundEmptyClick	);
-	HUD_SOUND::LoadSound(section,"snd_reload"	, sndReload		, m_eSoundReload		);
+	m_sounds.LoadSound(section,"snd_draw", "sndShow"		, false, m_eSoundShow		);
+	m_sounds.LoadSound(section,"snd_holster", "sndHide"		, false, m_eSoundHide		);
+	m_sounds.LoadSound(section,"snd_shoot", "sndShot"		, false, m_eSoundShot		);
+	m_sounds.LoadSound(section,"snd_empty", "sndEmptyClick"	, false, m_eSoundEmptyClick	);
+	m_sounds.LoadSound(section,"snd_reload", "sndReload"		, true, m_eSoundReload		);
 	
-	m_pSndShotCurrent = &sndShot;
+	m_sSndShotCurrent = "sndShot";
 		
-	
-	// HUD :: Anims
-	R_ASSERT			(m_pHUD);
-	animGet				(mhud.mhud_idle,		pSettings->r_string(*hud_sect, "anim_idle"));
-	animGet				(mhud.mhud_reload,	pSettings->r_string(*hud_sect, "anim_reload"));
-	animGet				(mhud.mhud_show,		pSettings->r_string(*hud_sect, "anim_draw"));
-	animGet				(mhud.mhud_hide,		pSettings->r_string(*hud_sect, "anim_holster"));
-	animGet				(mhud.mhud_shots,	pSettings->r_string(*hud_sect, "anim_shoot"));
-
-	if(pSettings->line_exist(*hud_sect,"anim_idle_sprint"))
-		animGet				(mhud.mhud_idle_sprint,	pSettings->r_string(*hud_sect, "anim_idle_sprint"));
-
-	if(IsZoomEnabled())
-		animGet				(mhud.mhud_idle_aim,		pSettings->r_string(*hud_sect, "anim_idle_aim"));
-	
-
 	//звуки и партиклы глушителя, еслит такой есть
 	if(m_eSilencerStatus == ALife::eAddonAttachable)
 	{
@@ -101,7 +64,8 @@ void CWeaponMagazined::Load	(LPCSTR section)
 			m_sSilencerFlameParticles = pSettings->r_string(section, "silencer_flame_particles");
 		if(pSettings->line_exist(section, "silencer_smoke_particles"))
 			m_sSilencerSmokeParticles = pSettings->r_string(section, "silencer_smoke_particles");
-		HUD_SOUND::LoadSound(section,"snd_silncer_shot", sndSilencerShot, m_eSoundShot);
+		
+		m_sounds.LoadSound(section,"snd_silncer_shot", "sndSilencerShot", false, m_eSoundShot);
 	}
 	//  [7/20/2005]
 	if (pSettings->line_exist(section, "dispersion_start"))
@@ -194,9 +158,9 @@ bool CWeaponMagazined::TryReload()
 		
 		if(m_pAmmo || unlimited_ammo() || (IsMisfire() && iAmmoElapsed))
 		{
-			m_bPending = true;
-			SwitchState(eReload); 
-			return true;
+			SetPending			(TRUE);
+			SwitchState			(eReload); 
+			return				true;
 		}
 
 		else for(u32 i = 0; i < m_ammoTypes.size(); ++i) 
@@ -204,10 +168,10 @@ bool CWeaponMagazined::TryReload()
 			m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAny( *m_ammoTypes[i] ));
 			if(m_pAmmo) 
 			{ 
-				m_ammoType = i; 
-				m_bPending = true;
-				SwitchState(eReload);
-				return true; 
+				m_ammoType			= i; 
+				SetPending			(TRUE);
+				SwitchState			(eReload);
+				return				true;
 			}
 		}
 	}
@@ -467,12 +431,12 @@ void CWeaponMagazined::UpdateSounds	()
 	
 	dwUpdateSounds_Frame = Device.dwFrame;
 
-	// ref_sound positions
-	if (sndShow.playing			())	sndShow.set_position		(get_LastFP());
-	if (sndHide.playing			())	sndHide.set_position		(get_LastFP());
-	if (sndShot.playing			()) sndShot.set_position		(get_LastFP());
-	if (sndReload.playing		()) sndReload.set_position		(get_LastFP());
-	if (sndEmptyClick.playing	())	sndEmptyClick.set_position	(get_LastFP());
+	Fvector P						= get_LastFP();
+	m_sounds.SetPosition("sndShow", P);
+	m_sounds.SetPosition("sndHide", P);
+//. nah	m_sounds.SetPosition("sndShot", P);
+	m_sounds.SetPosition("sndReload", P);
+//. nah	m_sounds.SetPosition("sndEmptyClick", P);
 }
 
 void CWeaponMagazined::state_Fire	(float dt)
@@ -485,15 +449,14 @@ void CWeaponMagazined::state_Fire	(float dt)
 
 	if (!H_Parent()) return;
 
-	CInventoryOwner* io		= smart_cast<CInventoryOwner*>(H_Parent());
-	if(NULL == io->inventory().ActiveItem())
-	{
-			Log("current_state", GetState() );
-			Log("next_state", GetNextState());
-			Log("state_time", m_dwStateTime);
-			Log("item_sect", cNameSect().c_str());
-			Log("H_Parent", H_Parent()->cNameSect().c_str());
-	}
+		CInventoryOwner* io		= smart_cast<CInventoryOwner*>(H_Parent());
+		if(NULL == io->inventory().ActiveItem())
+		{
+				Log("current_state", GetState() );
+				Log("next_state", GetNextState());
+				Log("item_sect", cNameSect().c_str());
+				Log("H_Parent", H_Parent()->cNameSect().c_str());
+		}
 
 
 	smart_cast<CEntity*>	(H_Parent())->g_fireParams	(this, p1,d);
@@ -556,7 +519,7 @@ void CWeaponMagazined::OnShot		()
 		Actor()->set_state_wishful(Actor()->get_state_wishful() & (~mcSprint));
 
 	// Sound
-	PlaySound			(*m_pSndShotCurrent,get_LastFP());
+	PlaySound					(m_sSndShotCurrent.c_str(), get_LastFP());
 
 	// Camera	
 	AddShotEffector		();
@@ -580,7 +543,7 @@ void CWeaponMagazined::OnShot		()
 
 void CWeaponMagazined::OnEmptyClick	()
 {
-	PlaySound	(sndEmptyClick,get_LastFP());
+	PlaySound	("sndEmptyClick",get_LastFP());
 }
 
 void CWeaponMagazined::OnAnimationEnd(u32 state) 
@@ -591,13 +554,18 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 		case eHiding:	SwitchState(eHidden);   break;	// End of Hide
 		case eShowing:	SwitchState(eIdle);		break;	// End of Show
 		case eIdle:		switch2_Idle();			break;  // Keep showing idle
-
 	}
+	inherited::OnAnimationEnd(state);
 }
+
 void CWeaponMagazined::switch2_Idle	()
 {
-	m_bPending = false;
-	PlayAnimIdle();
+	m_iShotNum = 0;
+	//if(m_fOldBulletSpeed != 0.f)
+	//	SetBulletSpeed(m_fOldBulletSpeed);
+
+	SetPending			(FALSE);
+	PlayAnimIdle		();
 }
 
 #ifdef DEBUG
@@ -672,46 +640,46 @@ void CWeaponMagazined::switch2_Empty()
 }
 void CWeaponMagazined::PlayReloadSound()
 {
-	PlaySound	(sndReload,get_LastFP());
+	if(m_sounds_enabled)
+		PlaySound	("sndReload",get_LastFP());
 }
 
 void CWeaponMagazined::switch2_Reload()
 {
-	CWeapon::FireEnd();
+	CWeapon::FireEnd	();
 
-	PlayReloadSound	();
-	PlayAnimReload	();
-	m_bPending = true;
+	PlayReloadSound		();
+	PlayAnimReload		();
+	SetPending			(TRUE);
 }
 void CWeaponMagazined::switch2_Hiding()
 {
+	OnZoomOut();
 	CWeapon::FireEnd();
+	
+	if(m_sounds_enabled)
+		PlaySound			("sndHide",get_LastFP());
 
-	HUD_SOUND::StopSound(sndReload);
-
-	PlaySound	(sndHide,get_LastFP());
-
-	PlayAnimHide();
-	m_bPending = true;
+	PlayAnimHide		();
+	SetPending			(TRUE);
 }
 
 void CWeaponMagazined::switch2_Hidden()
 {
 	CWeapon::FireEnd();
 
-	HUD_SOUND::StopSound(sndReload);
-
-	if (m_pHUD) m_pHUD->StopCurrentAnimWithoutCallback();
+	StopCurrentAnimWithoutCallback();
 
 	signal_HideComplete		();
 	RemoveShotEffector		();
 }
 void CWeaponMagazined::switch2_Showing()
 {
-	PlaySound	(sndShow,get_LastFP());
+	if(m_sounds_enabled)
+		PlaySound			("sndShow",get_LastFP());
 
-	m_bPending = true;
-	PlayAnimShow();
+	SetPending			(TRUE);
+	PlayAnimShow		();
 }
 
 bool CWeaponMagazined::Action(s32 cmd, u32 flags) 
@@ -931,13 +899,9 @@ void CWeaponMagazined::InitAddons()
 
 	if(IsSilencerAttached() && SilencerAttachable())
 	{		
-		m_sFlameParticlesCurrent = m_sSilencerFlameParticles;
-		m_sSmokeParticlesCurrent = m_sSilencerSmokeParticles;
-		m_pSndShotCurrent = &sndSilencerShot;
-
-
-		//сила выстрела
-		LoadFireParams	(*cNameSect(), "");
+		m_sFlameParticlesCurrent	= m_sSilencerFlameParticles;
+		m_sSmokeParticlesCurrent	= m_sSilencerSmokeParticles;
+		m_sSndShotCurrent			= "sndSilencerShot";
 
 		//подсветка от выстрела
 		LoadLights		(*cNameSect(), "silencer_");
@@ -945,12 +909,12 @@ void CWeaponMagazined::InitAddons()
 	}
 	else
 	{
-		m_sFlameParticlesCurrent = m_sFlameParticles;
-		m_sSmokeParticlesCurrent = m_sSmokeParticles;
-		m_pSndShotCurrent = &sndShot;
+		m_sFlameParticlesCurrent	= m_sFlameParticles;
+		m_sSmokeParticlesCurrent	= m_sSmokeParticles;
+		m_sSndShotCurrent			= "sndShot";
 
 		//сила выстрела
-		LoadFireParams	(*cNameSect(), "");
+		LoadFireParams	(*cNameSect());
 		//подсветка от выстрела
 		LoadLights		(*cNameSect(), "");
 	}
@@ -997,61 +961,40 @@ void CWeaponMagazined::ApplySilencerKoeffs	()
 void CWeaponMagazined::PlayAnimShow()
 {
 	VERIFY(GetState()==eShowing);
-	m_pHUD->animPlay(random_anim(mhud.mhud_show),FALSE,this,GetState());
+	PlayHUDMotion("anim_draw", "anm_show", FALSE, this, GetState());
 }
 
 void CWeaponMagazined::PlayAnimHide()
 {
 	VERIFY(GetState()==eHiding);
-	m_pHUD->animPlay (random_anim(mhud.mhud_hide),TRUE,this,GetState());
+	PlayHUDMotion("anim_holster", "anm_hide", TRUE, this, GetState());
 }
-
 
 void CWeaponMagazined::PlayAnimReload()
 {
 	VERIFY(GetState()==eReload);
-	m_pHUD->animPlay(random_anim(mhud.mhud_reload),TRUE,this,GetState());
+	PlayHUDMotion("anim_reload", "anm_reload", TRUE, this, GetState());
 }
 
-bool CWeaponMagazined::TryPlayAnimIdle()
+void CWeaponMagazined::PlayAnimAim()
 {
-	VERIFY(GetState()==eIdle);
-	if(!IsZoomed()){
-		CActor* pActor = smart_cast<CActor*>(H_Parent());
-		if(pActor)
-		{
-			CEntity::SEntityState st;
-			pActor->g_State(st);
-			if(st.bSprint && mhud.mhud_idle_sprint.size())
-			{
-				m_pHUD->animPlay(random_anim(mhud.mhud_idle_sprint), TRUE, NULL,GetState());
-				return true;
-			}
-		}
-	}
-	return false;
+	PlayHUDMotion("anim_idle_aim", "anm_idle_aim", TRUE, NULL, GetState());
 }
 
 void CWeaponMagazined::PlayAnimIdle()
 {
-	MotionSVec* m = NULL;
+	if(GetState()!=eIdle)	return;
 	if(IsZoomed())
 	{
-		m = &mhud.mhud_idle_aim;
-	}
-	else{
-		m = &mhud.mhud_idle;
-		if (TryPlayAnimIdle()) return;
-	}
-
-	VERIFY(GetState()==eIdle);
-	m_pHUD->animPlay(random_anim(*m), TRUE, NULL, GetState());
+		PlayAnimAim();
+	}else
+		inherited::PlayAnimIdle();
 }
 
 void CWeaponMagazined::PlayAnimShoot()
 {
-	VERIFY(GetState()==eFire || GetState()==eFire2);
-	m_pHUD->animPlay(random_anim(mhud.mhud_shots), TRUE, this, GetState());
+	VERIFY(GetState()==eFire);
+	PlayHUDMotion("anim_shoot", "anm_shots", FALSE, this, GetState());
 }
 
 void CWeaponMagazined::OnZoomIn			()
@@ -1100,23 +1043,11 @@ bool CWeaponMagazined::SwitchMode			()
 	else
 		m_iQueueSize = 1;
 	
-	PlaySound	(sndEmptyClick, get_LastFP());
+	PlaySound	("sndEmptyClick", get_LastFP());
 
 	return true;
 }
  
-void CWeaponMagazined::StartIdleAnim			()
-{
-	if(IsZoomed())	m_pHUD->animDisplay(mhud.mhud_idle_aim[Random.randI(mhud.mhud_idle_aim.size())], TRUE);
-	else			m_pHUD->animDisplay(mhud.mhud_idle[Random.randI(mhud.mhud_idle.size())], TRUE);
-}
-
-void CWeaponMagazined::onMovementChanged	(ACTOR_DEFS::EMoveCommand cmd)
-{
-	if( (cmd == ACTOR_DEFS::mcSprint)&&(GetState()==eIdle)  )
-		PlayAnimIdle						();
-}
-
 void	CWeaponMagazined::OnNextFireMode		()
 {
 	if (!m_bHasDifferentFireModes) return;

@@ -18,38 +18,19 @@ class CWeaponMagazined: public CWeapon
 private:
 	typedef CWeapon inherited;
 protected:
-	// Media :: sounds
-	HUD_SOUND		sndShow;
-	HUD_SOUND		sndHide;
-	HUD_SOUND		sndShot;
-	HUD_SOUND		sndEmptyClick;
-	HUD_SOUND		sndReload;
 	//звук текущего выстрела
-	HUD_SOUND*		m_pSndShotCurrent;
-
-	virtual void	StopHUDSounds		();
+	shared_str		m_sSndShotCurrent;
 
 	//дополнительная информация о глушителе
 	LPCSTR			m_sSilencerFlameParticles;
 	LPCSTR			m_sSilencerSmokeParticles;
-	HUD_SOUND		sndSilencerShot;
 
 	ESoundTypes		m_eSoundShow;
 	ESoundTypes		m_eSoundHide;
 	ESoundTypes		m_eSoundShot;
 	ESoundTypes		m_eSoundEmptyClick;
 	ESoundTypes		m_eSoundReload;
-	struct SWMmotions{
-		MotionSVec		mhud_idle;
-		MotionSVec		mhud_idle_aim;
-		MotionSVec		mhud_reload;	//
-		MotionSVec		mhud_hide;		//
-		MotionSVec		mhud_show;		//
-		MotionSVec		mhud_shots;		//
-		MotionSVec		mhud_idle_sprint;
-	};
-	SWMmotions			mhud;	
-	
+	bool			m_sounds_enabled;
 	// General
 	//кадр момента пересчета UpdateSounds
 	u32				dwUpdateSounds_Frame;
@@ -75,7 +56,6 @@ protected:
 	virtual void	UpdateSounds	();
 
 	bool			TryReload		();
-	bool			TryPlayAnimIdle	();
 
 protected:
 	virtual void	ReloadMagazine	();
@@ -111,7 +91,6 @@ public:
 	virtual void	InitAddons();
 
 	virtual bool	Action			(s32 cmd, u32 flags);
-	virtual void	onMovementChanged	(ACTOR_DEFS::EMoveCommand cmd);
 	bool			IsAmmoAvailable	();
 	virtual void	UnloadMagazine	(bool spawn_ammo = true);
 
@@ -175,14 +154,14 @@ protected:
 	virtual bool	AllowFireWhileWorking() {return false;}
 
 	//виртуальные функции для проигрывания анимации HUD
-	virtual void	PlayAnimShow();
-	virtual void	PlayAnimHide();
-	virtual void	PlayAnimReload();
-	virtual void	PlayAnimIdle();
-	virtual void	PlayAnimShoot();
+	virtual void	PlayAnimShow		();
+	virtual void	PlayAnimHide		();
+	virtual void	PlayAnimReload		();
+	virtual void	PlayAnimIdle		();
+	virtual void	PlayAnimShoot		();
 	virtual void	PlayReloadSound		();
+	virtual void	PlayAnimAim			();
 
-	virtual void	StartIdleAnim		();
 	virtual	int		ShotsFired			() { return m_iShotNum; }
 	virtual float	GetWeaponDeterioration	();
 

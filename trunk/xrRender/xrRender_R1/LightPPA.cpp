@@ -211,7 +211,7 @@ void CLightR_Manager::render_point	()
 		{
 			CObject* O = g_pGameLevel->CurrentViewEntity();
 
-			if (g_hud->NeedRenderHUD(O))
+			//if (g_hud->NeedRenderHUD(O))
 				g_hud->Render_Last(O);
 		}
 
@@ -293,7 +293,7 @@ void CLightR_Manager::render_spot	()
 		{
 			CObject* O = g_pGameLevel->CurrentViewEntity();
 
-			if (g_hud->NeedRenderHUD(O))
+			//if (g_hud->NeedRenderHUD(O))
 				g_hud->Render_Last(O);
 		}
 		RImplementation.r_dsgraph_render_graph			(0);

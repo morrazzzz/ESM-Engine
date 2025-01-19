@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "missile.h"
-#include "WeaponHUD.h"
 #include "../xrPhysics/PhysicsShell.h"
 #include "actor.h"
 #include "../xr_3da/CameraBase.h"
@@ -15,6 +14,7 @@
 #include "characterphysicssupport.h"
 #include "inventory.h"
 #include "../xr_3da/IGame_Persistent.h"
+#include "player_hud.h"
 #ifdef DEBUG
 #	include "phdebug.h"
 #endif
@@ -45,7 +45,6 @@ CMissile::CMissile(void)
 
 CMissile::~CMissile(void) 
 {
-	HUD_SOUND::DestroySound(sndPlaying);
 }
 
 void CMissile::reinit		()
@@ -55,10 +54,9 @@ void CMissile::reinit		()
 	m_constpower = false;
 	m_fThrowForce		= 0;
 	m_dwDestroyTime		= 0xffffffff;
-	m_bPending			= false;
+	SetPending			(FALSE);
 	m_fake_missile		= NULL;
-	SetHUDmode			(FALSE);
-	SetState			( MS_HIDDEN );
+	SetState			( eHidden );
 }
 
 void CMissile::Load(LPCSTR section) 
@@ -77,18 +75,7 @@ void CMissile::Load(LPCSTR section)
 	m_vHudThrowPoint	= pSettings->r_fvector3(*hud_sect,"throw_point");
 	m_vHudThrowDir		= pSettings->r_fvector3(*hud_sect,"throw_dir");
 
-	//загрузить анимации HUD-а
-	m_sAnimShow			= pSettings->r_string(*hud_sect, "anim_show");
-	m_sAnimHide			= pSettings->r_string(*hud_sect, "anim_hide");
-	m_sAnimIdle			= pSettings->r_string(*hud_sect, "anim_idle");
-	m_sAnimPlaying		= pSettings->r_string(*hud_sect, "anim_playing");
-	m_sAnimThrowBegin	= pSettings->r_string(*hud_sect, "anim_throw_begin");
-	m_sAnimThrowIdle	= pSettings->r_string(*hud_sect, "anim_throw_idle");
-	m_sAnimThrowAct		= pSettings->r_string(*hud_sect, "anim_throw_act");
-	m_sAnimThrowEnd		= pSettings->r_string(*hud_sect, "anim_throw_end");
-
-	if(pSettings->line_exist(section,"snd_playing"))
-		HUD_SOUND::LoadSound(section,"snd_playing",sndPlaying);
+	m_sounds.LoadSound(section, "snd_playing", "sndPlaying", true);
 
 	m_ef_weapon_type	= READ_IF_EXISTS(pSettings,r_u32,section,"ef_weapon_type",u32(-1));
 }
@@ -113,18 +100,25 @@ void CMissile::net_Destroy()
 
 void CMissile::OnActiveItem		()
 {
+	SwitchState				(eShowing);
 	inherited::OnActiveItem	();
-	SetState				( MS_IDLE );
-	SetNextState			( MS_IDLE );	
-	if (m_pHUD) m_pHUD->Show();
+	SetState				(eIdle);
+	SetNextState			(eIdle);	
 }
 
 void CMissile::OnHiddenItem()
 {
+
+//. -Hide
+	if(IsGameTypeSingle())
+		SwitchState			(eHiding);
+	else
+		SwitchState			(eHidden);
+//-
+
 	inherited::OnHiddenItem	();
-	if (m_pHUD) m_pHUD->Hide();
-	SetState				( MS_HIDDEN );
-	SetNextState			( MS_HIDDEN );
+	SetState				(eHidden);
+	SetNextState			(eHidden);
 }
 
 
@@ -166,8 +160,18 @@ void CMissile::OnH_B_Independent(bool just_before_destroy)
 {
 	inherited::OnH_B_Independent(just_before_destroy);
 
-	m_pHUD->Hide();
+	if (!just_before_destroy) 
+	{
+		VERIFY								(PPhysicsShell());
+		PPhysicsShell()->SetAirResistance	(0.f, 0.f);
+		PPhysicsShell()->set_DynamicScales	(1.f, 1.f);
 
+		if(GetState() == eThrow)
+		{
+			Msg("Throw on reject");
+			Throw				();
+		}
+	}
 	if(!m_dwDestroyTime && Local()) 
 	{
 		DestroyObject		();
@@ -175,21 +179,35 @@ void CMissile::OnH_B_Independent(bool just_before_destroy)
 	}
 }
 
+extern u32 hud_adj_mode;
+
 void CMissile::UpdateCL() 
 {
+	m_dwStateTime += Device.dwTimeDelta;
+
 	inherited::UpdateCL();
 
-	if(GetState() == MS_IDLE && m_dwStateTime > PLAYING_ANIM_TIME) 
-		OnStateSwitch(MS_PLAYING);
-	
-	if(GetState() == MS_READY) 
+	CActor* pActor	= smart_cast<CActor*>(H_Parent());
+	if(pActor && !pActor->AnyMove() && this==pActor->inventory().ActiveItem())
 	{
-		if(m_throw){ 
-			SwitchState(MS_THROW);
+		if (hud_adj_mode==0 && GetState()==eIdle && (Device.dwTimeGlobal-m_dw_curr_substate_time>20000) )
+		{
+			SwitchState			(eBore);
+			ResetSubStateTime	();
+		}
+	}
+
+
+	if(GetState() == eReady) 
+	{
+		if(m_throw)
+		{ 
+			SwitchState(eThrow);
 		}else 
 		{
 			CActor	*actor = smart_cast<CActor*>(H_Parent());
-			if (actor) {				
+			if (actor) 
+			{				
 				m_fThrowForce		+= (m_fForceGrowSpeed * Device.dwTimeDelta) * .001f;
 				clamp(m_fThrowForce, m_fMinForce, m_fMaxForce);
 			}
@@ -212,37 +230,34 @@ void CMissile::shedule_Update(u32 dt)
 	} 
 }
 
-void CMissile::StartIdleAnim()
-{
-	m_pHUD->animDisplay(m_pHUD->animGet(*m_sAnimIdle), TRUE);
-}
-
 void CMissile::State(u32 state) 
 {
 	switch(GetState()) 
 	{
-	case MS_SHOWING:
+	case eShowing:
         {
-			m_bPending = true;
-			m_pHUD->animPlay(m_pHUD->animGet(*m_sAnimShow), FALSE, this, GetState());
+			SetPending			(TRUE);
+			PlayHUDMotion("anim_show", "anm_show", FALSE, this, GetState());
 		} break;
-	case MS_IDLE:
+	case eIdle:
 		{
-			m_bPending = false;
-			m_pHUD->animPlay(m_pHUD->animGet(*m_sAnimIdle), TRUE, this, GetState());
+			SetPending			(FALSE);
+			PlayAnimIdle		();
 		} break;
-	case MS_HIDING:
+	case eHiding:
 		{
-			m_bPending = true;
-			m_pHUD->animPlay(m_pHUD->animGet(*m_sAnimHide), TRUE, this, GetState());
+			if(H_Parent())
+			{
+				SetPending			(TRUE);
+				PlayHUDMotion		("anim_hide", "anm_hide", TRUE, this, GetState());
+			}
 		} break;
-	case MS_HIDDEN:
+	case eHidden:
 		{
 			
-			if (m_pHUD) 
+			if (1 /*GetHUD()*/) 
 			{
-				m_pHUD->StopCurrentAnimWithoutCallback();
-				m_pHUD->Hide();
+				StopCurrentAnimWithoutCallback	();
 			};
 			
 			if (H_Parent())
@@ -250,40 +265,35 @@ void CMissile::State(u32 state)
 				setVisible(FALSE);
 				setEnabled(FALSE);				
 			};
-			m_bPending = false;			
+			SetPending			(FALSE);
 		} break;
-	case MS_THREATEN:
+	case eThrowStart:
 		{
-			m_bPending = true;
-			m_fThrowForce = m_fMinForce;
-			m_pHUD->animPlay(m_pHUD->animGet(*m_sAnimThrowBegin), TRUE, this, GetState());
+			SetPending			(TRUE);
+			m_fThrowForce		= m_fMinForce;
+			PlayHUDMotion		("anim_throw_begin", "anm_throw_begin", TRUE, this, GetState());
 		} break;
-	case MS_READY:
+	case eReady:
 		{
-			m_pHUD->animPlay(m_pHUD->animGet(*m_sAnimThrowIdle), TRUE, this, GetState());
+			PlayHUDMotion		("anim_throw_idle", "anm_throw_idle", TRUE, this, GetState());
 		} break;
-	case MS_THROW:
+	case eThrow:
 		{
-			m_bPending = true;
-			m_throw = false;
-			m_pHUD->animPlay(m_pHUD->animGet(*m_sAnimThrowAct), TRUE, this, GetState());
+			SetPending			(TRUE);
+			m_throw				= false;
+			PlayHUDMotion("anim_throw_act", "anm_throw", TRUE, this, GetState());
 		} break;
-	case MS_END:
+	case eThrowEnd:
 		{
-			m_bPending = true;
-			m_pHUD->animPlay(m_pHUD->animGet(*m_sAnimThrowEnd), TRUE, this, GetState());
-		} break;
-	case MS_PLAYING:
-		{
-			PlaySound(sndPlaying,Position());
-			m_pHUD->animPlay(m_pHUD->animGet(*m_sAnimPlaying), TRUE, this, GetState());
+			SwitchState			(eShowing); 
 		} break;
 	}
 }
 
 void CMissile::OnStateSwitch	(u32 S)
 {
-	inherited::OnStateSwitch	(S);
+	m_dwStateTime				= 0;
+	inherited::OnStateSwitch         (S);
 	State						(S);
 }
 
@@ -292,52 +302,52 @@ void CMissile::OnAnimationEnd(u32 state)
 {
 	switch(state) 
 	{
-	case MS_HIDING:
+	case eHiding:
 		{
 			setVisible(FALSE);
-			OnStateSwitch(MS_HIDDEN);
+			SwitchState(eHidden);
 		} break;
-	case MS_SHOWING:
+	case eShowing:
 		{
 			setVisible(TRUE);
-			OnStateSwitch(MS_IDLE);
+			SwitchState(eIdle);
 		} break;
-	case MS_THREATEN:
+	case eThrowStart:
 		{
-			if (!m_fake_missile) {
-				CMissile				*missile = smart_cast<CMissile*>(H_Parent());
-				if (!missile) {
-					CEntityAlive		*entity_alive = smart_cast<CEntityAlive*>(H_Parent());
-					if (!entity_alive || entity_alive->g_Alive())
-					{
-						spawn_fake_missile	();
-					}
-				}
-			}
+			if(!m_fake_missile && !smart_cast<CMissile*>(H_Parent())) 
+				spawn_fake_missile	();
 
 			if(m_throw) 
-				SwitchState(MS_THROW); 
-//				OnStateSwitch(MS_THROW); 
+				SwitchState(eThrow); 
 			else 
-				SwitchState(MS_READY);
-//				OnStateSwitch(MS_READY);
+				SwitchState(eReady);
 		} break;
-	case MS_THROW:
+	case eThrow:
 		{
-			Throw();
-			OnStateSwitch(MS_END);
+			SwitchState	(eThrowEnd);
 		} break;
-	case MS_END:
+	case eThrowEnd:
 		{
-			OnStateSwitch(MS_SHOWING);
+			SwitchState	(eShowing);
 		} break;
-	case MS_PLAYING:
-		{
-			OnStateSwitch(MS_IDLE);
-		} break;
+	default:
+		inherited::OnAnimationEnd(state);
 	}
 }
 
+void CMissile::PlayAnimBore()
+{
+	PlayHUDMotion("anim_playing", "anm_bore", true, this, GetState());
+}
+
+void CMissile::PlaySndBore()
+{
+	if (HudItemData())
+	{
+		Fvector P = HudItemData()->m_item_transform.c;
+		m_sounds.PlaySound("sndPlaying", P, this, !!GetHUDmode(), false, m_started_rnd_anim_idx);
+	}
+}
 
 void CMissile::UpdatePosition(const Fmatrix& trans)
 {
@@ -389,21 +399,6 @@ void CMissile::UpdateXForm	()
 		UpdatePosition		(mRes);
 	}
 }
-
-
-void CMissile::Show() 
-{
-	SwitchState(MS_SHOWING);
-}
-
-void CMissile::Hide() 
-{
-	if(IsGameTypeSingle())
-		SwitchState(MS_HIDING);
-	else
-		SwitchState(MS_HIDDEN);
-}
-
 void CMissile::setup_throw_params()
 {
 	CEntity					*entity = smart_cast<CEntity*>(H_Parent());
@@ -514,9 +509,11 @@ bool CMissile::Action(s32 cmd, u32 flags)
 			m_constpower = true;			
 			if(flags&CMD_START) 
 			{
-				m_throw = true;
-				if(GetState() == MS_IDLE) 
-					SwitchState(MS_THREATEN);
+								if(GetState()==eIdle) 
+				{
+					m_throw = true;
+					SwitchState(eThrowStart);
+				}
 			} 
 			return true;
 		}break;
@@ -527,18 +524,21 @@ bool CMissile::Action(s32 cmd, u32 flags)
         	if(flags&CMD_START) 
 			{
 				m_throw = false;
-				if(GetState() == MS_IDLE) 
-					SwitchState(MS_THREATEN);
-				else if(GetState() == MS_READY)
+				if(GetState()==eIdle) 
+					SwitchState(eThrowStart);
+				else 
+				if(GetState()==eReady)
 				{
 					m_throw = true; 
 				}
 
 			} 
-			else if(GetState() == MS_READY || GetState() == MS_THREATEN || GetState() == MS_IDLE) 
+			else 
+			if(GetState()==eReady || GetState()==eThrowStart || GetState()==eIdle) 
 			{
 				m_throw = true; 
-				if(GetState() == MS_READY) SwitchState(MS_THROW);
+				if(GetState()==eReady) 
+					SwitchState(eThrow);
 			}
 			return true;
 		}break;
@@ -555,19 +555,22 @@ void  CMissile::UpdateFireDependencies_internal	()
 
 		UpdateXForm			();
 		
-		if (GetHUDmode() && !IsHidden()){
+		if (GetHUDmode() && !IsHidden())
+		{
+			R_ASSERT(0);  //implement this!!!
+/*
 			// 1st person view - skeletoned
-			IKinematics* V			= smart_cast<IKinematics*>(m_pHUD->Visual());
+			CKinematics* V			= smart_cast<CKinematics*>(GetHUD()->Visual());
 			VERIFY					(V);
 			V->CalculateBones		();
 
 			// fire point&direction
-			Fmatrix& parent			= m_pHUD->Transform	();
+			Fmatrix& parent			= GetHUD()->Transform	();
 			m_throw_direction.set	(parent.k);
+*/
 		}else{
 			// 3rd person
 			Fmatrix& parent			= H_Parent()->XFORM();
-
 			m_throw_direction.set	(m_vThrowDir);
 			parent.transform_dir	(m_throw_direction);
 		}
@@ -666,18 +669,22 @@ u32	CMissile::ef_weapon_type		() const
 }
 
 
-void CMissile::OnDrawUI()
+bool CMissile::render_item_ui_query()
 {
-	if(GetState()==MS_READY && !m_throw) 
-	{
-		CActor	*actor = smart_cast<CActor*>(H_Parent());
-		if (actor) {
-			if(!g_MissileForceShape) create_force_progress();
-			float k = (m_fThrowForce-m_fMinForce)/(m_fMaxForce-m_fMinForce);
-			g_MissileForceShape->SetPos	(k);
-			g_MissileForceShape->Draw	();
-		}
-	}	
+	bool b_is_active_item = m_pCurrentInventory->ActiveItem()==this;
+	return b_is_active_item && (GetState()==eReady) && !m_throw && smart_cast<CActor*>(H_Parent());
+}
+
+void CMissile::render_item_ui()
+{
+	CActor	*actor = smart_cast<CActor*>(H_Parent());
+	R_ASSERT(actor);
+
+	if(!g_MissileForceShape) 
+		create_force_progress();
+	float k = (m_fThrowForce-m_fMinForce)/(m_fMaxForce-m_fMinForce);
+	g_MissileForceShape->SetPos	(k);
+	g_MissileForceShape->Draw	();
 }
 
 void	 CMissile::ExitContactCallback(bool& do_colide,bool bo1,dContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/)
@@ -685,13 +692,13 @@ void	 CMissile::ExitContactCallback(bool& do_colide,bool bo1,dContact& c,SGameMt
 	dxGeomUserData	*gd1=NULL,	*gd2=NULL;
 	if(bo1)
 	{
-		gd1 =retrieveGeomUserData(c.geom.g1);
-		gd2 =retrieveGeomUserData(c.geom.g2);
+		gd1 =PHRetrieveGeomUserData(c.geom.g1);
+		gd2 =PHRetrieveGeomUserData(c.geom.g2);
 	}
 	else
 	{
-		gd2 =retrieveGeomUserData(c.geom.g1);
-		gd1 =retrieveGeomUserData(c.geom.g2);
+		gd2 =PHRetrieveGeomUserData(c.geom.g1);
+		gd1 =PHRetrieveGeomUserData(c.geom.g2);
 	}
 	if(gd1&&gd2&&(CPhysicsShellHolder*)gd1->callback_data==gd2->ph_ref_object)	
 																				do_colide=false;
