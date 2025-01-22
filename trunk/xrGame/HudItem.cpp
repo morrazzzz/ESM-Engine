@@ -150,13 +150,13 @@ void CHudItem::PlayAnimBore()
 	PlayHUDMotion("anm_bore", TRUE, this, GetState());
 }
 
-bool CHudItem::ActivateItem() 
+bool CHudItem::Activate() 
 {
 	OnActiveItem	();
 	return			true;
 }
 
-void CHudItem::DeactivateItem() 
+void CHudItem::Deactivate() 
 {
 	OnHiddenItem	();
 }
@@ -300,13 +300,11 @@ player_hud_motion* CHudItem::AnimationExist(const shared_str& anim_name) const
 	else // Third person
 		anm = g_player_hud->find_motion_length(anim_name, HudSection());
 
-	if (anm)
-		return anm;
-
 #ifdef DEBUG
-	Msg("~ [WARNING] ------ Animation [%s] does not exist in [%s]", anim_name, HudSection().c_str());
+	if (!anm)
+		Msg("~ [WARNING] ------ Animation [%s] does not exist in [%s]", anim_name, HudSection().c_str());
 #endif
-	return false;
+	return anm;
 }
 
 u32 CHudItem::PlayHUDMotion(const shared_str& M, BOOL bMixIn, CHudItem*  W, u32 state)
@@ -396,7 +394,7 @@ BOOL CHudItem::GetHUDmode()
 	if(object().H_Parent())
 	{
 		CActor* A = smart_cast<CActor*>(object().H_Parent());
-		return ( A && A->HUDview() && HudItemData() && HudItemData() );
+		return ( A && A->HUDview() && HudItemData());
 	}else
 		return FALSE;
 }

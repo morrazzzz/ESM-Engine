@@ -390,7 +390,7 @@ bool CInventory::Activate(u32 slot, bool bForce)
 		(m_iNextActiveSlot == slot &&
 		 m_iActiveSlot != NO_ACTIVE_SLOT &&
 		 m_slots[m_iActiveSlot].m_pIItem &&
-		 m_slots[m_iActiveSlot].m_pIItem->IsHiding()
+		 m_slots[m_iActiveSlot].m_pIItem->cast_hud_item()->IsHiding()
 		 )
 		)
 		return false;
@@ -508,7 +508,7 @@ void CInventory::Update()
 	
 	if(m_iActiveSlot == NO_ACTIVE_SLOT || 
 		!m_slots[m_iActiveSlot].m_pIItem ||
-        m_slots[m_iActiveSlot].m_pIItem->IsHidden())
+        m_slots[m_iActiveSlot].m_pIItem->cast_hud_item()->IsHidden())
 	{ 
 		bActiveSlotVisible = false;
 	}
@@ -893,18 +893,12 @@ bool CInventory::isBeautifulForActiveSlot	(CInventoryItem *pIItem)
 	return				(false);
 }
 
-#include "WeaponHUD.h"
 void CInventory::Items_SetCurrentEntityHud(bool current_entity)
 {
 	TIItemContainer::iterator it;
 	for(it = m_all.begin(); m_all.end() != it; ++it) 
 	{
 		PIItem pIItem = *it;
-		CHudItem* pHudItem = smart_cast<CHudItem*> (pIItem);
-		if (pHudItem) 
-		{
-			pHudItem->GetHUD()->Visible(current_entity);
-		};
 		CWeapon* pWeapon = smart_cast<CWeapon*>(pIItem);
 		if (pWeapon)
 		{

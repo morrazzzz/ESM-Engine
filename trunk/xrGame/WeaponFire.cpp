@@ -105,7 +105,7 @@ void CWeapon::Fire2End	()
 
 void CWeapon::StopShooting		()
 {
-	m_bPending = true;
+	SetPending(true);
 
 	//принудительно останавливать зацикленные партиклы
 	if(m_pFlameParticles && m_pFlameParticles->IsLooped())

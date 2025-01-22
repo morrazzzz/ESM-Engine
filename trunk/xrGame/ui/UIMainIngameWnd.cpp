@@ -9,7 +9,6 @@
 #include "../actor.h"
 #include "../HUDManager.h"
 #include "../PDA.h"
-#include "../WeaponHUD.h"
 #include "../character_info.h"
 #include "../inventory.h"
 #include "../UIGameSP.h"
@@ -101,7 +100,7 @@ CUIMainIngameWnd::~CUIMainIngameWnd()
 	DestroyFlashingIcons		();
 	xr_delete					(UIZoneMap);
 	xr_delete					(m_artefactPanel);
-	HUD_SOUND::DestroySound		(m_contactSnd);
+	HUD_SOUND_ITEM::DestroySound(m_contactSnd);
 	xr_delete					(g_MissileForceShape);
 }
 
@@ -267,7 +266,7 @@ void CUIMainIngameWnd::Init()
 	UIStaticDiskIO.SetStretchTexture		(TRUE);
 
 
-	HUD_SOUND::LoadSound					("maingame_ui", "snd_new_contact"		, m_contactSnd		, SOUND_TYPE_IDLE);
+	HUD_SOUND_ITEM::LoadSound					("maingame_ui", "snd_new_contact"		, m_contactSnd		, SOUND_TYPE_IDLE);
 }
 
 float UIStaticDiskIO_start_time = 0.0f;
@@ -305,10 +304,6 @@ void CUIMainIngameWnd::Draw()
 	UIZoneMap->Render			();			
 
 	RenderQuickInfos			();		
-
-#ifdef DEBUG
-	draw_adjust_mode			();
-#endif
 }
 
 
@@ -497,324 +492,13 @@ void CUIMainIngameWnd::Update()
 
 bool CUIMainIngameWnd::OnKeyboardPress(int dik)
 {
-#if 0//def DEBUG
-	test_key(dik);
-#endif
-	// поддержка режима adjust hud mode
-	bool flag = false;
-	if (g_bHudAdjustMode)
-	{
-		CWeaponHUD *pWpnHud = NULL;
-		if (m_pWeapon)
-		{
-			pWpnHud = m_pWeapon->GetHUD();
-//			if (!pWpnHud) return false;
-		}
-		else
-			return false;
-
-		Fvector tmpV;
-
-		if (1 == g_bHudAdjustMode) //zoom offset
-		{
-			if (!pWpnHud) return false;
-			tmpV = pWpnHud->ZoomOffset();
-
-			switch (dik)
-			{
-				// Rotate +y
-			case DIK_K:
-				pWpnHud->SetZoomRotateX(pWpnHud->ZoomRotateX() + g_fHudAdjustValue);
-				flag = true;
-				break;
-				// Rotate -y
-			case DIK_I:
-				pWpnHud->SetZoomRotateX(pWpnHud->ZoomRotateX() - g_fHudAdjustValue);
-				flag = true;
-				break;
-				// Rotate +x
-			case DIK_L:
-				pWpnHud->SetZoomRotateY(pWpnHud->ZoomRotateY() + g_fHudAdjustValue);
-				flag = true;
-				break;
-				// Rotate -x
-			case DIK_J:
-				pWpnHud->SetZoomRotateY(pWpnHud->ZoomRotateY() - g_fHudAdjustValue);
-				flag = true;
-				break;
-				// Shift +x
-			case DIK_W:
-				tmpV.y += g_fHudAdjustValue;
-				flag = true;
-				break;
-				// Shift -y
-			case DIK_S:
-				tmpV.y -= g_fHudAdjustValue;
-				flag = true;
-				break;
-				// Shift +x
-			case DIK_D:
-				tmpV.x += g_fHudAdjustValue;
-				flag = true;
-				break;
-				// Shift -x
-			case DIK_A:
-				tmpV.x -= g_fHudAdjustValue;
-				flag = true;
-				break;
-				// Shift +z
-			case DIK_Q:
-				tmpV.z += g_fHudAdjustValue;
-				flag = true;
-				break;
-				// Shift -z
-			case DIK_E:
-				tmpV.z -= g_fHudAdjustValue;
-				flag = true;
-				break;
-				// output coordinate info to the console
-			case DIK_P:
-				string256 tmpStr;
-				sprintf_s(tmpStr, "%s",
-					*m_pWeapon->cNameSect());
-				Log(tmpStr);
-
-					sprintf_s(tmpStr, "zoom_offset\t\t\t= %f,%f,%f",
-						pWpnHud->ZoomOffset().x,
-						pWpnHud->ZoomOffset().y,
-						pWpnHud->ZoomOffset().z);
-				Log(tmpStr);
-				sprintf_s(tmpStr, "zoom_rotate_x\t\t= %f",
-					pWpnHud->ZoomRotateX());
-				Log(tmpStr);
-				sprintf_s(tmpStr, "zoom_rotate_y\t\t= %f",
-					pWpnHud->ZoomRotateY());
-				Log(tmpStr);
-				flag = true;
-				break;
-			}
-
-			if (tmpV.x || tmpV.y || tmpV.z)
-				pWpnHud->SetZoomOffset(tmpV);
-		}
-		else if (2 == g_bHudAdjustMode || 5 == g_bHudAdjustMode) //firePoints
-		{
-			if(TRUE==m_pWeapon->GetHUDmode())
-				tmpV = (2 == g_bHudAdjustMode) ? pWpnHud->FirePoint() : pWpnHud->FirePoint2();
-			else
-				tmpV = (2 == g_bHudAdjustMode) ? m_pWeapon->vLoadedFirePoint : m_pWeapon->vLoadedFirePoint2;
-
-		
-			switch (dik)
-			{
-				// Shift +x
-			case DIK_A:
-				tmpV.y += g_fHudAdjustValue;
-				flag = true;
-				break;
-				// Shift -x
-			case DIK_D:
-				tmpV.y -= g_fHudAdjustValue;
-				flag = true;
-				break;
-				// Shift +z
-			case DIK_Q:
-				tmpV.x += g_fHudAdjustValue;
-				flag = true;
-				break;
-				// Shift -z
-			case DIK_E:
-				tmpV.x -= g_fHudAdjustValue;
-				flag = true;
-				break;
-				// Shift +y
-			case DIK_S:
-				tmpV.z += g_fHudAdjustValue;
-				flag = true;
-				break;
-				// Shift -y
-			case DIK_W:
-				tmpV.z -= g_fHudAdjustValue;
-				flag = true;
-				break;
-				// output coordinate info to the console
-			case DIK_P:
-				string256 tmpStr;
-				if (m_pWeapon)
-				{
-					sprintf_s(tmpStr, "%s",
-						*m_pWeapon->cNameSect());
-					Log(tmpStr);
-				}
-
-			if(TRUE==m_pWeapon->GetHUDmode())
-				Msg("weapon hud section:");
-			else
-				Msg("weapon section:");
-
-				sprintf_s(tmpStr, "fire_point\t\t\t= %f,%f,%f",
-					tmpV.x,
-					tmpV.y,
-					tmpV.z);
-				Log(tmpStr);
-				flag = true;
-				break;
-			}
-#ifdef	DEBUG
-			if(TRUE==m_pWeapon->GetHUDmode())
-				if (2 == g_bHudAdjustMode) pWpnHud->dbg_SetFirePoint(tmpV);
-				else pWpnHud->dbg_SetFirePoint2(tmpV);
-			else
-			{
-				if (2 == g_bHudAdjustMode)  m_pWeapon->vLoadedFirePoint = tmpV;
-				else m_pWeapon->vLoadedFirePoint2 = tmpV;
-			}
-#endif
-		}
-		else if (4 == g_bHudAdjustMode) //ShellPoint
-		{
-			if(TRUE==m_pWeapon->GetHUDmode())
-				tmpV = pWpnHud->ShellPoint();
-			else
-				tmpV = m_pWeapon->vLoadedShellPoint;
-
-			switch (dik)
-			{
-				// Shift +x
-			case DIK_A:
-				tmpV.y += g_fHudAdjustValue;
-				flag = true;
-				break;
-				// Shift -x
-			case DIK_D:
-				tmpV.y -= g_fHudAdjustValue;
-				flag = true;
-				break;
-				// Shift +z
-			case DIK_Q:
-				tmpV.x += g_fHudAdjustValue;
-				flag = true;
-				break;
-				// Shift -z
-			case DIK_E:
-				tmpV.x -= g_fHudAdjustValue;
-				flag = true;
-				break;
-				// Shift +y
-			case DIK_S:
-				tmpV.z += g_fHudAdjustValue;
-				flag = true;
-				break;
-				// Shift -y
-			case DIK_W:
-				tmpV.z -= g_fHudAdjustValue;
-				flag = true;
-				break;
-				// output coordinate info to the console
-			case DIK_P:
-				string256 tmpStr;
-				if (m_pWeapon)
-				{
-					sprintf_s(tmpStr, "%s",
-						*m_pWeapon->cNameSect());
-					Log(tmpStr);
-				}
-
-			if(TRUE==m_pWeapon->GetHUDmode())
-				Msg("weapon hud section:");
-			else
-				Msg("weapon section:");
-
-				sprintf_s(tmpStr, "shell_point\t\t\t= %f,%f,%f",
-					tmpV.x,
-					tmpV.y,
-					tmpV.z);
-				Log(tmpStr);
-				flag = true;
-				break;
-			}
-#ifdef DEBUG
-			if(TRUE==m_pWeapon->GetHUDmode())
-				pWpnHud->dbg_SetShellPoint(tmpV);
-			else
-				m_pWeapon->vLoadedShellPoint = tmpV;
-
-#endif
-		}
-		else if (3 == g_bHudAdjustMode) //MissileOffset
-		{
-			CActor *pActor = smart_cast<CActor*>(Level().CurrentEntity());
-
-			R_ASSERT(pActor);
-
-			tmpV = pActor->GetMissileOffset();
-
-			if (!pActor) return false;
-			switch (dik)
-			{
-				// Shift +x
-			case DIK_E:
-				tmpV.y += g_fHudAdjustValue;
-				flag = true;
-				break;
-				// Shift -x
-			case DIK_Q:
-				tmpV.y -= g_fHudAdjustValue;
-				flag = true;
-				break;
-				// Shift +z
-			case DIK_D:
-				tmpV.x += g_fHudAdjustValue;
-				flag = true;
-				break;
-				// Shift -z
-			case DIK_A:
-				tmpV.x -= g_fHudAdjustValue;
-				flag = true;
-				break;
-				// Shift +y
-			case DIK_W:
-				tmpV.z += g_fHudAdjustValue;
-				flag = true;
-				break;
-				// Shift -y
-			case DIK_S:
-				tmpV.z -= g_fHudAdjustValue;
-				flag = true;
-				break;
-				// output coordinate info to the console
-			case DIK_P:
-				string256 tmpStr;
-				if (m_pWeapon)
-				{
-					sprintf_s(tmpStr, "%s",
-						*m_pWeapon->cNameSect());
-					Log(tmpStr);
-				}
-
-				sprintf_s(tmpStr, "missile_throw_offset\t\t\t= %f,%f,%f",
-					pActor->GetMissileOffset().x,
-					pActor->GetMissileOffset().y,
-					pActor->GetMissileOffset().z);
-
-				Log(tmpStr);
-				flag = true;
-				break;
-			}
-
-			pActor->SetMissileOffset(tmpV);
-		}
-		
-
-		if (flag) return true;
-	}
 
 #ifdef DEBUG
 		if(CAttachableItem::m_dbgItem){
 			static float rot_d = deg2rad(0.5f);
 			static float mov_d = 0.01f;
 			bool shift = !!pInput->iGetAsyncKeyState(DIK_LSHIFT);
-			flag = true;
+			bool flag = true;
 			switch (dik)
 			{
 				// Shift +x
@@ -868,7 +552,7 @@ bool CUIMainIngameWnd::OnKeyboardPress(int dik)
 				flag = false;
 				break;
 			}		
-		if(flag)return true;;
+		if(flag)return true;
 		}
 #endif		
 
@@ -1061,8 +745,7 @@ void CUIMainIngameWnd::AnimateContacts(bool b_snd)
 	UIPdaOnline.ResetClrAnimation	();
 
 	if(b_snd)
-		HUD_SOUND::PlaySound	(m_contactSnd, Fvector().set(0,0,0), 0, true );
-
+		HUD_SOUND_ITEM::PlaySound	(m_contactSnd, Fvector().set(0,0,0), 0, true );
 }
 
 
@@ -1192,78 +875,5 @@ void test_draw	()
 {
 	if(pUIFrame)
 		pUIFrame->Draw();
-}
-
-void CUIMainIngameWnd::draw_adjust_mode()
-{
-	if (g_bHudAdjustMode&&m_pWeapon) //draw firePoint,ShellPoint etc
-	{
-		R_ASSERT(false);
-		/*CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
-		if(!pActor)
-			return;
-
-		bool bCamFirstEye = !!m_pWeapon->GetHUDmode();
-		string32 hud_view="HUD view";
-		string32 _3rd_person_view="3-rd person view";
-		CGameFont* F		= UI().Font().pFontDI;
-		F->SetAligment		(CGameFont::alCenter);
-//.		F->SetSizeI			(0.02f);
-		F->OutSetI			(0.f,-0.8f);
-		F->SetColor			(0xffffffff);
-		F->OutNext			("Hud_adjust_mode=%d",g_bHudAdjustMode);
-		if(g_bHudAdjustMode==1)
-			F->OutNext			("adjusting zoom offset");
-		else if(g_bHudAdjustMode==2)
-			F->OutNext			("adjusting fire point for %s",bCamFirstEye?hud_view:_3rd_person_view);
-		else if(g_bHudAdjustMode==3)
-			F->OutNext			("adjusting missile offset");
-		else if(g_bHudAdjustMode==4)
-			F->OutNext			("adjusting shell point for %s",bCamFirstEye?hud_view:_3rd_person_view);
-		else if(g_bHudAdjustMode == 5)
-			F->OutNext			("adjusting fire point 2 for %s",bCamFirstEye?hud_view:_3rd_person_view);
-
-		if(bCamFirstEye)
-		{
-			CWeaponHUD *pWpnHud = NULL;
-			pWpnHud = m_pWeapon->GetHUD();
-
-			Fvector FP,SP,FP2;
-
-			IKinematics* V			= smart_cast<IKinematics*>(pWpnHud->Visual());
-			VERIFY					(V);
-			V->CalculateBones		();
-
-			// fire point&direction
-			Fmatrix& fire_mat		= V->LL_GetTransform(u16(pWpnHud->FireBone()));
-			Fmatrix& parent			= pWpnHud->Transform	();
-
-			const Fvector& fp		= pWpnHud->FirePoint();
-			const Fvector& fp2		= pWpnHud->FirePoint2();
-			const Fvector& sp		= pWpnHud->ShellPoint();
-
-			fire_mat.transform_tiny	(FP,fp);
-			parent.transform_tiny	(FP);
-
-			fire_mat.transform_tiny	(FP2,fp2);
-			parent.transform_tiny	(FP2);
-
-			fire_mat.transform_tiny	(SP,sp);
-			parent.transform_tiny	(SP);
-
-
-			DRender->dbg_DrawAABB(FP,0.01f,0.01f,0.01f,D3DCOLOR_XRGB(255,0,0));
-			RCache.dbg_DrawAABB(FP2,0.02f,0.02f,0.02f,D3DCOLOR_XRGB(0,0,255));
-			RCache.dbg_DrawAABB(SP,0.01f,0.01f,0.01f,D3DCOLOR_XRGB(0,255,0));
-		
-		}else{
-			Fvector FP = m_pWeapon->get_CurrentFirePoint();
-			Fvector FP2 = m_pWeapon->get_CurrentFirePoint2();
-			Fvector SP = m_pWeapon->get_LastSP();
-			RCache.dbg_DrawAABB(FP,0.01f,0.01f,0.01f,D3DCOLOR_XRGB(255,0,0));
-			RCache.dbg_DrawAABB(FP2,0.02f,0.02f,0.02f,D3DCOLOR_XRGB(0,0,255));
-			RCache.dbg_DrawAABB(SP,0.02f,0.02f,0.02f,D3DCOLOR_XRGB(0,255,0));
-		}*/
-	}
 }
 #endif

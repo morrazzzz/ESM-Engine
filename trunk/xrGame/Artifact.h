@@ -74,20 +74,9 @@ public:
 	float							m_fPowerRestoreSpeed;
 	float							m_fBleedingRestoreSpeed;
 	CHitImmunity 					m_ArtefactHitImmunities;
-
-protected:
-	MotionSVec						m_anim_idle;
-	MotionSVec						m_anim_idle_sprint;
-	MotionSVec						m_anim_hide;
-	MotionSVec						m_anim_show;
-	MotionSVec						m_anim_activate;
 public:
 	enum EAFHudStates {
-		eIdle		= 0,
-		eShowing,
-		eHiding,
-		eHidden,
-		eActivating,
+		eActivating = eLastBaseState+1,
 	};
 	virtual	void					PlayAnimIdle		();
 public:

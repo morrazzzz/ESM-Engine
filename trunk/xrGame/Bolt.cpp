@@ -13,12 +13,14 @@ CBolt::CBolt()
 	m_thrower_id				= static_cast<u16>(-1);
 }
 
-CBolt::~CBolt() {}
+CBolt::~CBolt() {
+	HUD_SOUND_ITEM::DestroySound(m_ThrowSnd);
+}
 
 void CBolt::Load(LPCSTR section) {
 	inherited::Load(section);
 	if(pSettings->line_exist(section, "snd_throw"))
-		HUD_SOUND::LoadSound(section, "snd_throw", m_ThrowSnd, SOUND_TYPE_WEAPON_SHOOTING);
+		HUD_SOUND_ITEM::LoadSound(section, "snd_throw", m_ThrowSnd, SOUND_TYPE_WEAPON_SHOOTING);
 }
 
 
@@ -30,26 +32,10 @@ void CBolt::OnH_A_Chield()
 	
 }
 
-void CBolt::OnEvent(NET_Packet& P, u16 type) 
-{
-	inherited::OnEvent(P,type);
-}
-
-bool CBolt::Activate() 
-{
-	Show();
-	return true;
-}
-
-void CBolt::Deactivate() 
-{
-	Hide();
-}
-
 void CBolt::Throw() 
 {
 	if (const auto actor = smart_cast<CActor*>(H_Parent()))
-		PlaySound(m_ThrowSnd, actor->Position());
+		HUD_SOUND_ITEM::PlaySound(m_ThrowSnd, actor->Position(), nullptr, true);
 
 	auto					*l_pBolt = smart_cast<CMissile*>(m_fake_missile);
 	if(!l_pBolt)				return;

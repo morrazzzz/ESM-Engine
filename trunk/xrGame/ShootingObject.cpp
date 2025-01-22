@@ -70,7 +70,7 @@ void CShootingObject::Load	(LPCSTR section)
 	VERIFY(fTimeToFire>0.f);
 	fTimeToFire			= 60.f / fTimeToFire;
 
-	LoadFireParams		(section, "");
+	LoadFireParams		(section);
 	LoadLights			(section, "");
 	LoadShellParticles	(section, "");
 	LoadFlameParticles	(section, "");
@@ -89,7 +89,7 @@ void CShootingObject::Light_Destroy		()
 	light_render.destroy		();
 }
 
-void CShootingObject::LoadFireParams	(LPCSTR section, LPCSTR prefix)
+void CShootingObject::LoadFireParams( LPCSTR section )
 {
 	string256	full_name;
 	string32	buffer;
@@ -98,13 +98,11 @@ void CShootingObject::LoadFireParams	(LPCSTR section, LPCSTR prefix)
 	fireDispersionBase	= pSettings->r_float	(section,"fire_dispersion_base"	);
 	fireDispersionBase	= deg2rad				(fireDispersionBase);
 	//сила выстрела и его мощьность
-	s_sHitPower			= pSettings->r_string_wb(section,strconcat(sizeof(full_name),full_name, prefix, "hit_power"));//читаем строку силы хита пули оружия
-	fvHitPower[egdMaster]	= (float)atof(_GetItem(*s_sHitPower,0,buffer));//первый параметр - это хит для уровня игры мастер
+	s_sHitPower			= pSettings->r_string_wb(section, "hit_power" );//читаем строку силы хита пули оружия
+	fvHitPower[egdMaster]			= (float)atof(_GetItem(*s_sHitPower,0,buffer));//первый параметр - это хит для уровня игры мастер
+    
+    fvHitPower[egdNovice] = fvHitPower[egdStalker] = fvHitPower[egdVeteran] = fvHitPower[egdMaster];//изначально параметры для других уровней сложности такие же
 
-	fvHitPower[egdVeteran]	= fvHitPower[egdMaster];//изначально параметры для других уровней
-	fvHitPower[egdStalker]	= fvHitPower[egdMaster];//сложности
-	fvHitPower[egdNovice]	= fvHitPower[egdMaster];//такие же
-	
 	int num_game_diff_param=_GetItemCount(*s_sHitPower);//узнаём колличество параметров для хитов
 	if (num_game_diff_param>1)//если задан второй параметр хита
 	{
@@ -119,16 +117,15 @@ void CShootingObject::LoadFireParams	(LPCSTR section, LPCSTR prefix)
 		fvHitPower[egdNovice]	= (float)atof(_GetItem(*s_sHitPower,3,buffer));//то вычитываем его для уровня новичка
 	}
 	
-	//fHitPower			= pSettings->r_float	(section,strconcat(full_name, prefix, "hit_power"));
-	fHitImpulse			= pSettings->r_float	(section,strconcat(sizeof(full_name),full_name, prefix, "hit_impulse"));
+	fHitImpulse		= pSettings->r_float	(section, "hit_impulse" );
 	//максимальное расстояние полета пули
-	fireDistance		= pSettings->r_float	(section,strconcat(sizeof(full_name),full_name, prefix, "fire_distance"));
+	fireDistance		= pSettings->r_float	(section, "fire_distance" );
 	//начальная скорость пули
-	m_fStartBulletSpeed = pSettings->r_float	(section,strconcat(sizeof(full_name),full_name, prefix, "bullet_speed"));
-	m_bUseAimBullet		= pSettings->r_bool		(section,strconcat(sizeof(full_name),full_name, prefix, "use_aim_bullet"));
+	m_fStartBulletSpeed = pSettings->r_float	(section, "bullet_speed" );
+	m_bUseAimBullet		= pSettings->r_bool		(section, "use_aim_bullet" );
 	if (m_bUseAimBullet)
 	{
-		m_fTimeToAim		= pSettings->r_float	(section,strconcat(sizeof(full_name),full_name, prefix, "time_to_aim"));
+		m_fTimeToAim		= pSettings->r_float	(section, "time_to_aim" );
 	}
 }
 

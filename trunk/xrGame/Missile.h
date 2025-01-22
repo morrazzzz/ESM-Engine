@@ -62,10 +62,11 @@ protected:
 	virtual void			OnHiddenItem		();
 
 	//для сети
-	virtual void			StartIdleAnim		();
 	virtual void			net_Relcase			(CObject* O );
 protected:
 
+	//время нахождения в текущем состоянии
+	u32						m_dwStateTime;
 	bool					m_throw;
 	
 	//время уничтожения

@@ -58,15 +58,7 @@ protected:
 	bool					m_bNightVisionEnabled;
 	bool					m_bNightVisionOn;
 
-	HUD_SOUND				m_NightVisionOnSnd;
-	HUD_SOUND				m_NightVisionOffSnd;
-	HUD_SOUND				m_NightVisionIdleSnd;
-	HUD_SOUND				m_NightVisionBrokenSnd;
-
-	/*float					m_NightVisionRechargeTime;
-	float					m_NightVisionRechargeTimeMin;
-	float					m_NightVisionDischargeTime;
-	float					m_NightVisionChargeTime;*/
+	HUD_SOUND_COLLECTION	m_sounds;
 
 	enum EStats{
 		eTorchActive				= (1<<0),

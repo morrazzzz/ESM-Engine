@@ -96,8 +96,8 @@ public:
 	BOOL						GetHUDmode			();
 	IC BOOL						IsPending			()		const					{ return !!m_huditem_flags.test(fl_pending);}
 
-	virtual bool				ActivateItem		();
-	virtual void				DeactivateItem		();
+	virtual bool				Activate		();
+	virtual void				Deactivate		();
 	virtual void				SendDeactivateItem	();
 	virtual void				OnActiveItem		()				{};
 	virtual void				OnHiddenItem		()				{};

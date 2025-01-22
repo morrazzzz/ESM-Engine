@@ -79,6 +79,7 @@ void CUIGameCustom::Render()
 	CEntity* pEntity = smart_cast<CEntity*>(Level().CurrentEntity());
 	if (pEntity)
 	{
+/*
 		CActor* pActor = smart_cast<CActor*>(pEntity);
 		if (pActor)
 		{
@@ -86,6 +87,7 @@ void CUIGameCustom::Render()
 			if (item && pActor->HUDview() && smart_cast<CHudItem*>(item))
 				(smart_cast<CHudItem*>(item))->OnDrawUI();
 		}
+*/
 
 		if( GameIndicatorsShown() && psHUD_Flags.is(HUD_DRAW | HUD_DRAW_RT) )
 			UIMainIngameWnd->Draw();

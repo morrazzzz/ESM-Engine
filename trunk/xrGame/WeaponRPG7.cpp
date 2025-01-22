@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "weaponrpg7.h"
-#include "WeaponHUD.h"
 #include "xrserver_objects_alife_items.h"
 #include "explosiverocket.h"
 #include "entity.h"
@@ -111,15 +110,16 @@ void CWeaponRPG7::switch2_Fire	()
 
 	if(GetState() == eFire	&& getRocketCount()) 
 	{
-		Fvector p1, d1, p; 
-		Fvector p2, d2, d; 
+		Fvector p1, /*d1, p*/ d;
+		//Fvector p2, d2, d; 
 		p1.set								(get_LastFP()); 
-		d1.set								(get_LastFD());
-		p = p1;
-		d = d1;
+		d.set								(get_LastFD());
+		//p = p1;
+		//d = d1;
 		CEntity* E = smart_cast<CEntity*>	(H_Parent());
 		if(E)
 		{
+/*
 			E->g_fireParams				(this, p2,d2);
 			p = p2;
 			d = d2;
@@ -134,6 +134,8 @@ void CWeaponRPG7::switch2_Fire	()
 				d.sub		(p0,p1);
 				d.normalize_safe();
 			}
+*/
+			E->g_fireParams(this, p1, d);
 		}
 
 		Fmatrix								launch_matrix;
@@ -141,7 +143,7 @@ void CWeaponRPG7::switch2_Fire	()
 		launch_matrix.k.set					(d);
 		Fvector::generate_orthonormal_basis(launch_matrix.k,
 											launch_matrix.j, launch_matrix.i);
-		launch_matrix.c.set					(p);
+		launch_matrix.c.set					(p1);
 
 		d.normalize							();
 		d.mul								(m_fLaunchSpeed);

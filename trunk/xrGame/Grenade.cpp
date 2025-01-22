@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "grenade.h"
 #include "../xrPhysics/PhysicsShell.h"
-#include "WeaponHUD.h"
 #include "entity.h"
 #include "ParticlesObject.h"
 #include "actor.h"
@@ -22,7 +21,6 @@ CGrenade::CGrenade(void)
 
 CGrenade::~CGrenade(void) 
 {
-	HUD_SOUND::DestroySound(sndCheckout);
 }
 
 void CGrenade::Load(LPCSTR section) 
@@ -30,7 +28,7 @@ void CGrenade::Load(LPCSTR section)
 	inherited::Load(section);
 	CExplosive::Load(section);
 
-	HUD_SOUND::LoadSound(section,"snd_checkout",sndCheckout,m_eSoundCheckout);
+	m_sounds.LoadSound(section,"snd_checkout", "sndCheckout", false, m_eSoundCheckout);
 
 	//////////////////////////////////////
 	//время убирания оружия с уровня
@@ -92,18 +90,19 @@ void CGrenade::State(u32 state)
 {
 	switch (state)
 	{
-	case MS_THREATEN:
+	case eThrowStart:
 		{
 			Fvector						C;
 			Center						(C);
-			PlaySound					(sndCheckout,C);
+			PlaySound					("sndCheckout", C);
 		}break;
-	case MS_HIDDEN:
+	case eThrowEnd:
 		{
 			if(m_thrown)
 			{
-				if (m_pPhysicsShell)	m_pPhysicsShell->Deactivate();
-				xr_delete				(m_pPhysicsShell);
+				if (m_pPhysicsShell)
+					m_pPhysicsShell->Deactivate();
+				xr_delete	( m_pPhysicsShell );
 				m_dwDestroyTime			= 0xffffffff;
 				
 				if(H_Parent())
@@ -200,10 +199,10 @@ void CGrenade::PutNextToSlot()
 
 void CGrenade::OnAnimationEnd(u32 state) 
 {
-	switch(state){
-	case MS_END: SwitchState(MS_HIDDEN);	break;
-//.	case MS_END: SwitchState(MS_RESTORE);	break;
-		default : inherited::OnAnimationEnd(state);
+	switch(state)
+	{
+	case eThrowEnd: SwitchState(eHidden);	break;
+	default : inherited::OnAnimationEnd(state);
 	}
 }
 
@@ -281,13 +280,13 @@ void CGrenade::net_Relcase(CObject* O )
 void CGrenade::Deactivate()
 {
 	//Drop grenade if primed
-	m_pHUD->StopCurrentAnimWithoutCallback();
-	if (!GetTmpPreDestroy() && Local() && (GetState() == MS_THREATEN || GetState() == MS_READY || GetState() == MS_THROW))
+	StopCurrentAnimWithoutCallback();
+	if ( !GetTmpPreDestroy() && Local() && ( GetState()==eThrowStart || GetState()==eReady || GetState()==eThrow ) )
 	{
 		if (m_fake_missile)
 		{
-			CGrenade*		pGrenade	= smart_cast<CGrenade*>(m_fake_missile);
-			if (pGrenade)
+			CGrenade*		pGrenade	= smart_cast<CGrenade*>( m_fake_missile );
+			if ( pGrenade )
 			{
 				if (m_pCurrentInventory->GetOwner())
 				{

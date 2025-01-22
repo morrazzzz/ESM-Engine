@@ -143,13 +143,14 @@ CObjectPropertyEvaluatorNoItems::CObjectPropertyEvaluatorNoItems(CAI_Stalker *ow
 
 CObjectPropertyEvaluatorNoItems::_value_type CObjectPropertyEvaluatorNoItems::evaluate	()
 {
-	if (!object().inventory().ActiveItem())
+	PIItem I = object().inventory().ActiveItem();
+	if (!I)
 		return		(true);
 	
-	if (object().inventory().ActiveItem()->IsHidden())
+	if (!I->cast_hud_item() || I->cast_hud_item()->IsHidden())
 		return		(true);
 
-	if (object().inventory().ActiveItem()->IsShowing())
+	if (I->cast_hud_item() && I->cast_hud_item()->IsShowing())
 		return		(true);
 
 	return			(false);

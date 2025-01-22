@@ -1,7 +1,12 @@
 #include "stdafx.h"
 #include "artifact.h"
 #include "../xrPhysics/PhysicsShell.h"
-#include "../include/xrRender/Kinematics.h"
+#include "PhysicsShellHolder.h"
+#include "game_cl_base.h"
+
+#include "../Include/xrRender/Kinematics.h"
+#include "../Include/xrRender/KinematicsAnimated.h"
+
 #include "inventory.h"
 #include "level.h"
 #include "ai_object_location.h"
@@ -96,12 +101,6 @@ void CArtefact::Load(LPCSTR section)
 	}
 	m_bCanSpawnZone = !!pSettings->line_exist("artefact_spawn_zones", section);
 
-
-	animGet				(m_anim_idle,					pSettings->r_string(*hud_sect,"anim_idle"));
-	animGet				(m_anim_idle_sprint,			pSettings->r_string(*hud_sect,"anim_idle_sprint"));
-	animGet				(m_anim_hide,					pSettings->r_string(*hud_sect,"anim_hide"));
-	animGet				(m_anim_show,					pSettings->r_string(*hud_sect,"anim_show"));
-	animGet				(m_anim_activate,				pSettings->r_string(*hud_sect,"anim_activate"));
 }
 
 BOOL CArtefact::net_Spawn(CSE_Abstract* DC) 
@@ -378,15 +377,15 @@ void CArtefact::OnStateSwitch		(u32 S)
 	switch(S){
 	case eShowing:
 		{
-			m_pHUD->animPlay(random_anim(m_anim_show),		FALSE, this, S);
+			PlayHUDMotion("anm_show", FALSE, this, S);
 		}break;
 	case eHiding:
 		{
-			m_pHUD->animPlay(random_anim(m_anim_hide),		FALSE, this, S);
+			PlayHUDMotion("anm_hide", FALSE, this, S);
 		}break;
 	case eActivating:
 		{
-			m_pHUD->animPlay(random_anim(m_anim_activate),	FALSE, this, S);
+			PlayHUDMotion("anm_activate", FALSE, this, S);
 		}break;
 	case eIdle:
 		{
@@ -397,7 +396,7 @@ void CArtefact::OnStateSwitch		(u32 S)
 
 void CArtefact::PlayAnimIdle()
 {
-	m_pHUD->animPlay(random_anim(m_anim_idle),		FALSE, NULL, eIdle);
+	PlayHUDMotion("anm_idle", FALSE, NULL, eIdle);
 }
 
 void CArtefact::OnAnimationEnd		(u32 state)
@@ -551,7 +550,7 @@ void SArtefactActivation::ChangeEffects()
 	};
 	if(state_def.m_animation.size()){
 		IKinematicsAnimated	*K=smart_cast<IKinematicsAnimated*>(m_af->Visual());
-		if(K)K->PlayCycle(*state_def.m_animation);
+		if(K)K->PlayCycle(state_def.m_animation.c_str());
 	}
 
 }

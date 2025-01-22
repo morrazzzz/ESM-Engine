@@ -216,7 +216,7 @@ bool  attachable_hud_item::need_renderable()
 
 void attachable_hud_item::RenderAttachableHud(IRenderable* object)
 {
-	::Render->add_Visual(object, m_model->dcast_RenderVisual(), &m_item_transform);
+	::Render->add_Visual(object, m_model->dcast_RenderVisual(), &m_item_transform, true);
 	debug_draw_firedeps();
 	m_parent_hud_item->render_hud_mode();
 }
@@ -235,16 +235,34 @@ void hud_item_measures::load(const shared_str& sect_name, IKinematics* K)
 {
 	bool is_16x9 = UI().is_widescreen();
 	string64	_prefix;
-	xr_sprintf	(_prefix,"%s",is_16x9?"_16x9":"");
+	xr_sprintf(_prefix, "%s", is_16x9 ? "_16x9" : "");
 	string128	val_name;
 
-	strconcat					(sizeof(val_name),val_name,"hands_position",_prefix);
-	m_hands_attach[0]			= pSettings->r_fvector3(sect_name, val_name);
+	strconcat(sizeof(val_name), val_name, "hands_position", _prefix);
+	m_hands_attach[0] = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, val_name, Fvector{});
 	strconcat					(sizeof(val_name),val_name,"hands_orientation",_prefix);
-	m_hands_attach[1]			= pSettings->r_fvector3(sect_name, val_name);
+	m_hands_attach[1] = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, val_name, Fvector{});
 
-	m_item_attach[0]			= pSettings->r_fvector3(sect_name, "item_position");
-	m_item_attach[1]			= pSettings->r_fvector3(sect_name, "item_orientation");
+	LPCSTR val_param = "item_position";
+
+	if (!pSettings->line_exist(sect_name, "item_position"))
+		val_param = "position";
+
+	m_item_attach[0]			= pSettings->r_fvector3(sect_name, val_param);
+
+	val_param = "item_orientation";
+
+	if (!pSettings->line_exist(sect_name, "item_orientation"))
+		val_param = "orientation";
+
+	m_item_attach[1]			= pSettings->r_fvector3(sect_name, val_param);
+ 
+	bool FireBone2 = pSettings->line_exist(sect_name, "fire_bone2");
+	bool ShellBone = pSettings->line_exist(sect_name, "shell_bone");
+	//bool SoCFirePoint = !pSettings->line_exist(sect_name, "fire_bone2") || !pSettings->line_exist(sect_name, "shell_bone"); //READ_IF_EXISTS(pSettings, r_bool, sect_name, "cop_fire_points", true);
+
+	LPCSTR FirePoint2 = FireBone2 ? "fire_bone2" : "fire_bone";
+	LPCSTR ShellPoint = ShellBone ? "shell_bone" : "fire_bone";
 
 	shared_str					 bone_name;
 	m_prop_flags.set			 (e_fire_point,pSettings->line_exist(sect_name,"fire_bone"));
@@ -256,19 +274,24 @@ void hud_item_measures::load(const shared_str& sect_name, IKinematics* K)
 	}else
 		m_fire_point_offset.set(0,0,0);
 
-	m_prop_flags.set			 (e_fire_point2,pSettings->line_exist(sect_name,"fire_bone2"));
-	if(m_prop_flags.test(e_fire_point2))
+	m_prop_flags.set(e_fire_point2, FireBone2 || m_prop_flags.test(e_fire_point));
+	if (m_prop_flags.test(e_fire_point2))
 	{
-		bone_name				= pSettings->r_string(sect_name, "fire_bone2");
-		m_fire_bone2			= K->LL_BoneID(bone_name);
-		m_fire_point2_offset	= pSettings->r_fvector3(sect_name, "fire_point2");
-	}else
-		m_fire_point2_offset.set(0,0,0);
-
-	m_prop_flags.set			 (e_shell_point,pSettings->line_exist(sect_name,"shell_bone"));
+		bone_name = pSettings->r_string(sect_name, FirePoint2);
+		m_fire_bone2 = K->LL_BoneID(bone_name);
+		
+		if (pSettings->line_exist(sect_name, "fire_point2"))
+			m_fire_point2_offset = pSettings->r_fvector3(sect_name, "fire_point2");
+		else
+			m_fire_point2_offset = m_fire_point_offset;
+	}
+	else
+		m_fire_point2_offset.set(0, 0, 0);
+	
+	m_prop_flags.set(e_shell_point, ShellBone || m_prop_flags.test(e_fire_point) && pSettings->line_exist(sect_name, "shell_particles"));
 	if(m_prop_flags.test(e_shell_point))
 	{
-		bone_name				= pSettings->r_string(sect_name, "shell_bone");
+		bone_name				= pSettings->r_string(sect_name, ShellPoint);
 		m_shell_bone			= K->LL_BoneID(bone_name);
 		m_shell_point_offset	= pSettings->r_fvector3(sect_name, "shell_point");
 	}else
@@ -278,19 +301,19 @@ void hud_item_measures::load(const shared_str& sect_name, IKinematics* K)
 	m_hands_offset[1][0].set	(0,0,0);
 
 	strconcat					(sizeof(val_name),val_name,"aim_hud_offset_pos",_prefix);
-	m_hands_offset[0][1]		= pSettings->r_fvector3(sect_name, val_name);
+	m_hands_offset[0][1]		= READ_IF_EXISTS(pSettings, r_fvector3, sect_name, val_name, Fvector{});
 	strconcat					(sizeof(val_name),val_name,"aim_hud_offset_rot",_prefix);
-	m_hands_offset[1][1]		= pSettings->r_fvector3(sect_name, val_name);
+	m_hands_offset[1][1]		= READ_IF_EXISTS(pSettings, r_fvector3, sect_name, val_name, Fvector{});
 
 	strconcat					(sizeof(val_name),val_name,"gl_hud_offset_pos",_prefix);
-	m_hands_offset[0][2]		= pSettings->r_fvector3(sect_name, val_name);
+	m_hands_offset[0][2]		= READ_IF_EXISTS(pSettings, r_fvector3, sect_name, val_name, Fvector{});
 	strconcat					(sizeof(val_name),val_name,"gl_hud_offset_rot",_prefix);
-	m_hands_offset[1][2]		= pSettings->r_fvector3(sect_name, val_name);
+	m_hands_offset[1][2]		= READ_IF_EXISTS(pSettings, r_fvector3, sect_name, val_name, Fvector{});
 
 
 	R_ASSERT2(pSettings->line_exist(sect_name,"fire_point")==pSettings->line_exist(sect_name,"fire_bone"),		sect_name.c_str());
-	R_ASSERT2(pSettings->line_exist(sect_name,"fire_point2")==pSettings->line_exist(sect_name,"fire_bone2"),	sect_name.c_str());
-	R_ASSERT2(pSettings->line_exist(sect_name,"shell_point")==pSettings->line_exist(sect_name,"shell_bone"),	sect_name.c_str());
+	//R_ASSERT2(pSettings->line_exist(sect_name,"fire_point2")==pSettings->line_exist(sect_name,"fire_bone2"),	sect_name.c_str());
+	//R_ASSERT2(pSettings->line_exist(sect_name,"shell_point")==pSettings->line_exist(sect_name,"shell_bone"),	sect_name.c_str());
 
 	m_prop_flags.set(e_16x9_mode_now,is_16x9);
 }
@@ -307,11 +330,14 @@ void attachable_hud_item::load(const shared_str& sect_name)
 	m_sect_name					= sect_name;
 
 	// Visual
-	const shared_str& visual_name = pSettings->r_string(sect_name, "item_visual");
+	const shared_str& visual_name = pSettings->r_string(sect_name, "visual");
 	m_model						 = smart_cast<IKinematics*>(::Render->model_Create(visual_name.c_str()));
 
-	m_attach_place_idx			= pSettings->r_u16(sect_name, "attach_place_idx");
+	m_attach_place_idx			= READ_IF_EXISTS(pSettings, r_u16, sect_name, "attach_place_idx", 0);
 	m_measures.load				(sect_name, m_model);
+
+	IKinematicsAnimated* animatedHudItem = smart_cast<IKinematicsAnimated*>(m_model);
+	m_hand_motions.load(animatedHudItem, sect_name);
 }
 
 u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, const CMotionDef*& md, u8& rnd_idx, player_hud_motion* anm_play)
@@ -322,7 +348,7 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, co
 	//R_ASSERT				(strstr(anm_name_b.c_str(),"anm_")==anm_name_b.c_str());
 
 	player_hud_motion* anm;
-	if (anm_play)
+	if (!anm_play)
 	{
 		string256				anim_name_r;
 		bool is_16x9 = UI().is_widescreen();
@@ -338,7 +364,7 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, co
 	rnd_idx					= (u8)Random.randI(anm->m_animations.size()) ;
 	const motion_descr& M	= anm->m_animations[ rnd_idx ];
 
-	u32 ret					= g_player_hud->anim_play(m_attach_place_idx, M.mid, bMixIn, md, speed);
+	u32 ret	= g_player_hud->anim_play(m_attach_place_idx, M.mid, bMixIn, md, speed, m_model->dcast_PKinematicsAnimated());
 	
 	if(m_model->dcast_PKinematicsAnimated())
 	{
@@ -357,7 +383,8 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, co
 			if(bDebug)
 				Msg						("playing item animation [%s]",item_anm_name.c_str());
 		
-		R_ASSERT3(M2.valid(),"model has no motion [idle] ", pSettings->r_string(m_sect_name, "item_visual"));
+		//R_ASSERT3(M2.valid(),"model has no motion [idle] ", pSettings->r_string(m_sect_name, "item_visual"));
+		R_ASSERT2(M2.valid(), "model has no motion [idle] ");
 
 		u16 root_id						= m_model->LL_GetBoneRoot();
 		CBoneInstance& root_binst		= m_model->LL_GetBoneInstance(root_id);
@@ -442,6 +469,9 @@ void player_hud::load(const shared_str& player_hud_sect)
 		::Render->model_Delete		(v);
 	}
 
+	if (!pSettings->line_exist(player_hud_sect, "visual"))
+		return;
+
 	m_sect_name					= player_hud_sect;
 	const shared_str& model_name= pSettings->r_string(player_hud_sect, "visual");
 	m_model						= smart_cast<IKinematicsAnimated*>(::Render->model_Create(model_name.c_str()));
@@ -505,7 +535,8 @@ void player_hud::render_hud(IRenderable* root_object)
 
 	if(!b_r0 && !b_r1)									return;
 
-	::Render->add_Visual(root_object, m_model->dcast_RenderVisual(), &m_transform, true);
+	if (m_model)
+		::Render->add_Visual(root_object, m_model->dcast_RenderVisual(), &m_transform, true);
 	
 	if(m_attached_items[0])
 		m_attached_items[0]->RenderAttachableHud(root_object);
@@ -527,12 +558,11 @@ u32 player_hud::motion_length(const shared_str& anim_name, const shared_str& hud
 	R_ASSERT2(pm,
 		make_string("hudItem model [%s] has no motion with alias [%s]", hud_name.c_str(), anim_name.c_str()).c_str()
 	);
-	return motion_length(pm->m_animations[0].mid, md, speed);
+	return motion_length(pm->m_animations[0].mid, md, pi->m_model->dcast_PKinematicsAnimated(), speed);
 }
 
 player_hud_motion* player_hud::find_motion_length(const shared_str& anim_name, const shared_str& hud_name)
 {
-	float speed						= CalcMotionSpeed(anim_name);
 	attachable_hud_item* pi			= create_hud_item(hud_name);
 	player_hud_motion* anm = pi->m_hand_motions.find_motion(anim_name);
 	if (!anm)
@@ -543,13 +573,13 @@ player_hud_motion* player_hud::find_motion_length(const shared_str& anim_name, c
 	return anm;
 }
 
-u32 player_hud::motion_length(const MotionID& M, const CMotionDef*& md, float speed)
+u32 player_hud::motion_length(const MotionID& M, const CMotionDef*& md, IKinematicsAnimated* model, float speed)
 {
-	md = m_model->LL_GetMotionDef(M);
+	md = model->LL_GetMotionDef(M);
 	R_ASSERT(md);
 	if (md->flags & esmStopAtEnd) 
 	{
-		CMotion*			motion		= m_model->LL_GetRootMotion(M);
+		CMotion*			motion		= model->LL_GetRootMotion(M);
 		return				iFloor( 0.5f + 1000.f*motion->GetLength() / (md->Dequantize(md->speed) * speed) );
 	}
 	return					0;
@@ -600,26 +630,32 @@ void player_hud::update(const Fmatrix& cam_trans)
 		m_attached_items[1]->update(true);
 }
 
-u32 player_hud::anim_play(u16 part, const MotionID& M, BOOL bMixIn, const CMotionDef*& md, float speed)
+u32 player_hud::anim_play(u16 part, const MotionID& M, BOOL bMixIn, const CMotionDef*& md, float speed, IKinematicsAnimated* model)
 {
+	IKinematicsAnimated* itemModel = model;
 
-	u16 part_id							= u16(-1);
-	if(attached_item(0) && attached_item(1))
-		part_id = m_model->partitions().part_id((part==0)?"right_hand":"left_hand");
-
-	u16 pc					= m_model->partitions().count();
-	for(u16 pid=0; pid<pc; ++pid)
+	if (m_model)
 	{
-		if(pid==0 || pid==part_id || part_id==u16(-1))
-		{
-			CBlend* B	= m_model->PlayCycle(pid, M, bMixIn);
-			R_ASSERT	(B);
-			B->speed	*= speed;
-		}
-	}
-	m_model->dcast_PKinematics()->CalculateBones_Invalidate	();
+		itemModel = m_model;
 
-	return				motion_length(M, md, speed);
+		u16 part_id = u16(-1);
+		if (attached_item(0) && attached_item(1))
+			part_id = m_model->partitions().part_id((part == 0) ? "right_hand" : "left_hand");
+
+		u16 pc = m_model->partitions().count();
+		for (u16 pid = 0; pid < pc; ++pid)
+		{
+			if (pid == 0 || pid == part_id || part_id == u16(-1))
+			{
+				CBlend* B = m_model->PlayCycle(pid, M, bMixIn);
+				R_ASSERT(B);
+				B->speed *= speed;
+			}
+		}
+		m_model->dcast_PKinematics()->CalculateBones_Invalidate();
+	}
+
+	return motion_length(M, md, itemModel, speed);
 }
 
 void player_hud::update_additional	(Fmatrix& trans)
@@ -687,7 +723,7 @@ attachable_hud_item* player_hud::create_hud_item(const shared_str& sect)
 	}
 	attachable_hud_item* res	= xr_new<attachable_hud_item>(this);
 	res->load					(sect);
-	res->m_hand_motions.load	(m_model, sect);
+	//res->m_hand_motions.load	(m_model, sect);
 	m_pool.push_back			(res);
 
 	return	res;
