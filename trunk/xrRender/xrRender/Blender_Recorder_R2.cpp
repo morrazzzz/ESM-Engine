@@ -18,10 +18,16 @@ void	CBlender_Compile::r_Pass		(LPCSTR _vs, LPCSTR _ps, bool bFog, BOOL bZtest, 
 	passConstants.clear		();
 	dwStage					= 0;
 
+#ifdef DEBUG
+	if (strstr(Core.Params, "-noaref")) { aTest = FALSE; aRef = 0; }
+#endif
+
 	// Setup FF-units (Z-buffer, blender)
 	PassSET_ZB				(bZtest,bZwrite);
 	PassSET_Blend			(bABlend,abSRC,abDST,aTest,aRef);
 	PassSET_LightFog		(FALSE,bFog);
+
+	SH->flags.bAlphaRef = strstr(_vs, "_aref") || aTest;
 
 	// Create shaders
 	SPS* ps					= DEV->_CreatePS			(_ps);
