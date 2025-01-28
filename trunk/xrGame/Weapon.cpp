@@ -573,10 +573,17 @@ void CWeapon::OnH_A_Chield		()
 
 void CWeapon::OnActiveItem ()
 {
+	//. from Activate
+	UpdateAddonsVisibility();
+
+//. Show
+	SwitchState					(eShowing);
+//-
+
 	inherited::OnActiveItem		();
 	//если мы занружаемся и оружие было в руках
-	SetState					(eIdle);
-	SetNextState				(eIdle);
+//.	SetState					(eIdle);
+//.	SetNextState				(eIdle);
 }
 
 void CWeapon::OnHiddenItem ()
@@ -1380,27 +1387,32 @@ void CWeapon::modify_holder_params		(float &range, float &fov) const
 	fov		*= m_addon_holder_fov_modifier;
 }
 
-void CWeapon::OnDrawUI()
+bool CWeapon::render_item_ui_query()
 {
-	if(IsZoomed() && ZoomHideCrosshair()){
-		if(ZoomTexture() && !IsRotatingToZoom()){
-			ZoomTexture()->SetPos	(0,0);
-			ZoomTexture()->SetRect	(0,0,UI_BASE_WIDTH, UI_BASE_HEIGHT);
-			ZoomTexture()->Render	();
-		}
-	}
+	bool b_is_active_item = m_pCurrentInventory->ActiveItem() == this;
+	bool res = b_is_active_item && GetNotRenderHud() && ZoomHideCrosshair();
+	return res;
+}
+
+void CWeapon::render_item_ui()
+{
+#pragma todo("Merge custom vision for weapon from CoP")
+	//if(m_zoom_params.m_pVision)
+	// 	m_zoom_params.m_pVision->Draw();
+
+	//ZoomTexture()->Update	();
+	//ZoomTexture()->Draw		();
+
+	ZoomTexture()->SetPos(0, 0);
+	ZoomTexture()->SetRect(0, 0, UI_BASE_WIDTH, UI_BASE_HEIGHT);
+	ZoomTexture()->Render();
 }
 
 bool CWeapon::unlimited_ammo() const
 { 
-	if (GameID() == GAME_SINGLE	)
-		return psActorFlags.test(AF_UNLIMITEDAMMO) && 
-				m_DefaultCartridge.m_flags.test(CCartridge::cfCanBeUnlimited); 
-
-	return (GameID()!=GAME_ARTEFACTHUNT) && 
-		m_DefaultCartridge.m_flags.test(CCartridge::cfCanBeUnlimited); 
-			
-};
+	return psActorFlags.test(AF_UNLIMITEDAMMO) && 
+			m_DefaultCartridge.m_flags.test(CCartridge::cfCanBeUnlimited); 			
+}
 
 LPCSTR	CWeapon::GetCurrentAmmo_ShortName() const
 {

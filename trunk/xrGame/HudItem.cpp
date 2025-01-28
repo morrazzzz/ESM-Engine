@@ -191,6 +191,7 @@ void CHudItem::UpdateCL()
 	{
 		if(m_bStopAtEndAnimIsRunning)
 		{
+			/*
 			const xr_vector<motion_marks>&	marks = m_current_motion_def->marks;
 			if(!marks.empty())
 			{
@@ -207,17 +208,22 @@ void CHudItem::UpdateCL()
 	
 					const motion_marks::interval* Iprev = M.pick_mark(motion_prev_time);
 					const motion_marks::interval* Icurr = M.pick_mark(motion_curr_time);
-					if(Iprev==NULL && Icurr!=NULL /* || M.is_mark_between(motion_prev_time, motion_curr_time)*/)
+					if(Iprev==NULL && Icurr!=NULL /* || M.is_mark_between(motion_prev_time, motion_curr_time))
 					{
 						OnMotionMark				(m_startedMotionState, M);
 					}
 				}
 			
 			}
+			
+			else
+			*/
 
 			m_dwMotionCurrTm					= Device.dwTimeGlobal;
 			if(m_dwMotionCurrTm > m_dwMotionEndTm)
 			{
+				OnMotionMark(m_startedMotionState);
+
 				m_current_motion_def				= NULL;
 				m_dwMotionStartTm					= 0;
 				m_dwMotionEndTm						= 0;

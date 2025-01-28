@@ -52,7 +52,9 @@ public:
 	virtual void			shedule_Update		(u32 dt);
 
 	virtual void			renderable_Render	();
-	virtual void			OnDrawUI			();
+
+	virtual void			render_item_ui		();
+	virtual bool			render_item_ui_query();
 
 	virtual void			OnH_B_Chield		();
 	virtual void			OnH_A_Chield		();

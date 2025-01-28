@@ -18,6 +18,7 @@
 #ifdef DEBUG
 #	include "phdebug.h"
 #endif
+#include "game_object_space.h"
 
 
 #define PLAYING_ANIM_TIME 10000
@@ -75,7 +76,7 @@ void CMissile::Load(LPCSTR section)
 	m_vHudThrowPoint	= pSettings->r_fvector3(*hud_sect,"throw_point");
 	m_vHudThrowDir		= pSettings->r_fvector3(*hud_sect,"throw_dir");
 
-	m_sounds.LoadSound(section, "snd_playing", "sndPlaying", true);
+	HUD_SOUND_ITEM::LoadSound(section, "snd_playing", sndPlaying);
 
 	m_ef_weapon_type	= READ_IF_EXISTS(pSettings,r_u32,section,"ef_weapon_type",u32(-1));
 }
@@ -342,11 +343,7 @@ void CMissile::PlayAnimBore()
 
 void CMissile::PlaySndBore()
 {
-	if (HudItemData())
-	{
-		Fvector P = HudItemData()->m_item_transform.c;
-		m_sounds.PlaySound("sndPlaying", P, this, !!GetHUDmode(), false, m_started_rnd_anim_idx);
-	}
+	HUD_SOUND_ITEM::PlaySound(sndPlaying, Position(), this, true);
 }
 
 void CMissile::UpdatePosition(const Fmatrix& trans)
@@ -432,6 +429,17 @@ void CMissile::setup_throw_params()
 	m_throw_direction.set	(trans.k);
 }
 
+void CMissile::OnMotionMark(u32 state)
+{
+	inherited::OnMotionMark(state);
+	if(state==eThrow && !m_throw)
+	{
+		if (H_Parent())
+			Throw	();
+	}
+}
+
+
 void CMissile::Throw() 
 {
 	VERIFY								(smart_cast<CEntity*>(H_Parent()));
@@ -509,7 +517,7 @@ bool CMissile::Action(s32 cmd, u32 flags)
 			m_constpower = true;			
 			if(flags&CMD_START) 
 			{
-								if(GetState()==eIdle) 
+								if(GetState()==eIdle || GetState() == eBore) 
 				{
 					m_throw = true;
 					SwitchState(eThrowStart);
@@ -524,7 +532,7 @@ bool CMissile::Action(s32 cmd, u32 flags)
         	if(flags&CMD_START) 
 			{
 				m_throw = false;
-				if(GetState()==eIdle) 
+				if(GetState()==eIdle || GetState() == eBore) 
 					SwitchState(eThrowStart);
 				else 
 				if(GetState()==eReady)
@@ -682,6 +690,7 @@ void CMissile::render_item_ui()
 
 	if(!g_MissileForceShape) 
 		create_force_progress();
+
 	float k = (m_fThrowForce-m_fMinForce)/(m_fMaxForce-m_fMinForce);
 	g_MissileForceShape->SetPos	(k);
 	g_MissileForceShape->Draw	();

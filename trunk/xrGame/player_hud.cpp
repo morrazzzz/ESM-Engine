@@ -386,10 +386,12 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, co
 		//R_ASSERT3(M2.valid(),"model has no motion [idle] ", pSettings->r_string(m_sect_name, "item_visual"));
 		R_ASSERT2(M2.valid(), "model has no motion [idle] ");
 
+		/*
 		u16 root_id						= m_model->LL_GetBoneRoot();
 		CBoneInstance& root_binst		= m_model->LL_GetBoneInstance(root_id);
 		root_binst.set_callback_overwrite(TRUE);
 		root_binst.mTransform.identity	();
+		*/
 
 		u16 pc							= ka->partitions().count();
 		for(u16 pid=0; pid<pc; ++pid)
@@ -445,9 +447,12 @@ player_hud::player_hud()
 
 player_hud::~player_hud()
 {
-	IRenderVisual* v			= m_model->dcast_RenderVisual();
-	::Render->model_Delete		(v);
-	m_model						= NULL;
+	if (m_model)
+	{
+		IRenderVisual* v = m_model->dcast_RenderVisual();
+		::Render->model_Delete(v);
+		m_model = NULL;
+	}
 
 	xr_vector<attachable_hud_item*>::iterator it	= m_pool.begin();
 	xr_vector<attachable_hud_item*>::iterator it_e	= m_pool.end();
@@ -619,9 +624,12 @@ void player_hud::update(const Fmatrix& cam_trans)
 	m_transform.mul					(trans, m_attach_offset);
 	// insert inertion here
 
-	m_model->UpdateTracks				();
-	m_model->dcast_PKinematics()->CalculateBones_Invalidate	();
-	m_model->dcast_PKinematics()->CalculateBones				(TRUE);
+	if (m_model)
+	{
+		m_model->UpdateTracks();
+		m_model->dcast_PKinematics()->CalculateBones_Invalidate();
+		m_model->dcast_PKinematics()->CalculateBones(TRUE);
+	}
 
 	if(m_attached_items[0])
 		m_attached_items[0]->update(true);
@@ -814,8 +822,15 @@ void player_hud::detach_item(CHudItem* item)
 
 void player_hud::calc_transform(u16 attach_slot_idx, const Fmatrix& offset, Fmatrix& result)
 {
-	Fmatrix ancor_m			= m_model->dcast_PKinematics()->LL_GetTransform(m_ancors[attach_slot_idx]);
-	result.mul				(m_transform, ancor_m);
+	if (m_model)
+	{
+
+		Fmatrix ancor_m = m_model->dcast_PKinematics()->LL_GetTransform(m_ancors[attach_slot_idx]);
+		result.mul(m_transform, ancor_m);
+	}
+	else
+		result.set(m_transform);
+
 	result.mulB_43			(offset);
 }
 

@@ -6,7 +6,7 @@
 #include "level.h"
 #include "WeaponBinocularsVision.h"
 #include "object_broker.h"
-#include "hudmanager.h"
+#include "Inventory.h"
 CWeaponBinoculars::CWeaponBinoculars() : CWeaponCustomPistol("BINOCULARS")
 {
 	m_binoc_vision	= NULL;
@@ -97,11 +97,18 @@ void	CWeaponBinoculars::UpdateCL()
 		m_binoc_vision->Update();
 }
 
-void CWeaponBinoculars::OnDrawUI()
+bool CWeaponBinoculars::render_item_ui_query()
 {
-	if(H_Parent() && IsZoomed() && !IsRotatingToZoom() && m_binoc_vision)
+	bool b_is_active_item = m_pCurrentInventory->ActiveItem() == this;
+	return b_is_active_item && H_Parent() && IsZoomed() && !IsRotatingToZoom();
+}
+
+void CWeaponBinoculars::render_item_ui()
+{
+	if (m_binoc_vision)
 		m_binoc_vision->Draw();
-	inherited::OnDrawUI	();
+
+	inherited::render_item_ui();
 }
 
 void GetZoomData(const float scope_factor, float& delta, float& min_zoom_factor)

@@ -390,4 +390,54 @@ BOOL CControllerPsyHitCamEffector::ProcessCam(SCamEffectorInfo& info)
 	return TRUE;
 }
 
+void CActorCameraManager::UpdateCamEffectors()
+{
+	m_cam_info_hud		= m_cam_info;
+	inherited::UpdateCamEffectors();
+
+	m_cam_info_hud.d.normalize			();
+	m_cam_info_hud.n.normalize			();
+	m_cam_info_hud.r.crossproduct		(m_cam_info_hud.n, m_cam_info_hud.d);
+	m_cam_info_hud.n.crossproduct		(m_cam_info_hud.d, m_cam_info_hud.r);
+}
+
+void cam_effector_sub(const SCamEffectorInfo& c1, const SCamEffectorInfo& c2, SCamEffectorInfo& dest)
+{
+	dest.p.sub	(c1.p, c2.p);
+	dest.d.sub	(c1.d, c2.d);
+	dest.n.sub	(c1.n, c2.n);
+	dest.r.sub	(c1.r, c2.r);
+}
+
+void cam_effector_add(const SCamEffectorInfo& diff, SCamEffectorInfo& dest)
+{
+	dest.p.add	(diff.p);
+	dest.d.add	(diff.d);
+	dest.n.add	(diff.n);
+	dest.r.add	(diff.r);
+}
+
+bool CActorCameraManager::ProcessCameraEffector(CEffectorCam* eff)
+{
+	SCamEffectorInfo	prev			= m_cam_info;
+
+	bool res = inherited::ProcessCameraEffector	(eff);
+	if(res)
+	{
+		if(eff->GetHudAffect())
+		{
+			SCamEffectorInfo affected	= m_cam_info;
+			SCamEffectorInfo diff;
+
+			cam_effector_sub			(affected, prev, diff);
+			
+			cam_effector_add			(diff, m_cam_info_hud); // m_cam_info_hud += difference
+		}
+
+		m_cam_info_hud.fFov		= m_cam_info.fFov;
+		m_cam_info_hud.fFar		= m_cam_info.fFar; 
+		m_cam_info_hud.fAspect	= m_cam_info.fAspect;
+	}
+	return res;
+}
 

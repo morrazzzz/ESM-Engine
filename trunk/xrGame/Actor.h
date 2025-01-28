@@ -14,6 +14,7 @@
 #include "ui_defs.h"
 
 #include "step_manager.h"
+#include "ActorEffector.h"
 
 using namespace ACTOR_DEFS;
 
@@ -26,6 +27,7 @@ class CEncyclopediaRegistryWrapper;
 class CGameTaskRegistryWrapper;
 class CGameNewsRegistryWrapper;
 class CCharacterPhysicsSupport;
+//class CActorCameraManager;
 // refs
 class ENGINE_API CCameraBase;
 class ENGINE_API CBoneInstance;
@@ -340,7 +342,7 @@ public:
 	// Cameras and effectors
 	//////////////////////////////////////////////////////////////////////////
 public:
-	CCameraManager&			Cameras				() 	{VERIFY(m_pActorEffector); return *m_pActorEffector;}
+	CActorCameraManager&	Cameras				() 	{VERIFY(m_pActorEffector); return *m_pActorEffector;}
 	IC CCameraBase*			cam_Active			()	{return cameras[cam_active];}
 	IC CCameraBase*			cam_FirstEye		()	{return cameras[eacFirstEye];}
 
@@ -369,7 +371,7 @@ protected:
 	CSleepEffectorPP*		m_pSleepEffectorPP;
 
 	//менеджер эффекторов, есть у каждого актрера
-	CCameraManager*			m_pActorEffector;
+	CActorCameraManager*	m_pActorEffector;
 	static float			f_Ladder_cam_limit;
 	////////////////////////////////////////////
 	// для взаимодействия с другими персонажами 

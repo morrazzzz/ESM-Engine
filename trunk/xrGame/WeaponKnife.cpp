@@ -135,9 +135,9 @@ void CWeaponKnife::KnifeStrike(const Fvector& pos, const Fvector& dir)
 										SendHit);
 }
 
-void CWeaponKnife::OnMotionMark(u32 state, const motion_marks& M)
+void CWeaponKnife::OnMotionMark(u32 state)
 {
-	inherited::OnMotionMark(state, M);
+	inherited::OnMotionMark(state);
 		/*
 	if (state == eFire)
 	{

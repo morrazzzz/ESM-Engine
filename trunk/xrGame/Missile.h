@@ -37,6 +37,7 @@ public:
 	virtual void 			OnEvent						(NET_Packet& P, u16 type);
 
 	virtual void 			OnAnimationEnd				(u32 state);
+	virtual void			OnMotionMark				(u32 state);
 
 	void            PlayAnimBore() override;
 	void PlaySndBore() override;
@@ -64,6 +65,7 @@ protected:
 	//для сети
 	virtual void			net_Relcase			(CObject* O );
 protected:
+	HUD_SOUND_ITEM sndPlaying;
 
 	//время нахождения в текущем состоянии
 	u32						m_dwStateTime;
