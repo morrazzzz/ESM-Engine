@@ -68,13 +68,13 @@ void CWeaponBM16::PlayAnimHide()
 	switch( m_magazine.size() )
 	{
 	case 0:
-		PlayHUDMotion("anim_hide", "anm_hide_0", TRUE, this, GetState());
+		PlayHUDMotion("anim_holster", "anm_hide_0", TRUE, this, GetState());
 		break;
 	case 1:
-		PlayHUDMotion("anim_hide", "anm_hide_1", TRUE, this, GetState());
+		PlayHUDMotion("anim_holster", "anm_hide_1", TRUE, this, GetState());
 		break;
 	case 2:
-		PlayHUDMotion("anim_hide", "anm_hide_2", TRUE,this,GetState());
+		PlayHUDMotion("anim_holster", "anm_hide_2", TRUE,this,GetState());
 		break;
 	}
 }
@@ -121,10 +121,10 @@ void  CWeaponBM16::PlayAnimIdleMoving()
 		PlayHUDMotion("anim_idle", "anm_idle_moving_0",TRUE,this,GetState());
 		break;
 	case 1:
-		PlayHUDMotion("anim_idle", "anm_idle_moving_1", TRUE, this, GetState());
+		PlayHUDMotion("anim_idle_1", "anm_idle_moving_1", TRUE, this, GetState());
 		break;
 	case 2:
-		PlayHUDMotion("anim_idle", "anm_idle_moving_2",TRUE,this,GetState());
+		PlayHUDMotion("anim_idle_2", "anm_idle_moving_2",TRUE,this,GetState());
 		break;
 	}
 }
