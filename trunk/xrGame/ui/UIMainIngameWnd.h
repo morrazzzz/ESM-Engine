@@ -12,10 +12,6 @@
 #include "UICarPanel.h"
 #include "UIMotionIcon.h"
 #include "../hudsound.h"
-//для режима настройки HUD
-extern int				g_bHudAdjustMode;
-extern float			g_fHudAdjustValue;
-
 class					CUIPdaMsgListItem;
 class					CLAItem;
 class					CUIZoneMap;

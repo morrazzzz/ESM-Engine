@@ -88,11 +88,13 @@ int				g_keypress_on_start = 1;
 		u32		g_dwDebugNodeDest		= 0;
 extern	BOOL	g_bDrawBulletHit;
 
-		float	debug_on_frame_gather_stats_frequency	= 0.f;
-#endif
-#ifdef DEBUG 
+float	debug_on_frame_gather_stats_frequency	= 0.f;
+
 extern LPSTR	dbg_stalker_death_anim;
 extern BOOL		b_death_anim_velocity;
+
+extern int hud_adj_mode;
+extern int hud_adj_item_idx;
 #endif
 int g_AI_inactive_time = 0;
 Flags32 g_uCommonFlags;
@@ -1557,8 +1559,8 @@ void CCC_RegisterCommands()
 	CMD1(CCC_TuneAttachableItem,"dbg_adjust_attachable_item");
 
 	// adjust mode support
-	CMD4(CCC_Integer,			"hud_adjust_mode",		&g_bHudAdjustMode,	0, 5);
-	CMD4(CCC_Float,				"hud_adjust_value",		&g_fHudAdjustValue,	0.0f, 1.0f);
+    CMD4(CCC_Integer, "hud_adjust_mode", &hud_adj_mode, 0, 9)
+ 	CMD4(CCC_Integer, "hud_adjust_item_index", &hud_adj_item_idx, 0, 1)
 
 	CMD1(CCC_ShowAnimationStats,"ai_show_animation_stats");
 #endif // DEBUG

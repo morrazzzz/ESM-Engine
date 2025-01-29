@@ -61,10 +61,6 @@ void test_update();
 
 using namespace InventoryUtilities;
 
-//	hud adjust mode
-int			g_bHudAdjustMode			= 0;
-float		g_fHudAdjustValue			= 0.0f;
-
 const u32	g_clWhite					= 0xffffffff;
 
 #define		DEFAULT_MAP_SCALE			1.f

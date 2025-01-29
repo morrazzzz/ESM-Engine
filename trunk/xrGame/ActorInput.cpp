@@ -27,7 +27,7 @@
 #include "CustomDetector.h"
 #include "Weapon.h"
 
-extern u32 hud_adj_mode;
+extern int hud_adj_mode;
 
 void CActor::IR_OnKeyboardPress(int cmd)
 {
@@ -225,7 +225,23 @@ void CActor::IR_OnKeyboardRelease(int cmd)
 
 void CActor::IR_OnKeyboardHold(int cmd)
 {
-	if(hud_adj_mode && pInput->iGetAsyncKeyState(DIK_LSHIFT))	return;
+	if (hud_adj_mode && pInput->iGetAsyncKeyState(DIK_LSHIFT))
+	{
+		if (pInput->iGetAsyncKeyState(DIK_UP))
+			g_player_hud->tune(Ivector().set(0, -1, 0));
+		if (pInput->iGetAsyncKeyState(DIK_DOWN))
+			g_player_hud->tune(Ivector().set(0, 1, 0));
+		if (pInput->iGetAsyncKeyState(DIK_LEFT))
+			g_player_hud->tune(Ivector().set(-1, 0, 0));
+		if (pInput->iGetAsyncKeyState(DIK_RIGHT))
+			g_player_hud->tune(Ivector().set(1, 0, 0));
+		if (pInput->iGetAsyncKeyState(DIK_PRIOR))
+			g_player_hud->tune(Ivector().set(0, 0, -1));
+		if (pInput->iGetAsyncKeyState(DIK_NEXT))
+			g_player_hud->tune(Ivector().set(0, 0, 1));
+
+		return;
+	}
 
 	if (Remote() || !g_Alive())					return;
 //	if (conditions().IsSleeping())				return;

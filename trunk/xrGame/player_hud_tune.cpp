@@ -6,8 +6,8 @@
 #include "HudManager.h"
 #include "HudItem.h"
 #include "ui_base.h"
-u32 hud_adj_mode		= 0;
-u32 hud_adj_item_idx	= 0;
+int hud_adj_mode		= 0;
+int hud_adj_item_idx	= 0;
 // "press SHIFT+NUM 0-return 1-hud_pos 2-hud_rot 3-itm_pos 4-itm_rot 5-fire_point 6-fire_2_point 7-shell_point";
 
 float _delta_pos			= 0.0005f;
@@ -204,6 +204,9 @@ void attachable_hud_item::debug_draw_firedeps()
 void player_hud::tune(Ivector _values)
 {
 #ifndef MASTER_GOLD
+	if (hud_adj_item_idx > 0 && !m_attached_items[hud_adj_item_idx])
+		return;
+
 	Ivector				values;
 	tune_remap			(_values,values);
 
