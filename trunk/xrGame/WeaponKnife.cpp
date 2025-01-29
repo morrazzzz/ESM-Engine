@@ -241,7 +241,6 @@ void CWeaponKnife::FireStart()
 
 void CWeaponKnife::Fire2Start () 
 {
-	inherited::Fire2Start();
 	SwitchState(eFire2);
 }
 

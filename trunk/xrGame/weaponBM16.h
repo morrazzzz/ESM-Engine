@@ -13,6 +13,8 @@ public:
 	virtual void	Load							(LPCSTR section);
 
 protected:
+	void SetAllowBoreAnm(LPCSTR) override;
+
 	virtual void	PlayAnimShoot					();
 	virtual void	PlayAnimReload					();
 	virtual void	PlayReloadSound					();

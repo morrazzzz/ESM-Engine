@@ -24,13 +24,19 @@ void CWeaponPistol::Load	(LPCSTR section)
 	inherited::Load		(section);
 
 	m_sounds.LoadSound(section, "snd_close", "sndClose", false, m_eSoundClose);
-
-	AllowBoreAnm = AllowBoreAnm && pSettings->line_exist(section, "anm_bore_empty");
 }
 
 void CWeaponPistol::OnH_B_Chield		()
 {
 	inherited::OnH_B_Chield		();
+}
+
+void CWeaponPistol::SetAllowBoreAnm(LPCSTR section)
+{
+	if (!pSettings->line_exist(section, "anm_bore_empty"))
+		return;
+
+	inherited::SetAllowBoreAnm(section);
 }
 
 void CWeaponPistol::PlayAnimShow	()

@@ -149,12 +149,14 @@ protected:
 
 	bool					m_bTriStateReload;
 	u8						m_sub_state;
-	// Weapon fires now
-	bool					bWorking2;
 	// a misfire happens, you'll need to rearm weapon
 	bool					bMisfire;				
 	bool AllowBoreAnm;
 	
+	virtual void SetAllowBoreAnm(LPCSTR);
+
+	IC bool GetAllowBoreAnm() const { return AllowBoreAnm; }
+
 	virtual bool			AllowBore		();
 public:
 			bool IsGrenadeLauncherAttached	() const;
@@ -310,9 +312,10 @@ public:
 	// Weapon fire
 	//////////////////////////////////////////////////////////////////////////
 protected:
-	virtual void			SetDefaults			();
-
-	virtual void			OnStateSwitch(u32 S);
+	virtual void			SetDefaults				();
+	
+	virtual bool			MovingAnimAllowedNow	();
+	virtual void			OnStateSwitch			(u32 S);
 
 	//трассирование полета пули
 			void			FireTrace			(const Fvector& P, const Fvector& D);
@@ -321,7 +324,6 @@ protected:
 	virtual void			FireStart			() {CShootingObject::FireStart();}
 	virtual void			FireEnd				();// {CShootingObject::FireEnd();}
 
-	virtual void			Fire2Start			();
 	virtual void			Fire2End			();
 	virtual void			Reload				();
 			void			StopShooting		();

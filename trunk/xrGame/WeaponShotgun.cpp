@@ -47,8 +47,6 @@ void CWeaponShotgun::Fire2Start()
 {
 	if (IsPending()) return;
 
-	inherited::Fire2Start();
-
 	if (IsValid())
 	{
 		if (!IsWorking())

@@ -10,10 +10,20 @@ void CWeaponBM16::Load(LPCSTR section)
 	inherited::Load(section);
 	m_sounds.LoadSound(section, "snd_reload_1", "sndReload1", true, m_eSoundShot);
 
-	AllowBoreAnm = pSettings->line_exist(section, "anm_bore_0")
-		&& pSettings->line_exist(section, "anm_bore_1") && pSettings->line_exist(section, "anm_bore_2");
-
 	AllowAnmReload1 = pSettings->line_exist(section, "anm_reload_1");
+}
+
+static LPCSTR const animsBoreBM16[]{ "anm_bore_0", "anm_bore_1", "anm_bore_2"};
+
+void CWeaponBM16::SetAllowBoreAnm(LPCSTR section)
+{
+	for (size_t i = 0; i < 3; i++)
+	{
+		if (!pSettings->line_exist(section, animsBoreBM16[i]))
+			return;
+	}
+
+	AllowBoreAnm = true;
 }
 
 void CWeaponBM16::PlayReloadSound()

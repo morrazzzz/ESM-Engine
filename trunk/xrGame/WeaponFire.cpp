@@ -90,17 +90,11 @@ void CWeapon::FireTrace		(const Fvector& P, const Fvector& D)
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
 }
 
-void CWeapon::Fire2Start()				
-{ 
-	bWorking2=true;	
-}
 void CWeapon::Fire2End	()
 { 
 	//принудительно останавливать зацикленные партиклы
 	if(m_pFlameParticles2 && m_pFlameParticles2->IsLooped()) 
 		StopFlameParticles2	();
-
-	bWorking2=false;
 }
 
 void CWeapon::StopShooting		()

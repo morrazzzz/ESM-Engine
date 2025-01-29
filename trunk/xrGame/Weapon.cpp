@@ -80,6 +80,8 @@ CWeapon::CWeapon(LPCSTR name)
 	m_ef_weapon_type		= static_cast<u32>(-1);
 	m_UIScope				= nullptr;
 	m_set_next_ammoType_on_reload = static_cast<u32>(-1);
+
+	AllowBoreAnm = false;
 }
 
 CWeapon::~CWeapon		()
@@ -596,8 +598,8 @@ void CWeapon::OnHiddenItem ()
 		SwitchState(eHidden);
 
 	OnZoomOut();
+	inherited::OnHiddenItem		();
 
-	inherited::OnHiddenItem();
 	m_set_next_ammoType_on_reload	= static_cast<u32>(-1);
 }
 
@@ -611,7 +613,15 @@ void CWeapon::OnH_B_Chield		()
 	m_set_next_ammoType_on_reload	= static_cast<u32>(-1);
 }
 
-extern u32 hud_adj_mode;
+void CWeapon::SetAllowBoreAnm(LPCSTR section)
+{
+	if (!pSettings->line_exist(section, "anm_bore"))
+		return;
+
+	AllowBoreAnm = true;
+}
+
+extern int hud_adj_mode;
 bool CWeapon::AllowBore()
 {
 	return true;
@@ -627,11 +637,8 @@ void CWeapon::UpdateCL		()
 	//нарисовать партиклы
 	UpdateFlameParticles	();
 	UpdateFlameParticles2	();
-
-	if(!IsGameTypeSingle())
-		make_Interpolation		();
 	
-	if(AllowBoreAnm && GetNextState()==GetState() && H_Parent()==Level().CurrentEntity())
+	if(GetAllowBoreAnm() && GetNextState() == GetState() && H_Parent() == Level().CurrentEntity())
 	{
 		CActor* pActor	= smart_cast<CActor*>(H_Parent());
 		if(pActor && !pActor->AnyMove() && this==pActor->inventory().ActiveItem())
@@ -1494,7 +1501,7 @@ BOOL CWeapon::ParentIsActor	()
 	return EA->cast_actor()!=0;
 }
 
-extern u32 hud_adj_mode;
+extern int hud_adj_mode;
 
 void CWeapon::debug_draw_firedeps()
 {
@@ -1547,4 +1554,9 @@ void CWeapon::OnStateSwitch(u32 S)
 			}
 		}
 	}
+}
+
+bool CWeapon::MovingAnimAllowedNow()
+{
+	return !IsZoomed();
 }
