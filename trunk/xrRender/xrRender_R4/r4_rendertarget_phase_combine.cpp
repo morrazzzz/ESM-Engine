@@ -332,6 +332,16 @@ void	CRenderTarget::phase_combine	()
          HW.pDevice->ResolveSubresource( rt_Generic_1_r->pTexture->surface_get(), 0, rt_Generic_1->pTexture->surface_get(), 0, DXGI_FORMAT_R8G8B8A8_UNORM );
    }
    */
+   
+	//For now, we gonna call NVG here
+	{
+		//Write to rt_Color, read from rt_Generic_0
+		phase_nightvision();
+		
+		//Copy the rt_Color back to rt_Generic_0
+		HW.pContext->CopyResource(rt_Generic_0->pTexture->surface_get(), rt_Color->pTexture->surface_get());	
+	}
+   
 
 	// PP enabled ?
 	//	Render to RT texture to be able to copy RT even in windowed mode.
