@@ -1,0 +1,39 @@
+/*
+	A simple NVG shader example
+*/
+
+#include "common.h"
+
+struct PSInput
+{
+    float4 hpos : SV_POSITION;
+    float2 texcoord : TEXCOORD0;
+};
+
+//Our constants with color and intensity
+float4 nvg_color;
+
+//Noise function
+float hash12n(float2 p)
+{
+	p = frac(p * float2(5.3987, 5.4421));
+    p += dot(p.yx, p.xy + float2(21.5351, 14.3137));
+	return frac(p.x * p.y * 95.4307);
+}
+
+float4 main(PSInput I) : SV_Target
+{
+	//our current frame image
+	float3 image = s_image.SampleLevel(smp_rtlinear, I.texcoord).xy;
+
+    //our grayscale image
+    float image_grayscale = dot(image, float3(0.8, 0.4, 0.2));
+
+    //color the image
+    image = image_grayscale * nvg_color.xyz * nvg_color.w; //get our grayscale image and color it, boost the brightness too
+    image *= hash12n(I.hpos.xy) * 0.6 + 0.4; //remap the noise a bit
+    image *= image_grayscale * 0.7 + 0.3; //further contrast adjustment
+    image *= rcp(1.0 + image); //we work with LDR buffer, so lets tonemap it
+	
+	return float4(image, 1.0);
+}
