@@ -1,13 +1,11 @@
 #include "pch_script.h"
 #include "weaponsvu.h"
 
-CWeaponSVU::CWeaponSVU(void) : CWeaponCustomPistol("SVU")
-{
-}
+CWeaponSVU::CWeaponSVU(void)
+{}
 
 CWeaponSVU::~CWeaponSVU(void)
-{
-}
+{}
 
 using namespace luabind;
 

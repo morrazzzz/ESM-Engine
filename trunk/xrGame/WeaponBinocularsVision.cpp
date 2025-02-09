@@ -172,10 +172,9 @@ void SBinocVisibleObj::Update()
 }
 
 
-CBinocularsVision::CBinocularsVision(CWeaponBinoculars* parent)
+CBinocularsVision::CBinocularsVision(const shared_str& sect)
 {
-	m_parent = parent;
-	Load									(m_parent->cNameSect());
+	Load							(sect);
 }
 CBinocularsVision::~CBinocularsVision()
 {

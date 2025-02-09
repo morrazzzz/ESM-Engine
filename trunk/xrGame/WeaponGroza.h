@@ -8,8 +8,8 @@ class CWeaponGroza :
 {
 	typedef CWeaponMagazinedWGrenade inherited;
 public:
-	CWeaponGroza(void);
-	virtual ~CWeaponGroza(void);
+				CWeaponGroza();
+	virtual		~CWeaponGroza();
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

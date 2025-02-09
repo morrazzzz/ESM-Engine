@@ -21,15 +21,17 @@ class CSE_ALifeItemWeaponAmmo;
 class CWeaponMagazined;
 class CParticlesObject;
 class CUIStaticItem;
+class CBinocularsVision;
+//class CNightVisionEffector;
 
-class CWeapon : public CHudItemObject,
+class CWeapon : public CHudItemObject,	
 				public CShootingObject
 {
 private:
 	typedef CHudItemObject inherited;
 
 public:
-							CWeapon				(LPCSTR name);
+							CWeapon				();
 	virtual					~CWeapon			();
 
 	// Generic
@@ -52,6 +54,7 @@ public:
 	virtual void			shedule_Update		(u32 dt);
 
 	virtual void			renderable_Render	();
+	virtual bool			need_renderable		();
 
 	virtual void			render_item_ui		();
 	virtual bool			render_item_ui_query();
@@ -89,7 +92,6 @@ public:
 	virtual CInventoryItem	*can_kill			(CInventory *inventory) const;
 	virtual const CInventoryItem *can_kill		(const xr_vector<const CGameObject*> &items) const;
 	virtual bool			ready_to_kill		() const;
-	virtual bool			NeedToDestroyObject	() const; 
 	virtual ALife::_TIME_ID	TimePassedAfterIndependant() const;
 protected:
 	//время удаления оружия
@@ -127,10 +129,7 @@ public:
 		eSubstateReloadInProcess,
 		eSubstateReloadEnd,
 	};
-
-	virtual bool			IsHidden			()	const		{	return GetState() == eHidden;}						// Does weapon is in hidden state
-	virtual bool			IsHiding			()	const		{	return GetState() == eHiding;}
-	virtual bool			IsShowing			()	const		{	return GetState() == eShowing;}
+	static constexpr u8 undefined_ammo_type = static_cast<u8>(-1);
 
 	IC BOOL					IsValid				()	const		{	return iAmmoElapsed;						}
 	// Does weapon need's update?
@@ -175,16 +174,16 @@ public:
 	virtual void InitAddons();
 
 	//для отоброажения иконок апгрейдов в интерфейсе
-	int	GetScopeX() {return /*pSettings->r_s32(m_scopes[m_cur_scope], "scope_x")*/ m_iScopeX; }
-	int	GetScopeY() {return /*pSettings->r_s32(m_scopes[m_cur_scope], "scope_y")*/ m_iScopeY; }
+	int	GetScopeX() {return m_scopes[m_cur_scope].ScopeX;}
+	int	GetScopeY() {return m_scopes[m_cur_scope].ScopeY;}
 	int	GetSilencerX() {return m_iSilencerX;}
 	int	GetSilencerY() {return m_iSilencerY;}
 	int	GetGrenadeLauncherX() {return m_iGrenadeLauncherX;}
 	int	GetGrenadeLauncherY() {return m_iGrenadeLauncherY;}
 
-	const shared_str& GetGrenadeLauncherName	()		{return m_sGrenadeLauncherName;}
-	const shared_str& GetScopeName				()		{return m_sScopeName;}
-	const shared_str& GetSilencerName			()		{return m_sSilencerName;}
+	const shared_str& GetGrenadeLauncherName	() const{return m_sGrenadeLauncherName;}
+	const shared_str GetScopeName				() const{return m_scopes[m_cur_scope].ScopeName;}
+	const shared_str& GetSilencerName			() const{return m_sSilencerName;}
 
 	u8		GetAddonsState						()		const		{return m_flagsAddOnState;};
 	void	SetAddonsState						(u8 st)	{m_flagsAddOnState=st;}//dont use!!! for buy menu only!!!
@@ -198,7 +197,6 @@ protected:
 	ALife::EWeaponAddonStatus	m_eGrenadeLauncherStatus;
 
 	//названия секций подключаемых аддонов
-	shared_str		m_sScopeName;
 	shared_str		m_sSilencerName;
 	shared_str		m_sGrenadeLauncherName;
 
@@ -208,53 +206,56 @@ protected:
 	int	m_iGrenadeLauncherX, m_iGrenadeLauncherY;
 
 protected:
+
 	struct SZoomParams
 	{
-		    bool m_bZoomDofEnabled;
+		u8 m_bZoomEnabled : 1;			//разрешение режима приближения
+		u8 m_bHideCrosshairInZoom: 1;
+		u8 m_bZoomDofEnabled: 1;
 
-			Fvector			m_ZoomDof;
-		    Fvector4		m_ReloadDof;
-			Fvector4		m_ReloadEmptyDof;
+		u8 m_bIsZoomModeNow: 1; //когда режим приближения включен
+		u8 m_bUseDynamicZoom: 1;
+		float			m_fCurrentZoomFactor;	//текущий фактор приближения
+		float			m_fZoomRotateTime;		//время приближения
+	
+		float			m_fIronSightZoomFactor;	//коэффициент увеличения прицеливания
+		float			m_fScopeZoomFactor;		//коэффициент увеличения прицела
+
+		float			m_fZoomRotationFactor;
+		
+     	Fvector			m_ZoomDof;
+		Fvector4		m_ReloadDof;
+		shared_str		m_sUseZoomPostprocess;
+		shared_str		m_sUseBinocularVision;
+		CBinocularsVision* m_pVision;
+		//CNightVisionEffector*	m_pNight_vision;
 
 	} m_zoom_params;
-
-///////////////////////////////////////////////////
-//	для режима приближения и снайперского прицела
-///////////////////////////////////////////////////
-protected:
-	//разрешение режима приближения
-	bool			m_bZoomEnabled;
-	//текущий фактор приближения
-	float			m_fZoomFactor;
-	//время приближения
-	float			m_fZoomRotateTime;
-	//текстура для снайперского прицела, в режиме приближения
-	CUIStaticItem*	m_UIScope;
-	//коэффициент увеличения прицеливания
-	float			m_fIronSightZoomFactor;
-	//коэффициент увеличения прицела
-	float			m_fScopeZoomFactor;
-	//когда режим приближения включен
-	bool			m_bZoomMode;
-	//от 0 до 1, показывает насколько процентов
-	//мы перемещаем HUD  
-	float			m_fZoomRotationFactor;
-	bool			m_bHideCrosshairInZoom;
+	
+		float			m_fRTZoomFactor; //run-time zoom factor
+		//CUIWindow*		m_UIScope;
+		CUIStaticItem* m_UIScope;
 public:
 
-	IC bool					IsZoomEnabled		()	const	{return m_bZoomEnabled;}
-	virtual	void			ZoomInc				(){};
-	virtual	void			ZoomDec				(){};
+	IC bool					IsZoomEnabled		()	const		{return m_zoom_params.m_bZoomEnabled;}
+	virtual	void			ZoomInc				();
+	virtual	void			ZoomDec				();
 	virtual void			OnZoomIn			();
 	virtual void			OnZoomOut			();
-			bool			IsZoomed			()	const	{return m_bZoomMode;};
-	CUIStaticItem*			ZoomTexture			();	
-			bool			ZoomHideCrosshair	()			{return m_bHideCrosshairInZoom || ZoomTexture();}
+	IC		bool			IsZoomed			()	const		{return m_zoom_params.m_bIsZoomModeNow;};
+	CUIStaticItem*			ZoomTexture			();
 
-	IC float				GetZoomFactor		() const		{	return m_fZoomFactor;	}
+
+			bool			ZoomHideCrosshair	()				{return m_zoom_params.m_bHideCrosshairInZoom || ZoomTexture();}
+
+	IC float				GetZoomFactor		() const		{return m_zoom_params.m_fCurrentZoomFactor;}
+	IC void					SetZoomFactor		(float f) 		{m_zoom_params.m_fCurrentZoomFactor = f;}
+
 	virtual	float			CurrentZoomFactor	();
 	//показывает, что оружие находится в соостоянии поворота для приближенного прицеливания
-			bool			IsRotatingToZoom	() const		{	return (m_fZoomRotationFactor<1.f);}
+			bool			IsRotatingToZoom	() const		{	return (m_zoom_params.m_fZoomRotationFactor<1.f);}
+
+	u8				GetCurrentHudOffsetIdx() override;
 
 	virtual float				Weight			();		
 
@@ -434,15 +435,24 @@ protected:
 
 	virtual bool			IsNecessaryItem	    (const shared_str& item_sect);
 
+	struct ScopeParams
+	{
+		u32 ScopeX;
+		u32 ScopeY;
+		LPCSTR ScopeName;
+	};
 public:
 	xr_vector<shared_str>	m_ammoTypes;
 
-	CWeaponAmmo*			m_pAmmo;
+	xr_vector<ScopeParams>   m_scopes;
+	u8						m_cur_scope;
+	
+	CWeaponAmmo*            m_pAmmo;
 	u32						m_ammoType;
 	shared_str				m_ammoName;
 	BOOL					m_bHasTracers;
 	u8						m_u8TracerColorID;
-	u32						m_set_next_ammoType_on_reload;
+	u8						m_set_next_ammoType_on_reload;
 	// Multitype ammo support
 	xr_vector<CCartridge>	m_magazine;
 	CCartridge				m_DefaultCartridge;
@@ -452,7 +462,6 @@ public:
 	IC	bool				can_be_strapped				() const {return m_can_be_strapped;};
 
 	LPCSTR					GetCurrentAmmo_ShortName() const;
-
 protected:
 	u32						m_ef_main_weapon_type;
 	u32						m_ef_weapon_type;

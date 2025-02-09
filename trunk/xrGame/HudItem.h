@@ -16,7 +16,7 @@ class CMotionDef;
 
 struct attachable_hud_item;
 class motion_marks;
-class player_hud_motion;
+struct player_hud_motion;
 
 class CHUDState
 {
@@ -59,10 +59,8 @@ protected: //чтоб нельзя было вызвать на прямую
 	Flags16					m_huditem_flags;
 	enum {
 		fl_pending = (1 << 0),
-		fl_notrenderhud = (1 << 1),
-		//fl_renderinghud = (1 << 2),
-		fl_inertion_enable = (1 << 2),
-		fl_inertion_allow = (1 << 3),
+		fl_inertion_enable = (1 << 1),
+		fl_inertion_allow = (1 << 2),
 	};
 
 	struct {
@@ -133,16 +131,11 @@ public:
 	virtual	void				UpdateXForm			()						= 0;
 
 	player_hud_motion*			AnimationExist(const shared_str& M) const;
-	u32							PlayHUDMotion(const shared_str& M, BOOL bMixIn, CHudItem*  W, u32 state);
-	u32							PlayHUDMotion(const shared_str& M, const shared_str&, BOOL bMixIn, CHudItem* W, u32 state);
+	u32							PlayHUDMotion(const shared_str& M, BOOL bMixIn, u32 state);
+	u32							PlayHUDMotion(const shared_str& M, const shared_str&, BOOL bMixIn, u32 state);
 	u32							PlayHUDMotion_noCB(const shared_str& M, BOOL bMixIn, player_hud_motion* anm_play = nullptr);
 	void						StopCurrentAnimWithoutCallback();
 
-	//IC void RenderingHud(bool b) { m_huditem_flags.set(fl_renderinghud, b); }
-	//IC bool GetRenderingHud() { return m_huditem_flags.is(fl_renderinghud); }
-
-	IC void	NotRenderHud(bool B) { m_huditem_flags.set(fl_notrenderhud, B);}
-	IC BOOL	GetNotRenderHud() { return m_huditem_flags.is(fl_notrenderhud);}
 	attachable_hud_item*		HudItemData				() const;
 	virtual void				on_a_hud_attach			();
 	virtual void				on_b_hud_detach			();

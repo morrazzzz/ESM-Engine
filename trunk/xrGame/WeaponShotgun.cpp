@@ -7,7 +7,7 @@
 #include "level.h"
 #include "actor.h"
 
-CWeaponShotgun::CWeaponShotgun() : CWeaponCustomPistol("TOZ34")
+CWeaponShotgun::CWeaponShotgun()
 {
 	m_eSoundClose			= ESoundTypes(SOUND_TYPE_WEAPON_SHOOTING);
 	m_eSoundAddCartridge	= ESoundTypes(SOUND_TYPE_WEAPON_SHOOTING);
@@ -96,7 +96,7 @@ void CWeaponShotgun::OnShotBoth()
 	AddShotEffector();
 
 	// �������� �������
-	PlayHUDMotion("anim_shoot_both", "anm_shoot_both", FALSE, this, GetState());
+	PlayHUDMotion("anim_shoot_both", "anm_shoot_both", false, GetState());
 
 	// Shell Drop
 	Fvector vel;
@@ -279,18 +279,18 @@ void CWeaponShotgun::switch2_EndReload	()
 void CWeaponShotgun::PlayAnimOpenWeapon()
 {
 	VERIFY(GetState()==eReload);
-	PlayHUDMotion("anm_open",FALSE,this,GetState());
+	PlayHUDMotion("anm_open",false,GetState());
 }
 void CWeaponShotgun::PlayAnimAddOneCartridgeWeapon()
 {
 	VERIFY(GetState()==eReload);
-	PlayHUDMotion("anm_add_cartridge",FALSE,this,GetState());
+	PlayHUDMotion("anm_add_cartridge",false, GetState());
 }
 void CWeaponShotgun::PlayAnimCloseWeapon()
 {
 	VERIFY(GetState()==eReload);
 
-	PlayHUDMotion("anm_close",FALSE,this,GetState());
+	PlayHUDMotion("anm_close",false,GetState());
 }
 
 bool CWeaponShotgun::HaveCartridgeInInventory		(u8 cnt)
@@ -323,10 +323,9 @@ u8 CWeaponShotgun::AddCartridge		(u8 cnt)
 {
 	if(IsMisfire())	bMisfire = false;
 
-	if(m_set_next_ammoType_on_reload != u32(-1)){
-		m_ammoType						= m_set_next_ammoType_on_reload;
-		m_set_next_ammoType_on_reload	= u32(-1);
-
+	if (m_set_next_ammoType_on_reload != undefined_ammo_type) {
+		m_ammoType = m_set_next_ammoType_on_reload;
+		m_set_next_ammoType_on_reload = undefined_ammo_type;
 	}
 
 	if( !HaveCartridgeInInventory(1) )

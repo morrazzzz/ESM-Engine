@@ -19,7 +19,6 @@
 
 CHudItem::CHudItem()
 {
-	NotRenderHud(false);
 	EnableHudInertion(TRUE);
 	AllowHudInertion(TRUE);
 	m_bStopAtEndAnimIsRunning	= false;
@@ -83,9 +82,6 @@ void CHudItem::renderable_Render()
 
 void CHudItem::SwitchState(u32 S)
 {
-	if (OnClient()) 
-		return;
-
 	SetNextState( S );
 
 	if (object().Local() && !object().getDestroy())	
@@ -147,7 +143,7 @@ void CHudItem::PlayAnimBore()
 	//if (AnimationExist("anm_bore"))
 	//	return;
 
-	PlayHUDMotion("anm_bore", TRUE, this, GetState());
+	PlayHUDMotion("anm_bore", TRUE, GetState());
 }
 
 bool CHudItem::Activate() 
@@ -313,7 +309,7 @@ player_hud_motion* CHudItem::AnimationExist(const shared_str& anim_name) const
 	return anm;
 }
 
-u32 CHudItem::PlayHUDMotion(const shared_str& M, BOOL bMixIn, CHudItem*  W, u32 state)
+u32 CHudItem::PlayHUDMotion(const shared_str& M, BOOL bMixIn, u32 state)
 {
 	u32 anim_time					= PlayHUDMotion_noCB(M, bMixIn);
 	if (anim_time>0)
@@ -329,9 +325,9 @@ u32 CHudItem::PlayHUDMotion(const shared_str& M, BOOL bMixIn, CHudItem*  W, u32 
 	return anim_time;
 }
 
-u32 CHudItem::PlayHUDMotion(const shared_str& M, const shared_str& M2, BOOL bMixIn, CHudItem* W, u32 state)
+u32 CHudItem::PlayHUDMotion(const shared_str& M, const shared_str& M2, BOOL bMixIn, u32 state)
 {
-	 u32 anim_time;
+	 u32 anim_time = 0;
 	 bool IsAnimExist = false;
 
 	 if (auto motionHud = AnimationExist(M))
@@ -409,7 +405,7 @@ void CHudItem::PlayAnimIdle()
 {
 	if (TryPlayAnimIdle()) return;
 
-	PlayHUDMotion("anim_idle", "anm_idle", TRUE, NULL, GetState());
+	PlayHUDMotion("anim_idle", "anm_idle", true, GetState());
 }
 
 bool CHudItem::TryPlayAnimIdle()
@@ -438,12 +434,12 @@ bool CHudItem::TryPlayAnimIdle()
 
 void CHudItem::PlayAnimIdleMoving()
 {
-	PlayHUDMotion("anim_idle", "anm_idle_moving", TRUE, NULL, GetState());
+	PlayHUDMotion("anim_idle", "anm_idle_moving", true, GetState());
 }
 
 void CHudItem::PlayAnimIdleSprint()
 {
-	PlayHUDMotion("anim_idle_sprint", "anm_idle_sprint", TRUE, NULL,GetState());
+	PlayHUDMotion("anim_idle_sprint", "anm_idle_sprint", true, GetState());
 }
 
 void CHudItem::PlaySndBore()

@@ -1,13 +1,11 @@
 #include "pch_script.h"
 #include "WeaponFORT.h"
 
-CWeaponFORT::CWeaponFORT() : CWeaponPistol("FORT")
-{
-}
+CWeaponFORT::CWeaponFORT()
+{}
 
 CWeaponFORT::~CWeaponFORT()
-{
-}
+{}
 
 using namespace luabind;
 

@@ -238,7 +238,7 @@ void CMissile::State(u32 state)
 	case eShowing:
         {
 			SetPending			(TRUE);
-			PlayHUDMotion("anim_show", "anm_show", FALSE, this, GetState());
+			PlayHUDMotion("anim_show", "anm_show", false, GetState());
 		} break;
 	case eIdle:
 		{
@@ -250,7 +250,7 @@ void CMissile::State(u32 state)
 			if(H_Parent())
 			{
 				SetPending			(TRUE);
-				PlayHUDMotion		("anim_hide", "anm_hide", TRUE, this, GetState());
+				PlayHUDMotion		("anim_hide", "anm_hide", true, GetState());
 			}
 		} break;
 	case eHidden:
@@ -272,17 +272,17 @@ void CMissile::State(u32 state)
 		{
 			SetPending			(TRUE);
 			m_fThrowForce		= m_fMinForce;
-			PlayHUDMotion		("anim_throw_begin", "anm_throw_begin", TRUE, this, GetState());
+			PlayHUDMotion		("anim_throw_begin", "anm_throw_begin", true, GetState());
 		} break;
 	case eReady:
 		{
-			PlayHUDMotion		("anim_throw_idle", "anm_throw_idle", TRUE, this, GetState());
+			PlayHUDMotion		("anim_throw_idle", "anm_throw_idle", true, GetState());
 		} break;
 	case eThrow:
 		{
 			SetPending			(TRUE);
 			m_throw				= false;
-			PlayHUDMotion("anim_throw_act", "anm_throw", TRUE, this, GetState());
+			PlayHUDMotion("anim_throw_act", "anm_throw", true, GetState());
 		} break;
 	case eThrowEnd:
 		{
@@ -338,7 +338,7 @@ void CMissile::OnAnimationEnd(u32 state)
 
 void CMissile::PlayAnimBore()
 {
-	PlayHUDMotion("anim_playing", "anm_bore", true, this, GetState());
+	PlayHUDMotion("anim_playing", "anm_bore", true, GetState());
 }
 
 void CMissile::PlaySndBore()

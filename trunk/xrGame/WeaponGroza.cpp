@@ -1,14 +1,11 @@
 #include "pch_script.h"
 #include "weapongroza.h"
 
-CWeaponGroza::CWeaponGroza(void) : CWeaponMagazinedWGrenade("GROZA",SOUND_TYPE_WEAPON_SUBMACHINEGUN) {
-	m_weight = 1.5f;
-	m_slot = 2;
-}
+CWeaponGroza::CWeaponGroza() :CWeaponMagazinedWGrenade(SOUND_TYPE_WEAPON_SUBMACHINEGUN) 
+{}
 
-CWeaponGroza::~CWeaponGroza(void) 
-{
-}
+CWeaponGroza::~CWeaponGroza() 
+{}
 
 using namespace luabind;
 

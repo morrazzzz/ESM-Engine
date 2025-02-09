@@ -6,7 +6,7 @@
 #include "level.h"
 #include "player_hud.h"
 
-CWeaponRPG7::CWeaponRPG7() : CWeaponCustomPistol("RPG7") 
+CWeaponRPG7::CWeaponRPG7()
 {
 }
 
@@ -19,7 +19,7 @@ void CWeaponRPG7::Load	(LPCSTR section)
 	inherited::Load			(section);
 	CRocketLauncher::Load	(section);
 
-	m_fScopeZoomFactor		= pSettings->r_float	(section,"max_zoom_factor");
+	m_zoom_params.m_fScopeZoomFactor	= pSettings->r_float	(section,"max_zoom_factor");
 	m_sGrenadeBoneName		= pSettings->r_string	(section,"grenade_bone");
 
 	m_sRocketSection		= pSettings->r_string	(section,"rocket_class");
@@ -167,7 +167,7 @@ void CWeaponRPG7::switch2_Fire	()
 void CWeaponRPG7::PlayAnimReload()
 {
 	VERIFY(GetState()==eReload);
-	PlayHUDMotion("anm_reload", FALSE, this, GetState());
+	PlayHUDMotion("anm_reload", false, GetState());
 }
 
 void CWeaponRPG7::OnEvent(NET_Packet& P, u16 type) 

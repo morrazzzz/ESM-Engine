@@ -65,7 +65,7 @@ protected:
 	virtual void	state_MagEmpty	(float dt);
 	virtual void	state_Misfire	(float dt);
 public:
-					CWeaponMagazined	(LPCSTR name="AK74",ESoundTypes eSoundType=SOUND_TYPE_WEAPON_SUBMACHINEGUN);
+					CWeaponMagazined	(ESoundTypes eSoundType=SOUND_TYPE_WEAPON_SUBMACHINEGUN);
 	virtual			~CWeaponMagazined	();
 
 	virtual void	Load			(LPCSTR section);
@@ -85,6 +85,7 @@ public:
 
 	virtual bool	Attach(PIItem pIItem, bool b_send_event);
 	virtual bool	Detach(const char* item_section_name, bool b_spawn_item);
+	        bool	DetachScope(const char* item_section_name, bool b_spawn_item);
 	virtual bool	CanAttach(PIItem pIItem);
 	virtual bool	CanDetach(const char* item_section_name);
 

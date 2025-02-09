@@ -32,7 +32,14 @@ struct player_hud_motion_container
 
 struct hud_item_measures
 {
-	enum{e_fire_point=(1<<0), e_fire_point2=(1<<1), e_shell_point=(1<<2), e_16x9_mode_now=(1<<3)};
+	enum
+	{
+		e_fire_point=(1<<0), 
+		e_fire_point2=(1<<1),
+		e_shell_point=(1<<2), 
+		e_16x9_mode_now=(1<<3)
+	};
+
 	Flags8							m_prop_flags;
 
 	Fvector							m_item_attach[2];//pos,rot
@@ -46,9 +53,12 @@ struct hud_item_measures
 	u16								m_shell_bone;
 	Fvector							m_shell_point_offset;
 
-	Fvector							m_hands_attach[2];//pos,rot
+	Fvector							m_hands_attach[2]{};//pos,rot
 
-	void load						(const shared_str& sect_name, IKinematics* K);
+	void LoadNotHands(const shared_str& sect_name, IKinematics* K);
+	void LoadHands(const shared_str& sect_name, IKinematics* K);
+
+	hud_item_measures() = default;
 };
 
 struct attachable_hud_item
@@ -66,9 +76,11 @@ struct attachable_hud_item
 
 	player_hud_motion_container		m_hand_motions;
 			
+	bool HandsModeHudItem{ true };
+
 			attachable_hud_item		(player_hud* pparent):m_parent(pparent),m_upd_firedeps_frame(u32(-1)),m_parent_hud_item(NULL){}
 			~attachable_hud_item	();
-	void load						(const shared_str& sect_name);
+	void LoadingHudItem(const shared_str& sect_name, IKinematicsAnimated* hands);
 	void update						(bool bForce);
 	void update_hud_additional		(Fmatrix& trans);
 	void setup_firedeps				(firedeps& fd);
@@ -104,7 +116,7 @@ public:
 	void			render_hud			(IRenderable* root_object);	
 	void			render_item_ui		();
 	bool			render_item_ui_query();
-	u32				anim_play			(u16 part, const MotionID& M, BOOL bMixIn, const CMotionDef*& md, float speed, IKinematicsAnimated* model);
+	u32				anim_play			(u16 part, const MotionID& M, BOOL bMixIn, const CMotionDef*& md, IKinematicsAnimated* model);
 	const shared_str& section_name		() const {return m_sect_name;}
 
 	attachable_hud_item* create_hud_item(const shared_str& sect);
@@ -118,7 +130,7 @@ public:
 
 	void			calc_transform		(u16 attach_slot_idx, const Fmatrix& offset, Fmatrix& result);
 	void			tune				(Ivector values);
-	u32	motion_length(const MotionID& M, const CMotionDef*& md, IKinematicsAnimated* model, float speed);
+	u32	motion_length(const MotionID& M, const CMotionDef*& md, IKinematicsAnimated* model);
 	u32	motion_length(const shared_str& anim_name, const shared_str& hud_name, const CMotionDef*& md);
 	player_hud_motion* find_motion_length(const shared_str& anim_name, const shared_str& hud_name);
 	void			OnMovementChanged	(ACTOR_DEFS::EMoveCommand cmd)	;

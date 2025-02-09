@@ -11,7 +11,7 @@ class CWeaponMagazinedWGrenade : public CWeaponMagazined,
 {
 	typedef CWeaponMagazined inherited;
 public:
-					CWeaponMagazinedWGrenade	(LPCSTR name="AK74",ESoundTypes eSoundType=SOUND_TYPE_WEAPON_SUBMACHINEGUN);
+					CWeaponMagazinedWGrenade	(ESoundTypes eSoundType=SOUND_TYPE_WEAPON_SUBMACHINEGUN);
 	virtual			~CWeaponMagazinedWGrenade	();
 
 	virtual void	Load				(LPCSTR section);
@@ -32,7 +32,8 @@ public:
 	virtual bool	CanDetach(const char* item_section_name);
 	virtual void	InitAddons();
 	virtual bool	UseScopeTexture();
-	virtual	float	CurrentZoomFactor	();
+	virtual	float	CurrentZoomFactor();
+	virtual	u8		GetCurrentHudOffsetIdx	();
 
 	
 	virtual void	OnStateSwitch	(u32 S);

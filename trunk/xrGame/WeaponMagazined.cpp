@@ -15,7 +15,7 @@
 #include "object_broker.h"
 #include "string_table.h"
 
-CWeaponMagazined::CWeaponMagazined(LPCSTR name, ESoundTypes eSoundType) : CWeapon(name)
+CWeaponMagazined::CWeaponMagazined(ESoundTypes eSoundType) : CWeapon()
 {
 	m_eSoundShow				= ESoundTypes(SOUND_TYPE_ITEM_TAKING | eSoundType);
 	m_eSoundHide				= ESoundTypes(SOUND_TYPE_ITEM_HIDING | eSoundType);
@@ -267,9 +267,9 @@ void CWeaponMagazined::ReloadMagazine()
 	
 	if (!m_pCurrentInventory) return;
 
-	if(m_set_next_ammoType_on_reload != u32(-1)){		
-		m_ammoType						= m_set_next_ammoType_on_reload;
-		m_set_next_ammoType_on_reload	= u32(-1);
+	if (m_set_next_ammoType_on_reload != undefined_ammo_type) {
+		m_ammoType = m_set_next_ammoType_on_reload;
+		m_set_next_ammoType_on_reload = undefined_ammo_type;
 	}
 	
 	if(!unlimited_ammo()) 
@@ -727,9 +727,16 @@ bool CWeaponMagazined::CanAttach(PIItem pIItem)
 
 	if(			pScope &&
 				 m_eScopeStatus == ALife::eAddonAttachable &&
-				(m_flagsAddOnState&CSE_ALifeItemWeapon::eWeaponAddonScope) == 0 &&
-				(m_sScopeName == pIItem->object().cNameSect()) )
-       return true;
+				(m_flagsAddOnState&CSE_ALifeItemWeapon::eWeaponAddonScope) == 0 /*&&
+				(m_scopes[cur_scope]->m_sScopeName == pIItem->object().cNameSect())*/ )
+	{
+		for (u32 i = 0; i < m_scopes.size(); i++)
+		{
+			if (!xr_strcmp(m_scopes[i].ScopeName, pIItem->object().cNameSect()))
+				return true;
+		}
+		return false;
+	}
 	else if(	pSilencer &&
 				m_eSilencerStatus == ALife::eAddonAttachable &&
 				(m_flagsAddOnState&CSE_ALifeItemWeapon::eWeaponAddonSilencer) == 0 &&
@@ -747,9 +754,17 @@ bool CWeaponMagazined::CanAttach(PIItem pIItem)
 bool CWeaponMagazined::CanDetach(const char* item_section_name)
 {
 	if( m_eScopeStatus == ALife::eAddonAttachable &&
-	   0 != (m_flagsAddOnState&CSE_ALifeItemWeapon::eWeaponAddonScope) &&
-	   (m_sScopeName	== item_section_name))
-       return true;
+	   0 != (m_flagsAddOnState&CSE_ALifeItemWeapon::eWeaponAddonScope))/* &&
+	   (m_scopes[cur_scope]->m_sScopeName	== item_section_name))*/
+	{
+		for(u32 i = 0; i < m_scopes.size(); i++)
+		{
+			if (!xr_strcmp(m_scopes[i].ScopeName, item_section_name))
+				return true;
+		}
+		return false;
+	}
+//	   return true;
 	else if(m_eSilencerStatus == ALife::eAddonAttachable &&
 	   0 != (m_flagsAddOnState&CSE_ALifeItemWeapon::eWeaponAddonSilencer) &&
 	   (m_sSilencerName == item_section_name))
@@ -772,9 +787,17 @@ bool CWeaponMagazined::Attach(PIItem pIItem, bool b_send_event)
 	
 	if(pScope &&
 	   m_eScopeStatus == ALife::eAddonAttachable &&
-	   (m_flagsAddOnState&CSE_ALifeItemWeapon::eWeaponAddonScope) == 0 &&
-	   (m_sScopeName == pIItem->object().cNameSect()))
+	   (m_flagsAddOnState&CSE_ALifeItemWeapon::eWeaponAddonScope) == 0 /*&&
+	   (m_scopes[cur_scope]->m_sScopeName == pIItem->object().cNameSect())*/)
 	{
+		for (u8 i = 0; i < m_scopes.size(); i++)
+		{
+			if (!xr_strcmp(m_scopes[i].ScopeName, pIItem->object().cNameSect()))
+			{
+				m_cur_scope = i;
+				break;
+			}
+		}
 		m_flagsAddOnState |= CSE_ALifeItemWeapon::eWeaponAddonScope;
 		result = true;
 	}
@@ -813,13 +836,29 @@ bool CWeaponMagazined::Attach(PIItem pIItem, bool b_send_event)
         return inherited::Attach(pIItem, b_send_event);
 }
 
+bool CWeaponMagazined::DetachScope(const char* item_section_name, bool b_spawn_item)
+{
+	for (u8 i = 0; i < m_scopes.size(); i++)
+	{
+		if(!xr_strcmp(m_scopes[i].ScopeName, item_section_name))
+		{
+			m_cur_scope = NULL;
+			return true;
+		}
+	}
+	return false;
+}
 
 bool CWeaponMagazined::Detach(const char* item_section_name, bool b_spawn_item)
 {
 	if(		m_eScopeStatus == ALife::eAddonAttachable &&
-			0 != (m_flagsAddOnState&CSE_ALifeItemWeapon::eWeaponAddonScope) &&
-			(m_sScopeName == item_section_name))
+			DetachScope(item_section_name, b_spawn_item))
 	{
+		if ((m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonScope) == 0)
+		{
+			Msg("ERROR: scope addon already detached.");
+			return true;
+		}
 		m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonScope;
 		
 		UpdateAddonsVisibility();
@@ -853,36 +892,33 @@ bool CWeaponMagazined::Detach(const char* item_section_name, bool b_spawn_item)
 
 void CWeaponMagazined::InitAddons()
 {
-	//////////////////////////////////////////////////////////////////////////
-	// ѕрицел
-	m_fIronSightZoomFactor = READ_IF_EXISTS(pSettings, r_float, cNameSect(), "ironsight_zoom_factor", 50.0f);
+    m_zoom_params.m_fIronSightZoomFactor = READ_IF_EXISTS( pSettings, r_float, cNameSect(), "ironsight_zoom_factor", 50.0f );
 
 	if(IsScopeAttached())
 	{
 		if(m_eScopeStatus == ALife::eAddonAttachable)
 		{
-			m_sScopeName = pSettings->r_string(cNameSect(), "scope_name");
-			m_iScopeX	 = pSettings->r_s32(cNameSect(),"scope_x");
-			m_iScopeY	 = pSettings->r_s32(cNameSect(),"scope_y");
+			shared_str scope_tex_name = pSettings->r_string(GetScopeName(), "scope_texture");
+            m_zoom_params.m_fScopeZoomFactor	= pSettings->r_float( GetScopeName(), "scope_zoom_factor");
+			m_zoom_params.m_sUseZoomPostprocess = READ_IF_EXISTS(pSettings, r_string, GetScopeName(), "scope_nightvision", 0);
+			m_zoom_params.m_bUseDynamicZoom = READ_IF_EXISTS(pSettings, r_bool, GetScopeName(), "scope_dynamic_zoom", FALSE);
+			m_zoom_params.m_sUseBinocularVision = READ_IF_EXISTS(pSettings, r_string, GetScopeName(), "scope_alive_detector", 0);
+			if (m_UIScope)
+			{
+				xr_delete(m_UIScope);
+			}
 
-			shared_str scope_tex_name;
-			scope_tex_name = pSettings->r_string(*m_sScopeName, "scope_texture");
-			m_fScopeZoomFactor = pSettings->r_float	(*m_sScopeName, "scope_zoom_factor");
+			/*
+			if (!g_dedicated_server)
+			{
+				m_UIScope = xr_new<CUIWindow>();
+				createWpnScopeXML();
+				CUIXmlInit::InitWindow(*pWpnScopeXml, scope_tex_name.c_str(), 0, m_UIScope);
+			}
+			*/
 			
-			if(m_UIScope) xr_delete(m_UIScope);
 			m_UIScope = xr_new<CUIStaticItem>();
 
-			m_UIScope->Init(*scope_tex_name, "hud\\default", 0, 0, alNone);
-
-		}
-		else if(m_eScopeStatus == ALife::eAddonPermanent)
-		{
-			m_fScopeZoomFactor = pSettings->r_float	(cNameSect(), "scope_zoom_factor");
-			shared_str scope_tex_name;
-			scope_tex_name = pSettings->r_string(cNameSect(), "scope_texture");
-
-			if(m_UIScope) xr_delete(m_UIScope);
-			m_UIScope = xr_new<CUIStaticItem>();
 			m_UIScope->Init(*scope_tex_name, "hud\\default", 0, 0, alNone);
 
 		}
@@ -891,8 +927,10 @@ void CWeaponMagazined::InitAddons()
 	{
 		if(m_UIScope) xr_delete(m_UIScope);
 		
-		if(IsZoomEnabled())
-			m_fIronSightZoomFactor = pSettings->r_float	(cNameSect(), "scope_zoom_factor");
+		if ( IsZoomEnabled() )
+		{
+			m_zoom_params.m_fIronSightZoomFactor = pSettings->r_float( cNameSect(), "scope_zoom_factor" );
+		}
 	}
 
 	
@@ -913,8 +951,6 @@ void CWeaponMagazined::InitAddons()
 		m_sSmokeParticlesCurrent	= m_sSmokeParticles;
 		m_sSndShotCurrent			= "sndShot";
 
-		//сила выстрела
-		LoadFireParams	(*cNameSect());
 		//подсветка от выстрела
 		LoadLights		(*cNameSect(), "");
 	}
@@ -961,24 +997,24 @@ void CWeaponMagazined::ApplySilencerKoeffs	()
 void CWeaponMagazined::PlayAnimShow()
 {
 	VERIFY(GetState()==eShowing);
-	PlayHUDMotion("anim_draw", "anm_show", FALSE, this, GetState());
+	PlayHUDMotion("anim_draw", "anm_show", false, GetState());
 }
 
 void CWeaponMagazined::PlayAnimHide()
 {
 	VERIFY(GetState()==eHiding);
-	PlayHUDMotion("anim_holster", "anm_hide", TRUE, this, GetState());
+	PlayHUDMotion("anim_holster", "anm_hide", true, GetState());
 }
 
 void CWeaponMagazined::PlayAnimReload()
 {
 	VERIFY(GetState()==eReload);
-	PlayHUDMotion("anim_reload", "anm_reload", TRUE, this, GetState());
+	PlayHUDMotion("anim_reload", "anm_reload", true, GetState());
 }
 
 void CWeaponMagazined::PlayAnimAim()
 {
-	PlayHUDMotion("anim_idle_aim", "anm_idle_aim", TRUE, NULL, GetState());
+	PlayHUDMotion("anim_idle_aim", "anm_idle_aim", true, GetState());
 }
 
 void CWeaponMagazined::PlayAnimIdle()
@@ -994,7 +1030,7 @@ void CWeaponMagazined::PlayAnimIdle()
 void CWeaponMagazined::PlayAnimShoot()
 {
 	VERIFY(GetState()==eFire);
-	PlayHUDMotion("anim_shoot", "anm_shots", FALSE, this, GetState());
+	PlayHUDMotion("anim_shoot", "anm_shots", false, GetState());
 }
 
 void CWeaponMagazined::OnZoomIn			()
@@ -1020,14 +1056,16 @@ void CWeaponMagazined::OnZoomIn			()
 }
 void CWeaponMagazined::OnZoomOut		()
 {
-	if(!m_bZoomMode) return;
+	if(!IsZoomed())	 
+		return;
 
 	inherited::OnZoomOut();
 
-	if(GetState() == eIdle)
-		PlayAnimIdle();
+	if(GetState()==eIdle)
+		PlayAnimIdle		();
 
-	CActor* pActor = smart_cast<CActor*>(H_Parent());
+	CActor* pActor			= smart_cast<CActor*>(H_Parent());
+
 	if(pActor)
 		pActor->Cameras().RemoveCamEffector	(eCEZoom);
 

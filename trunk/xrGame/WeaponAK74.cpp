@@ -1,13 +1,11 @@
 #include "pch_script.h"
 #include "WeaponAK74.h"
 
-CWeaponAK74::CWeaponAK74(LPCSTR name, ESoundTypes eSoundType) : CWeaponMagazinedWGrenade(name, eSoundType)
-{
-}
+CWeaponAK74::CWeaponAK74(ESoundTypes eSoundType) : CWeaponMagazinedWGrenade(eSoundType)
+{}
 
 CWeaponAK74::~CWeaponAK74()
-{
-}
+{}
 
 using namespace luabind;
 

@@ -3,11 +3,11 @@
 #include "entity.h"
 #include "explosiveRocket.h"
 #include "level.h"
-#include "clsid_game.h"
+#include "../xrphysics/MathUtils.h"
+#include "actor.h"
 
-#include "../xrPhysics/MathUtils.h"
 #ifdef DEBUG
-#include "phdebug.h"
+#	include "phdebug.h"
 #endif
 
 
@@ -80,7 +80,7 @@ void CWeaponRG6::FireStart ()
 											launch_matrix.j, launch_matrix.i);
 		launch_matrix.c.set(p1);
 
-		if (IsZoomed() && H_Parent()->CLS_ID == CLSID_OBJECT_ACTOR)
+		if (IsGameTypeSingle() && IsZoomed() && smart_cast<CActor*>(H_Parent()))
 		{
 			H_Parent()->setEnabled(FALSE);
 			setEnabled(FALSE);
@@ -98,16 +98,16 @@ void CWeaponRG6::FireStart ()
 				//Transference.add(p1, Fvector().mul(d, RQ.range));				
 				Transference.mul(d, RQ.range);
 				Fvector res[2];
-#ifdef		DEBUG
+/*#ifdef		DEBUG
 				DBG_OpenCashedDraw();
 				DBG_DrawLine(p1,Fvector().add(p1,d),D3DCOLOR_XRGB(255,0,0));
-#endif
+#endif*/
 				u8 canfire0 = TransferenceAndThrowVelToThrowDir(Transference, CRocketLauncher::m_fLaunchSpeed, EffectiveGravity(), res);
-#ifdef DEBUG
+/*#ifdef DEBUG
 				if(canfire0>0)DBG_DrawLine(p1,Fvector().add(p1,res[0]),D3DCOLOR_XRGB(0,255,0));
 				if(canfire0>1)DBG_DrawLine(p1,Fvector().add(p1,res[1]),D3DCOLOR_XRGB(0,0,255));
 				DBG_ClosedCashedDraw(30000);
-#endif
+#endif*/
 				if (canfire0 != 0)
 				{
 //					Msg ("d[%f,%f,%f] - res [%f,%f,%f]", d.x, d.y, d.z, res[0].x, res[0].y, res[0].z);
@@ -140,7 +140,7 @@ u8 CWeaponRG6::AddCartridge		(u8 cnt)
 {
 	u8 t = inheritedSG::AddCartridge(cnt);
 	u8 k = cnt-t;
-	shared_str fake_grenade_name = pSettings->r_string(*m_ammoTypes[m_ammoType], "fake_grenade_name");
+	shared_str fake_grenade_name = pSettings->r_string(m_ammoTypes[m_ammoType].c_str(), "fake_grenade_name");
 	while(k){
 		--k;
 		inheritedRL::SpawnRocket(*fake_grenade_name, this);
