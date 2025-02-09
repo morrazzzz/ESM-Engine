@@ -15,6 +15,7 @@
 #include "../xrRenderDX10/msaa/dx10MSAABlender.h"
 #include "../xrRenderDX10/DX10 Rain/dx10RainBlender.h"
 
+#include "blender_nightvision.h"
 
 #include "../xrRender/dxRenderDeviceRender.h"
 
@@ -538,6 +539,12 @@ CRenderTarget::CRenderTarget		()
 		accum_volumetric_geom_create();
 		g_accum_volumetric.create( D3DFVF_XYZ, g_accum_volumetric_vb, g_accum_volumetric_ib);
 	}
+	
+	//Nightvision
+	{
+		b_nightvision = xr_new<CBlender_nightvision>();
+		s_nightvision.create(b_nightvision, "r3\\nightvision");
+	}
 
 
 	// REFLECTED
@@ -1048,6 +1055,7 @@ CRenderTarget::~CRenderTarget	()
 	{
         xr_delete( b_hdao_msaa_cs );
     }
+	xr_delete(b_nightvision);
 }
 
 void CRenderTarget::reset_light_marker( bool bResetStencil)
