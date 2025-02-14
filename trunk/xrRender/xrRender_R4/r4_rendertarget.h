@@ -53,9 +53,6 @@ public:
     IBlender*                   b_hdao_cs;
     IBlender*                   b_hdao_msaa_cs;
 
-	//New
-	IBlender*					b_nightvision;
-
 #ifdef DEBUG
 	struct		dbg_line_t		{
 		Fvector	P0,P1;
@@ -152,8 +149,6 @@ private:
 	ref_shader					s_accum_spot_msaa[8]	;
 	ref_shader					s_accum_reflected_msaa[8];
 	ref_shader					s_accum_volume_msaa[8];
-
-	ref_shader					s_nightvision;
 
 	ref_geom						g_accum_point	;
 	ref_geom						g_accum_spot	;
@@ -269,8 +264,6 @@ public:
 	void						phase_accumulator		();
 	void						phase_vol_accumulator	();
 	void						shadow_direct			(light* L, u32 dls_phase);
-
-	void						phase_nightvision		();
 
 	//	Generates min/max sm
 	void						create_minmax_SM();
