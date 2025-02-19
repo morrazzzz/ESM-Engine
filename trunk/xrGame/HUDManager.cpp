@@ -289,8 +289,6 @@ void CHUDManager::OnScreenResolutionChanged()
 {
 	pUIGame->HideShownDialogs();
 
-	//xr_delete(pWpnScopeXml);
-
 	pUIGame->UnLoad();
 	pUIGame->Load();
 

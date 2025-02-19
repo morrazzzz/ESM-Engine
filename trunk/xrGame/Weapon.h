@@ -20,7 +20,7 @@ class CSE_ALifeItemWeapon;
 class CSE_ALifeItemWeaponAmmo;
 class CWeaponMagazined;
 class CParticlesObject;
-class CUIStaticItem;
+class CUIWeaponScope;
 class CBinocularsVision;
 //class CNightVisionEffector;
 
@@ -233,8 +233,7 @@ protected:
 	} m_zoom_params;
 	
 		float			m_fRTZoomFactor; //run-time zoom factor
-		//CUIWindow*		m_UIScope;
-		CUIStaticItem* m_UIScope;
+		CUIWeaponScope* m_UIScope;
 public:
 
 	IC bool					IsZoomEnabled		()	const		{return m_zoom_params.m_bZoomEnabled;}
@@ -243,7 +242,7 @@ public:
 	virtual void			OnZoomIn			();
 	virtual void			OnZoomOut			();
 	IC		bool			IsZoomed			()	const		{return m_zoom_params.m_bIsZoomModeNow;};
-	CUIStaticItem*			ZoomTexture			();
+	CUIWeaponScope*			ZoomTexture			();
 
 
 			bool			ZoomHideCrosshair	()				{return m_zoom_params.m_bHideCrosshairInZoom || ZoomTexture();}

@@ -2131,6 +2131,9 @@
     <Filter Include="Core\Client\Objects\items &amp; weapons\Weapons\HudItem">
       <UniqueIdentifier>{50247808-9ec6-4882-bc9d-ca9f3d6d0697}</UniqueIdentifier>
     </Filter>
+    <Filter Include="UI\Common\WeaponScopeWnd">
+      <UniqueIdentifier>{ca6d2603-3011-4901-8584-7c367dfc31a1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mt_config.h">
@@ -6042,6 +6045,9 @@
     <ClInclude Include="player_hud.h">
       <Filter>Core\Client\Objects\items &amp; weapons\Weapons\HudItem</Filter>
     </ClInclude>
+    <ClInclude Include="ui\UIWeaponScope.h">
+      <Filter>UI\Common\WeaponScopeWnd</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -8872,6 +8878,9 @@
     </ClCompile>
     <ClCompile Include="player_hud_tune.cpp">
       <Filter>Core\Client\Objects\items &amp; weapons\Weapons\HudItem</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\UIWeaponScope.cpp">
+      <Filter>UI\Common\WeaponScopeWnd</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

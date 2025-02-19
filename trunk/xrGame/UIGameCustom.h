@@ -74,7 +74,7 @@ extern CMapListHelper	gMapListHelper;
 class CUIGameCustom :public DLL_Pure, public CDialogHolder
 {
 protected:
-	CUIXml*				m_msgs_xml;
+	CUIXml* m_msgs_xml;
 	CUICaption*			GameCaptions			() {return m_pgameCaptions;}
 	CUICaption*			m_pgameCaptions;
 	st_vec m_custom_statics;
@@ -85,6 +85,7 @@ protected:
 	bool				m_bShowGameIndicators;
 
 public:
+	CUIXml* WpnScopeXml;
 	CUIMainIngameWnd*		UIMainIngameWnd;
 	CUIMessagesWindow*		m_pMessagesWnd;
 

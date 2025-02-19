@@ -22,6 +22,7 @@ struct predicate_remove_stat {
 CUIGameCustom::CUIGameCustom()
 {
 	m_msgs_xml = nullptr;
+	WpnScopeXml = nullptr;
 	m_InventoryMenu = nullptr;
 	m_PdaMenu = nullptr;
 	//m_window = nullptr;
@@ -182,6 +183,7 @@ void CUIGameCustom::ShowHidePdaMenu(const EPdaTabs tab) const
 void CUIGameCustom::UnLoad()
 {
 	xr_delete					(m_msgs_xml);
+	delete WpnScopeXml;
 	xr_delete					(m_InventoryMenu);
 	xr_delete					(m_PdaMenu);
 //	xr_delete					(m_window);
@@ -196,6 +198,14 @@ void CUIGameCustom::Load()
 		R_ASSERT				(!m_msgs_xml);
 		m_msgs_xml				= xr_new<CUIXml>();
 		m_msgs_xml->Init		(CONFIG_PATH, UI_PATH, "ui_custom_msgs.xml");
+
+		R_ASSERT(!WpnScopeXml);
+		WpnScopeXml = new CUIXml();
+		if (!WpnScopeXml->Init(CONFIG_PATH, UI_PATH, "scopes.xml"))
+		{
+			delete WpnScopeXml;
+			WpnScopeXml = nullptr;
+		}
 
 		R_ASSERT				(!m_InventoryMenu);
 		m_InventoryMenu		    = xr_new<CUIInventoryWnd>	();

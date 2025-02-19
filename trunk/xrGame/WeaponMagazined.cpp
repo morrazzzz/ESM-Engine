@@ -14,6 +14,7 @@
 #include "level.h"
 #include "object_broker.h"
 #include "string_table.h"
+#include "ui/UIWeaponScope.h"
 
 CWeaponMagazined::CWeaponMagazined(ESoundTypes eSoundType) : CWeapon()
 {
@@ -898,7 +899,7 @@ void CWeaponMagazined::InitAddons()
 	{
 		if(m_eScopeStatus == ALife::eAddonAttachable)
 		{
-			shared_str scope_tex_name = pSettings->r_string(GetScopeName(), "scope_texture");
+			LPCSTR scope_tex_name = pSettings->r_string(GetScopeName(), "scope_texture");
             m_zoom_params.m_fScopeZoomFactor	= pSettings->r_float( GetScopeName(), "scope_zoom_factor");
 			m_zoom_params.m_sUseZoomPostprocess = READ_IF_EXISTS(pSettings, r_string, GetScopeName(), "scope_nightvision", 0);
 			m_zoom_params.m_bUseDynamicZoom = READ_IF_EXISTS(pSettings, r_bool, GetScopeName(), "scope_dynamic_zoom", FALSE);
@@ -908,19 +909,10 @@ void CWeaponMagazined::InitAddons()
 				xr_delete(m_UIScope);
 			}
 
-			/*
-			if (!g_dedicated_server)
-			{
-				m_UIScope = xr_new<CUIWindow>();
-				createWpnScopeXML();
-				CUIXmlInit::InitWindow(*pWpnScopeXml, scope_tex_name.c_str(), 0, m_UIScope);
-			}
-			*/
-			
-			m_UIScope = xr_new<CUIStaticItem>();
+			m_UIScope = new CUIWeaponScope();
 
-			m_UIScope->Init(*scope_tex_name, "hud\\default", 0, 0, alNone);
-
+			bool ScopeTexture = !CurrentGameUI()->WpnScopeXml || strstr(scope_tex_name, "/") || strstr(scope_tex_name, "\\"); //!CurrentGameUI()->WpnScopeXml->NavigateToNode(scope_tex_name);
+			m_UIScope->InitScope(CurrentGameUI()->WpnScopeXml, scope_tex_name, ScopeTexture);
 		}
 	}
 	else
@@ -1152,7 +1144,6 @@ void CWeaponMagazined::net_Export(NET_Packet& P)
 	P.w_u8(u8(m_iCurFireMode & 0x00ff));
 }
 
-#include "string_table.h"
 void CWeaponMagazined::GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count)
 {
 	int	AE					= GetAmmoElapsed();

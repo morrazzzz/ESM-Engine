@@ -25,10 +25,11 @@
 #include "object_broker.h"
 #include "../xr_3da/igame_persistent.h"
 #include "EffectorFall.h"
-#include "ui/UIStatic.h"
 #include "player_hud.h"
 #include "debug_renderer.h"
 #include "weaponBinocularsVision.h"
+#include "ui/UIWeaponScope.h"
+#include "uigamecustom.h"
 
 #define WEAPON_REMOVE_TIME		60000
 #define ROTATION_TIME			0.25f
@@ -89,8 +90,10 @@ CWeapon::CWeapon()
 
 CWeapon::~CWeapon		()
 {
-	xr_delete	(m_UIScope);
-	delete_data				( m_scopes );
+	delete m_zoom_params.m_pVision;
+	delete m_UIScope;
+
+	delete_data(m_scopes);
 }
 
 void CWeapon::Hit(SHit* pHDS)
@@ -371,24 +374,13 @@ void CWeapon::Load		(LPCSTR section)
 	}
 	else if (m_eScopeStatus == ALife::eAddonPermanent)
 	{
-		shared_str scope_tex_name = pSettings->r_string(cNameSect(), "scope_texture");
+		LPCSTR scope_tex_name = pSettings->r_string(cNameSect(), "scope_texture");
 		m_zoom_params.m_fScopeZoomFactor = pSettings->r_float(cNameSect(), "scope_zoom_factor");
-#pragma todo("Add me!!")
-/*
-		if (!g_dedicated_server)
-		{
-			m_UIScope = xr_new<CUIWindow>();
-			if (!pWpnScopeXml)
-			{
-				pWpnScopeXml = xr_new<CUIXml>();
-				pWpnScopeXml->Load(CONFIG_PATH, UI_PATH, "scopes.xml");
-			}
-			CUIXmlInit::InitWindow(*pWpnScopeXml, scope_tex_name.c_str(), 0, m_UIScope);
-		}
-*/
-		if (m_UIScope) xr_delete(m_UIScope);
-		m_UIScope = xr_new<CUIStaticItem>();
-		m_UIScope->Init(*scope_tex_name, "hud\\default", 0, 0, alNone);
+
+		m_UIScope = new CUIWeaponScope();
+
+		bool ScopeTexture = !CurrentGameUI()->WpnScopeXml || strstr(scope_tex_name, "/") || strstr(scope_tex_name, "\\");
+		m_UIScope->InitScope(CurrentGameUI()->WpnScopeXml, scope_tex_name, ScopeTexture);
 	}
 
 	if(m_eSilencerStatus == ALife::eAddonAttachable)
@@ -1201,7 +1193,7 @@ void CWeapon::OnZoomOut()
 	xr_delete							(m_zoom_params.m_pVision);
 }
 
-CUIStaticItem* CWeapon::ZoomTexture()
+CUIWeaponScope* CWeapon::ZoomTexture()
 {
 	if (UseScopeTexture())
 		return m_UIScope;
@@ -1484,12 +1476,10 @@ void CWeapon::render_item_ui()
 	if(m_zoom_params.m_pVision)
       	m_zoom_params.m_pVision->Draw();
 
-	//ZoomTexture()->Update	();
-	//ZoomTexture()->Draw		();
+	if (ZoomTexture()->GetWindowScope())
+		ZoomTexture()->GetWindowScope()->Update();
 
-	ZoomTexture()->SetPos(0, 0);
-	ZoomTexture()->SetRect(0, 0, UI_BASE_WIDTH, UI_BASE_HEIGHT);
-	ZoomTexture()->Render();
+	ZoomTexture()->DrawScope();
 }
 
 bool CWeapon::unlimited_ammo() const
