@@ -440,7 +440,6 @@ void CWeapon::Load		(LPCSTR section)
 	
 	m_zoom_params.m_bUseDynamicZoom				= READ_IF_EXISTS(pSettings,r_bool,section,"scope_dynamic_zoom",FALSE);
 	m_zoom_params.m_sUseZoomPostprocess			= 0;
-	m_zoom_params.m_sUseBinocularVision			= 0;
 }
 
 void CWeapon::LoadFireParams(LPCSTR section)
@@ -506,6 +505,14 @@ void CWeapon::net_Destroy	()
 	m_magazine.clear();
 }
 
+void CWeapon::net_Relcase(CObject* object)
+{
+	if (!m_zoom_params.m_pVision || need_renderable())
+		return;
+
+	m_zoom_params.m_pVision->remove_links(object);
+}
+
 BOOL CWeapon::IsUpdating()
 {	
 	bool bIsActiveItem = m_pCurrentInventory && m_pCurrentInventory->ActiveItem()==this;
@@ -565,7 +572,7 @@ void CWeapon::OnEvent(NET_Packet& P, u16 type)
 
 	case GE_WPN_STATE_CHANGE:
 		{
-			u8				state;
+			u8				state; 
 			P.r_u8			(state);
 			P.r_u8			(m_sub_state);		
 //			u8 NewAmmoType = 
@@ -709,7 +716,7 @@ void CWeapon::UpdateCL		()
 		}
 	}
 
-	if (m_zoom_params.m_pVision)
+	if (m_zoom_params.m_pVision && !need_renderable())
 		m_zoom_params.m_pVision->Update();
 }
 
@@ -1159,9 +1166,6 @@ void CWeapon::OnZoomIn()
 	if (GetHUDmode())
 		GamePersistent().SetPickableEffectorDOF(true);
 
-	if(m_zoom_params.m_sUseBinocularVision.size() && IsScopeAttached() && NULL==m_zoom_params.m_pVision) 
-		m_zoom_params.m_pVision	= xr_new<CBinocularsVision>(m_zoom_params.m_sUseBinocularVision/*"wpn_binoc"*/);
-
 /*
 	if(m_zoom_params.m_sUseZoomPostprocess.size() && IsScopeAttached()) 
 	{
@@ -1187,10 +1191,11 @@ void CWeapon::OnZoomOut()
     GamePersistent().RestoreEffectorDOF();
 
 	if (GetHUDmode())
+	{
 		GamePersistent().SetPickableEffectorDOF(false);
+		m_zoom_params.m_pVision->RemoveVisibleObjects();
+	}
 	ResetSubStateTime					();
-
-	xr_delete							(m_zoom_params.m_pVision);
 }
 
 CUIWeaponScope* CWeapon::ZoomTexture()

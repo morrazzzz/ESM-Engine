@@ -14,8 +14,8 @@ private:
 protected:
 	bool			m_bVision;
 public:
-					CWeaponBinoculars	(); 
-	virtual			~CWeaponBinoculars	();
+					CWeaponBinoculars	() = default; 
+	virtual			~CWeaponBinoculars	() = default;
 
 	void			Load				(LPCSTR section);
 
@@ -23,19 +23,14 @@ public:
 	virtual void	OnZoomOut			();
 	virtual	void	ZoomInc				();
 	virtual	void	ZoomDec				();
-	virtual void	net_Destroy			();
 	virtual BOOL	net_Spawn			(CSE_Abstract* DC);
 
 	virtual void	save				(NET_Packet &output_packet);
 	virtual void	load				(IReader &input_packet);
 
 	virtual bool	Action				(s32 cmd, u32 flags);
-	virtual void	UpdateCL			();
-	virtual void	render_item_ui		();
-	virtual bool	render_item_ui_query();
 	virtual bool	use_crosshair		()	const {return false;}
 	virtual void	GetBriefInfo		(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count);
-	virtual void	net_Relcase			(CObject *object);
 protected:
 	CBinocularsVision*					m_binoc_vision;
 

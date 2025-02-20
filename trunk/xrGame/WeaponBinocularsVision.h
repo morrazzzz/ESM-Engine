@@ -1,16 +1,13 @@
 #pragma once
 #include "ui\uistatic.h"
 class CObject;
-class CWeaponBinoculars;
-
 
 enum{
 	flVisObjNotValid		=(1<<0),
 	flTargetLocked			=(1<<1),
 };
 struct SBinocVisibleObj{
-							SBinocVisibleObj		()					{};
-	CObject*				m_object;
+	SBinocVisibleObj() {};
 	CUIStatic				m_lt;
 	CUIStatic				m_lb;
 	CUIStatic				m_rt;
@@ -19,27 +16,31 @@ struct SBinocVisibleObj{
 
 	float					m_upd_speed;
 	Flags8					m_flags;
-	void					create_default			(u32 color);
-	void					Draw					();
-	void					Update					();
-	bool					operator <				(const SBinocVisibleObj& other) const{ return  m_flags.test(flVisObjNotValid) < other.m_flags.test(flVisObjNotValid);} //move non-actual to tail
+	void create_default(u32 color);
+	void Draw();
+	void Update(CObject*);
 };
 
 class CBinocularsVision
 {
-	typedef xr_vector<SBinocVisibleObj*>	VIS_OBJECTS;
-	typedef VIS_OBJECTS::iterator			VIS_OBJECTS_IT;
-	VIS_OBJECTS								m_active_objects;
+	xr_unordered_map<CObject*, SBinocVisibleObj*> m_active_objects;
 public:
-	CBinocularsVision			(const shared_str& sect);
+	CBinocularsVision			(LPCSTR sect);
 	~CBinocularsVision			();
 	void	Update				();
 	void	Draw				();
 	void	remove_links		(CObject *object);
+	IC void RemoveVisibleObjects() 
+	{
+		for (auto& it : m_active_objects)
+			delete it.second;
+
+		m_active_objects.clear();
+	};
 
 protected :
 	Fcolor						m_frame_color;
 	float						m_rotating_speed;
-	void	Load				(const shared_str& section);
+	void	Load				(LPCSTR section);
 	ref_sound					m_snd_found;
 };

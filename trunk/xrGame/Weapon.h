@@ -40,7 +40,8 @@ public:
 	virtual BOOL			net_Spawn			(CSE_Abstract* DC);
 	virtual void			net_Destroy			();
 	virtual void			net_Export			(NET_Packet& P);
-	
+	void net_Relcase(CObject*) override;
+
 	virtual CWeapon			*cast_weapon			()					{return this;}
 	virtual CWeaponMagazined*cast_weapon_magazined	()					{return 0;}
 
@@ -226,7 +227,6 @@ protected:
      	Fvector			m_ZoomDof;
 		Fvector4		m_ReloadDof;
 		shared_str		m_sUseZoomPostprocess;
-		shared_str		m_sUseBinocularVision;
 		CBinocularsVision* m_pVision;
 		//CNightVisionEffector*	m_pNight_vision;
 
