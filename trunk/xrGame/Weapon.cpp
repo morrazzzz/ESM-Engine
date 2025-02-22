@@ -1193,7 +1193,8 @@ void CWeapon::OnZoomOut()
 	if (GetHUDmode())
 	{
 		GamePersistent().SetPickableEffectorDOF(false);
-		m_zoom_params.m_pVision->RemoveVisibleObjects();
+		if (m_zoom_params.m_pVision)
+			m_zoom_params.m_pVision->RemoveVisibleObjects();
 	}
 	ResetSubStateTime					();
 }
