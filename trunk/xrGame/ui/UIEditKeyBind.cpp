@@ -77,7 +77,7 @@ void CUIEditKeyBind::OnFocusLost()
 {
 	CUILabel::OnFocusLost		();
 	m_bEditMode					= false;
-	m_lines.SetTextColor		((subst_alpha(m_lines.GetTextColor(), color_get_A(0xffffffff))));
+	m_lines.SetTextColor		(subst_alpha(m_lines.GetTextColor(), color_get_A(0xffffffff)));
 }
 
 bool CUIEditKeyBind::OnMouseDown(int mouse_btn)

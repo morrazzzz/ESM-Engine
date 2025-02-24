@@ -151,11 +151,8 @@ protected:
 	u8						m_sub_state;
 	// a misfire happens, you'll need to rearm weapon
 	bool					bMisfire;				
-	bool AllowBoreAnm;
 	
-	virtual void SetAllowBoreAnm(LPCSTR);
-
-	IC bool GetAllowBoreAnm() const { return AllowBoreAnm; }
+	virtual void InitBoreAnm() { EnableHudBore(AnimationExist("anm_bore", true)); };
 
 	virtual bool			AllowBore		();
 public:
@@ -399,9 +396,10 @@ protected:
 	//объект партиклов для стрельбы из 2-го ствола
 	CParticlesObject*		m_pFlameParticles2;
 
-//////////////////////////////////////////////////////////////////////////
-// Weapon and ammo
-//////////////////////////////////////////////////////////////////////////
+protected:
+	int						GetAmmoCount_forType(shared_str const& ammo_type) const;
+	int						GetAmmoCount		(u8 ammo_type) const;
+
 public:
 	IC int					GetAmmoElapsed		()	const		{	return /*int(m_magazine.size())*/iAmmoElapsed;}
 	IC int					GetAmmoMagSize		()	const		{	return iMagazineSize;						}
@@ -425,12 +423,10 @@ protected:
 	int						iAmmoElapsed;		// ammo in magazine, currently
 	int						iMagazineSize;		// size (in bullets) of magazine
 
-	//для подсчета в GetAmmoCurrent
-	mutable int				iAmmoCurrent;
-	mutable u32				m_dwAmmoCurrentCalcFrame;	//кадр на котором просчитали кол-во патронов
-	//  [10/5/2005]
+	//для подсчета в GetSuitableAmmoTotal
+	mutable int				m_iAmmoCurrentTotal;
+	mutable u32				m_BriefInfo_CalcFrame;	//кадр на котором просчитали кол-во патронов
 	bool					m_bAmmoWasSpawned;
-	//  [10/5/2005]
 
 	virtual bool			IsNecessaryItem	    (const shared_str& item_sect);
 
@@ -445,11 +441,11 @@ public:
 
 	xr_vector<ScopeParams>   m_scopes;
 	u8						m_cur_scope;
-	
-	CWeaponAmmo*            m_pAmmo;
-	u32						m_ammoType;
-	shared_str				m_ammoName;
-	BOOL					m_bHasTracers;
+
+	CWeaponAmmo*			m_pCurrentAmmo;
+	u8						m_ammoType;
+//-	shared_str				m_ammoName; <== deleted
+	bool					m_bHasTracers;
 	u8						m_u8TracerColorID;
 	u8						m_set_next_ammoType_on_reload;
 	// Multitype ammo support

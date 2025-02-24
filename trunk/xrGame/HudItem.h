@@ -61,6 +61,7 @@ protected: //чтоб нельзя было вызвать на прямую
 		fl_pending = (1 << 0),
 		fl_inertion_enable = (1 << 1),
 		fl_inertion_allow = (1 << 2),
+		fl_bore_enable = (1 << 3),
 	};
 
 	struct {
@@ -130,9 +131,9 @@ public:
 
 	virtual	void				UpdateXForm			()						= 0;
 
-	player_hud_motion*			AnimationExist(const shared_str& M) const;
+	player_hud_motion* AnimationExist(const shared_str& M, bool NoWarningNotExist = false) const;
 	u32							PlayHUDMotion(const shared_str& M, BOOL bMixIn, u32 state);
-	u32							PlayHUDMotion(const shared_str& M, const shared_str&, BOOL bMixIn, u32 state);
+	u32								PlayHUDMotion(const shared_str& M, const shared_str&, BOOL bMixIn, u32 state);
 	u32							PlayHUDMotion_noCB(const shared_str& M, BOOL bMixIn, player_hud_motion* anm_play = nullptr);
 	void						StopCurrentAnimWithoutCallback();
 
@@ -158,6 +159,8 @@ protected:
 
 	IC void						EnableHudInertion		(BOOL B)		{ m_huditem_flags.set(fl_inertion_enable, B);}
 	IC void						AllowHudInertion		(BOOL B)		{ m_huditem_flags.set(fl_inertion_allow, B);}
+	IC void EnableHudBore(bool value) { m_huditem_flags.set(fl_bore_enable, value); }
+	IC bool GetEnableHudBore() const { return m_huditem_flags.is(fl_bore_enable); }
 
 	u32							m_animation_slot;
 

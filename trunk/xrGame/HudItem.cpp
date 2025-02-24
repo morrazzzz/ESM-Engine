@@ -21,6 +21,7 @@ CHudItem::CHudItem()
 {
 	EnableHudInertion(TRUE);
 	AllowHudInertion(TRUE);
+	EnableHudBore(true);
 	m_bStopAtEndAnimIsRunning	= false;
 	m_current_motion_def		= NULL;
 	m_started_rnd_anim_idx		= u8(-1);
@@ -274,20 +275,10 @@ void CHudItem::on_b_hud_detach()
 void CHudItem::on_a_hud_attach()
 {
 	if(m_current_motion_def)
-	{
 		PlayHUDMotion_noCB(m_current_motion, FALSE);
-#ifdef DEBUG
-//		Msg("continue playing [%s][%d]",m_current_motion.c_str(), Device.dwFrame);
-#endif // #ifdef DEBUG
-	}else
-	{
-#ifdef DEBUG
-//		Msg("no active motion");
-#endif // #ifdef DEBUG
-	}
 }
 
-player_hud_motion* CHudItem::AnimationExist(const shared_str& anim_name) const
+player_hud_motion* CHudItem::AnimationExist(const shared_str& anim_name, bool NoWarningNotExist) const
 {
 	player_hud_motion* anm = nullptr;
 	if (HudItemData())
@@ -299,13 +290,14 @@ player_hud_motion* CHudItem::AnimationExist(const shared_str& anim_name) const
 		anm = HudItemData()->m_hand_motions.find_motion(anim_name_r);
 		return anm;
 	}
-	else // Third person
-		anm = g_player_hud->find_motion_length(anim_name, HudSection());
+
+	anm = g_player_hud->find_motion_length(anim_name, HudSection());
 
 #ifdef DEBUG
-	if (!anm)
-		Msg("~ [WARNING] ------ Animation [%s] does not exist in [%s]", anim_name, HudSection().c_str());
+	if (!NoWarningNotExist && !anm)
+		Msg("~~~ [WARNING]: Animation [%s] does not exist in [%s]", anim_name.c_str(), HudSection().c_str());
 #endif
+
 	return anm;
 }
 
@@ -335,10 +327,10 @@ u32 CHudItem::PlayHUDMotion(const shared_str& M, const shared_str& M2, BOOL bMix
 		 IsAnimExist = true;
 		 anim_time = PlayHUDMotion_noCB(M, bMixIn, motionHud);
 	 }
-	 else if (auto motionHud = AnimationExist(M2))
+	 else if (auto motionHud2 = AnimationExist(M2))
 	 {
 		 IsAnimExist = true;
-		 anim_time = PlayHUDMotion_noCB(M2, bMixIn, motionHud);
+		 anim_time = PlayHUDMotion_noCB(M2, bMixIn, motionHud2);
 	 }
 
 	 R_ASSERT2(IsAnimExist, make_string("Animation %s and %s not exist.", M.c_str(), M2.c_str()));

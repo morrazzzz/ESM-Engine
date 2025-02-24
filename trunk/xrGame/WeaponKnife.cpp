@@ -6,9 +6,14 @@
 #include "level.h"
 #include "xr_level_controller.h"
 #include "../xr_3da/GameMtlLib.h"
+#include "../Include/xrRender/Kinematics.h"
 #include "level_bullet_manager.h"
 #include "ai_sounds.h"
 #include "game_cl_single.h"
+#include "../xr_3da/SkeletonMotions.h"
+#include "player_hud.h"
+#include "ActorEffector.h"
+#include <iterator>
 
 #define KNIFE_MATERIAL_NAME "objects\\knife"
 
@@ -17,7 +22,18 @@ CWeaponKnife::CWeaponKnife()
 	SetState				( eHidden );
 	SetNextState			( eHidden );
 	knife_material_idx		= (u16)-1;
+	fHitImpulse_cur			= 0.0f;
+
+	m_Hit1Distance			= 1.f;
+	m_Hit2Distance			= 1.f;
+
+	m_Hit1SplashRadius		= 1.0f;
+	m_Hit2SplashRadius		= 1.0f;
+
+	m_Hit1SpashDir.set	(0.f,0.f,1.f);
+	m_Hit2SpashDir.set	(0.f,0.f,1.f);
 }
+
 CWeaponKnife::~CWeaponKnife()
 {
 }
@@ -29,8 +45,28 @@ void CWeaponKnife::Load	(LPCSTR section)
 
 	fWallmarkSize = pSettings->r_float(section,"wm_size");
 	m_sounds.LoadSound(section,"snd_shoot"		, "sndShot"		, false, SOUND_TYPE_WEAPON_SHOOTING		);
+	
+	m_Hit1SpashDir		=	pSettings->r_fvector3(section, "splash1_direction");
+	m_Hit2SpashDir		=	pSettings->r_fvector3(section, "splash2_direction");
+
+	m_Hit1Distance		=	pSettings->r_float(section, "spash1_dist");
+	m_Hit2Distance		=	pSettings->r_float(section, "spash2_dist");
+
+	m_Hit1SplashRadius	=	pSettings->r_float(section, "spash1_radius");
+	m_Hit2SplashRadius	=	pSettings->r_float(section, "spash2_radius");
+
+	m_Splash1HitsCount			=	pSettings->r_u32(section, "splash1_hits_count");
+	m_Splash1PerVictimsHCount	=	pSettings->r_u32(section, "splash1_pervictim_hcount");
+	m_Splash2HitsCount			=	pSettings->r_u32(section, "splash2_hits_count");
+#ifdef DEBUG
+	m_dbg_data.m_pick_vectors.reserve(std::max(m_Splash1HitsCount, m_Splash2HitsCount));
+#endif
+	m_NextHitDivideFactor	=	pSettings->r_float(section, "splash_hit_divide_factor");
 
 	knife_material_idx =  GMLib.GetMaterialIdx(KNIFE_MATERIAL_NAME);
+
+	KnifeEndingAnimations[0] = AnimationExist("anim_shoot1_end", true);
+	KnifeEndingAnimations[1] = AnimationExist("anim_shoot2_end", true);
 }
 
 void CWeaponKnife::OnStateSwitch	(u32 S)
@@ -104,6 +140,45 @@ void CWeaponKnife::OnStateSwitch	(u32 S)
 
 void CWeaponKnife::KnifeStrike(const Fvector& pos, const Fvector& dir)
 {
+	PROF_EVENT("Knife strike")
+
+	CObject* real_victim = TryPick(pos, dir, m_hit_dist);
+	if (real_victim)
+	{
+		float new_khit = m_eHitType == m_eHitType_1 ? 
+			float(m_Splash1PerVictimsHCount) : float(m_Splash2HitsCount);
+		MakeShot(pos, dir, new_khit);
+		return;
+	}
+	
+	
+	shot_targets_t	dest_hits(_alloca(sizeof(Fvector)*m_hits_count), m_hits_count);
+	
+	if (SelectHitsToShot(dest_hits, pos))
+	{
+#ifdef DEBUG
+		m_dbg_data.m_targets_vectors.clear();
+		std::copy(dest_hits.begin(), dest_hits.end(),
+			std::back_insert_iterator<dbg_draw_data::targets_t>(
+				m_dbg_data.m_targets_vectors));
+#endif
+		float tmp_k_hit = 1.0f;
+		for (shot_targets_t::const_iterator i = dest_hits.begin(),
+			ie = dest_hits.end(); i != ie; ++i)
+		{
+			Fvector shot_dir;
+			shot_dir.set(*i).sub(pos).normalize();
+			MakeShot(pos, shot_dir, tmp_k_hit);
+			tmp_k_hit *= m_NextHitDivideFactor;
+		}
+		return;
+	}
+
+	MakeShot(pos, dir);
+}
+
+void CWeaponKnife::MakeShot(Fvector const & pos, Fvector const & dir, float const k_hit)
+{
 	CCartridge						cartridge; 
 	cartridge.m_buckShot			= 1;				
 	cartridge.m_impair				= 1;
@@ -126,7 +201,7 @@ void CWeaponKnife::KnifeStrike(const Fvector& pos, const Fvector& dir)
 										dir, 
 										m_fStartBulletSpeed, 
 										fCurrentHit, 
-										fHitImpulse, 
+										fHitImpulse_cur, 
 										H_Parent()->ID(), 
 										ID(), 
 										m_eHitType, 
@@ -138,9 +213,15 @@ void CWeaponKnife::KnifeStrike(const Fvector& pos, const Fvector& dir)
 void CWeaponKnife::OnMotionMark(u32 state)
 {
 	inherited::OnMotionMark(state);
-		/*
+
 	if (state == eFire)
 	{
+		if (KnifeEndingAnimations[0])
+		{
+			if (!KnifeStartAttack)
+				return;
+		}
+
 		m_hit_dist		=	m_Hit1Distance;
 		m_splash_dir	=	m_Hit1SpashDir;
 		m_splash_radius	=	m_Hit1SplashRadius;
@@ -148,6 +229,12 @@ void CWeaponKnife::OnMotionMark(u32 state)
 		m_perv_hits_count = m_Splash1PerVictimsHCount;
 	} else if (state == eFire2)
 	{
+		if (KnifeEndingAnimations[1])
+		{
+			if (!KnifeStartAttack)
+				return;
+		}
+
 		m_hit_dist		=	m_Hit2Distance;
 		m_splash_dir	=	m_Hit2SpashDir;
 		m_splash_radius	=	m_Hit2SplashRadius;
@@ -157,15 +244,11 @@ void CWeaponKnife::OnMotionMark(u32 state)
 	{
 		return;
 	}
-	*/
-
-	if (state != eFire && state != eFire2)
-		return;
 
 	Fvector	p1, d; 
 	p1.set			(get_LastFP()); 
 	d.set			(get_LastFD());
-	//fireDistance	= m_hit_dist + m_splash_radius;
+	fireDistance	= m_hit_dist + m_splash_radius;
 
 	if(H_Parent())
 	{
@@ -179,8 +262,16 @@ void CWeaponKnife::OnAnimationEnd(u32 state)
 	switch (state)
 	{
 	case eHiding:	SwitchState(eHidden);	break;
-	case eFire: 
-	case eFire2: 	SwitchState(eIdle);		break;
+	case eFire:
+	case eFire2:
+		if (KnifeStartAttack)
+		{
+			KnifeStartAttack = false;
+			switch2_AttackingEnd(state);
+		}
+		else
+			SwitchState(eIdle);
+		break;
 
 	case eShowing:
 	case eIdle:		SwitchState(eIdle);		break;	
@@ -197,12 +288,30 @@ void CWeaponKnife::switch2_Attacking	(u32 state)
 {
 	if(IsPending())	return;
 
-	if(state==eFire)
+	if (state == eFire)
+	{
 		PlayHUDMotion("anim_shoot1_start", "anm_attack", false, state);
-	else //eFire2
+		
+		if (KnifeEndingAnimations[0])
+			KnifeStartAttack = true;
+	}
+	else
+	{	//eFire2
 		PlayHUDMotion("anim_shoot2_start", "anm_attack2", false, state);
 
+		if (KnifeEndingAnimations[1])
+			KnifeStartAttack = true;
+	}
+
 	SetPending			(TRUE);
+}
+
+void CWeaponKnife::switch2_AttackingEnd(u32 state)
+{
+	if (KnifeEndingAnimations[0] && state == eFire)
+		PlayHUDMotion("anim_shoot1_end", true, state);
+	else if (KnifeEndingAnimations[1])
+		PlayHUDMotion("anim_shoot2_end", true, state);
 }
 
 void CWeaponKnife::switch2_Idle	()
@@ -264,11 +373,12 @@ void CWeaponKnife::LoadFireParams(LPCSTR section)
 {
 	inherited::LoadFireParams(section);
 
-	string256			full_name;
 	string32			buffer;
 	shared_str			s_sHitPower_2;
-	//fHitPower_1		= fHitPower;
+	//shared_str			s_sHitPowerCritical_2;
+
 	fvHitPower_1		= fvHitPower;
+	//fvHitPowerCritical_1= fvHitPowerCritical;
 	fHitImpulse_1		= fHitImpulse;
 	m_eHitType_1		= ALife::g_tfString2HitType(pSettings->r_string(section, "hit_type"));
 
@@ -285,24 +395,536 @@ void CWeaponKnife::LoadFireParams(LPCSTR section)
 	int num_game_diff_param=_GetItemCount(*s_sHitPower_2);//узнаём колличество параметров для хитов
 	if (num_game_diff_param>1)//если задан второй параметр хита
 	{
-		fvHitPower_2[egdVeteran]	= (float)atof(_GetItem(*s_sHitPower_2,1,buffer));//то вычитываем его для уровня ветерана
+		fvHitPower_2[egdVeteran] = (float)atof(_GetItem(*s_sHitPower_2,1,buffer));//то вычитываем его для уровня ветерана
 	}
 	if (num_game_diff_param>2)//если задан третий параметр хита
 	{
-		fvHitPower_2[egdStalker]	= (float)atof(_GetItem(*s_sHitPower_2,2,buffer));//то вычитываем его для уровня сталкера
+		fvHitPower_2[egdStalker] = (float)atof(_GetItem(*s_sHitPower_2,2,buffer));//то вычитываем его для уровня сталкера
 	}
 	if (num_game_diff_param>3)//если задан четвёртый параметр хита
 	{
-		fvHitPower_2[egdNovice]	= (float)atof(_GetItem(*s_sHitPower_2,3,buffer));//то вычитываем его для уровня новичка
+		fvHitPower_2[egdNovice]  = (float)atof(_GetItem(*s_sHitPower_2,3,buffer));//то вычитываем его для уровня новичка
 	}
+
+	/*
+	num_game_diff_param=_GetItemCount(*s_sHitPowerCritical_2);//узнаём колличество параметров
+	if (num_game_diff_param>1)//если задан второй параметр хита
+	{
+		fvHitPowerCritical_2[egdVeteran] = (float)atof(_GetItem(*s_sHitPowerCritical_2,1,buffer));//то вычитываем его для уровня ветерана
+	}
+	if (num_game_diff_param>2)//если задан третий параметр хита
+	{
+		fvHitPowerCritical_2[egdStalker] = (float)atof(_GetItem(*s_sHitPowerCritical_2,2,buffer));//то вычитываем его для уровня сталкера
+	}
+	if (num_game_diff_param>3)//если задан четвёртый параметр хита
+	{
+		fvHitPowerCritical_2[egdNovice]  = (float)atof(_GetItem(*s_sHitPowerCritical_2,3,buffer));//то вычитываем его для уровня новичка
+	}
+	*/
 
 	fHitImpulse_2		= pSettings->r_float	(section, "hit_impulse_2" );
 	m_eHitType_2		= ALife::g_tfString2HitType(pSettings->r_string(section, "hit_type_2"));
 }
 
-void CWeaponKnife::GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count)
+#ifdef DEBUG
+/*
+void CWeaponKnife::OnRender()
 {
-	str_name		= NameShort();
-	str_count		= "";
-	icon_sect_name	= *cNameSect();
+	CDebugRenderer& renderer	= Level().debug_renderer();
+	if (g_bDrawBulletHit)
+	{
+		for (dbg_draw_data::spheres_t::const_iterator i = m_dbg_data.m_spheres.begin(),
+			ie = m_dbg_data.m_spheres.end(); i != ie; ++i)
+		{
+			float	sc_r				= i->second;
+			Fmatrix	sphere				= Fmatrix().scale(sc_r, sc_r, sc_r);
+			sphere.c					= i->first;
+			renderer.draw_ellipse		(sphere, D3DCOLOR_XRGB(100, 255, 0));
+		}
+		/*
+		Fmatrix	sphere				= Fmatrix().scale(.05f, .05f, .05f);
+		sphere.c					= m_dbg_data.m_pos;
+		renderer.draw_ellipse		(sphere, D3DCOLOR_XRGB(255, 0, 0));
+		renderer.draw_line			(Fidentity, m_dbg_data.m_pos, m_dbg_data.m_endpos, D3DCOLOR_XRGB(255, 255, 0));
+		
+		sphere.c					= m_dbg_data.m_endpos;
+		renderer.draw_ellipse		(sphere, D3DCOLOR_XRGB(100, 255, 0));
+		//Fvector victim_end			(m_dbg_data.m_pos);
+		//victim_end.add				(m_dbg_data.m_pick_vector);
+		//renderer.draw_line			(Fidentity, m_dbg_data.m_pos, victim_end, D3DCOLOR_XRGB(0, 255, 255));
+	}
+	float hit_power = 1.f;
+	for (dbg_draw_data::targets_t::const_iterator i = m_dbg_data.m_targets_vectors.begin(),
+		ie = m_dbg_data.m_targets_vectors.end(); i != ie; ++i)
+	{
+		Fmatrix	sphere	= Fmatrix().scale(0.05f, 0.05f, 0.05f);
+		sphere.c		= *i;
+		u8				hit_color = u8(255 * hit_power);
+		hit_power		*= m_NextHitDivideFactor;
+		renderer.draw_ellipse(sphere, D3DCOLOR_XRGB(hit_color, 50, 0));
+	}
+	
+	for (dbg_draw_data::obbes_t::const_iterator i = m_dbg_data.m_target_boxes.begin(),
+		ie = m_dbg_data.m_target_boxes.end(); i != ie; ++i)
+	{
+		Fmatrix	tmp_matrix;
+		tmp_matrix.set(i->m_rotate.i, i->m_rotate.j, i->m_rotate.k, i->m_translate);
+		renderer.draw_obb(tmp_matrix, i->m_halfsize, D3DCOLOR_XRGB(0, 255, 0));
+	}
+}
+*/
+#endif
+
+static bool intersect	( Fsphere const& bone, Fsphere const& query )
+{
+	return			bone.P.distance_to_sqr(query.P) < _sqr(bone.R + query.R);
+}
+
+static bool intersect	( Fobb bone, Fsphere const& query )
+{
+	Fmatrix	transform;
+	bone.m_halfsize.add	( Fvector().set( query.R, query.R, query.R) );
+	bone.xform_full		( transform );
+	transform.invert	( );
+
+	Fvector new_position;
+	transform.transform_tiny( new_position, query.P );
+
+	return				
+		( new_position.x >= -1.f ) &&
+		( new_position.y >= -1.f ) &&
+		( new_position.z >= -1.f ) &&
+		( new_position.x <=  1.f ) &&
+		( new_position.y <=  1.f ) &&
+		( new_position.z <=  1.f );
+}
+
+static bool intersect	( Fcylinder const& bone, Fsphere const& query )
+{
+	Fvector const bone2query	= Fvector().sub( query.P, bone.m_center );
+	float const axe_projection	= bone2query.dotproduct(bone.m_direction);
+	float const half_height		= bone.m_height/2.f;
+	if ( _abs(axe_projection) > half_height + query.R )
+		return					false;
+
+	VERIFY						( bone2query.square_magnitude() >= _sqr(axe_projection) );
+	float const axe_projection2_sqr	= bone2query.square_magnitude() - _sqr(axe_projection);
+	if ( axe_projection2_sqr > _sqr(bone.m_radius + query.R) )
+		return					false;
+
+	if ( _abs(axe_projection) <= half_height )
+		return					true;
+
+	if ( axe_projection2_sqr <= _sqr(bone.m_radius) )
+		return					true;
+
+	Fvector const center_direction		= Fvector(bone.m_direction).mul( axe_projection >= 0.f ? 1.f : -1.f);
+	Fvector const circle_center			= Fvector(bone.m_center).mad( center_direction, half_height );
+	Fvector const circle2sphere			= Fvector().sub( query.P, circle_center );
+	float const distance2plane			= circle2sphere.dotproduct( center_direction );
+	VERIFY								( distance2plane > 0.f );
+	VERIFY								( _sqr(query.R) >= _sqr(distance2plane) );
+	float const circle_radius			= _sqrt( _sqr(query.R) - _sqr(distance2plane) );
+	Fvector const sphere_circle_center	= Fvector(query.P).mad(center_direction,-distance2plane);
+	float const distance2center_sqr		= circle_center.distance_to_sqr(sphere_circle_center);
+	return								distance2center_sqr <= _sqr( bone.m_radius + circle_radius );
+}
+
+u32 CWeaponKnife::get_entity_bones_count(CEntityAlive const * entity)
+{
+	VERIFY(entity);
+	if (!entity)
+		return 0;
+	IKinematics*	tmp_kinem	= smart_cast<IKinematics*>(entity->Visual());
+	if (!tmp_kinem)
+		return 0;
+
+	IKinematics::accel* tmp_accel = tmp_kinem->LL_Bones();
+	if (!tmp_accel)
+		return 0;
+
+	return tmp_accel->size();
+};
+
+void CWeaponKnife::fill_shapes_list(CEntityAlive const * entity,
+									Fvector const & camera_endpos,
+									victims_shapes_list_t & dest_shapes)
+{
+	VERIFY(entity);
+	if (!entity)
+		return;
+
+	CCF_Skeleton*	tmp_skeleton = smart_cast<CCF_Skeleton*>(entity->CFORM());
+	if (!tmp_skeleton)
+		return;
+
+	Fvector basis_vector;
+	float max_dist;
+	make_hit_sort_vectors(basis_vector, max_dist);
+	Fvector camendpos2;
+	camendpos2.set(camera_endpos).mul(basis_vector);
+
+	CCF_Skeleton::ElementVec const & elems_vec = tmp_skeleton->_GetElements();
+	for (CCF_Skeleton::ElementVec::const_iterator i = elems_vec.begin(),
+		ie = elems_vec.end(); i != ie; ++i)
+	{
+		Fvector		tmp_pos;
+		i->center(tmp_pos);
+		tmp_pos.mul(basis_vector);
+		//float basis_proj = tmp_pos.dotproduct(basis_vector);
+		float bone_dist = tmp_pos.distance_to_sqr(camendpos2);
+		if (bone_dist < max_dist)
+		{
+			victim_bone_data	tmp_bone_data;
+			tmp_bone_data.m_bone_element	= &(*i);
+			tmp_bone_data.m_victim_id		= entity->ID();
+			tmp_bone_data.m_shots_count		= 0;
+			dest_shapes.push_back(std::make_pair(tmp_bone_data, bone_dist));
+		}
+	}
+}
+
+void CWeaponKnife::fill_shots_list(victims_shapes_list_t & victims_shapres,
+								   Fsphere const & query,
+								   shot_targets_t & dest_shots)
+{
+	m_victims_hits_count.clear();
+	for (victims_shapes_list_t::iterator i = victims_shapres.begin(),
+		ie = victims_shapres.end(); i != ie; ++i)
+	{
+		if (dest_shots.capacity() <= dest_shots.size())
+			return;
+
+		bool intersect_res = false;
+		Fvector target_pos;
+#ifdef DEBUG
+		m_dbg_data.m_target_boxes.clear();
+#endif
+		victim_bone_data & curr_bone = i->first;
+		switch (curr_bone.m_bone_element->type)
+		{
+		case SBoneShape::stBox:
+			{
+				Fobb	tmp_obb;
+				Fmatrix tmp_xform;
+				if (!tmp_xform.invert_b(curr_bone.m_bone_element->b_IM))
+				{
+					VERIFY2(false, "invalid bone xform");
+					break;
+				}
+				tmp_obb.xform_set(tmp_xform);
+				tmp_obb.m_halfsize = curr_bone.m_bone_element->b_hsize;
+#ifdef DEBUG
+				m_dbg_data.m_target_boxes.push_back(tmp_obb);
+#endif
+				intersect_res = intersect(tmp_obb, query);
+				break;
+			};
+		case SBoneShape::stSphere:
+			{
+				intersect_res = intersect(curr_bone.m_bone_element->s_sphere, query);
+				break;
+			}break;
+		case SBoneShape::stCylinder:
+			{
+				intersect_res = intersect(curr_bone.m_bone_element->c_cylinder, query);
+				break;
+			}break;
+		};//switch (tmp_bone_data.shape.type)*/
+		if (intersect_res)
+		{
+			victims_hits_count_t::iterator tmp_vhits_iter = m_victims_hits_count.find(
+				curr_bone.m_victim_id);
+			if (m_perv_hits_count && (tmp_vhits_iter == m_victims_hits_count.end()))
+			{
+				m_victims_hits_count.insert(std::make_pair(curr_bone.m_victim_id, u16(1)));
+			} else if (m_perv_hits_count && (tmp_vhits_iter->second < m_perv_hits_count))
+			{
+				++tmp_vhits_iter->second;
+			} else if (m_perv_hits_count)
+			{
+				continue;
+			}
+			curr_bone.m_bone_element->center(target_pos);
+			dest_shots.push_back(target_pos);
+		}
+	}
+}
+
+void CWeaponKnife::create_victims_list(spartial_base_t spartial_result,
+								victims_list_t & victims_dest)
+{
+	for (spartial_base_t::const_iterator i = spartial_result.begin(),
+		ie = spartial_result.end(); i != ie; ++i)
+	{
+		CObject* tmp_obj = (*i)->dcast_CObject();
+		VERIFY(tmp_obj);
+		if (!tmp_obj)
+			continue;
+		CEntityAlive*	tmp_entity = smart_cast<CEntityAlive*>(tmp_obj);
+		if (!tmp_entity)
+			continue;
+		VERIFY(victims_dest.capacity() > victims_dest.size());
+		victims_dest.push_back(tmp_entity);
+	}
+}
+
+void CWeaponKnife::make_hit_sort_vectors(Fvector & basis_hit_specific, float & max_dist)
+{
+	if (m_eHitType == m_eHitType_1)
+	{
+		//basis_hit_specific1.set(-1.f, 0.f, 0.f);
+		basis_hit_specific.set(0.f, 1.f, 0.f);
+		max_dist = 0.2;
+	} else // if (m_eHitType == m_eHitType_2)
+	{
+		//basis_hit_specific1.set(0.f, -1.f, 0.f);
+		basis_hit_specific.set(1.f, 0.f, 0.f);
+		max_dist = 0.1;
+	}
+}
+
+static float const	spartial_prefetch_radius = 2.0f;
+
+u32 CWeaponKnife::SelectHitsToShot(shot_targets_t & dst_dirs, Fvector const & f_pos)
+{
+	Fvector		hit1_basis_vector;
+	Fvector		hit2_basis_vector;
+	hit1_basis_vector.set(-1.f, 1.f, 0.f);
+	hit2_basis_vector.set(0.f, -1.f, 0.f);
+
+	Fmatrix		parent_xform;
+	Fvector		fendpos;
+	Fsphere		query_sphere;
+
+	dst_dirs.clear();
+	if (!SelectBestHitVictim(f_pos, parent_xform, fendpos, query_sphere))
+		return 0;
+
+	victims_list_t	tmp_victims_list(
+		_alloca(m_spartial_query_res.size() * sizeof(CEntityAlive*)),
+		m_spartial_query_res.size());
+	
+	create_victims_list(m_spartial_query_res, tmp_victims_list);
+
+	u32 summ_shapes_count = 0;
+	for (victims_list_t::const_iterator i = tmp_victims_list.begin(),
+		ie = tmp_victims_list.end(); i != ie; ++i)
+	{
+		summ_shapes_count += get_entity_bones_count(*i);
+	}
+	victims_shapes_list_t	tmp_shapes_list(
+		_alloca(summ_shapes_count * sizeof(victims_shapes_list_t::value_type)),
+		summ_shapes_count);
+
+	Fvector basis_vector;
+	if (m_eHitType == m_eHitType_1)
+	{
+		basis_vector.set(hit1_basis_vector);
+	} else // if (m_eHitType == m_eHitType_2)
+	{
+		basis_vector.set(hit2_basis_vector);
+	}
+
+	parent_xform.transform_dir(basis_vector);
+	basis_vector.normalize();
+	
+	for (victims_list_t::const_iterator i = tmp_victims_list.begin(),
+		ie = tmp_victims_list.end(); i != ie; ++i)
+	{
+		fill_shapes_list(*i, fendpos, tmp_shapes_list);
+	}
+	std::sort(tmp_shapes_list.begin(), tmp_shapes_list.end(), shapes_compare_predicate);
+	fill_shots_list(tmp_shapes_list, query_sphere, dst_dirs);
+
+	return static_cast<u32>(dst_dirs.size());
+}
+
+bool CWeaponKnife::SelectBestHitVictim(Fvector const & f_pos,
+									   Fmatrix & parent_xform,
+									   Fvector & fendpos_dest,
+									   Fsphere & query_sphere)
+{
+	CActor* tmp_parent = smart_cast<CActor*>(H_Parent());
+	VERIFY(tmp_parent);
+	if (!tmp_parent)
+		return false;
+
+	if (GetHUDmode())
+		tmp_parent->Cameras().hud_camera_Matrix(parent_xform);
+	else
+		return false;
+
+	parent_xform.transform_dir	(m_splash_dir);
+	fendpos_dest.set(f_pos).mad(m_splash_dir, m_hit_dist);
+	query_sphere.set(fendpos_dest, m_splash_radius);
+
+#ifdef DEBUG
+	m_dbg_data.m_spheres.push_back(
+		std::make_pair(fendpos_dest, m_splash_radius));
+#endif
+
+	m_spartial_query_res.clear();
+	g_SpatialSpace->q_sphere(
+		m_spartial_query_res,
+		0,
+		STYPE_COLLIDEABLE,
+		fendpos_dest,
+		m_splash_radius
+	);
+	
+	if ((m_eHitType == m_eHitType_2) && (!m_spartial_query_res.empty()))
+	{
+		spartial_base_t::value_type		tmp_best_victim = NULL;
+		best_victim_selector			tmp_selector(tmp_parent->ID(),
+			fendpos_dest, spartial_prefetch_radius, tmp_best_victim);
+		std::for_each(
+			m_spartial_query_res.begin(),
+			m_spartial_query_res.end(),
+			tmp_selector);
+		m_spartial_query_res.clear();
+		if (tmp_best_victim)
+			m_spartial_query_res.push_back(tmp_best_victim);
+	} else
+	{
+		victim_filter					tmp_filter(tmp_parent->ID(),
+			fendpos_dest, spartial_prefetch_radius);
+		m_spartial_query_res.erase(
+			std::remove_if(
+				m_spartial_query_res.begin(),
+				m_spartial_query_res.end(),
+				tmp_filter),
+			m_spartial_query_res.end());
+	}
+	return !m_spartial_query_res.empty();
+}
+
+bool CWeaponKnife::RayQueryCallback(collide::rq_result& result, LPVOID this_ptr)
+{
+	CWeaponKnife*	me = static_cast<CWeaponKnife*>(this_ptr);
+	if (result.O && (result.O->ID() != me->m_except_id))
+	{
+		me->m_last_picked_obj = result.O;
+		return FALSE;	//first hit
+	}
+	return TRUE;
+}
+
+CObject* CWeaponKnife::TryPick(Fvector const & start_pos, Fvector const & dir, float const dist)
+{
+	collide::ray_defs		tmp_rdefs(start_pos, dir, dist, CDB::OPT_FULL_TEST, collide::rqtObject);
+	m_ray_query_results.r_clear();
+	m_last_picked_obj	= NULL;
+	VERIFY(H_Parent());
+	m_except_id			= H_Parent()->ID();
+	Level().ObjectSpace.RayQuery(
+		m_ray_query_results,
+		tmp_rdefs,
+		&CWeaponKnife::RayQueryCallback,
+		static_cast<LPVOID>(this),
+		nullptr,
+		nullptr
+	);
+	return m_last_picked_obj;
+}
+
+
+//predicates implementation
+
+CWeaponKnife::victim_filter::victim_filter(u16 except_id,
+										   Fvector const & pos,
+										   float query_distance) :
+	m_except_id(except_id),
+	m_start_pos(pos),
+	m_query_distance(query_distance)
+{
+}
+
+CWeaponKnife::victim_filter::victim_filter(victim_filter const & copy) : 
+	m_except_id(copy.m_except_id),
+	m_start_pos(copy.m_start_pos),
+	m_query_distance(copy.m_query_distance)
+{
+}
+
+bool CWeaponKnife::victim_filter::operator()(spartial_base_t::value_type const & left) const
+{
+	CObject* const tmp_obj = left->dcast_CObject();
+	VERIFY			(tmp_obj);
+	if (!tmp_obj)
+		return true;
+
+	if (tmp_obj->ID() == m_except_id)
+		return true;
+	
+	CEntityAlive*	const tmp_actor = smart_cast<CEntityAlive*>(tmp_obj);
+	if (!tmp_actor)
+		return true;
+
+	Fvector			obj_pos;
+	tmp_actor->Center(obj_pos);
+	
+	Fvector	tmp_dir			= Fvector(obj_pos).sub(m_start_pos);
+	float const tmp_dist	= tmp_dir.magnitude();
+	
+	if ( tmp_dist > m_query_distance )
+		return true;
+	
+	return false;
+}
+
+CWeaponKnife::best_victim_selector::best_victim_selector(
+		u16 except_id,
+		Fvector const & pos,
+		float const query_distance,
+		spartial_base_t::value_type & dest_result) :
+	m_except_id(except_id),
+	m_start_pos(pos),
+	m_query_distance(query_distance),
+	m_dest_result(dest_result)
+{
+	m_dest_result = NULL;
+}
+
+CWeaponKnife::best_victim_selector::best_victim_selector(
+		best_victim_selector const & copy) :
+	m_min_dist		(copy.m_min_dist),
+	m_except_id		(copy.m_except_id),
+	m_start_pos		(copy.m_start_pos),
+	m_query_distance(copy.m_query_distance),
+	m_dest_result	(copy.m_dest_result)
+{
+}
+
+void CWeaponKnife::best_victim_selector::operator()(
+	spartial_base_t::value_type const & left)
+{
+	CObject* const tmp_obj = left->dcast_CObject();
+	VERIFY			(tmp_obj);
+	if (!tmp_obj)
+		return;
+
+	if (tmp_obj->ID() == m_except_id)
+		return;
+	
+	CEntityAlive*	const tmp_actor = smart_cast<CEntityAlive*>(tmp_obj);
+	if (!tmp_actor)
+		return;
+
+	Fvector			obj_pos;
+	tmp_actor->Center(obj_pos);
+
+	Fvector	tmp_dir			= Fvector(obj_pos).sub(m_start_pos);
+	float const tmp_dist	= tmp_dir.magnitude();
+	tmp_dir.normalize		( );
+
+	if ( tmp_dist > m_query_distance )
+		return;
+	
+	if (!m_dest_result || (m_min_dist > tmp_dist))
+	{
+		m_dest_result		=	left;
+		m_min_dist			=	tmp_dist;
+		return;
+	}
 }

@@ -35,6 +35,7 @@ public:
 	virtual	float	CurrentZoomFactor();
 	virtual	u8		GetCurrentHudOffsetIdx	();
 
+			void	LaunchGrenade			();
 	
 	virtual void	OnStateSwitch	(u32 S);
 	
@@ -42,7 +43,6 @@ public:
 	virtual void	switch2_Reload	();
 	virtual void	state_Fire		(float dt);
 	virtual void	OnShot			();
-	virtual void	SwitchState		(u32 S);
 	virtual void	OnEvent			(NET_Packet& P, u16 type);
 	virtual void	ReloadMagazine	();
 
@@ -57,7 +57,7 @@ public:
 
 	virtual bool	IsNecessaryItem	    (const shared_str& item_sect);
 
-	void SetAllowBoreAnm(LPCSTR) override;
+	void InitBoreAnm() override;
 
 	//виртуальные функции для проигрывания анимации HUD
 	virtual void	PlayAnimShow();
@@ -71,13 +71,13 @@ public:
 
 	//дополнительные параметры патронов 
 	//для подствольника
-	CWeaponAmmo*			m_pAmmo2;
-	shared_str				m_ammoSect2;
+//-	CWeaponAmmo*			m_pAmmo2;
 	xr_vector<shared_str>	m_ammoTypes2;
-	u32						m_ammoType2;
-	shared_str				m_ammoName2;
+	u8						m_ammoType2;
+
 	int						iMagazineSize2;
 	xr_vector<CCartridge>	m_magazine2;
+
 	bool					m_bGrenadeMode;
 
 	CCartridge				m_DefaultCartridge2;

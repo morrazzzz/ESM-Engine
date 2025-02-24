@@ -18,7 +18,7 @@ public:
 	virtual void	net_Destroy		();
 	virtual void	OnH_B_Chield	();
 
-	void SetAllowBoreAnm(LPCSTR) override;
+	void InitBoreAnm() override;
 
 	//анимации
 	virtual void	PlayAnimShow	();

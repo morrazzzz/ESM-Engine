@@ -9,21 +9,19 @@ void CWeaponBM16::Load(LPCSTR section)
 {
 	inherited::Load(section);
 	m_sounds.LoadSound(section, "snd_reload_1", "sndReload1", true, m_eSoundShot);
-
-	AllowAnmReload1 = pSettings->line_exist(section, "anm_reload_1");
 }
 
 static LPCSTR const animsBoreBM16[]{ "anm_bore_0", "anm_bore_1", "anm_bore_2"};
 
-void CWeaponBM16::SetAllowBoreAnm(LPCSTR section)
+void CWeaponBM16::InitBoreAnm()
 {
 	for (size_t i = 0; i < 3; i++)
 	{
-		if (!pSettings->line_exist(section, animsBoreBM16[i]))
+		EnableHudBore(AnimationExist(animsBoreBM16[i], true));
+		
+		if (!GetEnableHudBore())
 			return;
 	}
-
-	AllowBoreAnm = true;
 }
 
 void CWeaponBM16::PlayReloadSound()
@@ -101,15 +99,9 @@ void CWeaponBM16::PlayAnimReload()
 
 	VERIFY(GetState()==eReload);
 	
-	if (m_magazine.size() == 1 || !b_both)
-	{
-		if (AllowAnmReload1 && m_set_next_ammoType_on_reload == undefined_ammo_type ||
-			m_ammoType == m_set_next_ammoType_on_reload)
-			PlayHUDMotion("anm_reload_1", true, GetState());
-
-		if (!AllowAnmReload1)
-			PlayHUDMotion("anim_reload_1", true, GetState());
-	}
+	if ((m_magazine.size() == 1 || !b_both) && m_set_next_ammoType_on_reload == undefined_ammo_type ||
+		m_ammoType == m_set_next_ammoType_on_reload)
+		PlayHUDMotion("anim_reload_1", " anm_reload_1", true, GetState());
 	else
 		PlayHUDMotion("anim_reload", "anm_reload_2", true, GetState());
 }

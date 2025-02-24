@@ -31,12 +31,14 @@ void CWeaponPistol::OnH_B_Chield		()
 	inherited::OnH_B_Chield		();
 }
 
-void CWeaponPistol::SetAllowBoreAnm(LPCSTR section)
+void CWeaponPistol::InitBoreAnm()
 {
-	if (!pSettings->line_exist(section, "anm_bore_empty"))
+	EnableHudBore(AnimationExist("anm_bore_empty", true));
+
+	if (!GetEnableHudBore())
 		return;
 
-	inherited::SetAllowBoreAnm(section);
+	inherited::InitBoreAnm();
 }
 
 void CWeaponPistol::PlayAnimShow	()
@@ -61,7 +63,7 @@ void CWeaponPistol::PlayAnimIdleSprint()
 {
 	if(iAmmoElapsed==0)
 	{
-		PlayHUDMotion("anim_idle_sprint", "anm_idle_sprint_empty", true, GetState());
+		PlayHUDMotion("anim_empty", "anm_idle_sprint_empty", true, GetState());
 	}else{
 		inherited::PlayAnimIdleSprint();
 	}
@@ -71,7 +73,7 @@ void CWeaponPistol::PlayAnimIdleMoving()
 {
 	if(iAmmoElapsed==0)
 	{
-		PlayHUDMotion("anim_idle", "anm_idle_moving_empty", true, GetState());
+		PlayHUDMotion("anim_empty", "anm_idle_moving_empty", true, GetState());
 	}else{
 		inherited::PlayAnimIdleMoving();
 	}
@@ -84,7 +86,7 @@ void CWeaponPistol::PlayAnimIdle()
 
 	if(iAmmoElapsed==0)
 	{
-		PlayHUDMotion("anm_idle_empty", true, GetState());
+		PlayHUDMotion("anim_empty", "anm_idle_empty", true, GetState());
 	}else{
 		inherited::PlayAnimIdle		();
 	}
@@ -93,7 +95,7 @@ void CWeaponPistol::PlayAnimIdle()
 void CWeaponPistol::PlayAnimAim()
 {
 	if(iAmmoElapsed==0)
-		PlayHUDMotion("anm_idle_aim_empty", true, GetState());
+		PlayHUDMotion("anim_empty", "anm_idle_aim_empty", true, GetState());
 	else
 		inherited::PlayAnimAim();
 }

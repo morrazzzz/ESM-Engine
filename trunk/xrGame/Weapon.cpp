@@ -50,13 +50,12 @@ CWeapon::CWeapon()
 	m_Offset.identity		();
 	m_StrapOffset.identity	();
 
-	iAmmoCurrent			= -1;
-	m_dwAmmoCurrentCalcFrame= 0;
+	m_iAmmoCurrentTotal		= 0;
+	m_BriefInfo_CalcFrame	= 0;
 
 	iAmmoElapsed			= -1;
 	iMagazineSize			= -1;
 	m_ammoType				= 0;
-	m_ammoName				= nullptr;
 
 	eHandDependence			= hdNone;
 
@@ -65,8 +64,7 @@ CWeapon::CWeapon()
 	m_zoom_params.m_pVision						= NULL;
 	//m_zoom_params.m_pNight_vision				= NULL;
 
-	m_pAmmo					= nullptr;
-
+	m_pCurrentAmmo			= nullptr;
 
 	m_pFlameParticles2		= nullptr;
 	m_sFlameParticles2		= nullptr;
@@ -85,7 +83,6 @@ CWeapon::CWeapon()
 	m_set_next_ammoType_on_reload = undefined_ammo_type;
 
 	m_cur_scope = 0;
-	AllowBoreAnm = false;
 }
 
 CWeapon::~CWeapon		()
@@ -257,17 +254,14 @@ void CWeapon::Load		(LPCSTR section)
 	LPCSTR				S = pSettings->r_string(section,"ammo_class");
 	if (S && S[0]) 
 	{
+		string128		_ammoItem;
 		int				count		= _GetItemCount	(S);
-		for (int it=0; it<count; ++it)
+		for (int it=0; it<count; ++it)	
 		{
-			string128		_ammoItem;
 			_GetItem				(S,it,_ammoItem);
 			m_ammoTypes.push_back	(_ammoItem);
 		}
-		m_ammoName = pSettings->r_string(*m_ammoTypes[0],"inv_name_short");
 	}
-	else
-		m_ammoName = nullptr;
 
 	iAmmoElapsed		= pSettings->r_s32		(section,"ammo_elapsed"		);
 	iMagazineSize		= pSettings->r_s32		(section,"ammo_mag_size"	);
@@ -400,6 +394,8 @@ void CWeapon::Load		(LPCSTR section)
 
 	InitAddons();
 
+	InitBoreAnm();
+
 	//////////////////////////////////////
 	//время убирания оружия с уровня
 	if(pSettings->line_exist(section,"weapon_remove_time"))
@@ -460,6 +456,7 @@ void CWeapon::LoadFireParams(LPCSTR section)
 
 BOOL CWeapon::net_Spawn		(CSE_Abstract* DC)
 {
+	m_fRTZoomFactor					= m_zoom_params.m_fScopeZoomFactor;
 	BOOL bResult					= inherited::net_Spawn(DC);
 	auto* e	= (CSE_Abstract*)(DC);
 	auto* E	= smart_cast<CSE_ALifeItemWeapon*>(e);
@@ -636,6 +633,7 @@ void CWeapon::OnActiveItem ()
 {
 	//. from Activate
 	UpdateAddonsVisibility();
+	m_BriefInfo_CalcFrame = 0;
 
 //. Show
 	SwitchState					(eShowing);
@@ -649,7 +647,7 @@ void CWeapon::OnActiveItem ()
 
 void CWeapon::OnHiddenItem ()
 {
-//	m_BriefInfo_CalcFrame = 0;
+	m_BriefInfo_CalcFrame = 0;
 
 	if (IsGameTypeSingle())
 		SwitchState(eHiding);
@@ -672,14 +670,6 @@ void CWeapon::OnH_B_Chield		()
 	m_set_next_ammoType_on_reload = undefined_ammo_type;
 }
 
-void CWeapon::SetAllowBoreAnm(LPCSTR section)
-{
-	if (!pSettings->line_exist(section, "anm_bore"))
-		return;
-
-	AllowBoreAnm = true;
-}
-
 extern int hud_adj_mode;
 bool CWeapon::AllowBore()
 {
@@ -697,7 +687,7 @@ void CWeapon::UpdateCL		()
 	UpdateFlameParticles	();
 	UpdateFlameParticles2	();
 	
-	if(GetAllowBoreAnm() && GetNextState() == GetState() && H_Parent() == Level().CurrentEntity())
+	if(GetEnableHudBore() && GetNextState() == GetState() && H_Parent() == Level().CurrentEntity())
 	{
 		CActor* pActor	= smart_cast<CActor*>(H_Parent());
 		if(pActor && !pActor->AnyMove() && this==pActor->inventory().ActiveItem())
@@ -901,48 +891,63 @@ void CWeapon::SpawnAmmo(u32 boxCurr, LPCSTR ammoSect, u32 ParentID)
 
 int CWeapon::GetAmmoCurrent(bool use_item_to_spawn) const
 {
-	int l_count = iAmmoElapsed;
-	if(!m_pCurrentInventory) return l_count;
+	int ae_count = iAmmoElapsed;
+	if ( !m_pCurrentInventory)
+	{
+		return ae_count;
+	}
 
 	//чтоб не делать лишних пересчетов
-	if(m_pCurrentInventory->ModifyFrame()<=m_dwAmmoCurrentCalcFrame)
-		return l_count + iAmmoCurrent;
-
- 	m_dwAmmoCurrentCalcFrame = Device.dwFrame;
-	iAmmoCurrent = 0;
-
-	for(int i = 0; i < static_cast<int>(m_ammoTypes.size()); ++i) 
+	if (m_pCurrentInventory->ModifyFrame() <= m_BriefInfo_CalcFrame )
 	{
-		LPCSTR l_ammoType = *m_ammoTypes[i];
-
-		for(auto l_it = m_pCurrentInventory->m_belt.begin(); m_pCurrentInventory->m_belt.end() != l_it; ++l_it) 
-		{
-			auto *l_pAmmo = smart_cast<CWeaponAmmo*>(*l_it);
-
-			if(l_pAmmo && !xr_strcmp(l_pAmmo->cNameSect(), l_ammoType)) 
-			{
-				iAmmoCurrent = iAmmoCurrent + l_pAmmo->m_boxCurr;
-			}
-		}
-
-		for(auto l_it = m_pCurrentInventory->m_ruck.begin(); m_pCurrentInventory->m_ruck.end() != l_it; ++l_it) 
-		{
-			auto *l_pAmmo = smart_cast<CWeaponAmmo*>(*l_it);
-			if(l_pAmmo && !xr_strcmp(l_pAmmo->cNameSect(), l_ammoType)) 
-			{
-				iAmmoCurrent = iAmmoCurrent + l_pAmmo->m_boxCurr;
-			}
-		}
-
-		if (!use_item_to_spawn)
-			continue;
-
-		if (!inventory_owner().item_to_spawn())
-			continue;
-
-		iAmmoCurrent += inventory_owner().ammo_in_box_to_spawn();
+		return ae_count + m_iAmmoCurrentTotal;
 	}
-	return l_count + iAmmoCurrent;
+	m_BriefInfo_CalcFrame = Device.dwFrame;
+
+	m_iAmmoCurrentTotal = 0;
+	for ( u8 i = 0; i < u8(m_ammoTypes.size()); ++i ) 
+	{
+		m_iAmmoCurrentTotal += GetAmmoCount_forType( m_ammoTypes[i] );
+
+		if ( !use_item_to_spawn )
+		{
+			continue;
+		}
+		if ( !inventory_owner().item_to_spawn() )
+		{
+			continue;
+		}
+		m_iAmmoCurrentTotal += inventory_owner().ammo_in_box_to_spawn();
+	}
+	return ae_count + m_iAmmoCurrentTotal;
+}
+
+int CWeapon::GetAmmoCount( u8 ammo_type ) const
+{
+	VERIFY(m_pCurrentInventory);
+	R_ASSERT( ammo_type < m_ammoTypes.size() );
+
+	return GetAmmoCount_forType( m_ammoTypes[ammo_type] );
+}
+
+int CWeapon::GetAmmoCount_forType( shared_str const& ammo_type ) const
+{
+	int res = 0;
+
+	for(u32 i = 0; i < m_pCurrentInventory->m_belt.size(); i++)
+	{
+		CWeaponAmmo* pAmmo = m_pCurrentInventory->m_belt[i]->cast_weapon_ammo();
+		if ( pAmmo && !xr_strcmp(pAmmo->cNameSect(), ammo_type))
+			res += pAmmo->m_boxCurr;
+	}
+
+	for (u32 i = 0; i < m_pCurrentInventory->m_ruck.size(); i++)
+	{
+		CWeaponAmmo* pAmmo = m_pCurrentInventory->m_ruck[i]->cast_weapon_ammo();
+		if ( pAmmo && !xr_strcmp(pAmmo->cNameSect(), ammo_type))
+			res += pAmmo->m_boxCurr;
+	}
+	return res;
 }
 
 float CWeapon::GetConditionMisfireProbability() const
@@ -1604,7 +1609,7 @@ const float &CWeapon::hit_probability() const
 void CWeapon::OnStateSwitch(u32 S)
 {
 	inherited::OnStateSwitch(S);
-	m_dwAmmoCurrentCalcFrame = 0;
+	m_BriefInfo_CalcFrame = 0;
 
 	if (GetState() == eReload)
 	{

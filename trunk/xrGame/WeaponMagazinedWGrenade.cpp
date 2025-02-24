@@ -62,10 +62,7 @@ void CWeaponMagazinedWGrenade::Load	(LPCSTR section)
 			_GetItem				(S,it,_ammoItem);
 			m_ammoTypes2.push_back	(_ammoItem);
 		}
-		m_ammoName2 = pSettings->r_string(*m_ammoTypes2[0],"inv_name_short");
 	}
-	else
-		m_ammoName2 = 0;
 
 	iMagazineSize2 = iMagazineSize;
 }
@@ -130,15 +127,11 @@ void CWeaponMagazinedWGrenade::OnShot		()
 		PlayAnimShoot		();
 		PlaySound			("sndShotG", get_LastFP2());
 		AddShotEffector		();
-		
-		//партиклы огня вылета гранаты из подствольника
 		StartFlameParticles2();
 	} 
 	else inherited::OnShot();
 }
-//переход в режим подствольника или выход из него
-//если мы в режиме стрельбы очередями, переключиться
-//на одиночные, а уже потом на подствольник
+
 bool CWeaponMagazinedWGrenade::SwitchMode() 
 {
 	bool bUsefulStateToSwitch = ((eIdle==GetState())||(eHidden==GetState())||(eMisfire==GetState())||(eMagEmpty==GetState())) && (!IsPending());
@@ -159,7 +152,7 @@ bool CWeaponMagazinedWGrenade::SwitchMode()
 
 	PlayAnimModeSwitch		();
 
-	m_dwAmmoCurrentCalcFrame = 0;
+	m_BriefInfo_CalcFrame	= 0;
 
 	return					true;
 }
@@ -173,8 +166,6 @@ void  CWeaponMagazinedWGrenade::PerformSwitchGL()
 	m_ammoTypes.swap	(m_ammoTypes2);
 
 	swap				(m_ammoType,m_ammoType2);
-	swap				(m_ammoName,m_ammoName2);
-	
 	swap				(m_DefaultCartridge, m_DefaultCartridge2);
 
 	xr_vector<CCartridge> l_magazine;
@@ -182,11 +173,31 @@ void  CWeaponMagazinedWGrenade::PerformSwitchGL()
 	while(m_magazine2.size()) { m_magazine.push_back(m_magazine2.back()); m_magazine2.pop_back(); }
 	while(l_magazine.size()) { m_magazine2.push_back(l_magazine.back()); l_magazine.pop_back(); }
 	iAmmoElapsed = (int)m_magazine.size();
+
+	m_BriefInfo_CalcFrame = 0;
 }
 
 bool CWeaponMagazinedWGrenade::Action(s32 cmd, u32 flags) 
 {
-	if(inherited::Action(cmd, flags)) return true;
+	if(m_bGrenadeMode && cmd==kWPN_FIRE)
+	{
+		if(IsPending())		
+			return				false;
+
+		if(flags&CMD_START)
+		{
+			if(iAmmoElapsed)
+				LaunchGrenade		();
+//			else
+//				Reload				();
+
+			if(GetState() == eIdle) 
+				OnEmptyClick			();
+		}
+		return					true;
+	}
+	if(inherited::Action(cmd, flags))
+		return true;
 	
 	switch(cmd) 
 	{
@@ -208,52 +219,37 @@ void CWeaponMagazinedWGrenade::state_Fire(float dt)
 	VERIFY(fTimeToFire>0.f);
 
 	//режим стрельбы подствольника
-	if(m_bGrenadeMode)
-	{
-		fTime					-=dt;
-		Fvector					p1, d; 
-		p1.set	(get_LastFP2()); 
-		d.set	(get_LastFD());
-		
-		if(H_Parent())
-			smart_cast<CEntity*>	(H_Parent())->g_fireParams	(this, p1,d);
-		else
-			return;
-		
-		while (fTime<=0 && (iAmmoElapsed>0) && (IsWorking() || m_bFireSingleShot))
-		{
-
-			fTime			+=	fTimeToFire;
-
-			++m_iShotNum;
-			OnShot			();
-			
-			// Ammo
-			if(Local()) 
-			{
-				VERIFY(m_magazine.size());
-				m_magazine.pop_back	();
-				--iAmmoElapsed;
-			
-				VERIFY((u32)iAmmoElapsed == m_magazine.size());
-
-				if(!iAmmoElapsed) 
-					OnMagazineEmpty();
-			}
-		}
-		UpdateSounds			();
-		if(m_iShotNum == m_iQueueSize) FireEnd();
-	} 
-	//режим стрельбы очередями
-	else inherited::state_Fire(dt);
+	if (!m_bGrenadeMode)
+		inherited::state_Fire(dt);
 }
 
-void CWeaponMagazinedWGrenade::SwitchState(u32 S) 
+void CWeaponMagazinedWGrenade::OnEvent(NET_Packet& P, u16 type)
 {
-	inherited::SwitchState(S);
-	
-	//стрельнуть из подствольника
-	if(m_bGrenadeMode && GetState() == eIdle && S == eFire && getRocketCount() ) 
+	inherited::OnEvent(P, type);
+	u16 id;
+	switch (type)
+	{
+	case GE_OWNERSHIP_TAKE:
+	{
+		P.r_u16(id);
+		CRocketLauncher::AttachRocket(id, this);
+	}
+	break;
+	case GE_OWNERSHIP_REJECT:
+	case GE_LAUNCH_ROCKET:
+	{
+		bool bLaunch = (type == GE_LAUNCH_ROCKET);
+		P.r_u16(id);
+		CRocketLauncher::DetachRocket(id, bLaunch);
+		break;
+	}
+	}
+}
+
+void  CWeaponMagazinedWGrenade::LaunchGrenade()
+{
+	if (!getRocketCount())	return;
+	R_ASSERT(m_bGrenadeMode);
 	{
 		Fvector						p1, d; 
 		p1.set						(get_LastFP2());
@@ -336,29 +332,6 @@ void CWeaponMagazinedWGrenade::SwitchState(u32 S)
 	}
 }
 
-void CWeaponMagazinedWGrenade::OnEvent(NET_Packet& P, u16 type) 
-{
-	inherited::OnEvent(P,type);
-	u16 id;
-	switch (type) 
-	{
-		case GE_OWNERSHIP_TAKE: 
-			{
-				P.r_u16(id);
-				CRocketLauncher::AttachRocket(id, this);
-			}
-			break;
-		case GE_OWNERSHIP_REJECT :
-		case GE_LAUNCH_ROCKET : 
-			{
-				bool bLaunch = (type==GE_LAUNCH_ROCKET);
-				P.r_u16(id);
-				CRocketLauncher::DetachRocket(id, bLaunch);
-				break;
-			}
-	}
-}
-
 void CWeaponMagazinedWGrenade::ReloadMagazine() 
 {
 	inherited::ReloadMagazine();
@@ -366,8 +339,7 @@ void CWeaponMagazinedWGrenade::ReloadMagazine()
 	//перезарядка подствольного гранатомета
 	if(iAmmoElapsed && !getRocketCount() && m_bGrenadeMode) 
 	{
-//.		shared_str fake_grenade_name = pSettings->r_string(*m_pAmmo->cNameSect(), "fake_grenade_name");
-		shared_str fake_grenade_name = pSettings->r_string(*m_ammoTypes[m_ammoType], "fake_grenade_name");
+		shared_str fake_grenade_name = pSettings->r_string(m_ammoTypes[m_ammoType].c_str(), "fake_grenade_name");
 		
 		CRocketLauncher::SpawnRocket(*fake_grenade_name, this);
 	}
@@ -376,7 +348,6 @@ void CWeaponMagazinedWGrenade::ReloadMagazine()
 
 void CWeaponMagazinedWGrenade::OnStateSwitch(u32 S) 
 {
-
 	switch (S)
 	{
 	case eSwitch:
@@ -513,6 +484,21 @@ void CWeaponMagazinedWGrenade::InitAddons()
 	}
 }
 
+static LPCSTR const animsBoreGrenade[]{ "anm_bore_g", "anm_bore_w_gl" };
+
+void CWeaponMagazinedWGrenade::InitBoreAnm()
+{
+	for (size_t i = 0; i < 2; i++)
+	{
+		EnableHudBore(AnimationExist(animsBoreGrenade[i], true));
+
+		if (!GetEnableHudBore())
+			return;
+	}
+
+	inherited::InitBoreAnm();
+}
+
 bool	CWeaponMagazinedWGrenade::UseScopeTexture()
 {
 	if (IsGrenadeLauncherAttached() && m_bGrenadeMode) return false;
@@ -524,19 +510,6 @@ float	CWeaponMagazinedWGrenade::CurrentZoomFactor	()
 {
 	if (IsGrenadeLauncherAttached() && m_bGrenadeMode) return m_zoom_params.m_fIronSightZoomFactor;
 	return inherited::CurrentZoomFactor();
-}
-
-static LPCSTR const animsBoreGrenade[] { "anm_bore_g", "anm_bore_w_gl" };
-
-void CWeaponMagazinedWGrenade::SetAllowBoreAnm(LPCSTR section)
-{
-	for (size_t i = 0; i < 2; i++)
-	{
-		if (!pSettings->line_exist(section, animsBoreGrenade[i]))
-			return;
-	}
-
-	inherited::SetAllowBoreAnm(section);
 }
 
 //виртуальные функции для проигрывания анимации HUD
@@ -706,7 +679,7 @@ void CWeaponMagazinedWGrenade::load(IReader &input_packet)
 	load_data					(sz, input_packet);
 
 	CCartridge					l_cartridge; 
-	l_cartridge.Load			(*m_ammoTypes2[m_ammoType2], u8(m_ammoType2));
+	l_cartridge.Load			(m_ammoTypes2[m_ammoType2].c_str(), m_ammoType2);
 
 	while (sz > m_magazine2.size())
 		m_magazine2.push_back(l_cartridge);

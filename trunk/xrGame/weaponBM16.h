@@ -6,14 +6,12 @@
 class CWeaponBM16 :public CWeaponShotgun
 {
 	typedef CWeaponShotgun inherited;
-
-	bool AllowAnmReload1;
 public:
 	virtual			~CWeaponBM16					();
 	virtual void	Load							(LPCSTR section);
 
 protected:
-	void SetAllowBoreAnm(LPCSTR) override;
+	void InitBoreAnm() override;
 
 	virtual void	PlayAnimShoot					();
 	virtual void	PlayAnimReload					();

@@ -75,7 +75,7 @@ struct clQueryCollision
 	}
 };
 
-enum ENGINE_API	ECollisionFormType{
+enum /*ENGINE_API*/	ECollisionFormType{
 	cftObject,
 	cftShape
 };
@@ -108,7 +108,7 @@ public:
 class ENGINE_API	CCF_Skeleton : public ICollisionForm
 {
 public:
-	struct SElement{
+	struct ENGINE_API SElement {
 		union{
 			struct{
 				Fmatrix	b_IM;		// world 2 bone xform
