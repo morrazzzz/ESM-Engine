@@ -83,6 +83,10 @@ extern float r_ssaDISCARD			;
 extern float r_ssaLOD_A, r_ssaLOD_B ;
 void CPortalTraverser::fade_render	()
 {
+#if RENDER != R_R1
+	PIX_EVENT(fade_render)
+#endif
+
 	if (f_portals.empty())			return;
 
 	// re-sort, back to front

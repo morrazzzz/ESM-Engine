@@ -247,8 +247,10 @@ extern ENGINE_API float	psHUD_FOV;
 // HUD render
 void R_dsgraph_structure::r_dsgraph_render_hud	()
 {
-	//PIX_EVENT(r_dsgraph_render_hud);
-	
+#if	RENDER!=R_R1
+	PIX_EVENT(r_dsgraph_render_hud);
+#endif	
+
 								   
 
 	// Change projection
@@ -309,6 +311,10 @@ void R_dsgraph_structure::r_dsgraph_render_hud	()
 
 void R_dsgraph_structure::r_dsgraph_render_hud_ui()
 {
+#if	RENDER!=R_R1
+	PIX_EVENT(r_dsgraph_render_ui);
+#endif	
+
 	VERIFY(g_hud && g_hud->RenderActiveItemUIQuery());
 
 	// Change projection
@@ -368,6 +374,8 @@ void	R_dsgraph_structure::r_dsgraph_render_sorted	()
 void	R_dsgraph_structure::r_dsgraph_render_emissive	()
 {
 #if	RENDER!=R_R1
+	PIX_EVENT(r_dsgraph_render_emissive);
+
 	// Sorted (back to front)
 	mapEmissive.traverseLR	(sorted_L1);
 	mapEmissive.clear		();
