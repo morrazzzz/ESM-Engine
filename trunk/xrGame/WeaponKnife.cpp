@@ -884,6 +884,7 @@ CWeaponKnife::best_victim_selector::best_victim_selector(
 	m_dest_result(dest_result)
 {
 	m_dest_result = NULL;
+	m_min_dist = 0.0f;
 }
 
 CWeaponKnife::best_victim_selector::best_victim_selector(
@@ -921,7 +922,7 @@ void CWeaponKnife::best_victim_selector::operator()(
 	if ( tmp_dist > m_query_distance )
 		return;
 	
-	if (!m_dest_result || (m_min_dist > tmp_dist))
+	if (!m_dest_result || m_min_dist > tmp_dist)
 	{
 		m_dest_result		=	left;
 		m_min_dist			=	tmp_dist;

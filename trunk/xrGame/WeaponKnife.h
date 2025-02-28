@@ -147,7 +147,6 @@ private:
 		victim_filter & operator=(victim_filter const & copy) {};
 
 		u16				m_except_id;
-		CWeaponKnife*	m_owner;
 		Fvector			m_start_pos;
 		float			m_query_distance;
 	};//class victim_filter
