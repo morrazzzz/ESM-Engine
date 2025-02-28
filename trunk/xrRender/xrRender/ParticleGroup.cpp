@@ -163,6 +163,9 @@ void CParticleGroup::SItem::Clear()
 void CParticleGroup::SItem::StartRelatedChild(CParticleEffect* emitter, LPCSTR eff_name, PAPI::Particle& m)
 {
     CParticleEffect*C		= static_cast<CParticleEffect*>(RImplementation.model_CreatePE(eff_name));
+	
+	C->SetHudMode			(emitter->GetHudMode());
+
     Fmatrix M; 				M.identity();
     Fvector vel; 			vel.sub(m.pos,m.posB); vel.div(fDT_STEP);
     if (emitter->m_RT_Flags.is(CParticleEffect::flRT_XFORM)){
@@ -188,7 +191,9 @@ void CParticleGroup::SItem::StopRelatedChild(u32 idx)
 void CParticleGroup::SItem::StartFreeChild(CParticleEffect* emitter, LPCSTR nm, PAPI::Particle& m)
 {
     CParticleEffect*C			= static_cast<CParticleEffect*>(RImplementation.model_CreatePE(nm));
-    if(!C->IsLooped()){
+	C->SetHudMode				(emitter->GetHudMode());
+    if(!C->IsLooped())
+	{
         Fmatrix M; 				M.identity();
         Fvector vel; 			vel.sub(m.pos,m.posB); vel.div(fDT_STEP);
         if (emitter->m_RT_Flags.is(CParticleEffect::flRT_XFORM)){
@@ -492,5 +497,24 @@ u32 CParticleGroup::ParticlesCount()
     for (SItemVecIt i_it=items.begin(); i_it!=items.end(); i_it++)
         p_count 	+= i_it->ParticlesCount();
 	return p_count;
+}
+
+void CParticleGroup::SetHudMode(BOOL b)
+{
+    for (SItemVecIt i_it=items.begin(); i_it!=items.end(); ++i_it)
+	{
+		CParticleEffect* E	= static_cast<CParticleEffect*>(i_it->_effect);
+		E->SetHudMode(b);
+	}
+}
+
+BOOL CParticleGroup::GetHudMode()
+{
+	if(items.size())
+	{
+		CParticleEffect* E	= static_cast<CParticleEffect*>(items[0]._effect);
+		return E->GetHudMode();
+	}else
+		return FALSE;
 }
 

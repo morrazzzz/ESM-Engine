@@ -23,8 +23,8 @@ public:
 	virtual BOOL	IsLooped			(){return GetTimeLimit()<0.f;}
 	
 	virtual const shared_str	Name		()=0;
-//	virtual void	SetHudMode			(BOOL b)=0;
-//    virtual BOOL	GetHudMode			()=0;
+	virtual void	SetHudMode			(BOOL b)=0;
+    virtual BOOL	GetHudMode			()=0;
 };
 
 #endif	//	ParticleCustom_included

@@ -9,6 +9,36 @@ using namespace PS;
 const u32	PS::uDT_STEP 	= 33;
 const float	PS::fDT_STEP 	= float(uDT_STEP)/1000.f;
 
+static void ApplyTexgen( const Fmatrix &mVP )
+{
+	Fmatrix mTexgen;
+
+#if defined(USE_DX10) || defined(USE_DX11)
+	Fmatrix			mTexelAdjust		= 
+	{
+		0.5f,				0.0f,				0.0f,			0.0f,
+		0.0f,				-0.5f,				0.0f,			0.0f,
+		0.0f,				0.0f,				1.0f,			0.0f,
+		0.5f,				0.5f,				0.0f,			1.0f
+	};
+#else	//	USE_DX10
+	float	_w						= float(RDEVICE.dwWidth);
+	float	_h						= float(RDEVICE.dwHeight);
+	float	o_w						= (.5f / _w);
+	float	o_h						= (.5f / _h);
+	Fmatrix			mTexelAdjust		= 
+	{
+		0.5f,				0.0f,				0.0f,			0.0f,
+		0.0f,				-0.5f,				0.0f,			0.0f,
+		0.0f,				0.0f,				1.0f,			0.0f,
+		0.5f + o_w,			0.5f + o_h,			0.0f,			1.0f
+	};
+#endif	//	USE_DX10
+
+	mTexgen.mul(mTexelAdjust,mVP);
+	RCache.set_c( "mVPTexgen", mTexgen );
+}
+
 void PS::OnEffectParticleBirth(void* owner, u32 , PAPI::Particle& m, u32 )
 {
 	CParticleEffect* PE = static_cast<CParticleEffect*>(owner); VERIFY(PE);
@@ -246,6 +276,8 @@ IC void FillSprite	(FVF::LIT*& pv, const Fvector& pos, const Fvector& dir, const
 	pv->set		(c.x+pos.x,c.y+pos.y,c.z+pos.z, clr, rb.x,rb.y);	pv++;
 	pv->set		(b.x+pos.x,b.y+pos.y,b.z+pos.z,	clr, rb.x,lt.y);	pv++;
 }
+
+extern ENGINE_API float		psHUD_FOV;
 void CParticleEffect::Render(float )
 {
 	u32			dwOffset,dwCount;
@@ -325,7 +357,25 @@ void CParticleEffect::Render(float )
 			}
 			dwCount 			= u32(pv-pv_start);
 			RCache.Vertex.Unlock(dwCount,geom->vb_stride);
-			if (dwCount)    {
+			if (dwCount)    
+			{
+#ifndef _EDITOR
+				Fmatrix Pold						= Device.mProject;
+				Fmatrix FTold						= Device.mFullTransform;
+				if(GetHudMode())
+				{
+					Device.mProject.build_projection(	deg2rad(psHUD_FOV*Device.fFOV), 
+														Device.fASPECT, 
+														VIEWPORT_NEAR, 
+														g_pGamePersistent->Environment().CurrentEnv->far_plane);
+
+					Device.mFullTransform.mul	(Device.mProject, Device.mView);
+					RCache.set_xform_project	(Device.mProject);
+					RImplementation.rmNear		();
+					ApplyTexgen(Device.mFullTransform);
+				}
+#endif
+
 				RCache.set_xform_world	(Fidentity);
 				RCache.set_Geometry		(geom);
 
@@ -333,6 +383,16 @@ void CParticleEffect::Render(float )
                 RCache.set_CullMode		(m_Def->m_Flags.is(CPEDef::dfCulling)?(m_Def->m_Flags.is(CPEDef::dfCullCCW)?CULL_CCW:CULL_CW):CULL_NONE);
 				RCache.Render	   		(D3DPT_TRIANGLELIST,dwOffset,0,dwCount,0,dwCount/2);
                 RCache.set_CullMode		(CULL_CCW	); 
+#ifndef _EDITOR
+				if(GetHudMode())
+				{
+					RImplementation.rmNormal	();
+					Device.mProject				= Pold;
+					Device.mFullTransform		= FTold;
+					RCache.set_xform_project	(Device.mProject);
+					ApplyTexgen(Device.mFullTransform);
+				}
+#endif
 			}
 		}
 	}

@@ -130,6 +130,9 @@ namespace PS
 		virtual void		Stop			(BOOL bDefferedStop=TRUE);
 		virtual BOOL		IsPlaying		(){return m_RT_Flags.is(flRT_Playing);}
 
+		virtual void		SetHudMode			(BOOL b);
+		virtual BOOL		GetHudMode			();
+
 		virtual float		GetTimeLimit	(){VERIFY(m_Def); return m_Def->m_fTimeLimit;}
 
 		virtual const shared_str	Name		(){VERIFY(m_Def); return m_Def->m_Name;}
