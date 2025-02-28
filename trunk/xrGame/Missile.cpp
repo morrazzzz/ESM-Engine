@@ -517,7 +517,7 @@ bool CMissile::Action(s32 cmd, u32 flags)
 			m_constpower = true;			
 			if(flags&CMD_START) 
 			{
-								if(GetState()==eIdle || GetState() == eBore) 
+								if(GetState()==eIdle) 
 				{
 					m_throw = true;
 					SwitchState(eThrowStart);
@@ -532,7 +532,7 @@ bool CMissile::Action(s32 cmd, u32 flags)
         	if(flags&CMD_START) 
 			{
 				m_throw = false;
-				if(GetState()==eIdle || GetState() == eBore) 
+				if(GetState()==eIdle) 
 					SwitchState(eThrowStart);
 				else 
 				if(GetState()==eReady)

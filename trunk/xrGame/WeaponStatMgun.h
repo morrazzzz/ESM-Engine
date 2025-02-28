@@ -76,6 +76,8 @@ protected:
 			void			AddShotEffector		();
 			void			RemoveShotEffector	();
 			void			SetDesiredDir		(float h, float p);
+	virtual bool			IsHudModeNow		(){return false;};
+
 //HolderCustom
 public:
 	virtual bool			Use					(const Fvector& pos,const Fvector& dir,const Fvector& foot_pos) {return !Owner();};

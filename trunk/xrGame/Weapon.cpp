@@ -102,6 +102,8 @@ void CWeapon::Hit(SHit* pHDS)
 
 void CWeapon::UpdateXForm	()
 {
+	PROF_EVENT("UpdateXForm Weapon")
+
 	if (Device.dwFrame!=dwXF_Frame)
 	{
 		dwXF_Frame = Device.dwFrame;
@@ -225,29 +227,6 @@ void CWeapon::Load		(LPCSTR section)
 	
 	if(pSettings->line_exist(section, "flame_particles_2"))
 		m_sFlameParticles2 = pSettings->r_string(section, "flame_particles_2");
-
-#ifdef DEBUG
-	{
-		Fvector				pos,ypr;
-		pos					= pSettings->r_fvector3		(section,"position");
-		ypr					= pSettings->r_fvector3		(section,"orientation");
-		ypr.mul				(PI/180.f);
-
-		m_Offset.setHPB			(ypr.x,ypr.y,ypr.z);
-		m_Offset.translate_over	(pos);
-	}
-
-	m_StrapOffset			= m_Offset;
-	if (pSettings->line_exist(section,"strap_position") && pSettings->line_exist(section,"strap_orientation")) {
-		Fvector				pos,ypr;
-		pos					= pSettings->r_fvector3		(section,"strap_position");
-		ypr					= pSettings->r_fvector3		(section,"strap_orientation");
-		ypr.mul				(PI/180.f);
-
-		m_StrapOffset.setHPB			(ypr.x,ypr.y,ypr.z);
-		m_StrapOffset.translate_over	(pos);
-	}
-#endif
 
 	// load ammo classes
 	m_ammoTypes.clear	(); 
@@ -468,7 +447,7 @@ BOOL CWeapon::net_Spawn		(CSE_Abstract* DC)
 	SetState						(E->wpn_state);
 	SetNextState					(E->wpn_state);
 	
-	m_DefaultCartridge.Load(*m_ammoTypes[m_ammoType], static_cast<u8>(m_ammoType));	
+	m_DefaultCartridge.Load(m_ammoTypes[m_ammoType].c_str(), m_ammoType);
 	if(iAmmoElapsed) 
 	{
 		m_fCurrentCartirdgeDisp = m_DefaultCartridge.m_kDisp;
@@ -520,13 +499,14 @@ void CWeapon::net_Export(NET_Packet& P)
 {
 	inherited::net_Export	(P);
 
-	P.w_float_q8			(m_fCondition,0.0f,1.0f);
+	P.w_float_q8			(GetCondition(),0.0f,1.0f);
+
 
 	u8 need_upd				= IsUpdating() ? 1 : 0;
 	P.w_u8					(need_upd);
 	P.w_u16					(static_cast<u16>(iAmmoElapsed));
 	P.w_u8					(m_flagsAddOnState);
-	P.w_u8					(static_cast<u8>(m_ammoType));
+	P.w_u8					(m_ammoType);
 	P.w_u8					(static_cast<u8>(GetState()));
 	P.w_u8					(IsZoomed());
 }
@@ -961,9 +941,6 @@ float CWeapon::GetConditionMisfireProbability() const
 
 BOOL CWeapon::CheckForMisfire()
 {
-	if (OnClient()) 
-		return FALSE;
-
 	float rnd = ::Random.randF(0.f,1.f);
 	float mp = GetConditionMisfireProbability();
 	if(rnd < mp)
@@ -1064,16 +1041,18 @@ void CWeapon::UpdateHUDAddonsVisibility()
 		if(m_eSilencerStatus==ALife::eAddonPermanent)
 			HudItemData()->set_bone_visible(wpn_silencer, TRUE, TRUE);
 
+	LPCSTR WpnLauncherBone = HudItemData()->HandsModeHudItem ? wpn_launcher : wpn_grenade_launcher;
+
 	if(GrenadeLauncherAttachable())
 	{
-		HudItemData()->set_bone_visible(wpn_grenade_launcher, IsGrenadeLauncherAttached());
+		HudItemData()->set_bone_visible(WpnLauncherBone, IsGrenadeLauncherAttached());
 	}
 	if(m_eGrenadeLauncherStatus==ALife::eAddonDisabled )
 	{
-		HudItemData()->set_bone_visible(wpn_grenade_launcher, FALSE, TRUE);
+		HudItemData()->set_bone_visible(WpnLauncherBone, FALSE, TRUE);
 	}else
 		if(m_eGrenadeLauncherStatus==ALife::eAddonPermanent)
-			HudItemData()->set_bone_visible(wpn_grenade_launcher, TRUE, TRUE);
+			HudItemData()->set_bone_visible(WpnLauncherBone, TRUE, TRUE);
 
 }
 
@@ -1084,6 +1063,8 @@ void CWeapon::UpdateAddonsVisibility()
 
 	u16  bone_id;
 	UpdateHUDAddonsVisibility								();	
+
+	pWeaponVisual->CalculateBones_Invalidate				();
 
 	bone_id = pWeaponVisual->LL_BoneID					(wpn_scope);
 	if(ScopeAttachable())
@@ -1654,6 +1635,11 @@ u8 CWeapon::GetCurrentHudOffsetIdx()
 bool CWeapon::MovingAnimAllowedNow()
 {
 	return !IsZoomed();
+}
+
+bool CWeapon::IsHudModeNow()
+{
+	return HudItemData() && HudItemData()->HandsModeHudItem;
 }
 
 void CWeapon::ZoomInc()

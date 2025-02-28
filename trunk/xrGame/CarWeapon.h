@@ -23,6 +23,8 @@ protected:
 	bool					m_bActive;
 	bool					m_bAutoFire;
 	float					m_weapon_h;
+	virtual bool			IsHudModeNow		(){return false;};
+
 public:
 	enum{
 			eWpnDesiredDir		=1,

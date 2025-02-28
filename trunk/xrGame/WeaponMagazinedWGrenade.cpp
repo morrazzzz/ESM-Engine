@@ -490,7 +490,7 @@ void CWeaponMagazinedWGrenade::InitBoreAnm()
 {
 	for (size_t i = 0; i < 2; i++)
 	{
-		EnableHudBore(AnimationExist(animsBoreGrenade[i], true));
+		EnableHudBore(GetAnimationIfExist(animsBoreGrenade[i], true));
 
 		if (!GetEnableHudBore())
 			return;

@@ -131,7 +131,7 @@ public:
 
 	virtual	void				UpdateXForm			()						= 0;
 
-	player_hud_motion* AnimationExist(const shared_str& M, bool NoWarningNotExist = false) const;
+	player_hud_motion* GetAnimationIfExist(const shared_str& M, bool NoWarningNotExist = false) const;
 	u32							PlayHUDMotion(const shared_str& M, BOOL bMixIn, u32 state);
 	u32								PlayHUDMotion(const shared_str& M, const shared_str&, BOOL bMixIn, u32 state);
 	u32							PlayHUDMotion_noCB(const shared_str& M, BOOL bMixIn, player_hud_motion* anm_play = nullptr);

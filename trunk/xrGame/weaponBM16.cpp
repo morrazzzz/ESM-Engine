@@ -17,7 +17,7 @@ void CWeaponBM16::InitBoreAnm()
 {
 	for (size_t i = 0; i < 3; i++)
 	{
-		EnableHudBore(AnimationExist(animsBoreBM16[i], true));
+		EnableHudBore(GetAnimationIfExist(animsBoreBM16[i], true));
 		
 		if (!GetEnableHudBore())
 			return;

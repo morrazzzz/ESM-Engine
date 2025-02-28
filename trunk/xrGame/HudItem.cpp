@@ -112,9 +112,6 @@ void CHudItem::OnEvent		(NET_Packet& P, u16 type)
 void CHudItem::OnStateSwitch(u32 S)
 {
 	SetState			(S);
-	
-	if(object().Remote()) 
-		SetNextState	(S);
 
 	switch (S)
 	{
@@ -278,9 +275,10 @@ void CHudItem::on_a_hud_attach()
 		PlayHUDMotion_noCB(m_current_motion, FALSE);
 }
 
-player_hud_motion* CHudItem::AnimationExist(const shared_str& anim_name, bool NoWarningNotExist) const
+player_hud_motion* CHudItem::GetAnimationIfExist(const shared_str& anim_name, bool NoWarningNotExist) const
 {
 	player_hud_motion* anm = nullptr;
+
 	if (HudItemData())
 	{
 		string256 anim_name_r;
@@ -322,12 +320,12 @@ u32 CHudItem::PlayHUDMotion(const shared_str& M, const shared_str& M2, BOOL bMix
 	 u32 anim_time = 0;
 	 bool IsAnimExist = false;
 
-	 if (auto motionHud = AnimationExist(M))
+	 if (auto motionHud = GetAnimationIfExist(M, true))
 	 {
 		 IsAnimExist = true;
 		 anim_time = PlayHUDMotion_noCB(M, bMixIn, motionHud);
 	 }
-	 else if (auto motionHud2 = AnimationExist(M2))
+	 else if (auto motionHud2 = GetAnimationIfExist(M2, true))
 	 {
 		 IsAnimExist = true;
 		 anim_time = PlayHUDMotion_noCB(M2, bMixIn, motionHud2);

@@ -27,7 +27,7 @@ struct player_hud_motion_container
 {
 	xr_vector<player_hud_motion>	m_anims;
 	player_hud_motion*				find_motion(const shared_str& name);
-	void		load				(IKinematicsAnimated* model, const shared_str& sect);
+	void LoadingMotions(IKinematicsAnimated* model, const shared_str& sect);
 };
 
 struct hud_item_measures
@@ -110,8 +110,9 @@ class player_hud
 public: 
 					player_hud			();
 					~player_hud			();
-	void			load				(const shared_str& model_name);
-	void			load_default		(){load("actor_hud_05");};
+	void LoadActorHud(const shared_str& model_name);
+	void LoadDefaultActorHudIfExist();
+
 	void			update				(const Fmatrix& trans);
 	void			render_hud			(IRenderable* root_object);	
 	void			render_item_ui		();
@@ -128,7 +129,7 @@ public:
 	void			detach_item			(CHudItem* item);
 	void			detach_all_items	(){m_attached_items[0]=NULL; m_attached_items[1]=NULL;};
 
-	void			calc_transform		(u16 attach_slot_idx, const Fmatrix& offset, Fmatrix& result);
+	void calc_transform(u16 attach_slot_idx, const Fmatrix& offset, Fmatrix& result, bool);
 	void			tune				(Ivector values);
 	u32	motion_length(const MotionID& M, const CMotionDef*& md, IKinematicsAnimated* model);
 	u32	motion_length(const shared_str& anim_name, const shared_str& hud_name, const CMotionDef*& md);
@@ -151,7 +152,6 @@ private:
 	xr_vector<u16>						m_ancors;
 	attachable_hud_item*				m_attached_items[2];
 	xr_vector<attachable_hud_item*>		m_pool;
-
 };
 
 extern player_hud* g_player_hud;

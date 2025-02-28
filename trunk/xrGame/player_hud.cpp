@@ -24,7 +24,7 @@ player_hud_motion* player_hud_motion_container::find_motion(const shared_str& na
 	return NULL;
 }
 
-void player_hud_motion_container::load(IKinematicsAnimated* model, const shared_str& sect)
+void player_hud_motion_container::LoadingMotions(IKinematicsAnimated* model, const shared_str& sect)
 {
 	CInifile::Sect& _sect		= pSettings->r_section(sect);
 	CInifile::SectCIt _b		= _sect.Data.begin();
@@ -83,7 +83,7 @@ void player_hud_motion_container::load(IKinematicsAnimated* model, const shared_
 #endif // #ifdef DEBUG
 				}
 			}
-			R_ASSERT2(pm->m_animations.size(),make_string("motion not found [%s]", pm->m_base_name.c_str()).c_str());
+			R_ASSERT2(pm->m_animations.size(), make_string("Motion not found [%s] in [%s]", pm->m_base_name.c_str(), sect.c_str()));
 		}
 	}
 }
@@ -138,7 +138,7 @@ void attachable_hud_item::update(bool bForce)
 	m_attach_offset.setHPB			(ypr.x,ypr.y,ypr.z);
 	m_attach_offset.translate_over	(m_measures.m_item_attach[0]);
 
-	m_parent->calc_transform		(m_attach_place_idx, m_attach_offset, m_item_transform);
+	m_parent->calc_transform		(m_attach_place_idx, m_attach_offset, m_item_transform, HandsModeHudItem);
 	m_upd_firedeps_frame			= Device.dwFrame;
 
 	IKinematicsAnimated* ka			=	m_model->dcast_PKinematicsAnimated();
@@ -292,6 +292,12 @@ void hud_item_measures::LoadNotHands(const shared_str& sect_name, IKinematics* K
 {
 	bool is_16x9 = UI().is_widescreen();
 
+	for (int i = 0; i < 2; i++)
+	{
+		m_hands_attach[i].set(0, 0, 0);
+		m_hands_offset[i][0].set(0, 0, 0);
+	}
+
 	m_item_attach[0] = pSettings->r_fvector3(sect_name, "position");
 	m_item_attach[1] = pSettings->r_fvector3(sect_name, "orientation");
 
@@ -328,9 +334,6 @@ void hud_item_measures::LoadNotHands(const shared_str& sect_name, IKinematics* K
 	else
 		m_shell_point_offset.set(0, 0, 0);
 
-	m_hands_offset[0][0].set(0, 0, 0);
-	m_hands_offset[1][0].set(0, 0, 0);
-
 	if (pSettings->line_exist(sect_name, "zoom_offset"))
 	{
 		m_hands_offset[0][1] = pSettings->r_fvector3(sect_name, "zoom_offset");
@@ -361,26 +364,39 @@ void attachable_hud_item::LoadingHudItem(const shared_str& sect_name, IKinematic
 {
 	m_sect_name	= sect_name;
 
+	//HandsModeHudItem = hands != nullptr;
+
+    shared_str visual_name;
+	if (hands && pSettings->line_exist(sect_name, "item_visual"))
+	{
+		visual_name = pSettings->r_string(sect_name, "item_visual");
+		m_attach_place_idx = pSettings->r_u16(sect_name, "attach_place_idx");
+		HandsModeHudItem = true;
+	}
+	else
+	{
+		visual_name = pSettings->r_string(sect_name, "visual");
+		m_attach_place_idx = 0;
+		HandsModeHudItem = false;
+	}
+
+
 	// Visual
-	const shared_str& visual_name = pSettings->r_string(sect_name, "visual");
-	m_model	= smart_cast<IKinematics*>(::Render->model_Create(visual_name.c_str()));
-
-	HandsModeHudItem = hands != nullptr;
-
-	m_attach_place_idx = READ_IF_EXISTS(pSettings, r_u16, sect_name, "attach_place_idx", 0);
+	//const shared_str& visual_name = pSettings->r_string(sect_name, HandsModeHudItem ? "item_visual" : "visual");
+	m_model = smart_cast<IKinematics*>(::Render->model_Create(visual_name.c_str()));
 
 	if (HandsModeHudItem)
 	{
 		m_measures.LoadHands(sect_name, m_model);
 
-		m_hand_motions.load(hands, sect_name);
+		m_hand_motions.LoadingMotions(hands, sect_name);
 	}
 	else
 	{
 		m_measures.LoadNotHands(sect_name, m_model);
 
 		IKinematicsAnimated* animatedHudItem = m_model->dcast_PKinematicsAnimated();
-		m_hand_motions.load(animatedHudItem, sect_name);
+		m_hand_motions.LoadingMotions(animatedHudItem, sect_name);
 	}
 }
 
@@ -403,7 +419,8 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, co
 	rnd_idx					= (u8)Random.randI(anm->m_animations.size()) ;
 	const motion_descr& M	= anm->m_animations[ rnd_idx ];
 
-	u32 ret	= g_player_hud->anim_play(m_attach_place_idx, M.mid, bMixIn, md, m_model->dcast_PKinematicsAnimated());
+	IKinematicsAnimated* kaModel = !HandsModeHudItem ? m_model->dcast_PKinematicsAnimated() : nullptr;
+	u32 ret	= g_player_hud->anim_play(m_attach_place_idx, M.mid, bMixIn, md, kaModel);
 	
 	if(m_model->dcast_PKinematicsAnimated())
 	{
@@ -503,7 +520,7 @@ player_hud::~player_hud()
 	m_pool.clear				();
 }
 
-void player_hud::load(const shared_str& player_hud_sect)
+void player_hud::LoadActorHud(const shared_str& player_hud_sect)
 {
 	if(player_hud_sect ==m_sect_name)	return;
 	bool b_reload = (m_model!=NULL);
@@ -512,9 +529,6 @@ void player_hud::load(const shared_str& player_hud_sect)
 		IRenderVisual* v			= m_model->dcast_RenderVisual();
 		::Render->model_Delete		(v);
 	}
-
-	if (!pSettings->line_exist(player_hud_sect, "visual"))
-		return;
 
 	m_sect_name					= player_hud_sect;
 	const shared_str& model_name= pSettings->r_string(player_hud_sect, "visual");
@@ -549,6 +563,14 @@ void player_hud::load(const shared_str& player_hud_sect)
 	m_model->dcast_PKinematics()->CalculateBones(TRUE);
 }
 
+void player_hud::LoadDefaultActorHudIfExist()
+{
+	if (!pSettings->section_exist("actor_hud_05"))
+		return;
+
+	LoadActorHud("actor_hud_05");
+}
+
 bool player_hud::render_item_ui_query()
 {
 	bool res = false;
@@ -579,7 +601,7 @@ void player_hud::render_hud(IRenderable* root_object)
 
 	if(!b_r0 && !b_r1)									return;
 
-	if (m_model)
+	if (m_model && (m_attached_items[0] && m_attached_items[0]->HandsModeHudItem || m_attached_items[1]))
 		::Render->add_Visual(root_object, m_model->dcast_RenderVisual(), &m_transform, true);
 	
 	if(m_attached_items[0])
@@ -601,7 +623,9 @@ u32 player_hud::motion_length(const shared_str& anim_name, const shared_str& hud
 	R_ASSERT2(pm,
 		make_string("hudItem model [%s] has no motion with alias [%s]", hud_name.c_str(), anim_name.c_str()).c_str()
 	);
-	return motion_length(pm->m_animations[0].mid, md, pi->m_model->dcast_PKinematicsAnimated());
+
+	IKinematicsAnimated* modelMotion = pi->HandsModeHudItem ? m_model : pi->m_model->dcast_PKinematicsAnimated();
+	return motion_length(pm->m_animations[0].mid, md, modelMotion);
 }
 
 player_hud_motion* player_hud::find_motion_length(const shared_str& anim_name, const shared_str& hud_name)
@@ -651,6 +675,9 @@ const Fvector& player_hud::attach_pos() const
 
 void player_hud::update(const Fmatrix& cam_trans)
 {
+	if (!m_attached_items[0] && !m_attached_items[1])
+		return;
+
 	Fmatrix	trans					= cam_trans;
 	update_inertion					(trans);
 	update_additional				(trans);
@@ -662,12 +689,12 @@ void player_hud::update(const Fmatrix& cam_trans)
 	m_transform.mul					(trans, m_attach_offset);
 	// insert inertion here
 
-	if (m_model)
+	if (m_model && (m_attached_items[0] && m_attached_items[0]->HandsModeHudItem || m_attached_items[1]))
 	{
 		m_model->UpdateTracks();
 		m_model->dcast_PKinematics()->CalculateBones_Invalidate();
 		m_model->dcast_PKinematics()->CalculateBones(TRUE);
-	}
+	}	
 
 	if(m_attached_items[0])
 		m_attached_items[0]->update(true);
@@ -680,7 +707,7 @@ u32 player_hud::anim_play(u16 part, const MotionID& M, BOOL bMixIn, const CMotio
 {
 	IKinematicsAnimated* itemModel = model;
 
-	if (m_model)
+	if (!itemModel && m_model)
 	{
 		itemModel = m_model;
 
@@ -856,9 +883,9 @@ void player_hud::detach_item(CHudItem* item)
 	}
 }
 
-void player_hud::calc_transform(u16 attach_slot_idx, const Fmatrix& offset, Fmatrix& result)
+void player_hud::calc_transform(u16 attach_slot_idx, const Fmatrix& offset, Fmatrix& result, bool HandsCalc)
 {
-	if (m_model)
+	if (m_model && HandsCalc)
 	{
 
 		Fmatrix ancor_m = m_model->dcast_PKinematics()->LL_GetTransform(m_ancors[attach_slot_idx]);

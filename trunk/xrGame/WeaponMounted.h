@@ -48,6 +48,7 @@ protected:
 	virtual	void			OnShot		();
 			void			AddShotEffector		();
 			void			RemoveShotEffector	();
+	virtual bool			IsHudModeNow		(){return false;};
 protected:
 	shared_str					m_sAmmoType;
 	CCartridge				m_CurrentAmmo;

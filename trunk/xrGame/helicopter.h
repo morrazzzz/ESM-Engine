@@ -214,6 +214,8 @@ protected:
 	float							m_death_lin_vel_k;
 	shared_str						m_death_bones_to_hide;
 
+	virtual bool					IsHudModeNow() { return false; };
+
 //////////////////////////////////////////////////
 
 // sound, light, particles...

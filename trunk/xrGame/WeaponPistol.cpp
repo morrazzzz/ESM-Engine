@@ -33,7 +33,7 @@ void CWeaponPistol::OnH_B_Chield		()
 
 void CWeaponPistol::InitBoreAnm()
 {
-	EnableHudBore(AnimationExist("anm_bore_empty", true));
+	EnableHudBore(GetAnimationIfExist("anm_bore_empty", true));
 
 	if (!GetEnableHudBore())
 		return;

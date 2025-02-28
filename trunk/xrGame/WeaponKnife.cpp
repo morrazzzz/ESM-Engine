@@ -65,8 +65,8 @@ void CWeaponKnife::Load	(LPCSTR section)
 
 	knife_material_idx =  GMLib.GetMaterialIdx(KNIFE_MATERIAL_NAME);
 
-	KnifeEndingAnimations[0] = AnimationExist("anim_shoot1_end", true);
-	KnifeEndingAnimations[1] = AnimationExist("anim_shoot2_end", true);
+	KnifeEndingAnimations[0] = GetAnimationIfExist("anim_shoot1_end", true);
+	KnifeEndingAnimations[1] = GetAnimationIfExist("anim_shoot2_end", true);
 }
 
 void CWeaponKnife::OnStateSwitch	(u32 S)

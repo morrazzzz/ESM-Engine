@@ -99,9 +99,7 @@ protected:
 	ALife::_TIME_ID			m_dwWeaponRemoveTime;
 	ALife::_TIME_ID			m_dwWeaponIndependencyTime;
 
-//////////////////////////////////////////////////////////////////////////
-//  Animation 
-//////////////////////////////////////////////////////////////////////////
+	virtual bool			IsHudModeNow		();
 public:
 
 //	void					animGet				(MotionSVec& lst, LPCSTR prefix);
@@ -152,7 +150,7 @@ protected:
 	// a misfire happens, you'll need to rearm weapon
 	bool					bMisfire;				
 	
-	virtual void InitBoreAnm() { EnableHudBore(AnimationExist("anm_bore", true)); };
+	virtual void InitBoreAnm() { EnableHudBore(GetAnimationIfExist("anm_bore", true)); };
 
 	virtual bool			AllowBore		();
 public:

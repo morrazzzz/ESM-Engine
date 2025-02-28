@@ -151,7 +151,7 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 	m_we_used_old_crach_handler	= false;
 	R_ASSERT				(NULL==g_player_hud);
 	g_player_hud			= xr_new<player_hud>();
-	g_player_hud->load_default();
+	g_player_hud->LoadDefaultActorHudIfExist();
 
 //	if ( !strstr( Core.Params, "-tdemo " ) && !strstr(Core.Params,"-tdemof "))
 //	{

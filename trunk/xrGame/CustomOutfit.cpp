@@ -112,36 +112,15 @@ void	CCustomOutfit::OnMoveToSlot		()
 		if (pActor)
 		{
 			if (m_ActorVisual.size())
-			{
-				shared_str NewVisual = NULL;
-				const char* TeamSection = Game().getTeamSection(pActor->g_Team());
-				if (TeamSection)
-				{
-					if (pSettings->line_exist(TeamSection, *cNameSect()))
-					{
-						NewVisual = pSettings->r_string(TeamSection, *cNameSect());
-						string256 SkinName;
-						strcpy_s(SkinName, pSettings->r_string("mp_skins_path", "skin_path"));
-						strcat_s(SkinName, *NewVisual);
-						strcat_s(SkinName, ".ogf");
-						NewVisual._set(SkinName);
-					}
-				}
-				
-				if (!NewVisual.size())
-					NewVisual = m_ActorVisual;
+				pActor->ChangeVisual(m_ActorVisual);
 
-				pActor->ChangeVisual(NewVisual);
-			}
-			if(pSettings->line_exist(cNameSect(),"bones_koeff_protection")){
+			if(pSettings->line_exist(cNameSect(),"bones_koeff_protection"))
 				m_boneProtection->reload( pSettings->r_string(cNameSect(),"bones_koeff_protection"), smart_cast<IKinematics*>(pActor->Visual()) );
 
-			};
-
 			if (pSettings->line_exist(cNameSect(), "player_hud_section"))
-				g_player_hud->load(pSettings->r_string(cNameSect(), "player_hud_section"));
+				g_player_hud->LoadActorHud(pSettings->r_string(cNameSect(), "player_hud_section"));
 			else
-				g_player_hud->load_default();
+				g_player_hud->LoadDefaultActorHudIfExist();
 		}
 	}
 };

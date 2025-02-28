@@ -119,7 +119,7 @@ void attachable_hud_item::tune(Ivector values)
 			
 			Fvector							d;
 			Fmatrix							ancor_m;
-			m_parent->calc_transform		(m_attach_place_idx, Fidentity, ancor_m);
+			m_parent->calc_transform		(m_attach_place_idx, Fidentity, ancor_m, HandsModeHudItem);
 			calc_cam_diff_pos				(ancor_m, diff, d);
 			m_measures.m_item_attach[0].add	(d);
 		}else
@@ -131,7 +131,7 @@ void attachable_hud_item::tune(Ivector values)
 
 			Fvector							d;
 			Fmatrix							ancor_m;
-			m_parent->calc_transform		(m_attach_place_idx, Fidentity, ancor_m);
+			m_parent->calc_transform		(m_attach_place_idx, Fidentity, ancor_m, HandsModeHudItem);
 
 			calc_cam_diff_pos				(m_item_transform, diff, d);
 			m_measures.m_item_attach[1].add	(d);
