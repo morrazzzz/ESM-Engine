@@ -81,6 +81,7 @@ protected:
 
 	EffectorCamVec			m_EffectorsCam;
 	EffectorCamVec			m_EffectorsCam_added_deffered;
+	EffectorCamVec			m_EffectorsCam_removed_deffered;
 	EffectorPPVec			m_EffectorsPP;
 
 	bool					m_bAutoApply;
@@ -98,12 +99,12 @@ public:
 
 	void					Dump					(void);
 	u32						Count					()	{return m_EffectorsCam.size()+m_EffectorsCam_added_deffered.size();}
-	CEffectorCam*			AddCamEffector			(CEffectorCam*			ef);
-	CEffectorCam*			GetCamEffector			(ECamEffectorType		type);
-	void					RemoveCamEffector		(ECamEffectorType		type);
+	CEffectorCam*			AddCamEffector			(CEffectorCam*		ef);
+	CEffectorCam*			GetCamEffector			(ECamEffectorType	type);
+	void					RemoveCamEffector		(ECamEffectorType	type);
 
 	ECamEffectorType		RequestCamEffectorId	();
-	EEffectorPPType			RequestPPEffectorId		();	
+	EEffectorPPType			RequestPPEffectorId		();
 	CEffectorPP*			GetPPEffector			(EEffectorPPType	type);
 	CEffectorPP*			AddPPEffector			(CEffectorPP*		ef);
 	void					RemovePPEffector		(EEffectorPPType	type);
@@ -118,12 +119,12 @@ public:
 	IC void					camera_Matrix			(Fmatrix& M){M.set(m_cam_info.r,m_cam_info.n,m_cam_info.d,m_cam_info.p);}
 	void					Update					(const Fvector& P, const Fvector& D, const Fvector& N, float fFOV_Dest, float fASPECT_Dest, float fFAR_Dest, u32 flags);
 	void					UpdateFromCamera		(const CCameraBase* C);
+	
+	void					ApplyDevice				(float _viewport_near);
+	static void				ResetPP					();
 
-	void					ApplyDevice			(float _viewport_near);
-	static void				ResetPP				();
-
-							CCameraManager		(bool bApplyOnUpdate);
-    virtual					~CCameraManager			();
+							CCameraManager			(bool bApplyOnUpdate);
+	virtual					~CCameraManager			();
 };
 ENGINE_API extern SPPInfo					pp_identity;
 ENGINE_API extern SPPInfo					pp_zero;
