@@ -266,8 +266,11 @@ bool CInventory::Slot(PIItem pIItem, bool bNotActivate)
 
 
 
-	if (m_iActiveSlot==pIItem->GetSlot())
+	if (m_iActiveSlot == pIItem->GetSlot())
+	{
+		pIItem->object().processing_activate();
 		Activate(pIItem->GetSlot());
+	}
 
 	
 	m_pOwner->OnItemSlot		(pIItem, pIItem->m_eItemPlace);
