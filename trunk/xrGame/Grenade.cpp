@@ -251,12 +251,6 @@ bool CGrenade::Action(s32 cmd, u32 flags)
 	return false;
 }
 
-
-bool CGrenade::NeedToDestroyObject()	const
-{
-	return ( TimePassedAfterIndependant() > m_dwGrenadeRemoveTime);
-}
-
 ALife::_TIME_ID	 CGrenade::TimePassedAfterIndependant()	const
 {
 	if(!H_Parent() && m_dwGrenadeIndependencyTime != 0)

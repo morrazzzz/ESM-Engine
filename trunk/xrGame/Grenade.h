@@ -42,7 +42,6 @@ public:
 
 	virtual	void			Hit									(SHit* pHDS);
 
-	virtual bool			NeedToDestroyObject					() const; 
 	virtual ALife::_TIME_ID	TimePassedAfterIndependant			() const;
 
 			void			PutNextToSlot						();

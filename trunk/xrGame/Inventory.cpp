@@ -32,10 +32,6 @@ CInventorySlot::CInventorySlot()
 	m_blockCounter			= 0;
 }
 
-CInventorySlot::~CInventorySlot() 
-{
-}
-
 bool CInventorySlot::CanBeActivated() const 
 {
 	return (m_bVisible && !IsBlocked());

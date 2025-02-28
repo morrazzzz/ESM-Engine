@@ -167,7 +167,6 @@ public:
 
 	virtual void reinit			();
 	virtual void reload			(LPCSTR section);
-	virtual bool use_bolts		() const;
 
 	virtual void OnItemTake		(CInventoryItem *inventory_item);
 	
@@ -191,8 +190,6 @@ public:
 	virtual float						Radius				() const;
 	virtual void						g_PerformDrop		();
 
-
-	virtual bool						NeedToDestroyObject()  const;
 	virtual ALife::_TIME_ID				TimePassedAfterDeath() const;
 
 

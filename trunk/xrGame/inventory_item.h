@@ -181,7 +181,6 @@ public:
 	virtual void				activate_physic_shell		();
 	virtual u16					bone_count_to_synchronize	() const;
 
-	virtual bool				NeedToDestroyObject			() const;
 	virtual ALife::_TIME_ID		TimePassedAfterIndependant	() const;
 
 	virtual	bool				IsSprintAllowed				() const		{return !!m_flags.test(FAllowSprint);} ;

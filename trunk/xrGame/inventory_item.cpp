@@ -860,11 +860,6 @@ void CInventoryItem::modify_holder_params	(float &range, float &fov) const
 	fov			*= m_holder_fov_modifier;
 }
 
-bool CInventoryItem::NeedToDestroyObject()	const
-{
-	return (TimePassedAfterIndependant() > m_dwItemRemoveTime);
-}
-
 ALife::_TIME_ID	 CInventoryItem::TimePassedAfterIndependant()	const
 {
 	if(!object().H_Parent() && m_dwItemIndependencyTime != 0)

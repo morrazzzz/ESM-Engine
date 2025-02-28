@@ -189,12 +189,7 @@ void CEatableItemObject::OnRender			()
 	CEatableItem::OnRender			();
 }
 #endif
-
-bool CEatableItemObject::NeedToDestroyObject() const
-{
-	return CInventoryItem::NeedToDestroyObject();
-}
-
+	
 u32	 CEatableItemObject::ef_weapon_type		() const
 {
 	return								(0);

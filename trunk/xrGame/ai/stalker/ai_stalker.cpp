@@ -485,12 +485,18 @@ void CAI_Stalker::net_Export(NET_Packet& P)
 	float f1 = 0;
 	GameGraph::_GRAPH_ID		l_game_vertex_id = ai_location().game_vertex_id();
 	P.w(&l_game_vertex_id, sizeof(l_game_vertex_id));
+	P.w(&l_game_vertex_id, sizeof(l_game_vertex_id));
 	if (ai().game_graph().valid_vertex_id(l_game_vertex_id)) {
+		f1 = Position().distance_to(ai().game_graph().vertex(l_game_vertex_id)->level_point());
+		P.w(&f1, sizeof(f1));
 		f1 = Position().distance_to(ai().game_graph().vertex(l_game_vertex_id)->level_point());
 		P.w(&f1, sizeof(f1));
 	}
 	else
+	{
 		P.w(&f1, sizeof(f1));
+		P.w(&f1, sizeof(f1));
+	}
 
 	P.w_stringZ(m_sStartDialog);
 }

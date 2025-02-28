@@ -9,8 +9,8 @@ class CInventoryOwner;
 class CInventorySlot
 {									
 public:
-							CInventorySlot		();
-	virtual					~CInventorySlot		();
+	CInventorySlot();
+	virtual	~CInventorySlot() = default;
 
 	bool					CanBeActivated		() const;
 	bool					IsBlocked			() const;

@@ -730,11 +730,6 @@ CScriptGameObject *CGameObject::lua_game_object		() const
 	return							(m_lua_game_object);
 }
 
-bool CGameObject::NeedToDestroyObject()	const
-{
-	return false;
-}
-
 void CGameObject::DestroyObject()			
 {
 	
@@ -752,16 +747,6 @@ void CGameObject::DestroyObject()
 
 void CGameObject::shedule_Update	(u32 dt)
 {
-	//уничтожить
-	if(!IsGameTypeSingle() && OnServer() && NeedToDestroyObject())
-	{
-#ifdef DEBUG
-		Msg("--NeedToDestroyObject for [%d][%d]", ID(), Device.dwFrame);
-#endif
-		DestroyObject			();
-
-	}
-
 	START_PROFILE("game_object/schedule_update/inherited")
 	// Msg							("-SUB-:[%x][%s] CGameObject::shedule_Update",smart_cast<void*>(this),*cName());
 	inherited::shedule_Update	(dt);
