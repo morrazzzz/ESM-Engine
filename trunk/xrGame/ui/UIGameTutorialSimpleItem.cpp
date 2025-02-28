@@ -183,35 +183,34 @@ void CUISequenceSimpleItem::Start()
 		    CurrentGameUI()->PdaMenu().SetActiveSubdialog(eptContacts);
 			bShowPda = true;
 		}
-		else {
-			if (!stricmp(m_pda_section, "pda_map")) {
-				CurrentGameUI()->PdaMenu().SetActiveSubdialog(eptMap);
-				bShowPda = true;
-			}
-			else if (!stricmp(m_pda_section, "pda_quests")) {
-				CurrentGameUI()->PdaMenu().SetActiveSubdialog(eptQuests);
-				bShowPda = true;
-			}
-			else if (!stricmp(m_pda_section, "pda_diary")) {
-				CurrentGameUI()->PdaMenu().SetActiveSubdialog(eptDiary);
-				bShowPda = true;
-			}
-			else if (!stricmp(m_pda_section, "pda_ranking")) {
-				CurrentGameUI()->PdaMenu().SetActiveSubdialog(eptRanking);
-				bShowPda = true;
-			}
-			else if (!stricmp(m_pda_section, "pda_statistics")) {
-				CurrentGameUI()->PdaMenu().SetActiveSubdialog(eptActorStatistic);
-				bShowPda = true;
-			}
-			else if (!stricmp(m_pda_section, "pda_encyclopedia")) {
-				CurrentGameUI()->PdaMenu().SetActiveSubdialog(eptEncyclopedia);
-				bShowPda = true;
-			}
+		if (!stricmp(m_pda_section, "pda_map")) {
+			CurrentGameUI()->PdaMenu().SetActiveSubdialog(eptMap);
+			bShowPda = true;
+		}
+		if (!stricmp(m_pda_section, "pda_quests")) {
+			CurrentGameUI()->PdaMenu().SetActiveSubdialog(eptQuests);
+			bShowPda = true;
+		}
+		if (!stricmp(m_pda_section, "pda_diary")) {
+			CurrentGameUI()->PdaMenu().SetActiveSubdialog(eptDiary);
+			bShowPda = true;
+		}
+		if (!stricmp(m_pda_section, "pda_ranking")) {
+			CurrentGameUI()->PdaMenu().SetActiveSubdialog(eptRanking);
+			bShowPda = true;
+		}
+		if (!stricmp(m_pda_section, "pda_statistics")) {
+			CurrentGameUI()->PdaMenu().SetActiveSubdialog(eptActorStatistic);
+			bShowPda = true;
+		}
+		if (!stricmp(m_pda_section, "pda_encyclopedia")) {
+			CurrentGameUI()->PdaMenu().SetActiveSubdialog(eptEncyclopedia);
+			bShowPda = true;
 		}
 
-		if ((!CurrentGameUI()->PdaMenu().IsShown() && bShowPda) ||
-			(CurrentGameUI()->PdaMenu().IsShown() && !bShowPda))
+		if (!CurrentGameUI()->PdaMenu().IsShown() && bShowPda)
+			CurrentGameUI()->PdaMenu().ShowDialog(true);
+		else if (CurrentGameUI()->PdaMenu().IsShown() && !bShowPda)
 			CurrentGameUI()->PdaMenu().HideDialog();
 	}
 }
@@ -233,7 +232,7 @@ bool CUISequenceSimpleItem::Stop			(bool bForce)
 	if(m_flags.test(etiNeedPauseSound))
 		Device.Pause			(FALSE, FALSE, TRUE, "simpleitem_stop");
 
-	if (g_pGameLevel && CurrentGameUI()) {
+	if (g_pGameLevel && CurrentGameUI() && (!m_pda_section || 0 == xr_strlen(m_pda_section))) {
 		if (CurrentGameUI()->PdaMenu().IsShown())
 			CurrentGameUI()->PdaMenu().HideDialog();
 	}
