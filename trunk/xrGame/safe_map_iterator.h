@@ -23,6 +23,7 @@ public:
 	typedef typename _REGISTRY::const_iterator			_const_iterator;
 
 protected:
+	_iterator m_next_iterator;
 	_REGISTRY				m_objects;
 	_cycle_type				m_cycle_count;
 	CTimer					m_timer;
@@ -30,8 +31,8 @@ protected:
 	bool					m_first_update;
 
 protected:
-//	IC		void			update_next			();
-//	IC		_iterator		&next				();
+	IC		void			update_next			();
+	IC		_iterator		&next				();
 	IC		void			start_timer			();
 	IC		bool			time_over			();
 

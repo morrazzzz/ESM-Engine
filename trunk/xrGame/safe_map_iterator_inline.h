@@ -26,7 +26,7 @@ IC	CSSafeMapIterator::CSafeMapIterator			()
 	m_cycle_count			= 0;
 	m_first_update			= use_first_update;
 	m_max_process_time		= 0;
-//	update_next				();
+	update_next				();
 }
 
 TEMPLATE_SPEZIALIZATION
@@ -43,12 +43,12 @@ IC	void CSSafeMapIterator::add					(const _key_type &id, _data_type *value, bool
 		return;
 	}
 
-//	bool					addition = m_objects.empty();
+	bool					addition = m_objects.empty();
 
 	m_objects.insert		(std::make_pair(id,value));
 
-//	if (addition)
-//		m_next_iterator		= m_objects.begin();
+	if (addition)
+		m_next_iterator		= m_objects.begin();
 }
 
 TEMPLATE_SPEZIALIZATION
@@ -60,17 +60,17 @@ IC	void CSSafeMapIterator::remove				(const _key_type &id, bool no_assert)
 		return;
 	}
 
-	//if (I == m_next_iterator)
-	//	update_next			();
+	if (I == m_next_iterator)
+		update_next			();
 
 	m_objects.erase			(I);
 
-	//if (m_objects.empty())
-	//	update_next			();
+	if (m_objects.empty())
+		update_next			();
 }
-/*
+
 TEMPLATE_SPEZIALIZATION
-IC	void CSSafeMapIterator::update_next			()
+IC	void CSSafeMapIterator::update_next()
 {
 	if (m_objects.empty())
 		m_next_iterator		= m_objects.begin();
@@ -87,7 +87,6 @@ IC	typename CSSafeMapIterator::_iterator	&CSSafeMapIterator::next	()
 {
 	return				(m_next_iterator);
 }
-*/
 
 TEMPLATE_SPEZIALIZATION
 IC	void CSSafeMapIterator::start_timer			()
@@ -131,19 +130,16 @@ IC void CSSafeMapIterator::update(const _update_predicate &predicate)
 
 	//if (!time_over())
 	{
-		//_iterator I = next();
-		//VERIFY(I != m_objects.end());
+		_iterator I = next();
+		VERIFY(I != m_objects.end());
 
-		//for (u32 i = 0; I != m_objects.end() && !time_over() && predicate((*I).second, m_cycle_count); ++i)
-		//{
-		//	update_next();
-		//	I = next();
-		//}
-
-		for (auto& i : m_objects)
+		for (u32 i = 0; I != m_objects.end(); ++i)
 		{
-			if (time_over() || !predicate(i.second, m_cycle_count))
+			if (time_over() || !predicate((*I).second, m_cycle_count))
 				break;
+
+			update_next();
+			I = next();
 		}
 	}
 
