@@ -477,68 +477,6 @@ void CLevel::OnFrame	()
 
 	// Inherited update
 	inherited::OnFrame		();
-
-	// Draw client/server stats
-	if ( !g_dedicated_server && psDeviceFlags.test(rsStatistic))
-	{
-		CGameFont* F = UI().Font().pFontDI;
-		if (!psNET_direct_connect) 
-		{
-			if ( IsServer() )
-			{
-				const IServerStatistic* S = Server->GetStatistic();
-				F->SetHeightI	(0.015f);
-				F->OutSetI	(0.0f,0.5f);
-				F->SetColor	(D3DCOLOR_XRGB(0,255,0));
-				F->OutNext	("IN:  %4d/%4d (%2.1f%%)",	S->bytes_in_real,	S->bytes_in,	100.f*float(S->bytes_in_real)/float(S->bytes_in));
-				F->OutNext	("OUT: %4d/%4d (%2.1f%%)",	S->bytes_out_real,	S->bytes_out,	100.f*float(S->bytes_out_real)/float(S->bytes_out));
-				F->OutNext	("client_2_sever ping: %d",	net_Statistic.getPing());
-				F->OutNext	("SPS/Sended : %4d/%4d", S->dwBytesPerSec, S->dwBytesSended);
-				F->OutNext	("sv_urate/cl_urate : %4d/%4d", psNET_ServerUpdate, psNET_ClientUpdate);
-
-				F->SetColor	(D3DCOLOR_XRGB(255,255,255));
-				for (u32 I=0; I<Server->client_Count(); ++I)	
-				{
-					IClient*	C = Server->client_Get(I);
-					Server->UpdateClientStatistic(C);
-					F->OutNext("P(%d), BPS(%2.1fK), MRR(%2d), MSR(%2d), Retried(%2d), Blocked(%2d)",
-						//Server->game->get_option_s(*C->Name,"name",*C->Name),
-						//					C->Name,
-						C->stats.getPing(),
-						float(C->stats.getBPS()),// /1024,
-						C->stats.getMPS_Receive	(),
-						C->stats.getMPS_Send	(),
-						C->stats.getRetriedCount(),
-						C->stats.dwTimesBlocked
-						);
-				}
-			}
-			if (IsClient())
-			{
-				IPureClient::UpdateStatistic();
-
-				F->SetHeightI(0.015f);
-				F->OutSetI	(0.0f,0.5f);
-				F->SetColor	(D3DCOLOR_XRGB(0,255,0));
-				F->OutNext	("client_2_sever ping: %d",	net_Statistic.getPing());
-				F->OutNext	("sv_urate/cl_urate : %4d/%4d", psNET_ServerUpdate, psNET_ClientUpdate);
-
-				F->SetColor	(D3DCOLOR_XRGB(255,255,255));
-				F->OutNext("P(%d), BPS(%2.1fK), MRR(%2d), MSR(%2d), Retried(%2d), Blocked(%2d), Sended(%2d), SPS(%2d)",
-					//Server->game->get_option_s(C->Name,"name",C->Name),
-					//					C->Name,
-					net_Statistic.getPing(),
-					float(net_Statistic.getBPS()),// /1024,
-					net_Statistic.getMPS_Receive	(),
-					net_Statistic.getMPS_Send	(),
-					net_Statistic.getRetriedCount(),
-					net_Statistic.dwTimesBlocked,
-					net_Statistic.dwBytesSended,
-					net_Statistic.dwBytesPerSec
-					);
-			}
-		}
-	}
 	
 //	g_pGamePersistent->Environment().SetGameTime	(GetGameDayTimeSec(),GetGameTimeFactor());
 	g_pGamePersistent->Environment().SetGameTime	(GetEnvironmentGameDayTimeSec(),GetGameTimeFactor());
@@ -571,6 +509,13 @@ void CLevel::OnFrame	()
 			Device.seqParallel.emplace_back(fastdelegate::FastDelegate0<>(this,&CLevel::script_gc));
 		else							script_gc	()	;
 	}
+
+	{
+		PROF_EVENT("Spatial Move");
+		g_SpatialSpace->UpdateSpatialMove();
+		g_SpatialSpacePhysic->UpdateSpatialMove();
+	}
+
 	//-----------------------------------------------------
 	if (pStatGraphR)
 	{	

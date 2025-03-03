@@ -107,9 +107,9 @@ void ISpatial::spatial_move()
 
 		//*** check if we are supposed to correct it's spatial location
 		if (spatial_inside())	
-			return; // ???
-		spatial.space->remove(this);
-		spatial.space->insert(this);
+			return;
+
+		spatial.space->AddToSpatialMove(this);
 	}
 }
 
@@ -183,7 +183,6 @@ void ISpatial_DB::initialize(Fbox& BB)
 		allocator_pool.reserve(128);
 		m_center.set(bbc);
 		m_bounds = _max(_max(bbd.x, bbd.y), bbd.z);
-		rt_insert_object = nullptr;
 		if (0 == m_root)	m_root = _node_create();
 		m_root->_init(nullptr);
 	}
@@ -210,30 +209,30 @@ void ISpatial_DB::_node_destroy(ISpatial_NODE*& P)
 	P = nullptr;
 }
 
-void ISpatial_DB::_insert(ISpatial_NODE* N, Fvector& n_C, float n_R)
+void ISpatial_DB::_insert(ISpatial* Spatial,ISpatial_NODE* N, Fvector& n_C, float n_R)
 {
 	//*** we are assured that object lives inside our node
 	float	n_vR = 2 * n_R;
 	VERIFY(N);
-	VERIFY(verify_sp(rt_insert_object, n_C, n_vR));
+	VERIFY(verify_sp(Spatial, n_C, n_vR));
 
 	// we have to make sure we aren't the leaf node
 	if (n_R <= c_spatial_min)
 	{
 		// this is leaf node
-		N->_insert(rt_insert_object);
-		rt_insert_object->spatial.node_center.set(n_C);
-		rt_insert_object->spatial.node_radius = n_vR;		// vR
+		N->_insert(Spatial);
+		Spatial->spatial.node_center.set(n_C);
+		Spatial->spatial.node_radius = n_vR;		// vR
 		return;
 	}
 
 	// we have to check if it can be putted further down
-	float	s_R = rt_insert_object->spatial.sphere.R;	// spatial bounds
+	float	s_R = Spatial->spatial.sphere.R;	// spatial bounds
 	float	c_R = n_R / 2;								// children bounds
 	if (s_R < c_R)
 	{
 		// object can be pushed further down - select "octant", calc node position
-		Fvector& s_C = rt_insert_object->spatial.sphere.P;
+		Fvector& s_C = Spatial->spatial.sphere.P;
 		u32			octant = _octant(n_C, s_C);
 		Fvector		c_C;				c_C.mad(n_C, c_spatial_offset[octant], c_R);
 		VERIFY(octant == _octant(n_C, c_C));				// check table assosiations
@@ -246,15 +245,15 @@ void ISpatial_DB::_insert(ISpatial_NODE* N, Fvector& n_C, float n_R)
 			VERIFY(chield);
 		}
 		VERIFY(chield);
-		_insert(chield, c_C, c_R);
+		_insert(Spatial, chield, c_C, c_R);
 		VERIFY(chield);
 	}
 	else
 	{
 		// we have to "own" this object (potentially it can be putted down sometimes...)
-		N->_insert(rt_insert_object);
-		rt_insert_object->spatial.node_center.set(n_C);
-		rt_insert_object->spatial.node_radius = n_vR;
+		N->_insert(Spatial);
+		Spatial->spatial.node_center.set(n_C);
+		Spatial->spatial.node_radius = n_vR;
 	}
 }
 
@@ -280,12 +279,10 @@ void ISpatial_DB::insert(ISpatial* S)
 	}
 #endif
 
-	cs.Enter();
 	if (verify_sp(S, m_center, m_bounds))
 	{
 		// Object inside our DB
-		rt_insert_object = S;
-		_insert(m_root, m_center, m_bounds);
+		_insert(S, m_root, m_center, m_bounds);
 		VERIFY(S->spatial_inside());
 	}
 	else {
@@ -295,7 +292,6 @@ void ISpatial_DB::insert(ISpatial* S)
 		S->spatial.node_center.set(m_center);
 		S->spatial.node_radius = m_bounds;
 	}
-	cs.Leave();
 
 #ifdef DEBUG
 	stat_insert.End();
@@ -347,17 +343,31 @@ void ISpatial_DB::remove(ISpatial* S)
 #endif
 	ISpatial_NODE* N = S->spatial.node_ptr;
 
-	cs.Enter();
 	N->_remove(S);
 
 	// Recurse
 	if (N->_empty())					
 		_remove(N->parent, N);
-	cs.Leave();
 
 #ifdef DEBUG
 	stat_remove.End();
 #endif
+}
+
+void ISpatial_DB::UpdateSpatialMove()
+{
+	for (u32 i = 0; i < SpatialsMove.size(); i++)
+	{
+		ISpatial* SpatialMove = SpatialsMove[i];
+
+		if (!SpatialMove->spatial.node_ptr)
+			continue;
+
+		remove(SpatialMove);
+		insert(SpatialMove);
+	}
+
+	SpatialsMove.clear();
 }
 
 void ISpatial_DB::update()

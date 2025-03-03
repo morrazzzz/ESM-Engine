@@ -110,15 +110,8 @@ public:
 			&& !children[6] && !children[7];
 	}
 };
-////////////
 
 
-
-
-
-
-//template <class T, int granularity>
-//class	poolSS;
 #ifndef	DLL_API
 #	define DLL_API __declspec(dllimport)
 #endif // #ifndef	DLL_API
@@ -127,10 +120,9 @@ public:
 class XRCDB_API ISpatial_DB
 {
 private:
-	xrCriticalSection cs; //TODO: I think you can delete it. Not very thread-unsafe
 	poolSS<ISpatial_NODE, 128> allocator;
 	xr_vector<ISpatial_NODE*> allocator_pool;
-	ISpatial* rt_insert_object;
+	xr_vector<ISpatial*> SpatialsMove{};
 public:
 	ISpatial_NODE* m_root;
 	Fvector m_center;
@@ -153,7 +145,7 @@ private:
 	ISpatial_NODE* _node_create();
 	void _node_destroy(ISpatial_NODE*& P);
 
-	void _insert(ISpatial_NODE* N, Fvector& n_center, float n_radius);
+	void _insert(ISpatial*, ISpatial_NODE*, Fvector&, float);
 	void _remove(ISpatial_NODE* N, ISpatial_NODE* N_sub);
 public:
 	ISpatial_DB();
@@ -166,12 +158,14 @@ public:
 	void update();
 	bool verify();
 
+	void AddToSpatialMove(ISpatial* spatial) { SpatialsMove.emplace_back(spatial); }
+	void UpdateSpatialMove();
+
 	enum
 	{
 		O_ONLYFIRST = (1 << 0),
 		O_ONLYNEAREST = (1 << 1),
 		O_ORDERED = (1 << 2),
-		O_force_u32 = u32(-1)
 	};
 
 	// query
