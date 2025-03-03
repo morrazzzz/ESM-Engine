@@ -191,6 +191,7 @@
       <StringPooling>true</StringPooling>
       <PrecompiledHeader>Create</PrecompiledHeader>
       <ConformanceMode>true</ConformanceMode>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>

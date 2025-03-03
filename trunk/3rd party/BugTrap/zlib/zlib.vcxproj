@@ -186,6 +186,7 @@
       <AdditionalIncludeDirectories>include;%(AdditionalIncludeDirectories)
       </AdditionalIncludeDirectories>
       <ConformanceMode>true</ConformanceMode>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>

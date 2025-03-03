@@ -287,7 +287,7 @@ copy /Y "..\3rd party\DiscordSDK\lib\x64\discord_game_sdk.dll" "..\..\xr_build\b
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <PreprocessorDefinitions>ENGINE_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <AssemblerOutput>
@@ -311,7 +311,7 @@ copy /Y "..\3rd party\DiscordSDK\lib\x64\discord_game_sdk.dll" "..\..\xr_build\b
       </AdditionalOptions>
       <AdditionalDependencies>d3dx9.lib;libvorbis_static.lib;libvorbisfile_static.lib;libogg_static.lib;libtheora_static.lib;discord_game_sdk.dll.lib;msacm32.lib;vfw32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <IgnoreSpecificDefaultLibraries>libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateMapFile>false</GenerateMapFile>
       <MapFileName>$(OutDir)$(ProjectName).map</MapFileName>
       <FixedBaseAddress>false</FixedBaseAddress>
