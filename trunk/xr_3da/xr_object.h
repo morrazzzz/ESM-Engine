@@ -163,7 +163,7 @@ public:
 	virtual void						ForceTransform		(const Fmatrix& m)	{};
 
 	// HUD
-	virtual void						OnHUDDraw			(CCustomHUD* hud)	{};
+	virtual void OnHUDDraw() {}
 
 	// Active/non active
 	virtual void						OnH_B_Chield		();		// before

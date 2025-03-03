@@ -1042,17 +1042,14 @@ public:
 		if (auto tpGame = smart_cast<game_sv_Single*>(Level().Server->game))
 		{
 			for (int i = 0; i < CountItems_; i++)
-				tpGame->alife().spawn_item(SectionName_, CamPos_, /*Actor()->ai_location().level_vertex_id()*/0, Actor()->ai_location().game_vertex_id(), ALife::_OBJECT_ID(-1));
+				tpGame->alife().spawn_item(SectionName_, CamPos_, Actor()->ai_location().level_vertex_id(), Actor()->ai_location().game_vertex_id(), ALife::_OBJECT_ID(-1));
 		}
 	}
 
 	virtual void fill_tips(vecTips& tips, u32 mode)
 	{
 		if (!g_pGameLevel)
-		{
-			Msg("# Required load the level!");
 			return;
-		}
 
 		for (const auto sect : pSettings->sections())
 		{
@@ -1095,10 +1092,7 @@ public:
 	virtual void fill_tips(vecTips& tips, u32 mode)
 	{
 		if (!g_pGameLevel)
-		{
-			Msg("# Required load the level!");
 			return;
-		}
 
 		for (auto sect : pSettings->sections())
 		{
@@ -1110,8 +1104,6 @@ public:
 		std::sort(tips.begin(), tips.end());
 	}
 };
-
-#include "GamePersistent.h"
 
 class CCC_MainMenu : public IConsole_Command {
 public:

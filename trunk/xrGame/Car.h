@@ -583,7 +583,7 @@ public:
 	virtual void			g_fireParams				(const CHudItem* /**pHudItem/**/, Fvector& /**P/**/, Fvector& /**D/**/)											{};
 	virtual u16				Initiator					();
 	// HUD
-	virtual void			OnHUDDraw					(CCustomHUD* hud);
+	void OnHUDDraw() override;
 	
 	CCameraBase*			Camera						()			{return active_camera;}
 	void					SetExplodeTime				(u32 et)	;

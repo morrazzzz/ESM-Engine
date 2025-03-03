@@ -147,8 +147,7 @@ public:
 
 	// debug
 #ifdef DEBUG
-	virtual void		OnRender				( );
-	virtual void		OnHUDDraw				(CCustomHUD* hud);
+	void OnRender() override;
 #endif
 
 

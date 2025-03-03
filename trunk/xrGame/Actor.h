@@ -327,8 +327,8 @@ public:
 	// HUD
 	//////////////////////////////////////////////////////////////////////////
 public:
-	virtual void			OnHUDDraw			(CCustomHUD* hud);
-			BOOL			HUDview				( )const ;
+	void OnHUDDraw() override;
+	BOOL HUDview() const;
 
 	//visiblity 
 	virtual	float			ffGetFov			()	const	{ return 90.f;		}	

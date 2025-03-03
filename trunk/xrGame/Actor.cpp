@@ -1244,11 +1244,10 @@ void CActor::g_PerformDrop	( )
 extern	BOOL	g_ShowAnimationInfo		;
 #endif // DEBUG
 // HUD
-void CActor::OnHUDDraw	(CCustomHUD* /**hud/**/)
+void CActor::OnHUDDraw()
 {
 	R_ASSERT(IsFocused());
-	if (!((mstate_real & mcLookout) && !IsGameTypeSingle()))
-		g_player_hud->render_hud(this);
+	g_player_hud->render_hud(this);
 
 #if 0//ndef NDEBUG
 	if (Level().CurrentControlEntity() == this && g_ShowAnimationInfo)

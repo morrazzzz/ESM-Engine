@@ -629,12 +629,6 @@ BOOL CCustomMonster::net_Spawn	(CSE_Abstract* DC)
 	return TRUE;
 }
 
-#ifdef DEBUG
-void CCustomMonster::OnHUDDraw(CCustomHUD *hud)
-{
-}
-#endif
-
 //void CCustomMonster::Hit(float P, Fvector &dir,CObject* who, s16 element,Fvector position_in_object_space, float impulse, ALife::EHitType hit_type)
 void			CCustomMonster::Hit					(SHit* pHDS)
 {

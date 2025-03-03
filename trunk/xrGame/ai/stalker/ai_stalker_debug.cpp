@@ -232,10 +232,8 @@ void CAI_Stalker::debug_planner			(const script_planner *planner)
 	m_debug_planner						= planner;
 }
 
-void CAI_Stalker::OnHUDDraw				(CCustomHUD *hud)
+void CAI_Stalker::OnHUDDraw()
 {
-	inherited::OnHUDDraw				(hud);
-
 	if (!psAI_Flags.test(aiStalker))
 		return;
 

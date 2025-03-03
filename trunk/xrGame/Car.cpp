@@ -491,7 +491,7 @@ void	CCar::net_Export			(NET_Packet& P)
 	inherited::net_Export(P);
 }
 
-void	CCar::OnHUDDraw				(CCustomHUD* /**hud/**/)
+void CCar::OnHUDDraw()
 {
 #ifdef DEBUG
 	Fvector velocity;
@@ -500,8 +500,6 @@ void	CCar::OnHUDDraw				(CCustomHUD* /**hud/**/)
 	UI().Font().pFontStat->OutSet		(120,530);
 	UI().Font().pFontStat->OutNext		("Position:      [%3.2f, %3.2f, %3.2f]",VPUSH(Position()));
 	UI().Font().pFontStat->OutNext		("Velocity:      [%3.2f]",velocity.magnitude());
-
-
 #endif
 }
 

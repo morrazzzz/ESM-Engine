@@ -201,7 +201,7 @@ void CHUDManager::Render_Last(CObject* object)
 		return;
 
 	// hud itself
-	object->OnHUDDraw(this);
+	object->OnHUDDraw();
 }
 extern void draw_wnds_rects();
 extern ENGINE_API BOOL bShowPauseString;
