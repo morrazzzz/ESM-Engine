@@ -103,9 +103,13 @@ void CALifeStorageManager::load	(void *buffer, const u32 &buffer_size, LPCSTR fi
 	CALifeObjectRegistry::OBJECT_REGISTRY::iterator	E = objects().objects().end();
 	CALifeObjectRegistry::OBJECT_REGISTRY::iterator	I;
 	for (I = B; I != E; ++I) {
+/*
+		Msg("Before offline storage: [%d]", (*I).second->ID);
 		ALife::_OBJECT_ID		id = (*I).second->ID;
 		(*I).second->ID			= server().PerformIDgen(id);
-		VERIFY					(id == (*I).second->ID);
+		Msg("Before offline storage: [%d]", (*I).second->ID);
+*/
+//		VERIFY					(id == (*I).second->ID);
 		register_object			((*I).second,false);
 	}
 

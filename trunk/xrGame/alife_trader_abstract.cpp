@@ -190,8 +190,10 @@ void CSE_ALifeTraderAbstract::add_offline	(const xr_vector<ALife::_OBJECT_ID> &s
 		}
 #endif
 
-		ALife::_OBJECT_ID				item_id = inventory_item->base()->ID;
-		inventory_item->base()->ID = object->alife().server().PerformIDgen(item_id);
+		//Msg("Before offline: [%d]", inventory_item->base()->ID);
+		//ALife::_OBJECT_ID				item_id = inventory_item->base()->ID;
+		//inventory_item->base()->ID = object->alife().server().PerformIDgen(item_id);
+		//Msg("After offline: [%d]", inventory_item->base()->ID);
 
 		if (!child->can_save()) {
 			object->alife().release(child);

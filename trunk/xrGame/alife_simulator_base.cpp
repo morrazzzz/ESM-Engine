@@ -100,6 +100,11 @@ CSE_Abstract *CALifeSimulatorBase::spawn_item	(LPCSTR section, const Fvector &po
 	abstract->o_Position		= position;
 	abstract->m_wVersion		= SPAWN_VERSION;
 	
+#ifdef NEW_GENERATOR_DEBUG
+	Msg("%d", abstract->ID);
+	server().CheckRegisterID(abstract->ID);
+#endif
+
 	string256					s_name_replace;
 	strcpy						(s_name_replace,*abstract->s_name);
 	if (abstract->ID < 1000)
@@ -155,7 +160,12 @@ CSE_Abstract *CALifeSimulatorBase::create(CSE_ALifeGroupAbstract *tpALifeGroupAb
 	k->ID						= server().PerformIDgen(0xffff);
 	k->m_bDirectControl			= false;
 	k->m_bALifeControl			= true;
-	
+#ifdef NEW_GENERATOR_DEBUG
+	Msg("[test1]: %d", k->ID);
+	server().CheckRegisterID(k->ID);
+#endif
+
+
 	string256					s_name_replace;
 	strcpy						(s_name_replace,*k->s_name);
 	if (k->ID < 1000)
@@ -196,7 +206,13 @@ void CALifeSimulatorBase::create(CSE_ALifeDynamicObject *&i, CSE_ALifeDynamicObj
 	if (!graph().actor() && smart_cast<CSE_ALifeCreatureActor*>(i))
 		i->ID					= 0;
 	else
-		i->ID					= server().PerformIDgen(0xffff);
+	{
+		i->ID = server().PerformIDgen(0xffff);
+#ifdef NEW_GENERATOR_DEBUG
+		Msg("[test2]: %d", i->ID);
+		server().CheckRegisterID(i->ID);
+#endif
+	}
 
 	register_object				(i,true);
 	i->m_bALifeControl			= true;
@@ -237,6 +253,7 @@ void CALifeSimulatorBase::create	(CSE_ALifeObject *object)
 //	Msg							("Creating object from client spawn [%d][%d][%s][%s]",dynamic_object->ID,dynamic_object->ID_Parent,dynamic_object->name(),dynamic_object->name_replace());
 #endif
 
+	Msg("Register in simulator");
 	if (0xffff != dynamic_object->ID_Parent) {
 		u16							id = dynamic_object->ID_Parent;
 		CSE_ALifeDynamicObject		*parent = objects().object(id);
@@ -284,7 +301,11 @@ void CALifeSimulatorBase::release	(CSE_Abstract *abstract, bool alife_query)
 	object->m_bALifeControl			= false;
 
 	if (alife_query)
-		server().entity_Destroy		(abstract);
+	{
+		server().FreeID(abstract->ID);
+
+		server().entity_Destroy(abstract);
+	}
 }
 
 void CALifeSimulatorBase::append_item_vector(OBJECT_VECTOR &tObjectVector, ITEM_P_VECTOR &tItemList)

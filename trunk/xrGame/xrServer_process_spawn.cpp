@@ -42,6 +42,7 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpaw
 //		E->m_bALifeControl = true;
 	}
 
+	Msg("%d %d", E->ID,E->ID_Parent);
 	CSE_Abstract			*e_parent = 0;
 	if (E->ID_Parent != 0xffff) {
 		e_parent			= ID_to_entity(E->ID_Parent);
@@ -66,6 +67,9 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpaw
 		CSE_Abstract* Phantom	=	entity_Create	(*E->s_name); R_ASSERT(Phantom);
 		Phantom->Spawn_Read		(P);
 		Phantom->ID				=	PerformIDgen	(0xffff);
+#ifdef NEW_GENERATOR_DEBUG
+		CheckRegisterID(Phantom->ID);
+#endif
 		Phantom->ID_Phantom		=	Phantom->ID;						// Self-linked to avoid phantom-breeding
 		Phantom->owner			=	NULL;
 		entities.insert			(mk_pair(Phantom->ID,Phantom));
@@ -74,6 +78,9 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpaw
 
 		// Spawn entity
 		E->ID					=	PerformIDgen(E->ID);
+#ifdef NEW_GENERATOR_DEBUG
+		CheckRegisterID(E->ID);
+#endif
 		E->ID_Phantom			=	Phantom->ID;
 		E->owner				=	CL;
 		entities.insert			(mk_pair(E->ID,E));
@@ -82,6 +89,9 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpaw
 		{
 			// Clone from Phantom
 			E->ID					=	PerformIDgen(0xffff);
+#ifdef NEW_GENERATOR_DEBUG
+			CheckRegisterID(E->ID);
+#endif
 			E->owner				=	CL;//		= SelectBestClientToMigrateTo	(E);
 			E->s_flags.set			(M_SPAWN_OBJECT_PHANTOM,FALSE);
 			entities.insert			(mk_pair(E->ID,E));
@@ -94,7 +104,15 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpaw
 				R_ASSERT				(P);
 				E->ID_Parent			= P->ID;
 			}
-			E->ID					=	PerformIDgen(E->ID);
+			if (E->ID == 0xFFFF)
+			{
+				E->ID = PerformIDgen(E->ID);
+#ifdef NEW_GENERATOR_DEBUG
+				Msg("spawn perform: [%d]", E->ID);
+				CheckRegisterID(E->ID);
+#endif
+			}
+
 			E->owner				=	CL;
 			entities.insert			(mk_pair(E->ID,E));
 		}
@@ -113,6 +131,7 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpaw
 
 	// Parent-Connect
 	if (!tpExistedEntity) {
+		Msg("OnTouch: [%d]", E->ID);
 		game->OnCreate		(E->ID);
 		
 		if (0xffff != E->ID_Parent) {

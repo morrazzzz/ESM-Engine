@@ -21,7 +21,7 @@ class CSE_Abstract;
 const u32	NET_Latency		= 50;		// time in (ms)
 
 // t-defs
-typedef xr_map<u16,CSE_Abstract*>	xrS_entities;
+typedef xr_unordered_map<u16,CSE_Abstract*>	xrS_entities;
 
 class xrClientData	: public IClient
 {
@@ -83,26 +83,8 @@ private:
 	u32							OnDelayedMessage		(NET_Packet& P, ClientID sender);			// Non-Zero means broadcasting with "flags" as returned
 
 	void						SendUpdatesToAll		();
-private:
-	typedef 
-		CID_Generator<
-			u32,		// time identifier type
-			u8,			// compressed id type 
-			u16,		// id type
-			u8,			// block id type
-			u16,		// chunk id type
-			0,			// min value
-			u16(-2),	// max value
-			256,		// block size
-			u16(-1)		// invalid id
-		> id_generator_type;
-
-private:
-	id_generator_type		m_tID_Generator;
-
 protected:
 	void					Server_Client_Check				(IClient* CL);
-	void					PerformCheckClientsForMaxPing	();
 public:
 	game_sv_GameState*		game;
 
@@ -113,16 +95,22 @@ public:
 	
 	IC void					clear_ids				()
 	{
-		m_tID_Generator		= id_generator_type();
+		IDGeneratorManager.ClearIDS();
 	}
 	IC u16					PerformIDgen			(u16 ID)
 	{
-		return				(m_tID_Generator.tfGetID(ID));
+		return IDGeneratorManager.tfGetID(ID);
 	}
-	IC void					FreeID					(u16 ID, u32 time)
+	IC void					FreeID					(u16 ID)
 	{
-		return				(m_tID_Generator.vfFreeID(ID, time));
+		return				(IDGeneratorManager.vfFreeID(ID));
 	}
+#ifdef NEW_GENERATOR_DEBUG
+	IC void CheckRegisterID(u16 ID)
+	{
+		IDGeneratorManager.VerifyRegisterID(ID);
+	}
+#endif
 
 	void					Perform_connect_spawn	(CSE_Abstract* E, xrClientData* to, NET_Packet& P);
 	void					Perform_transfer		(NET_Packet &PR, NET_Packet &PT, CSE_Abstract* what, CSE_Abstract* from, CSE_Abstract* to);
@@ -177,7 +165,7 @@ public:
 	// utilities
 	CSE_Abstract*			entity_Create		(LPCSTR name);
 	void					entity_Destroy		(CSE_Abstract *&P);
-	u32						GetEntitiesNum		()			{ return entities.size(); };
+	size_t						GetEntitiesNum		()			{ return entities.size(); };
 	CSE_Abstract*			GetEntity			(u32 Num);
 
 	IC void					clients_Lock		()			{	csPlayers.Enter();	}

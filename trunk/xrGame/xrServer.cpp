@@ -18,6 +18,8 @@
 #include "level_debug.h"
 #endif
 
+CID_Generator IDGeneratorManager;
+
 xrClientData::xrClientData	():IClient(Device.GetTimerGlobal())
 {
 	ps					= Level().Server->game->createPlayerState();
@@ -226,7 +228,6 @@ INT g_sv_SendUpdate = 0;
 void xrServer::Update	()
 {
 	NET_Packet		Packet;
-	csPlayers.Enter	();
 
 	ProceedDelayedPackets();
 	// game update
@@ -234,7 +235,7 @@ void xrServer::Update	()
 	game->Update	();
 
 	// spawn queue
-	u32 svT				= Device.TimerAsync();
+	u32 svT = Device.dwTimeGlobal;
 	while (!(q_respawn.empty() || (svT<q_respawn.begin()->timestamp)))
 	{
 		// get
@@ -272,27 +273,10 @@ void xrServer::Update	()
 		}
 		DI++;
 	}
-
-	PerformCheckClientsForMaxPing	();
-
-	Flush_Clients_Buffers			();
-	csPlayers.Leave					();
-	
-	if( 0==(Device.dwFrame%100) )//once per 100 frames
-	{
-		UpdateBannedList();
-	}
 }
 
 void xrServer::SendUpdatesToAll()
 {
-	m_iCurUpdatePacket = 0;
-	NET_Packet* pCurUpdatePacket = &(m_aUpdatePackets[0]);
-	pCurUpdatePacket->B.count = 0;
-	u32	 position;
-
-	R_ASSERT2(net_Players.size() == 1, "Player can only one!!!!");
-
 	for (u32 client=0; client<net_Players.size(); ++client)
 	{// for each client
 		// Initialize process and check for available bandwidth
@@ -319,100 +303,7 @@ void xrServer::SendUpdatesToAll()
 			SendTo			(Client->ID,Packet,net_flags(FALSE,TRUE));
 			continue;
 		}
-
-		R_ASSERT2(false, "It is not called.");
-		if (m_aUpdatePackets[0].B.count != 0) //not a first client in update cycle
-		{
-			m_aUpdatePackets[0].w_seek(0, Packet.B.data, Packet.B.count);			
-		}
-		else
-		{
-			m_aUpdatePackets[0].w(Packet.B.data, Packet.B.count);				
-
-			if (g_Dump_Update_Write) 
-			{
-				if (Client->ps)
-					Msg("---- UPDATE_Write to %s --- ", Client->ps->getName());
-				else
-					Msg("---- UPDATE_Write to %s --- ", *(Client->name));
-			}
-			
-	
-
-			NET_Packet						tmpPacket;			
-
-			xrS_entities::iterator I	= entities.begin();
-			xrS_entities::iterator E	= entities.end();
-			for (; I!=E; ++I)
-			{//all entities
-				CSE_Abstract&	Test = *(I->second);
-
-				if (0==Test.owner)								continue;
-				if (!Test.net_Ready)							continue;
-				if (Test.s_flags.is(M_SPAWN_OBJECT_PHANTOM))	continue;	// Surely: phantom
-				if (!Test.Net_Relevant() )						continue;
-
-				tmpPacket.B.count					= 0;
-				// write specific data
-				{
-					tmpPacket.w_u16					(Test.ID);
-					tmpPacket.w_chunk_open8			(position);
-					Test.UPDATE_Write				(tmpPacket);
-					u32 ObjectSize					= u32(tmpPacket.w_tell()-position)-sizeof(u8);
-					tmpPacket.w_chunk_close8		(position);
-
-					if (ObjectSize == 0)						continue;					
-#ifdef DEBUG
-					if (g_Dump_Update_Write) Msg("* %s : %d", Test.name(), ObjectSize);
-#endif
-
-					if (pCurUpdatePacket->B.count + tmpPacket.B.count >= NET_PacketSizeLimit)
-					{
-						m_iCurUpdatePacket++;
-
-						if (m_aUpdatePackets.size() == m_iCurUpdatePacket) m_aUpdatePackets.push_back(NET_Packet());				
-					}
-					pCurUpdatePacket->w(tmpPacket.B.data, tmpPacket.B.count);
-				}//all entities
-			}
-		}
-
-		//.#ifdef DEBUG
-		if (g_Dump_Update_Write) Msg("----------------------- ");
-		//.#endif			
-		for (u32 p =0; p<=m_iCurUpdatePacket; p++)
-		{
-			NET_Packet& ToSend = m_aUpdatePackets[p];
-			if (ToSend.B.count>2)
-			{
-				//.#ifdef DEBUG
-				if (g_Dump_Update_Write && Client->ps != NULL) 
-				{
-					Msg ("- Server Update[%d] to Client[%s]  : %d", 
-						*((u16*)ToSend.B.data), 
-						Client->ps->getName(), 
-						ToSend.B.count);
-				}
-//.#endif
-
-				
-				SendTo			(Client->ID,ToSend,net_flags(FALSE,TRUE));
-			}
-		}
-
-
 	};	// for each client
-#ifdef DEBUG
-	g_sv_SendUpdate = 0;
-#endif			
-
-#pragma todo("What is a "double" export? The same code element is in Update (Look at the line 259).")
-	if (game->sv_force_sync)	
-		Perform_game_export();
-
-#ifdef SLOW_VERIFY_ENTITIES
-	VERIFY(verify_entities());
-#endif
 }
 
 xr_vector<shared_str>	_tmp_log;
@@ -720,7 +611,11 @@ void			xrServer::entity_Destroy	(CSE_Abstract *&P)
 #endif
 	R_ASSERT					(P);
 	entities.erase				(P->ID);
-	m_tID_Generator.vfFreeID	(P->ID,Device.TimerAsync());
+
+	//We do not reserve 0 in the new ID generator, it simply cannot exist there. It can only happen once, and that's fine.
+	//Msg("free ID: [%d]", P->ID);
+	//if (P->ID != 0)
+	//	IDGeneratorManager.vfFreeID(P->ID);
 
 	if(P->owner && P->owner->owner==P)
 		P->owner->owner		= NULL;
@@ -900,46 +795,6 @@ void xrServer::AddDelayedPacket	(NET_Packet& Packet, ClientID Sender)
 
 	DelayedPackestCS.Leave();
 }
-
-u32 g_sv_dwMaxClientPing		= 2000;
-u32 g_sv_time_for_ping_check	= 15000;// 15 sec
-u8	g_sv_maxPingWarningsCount	= 5;
-
-void xrServer::PerformCheckClientsForMaxPing()
-{
-	for (u32 client=0; client<net_Players.size(); ++client)
-	{
-		xrClientData*	Client		= (xrClientData*) net_Players	[client];
-		game_PlayerState* ps		= Client->ps;
-		
-		if(	ps->ping > g_sv_dwMaxClientPing && 
-			Client->m_ping_warn.m_dwLastMaxPingWarningTime+g_sv_time_for_ping_check < Device.dwTimeGlobal )
-		{
-			++Client->m_ping_warn.m_maxPingWarnings;
-			Client->m_ping_warn.m_dwLastMaxPingWarningTime	= Device.dwTimeGlobal;
-
-			if(Client->m_ping_warn.m_maxPingWarnings >= g_sv_maxPingWarningsCount)
-			{  //kick
-				Level().Server->DisconnectClient		(Client);
-			}else
-			{ //send warning
-				NET_Packet		P;	
-				P.w_begin		(M_CLIENT_WARN);
-				P.w_u8			(1); // 1 means max-ping-warning
-				P.w_u16			(ps->ping);
-				P.w_u8			(Client->m_ping_warn.m_maxPingWarnings);
-				P.w_u8			(g_sv_maxPingWarningsCount);
-				SendTo			(Client->ID,P,net_flags(FALSE,TRUE));
-			}
-		}
-		
-	};
-}
-
-//extern	s32		g_sv_dm_dwFragLimit;
-//extern  s32		g_sv_ah_dwArtefactsNum;
-//extern	s32		g_sv_dm_dwTimeLimit;
-//extern	int		g_sv_ah_iReinforcementTime;
 
 xr_token game_types[];
 void xrServer::GetServerInfo( CServerInfo* si )

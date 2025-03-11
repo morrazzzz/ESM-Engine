@@ -60,8 +60,10 @@ void CALifeSwitchManager::remove_online(CSE_ALifeDynamicObject *object, bool upd
 	server().Perform_destroy	(object,net_flags(TRUE,TRUE));
 	VERIFY						(object->children.empty());
 
-	_OBJECT_ID					object_id = object->ID;
-	object->ID					= server().PerformIDgen(object_id);
+	//Msg("Before offline: [%d]", object->ID);
+	//_OBJECT_ID					object_id = object->ID;
+	//object->ID					= server().PerformIDgen(object_id);
+	//Msg("After offline: [%d]", object->ID);
 
 #ifdef DEBUG
 	if (psAI_Flags.test(aiALife))

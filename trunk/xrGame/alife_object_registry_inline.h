@@ -15,6 +15,7 @@ IC	void CALifeObjectRegistry::add		(CSE_ALifeDynamicObject *object)
 		THROW2					((*(objects().find(object->ID))).second != object,"Object with the specified ID is already presented in the Object Registry!");
 	}
 
+	Msg("Add object: [%d]", object->ID);
 	m_objects.insert			(std::make_pair(object->ID,object));
 }
 

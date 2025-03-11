@@ -8,110 +8,92 @@
 
 #pragma once
 
-template<
-	typename TIME_ID, 
-	typename TYPE_ID, 
-	typename VALUE_ID, 
-	typename BLOCK_ID, 
-	typename CHUNK_ID,
-	VALUE_ID tMinValue, 
-	VALUE_ID tMaxValue, 
-	CHUNK_ID tBlockSize,
-	VALUE_ID tInvalidValueID = tMaxValue,
-	TIME_ID	 tStartTime = 0> 
+#define NEW_GENERATOR_DEBUG
+
 class CID_Generator {
 private:
-	struct SID_Block {
-		CHUNK_ID	m_tCount;
-		TIME_ID		m_tTimeID;
-		TYPE_ID		m_tpIDs[tBlockSize];
-
-		IC				SID_Block	() : m_tCount(0) {}
-		
-		IC	bool		operator<	(const SID_Block &b) const
-		{
-			return	(m_tCount && ((m_tTimeID < b.m_tTimeID) || !b.m_tCount));
-		}
-	};
-
-private:
-	enum {
-		m_tBlockCount			= u32(tMaxValue - tMinValue)/tBlockSize + 1,
-	};
-
-private:
-	u32							m_available_count;
-	SID_Block					m_tppBlocks	[m_tBlockCount];
-
-private:
-	IC		BLOCK_ID			tfGetBlockByValue(VALUE_ID tValueID)
-	{
-		BLOCK_ID				l_tBlockID = BLOCK_ID((tValueID - tMinValue)/tBlockSize);
-		R_ASSERT2				(l_tBlockID < m_tBlockCount,"Requesting ID is invalid!");
-		return					(l_tBlockID);
-	}
-
-	IC		VALUE_ID			tfGetFromBlock	(SID_Block &l_tID_Block, VALUE_ID tValueID)
-	{
-		VERIFY					(l_tID_Block.m_tCount);
-		BLOCK_ID				l_tBlockID = BLOCK_ID(&l_tID_Block - m_tppBlocks);
-
-		if (l_tID_Block.m_tCount == 1) {
-			--m_available_count;
-			VERIFY				(m_available_count >= 0);
-		}
-
-		if (tInvalidValueID == tValueID)
-			return				(VALUE_ID(l_tID_Block.m_tpIDs[--l_tID_Block.m_tCount]) + l_tBlockID*tBlockSize + tMinValue);
-
-		TYPE_ID					*l_tpBlockID = std::find(l_tID_Block.m_tpIDs, l_tID_Block.m_tpIDs + l_tID_Block.m_tCount, TYPE_ID((tValueID - tMinValue)%tBlockSize));	
-		R_ASSERT2				(l_tID_Block.m_tpIDs + l_tID_Block.m_tCount != l_tpBlockID,"Requesting ID has already been used!");
-		*l_tpBlockID			= *(l_tID_Block.m_tpIDs + --l_tID_Block.m_tCount);
-		return					(tValueID);
-	}
-
-public:
-	IC							CID_Generator	()
-	{
-		m_available_count		= 0;
-		for (VALUE_ID i=tMinValue; ; ++i) {
-			vfFreeID			(i,tStartTime);
-			if (i >= tMaxValue)
-				break;
-		}
-		VERIFY					(m_available_count == m_tBlockCount);
-		for (u32 j=0; j<m_tBlockCount; ++j)
-			std::reverse		(m_tppBlocks[j].m_tpIDs,m_tppBlocks[j].m_tpIDs + m_tppBlocks[j].m_tCount);
-	}
-
-	IC		VALUE_ID			tfGetID			(VALUE_ID tValueID = tInvalidValueID)
-	{
-		if (tInvalidValueID != tValueID)
-			return				(tfGetFromBlock(m_tppBlocks[tfGetBlockByValue(tValueID)],tValueID));
-
-		R_ASSERT2				(m_available_count,"Not enough IDs");
-		SID_Block*				I = std::min_element(m_tppBlocks,m_tppBlocks + m_tBlockCount);
-		VERIFY					(I != m_tppBlocks + m_tBlockCount);
-		return					(tfGetFromBlock(*I,tValueID));
-	}
-
-	IC		void				vfFreeID		(VALUE_ID tValueID, TIME_ID tTimeID)
-	{
-		BLOCK_ID				l_tBlockID = tfGetBlockByValue(tValueID);
-		SID_Block				&l_tID_Block = m_tppBlocks[l_tBlockID];
-
-		VERIFY					(l_tID_Block.m_tCount < tBlockSize);
-
-		if (!l_tID_Block.m_tCount) {
-			++m_available_count;
-			VERIFY				(m_available_count <= m_tBlockCount);
-		}
-
-#ifdef DEBUG
-		TYPE_ID					*l_tpBlockID = std::find(l_tID_Block.m_tpIDs, l_tID_Block.m_tpIDs + l_tID_Block.m_tCount, TYPE_ID((tValueID - tMinValue)%tBlockSize));	
-		VERIFY					(l_tpBlockID == l_tID_Block.m_tpIDs + l_tID_Block.m_tCount);
+	xr_vector<u16> FreeIDs{};
+#ifdef NEW_GENERATOR_DEBUG
+	xr_vector<u16> IDsReg{};
 #endif
-		l_tID_Block.m_tpIDs		[l_tID_Block.m_tCount++] = TYPE_ID((tValueID - tMinValue)%tBlockSize);
-		l_tID_Block.m_tTimeID	= tTimeID;
+	//xr_unordered_map<CSE_Abstract*, u16> ObjectsIDs;
+
+	//bool FreeLastID{ true };
+	//u32 PrevIDGen;
+public:
+	CID_Generator()
+	{
+		ClearIDS();
+	};
+
+	IC void ClearIDS()
+	{
+		for (u16 i = static_cast<u16>(-1); i > 1; i--)
+			FreeIDs.emplace_back(static_cast<u16>(i - 1));
 	}
+
+	IC u16 tfGetID(u16 tValueID = static_cast<u16>(-1))
+	{
+		R_ASSERT2(!FreeIDs.empty(), "Not enough IDs");
+
+		//TODO: Not actual???
+		if (tValueID != static_cast<u16>(-1))
+		{
+			R_ASSERT2(false, "Fix this???");
+			//ObjectsIDs.insert()
+			u16 id = FreeIDs[FreeIDs.size() - tValueID];
+			FreeIDs.erase(FreeIDs.end() - tValueID);
+#ifdef NEW_GENERATOR_DEBUG
+			R_ASSERT(std::find(IDsReg.begin(), IDsReg.end(), id) == IDsReg.end());
+			IDsReg.emplace_back(id);
+#endif
+			return id;
+		}
+
+		//R_ASSERT2(FreeLastID, "Not enough IDs");
+		//FreeLastID = false;
+
+		u16 index = static_cast<u16>(FreeIDs.size() - Random.randI(1, 256));
+
+		u16 id = 0;
+		if (index >= FreeIDs.size())
+		{
+			id = FreeIDs.front();
+			index = 0;
+		}
+		else
+			id = FreeIDs[index];
+
+#ifdef NEW_GENERATOR_DEBUG
+		R_ASSERT(std::find(IDsReg.begin(), IDsReg.end(), id) == IDsReg.end());
+		IDsReg.emplace_back(id);
+#endif
+		FreeIDs.erase(FreeIDs.begin() + index);
+
+		return id;//static_cast<u16>(-1);
+	}
+
+	IC void vfFreeID(u16 valueID)
+	{
+#ifdef NEW_GENERATOR_DEBUG
+		auto it = std::find(IDsReg.begin(), IDsReg.end(), valueID);
+		R_ASSERT(it != IDsReg.end());
+		IDsReg.erase(it);
+#endif
+
+		FreeIDs.emplace_back(valueID);
+	}
+
+#ifdef NEW_GENERATOR_DEBUG
+	IC void VerifyRegisterID(u16 valueID)
+	{
+		auto it = std::find(IDsReg.begin(), IDsReg.end(), valueID);
+		R_ASSERT(it != IDsReg.end());
+		
+		auto it2 = std::find(FreeIDs.begin(), FreeIDs.end(), valueID);
+		R_ASSERT(it2 == FreeIDs.end());
+	}
+#endif
 };
+
+extern CID_Generator IDGeneratorManager;

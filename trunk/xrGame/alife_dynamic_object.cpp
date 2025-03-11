@@ -248,8 +248,8 @@ void CSE_InventoryBox::add_offline(const xr_vector<ALife::_OBJECT_ID>& saved_chi
 		}
 #endif
 
-		ALife::_OBJECT_ID				item_id = inventory_item->base()->ID;
-		inventory_item->base()->ID = alife().server().PerformIDgen(item_id);
+		//ALife::_OBJECT_ID				item_id = inventory_item->base()->ID;
+		//inventory_item->base()->ID = alife().server().PerformIDgen(item_id);
 
 		if (!child->can_save()) {
 			alife().release(child);

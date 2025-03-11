@@ -97,5 +97,8 @@ void xrServer::Process_event_destroy	(NET_Packet& P, ClientID sender, u32 time, 
 	if (game)
 		game->OnDestroyObject		(e_dest->ID);
 
-	entity_Destroy					(e_dest);
+	//if (!e_dest->m_bALifeControl)
+	//	FreeID(e_dest->ID);
+
+	entity_Destroy(e_dest);
 }

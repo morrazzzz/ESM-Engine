@@ -127,17 +127,9 @@ void xrServer::AttachNewClient			(IClient* CL)
 	msgConfig.is_battleye = (g_pGameLevel && Level().battleye_system.server != 0)? 1 : 0;
 #endif // BATTLEYE
 
-	if(psNET_direct_connect)  //single_game
-	{
-        SV_Client			= CL;
-		CL->flags.bLocal	= 1;
-		SendTo_LL( SV_Client->ID, &msgConfig, sizeof(msgConfig), net_flags(TRUE,TRUE,TRUE,TRUE) );
-	}
-	else
-	{
-		SendTo_LL				(CL->ID,&msgConfig,sizeof(msgConfig), net_flags(TRUE, TRUE, TRUE, TRUE));
-		Server_Client_Check		(CL); 
-	}
+    SV_Client			= CL;
+	CL->flags.bLocal	= 1;
+    SendTo_LL( SV_Client->ID, &msgConfig, sizeof(msgConfig), net_flags(TRUE,TRUE,TRUE,TRUE) );
 
 	// gen message
 	if (!NeedToCheckClient_GameSpy_CDKey(CL))

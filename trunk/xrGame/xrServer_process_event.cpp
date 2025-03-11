@@ -12,11 +12,7 @@
 
 void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 {
-#	ifdef SLOW_VERIFY_ENTITIES
-			VERIFY					(verify_entities());
-#	endif
-
-	u32			timestamp;
+    u32			timestamp;
 	u16			type;
 	u16			destination;
 	u32			MODE			= net_flags(TRUE,TRUE);
@@ -89,24 +85,20 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 	case GE_OWNERSHIP_TAKE:
 		{
 			Process_event_ownership	(P,sender,timestamp,destination);
-			VERIFY					(verify_entities());
 		}break;
 	case GE_OWNERSHIP_TAKE_MP_FORCED:
 		{
 			Process_event_ownership	(P,sender,timestamp,destination,TRUE);
-			VERIFY					(verify_entities());
 		}break;
 	case GE_TRADE_SELL:
 	case GE_OWNERSHIP_REJECT:
 	case GE_LAUNCH_ROCKET:
 		{
 			Process_event_reject	(P,sender,timestamp,destination,P.r_u16());
-			VERIFY					(verify_entities());
 		}break;
 	case GE_DESTROY:
 		{
 			Process_event_destroy	(P,sender,timestamp,destination, NULL);
-			VERIFY					(verify_entities());
 		}
 		break;
 	case GE_TRANSFER_AMMO:
@@ -126,7 +118,6 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 
 			// Perfrom real destroy
 			entity_Destroy		(e_entity	);
-			VERIFY				(verify_entities());
 		}
 		break;
 	case GE_HIT:
@@ -223,8 +214,6 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 				SendTo				(c_src->ID, P, net_flags(TRUE, TRUE));
 			}
 			//////////////////////////////////////////////////////////////////////////
-
-			VERIFY					(verify_entities());
 		}
 		break;
 	case GE_ADDON_ATTACH:
@@ -236,18 +225,11 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 	case GEG_PLAYER_WEAPON_HIDE_STATE:
 		{
 			SendTo		(SV_Client->ID, P, net_flags(TRUE, TRUE));
-
-#	ifdef SLOW_VERIFY_ENTITIES
-			VERIFY					(verify_entities());
-#	endif
 		}break;
 	case GEG_PLAYER_ACTIVATE_SLOT:
 	case GEG_PLAYER_ITEM_EAT:
 		{
 			SendTo(SV_Client->ID, P, net_flags(TRUE, TRUE));
-#	ifdef SLOW_VERIFY_ENTITIES
-			VERIFY					(verify_entities());
-#	endif
 		}break;	
 	case GEG_PLAYER_ITEM_SELL:
 		{
@@ -282,4 +264,7 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 		R_ASSERT2	(0,"Game Event not implemented!!!");
 		break;
 	}
+#ifdef SLOW_VERIFY_ENTITIES
+	VERIFY(verify_entities());
+#endif
 }

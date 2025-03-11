@@ -1243,7 +1243,6 @@ void	game_sv_mp::Player_AddMoney			(game_PlayerState* ps, s32 MoneyAmount)
 	//---------------------------------------	
 };
 //---------------------------------------------------------------------
-extern u32 g_sv_dwMaxClientPing;
 void	game_sv_mp::ReadOptions				(shared_str &options)
 {
 	inherited::ReadOptions(options);
@@ -1251,8 +1250,6 @@ void	game_sv_mp::ReadOptions				(shared_str &options)
 	u8 SpectatorModes = SpectatorModes_Pack();
 	SpectatorModes = u8(get_option_i(*options,"spectrmds",s32(SpectatorModes)) & 0x00ff);
 	SpectatorModes_UnPack(SpectatorModes);
-
-	g_sv_dwMaxClientPing = get_option_i(*options,"maxping",g_sv_dwMaxClientPing);
 
 	string64	StartTime, TimeFactor;
 	strcpy(StartTime,get_option_s		(*options,"estime","12:00:00"));
