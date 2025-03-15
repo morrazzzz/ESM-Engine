@@ -184,6 +184,8 @@
 #	endif
 #endif
 
+#include <ppl.h>
+
 #include "xrDebug.h"
 #include "vector.h"
 

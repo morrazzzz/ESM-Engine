@@ -134,45 +134,6 @@ void CRenderDevice::End		(void)
 #endif
 }
 
-
-volatile u32	mt_Thread_marker		= 0x12345678;
-void 			mt_Thread	(void *ptr)	{
-	PROF_THREAD("XRay Secondary thread");
-	while (true) {
-		// waiting for Device permission to execute
-		Device.mt_csEnter.Enter	();
-
-		if (Device.mt_bMustExit) {
-			Device.mt_bMustExit = FALSE;				// Important!!!
-			Device.mt_csEnter.Leave();					// Important!!!
-			return;
-		}
-		// we has granted permission to execute
-		mt_Thread_marker			= Device.dwFrame;
- 
-		Discord.UpdateSDK();
-
-		{
-			PROF_EVENT("seqParallel");
-			for (u32 pit = 0; pit < Device.seqParallel.size(); pit++)
-				Device.seqParallel[pit]();
-			Device.seqParallel.clear_not_free();
-		}
-
-		{
-			PROF_EVENT("pr_Frame");
-			Device.seqFrameMT.Process(rp_Frame);
-		}
-
-		// now we give control to device - signals that we are ended our work
-		Device.mt_csEnter.Leave	();
-		// waits for device signal to continue - to start again
-		Device.mt_csLeave.Enter	();
-		// returns sync signal to device
-		Device.mt_csLeave.Leave	();
-	}
-}
-
 #include "igame_level.h"
 void CRenderDevice::PreCache	(u32 amount, bool b_draw_loadscreen, bool b_wait_user_input)
 {
@@ -252,9 +213,23 @@ void CRenderDevice::on_idle		()
 	// *** Resume threads
 	// Capture end point - thread must run only ONE cycle
 	// Release start point - allow thread to run
-	mt_csLeave.Enter			();
-	mt_csEnter.Leave			();
-	Sleep						(0);
+	SecondaryTaskGroup.run([]()
+	{
+		PROF_THREAD("XRay Secondary Thread")
+
+	    Discord.UpdateSDK();
+
+	    {    
+		    PROF_EVENT("seqParallel");
+		    for (u32 pit = 0; pit < Device.seqParallel.size(); pit++)
+			     Device.seqParallel[pit]();
+		     Device.seqParallel.clear_not_free();
+	    }
+	    {
+		   PROF_EVENT("pr_Frame");
+		   Device.seqFrameMT.Process(rp_Frame);
+	    }
+	});
 
 #ifndef DEDICATED_SERVER
 	Statistic->RenderTOTAL_Real.FrameStart	();
@@ -278,16 +253,7 @@ void CRenderDevice::on_idle		()
 	// *** Suspend threads
 	// Capture startup point
 	// Release end point - allow thread to wait for startup point
-	mt_csEnter.Enter						();
-	mt_csLeave.Leave						();
-
-	// Ensure, that second thread gets chance to execute anyway
-	if (dwFrame!=mt_Thread_marker)			{
-		for (u32 pit=0; pit<Device.seqParallel.size(); pit++)
-			Device.seqParallel[pit]			();
-		Device.seqParallel.clear_not_free	();
-		seqFrameMT.Process					(rp_Frame);
-	}
+	SecondaryTaskGroup.wait();
 
 #ifdef DEDICATED_SERVER
 	u32 FrameEndTime = TimerGlobal.GetElapsed_ms();
@@ -358,13 +324,6 @@ void CRenderDevice::Run			()
 		Timer_MM_Delta		= time_system-time_local;
 	}
 
-	// Start all threads
-//	InitializeCriticalSection	(&mt_csEnter);
-//	InitializeCriticalSection	(&mt_csLeave);
-	mt_csEnter.Enter			();
-	mt_bMustExit				= FALSE;
-	thread_spawn				(mt_Thread,"X-RAY Secondary thread",0,0);
-
 	// Message cycle
 	seqAppStart.Process			(rp_AppStart);
 
@@ -375,12 +334,7 @@ void CRenderDevice::Run			()
 
 	seqAppEnd.Process		(rp_AppEnd);
 
-	// Stop Balance-Thread
-	mt_bMustExit			= TRUE;
-	mt_csEnter.Leave		();
-	while (mt_bMustExit)	Sleep(0);
-//	DeleteCriticalSection	(&mt_csEnter);
-//	DeleteCriticalSection	(&mt_csLeave);
+	SecondaryTaskGroup.cancel();
 }
 
 void ProcessLoading(RP_FUNC *f);

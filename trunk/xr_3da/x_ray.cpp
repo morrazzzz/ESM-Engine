@@ -286,8 +286,6 @@ void slowdownthread	( void* )
 //	Sleep		(30*1000);
 	for (;;)	{
 		if (Device.Statistic->fFPS<30) Sleep(1);
-		if (Device.mt_bMustExit)	
-			return;
 		if (!pSettings)			
 			return;
 		if (!Console)				

@@ -106,6 +106,8 @@ private:
 	//CTimer_paused							TimerGlobal;
 	CTimer									TimerMM;
 
+	Concurrency::task_group SecondaryTaskGroup;
+
 	void									_Create		(LPCSTR shName);
 	void									_Destroy	(BOOL	bKeepTextures);
 	void									_SetupStates();
@@ -233,11 +235,6 @@ public:
 		VERIFY					(Timer.time_factor() == TimerGlobal.time_factor());
 		return					(Timer.time_factor());
 	}
-
-	// Multi-threading
-	xrCriticalSection	mt_csEnter;
-	xrCriticalSection	mt_csLeave;
-	volatile BOOL		mt_bMustExit;
 
 	ICF		void			remove_from_seq_parallel	(const fastdelegate::FastDelegate0<> &delegate)
 	{
