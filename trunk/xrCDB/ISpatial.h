@@ -60,6 +60,7 @@ class XRCDB_API ISpatial
 public:
 	struct	_spatial
 	{
+		bool SpatialUnregistered{};
 		u32	type;
 		Fsphere	sphere;
 		Fvector node_center;	// Cached node center for TBV optimization

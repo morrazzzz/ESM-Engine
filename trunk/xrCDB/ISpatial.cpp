@@ -85,6 +85,8 @@ void ISpatial::spatial_register()
 		spatial.space->insert(this);
 		spatial.sector = 0;
 	}
+
+	spatial.SpatialUnregistered = false; 
 }
 
 void ISpatial::spatial_unregister()
@@ -96,6 +98,8 @@ void ISpatial::spatial_unregister()
 		spatial.node_ptr = nullptr;
 		spatial.sector = nullptr;
 	}
+
+	spatial.SpatialUnregistered = true;
 }
 
 void ISpatial::spatial_move()
@@ -359,6 +363,9 @@ void ISpatial_DB::UpdateSpatialMove()
 	for (u32 i = 0; i < SpatialsMove.size(); i++)
 	{
 		ISpatial* SpatialMove = SpatialsMove[i];
+
+		if (SpatialMove->spatial.SpatialUnregistered)
+			continue;
 
 		if (!SpatialMove->spatial.node_ptr)
 			continue;
