@@ -91,7 +91,6 @@ public:
 	
 	CStatTimer	BulletManager; // debug counter
 	CStatTimer	ActorCameraUpdate;				// debug counter
-	CStatTimer CreateListNetExport;
 	CStatTimer	SendNetExport;				// debug counter
 
 	shared_str	eval_line_1;

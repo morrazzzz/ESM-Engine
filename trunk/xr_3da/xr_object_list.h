@@ -14,8 +14,6 @@ private:
 	xr_vector<CObject*>			objects_active		;
 	xr_vector<CObject*>			objects_sleeping	;
 
-	xr_vector<CObject*> objects_export;
-
 //	xr_vector<CObject*> ObjectsUpdateCL{};
 	xr_vector<CObject*>	crows_0;
 	xr_vector<CObject*>	crows_1;
@@ -54,7 +52,6 @@ public:
 	void net_Register(CObject* O);
 	void net_Unregister(CObject* O);
 
-	void CreateListExportObjects(); //Create list for export objects to server.
 	u32 StartExportObjects(NET_Packet& Packet, u32 start, u32 max_object_size); // start export objects to server.
 
 	CObject* net_Find(u32 ID);

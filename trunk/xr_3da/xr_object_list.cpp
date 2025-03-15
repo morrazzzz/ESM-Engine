@@ -173,19 +173,12 @@ void CObjectList::net_Unregister(CObject* O)
 	}
 }
 
-void CObjectList::CreateListExportObjects()
-{
-	objects_export = objects_active;
-
-	std::erase_if(objects_export, [](CObject* O) { return !O->net_Relevant() && O->getDestroy(); });
-}
-
 u32 CObjectList::StartExportObjects(NET_Packet& Packet, u32 start, u32 max_object_size)
 {
 	u32	position;
-	for (; start < objects_export.size(); start++)
+	for (; start < objects_active.size(); start++)
 	{
-		CObject* O = objects_export[start];
+		CObject* O = objects_active[start];
 		Packet.w_u16(u16(O->ID()));
 		Packet.w_chunk_open8(position);
 		O->net_Export(Packet);

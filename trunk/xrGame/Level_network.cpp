@@ -117,10 +117,6 @@ void CLevel::ClientSend()
 {
 	NET_Packet P;
 
-	Device.Statistic->CreateListNetExport.Begin();
-	Objects.CreateListExportObjects();
-	Device.Statistic->CreateListNetExport.End();
-
 	u32	start = 0;
 
 	while (true)
