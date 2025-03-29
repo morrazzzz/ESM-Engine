@@ -97,8 +97,6 @@ public:
 			void			KillEntity			(u16 whoID);
 		
 	// Events
-	virtual void			OnEvent				( NET_Packet& P, u16 type		);
-
 	virtual BOOL			IsVisibleForHUD		()	{return g_Alive();	}
 	virtual void			g_fireParams		(const CHudItem*, Fvector &, Fvector &){}; 
 

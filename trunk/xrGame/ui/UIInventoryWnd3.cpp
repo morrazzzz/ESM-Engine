@@ -23,7 +23,8 @@ void CUIInventoryWnd::EatItem(PIItem itm)
 	SetCurrentItem							(NULL);
 	if(!itm->Useful())						return;
 
-	SendEvent_Item_Eat						(itm);
+	VERIFY(itm->m_pCurrentInventory == m_pInv);
+	itm->m_pCurrentInventory->Eat(itm);
 
 	PlaySnd									(eInvItemUse);
 }

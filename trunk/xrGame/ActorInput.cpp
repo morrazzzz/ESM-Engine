@@ -39,24 +39,8 @@ void CActor::IR_OnKeyboardPress(int cmd)
 	if (IsTalking())	return;
 	if (m_input_external_handler && !m_input_external_handler->authorized(cmd))	return;
 	
-	switch (cmd)
-	{
-	case kWPN_FIRE:
-		{
-			mstate_wishful &=~mcSprint;
-			//-----------------------------
-			if (OnServer())
-			{
-				NET_Packet P;
-				P.w_begin(M_PLAYER_FIRE); 
-				P.w_u16(ID());
-				u_EventSend(P);
-			}
-		}break;
-	default:
-		{
-		}break;
-	}
+	if (cmd == kWPN_FIRE)
+		mstate_wishful &= ~mcSprint;
 
 	if (!g_Alive()) 
 		return;

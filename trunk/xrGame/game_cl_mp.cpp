@@ -115,10 +115,6 @@ void game_cl_mp::OnWarnMessage(NET_Packet* P)
 {
 }
 
-void game_cl_mp::OnChatMessage(NET_Packet* P)
-{
-};
-
 void game_cl_mp::CommonMessageOut		(LPCSTR msg)
 {
 };
@@ -192,12 +188,6 @@ void	game_cl_mp::OnSpectatorSelect		()
 
 	CGameObject *l_pPlayer = smart_cast<CGameObject*>(l_pObj);
 	if(!l_pPlayer) return;
-
-	NET_Packet		P;
-	l_pPlayer->u_EventGen		(P, GE_GAME_EVENT, l_pPlayer->ID()	);
-//	P.w_u16(GAME_EVENT_PLAYER_SELECT_SPECTATOR);
-	P.w_u16(GAME_EVENT_PLAYER_GAME_MENU);
-	l_pPlayer->u_EventSend		(P);
 };
 
 void	game_cl_mp::OnGameMenuRespond		(NET_Packet& P)

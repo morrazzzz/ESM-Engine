@@ -9,37 +9,6 @@
 #include "../xr_3da/xr_object.h"
 #include "../xr_3da/IGame_Persistent.h"
 
-void CLevel::cl_Process_Spawn(NET_Packet& P)
-{
-	// Begin analysis
-	shared_str			s_name;
-	P.r_stringZ(s_name);
-
-	// Create DC (xrSE)
-	CSE_Abstract* E = F_entity_Create(*s_name);
-	R_ASSERT2(E, *s_name);
-
-	E->Spawn_Read(P);
-	if (E->s_flags.is(M_SPAWN_UPDATE))
-		E->UPDATE_Read(P);
-	//-------------------------------------------------
-	//	Msg ("M_SPAWN - %s[%d][%x] - %d", *s_name,  E->ID, E,E->ID_Parent);
-	//-------------------------------------------------
-		//force object to be local for server client
-	if (OnServer()) {
-		E->s_flags.set(M_SPAWN_OBJECT_LOCAL, TRUE);
-	};
-
-	/*
-	game_spawn_queue.push_back(E);
-	if (g_bDebugEvents)		ProcessGameSpawns();
-	/*/
-	g_sv_Spawn(E);
-
-	F_entity_Destroy(E);
-	//*/
-};
-
 void CLevel::g_cl_Spawn		(LPCSTR name, u8 rp, u16 flags, Fvector pos)
 {
 	// Create
@@ -73,7 +42,7 @@ void CLevel::g_cl_Spawn		(LPCSTR name, u8 rp, u16 flags, Fvector pos)
 #	include "ai_debug.h"
 #endif // DEBUG
 
-void CLevel::g_sv_Spawn		(CSE_Abstract* E)
+void CLevel::g_sv_Spawn(CObject* obj, CSE_Abstract* E)
 {
 #ifdef DEBUG_MEMORY_MANAGER
 	u32							E_mem = 0;
@@ -84,30 +53,16 @@ void CLevel::g_sv_Spawn		(CSE_Abstract* E)
 		Memory.stat_calls		= 0;
 	}
 #endif // DEBUG_MEMORY_MANAGER
-	//-----------------------------------------------------------------
-//	CTimer		T(false);
-
-	// Optimization for single-player only	- minimize traffic between client and server
-	psNET_Flags.set(NETFLAG_MINIMIZEUPDATES, true);
-
-	// Client spawn
-//	T.Start		();
-	CObject* O = Objects.Create(*E->s_name);
-
-	if (!O)
-	{
-		Msg("! An attempt to spawn a nullptr object.");
-		return;
-	}
+	Msg("ID: [%d]", E->ID);
 
 #ifdef DEBUG_MEMORY_MANAGER
 	mem_alloc_gather_stats		(false);
 #endif // DEBUG_MEMORY_MANAGER
-	if (!O->net_Spawn(E))
+	if (!obj->net_Spawn(E))
 	{
-		O->net_Destroy();
-		client_spawn_manager().clear(O->ID());
-		Objects.Destroy(O);
+		obj->net_Destroy();
+		client_spawn_manager().clear(obj->ID());
+		Objects.Destroy(obj);
 		Msg("! Failed to spawn entity '%s'", *E->s_name);
 #ifdef DEBUG_MEMORY_MANAGER
 		mem_alloc_gather_stats(!!psAI_Flags.test(aiDebugOnFrameAllocs));
@@ -118,7 +73,7 @@ void CLevel::g_sv_Spawn		(CSE_Abstract* E)
 #ifdef DEBUG_MEMORY_MANAGER
 		mem_alloc_gather_stats(!!psAI_Flags.test(aiDebugOnFrameAllocs));
 #endif // DEBUG_MEMORY_MANAGER
-		client_spawn_manager().callback(O);
+		client_spawn_manager().callback(obj);
 		//Msg			("--spawn--SPAWN: %f ms",1000.f*T.GetAsync());
 		if (E->s_flags.is(M_SPAWN_OBJECT_LOCAL) && E->s_flags.is(M_SPAWN_OBJECT_ASPLAYER)) {
 			if (CurrentEntity())
@@ -126,8 +81,8 @@ void CLevel::g_sv_Spawn		(CSE_Abstract* E)
 				CGameObject* pGO = smart_cast<CGameObject*>(CurrentEntity());
 				if (pGO) pGO->On_B_NotCurrentEntity();
 			}
-			SetEntity(O);
-			SetControlEntity(O);
+			SetEntity(obj);
+			SetControlEntity(obj);
 		}
 
 		if (0xffff != E->ID_Parent)
@@ -135,7 +90,8 @@ void CLevel::g_sv_Spawn		(CSE_Abstract* E)
 			NET_Packet	GEN;
 			GEN.write_start();
 			GEN.read_start();
-			GEN.w_u16(u16(O->ID()));
+			GEN.w_u16(obj->ID());
+			Msg("Parent: [%d]", E->ID_Parent);
 			cl_Process_Event(E->ID_Parent, GE_OWNERSHIP_TAKE, GEN);
 		}
 	}
@@ -185,18 +141,4 @@ CSE_Abstract *CLevel::spawn_item		(LPCSTR section, const Fvector &position, u32 
 	}
 	else
 		return				(abstract);
-}
-
-void	CLevel::ProcessGameSpawns	()
-{
-	while (!game_spawn_queue.empty())
-	{
-		CSE_Abstract*	E			= game_spawn_queue.front();
-
-		g_sv_Spawn					(E);
-
-		F_entity_Destroy			(E);
-
-		game_spawn_queue.pop_front	();
-	}
 }

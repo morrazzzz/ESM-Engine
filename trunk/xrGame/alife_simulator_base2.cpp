@@ -78,13 +78,13 @@ void CALifeSimulatorBase::unregister_object	(CSE_ALifeDynamicObject *object, boo
 		}
 }
 
-void CALifeSimulatorBase::on_death			(CSE_Abstract *killed, CSE_Abstract *killer)
+void CALifeSimulatorBase::on_death(CSE_Abstract *killed)
 {
 	typedef CSE_ALifeOnlineOfflineGroup::MEMBER	GROUP_MEMBER;
 
 	CSE_ALifeCreatureAbstract			*creature = smart_cast<CSE_ALifeCreatureAbstract*>(killed);
 	if (creature)
-		creature->on_death				(killer);
+		creature->on_death();
 
 	GROUP_MEMBER						*member = smart_cast<GROUP_MEMBER*>(killed);
 	if (!member)

@@ -26,25 +26,10 @@ void xrServer::OnCL_Disconnected	(IClient* CL)
 	};
 
 	//
-	xrS_entities::iterator	I=entities.begin(),E=entities.end();
-	if (client_Count()>1 && !CL->flags.bLocal)
-	{
-		// Migrate entities
-		for (; I!=E; ++I)
-		{
-			CSE_Abstract*	entity		= I->second;
-			if (entity->owner == CL)	PerformMigration	(entity,(xrClientData*)CL,SelectBestClientToMigrateTo(entity,TRUE));
-		}
-	} else {
-		// Destroy entities
-		while (!entities.empty())		{
-			CSE_Abstract*	entity		= entities.begin()->second;
-			entity_Destroy	(entity);
-		}
-	}	
+	xrS_entities::iterator	I=entities.begin(),E=entities.end();	
 	csPlayers.Leave			();
 
-	Server_Client_Check(CL);
+	//Server_Client_Check(CL);
 
 #ifdef BATTLEYE
 	if ( g_pGameLevel && Level().battleye_system.server )

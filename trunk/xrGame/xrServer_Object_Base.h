@@ -91,6 +91,8 @@ public:
 
 	// for ALife control
 	bool							m_bALifeControl;
+	bool ObjectCustomSpawn{ false };
+
 	ALife::_SPAWN_ID				m_tSpawnID;
 
 	// ALife spawn params

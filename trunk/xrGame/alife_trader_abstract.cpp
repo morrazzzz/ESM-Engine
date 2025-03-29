@@ -150,7 +150,7 @@ void CSE_ALifeTraderAbstract::add_online	(const bool &update_registries)
 		//		R_ASSERT3								(ai().level_graph().valid_vertex_id(l_tpALifeDynamicObject->m_tNodeID),"Invalid vertex for object ",l_tpALifeInventoryItem->name_replace());
 		l_tpALifeDynamicObject->o_Position = object->o_Position;
 		l_tpALifeDynamicObject->m_tNodeID = object->m_tNodeID;
-		object->alife().server().Process_spawn(tNetPacket, clientID, FALSE, l_tpALifeInventoryItem->base());
+		object->alife().server().Process_spawn(tNetPacket, clientID, l_tpALifeInventoryItem->base());
 		l_tpALifeDynamicObject->s_flags.And(u16(-1) ^ M_SPAWN_UPDATE);
 		l_tpALifeDynamicObject->m_bOnline = true;
 	}

@@ -112,11 +112,6 @@ void game_cl_Deathmatch::OnSkinMenu_Ok			()
 	CGameObject *l_pPlayer = smart_cast<CGameObject*>(l_pObj);
 	if(!l_pPlayer) return;
 
-	NET_Packet		P;
-	l_pPlayer->u_EventGen		(P, GE_GAME_EVENT, l_pPlayer->ID()	);
-	P.w_u16(GAME_EVENT_PLAYER_GAME_MENU);;
-
-	l_pPlayer->u_EventSend		(P);
 	//-----------------------------------------------------------------
 	m_bSkinSelected = TRUE;
 
@@ -543,10 +538,6 @@ void game_cl_Deathmatch::OnPlayerFlagsChanged(game_PlayerState* ps)
 
 void game_cl_Deathmatch::SendPickUpEvent(u16 ID_who, u16 ID_what)
 {
-	NET_Packet						P;
-	u_EventGen						(P,GE_OWNERSHIP_TAKE_MP_FORCED, ID_who);
-	P.w_u16							(ID_what);
-	u_EventSend						(P);
 };
 
 const shared_str game_cl_Deathmatch::GetTeamMenu(s16 team)

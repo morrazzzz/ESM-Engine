@@ -22,8 +22,6 @@ SHit::SHit(float aPower,Fvector &adir,CObject *awho, u16 aelement, Fvector ap_in
 		hit_type				=ahit_type								;
 		ap						= aAP									;
 		PACKET_TYPE				= 0										;
-		BulletID				= 0										;
-		SenderID				= 0										;
 		aim_bullet				= AimBullet								;
 }
 
@@ -50,8 +48,6 @@ void SHit::invalidate()
 	hit_type				=ALife::eHitTypeMax						;
 
 	ap						= 0.0f;	
-	BulletID				= 0;
-	SenderID				= 0;
 	aim_bullet				= false									;
 }
 
@@ -97,11 +93,6 @@ void SHit::Read_Packet_Cont		(NET_Packet	Packet)
 	{
 		Packet.r_float	(ap);
 	}
-	if (PACKET_TYPE == GE_HIT_STATISTIC)
-	{
-		Packet.r_u32(BulletID);
-		Packet.r_u32(SenderID);
-	}
 }
 
 void SHit::Write_Packet_Cont		(NET_Packet	&Packet)
@@ -119,11 +110,6 @@ void SHit::Write_Packet_Cont		(NET_Packet	&Packet)
 	if (hit_type == ALife::eHitTypeFireWound)
 	{
 		Packet.w_float	(ap);
-	}
-	if (PACKET_TYPE == GE_HIT_STATISTIC)
-	{
-		Packet.w_u32(BulletID);
-		Packet.w_u32(SenderID);
 	}
 }
 void SHit::Write_Packet			(NET_Packet	&Packet)

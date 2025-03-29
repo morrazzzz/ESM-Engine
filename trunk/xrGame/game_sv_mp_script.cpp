@@ -87,8 +87,6 @@ void	game_sv_mp_script::SpawnPlayer				(ClientID id, LPCSTR N, LPCSTR SkinName, 
 	
 	E->set_name_replace		( get_name_id(id) );	// name
 
-	E->s_flags.assign		(M_SPAWN_OBJECT_LOCAL | M_SPAWN_OBJECT_ASPLAYER);			// flags
-
 	CSE_ALifeCreatureActor	*pA	=	smart_cast<CSE_ALifeCreatureActor*>(E);
 	CSE_Spectator			*pS	=	smart_cast<CSE_Spectator*>(E);
 

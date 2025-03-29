@@ -59,9 +59,6 @@ protected:
 	virtual		shared_str			shedule_Name			() const		{ return shared_str("game_cl_GameState"); };
 	virtual		float				shedule_Scale			();
 	virtual		bool				shedule_Needed			()				{return true;};
-
-				void				sv_GameEventGen			(NET_Packet& P);
-				void				sv_EventSend			(NET_Packet& P);
 public:
 									game_cl_GameState		();
 	virtual							~game_cl_GameState		();
@@ -99,7 +96,6 @@ public:
 
 	virtual		void				ChatSayTeam				(const shared_str &phrase)	{};
 	virtual		void				ChatSayAll				(const shared_str &phrase)	{};
-	virtual		void				OnChatMessage			(NET_Packet* P)	{};
 	virtual		void				OnWarnMessage			(NET_Packet* P)	{};
 	virtual		void				OnRadminMessage			(u16 type, NET_Packet* P)	{};
 	

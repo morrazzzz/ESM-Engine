@@ -146,23 +146,6 @@ void game_cl_TeamDeathmatch::OnTeamSelect(int Team)
 		}
 	}
 
-	if (NeedToSendTeamSelect)
-	{
-		CObject *l_pObj = Level().CurrentEntity();
-
-		CGameObject *l_pPlayer = smart_cast<CGameObject*>(l_pObj);
-		if(!l_pPlayer) return;
-
-		NET_Packet		P;
-		l_pPlayer->u_EventGen		(P,GE_GAME_EVENT,l_pPlayer->ID()	);
-		P.w_u16(GAME_EVENT_PLAYER_GAME_MENU);
-		
-		P.w_s16			(s16(Team+1));
-		//P.w_u32			(0);
-		l_pPlayer->u_EventSend		(P);
-		//-----------------------------------------------------------------
-		m_bSkinSelected = FALSE;
-	};
 	//-----------------------------------------------------------------
 	m_bTeamSelected = TRUE;	
 	//---------------------------

@@ -13,6 +13,7 @@
 #include "group_hierarchy_holder.h"
 #include "..\include\xrRender\Kinematics.h"
 #include "monster_community.h"
+#include "ai/monsters/basemonster/base_monster.h"
 
 #include "profiler.h"
 
@@ -41,30 +42,6 @@ CEntityConditionSimple *CEntity::create_entity_condition(CEntityConditionSimple*
 		m_entity_condition		= smart_cast<CEntityCondition*>(ec);
 	
 	return		m_entity_condition;
-}
-
-void CEntity::OnEvent		(NET_Packet& P, u16 type)
-{
-	inherited::OnEvent		(P,type);
-
-	switch (type)
-	{
-
-	case GE_DIE:
-		{
-			u16				id;
-			u32				cl;
-			P.r_u16			(id);
-			P.r_u32			(cl);
-			CObject			*who = Level().Objects.net_Find	(id);
-			if (who) {
-				if (this!=who)	if(bDebug) Msg("%s %s %s %s",*cName(),"Killed by ",*(who->cName()), "...");
-				else			if(bDebug) Msg("%s %s",*cName(),"Crashed...");
-			};
-			Die				(who);
-		}
-		break;
-	}
 }
 
 void CEntity::Die(CObject* who)
@@ -264,14 +241,25 @@ void CEntity::KillEntity(u16 whoID)
 
 	set_death_time		();
 
-	if (!getDestroy()){
-		NET_Packet		P;
-		u_EventGen		(P,GE_DIE,ID());
-		P.w_u16			(u16(whoID));
-		P.w_u32			(0);
-		if (OnServer())
-			u_EventSend	(P, net_flags(TRUE, TRUE, FALSE, TRUE));
+	CSE_Abstract* killed = Level().Server->game->get_entity_from_eid(ID());
+	CSE_Abstract* killer = Level().Server->game->get_entity_from_eid(whoID);
+
+	Level().Server->game->on_death(killed, killer);
+
+	CObject* killer_object = Level().Objects.net_Find(whoID);
+	
+	if (bDebug)
+	{
+		if (this != killer_object)
+			Msg("~~~!! [INFO]: %s killed by %s", *cName(), *killer_object->cName());
+		else
+			Msg("~~~!! [INFO]: %s killed himself?", *cName());
 	}
+
+	Die(killer_object);
+
+	if (auto* base_monster = static_cast<CGameObject*>(killer_object)->cast_base_monster())
+		base_monster->on_kill_enemy(this);
 };
 
 //void CEntity::KillEntity(CObject* who)

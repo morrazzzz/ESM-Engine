@@ -58,7 +58,6 @@ public:
 class CLevel					: public IGame_Level, public IPureClient
 {
 	#include "Level_network_Demo.h"
-	void						ClearAllObjects			();
 private:
 #ifdef DEBUG
 	bool						m_bSynchronization;
@@ -93,15 +92,6 @@ protected:
 	EVENT						eChangeTrack;
 	EVENT						eEnvironment;
 	EVENT						eEntitySpawn;
-	//---------------------------------------------
-	CStatGraph					*pStatGraphS;
-	u32							m_dwSPC;	//SendedPacketsCount
-	u32							m_dwSPS;	//SendedPacketsSize
-	CStatGraph					*pStatGraphR;
-	u32							m_dwRPC;	//ReceivedPacketsCount
-	u32							m_dwRPS;	//ReceivedPacketsSize
-	//---------------------------------------------
-	
 public:
 #ifdef DEBUG
 	// level debugger
@@ -111,54 +101,24 @@ public:
 public:
 	////////////// network ////////////////////////
 	u32							GetInterpolationSteps	();
-	void						SetInterpolationSteps	(u32 InterpSteps);
 	bool						InterpolationDisabled	();
-	void						ReculcInterpolationSteps();
-	u32							GetNumCrSteps			() const	{return m_dwNumSteps; };
-	void						SetNumCrSteps			( u32 NumSteps );
 	static void 				PhisStepsCallback		( u32 Time0, u32 Time1 );
-	bool						In_NetCorrectionPrediction	() {return m_bIn_CrPr;};
 
 	virtual void				OnMessage				(void* data, u32 size);
-	virtual void				OnInvalidHost			();
-	virtual void				OnInvalidPassword		();
-	virtual void				OnSessionFull			();
-	virtual void				OnConnectRejected		();
 private:
-	DEF_VECTOR					(OBJECTS_LIST, CGameObject*);
-
 	CObject* pCurrentControlEntity;
-
-	OBJECTS_LIST				pObjects4CrPr;
-	OBJECTS_LIST				pActors4CrPr;
-
-	BOOL						m_bNeed_CrPr;
-	u32							m_dwNumSteps;
 
 	xrServer::EConnect			m_connect_server_err;
 
 public:
-	void						AddObject_To_Objects4CrPr	(CGameObject* pObj);
-	void						AddActor_To_Actors4CrPr		(CGameObject* pActor);
-
-	void						RemoveObject_From_4CrPr		(CGameObject* pObj);	
-
 	CObject*					CurrentControlEntity	( void ) const		{ return pCurrentControlEntity; }
 	void						SetControlEntity		( CObject* O  )		{ pCurrentControlEntity=O; }
 private:
-	
-	void						make_NetCorrectionPrediction	();
-
 	u32							m_dwDeltaUpdate;
-	u32							m_dwLastNetUpdateTime;
-	void						UpdateDeltaUpd					( u32 LastTime );
-	void						BlockCheatLoad					()				;
 
 	bool Connect2Server();
 public:	
 	void						OnGameSpyChallenge				(NET_Packet* P);
-	void						OnBuildVersionChallenge			();
-	void						OnConnectResult					(NET_Packet* P);
 public:
 	//////////////////////////////////////////////	
 	// static particles
@@ -227,9 +187,7 @@ public:
 	virtual void				OnFrame					( void );
 	virtual void				OnRender				( );
 	void						cl_Process_Event		(u16 dest, u16 type, NET_Packet& P);
-	void						cl_Process_Spawn		(NET_Packet& P);
 	void						ProcessGameEvents		( );
-	void						ProcessGameSpawns		( );
 
 	// Input
 	virtual	void				IR_OnKeyboardPress		( int btn );
@@ -255,7 +213,7 @@ public:
 	virtual	void				Send					(NET_Packet& P, u32 dwFlags=DPNSEND_GUARANTEED, u32 dwTimeout=0);
 	
 	void						g_cl_Spawn				(LPCSTR name, u8 rp, u16 flags, Fvector pos);	// only ask server
-	void						g_sv_Spawn				(CSE_Abstract* E);					// server reply/command spawning
+	void						g_sv_Spawn				(CObject*, CSE_Abstract*);					// server reply/command spawning
 	
 	// Save/Load/State
 	void						SLS_Load				(LPCSTR name);		// Game Load
@@ -321,21 +279,8 @@ public:
 			bool			IsServer					();
 			bool			IsClient					();
 			CSE_Abstract	*spawn_item					(LPCSTR section, const Fvector &position, u32 level_vertex_id, u16 parent_id, bool return_item = false);
-			
-protected:
-	u32		m_dwCL_PingDeltaSend;
-	u32		m_dwCL_PingLastSendTime;
-	u32		m_dwRealPing;
-private:
-	bool						m_bIn_CrPr;
-	bool						m_bConnectResultReceived;
-	bool						m_bConnectResult;
-public:
-	virtual	u32				GetRealPing					() { return m_dwRealPing; };
-
 public:
 			void			remove_objects				();
-	virtual void			OnSessionTerminate			(LPCSTR reason);
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

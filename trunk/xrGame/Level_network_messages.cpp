@@ -15,20 +15,8 @@
 
 void CLevel::ClientReceive()
 {
-
-	Demo_StartFrame();
-
-	Demo_Update();
-
-	m_dwRPC = 0;
-	m_dwRPS = 0;
-
 	for (NET_Packet* P = net_msg_Retreive(); P; P=net_msg_Retreive())
 	{
-		//-----------------------------------------------------
-		m_dwRPC++;
-		m_dwRPS += P->B.count;
-		//-----------------------------------------------------
 		u16			m_type;
 		u16			ID;
 		P->r_begin	(m_type);
@@ -48,23 +36,6 @@ void CLevel::ClientReceive()
 					Engine.Event.Defer	("KERNEL:start",m_caServerOptions.size() ? size_t( xr_strdup(*m_caServerOptions)) : 0, m_caClientOptions.size() ? size_t(xr_strdup(*m_caClientOptions)) : 0);
 				}
 			}break;
-		case M_SPAWN:			
-			{
-				if (!m_bGameConfigStarted || !bReady) 
-				{
-					Msg ("Unconventional M_SPAWN received : cgf[%s] | bReady[%s]",
-						(m_bGameConfigStarted) ? "true" : "false",
-						(bReady) ? "true" : "false");
-					break;
-				}
-				/*/
-				cl_Process_Spawn(*P);
-				/*/
-				game_events->insert		(*P);
-				if (g_bDebugEvents)		ProcessGameEvents();
-				//*/
-			}
-			break;
 		case M_EVENT:
 			game_events->insert		(*P);
 			if (g_bDebugEvents)		ProcessGameEvents();
@@ -87,32 +58,7 @@ void CLevel::ClientReceive()
 			//-------------------------------------------
 			break;
 		};
-		case M_MOVE_PLAYERS:
-			{
-				u8 Count = P->r_u8();
-				for (u8 i=0; i<Count; i++)
-				{
-					u16 ID = P->r_u16();					
-					Fvector NewPos, NewDir;
-					P->r_vec3(NewPos);
-					P->r_vec3(NewDir);
-
-					CActor*	OActor	= smart_cast<CActor*>(Objects.net_Find		(ID));
-					if (0 == OActor)		break;
-					OActor->MoveActor(NewPos, NewDir);
-				};
-
-				NET_Packet PRespond;
-				PRespond.w_begin(M_MOVE_PLAYERS_RESPOND);
-				Send(PRespond, net_flags(TRUE, TRUE));
-			}break;
 		//------------------------------------------------
-		case M_CL_INPUT:
-			{
-				P->r_u16		(ID);
-				CObject*	O	= Objects.net_Find		(ID);
-				if (0 == O)		break;
-			}break;
 		//---------------------------------------------------
 		case 	M_SV_CONFIG_NEW_CLIENT:
 			InitializeClientGame(*P);
@@ -124,22 +70,6 @@ void CLevel::ClientReceive()
 			game_configured			= TRUE;
 			Msg("- Game configuring : Finished ");
 			break;		
-		case M_MIGRATE_DEACTIVATE:	// TO:   Changing server, just deactivate
-			{
-				P->r_u16		(ID);
-				CObject*	O	= Objects.net_Find		(ID);
-				if (0 == O)		break;
-				if (bDebug)		Log("! MIGRATE_DEACTIVATE",*O->cName());
-			}
-			break;
-		case M_MIGRATE_ACTIVATE:	// TO:   Changing server, full state
-			{
-				P->r_u16		(ID);
-				CObject*	O	= Objects.net_Find		(ID);
-				if (0 == O)		break;
-				if (bDebug)		Log("! MIGRATE_ACTIVATE",*O->cName());
-			}
-			break;
 		case M_CHAT:
 			{
 				char	buffer[256];
@@ -152,7 +82,6 @@ void CLevel::ClientReceive()
 				if (!game) break;
 				Game().OnGameMessage(*P);
 			}break;
-		case M_RELOAD_GAME:
 		case M_LOAD_GAME:
 		case M_CHANGE_LEVEL:
 			{
@@ -182,85 +111,17 @@ void CLevel::ClientReceive()
 			{
 				OnGameSpyChallenge(P);
 			}break;
-		case M_AUTH_CHALLENGE:
-			{
-				OnBuildVersionChallenge();
-			}break;
-		case M_CLIENT_CONNECT_RESULT:
-			{
-				OnConnectResult(P);
-			}break;
-		case M_CHAT_MESSAGE:
-			{
-				if (!game) break;
-				Game().OnChatMessage(P);
-			}break;
-		case M_CLIENT_WARN:
-			{
-				if (!game) break;
-				Game().OnWarnMessage(P);
-			}break;
-		case M_REMOTE_CONTROL_AUTH:
-		case M_REMOTE_CONTROL_CMD:
-			{
-				Game().OnRadminMessage(m_type, P);
-			}break;
-		case M_CHANGE_LEVEL_GAME:
-			{
-				Msg("- M_CHANGE_LEVEL_GAME Received");
-
-				if (OnClient())
-				{
-					Engine.Event.Defer	("KERNEL:disconnect");
-					Engine.Event.Defer	("KERNEL:start",m_caServerOptions.size() ? size_t( xr_strdup(*m_caServerOptions)) : 0,m_caClientOptions.size() ? size_t(xr_strdup(*m_caClientOptions)) : 0);
-				}
-				else
-				{
-					const char* m_SO = m_caServerOptions.c_str();
-//					const char* m_CO = m_caClientOptions.c_str();
-
-					m_SO = strchr(m_SO, '/'); if (m_SO) m_SO++;
-					m_SO = strchr(m_SO, '/'); 
-
-					string128 LevelName = "";
-					string128 GameType = "";
-
-					P->r_stringZ(LevelName);
-					P->r_stringZ(GameType);
-
-					string4096 NewServerOptions = "";
-					sprintf_s(NewServerOptions, "%s/%s", LevelName, GameType);
-
-					if (m_SO) strcat(NewServerOptions, m_SO);
-					m_caServerOptions = NewServerOptions;
-
-					Engine.Event.Defer	("KERNEL:disconnect");
-					Engine.Event.Defer	("KERNEL:start",size_t(xr_strdup(*m_caServerOptions)),size_t(xr_strdup(*m_caClientOptions)));
-				};
-			}break;
 		case M_CHANGE_SELF_NAME:
 			{
 				net_OnChangeSelfName(P);
 			}break;
 		case M_BULLET_CHECK_RESPOND:
 			{
-				if (!game) break;
-				if (GameID() != GAME_SINGLE)
-					Game().m_WeaponUsageStatistic->On_Check_Respond(P);
 			}break;
 		case M_STATISTIC_UPDATE:
 			{
-				if (!game) break;
-				if (GameID() != GAME_SINGLE)
-					Game().m_WeaponUsageStatistic->OnUpdateRequest(P);
 			}break;
 		case M_STATISTIC_UPDATE_RESPOND:
-			{
-				if (!game) break;
-				if (GameID() != GAME_SINGLE)
-					Game().m_WeaponUsageStatistic->OnUpdateRespond(P);
-			}break;
-		case M_BATTLEYE:
 			{
 			}break;
 		}
@@ -273,51 +134,11 @@ void CLevel::ClientReceive()
 
 void				CLevel::OnMessage				(void* data, u32 size)
 {	
-	DemoCS.Enter();
-
-	if (IsDemoPlay() ) 
-	{
-		if (m_bDemoStarted) 
-		{
-			DemoCS.Leave();
-			return;
-		}
-		
-		if (!m_aDemoData.empty() && net_IsSyncronised())
-		{
-//			NET_Packet *P = &(m_aDemoData.front());
-			DemoDataStruct *P = &(m_aDemoData.front());
-			u32 CurTime = timeServer_Async();
-			timeServer_UserDelta(P->m_dwTimeReceive - CurTime);
-			m_bDemoStarted = TRUE;
-			Msg("! ------------- Demo Started ------------");
-			m_dwCurDemoFrame = P->m_dwFrame;
-			DemoCS.Leave();
-			return;
-		}
-	};	
-
-	if (IsDemoSave() && net_IsSyncronised()) 
-	{
-		Demo_StoreData(data, size, DATA_CLIENT_PACKET);
-	}	
-
 	IPureClient::OnMessage(data, size);	
-
-	DemoCS.Leave();
 };
 
 NET_Packet*				CLevel::net_msg_Retreive		()
 {
-	NET_Packet* P = NULL;
-
-	DemoCS.Enter();
-
-	P = IPureClient::net_msg_Retreive();
-	if (!P) Demo_EndFrame();
-
-	DemoCS.Leave();
-
-	return P;
+	return IPureClient::net_msg_Retreive();
 }
 

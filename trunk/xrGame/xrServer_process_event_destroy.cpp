@@ -37,11 +37,13 @@ void xrServer::Process_event_destroy	(NET_Packet& P, ClientID sender, u32 time, 
 	CSE_Abstract* e_dest = game->get_entity_from_eid(id_dest);	// кто должен быть уничтожен
 	R_ASSERT2(e_dest, "Destroy: [%d] not found on server", id_dest);
 
+	/*
 	xrClientData					*c_dest = e_dest->owner;				// клиент, чей юнит
 	R_ASSERT						(c_dest);
 	xrClientData					*c_from = ID_to_client(sender);	// клиент, кто прислал
 	R_ASSERT						(c_from);
 	R_ASSERT						(c_dest==c_from || GetServerClient()==c_from);
+	*/
 	u16								parent_id = e_dest->ID_Parent;
 
 	//---------------------------------------------

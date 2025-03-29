@@ -556,12 +556,7 @@ void game_sv_GameState::u_EventSend(NET_Packet& P, u32 dwFlags)
 }
 
 void game_sv_GameState::Update		()
-{
-	for (u32 it=0; it<m_server->client_Count(); ++it) {
-		xrClientData*	C			= (xrClientData*)	m_server->client_Get(it);
-		C->ps->ping					= u16(C->stats.getPing());
-	}
-	
+{	
 	if (!g_dedicated_server)
 	{
 		if (Level().game) {
@@ -622,22 +617,6 @@ void game_sv_GameState::switch_distance (NET_Packet &net_packet, ClientID sender
 {
 }
 
-void game_sv_GameState::OnHit (u16 id_hitter, u16 id_hitted, NET_Packet& P)
-{
-	CSE_Abstract*		e_hitter		= get_entity_from_eid	(id_hitter	);
-	CSE_Abstract*		e_hitted		= get_entity_from_eid	(id_hitted	);
-	if (!e_hitter || !e_hitted) return;
-
-//	CSE_ALifeCreatureActor*		a_hitter		= smart_cast <CSE_ALifeCreatureActor*> (e_hitter);
-	CSE_ALifeCreatureActor*		a_hitted		= smart_cast <CSE_ALifeCreatureActor*> (e_hitted);
-
-	if (a_hitted/* && a_hitter*/)
-	{
-		OnPlayerHitPlayer(id_hitter, id_hitted, P);
-		return;
-	};
-}
-
 void game_sv_GameState::OnEvent (NET_Packet &tNetPacket, u16 type, u32 time, ClientID sender )
 {
 	switch	(type)
@@ -657,41 +636,6 @@ void game_sv_GameState::OnEvent (NET_Packet &tNetPacket, u16 type, u32 time, Cli
 			tNetPacket.r_stringZ(PlayerName);
 			u16		GameID = tNetPacket.r_u16();
 			OnPlayerDisconnect(ID, PlayerName, GameID);
-		}break;
-
-	case GAME_EVENT_PLAYER_KILLED:
-		{
-		}break	;
-	case GAME_EVENT_ON_HIT:
-		{
-			u16		id_dest				= tNetPacket.r_u16();
-			u16     id_src				= tNetPacket.r_u16();
-			CSE_Abstract*	e_src		= get_entity_from_eid	(id_src	);
-
-			if(!e_src)  // && !IsGameTypeSingle() added by andy because of Phantom does not have server entity
-			{
-				if( IsGameTypeSingle() ) break;
-
-				game_PlayerState* ps	= get_eid(id_src);
-				if (!ps)				break;
-				id_src					= ps->GameID;
-			}
-
-			OnHit(id_src, id_dest, tNetPacket);
-			m_server->SendBroadcast		(BroadcastCID,tNetPacket,net_flags(TRUE,TRUE));
-		}break;
-	case GAME_EVENT_CREATE_CLIENT:
-		{
-			IClient* CL					= (IClient*)m_server->ID_to_client(sender);
-			if ( CL == NULL ) { break; }
-			
-			CL->flags.bConnected		= TRUE;
-			m_server->AttachNewClient	(CL);
-		}break;
-	case GAME_EVENT_PLAYER_AUTH:
-		{
-			IClient*	CL	=	m_server->ID_to_client		(sender);
-			m_server->OnBuildVersionRespond(CL, tNetPacket);
 		}break;
 	default:
 		{

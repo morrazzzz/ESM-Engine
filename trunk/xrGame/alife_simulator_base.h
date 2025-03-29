@@ -104,7 +104,7 @@ public:
 			CSE_Abstract						*spawn_item					(LPCSTR section,		const Fvector &position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, u16 parent_id, bool registration = true);
 			void								append_item_vector			(ALife::OBJECT_VECTOR	&tObjectVector,	ALife::ITEM_P_VECTOR &tItemList);
 			shared_str							level_name					() const;
-			void								on_death					(CSE_Abstract *killed, CSE_Abstract *killer);
+			void								on_death					(CSE_Abstract*);
 
 public:
 	ALife::ITEM_P_VECTOR						m_temp_item_vector;

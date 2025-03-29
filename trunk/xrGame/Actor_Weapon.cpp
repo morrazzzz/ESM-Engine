@@ -108,12 +108,11 @@ void	CActor::HitSector(CObject* who, CObject* weapon)
 {
 	if (!g_bShowHitSectors) return;
 	if (!g_Alive()) return;
-
-	bool bShowHitSector = true;
 	
 	CEntityAlive* pEntityAlive = smart_cast<CEntityAlive*>(who);
 
-	if (!pEntityAlive || this == who) bShowHitSector = false;
+	if (!pEntityAlive || this == who) 
+		return;
 
 	if (weapon)
 	{
@@ -121,17 +120,11 @@ void	CActor::HitSector(CObject* who, CObject* weapon)
 		if (pWeapon)
 		{
 			if (pWeapon->IsSilencerAttached())
-			{
-				bShowHitSector = false;
-				if (pWeapon->IsGrenadeLauncherAttached())
-				{
-				}
-			}
+				return;
 		}
 	}
 
-	if (!bShowHitSector) return;	
-		Level().MapManager().AddMapLocation(ENEMY_HIT_SPOT, who->ID());
+	Level().MapManager().AddMapLocation(ENEMY_HIT_SPOT, who->ID());
 }
 
 void CActor::on_weapon_shot_start		(CWeapon *weapon)

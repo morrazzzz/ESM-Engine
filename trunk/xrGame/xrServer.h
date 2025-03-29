@@ -21,7 +21,7 @@ class CSE_Abstract;
 const u32	NET_Latency		= 50;		// time in (ms)
 
 // t-defs
-typedef xr_map<u16,CSE_Abstract*>	xrS_entities;
+typedef xr_unordered_map<u32,CSE_Abstract*>	xrS_entities;
 
 class xrClientData	: public IClient
 {
@@ -30,18 +30,7 @@ public:
 	BOOL					net_Ready;
 	BOOL					net_Accepted;
 	
-	BOOL					net_PassUpdates;
-	u32						net_LastMoveUpdateTime;
-	
 	game_PlayerState*		ps;
-	struct{
-		u32						m_dwLastMaxPingWarningTime;
-		u8						m_maxPingWarnings;
-	}m_ping_warn;
-	struct{
-		BOOL					m_has_admin_rights;
-		u32						m_dwLoginTime;
-	}m_admin_rights;
 
 							xrClientData			();
 	virtual					~xrClientData			();
@@ -50,18 +39,12 @@ public:
 
 
 // main
-struct	svs_respawn
-{
-	u32		timestamp;
-	u16		phantom;
-};
-IC bool operator < (const svs_respawn& A, const svs_respawn& B)	{ return A.timestamp<B.timestamp; }
 
 class xrServer	: public IPureServer  
 {
 private:
 	xrS_entities				entities;
-	xr_multiset<svs_respawn>	q_respawn;
+	xr_vector<CSE_Abstract*> EntitiesToSpawn{};
 
 	u16							m_iCurUpdatePacket;
 	xr_vector<NET_Packet>		m_aUpdatePackets;
@@ -99,17 +82,11 @@ private:
 
 private:
 	id_generator_type		m_tID_Generator;
-
-protected:
-	void					Server_Client_Check				(IClient* CL);
-	void					PerformCheckClientsForMaxPing	();
 public:
 	game_sv_GameState*		game;
 
 	void					Export_game_type		(IClient* CL);
 	void					Perform_game_export		();
-	BOOL					PerformRP				(CSE_Abstract* E);
-	void					PerformMigration		(CSE_Abstract* E, xrClientData* from, xrClientData* to);
 	
 	IC void					clear_ids				()
 	{
@@ -125,37 +102,26 @@ public:
 	}
 
 	void					Perform_connect_spawn	(CSE_Abstract* E, xrClientData* to, NET_Packet& P);
-	void					Perform_transfer		(NET_Packet &PR, NET_Packet &PT, CSE_Abstract* what, CSE_Abstract* from, CSE_Abstract* to);
 	void					Perform_reject			(CSE_Abstract* what, CSE_Abstract* from, int delta);
 	void					Perform_destroy			(CSE_Abstract* tpSE_Abstract, u32 mode);
 
-	CSE_Abstract*			Process_spawn			(NET_Packet& P, ClientID sender, BOOL bSpawnWithClientsMainEntityAsParent=FALSE, CSE_Abstract* tpExistedEntity=0);
+	CSE_Abstract*			Process_spawn			(NET_Packet& P, ClientID sender, CSE_Abstract* tpExistedEntity = 0);
 	void					Process_update			(NET_Packet& P, ClientID sender);
 	void					Process_save			(NET_Packet& P, ClientID sender);
 	void					Process_event			(NET_Packet& P, ClientID sender);
-	void					Process_event_ownership	(NET_Packet& P, ClientID sender, u32 time, u16 ID, BOOL bForced = FALSE);
+	void					Process_event_ownership	(NET_Packet& P, ClientID sender, u32 time, u16 ID);
 	bool					Process_event_reject	(NET_Packet& P, const ClientID sender, const u32 time, const u16 id_parent, const u16 id_entity, bool send_message = true);
 	void					Process_event_destroy	(NET_Packet& P, ClientID sender, u32 time, u16 ID, NET_Packet* pEPack);
 	
 	xrClientData*			SelectBestClientToMigrateTo		(CSE_Abstract* E, BOOL bForceAnother=FALSE);
-	void					SendConnectResult		(IClient* CL, u8 res, u8 res1, const char* ResultStr);
-
-	void					AttachNewClient			(IClient* CL);
-	virtual void			OnBuildVersionRespond				(IClient* CL, NET_Packet& P);
 protected:
-	bool					CheckAdminRights		(const shared_str& user, const shared_str& pass, string512 reason);
 	virtual IClient*		new_client				( SClientConnectData* cl_data );
 	
 	virtual bool			Check_ServerAccess( IClient* CL, string512& reason )	{ return true; }
 
 	virtual bool			NeedToCheckClient_GameSpy_CDKey		(IClient* CL)	{ return false; }
-	virtual void			Check_GameSpy_CDKey_Success			(IClient* CL);
-	
-	virtual bool			NeedToCheckClient_BuildVersion		(IClient* CL);
-	virtual void			Check_BuildVersion_Success			(IClient* CL);
 
 	void					SendConnectionData		(IClient* CL);
-	void					OnChatMessage			(NET_Packet* P, xrClientData* CL);
 
 public:
 	// constr / destr
@@ -166,7 +132,6 @@ public:
 	virtual u32				OnMessage			(NET_Packet& P, ClientID sender);	// Non-Zero means broadcasting with "flags" as returned
 	virtual void			OnCL_Connected		(IClient* CL);
 	virtual void			OnCL_Disconnected	(IClient* CL);
-	virtual bool			OnCL_QueryHost		();
 	virtual void			SendTo_LL			(ClientID ID, void* data, u32 size, u32 dwFlags=DPNSEND_GUARANTEED, u32 dwTimeout=0);
 
 	virtual IClient*		client_Create		();								// create client info
@@ -177,7 +142,7 @@ public:
 	// utilities
 	CSE_Abstract*			entity_Create		(LPCSTR name);
 	void					entity_Destroy		(CSE_Abstract *&P);
-	u32						GetEntitiesNum		()			{ return entities.size(); };
+	size_t						GetEntitiesNum		()			{ return entities.size(); };
 	CSE_Abstract*			GetEntity			(u32 Num);
 
 	IC void					clients_Lock		()			{	csPlayers.Enter();	}
@@ -211,6 +176,7 @@ public:
 			bool			verify_entities		() const;
 			void			verify_entity		(const CSE_Abstract *entity) const;
 #endif
+			void SpawnNewObjects();
 };
 
 #endif // !defined(AFX_XRSERVER_H__65728A25_16FC_4A7B_8CCE_D798CA5EC64E__INCLUDED_)

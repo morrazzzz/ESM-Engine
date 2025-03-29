@@ -36,8 +36,6 @@ CGameObject::CGameObject		()
 {
 	init						();
 	//-----------------------------------------
-	m_bCrPr_Activated			= false;
-	m_dwCrPr_ActivationStep		= 0;
 	m_spawn_time				= 0;
 	m_ai_location				= !g_dedicated_server ? xr_new<CAI_ObjectLocation>() : 0;
 	m_server_flags.one			();
@@ -117,8 +115,6 @@ void CGameObject::net_Destroy	()
 		Level().SetControlEntity				(0);
 	}
 
-	Level().RemoveObject_From_4CrPr(this);
-
 //.	Parent									= 0;
 
 	CScriptBinder::net_Destroy				();
@@ -132,7 +128,6 @@ void CGameObject::OnEvent		(NET_Packet& P, u16 type)
 	switch (type)
 	{
 	case GE_HIT:
-	case GE_HIT_STATISTIC:
 		{
 /*
 			u16				id,weapon_id;
@@ -165,27 +160,9 @@ void CGameObject::OnEvent		(NET_Packet& P, u16 type)
 			HDS.PACKET_TYPE = type;
 			HDS.Read_Packet_Cont(P);
 //			Msg("Hit received: %d[%d,%d]", HDS.whoID, HDS.weaponID, HDS.BulletID);
-			CObject*	Hitter = Level().Objects.net_Find(HDS.whoID);
-			CObject*	Weapon = Level().Objects.net_Find(HDS.weaponID);
+			CObject* Hitter = Level().Objects.net_Find(HDS.whoID);
 			HDS.who		= Hitter;
-			//-------------------------------------------------------
-			switch (HDS.PACKET_TYPE)
-			{
-			case GE_HIT_STATISTIC:
-				{
-					if (GameID() != GAME_SINGLE)
-						Game().m_WeaponUsageStatistic->OnBullet_Check_Request(&HDS);
-				}break;
-			default:
-				{
-				}break;
-			}
-			SetHitInfo(Hitter, Weapon, HDS.bone(), HDS.p_in_bone_space, HDS.dir);
 			Hit				(&HDS);
-			//---------------------------------------------------------------------------
-			if (GameID() != GAME_SINGLE)
-				Game().m_WeaponUsageStatistic->OnBullet_Check_Result(false);
-			//---------------------------------------------------------------------------
 		}
 		break;
 	case GE_DESTROY:
@@ -228,10 +205,8 @@ BOOL CGameObject::net_Spawn		(CSE_Abstract*	DC)
 	if (E->name_replace()[0])
 		cName_set					(E->name_replace());
 
-	setID							(E->ID);
-//	if (GameID() != GAME_SINGLE)
-//		Msg ("CGameObject::net_Spawn -- object %s[%x] setID [%d]", *(E->s_name), this, E->ID);
-//	R_ASSERT(Level().Objects.net_Find(E->ID) == NULL);
+	if (!E->ObjectCustomSpawn)
+		setID(E->ID);
 	
 	// XForm
 	XFORM().setXYZ					(E->o_Angle);
@@ -255,7 +230,9 @@ BOOL CGameObject::net_Spawn		(CSE_Abstract*	DC)
 		m_story_id					= O->m_story_id;
 
 	setReady						(TRUE);
-	g_pGameLevel->Objects.net_Register	(this);
+
+	if (!E->ObjectCustomSpawn)
+		g_pGameLevel->Objects.net_Register(this);
 
 	m_server_flags.one				();
 	if (O) {

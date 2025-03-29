@@ -86,7 +86,7 @@ class CALifeSmartTerrainTask;
 		DEFINE_LUA_WRAPPER_METHOD_0			(g_team,	u8)\
 		DEFINE_LUA_WRAPPER_METHOD_0			(g_squad,	u8)\
 		DEFINE_LUA_WRAPPER_METHOD_0			(g_group,	u8)\
-		DEFINE_LUA_WRAPPER_METHOD_V1		(on_death,	CSE_Abstract*)
+		DEFINE_LUA_WRAPPER_METHOD_V0		(on_death)
 #else // XRGAME_EXPORTS
 #	define INHERIT_CREATURE \
 		INHERIT_DYNAMIC_ALIFE\

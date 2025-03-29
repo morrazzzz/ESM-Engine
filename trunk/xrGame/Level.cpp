@@ -85,12 +85,7 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 		m_map_manager				= NULL;
 
 //	m_pFogOfWarMngr				= xr_new<CFogOfWarMngr>();
-//----------------------------------------------------
-	m_bNeed_CrPr				= false;
-	m_bIn_CrPr					= false;
-	m_dwNumSteps				= 0;
 	m_dwDeltaUpdate				= u32(fixed_step*1000);
-	m_dwLastNetUpdateTime		= 0;
 	//VERIFY						( physics_world() );
 	//physics_world()->set_step_time_callback((PhysicsStepTimeCallback*) &PhisStepsCallback);
 	//physics_step_time_callback	= (PhysicsStepTimeCallback*) &PhisStepsCallback;
@@ -127,21 +122,8 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 
 #ifdef DEBUG
 	m_bSynchronization			= false;
-#endif	
-	//---------------------------------------------------------
-	pStatGraphR = NULL;
-	pStatGraphS = NULL;
-	//---------------------------------------------------------
-	pObjects4CrPr.clear();
-	pActors4CrPr.clear();
-	//---------------------------------------------------------
+#endif
 	pCurrentControlEntity = NULL;
-
-	//---------------------------------------------------------
-	m_dwCL_PingLastSendTime = 0;
-	m_dwCL_PingDeltaSend = 1000;
-	m_dwRealPing = 0;
-
 	//---------------------------------------------------------	
 	m_sDemoName[0] = 0;
 	m_bDemoSaveMode = FALSE;
@@ -247,16 +229,9 @@ CLevel::~CLevel()
 //	xr_delete					(m_pFogOfWar);
 	//destroy bullet manager
 	xr_delete					(m_pBulletManager);
-	//-----------------------------------------------------------
-	xr_delete					(pStatGraphR);
-	xr_delete					(pStatGraphS);
 
-	//-----------------------------------------------------------
 	xr_delete					(m_ph_commander);
 	xr_delete					(m_ph_commander_scripts);
-	//-----------------------------------------------------------
-	pObjects4CrPr.clear();
-	pActors4CrPr.clear();
 
 	ai().unload					();
 	//-----------------------------------------------------------	
@@ -345,38 +320,11 @@ void CLevel::cl_Process_Event				(u16 dest, u16 type, NET_Packet& P)
 		Msg("! ERROR: c_EVENT[%d] : non-game-object",dest);
 		return;
 	}
-	if (type != GE_DESTROY_REJECT)
-	{
-		if (type == GE_DESTROY)
-			Game().OnDestroy(GO);
-		GO->OnEvent		(P,type);
-	}
-	else { // handle GE_DESTROY_REJECT here
-		u32				pos = P.r_tell();
-		u16				id = P.r_u16();
-		P.r_seek		(pos);
 
-		bool			ok = true;
+	if (type == GE_DESTROY)
+		Game().OnDestroy(GO);
 
-		CObject			*D	= Objects.net_Find	(id);
-		if (0==D)		{
-			Msg			("! ERROR: c_EVENT[%d] : unknown dest",id);
-			ok			= false;
-		}
-
-		CGameObject		*GD = smart_cast<CGameObject*>(D);
-		if (!GD)		{
-			Msg			("! ERROR: c_EVENT[%d] : non-game-object",id);
-			ok			= false;
-		}
-
-		GO->OnEvent		(P,GE_OWNERSHIP_REJECT);
-		if (ok)
-		{
-			Game().OnDestroy(GD);
-			GD->OnEvent	(P,GE_DESTROY);
-		};
-	}
+	GO->OnEvent		(P,type);
 };
 
 void CLevel::ProcessGameEvents		()
@@ -391,12 +339,6 @@ void CLevel::ProcessGameEvents		()
 
 		switch (ID)
 		{
-		case M_SPAWN:
-		{
-			u16 dummy16;
-			P.r_begin(dummy16);
-			cl_Process_Spawn(P);
-		}break;
 		case M_EVENT:
 		{
 			cl_Process_Event(dest, type, P);
@@ -444,31 +386,18 @@ void CLevel::OnFrame	()
 	Device.Statistic->BulletManager.End			();
 
 	// Client receive
-	if (net_isDisconnected())	
-	{
-		if (OnClient() && GameID() != GAME_SINGLE) 
-			ClearAllObjects();
+	Device.Statistic->netClient1.Begin();
 
-		Engine.Event.Defer				("kernel:disconnect");
-		return;
-	} else {
+	ClientReceive();
 
-		Device.Statistic->netClient1.Begin();
-
-		ClientReceive					();
-
-		Device.Statistic->netClient1.End	();
-	}
+	Device.Statistic->netClient1.End();
 
 //	CTimer T;
 //	T.Start();
 
 	ProcessGameEvents	();
 
-//	Msg("ProcessGameEvents: %fms", T.GetElapsed_sec() * 1000.f);
-
-
-	if (m_bNeed_CrPr)					make_NetCorrectionPrediction();
+	Server->SpawnNewObjects();
 
 	if (g_mt_config.test(mtMap))
 		Device.seqParallel.emplace_back(fastdelegate::FastDelegate0(m_map_manager, &CMapManager::Update));
@@ -515,16 +444,6 @@ void CLevel::OnFrame	()
 		g_SpatialSpace->UpdateSpatialMove();
 		g_SpatialSpacePhysic->UpdateSpatialMove();
 	}
-
-	//-----------------------------------------------------
-	if (pStatGraphR)
-	{	
-		static	float fRPC_Mult = 10.0f;
-		static	float fRPS_Mult = 1.0f;
-
-		pStatGraphR->AppendItem(float(m_dwRPC)*fRPC_Mult, 0xffff0000, 1);
-		pStatGraphR->AppendItem(float(m_dwRPS)*fRPS_Mult, 0xff00ff00, 0);
-	};
 }
 
 int		psLUA_GCSTEP					= 10			;
@@ -681,139 +600,9 @@ void CLevel::OnEvent(EVENT E, u64 P1, u64 /**P2/**/)
 	} else return;
 }
 
-void	CLevel::AddObject_To_Objects4CrPr	(CGameObject* pObj)
-{
-	if (!pObj) return;
-	for	(OBJECTS_LIST_it OIt = pObjects4CrPr.begin(); OIt != pObjects4CrPr.end(); OIt++)
-	{
-		if (*OIt == pObj) return;
-	}
-	pObjects4CrPr.push_back(pObj);
-
-}
-void	CLevel::AddActor_To_Actors4CrPr		(CGameObject* pActor)
-{
-	if (!pActor) return;
-	if (pActor->CLS_ID != CLSID_OBJECT_ACTOR) return;
-	for	(OBJECTS_LIST_it AIt = pActors4CrPr.begin(); AIt != pActors4CrPr.end(); AIt++)
-	{
-		if (*AIt == pActor) return;
-	}
-	pActors4CrPr.push_back(pActor);
-}
-
-void	CLevel::RemoveObject_From_4CrPr		(CGameObject* pObj)
-{
-	if (!pObj) return;
-	
-	OBJECTS_LIST_it OIt = std::find(pObjects4CrPr.begin(), pObjects4CrPr.end(), pObj);
-	if (OIt != pObjects4CrPr.end())
-	{
-		pObjects4CrPr.erase(OIt);
-	}
-
-	OBJECTS_LIST_it AIt = std::find(pActors4CrPr.begin(), pActors4CrPr.end(), pObj);
-	if (AIt != pActors4CrPr.end())
-	{
-		pActors4CrPr.erase(AIt);
-	}
-}
-
-void CLevel::make_NetCorrectionPrediction	()
-{
-	m_bNeed_CrPr	= false;
-	m_bIn_CrPr		= true;
-	u64 NumPhSteps = physics_world()->StepsNum();
-	physics_world()->StepsNum() -= m_dwNumSteps;
-	if(ph_console::g_bDebugDumpPhysicsStep&&m_dwNumSteps>10)
-	{
-		Msg("!!!TOO MANY PHYSICS STEPS FOR CORRECTION PREDICTION = %d !!!",m_dwNumSteps);
-		m_dwNumSteps = 10;
-	};
-//////////////////////////////////////////////////////////////////////////////////
-	physics_world()->Freeze();
-
-	//setting UpdateData and determining number of PH steps from last received update
-	for	(OBJECTS_LIST_it OIt = pObjects4CrPr.begin(); OIt != pObjects4CrPr.end(); OIt++)
-	{
-		CGameObject* pObj = *OIt;
-		if (!pObj) continue;
-		pObj->PH_B_CrPr();
-	};
-//////////////////////////////////////////////////////////////////////////////////
-	//first prediction from "delivered" to "real current" position
-	//making enought PH steps to calculate current objects position based on their updated state	
-	
-	for (u32 i =0; i<m_dwNumSteps; i++)	
-	{
-		physics_world()->Step();
-
-		for	(OBJECTS_LIST_it AIt = pActors4CrPr.begin(); AIt != pActors4CrPr.end(); AIt++)
-		{
-			CGameObject* pActor = *AIt;
-			if (!pActor || pActor->CrPr_IsActivated()) continue;
-			pActor->PH_B_CrPr();
-		};
-	};
-//////////////////////////////////////////////////////////////////////////////////
-	for	(OBJECTS_LIST_it OIt = pObjects4CrPr.begin(); OIt != pObjects4CrPr.end(); OIt++)
-	{
-		CGameObject* pObj = *OIt;
-		if (!pObj) continue;
-		pObj->PH_I_CrPr();
-	};
-//////////////////////////////////////////////////////////////////////////////////
-	if (!InterpolationDisabled())
-	{
-		for (u32 i =0; i<lvInterpSteps; i++)	//second prediction "real current" to "future" position
-		{
-			physics_world()->Step();
-		}
-		//////////////////////////////////////////////////////////////////////////////////
-		for	(OBJECTS_LIST_it OIt = pObjects4CrPr.begin(); OIt != pObjects4CrPr.end(); ++OIt)
-		{
-			CGameObject* pObj = *OIt;
-			if (!pObj) continue;
-			pObj->PH_A_CrPr();
-		};
-	};
-	physics_world()->UnFreeze();
-
-	physics_world()->StepsNum() = NumPhSteps;
-	m_dwNumSteps = 0;
-	m_bIn_CrPr = false;
-
-	pObjects4CrPr.clear();
-	pActors4CrPr.clear();
-};
-
 u32			CLevel::GetInterpolationSteps	()
 {
 	return lvInterpSteps;
-};
-
-void		CLevel::UpdateDeltaUpd	( u32 LastTime )
-{
-	u32 CurrentDelta = LastTime - m_dwLastNetUpdateTime;
-	if (CurrentDelta < m_dwDeltaUpdate) 
-		CurrentDelta = iFloor(float(m_dwDeltaUpdate * 10 + CurrentDelta) / 11);
-
-	m_dwLastNetUpdateTime = LastTime;
-	m_dwDeltaUpdate = CurrentDelta;
-
-	if (0 == g_cl_lvInterp) ReculcInterpolationSteps();
-	else 
-		if (g_cl_lvInterp>0)
-		{
-			lvInterpSteps = iCeil(g_cl_lvInterp / fixed_step);
-		}
-};
-
-void		CLevel::ReculcInterpolationSteps ()
-{
-	lvInterpSteps			= iFloor(float(m_dwDeltaUpdate) / (fixed_step*1000));
-	if (lvInterpSteps > 60) lvInterpSteps = 60;
-	if (lvInterpSteps < 3)	lvInterpSteps = 3;
 };
 
 bool		CLevel::InterpolationDisabled	()
@@ -837,17 +626,6 @@ void 		CLevel::PhisStepsCallback		( u32 Time0, u32 Time1 )
 		}
 	};
 	*/
-};
-
-void				CLevel::SetNumCrSteps		( u32 NumSteps )
-{
-	m_bNeed_CrPr = true;
-	if (m_dwNumSteps > NumSteps) return;
-	m_dwNumSteps = NumSteps;
-	if (m_dwNumSteps > 1000000)
-	{
-		VERIFY(0);
-	}
 };
 
 
@@ -923,11 +701,6 @@ void CLevel::SetGameTime(ALife::_TIME_ID GameTime)
 */
 bool CLevel::IsServer ()
 {
-//	return (!!Server);
-	if (IsDemoPlay())
-	{
-		return IsServerDemo();
-	};	
 	if (!Server) return false;
 	return (Server->client_Count() != 0);
 
@@ -935,17 +708,8 @@ bool CLevel::IsServer ()
 
 bool CLevel::IsClient ()
 {
-//	return (!Server);
-	if (IsDemoPlay())
-	{
-		return IsClientDemo();
-	};	
 	if (!Server) return true;
 	return (Server->client_Count() == 0);
-}
-
-void CLevel::OnSessionTerminate		(LPCSTR reason)
-{
 }
 
 u32	GameID()
@@ -957,15 +721,6 @@ bool	IsGameTypeSingle()
 {
 	return g_pGamePersistent->GameType()==GAME_SINGLE || g_pGamePersistent->GameType()==GAME_ANY;
 }
-
-#ifdef BATTLEYE
-
-bool CLevel::TestLoadBEClient()
-{
-	return battleye_system.TestLoadClient();
-}
-
-#endif // BATTLEYE
 
 GlobalFeelTouch::GlobalFeelTouch()
 {

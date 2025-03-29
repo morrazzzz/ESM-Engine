@@ -351,33 +351,10 @@ void game_cl_ArtefactHunt::LoadSndMessages()
 
 void	game_cl_ArtefactHunt::OnBuySpawnMenu_Ok		()
 {
-	CObject* curr = Level().CurrentEntity();
-	if (!curr) return;
-	CGameObject* GO = smart_cast<CGameObject*>(curr);
-	NET_Packet			P;
-	GO->u_EventGen		(P,GE_GAME_EVENT,GO->ID()	);
-	P.w_u16(GAME_EVENT_PLAYER_BUY_SPAWN);
-	GO->u_EventSend			(P);
 };
 
 void	game_cl_ArtefactHunt::OnSellItemsFromRuck		()
 {
-	if (!local_player || local_player->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD) || !local_player->testFlag(GAME_PLAYER_FLAG_ONBASE)) return;
-	CActor* pCurActor = smart_cast<CActor*> (Level().Objects.net_Find	(local_player->GameID));
-	if (!pCurActor) return;
-	
-	TIItemContainer::const_iterator	IRuck = pCurActor->inventory().m_ruck.begin();
-	TIItemContainer::const_iterator	ERuck = pCurActor->inventory().m_ruck.end();
-
-	NET_Packet	P;
-	pCurActor->u_EventGen(P, GEG_PLAYER_ITEM_SELL, pCurActor->ID());
-	P.w_u16(u16(pCurActor->inventory().m_ruck.size() & 0xffff));
-	for ( ; IRuck != ERuck; ++IRuck) 
-	{		
-		PIItem pItem = *IRuck;
-		P.w_u16		(pItem->object().ID());		
-	};	
-	pCurActor->u_EventSend(P);
 };
 
 void			game_cl_ArtefactHunt::SendPickUpEvent		(u16 ID_who, u16 ID_what)

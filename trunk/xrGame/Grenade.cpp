@@ -173,12 +173,7 @@ void CGrenade::PutNextToSlot()
 	//выкинуть гранату из инвентаря
 	if (m_pCurrentInventory)
 	{
-		NET_Packet						P;
 		m_pCurrentInventory->Ruck		(this);
-
-		this->u_EventGen				(P, GEG_PLAYER_ITEM2RUCK, this->H_Parent()->ID());
-		P.w_u16							(this->ID());
-		this->u_EventSend				(P);
 
 		CGrenade *pNext					= smart_cast<CGrenade*>(	m_pCurrentInventory->Same(this,true)		);
 		if(!pNext) 
@@ -186,14 +181,8 @@ void CGrenade::PutNextToSlot()
 
 		VERIFY							(pNext != this);
 
-		if(pNext && m_pCurrentInventory->Slot(pNext) )
-		{
-			pNext->u_EventGen			(P, GEG_PLAYER_ITEM2SLOT, pNext->H_Parent()->ID());
-			P.w_u16						(pNext->ID());
-			pNext->u_EventSend			(P);
+		if(pNext && m_pCurrentInventory->Slot(pNext))
 			m_pCurrentInventory->SetActiveSlot(pNext->GetSlot());
-		}
-/////	m_thrown				= false;
 	}
 }
 
@@ -211,8 +200,6 @@ void CGrenade::UpdateCL()
 {
 	inherited::UpdateCL			();
 	CExplosive::UpdateCL		();
-
-	if(!IsGameTypeSingle())	make_Interpolation();
 }
 
 

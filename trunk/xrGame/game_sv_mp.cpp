@@ -163,48 +163,7 @@ void game_sv_mp::OnRoundEnd()
 
 
 void	game_sv_mp::KillPlayer				(ClientID id_who, u16 GameID)
-{
-	CObject* pObject =  Level().Objects.net_Find(GameID);
-	if (!pObject || pObject->CLS_ID != CLSID_OBJECT_ACTOR) return;
-	// Remove everything	
-	xrClientData* xrCData	=	m_server->ID_to_client(id_who);
-	
-	if (xrCData && xrCData->ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD)) return;
-	if (xrCData) 
-	{
-		//-------------------------------------------------------
-		OnPlayerKillPlayer(xrCData->ps, xrCData->ps, KT_HIT, SKT_NONE, NULL);
-		xrCData->ps->m_bClearRun = false;
-	};
-	//-------------------------------------------------------
-	CActor* pActor = smart_cast <CActor*>(pObject);
-	if (pActor)
-	{
-		if (!pActor->g_Alive())
-		{
-			return;
-		}
-		pActor->set_death_time		();
-		pActor->m_bAllowDeathRemove = true;
-		m_CorpseList.push_back(pActor->ID());
-	}
-	//-------------------------------------------------------
-	u16 PlayerID = (xrCData != 0) ? xrCData->ps->GameID : GameID;
-	//-------------------------------------------------------
-	SendPlayerKilledMessage(PlayerID, KT_HIT, PlayerID, 0, SKT_NONE);
-	//-------------------------------------------------------
-	// Kill Player on all clients
-	NET_Packet			P;
-	u_EventGen(P, GE_DIE, PlayerID);
-	P.w_u16				(PlayerID);
-	P.w_clientID		(id_who);
-
-	u_EventSend(P, net_flags(TRUE, TRUE, FALSE, TRUE));
-	
-	if (xrCData) SetPlayersDefItems		(xrCData->ps);
-	signal_Syncronize();
-	//-------------------------------------------------------	
-	
+{	
 };
 
 
@@ -367,57 +326,7 @@ void	game_sv_mp::RespawnPlayer			(ClientID id_who, bool NoSpectator)
 
 void	game_sv_mp::SpawnPlayer(ClientID id, LPCSTR N)
 {
-	xrClientData* CL	= m_server->ID_to_client(id);
-	//-------------------------------------------------
-	CL->net_PassUpdates = TRUE;
-	//-------------------------------------------------
-	game_PlayerState*	ps_who	=	CL->ps;
-	ps_who->setFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD);
 	
-	// Spawn "actor"
-	CSE_Abstract*	E				=	spawn_begin	(N);													// create SE
-	
-	E->set_name_replace		( get_name_id(id) );					// name
-
-	E->s_flags.assign		(M_SPAWN_OBJECT_LOCAL | M_SPAWN_OBJECT_ASPLAYER);	// flags
-
-	CSE_ALifeCreatureActor	*pA	=	smart_cast<CSE_ALifeCreatureActor*>(E);
-	CSE_Spectator			*pS	=	smart_cast<CSE_Spectator*>(E);
-
-	R_ASSERT2	(pA || pS,"Respawned Client is not Actor nor Spectator");
-	
-	if (pA) 
-	{
-		pA->s_team				=	u8(ps_who->team);
-		assign_RP				(pA, ps_who);
-		SetSkin					(E, pA->s_team, ps_who->skin);
-		ps_who->resetFlag		(GAME_PLAYER_FLAG_VERY_VERY_DEAD);
-
-		if (!ps_who->RespawnTime)
-			OnPlayerEnteredGame(id);
-
-		ps_who->RespawnTime = Device.dwTimeGlobal;
-
-		Game().m_WeaponUsageStatistic->OnPlayerSpawned(ps_who);
-	}
-	else
-		if (pS)
-		{
-			Fvector Pos, Angle;
-			if (!GetPosAngleFromActor(id, Pos, Angle)) assign_RP				(E, ps_who);
-			else
-			{
-				E->o_Angle.set(Angle);
-				E->o_Position.set(Pos);				
-			}
-		};
-	
-	Msg		("* %s respawned as %s", get_name_id(id) , (0 == pA) ? "spectator" : "actor");
-	spawn_end				(E,id);
-
-	ps_who->SetGameID(CL->owner->ID);
-
-	signal_Syncronize();
 }
 
 void game_sv_mp::AllowDeadBodyRemove(ClientID id, u16 GameID)
@@ -566,7 +475,6 @@ void	game_sv_mp::SpawnWeapon4Actor		(u16 actorId,  LPCSTR N, u8 Addons)
 	CSE_Abstract			*E	=	spawn_begin	(N);
 	E->ID_Parent = actorId;
 
-	E->s_flags.assign		(M_SPAWN_OBJECT_LOCAL);	// flags
 	/////////////////////////////////////////////////////////////////////////////////
 	//если это оружие - спавним его с полным магазином
 	CSE_ALifeItemWeapon		*pWeapon	=	smart_cast<CSE_ALifeItemWeapon*>(E);
@@ -1416,11 +1324,4 @@ void game_sv_mp::DumpRoundStatistics()
 
 void game_sv_mp::SvSendChatMessage(LPCSTR str)
 {
-	NET_Packet			P;	
-	P.w_begin			(M_CHAT_MESSAGE);
-	P.w_s16				(0);
-	P.w_stringZ			("ServerAdmin");
-	P.w_stringZ			(str);
-	P.w_s16				(0);
-	u_EventSend			(P);
 }

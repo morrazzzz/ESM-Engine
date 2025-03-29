@@ -512,12 +512,8 @@ void CUICarBodyWnd::EatItem()
 					Actor()->ID(), //to
 					CurrentIItem()->object().ID());
 	}
-
-	NET_Packet					P;
-	CGameObject::u_EventGen		(P, GEG_PLAYER_ITEM_EAT, Actor()->ID());
-	P.w_u16						(CurrentIItem()->object().ID());
-	CGameObject::u_EventSend	(P);
-
+	
+	m_pOurObject->inventory().Eat(CurrentIItem());
 }
 
 

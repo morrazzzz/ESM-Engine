@@ -99,31 +99,6 @@ void CActor::OnEvent		(NET_Packet& P, u16 type)
 				CurrentGameUI()->ReInitShownUI();
 		}
 		break;
-	case GE_INV_ACTION:
-		{
-			s32 cmd;
-			P.r_s32		(cmd);
-			u32 flags;
-			P.r_u32		(flags);
-			s32 ZoomRndSeed = P.r_s32();
-			s32 ShotRndSeed = P.r_s32();
-									
-			if (flags & CMD_START)
-			{
-				if (cmd == kWPN_ZOOM)
-					SetZoomRndSeed(ZoomRndSeed);
-				if (cmd == kWPN_FIRE)
-					SetShotRndSeed(ShotRndSeed);
-				IR_OnKeyboardPress(cmd);
-			}
-			else
-				IR_OnKeyboardRelease(cmd);
-		}
-		break;
-	case GEG_PLAYER_ITEM2SLOT:
-	case GEG_PLAYER_ITEM2BELT:
-	case GEG_PLAYER_ITEM2RUCK:
-	case GEG_PLAYER_ITEM_EAT:
 	case GEG_PLAYER_ACTIVATEARTEFACT:
 		{
 			P.r_u16		(id);
@@ -138,18 +113,6 @@ void CActor::OnEvent		(NET_Packet& P, u16 type)
 			}
 			switch (type)
 			{
-			case GEG_PLAYER_ITEM2SLOT:	 
-				inventory().Slot(smart_cast<CInventoryItem*>(O)); 
-				break;
-			case GEG_PLAYER_ITEM2BELT:	 
-				inventory().Belt(smart_cast<CInventoryItem*>(O)); 
-				break;
-			case GEG_PLAYER_ITEM2RUCK:	 
-				inventory().Ruck(smart_cast<CInventoryItem*>(O)); 
-				break;
-			case GEG_PLAYER_ITEM_EAT:	 
-				inventory().Eat(smart_cast<CInventoryItem*>(O)); 
-				break;
 			case GEG_PLAYER_ACTIVATEARTEFACT:
 				{
 					CArtefact* pArtefact		= smart_cast<CArtefact*>(O);
@@ -157,34 +120,11 @@ void CActor::OnEvent		(NET_Packet& P, u16 type)
 				}break;
 			}
 		}break;
-	case GEG_PLAYER_ACTIVATE_SLOT:
-		{
-			u32							slot_id;
-			P.r_u32						(slot_id);
-
-			inventory().Activate		(slot_id);
-								  
-		}break;
-
 	case GEG_PLAYER_WEAPON_HIDE_STATE:
 		{
 			u32 State		= P.r_u32();
 			BOOL	Set		= !!P.r_u8();
 			inventory().SetSlotsBlocked	((u16)State, !!Set);
-		}break;
-	case GE_MOVE_ACTOR:
-		{
-			Fvector NewPos, NewRot;
-			P.r_vec3(NewPos);
-			P.r_vec3(NewRot);
-			
-			MoveActor(NewPos, NewRot);
-		}break;
-	case GE_ACTOR_MAX_POWER:
-		{
-			conditions().MaxPower();
-			conditions().ClearWounds();
-			ClearBloodWounds();
 		}break;
 	case GEG_PLAYER_ATTACH_HOLDER:
 		{
@@ -206,23 +146,6 @@ void CActor::OnEvent		(NET_Packet& P, u16 type)
 			CGameObject*	GO	= smart_cast<CGameObject*>(m_holder);
 			VERIFY			(id==GO->ID());
 			use_Holder		(NULL);
-		}break;
-	case GEG_PLAYER_PLAY_HEADSHOT_PARTICLE:
-		{
-			OnPlayHeadShotParticle(P);
-		}break;
-	case GE_ACTOR_JUMPING:
-		{
-			/*
-			Fvector dir;
-			P.r_dir(dir);
-			float jump = P.r_float();
-			NET_SavedAccel = dir;
-			extern float NET_Jump;
-			NET_Jump = jump;
-			m_bInInterpolation = false;
-			mstate_real |= mcJump;
-			*/
 		}break;
 	}
 }

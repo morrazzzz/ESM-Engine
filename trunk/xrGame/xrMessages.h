@@ -1,6 +1,3 @@
-#ifndef _INCDEF_XRMESSAGES_H_
-#define _INCDEF_XRMESSAGES_H_
-
 #pragma once
 
 // CL	== client 2 server message
@@ -14,18 +11,13 @@ enum {
 	M_SV_CONFIG_GAME,
 	M_SV_CONFIG_FINISHED,
 
-	M_MIGRATE_DEACTIVATE,		// TO:   Changing server, just deactivate
-	M_MIGRATE_ACTIVATE,			// TO:   Changing server, full state
-
 	M_CHAT,						// DUAL:
 
 	M_EVENT,					// Game Event
-	M_CL_INPUT,					// Client Input Data
 	M_CLIENTREADY,				// Client has finished to load level and are ready to play
 	
 	M_CHANGE_LEVEL,				// changing level
 	M_LOAD_GAME,
-	M_RELOAD_GAME,
 	M_SAVE_GAME,
 	M_SAVE_PACKET,
 
@@ -36,90 +28,45 @@ enum {
 	//-----------------------------------------------------
 	M_GAMESPY_CDKEY_VALIDATION_CHALLENGE,
 	M_GAMESPY_CDKEY_VALIDATION_CHALLENGE_RESPOND,
-	M_CLIENT_CONNECT_RESULT,
 	M_CLIENT_REQUEST_CONNECTION_DATA,
 
-	M_CHAT_MESSAGE,
-	M_CLIENT_WARN,
-	M_CHANGE_LEVEL_GAME,
-	//-----------------------------------------------------
-	M_CL_PING_CHALLENGE,
-	M_CL_PING_CHALLENGE_RESPOND,
-	//-----------------------------------------------------
-	M_AUTH_CHALLENGE,
-	M_CL_AUTH,
 	M_BULLET_CHECK_RESPOND,
 	//-----------------------------------------------------
 	M_STATISTIC_UPDATE,
 	M_STATISTIC_UPDATE_RESPOND,
 	//-----------------------------------------------------
-	M_PLAYER_FIRE,
-	//-----------------------------------------------------
-	M_MOVE_PLAYERS,
-	M_MOVE_PLAYERS_RESPOND,
-	//-----------------------------------------------------
 	M_CHANGE_SELF_NAME,
-	M_REMOTE_CONTROL_AUTH,
-	M_REMOTE_CONTROL_CMD,
-	M_BATTLEYE,
 	M_MAP_SYNC,
 
 	MSG_FORCEDWORD				= u32(-1)
 };
 
 enum {
-	GE_RESPAWN,
 	GE_OWNERSHIP_TAKE,			// DUAL: Client request for ownership of an item
-	GE_OWNERSHIP_TAKE_MP_FORCED,
 	GE_OWNERSHIP_REJECT,		// DUAL: Client request ownership rejection
-	GE_TRANSFER_AMMO,			// DUAL: Take ammo out of weapon for our weapon
 	GE_HIT,						//
-	GE_DIE,						//
 	GE_ASSIGN_KILLER,			//
 	GE_DESTROY,					// authorative client request for entity-destroy
-	GE_DESTROY_REJECT,			// GE_DESTROY + GE_OWNERSHIP_REJECT
 	GE_TELEPORT_OBJECT,
 
 	GE_ADD_RESTRICTION,
 	GE_REMOVE_RESTRICTION,
 	GE_REMOVE_ALL_RESTRICTIONS,
 
-	GE_BUY,
-
-
 	GE_INFO_TRANSFER,			//transfer _new_ info on PDA
 	
 	GE_TRADE_SELL,
 	GE_TRADE_BUY,
 
-	GE_WPN_AMMO_ADD,
 	GE_WPN_STATE_CHANGE,
-
-	GE_ADDON_ATTACH,
-	GE_ADDON_DETACH,
-	GE_ADDON_CHANGE,
-	
-	GE_INV_ACTION,				//a action beign taken on inventory
 
 	GE_ZONE_STATE_CHANGE,
 
-	GE_MOVE_ACTOR,				//move actor to desired position instantly
-	GE_ACTOR_JUMPING,			//actor press jump key
-	GE_ACTOR_MAX_POWER,
-
 	GE_CHANGE_POS,
-
-	GE_GAME_EVENT,
 
 	GE_CHANGE_VISUAL,
 	GE_MONEY,
 
-	GEG_PLAYER_ACTIVATE_SLOT,
-	GEG_PLAYER_ITEM2SLOT,
-	GEG_PLAYER_ITEM2BELT,
-	GEG_PLAYER_ITEM2RUCK,
-	GEG_PLAYER_ITEM_EAT,
-	GEG_PLAYER_ITEM_SELL,
 	GEG_PLAYER_ACTIVATEARTEFACT,
 
 	GEG_PLAYER_WEAPON_HIDE_STATE,
@@ -127,15 +74,8 @@ enum {
 	GEG_PLAYER_ATTACH_HOLDER,
 	GEG_PLAYER_DETACH_HOLDER,
 
-	GEG_PLAYER_PLAY_HEADSHOT_PARTICLE,
-	//-------------------------------------
-	GE_HIT_STATISTIC,
-	//-------------------------------------
-	GE_KILL_SOMEONE,
-
 	GE_FREEZE_OBJECT,
 	GE_LAUNCH_ROCKET,
-	GE_CLEAR_SAVED_BONES,
 
 	GE_FORCEDWORD				= u32(-1)
 };
@@ -174,8 +114,6 @@ enum EGameMessages {  //game_cl <----> game_sv messages
 	GAME_EVENT_TEAM_MENU_CLOSED		,
 	GAME_EVENT_SKIN_MENU_CLOSED		,
 
-	GAME_EVENT_CREATE_CLIENT,
-	GAME_EVENT_ON_HIT,
 	GAME_EVENT_ON_TOUCH,
 
 	GAME_EVENT_VOTE_START,
@@ -185,7 +123,6 @@ enum EGameMessages {  //game_cl <----> game_sv messages
 	GAME_EVENT_VOTE_END,
 //	GAME_EVENT_VOTE_PLAYER_VOTED,
 
-	GAME_EVENT_PLAYER_AUTH,
 	GAME_EVENT_PLAYER_NAME,
 
 	GAME_EVENT_SPEECH_MESSAGE,
@@ -213,5 +150,3 @@ enum
 
 	M_SPAWN_OBJECT_FORCEDWORD	= u32(-1)
 };
-
-#endif /*_INCDEF_XRMESSAGES_H_*/

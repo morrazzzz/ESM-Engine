@@ -97,7 +97,6 @@ BOOL CLevel::Load_GameSpecific_After()
 			ai().script_engine().add_script_process(ScriptEngine::eScriptProcessorLevel,xr_new<CScriptProcess>("level",""));
 	}
 		
-	BlockCheatLoad();
 	return TRUE;
 }
 
@@ -184,9 +183,4 @@ void CLevel::Load_GameSpecific_CFORM	( CDB::TRI* tris, u32 count )
 			Debug.fatal					(DEBUG_INFO,"Game material '%d' not found",(*I).material);
 		}
 	}
-}
-
-void CLevel::BlockCheatLoad()
-{
-	if( game && (GameID() != GAME_SINGLE) ) phTimefactor=1.f;
 }

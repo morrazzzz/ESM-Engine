@@ -81,7 +81,6 @@ public:
 	virtual		void				OnPlayerHitPlayer		(u16 id_hitter, u16 id_hitted, NET_Packet& P);
 	virtual		void				OnPlayerHitPlayer_Case	(game_PlayerState* ps_hitter, game_PlayerState* ps_hitted, SHit* pHitS);	
 	virtual		void				OnPlayerKillPlayer		(game_PlayerState* ps_killer, game_PlayerState* ps_killed, KILL_TYPE KillType, SPECIAL_KILL_TYPE SpecialKillType, CSE_Abstract* pWeaponA);
-	virtual		void				OnPlayerFire			(ClientID id_who, NET_Packet &P) {};
 	virtual		void				Victim_Exp				(game_PlayerState* pVictim) {};
 	virtual		void				UpdateTeamScore			(game_PlayerState* ps_killer, s16 OldKills) {};
 	virtual		void				OnPlayerReady			(ClientID id_who);
@@ -103,7 +102,7 @@ public:
 	
 	void							OnArtefactOnBase		(ClientID id_who);
 
-	virtual		BOOL				OnTouch					(u16 eid_who, u16 eid_what, BOOL bForced = FALSE);
+	virtual		BOOL				OnTouch					(u16 eid_who, u16 eid_what);
 	virtual		void				OnDetach				(u16 eid_who, u16 eid_what);
 	virtual		void				OnCreate				(u16 id_who);
 

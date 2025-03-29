@@ -167,14 +167,6 @@ protected:
 
 	////////// network //////////////////////////////////////////////////
 public:
-	virtual void				make_Interpolation	();
-	virtual void				PH_B_CrPr			(); // actions & operations before physic correction-prediction steps
-	virtual void				PH_I_CrPr			(); // actions & operations after correction before prediction steps
-#ifdef DEBUG
-	virtual void				PH_Ch_CrPr			(); // 
-#endif
-	virtual void				PH_A_CrPr			(); // actions & operations after phisic correction-prediction steps
-
 	virtual void				net_Export			(NET_Packet& P);					// export to server
 
 public:
@@ -193,7 +185,6 @@ protected:
 protected:
 	net_updateData*				m_net_updateData;
 	net_updateData*				NetSync						();
-	void						CalculateInterpolationParams();
 
 public:
 	virtual BOOL				net_Spawn				(CSE_Abstract* DC);

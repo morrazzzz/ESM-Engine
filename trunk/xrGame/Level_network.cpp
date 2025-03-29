@@ -29,7 +29,6 @@ void CLevel::remove_objects	()
 	
 	snd_Events.clear			();
 	for (int i=0; i<6; ++i) {
-		psNET_Flags.set			(NETFLAG_MINIMIZEUPDATES,FALSE);
 		// ugly hack for checks that update is twice on frame
 		// we need it since we do updates for checking network messages
 		++(Device.dwFrame);
@@ -38,9 +37,6 @@ void CLevel::remove_objects	()
 		Objects.Update			(true);
 		Sleep					(100);
 	}
-
-	if (OnClient())
-		ClearAllObjects			();
 
 	BulletManager().Clear		();
 	ph_commander().clear		();
@@ -78,10 +74,6 @@ void CLevel::remove_objects	()
 	}
 
 	g_pGamePersistent->destroy_particles		(false);
-
-//.	xr_delete									(m_seniority_hierarchy_holder);
-//.	m_seniority_hierarchy_holder				= xr_new<CSeniorityHierarchyHolder>();
-	if (!IsGameTypeSingle()) Msg("CLevel::remove_objects - End");
 }
 
 #ifdef DEBUG
@@ -185,11 +177,9 @@ void CLevel::ClientSave	()
 }
 
 extern		float		phTimefactor;
-extern		BOOL		g_SV_Disable_Auth_Check;
 
 void CLevel::Send(NET_Packet& P, u32 dwFlags, u32 dwTimeout)
 {
-	if (IsDemoPlay() && m_bDemoStarted) return;
 	// optimize the case when server located in our memory
 	ClientID	_clid;
 	_clid.set(1);
@@ -235,128 +225,6 @@ bool CLevel::Connect2Server()
 	Send(P);
 	//---------------------------------------------------------------------------
 	return true;
-};
-
-void			CLevel::OnBuildVersionChallenge		()
-{
-	NET_Packet P;
-	P.w_begin				(M_CL_AUTH);
-	u64 auth = FS.auth_get();
-	P.w_u64					(auth);
-	Send					(P, net_flags(TRUE, TRUE, TRUE, TRUE));
-};
-
-void			CLevel::OnConnectResult				(NET_Packet*	P)
-{
-	// multiple results can be sent during connection they should be "AND-ed"
-	m_bConnectResultReceived	= true;
-	u8	result					= P->r_u8();
-	u8  res1					= P->r_u8();
-	string128 ResultStr			;	
-	P->r_stringZ(ResultStr)		;
-//	m_sConnectResult			= ResultStr;
-	
-	if (IsDemoSave())
-	{
-//		P->r_stringZ(m_sDemoHeader.LevelName);
-//		P->r_stringZ(m_sDemoHeader.GameType);
-		m_sDemoHeader.bServerClient = P->r_u8();
-		P->r_stringZ(m_sDemoHeader.ServerOptions);
-		//-----------------------------------------
-		FILE* fTDemo = fopen(m_sDemoName, "ab");
-		if (fTDemo)
-		{
-			fwrite(&m_sDemoHeader.bServerClient, 32, 1, fTDemo);
-			
-			DWORD OptLen = m_sDemoHeader.ServerOptions.size();
-			fwrite(&OptLen, 4, 1, fTDemo);
-			fwrite(*m_sDemoHeader.ServerOptions, OptLen, 1, fTDemo);
-			fclose(fTDemo);
-		};
-		//-----------------------------------------
-	};	
-};
-
-void			CLevel::ClearAllObjects				()
-{
-
-	bool ParentFound = true;
-	
-	while (ParentFound)
-	{	
-		ProcessGameEvents				();
-
-		u32 CLObjNum					= Level().Objects.o_count();
-		ParentFound						= false;
-
-		for (u32 i=0; i<CLObjNum; i++)
-		{
-			CObject* pObj				= Level().Objects.o_get_by_iterator(i);
-			if (!pObj->H_Parent()) 
-				continue;
-			//-----------------------------------------------------------
-			NET_Packet					GEN;
-			GEN.w_begin					(M_EVENT);
-			//------------------		---------------------------		
-			GEN.w_u32					(Level().timeServer());
-			GEN.w_u16					(GE_OWNERSHIP_REJECT);
-			GEN.w_u16					(pObj->H_Parent()->ID());
-			GEN.w_u16					(u16(pObj->ID()));
-			game_events->insert			(GEN);
-			if (g_bDebugEvents)	
-				ProcessGameEvents		();
-			//-------------------------------------------------------------
-			ParentFound					= true;
-			//-------------------------------------------------------------
-#ifdef DEBUG
-			Msg ("Rejection of %s[%d] from %s[%d]", *(pObj->cNameSect()), pObj->ID(), *(pObj->H_Parent()->cNameSect()), pObj->H_Parent()->ID());
-#endif
-		};
-	};
-
-	u32 CLObjNum = Level().Objects.o_count();
-
-	for (u32 i=0; i<CLObjNum; i++)
-	{
-		CObject* pObj = Level().Objects.o_get_by_iterator(i);
-		R_ASSERT(pObj->H_Parent()==NULL);
-		//-----------------------------------------------------------
-		NET_Packet			GEN;
-		GEN.w_begin			(M_EVENT);
-		//---------------------------------------------		
-		GEN.w_u32			(Level().timeServer());
-		GEN.w_u16			(GE_DESTROY);
-		GEN.w_u16			(u16(pObj->ID()));
-		game_events->insert	(GEN);
-		if (g_bDebugEvents)	ProcessGameEvents();
-		//-------------------------------------------------------------
-		ParentFound = true;
-		//-------------------------------------------------------------
-#ifdef DEBUG
-		Msg ("Destruction of %s[%d]", *(pObj->cNameSect()), pObj->ID());
-#endif
-	};
-	ProcessGameEvents();
-};
-
-void				CLevel::OnInvalidHost			()
-{
-};
-
-void				CLevel::OnInvalidPassword		()
-{
-};
-
-void				CLevel::OnSessionFull			()
-{
-}
-
-void				CLevel::OnConnectRejected		()
-{
-	IPureClient::OnConnectRejected();
-
-//	if (MainMenu()->GetErrorDialogType() != CMainMenu::ErrNoError)
-//		MainMenu()->SetErrorDialog(CMainMenu::ErrServerReject);
 };
 
 void				CLevel::net_OnChangeSelfName			(NET_Packet* P)

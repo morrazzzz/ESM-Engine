@@ -121,7 +121,8 @@ void CUIInventoryWnd::DropCurrentItem(bool b_all)
 
 	if(!b_all && CurrentIItem() && !CurrentIItem()->IsQuestItem())
 	{
-		SendEvent_Item_Drop		(CurrentIItem());
+		CurrentIItem()->DropItem();
+		PlaySnd(eInvDropItem);
 		SetCurrentItem			(NULL);
 		InventoryUtilities::UpdateWeight			(UIBagWnd, true);
 		return;
@@ -134,10 +135,12 @@ void CUIInventoryWnd::DropCurrentItem(bool b_all)
 		for(u32 i=0; i<cnt; ++i){
 			CUICellItem*	itm				= CurrentItem()->PopChild();
 			PIItem			iitm			= (PIItem)itm->m_pData;
-			SendEvent_Item_Drop				(iitm);
+			iitm->DropItem();
+			PlaySnd(eInvDropItem);
 		}
 
-		SendEvent_Item_Drop					(CurrentIItem());
+		CurrentIItem()->DropItem();
+		PlaySnd(eInvDropItem);
 		SetCurrentItem						(NULL);
 		InventoryUtilities::UpdateWeight	(UIBagWnd, true);
 		return;
@@ -163,11 +166,11 @@ bool CUIInventoryWnd::ToSlot(CUICellItem* itm, bool force_place)
 		CUICellItem* i						= old_owner->RemoveItem(itm, (old_owner==new_owner) );
 		
 		new_owner->SetItem					(i);
-	
-		SendEvent_Item2Slot					(iitem);
-
-		SendEvent_ActivateSlot				(iitem);
 		
+		PlaySnd(eInvItemToSlot);
+
+		GetInventory()->Activate(iitem->GetSlot());
+
 		return								true;
 	}else
 	{ // in case slot is busy
@@ -211,7 +214,8 @@ bool CUIInventoryWnd::ToBag(CUICellItem* itm, bool b_use_cursor_pos)
 		else
 			new_owner->SetItem				(i);
 
-		SendEvent_Item2Ruck					(iitem);
+		PlaySnd(eInvItemToRuck);
+		
 		return true;
 	}
 	return false;
@@ -241,7 +245,8 @@ bool CUIInventoryWnd::ToBelt(CUICellItem* itm, bool b_use_cursor_pos)
 		else
 			new_owner->SetItem				(i);
 
-		SendEvent_Item2Belt					(iitem);
+		PlaySnd(eInvItemToBelt);
+
 		return								true;
 	}
 	return									false;

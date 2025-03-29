@@ -1039,10 +1039,33 @@ public:
 		Fvector CamPos_;
 		CamPos_.mad(Device.vCameraPosition, Device.vCameraDirection, HUD().GetCurrentRayQuery().range);
 
-		if (auto tpGame = smart_cast<game_sv_Single*>(Level().Server->game))
+		NET_Packet					tNetPacket;
+		ClientID					clientID;
+		clientID.set(Level().Server->GetServerClient() ? Level().Server->GetServerClient()->ID.value() : 0);
+		u32 LevelVertexIDActor = Actor()->ai_location().level_vertex_id();
+
+		while (CountItems_ > 0)
 		{
-			for (int i = 0; i < CountItems_; i++)
-				tpGame->alife().spawn_item(SectionName_, CamPos_, Actor()->ai_location().level_vertex_id(), Actor()->ai_location().game_vertex_id(), ALife::_OBJECT_ID(-1));
+			auto object = Level().spawn_item(SectionName_, CamPos_, LevelVertexIDActor, static_cast<u16>(-1), true);
+			object->ObjectCustomSpawn = true;
+
+			object->Spawn_Write(tNetPacket, true);
+
+			Level().Server->Process_spawn(tNetPacket, clientID, object);
+
+			CObject* O = Level().Objects.Create(*object->s_name);
+
+			if (!O)
+			{
+				Msg("! Failed spawn object in g_spawn: [%s] :(", object->s_name.c_str());
+				Level().Server->entity_Destroy(object);
+				continue;
+			}
+
+			O->setID(object->ID);
+			Level().Objects.net_Register(O);
+
+			CountItems_--;
 		}
 	}
 

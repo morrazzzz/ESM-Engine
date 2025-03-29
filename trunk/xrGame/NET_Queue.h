@@ -19,11 +19,6 @@ public:
 		P.r_begin		(ID			);	//VERIFY(M_EVENT==ID);
 		switch (ID)
 		{
-		case M_SPAWN:
-			{
-				P.read_start();
-//				timestamp = P->
-			}break;
 		case M_EVENT:
 			{
 				P.r_u32			(timestamp	);
@@ -42,15 +37,6 @@ public:
 			data.resize		(size);
 			P.r				(&*data.begin(),size);
 		}
-	}
-	void				_export		(NET_Packet& P)
-	{
-		u16	ID			=	M_EVENT;
-		P.w_begin		(ID			);
-		P.w_u32			(timestamp	);
-		P.w_u16			(type		);
-		P.w_u16			(destination);
-		if (data.size())	P.w(&*data.begin(),(u32)data.size());
 	}
 	void				implication	(NET_Packet& P) const
 	{

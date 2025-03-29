@@ -966,7 +966,7 @@ u32	 CSE_ALifeCreatureAbstract::ef_detector_type() const
 }
 
 #ifdef XRGAME_EXPORTS
-void CSE_ALifeCreatureAbstract::on_death		(CSE_Abstract *killer)
+void CSE_ALifeCreatureAbstract::on_death()
 {
 	VERIFY						(!m_game_death_time);
 	m_game_death_time			= Level().GetGameTime();

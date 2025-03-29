@@ -171,8 +171,6 @@ CActor::CActor() : CEntityAlive(), current_ik_cam_shift(0)
 	m_anims					= xr_new<SActorMotions>();
 	m_vehicle_anims			= xr_new<SActorVehicleAnims>();
 	m_entity_condition		= NULL;
-	m_iLastHitterID			= u16(-1);
-	m_iLastHittingWeaponID	= u16(-1);
 	m_game_task_manager		= NULL;
 	m_statistic_manager		= NULL;
 	//-----------------------------------------------------------------------------------
@@ -256,8 +254,7 @@ void CActor::Load	(LPCSTR section )
 	CInventoryOwner::Load		(section);
 	m_location_manager->Load	(section);
 
-	if (GameID() == GAME_SINGLE)
-		OnDifficultyChanged		();
+	OnDifficultyChanged		();
 	//////////////////////////////////////////////////////////////////////////
 	ISpatial*		self			=	smart_cast<ISpatial*> (this);
 	if (self)	{
@@ -517,8 +514,8 @@ void	CActor::Hit							(SHit* pHDS)
 	//---------------------------------------------------------------
 	if (Level().CurrentViewEntity() == this && !g_dedicated_server && HDS.hit_type == ALife::eHitTypeFireWound)
 	{
-		CObject* pLastHitter = Level().Objects.net_Find(m_iLastHitterID);
-		CObject* pLastHittingWeapon = Level().Objects.net_Find(m_iLastHittingWeaponID);
+		CObject* pLastHitter = pHDS->who;
+		CObject* pLastHittingWeapon = Level().Objects.net_Find(pHDS->weaponID);
 		HitSector(pLastHitter, pLastHittingWeapon);
 	};
 
@@ -535,65 +532,19 @@ void	CActor::Hit							(SHit* pHDS)
 		HitMark			(HDS.damage(), HDS.dir, HDS.who, HDS.bone(), HDS.p_in_bone_space, HDS.impulse, HDS.hit_type);
 	}
 
-	switch (GameID())
+	float hit_power	= HitArtefactsOnBelt(HDS.damage(), HDS.hit_type);
+
+	if (GodMode())//psActorFlags.test(AF_GODMODE))
 	{
-	case GAME_SINGLE:		
-		{
-			float hit_power	= HitArtefactsOnBelt(HDS.damage(), HDS.hit_type);
-
-			if (GodMode())//psActorFlags.test(AF_GODMODE))
-			{
-				HDS.power = 0.0f;
-//				inherited::Hit(0.f,dir,who,element,position_in_bone_space,impulse, hit_type);
-				inherited::Hit(&HDS);
-				return;
-			}
-			else 
-			{
-				//inherited::Hit		(hit_power,dir,who,element,position_in_bone_space, impulse, hit_type);
-				HDS.power = hit_power;
-				inherited::Hit(&HDS);
-			};
-		}
-		break;
-	default:
-		{
-			m_bWasBackStabbed = false;
-			if (HDS.hit_type == ALife::eHitTypeWound_2 && Check_for_BackStab_Bone(HDS.bone()))
-			{
-				// convert impulse into local coordinate system
-				Fmatrix					mInvXForm;
-				mInvXForm.invert		(XFORM());
-				Fvector					vLocalDir;
-				mInvXForm.transform_dir	(vLocalDir,HDS.dir);
-				vLocalDir.invert		();
-
-				Fvector a	= {0,0,1};
-				float res = a.dotproduct(vLocalDir);
-				if (res < -0.707)
-				{
-					game_PlayerState* ps = Game().GetPlayerByGameID(ID());
-					if (!ps || !ps->testFlag(GAME_PLAYER_FLAG_INVINCIBLE))						
-						m_bWasBackStabbed = true;
-				}
-			};
-			
-			float hit_power = 0;
-
-			if (m_bWasBackStabbed) hit_power = (HDS.damage() == 0) ? 0 : 100000.0f;
-			else hit_power	= HitArtefactsOnBelt(HDS.damage(), HDS.hit_type);
-
-			HDS.power			= hit_power;
-			inherited::Hit		(&HDS);
-
-			if(OnServer() && !g_Alive() && HDS.hit_type==ALife::eHitTypeExplosion)
-			{
-				game_PlayerState* ps							= Game().GetPlayerByGameID(ID());
-				Game().m_WeaponUsageStatistic->OnExplosionKill	(ps, HDS);
-			}
-		}		
-		break;
+		HDS.power = 0.0f;
+//		inherited::Hit(0.f,dir,who,element,position_in_bone_space,impulse, hit_type);
+		inherited::Hit(&HDS);
+		return;
 	}
+
+	//inherited::Hit		(hit_power,dir,who,element,position_in_bone_space, impulse, hit_type);
+	HDS.power = hit_power;
+	inherited::Hit(&HDS);
 }
 
 void CActor::HitMark	(float P, 
@@ -785,7 +736,6 @@ void CActor::g_Physics(Fvector& _accel, float jump, float dt)
 		if (!fis_zero(character_physics_support()->movement()->gcontact_HealthLost))	{
 			const ICollisionDamageInfo* di=character_physics_support()->movement()->CollisionDamageInfo();
 			Fvector hdir;di->HitDir(hdir);
-			SetHitInfo(this, NULL, 0, Fvector().set(0, 0, 0), hdir);
 			//				Hit	(m_PhysicMovementControl->gcontact_HealthLost,hdir,di->DamageInitiator(),m_PhysicMovementControl->ContactBone(),di->HitPos(),0.f,ALife::eHitTypeStrike);//s16(6 + 2*::Random.randI(0,2))
 			if (Level().CurrentControlEntity() == this)
 			{
@@ -988,18 +938,7 @@ void CActor::shedule_Update(u32 DT)
 		//------------------------------------------------
 	{
 		g_cl_CheckControls(mstate_wishful, NET_SavedAccel, NET_Jump, dt);
-		{
-			/*
-			if (mstate_real & mcJump)
-			{
-				NET_Packet	P;
-				u_EventGen(P, GE_ACTOR_JUMPING, ID());
-				P.w_sdir(NET_SavedAccel);
-				P.w_float(NET_Jump);
-				u_EventSend(P);
-			}
-			*/
-		}
+
 		g_cl_Orientate(mstate_real, dt);
 		g_Orientate(mstate_real, dt);
 
@@ -1044,8 +983,6 @@ void CActor::shedule_Update(u32 DT)
 	}
 	else
 	{
-		make_Interpolation();
-
 		if (NET.size())
 		{
 

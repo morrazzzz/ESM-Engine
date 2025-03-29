@@ -1,9 +1,6 @@
 #pragma once
 
 #include "net_shared.h"
-#include "NET_Common.h"
-
-struct ip_address;
 
 class XRNETSERVER_API INetQueue
 {
@@ -24,10 +21,7 @@ public:
 
 //==============================================================================
 
-class XRNETSERVER_API 
-IPureClient
-  : private MultipacketReciever,
-    private MultipacketSender
+class XRNETSERVER_API IPureClient
 {
 	enum ConnectionState
 	{
@@ -35,7 +29,6 @@ IPureClient
 		EnmConnectionWait=-1,
 		EnmConnectionCompleted=1
 	};
-	friend void 				sync_thread(void*);
 protected:
 	struct HOST_NODE
 	{
@@ -45,45 +38,21 @@ protected:
 	};
 	CTimer*					device_timer;
 protected:
-	IDirectPlay8Client*		NET;
-	IDirectPlay8Address*	net_Address_device;
-	IDirectPlay8Address*	net_Address_server;
-	
-	xrCriticalSection		net_csEnumeration;
 	xr_vector<HOST_NODE>	net_Hosts;
-
-	NET_Compressor			net_Compressor;
 
 	ConnectionState			net_Connected;
 	BOOL					net_Syncronised;
-	BOOL					net_Disconnected;
 
 	INetQueue				net_Queue;
-	IClientStatistic		net_Statistic;
-	
-	u32						net_Time_LastUpdate;
+
 	s32						net_TimeDelta;
-	s32						net_TimeDelta_Calculated;
-	s32						net_TimeDelta_User;
-
-	void					Sync_Thread		();
-	void					Sync_Average	();
-
-	IC virtual	void			SendTo_LL				(void* data, u32 size, u32 dwFlags=DPNSEND_GUARANTEED, u32 dwTimeout=0);													
-
 public:
 	IPureClient				(CTimer* tm);
 	virtual ~IPureClient	();
-	HRESULT					net_Handler				(u32 dwMessageType, PVOID pMessage);
 	
 	bool Connect();
 	void					Disconnect				();
 
-	void					net_Syncronize			();
-	BOOL					net_isCompleted_Connect	()	{ return net_Connected==EnmConnectionCompleted;}
-	BOOL					net_isFails_Connect		()	{ return net_Connected==EnmConnectionFails;}
-	BOOL					net_isCompleted_Sync	()	{ return net_Syncronised;	}
-	BOOL					net_isDisconnected		()	{ return net_Disconnected;	}
 	LPCSTR					net_SessionName			()	{ return *(net_Hosts.front().dpSessionName); }
 
 	// receive
@@ -91,38 +60,13 @@ public:
 	IC void					net_msg_Release			()	{ net_Queue.Release();			}
 
 	// send
-	virtual	void			Send					(NET_Packet& P, u32 dwFlags=DPNSEND_GUARANTEED, u32 dwTimeout=0);
-	virtual void			Flush_Send_Buffer		();
 	virtual void			OnMessage				(void* data, u32 size);
-	virtual void			OnInvalidHost			()	{};
-	virtual void			OnInvalidPassword		()	{};
-	virtual void			OnSessionFull			()	{};
-	virtual void			OnConnectRejected		()	{};
-	BOOL					net_HasBandwidth		();
-	void					ClearStatistic			();
-	IClientStatistic		GetStatistic			() const {return  net_Statistic; }
-	void					UpdateStatistic			();
-
-			bool			GetServerAddress		(ip_address& pAddress, DWORD* pPort);
 	
 	// time management
-	IC u32					timeServer				()	{ return TimeGlobal(device_timer) + net_TimeDelta + net_TimeDelta_User; }
-	IC u32					timeServer_Async		()	{ return TimerAsync(device_timer) + net_TimeDelta + net_TimeDelta_User; }
+	IC u32					timeServer				()	{ return TimeGlobal(device_timer) + net_TimeDelta; }
+	IC u32					timeServer_Async		()	{ return TimerAsync(device_timer) + net_TimeDelta; }
 	IC u32					timeServer_Delta		()	{ return net_TimeDelta; }
-	IC void					timeServer_UserDelta	(s32 d)						{ net_TimeDelta_User=d;	}
-	IC void					timeServer_Correct		(u32 sv_time, u32 cl_time);
 
 	virtual	BOOL			net_IsSyncronised		();
-
-	virtual	LPCSTR			GetMsgId2Name			(u16 ID) { return ""; }
-	virtual void			OnSessionTerminate		(LPCSTR reason){};
-	
-	virtual bool			TestLoadBEClient		() { return false; }
-
-private:
-
-    virtual void    _Recieve( const void* data, u32 data_size, u32 param );
-    virtual void    _SendTo_LL( const void* data, u32 size, u32 flags, u32 timeout );
-
 };
 

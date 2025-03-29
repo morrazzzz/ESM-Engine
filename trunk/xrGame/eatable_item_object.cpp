@@ -156,33 +156,6 @@ void CEatableItemObject::on_activate_physic_shell()
 	CPhysicItem::activate_physic_shell	();
 }
 
-void CEatableItemObject::make_Interpolation	()
-{
-	CEatableItem::make_Interpolation	();
-}
-
-void CEatableItemObject::PH_B_CrPr		()
-{
-	CEatableItem::PH_B_CrPr			();
-}	
-
-void CEatableItemObject::PH_I_CrPr		()
-{
-	CEatableItem::PH_I_CrPr			();
-} 
-
-#ifdef DEBUG
-void CEatableItemObject::PH_Ch_CrPr		()
-{
-	CEatableItem::PH_Ch_CrPr			();
-}
-#endif
-
-void CEatableItemObject::PH_A_CrPr		()
-{
-	CEatableItem::PH_A_CrPr			();
-}
-
 #ifdef DEBUG
 void CEatableItemObject::OnRender			()
 {

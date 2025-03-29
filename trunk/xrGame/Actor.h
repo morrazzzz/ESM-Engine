@@ -176,8 +176,6 @@ public:
 	virtual void OnItemDrop		(CInventoryItem *inventory_item);
 	virtual void OnItemDropUpdate ();
 
-	virtual	void OnPlayHeadShotParticle (NET_Packet P);
-
 
 	virtual void						Die				(CObject* who);
 	virtual	void						Hit				(SHit* pHDS);
@@ -597,10 +595,6 @@ virtual	bool				can_validate_position_on_spawn	(){return false;}
 	PH_STATES				m_States;
 	u16						m_u16NumBones;
 	void					net_ExportDeadBody		(NET_Packet &P);
-	//---------------------------------------------
-	void					CalculateInterpolationParams();
-	//---------------------------------------------
-	virtual void			make_Interpolation ();
 #ifdef DEBUG
 	//---------------------------------------------
 	virtual void			OnRender_Network();
@@ -615,10 +609,6 @@ public:
 			void			g_Physics		(Fvector& accel, float jump, float dt);
 	virtual void			ForceTransform	(const Fmatrix &m);
 			void			SetPhPosition	(const Fmatrix& pos);
-	virtual void			PH_B_CrPr		(); // actions & operations before physic correction-prediction steps
-	virtual void			PH_I_CrPr		(); // actions & operations after correction before prediction steps
-	virtual void			PH_A_CrPr		(); // actions & operations after phisic correction-prediction steps
-//	virtual void			UpdatePosStack	( u32 Time0, u32 Time1 );
 	virtual void			MoveActor		(Fvector NewPos, Fvector NewDir);
 
 	virtual void			SpawnAmmoForWeapon		(CInventoryItem *pIItem);
@@ -683,21 +673,7 @@ public:
 	virtual bool				natural_weapon				() const {return false;}
 	virtual bool				natural_detector			() const {return false;}
 	virtual bool				use_center_to_aim			() const;
-
-protected:
-	u16							m_iLastHitterID;
-	u16							m_iLastHittingWeaponID;
-	s16							m_s16LastHittedElement;
-	Fvector						m_vLastHitDir;
-	Fvector						m_vLastHitPos;
-	float						m_fLastHealth;
-	bool						m_bWasHitted;
-	bool						m_bWasBackStabbed;
-
-	virtual		bool			Check_for_BackStab_Bone			(u16 element);
 public:
-	virtual void				SetHitInfo						(CObject* who, CObject* weapon, s16 element, Fvector Pos, Fvector Dir);
-
 	virtual	void				OnHitHealthLoss					(float NewHealth);	
 	virtual	void				OnCriticalHitHealthLoss			();
 	virtual	void				OnCriticalWoundHealthLoss		();

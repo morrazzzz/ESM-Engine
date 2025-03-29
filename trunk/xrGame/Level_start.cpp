@@ -52,32 +52,6 @@ BOOL CLevel::net_Start	( LPCSTR op_server, LPCSTR op_client )
 	m_bDemoPlayMode = FALSE;
 	m_aDemoData.clear();
 	m_bDemoStarted	= FALSE;
-	if (strstr(Core.Params,"-tdemo ") || strstr(Core.Params,"-tdemof "))
-	{
-		string1024				f_name;
-		if (strstr(Core.Params,"-tdemo "))
-		{
-			sscanf					(strstr(Core.Params,"-tdemo ")+7,"%[^ ] ",f_name);
-			m_bDemoPlayByFrame = FALSE;
-
-			Demo_Load	(f_name);	
-		}
-		else
-		{
-			sscanf					(strstr(Core.Params,"-tdemof ")+8,"%[^ ] ",f_name);
-			m_bDemoPlayByFrame = TRUE;
-
-			m_lDemoOfs = 0;
-			Demo_Load_toFrame(f_name, 100, m_lDemoOfs);
-		};		
-	}
-	else
-	{
-		if (m_caServerOptions.size() == 0 || !strstr(*m_caServerOptions, "single"))
-		{
-			Demo_PrepareToStore();
-		}
-	}
 	//---------------------------------------------------------------------------
 	g_loading_events.push_back	(LOADING_EVENT(this,&CLevel::net_start1));
 	g_loading_events.push_back	(LOADING_EVENT(this,&CLevel::net_start2));
@@ -101,10 +75,7 @@ bool CLevel::net_start1				()
 		typedef IGame_Persistent::params params;
 		params							&p = g_pGamePersistent->m_game_params;
 		// Connect
-		if (!xr_strcmp(p.m_game_type,"single"))
-			Server					= xr_new<xrServer>();		
-		else
-			Server					= xr_new<xrGameSpyServer>();
+		Server					= xr_new<xrServer>();
 		
 //		if (!strstr(*m_caServerOptions,"/alife")) 
 		if (xr_strcmp(p.m_alife,"alife"))
@@ -152,44 +123,6 @@ bool CLevel::net_start2				()
 bool CLevel::net_start3				()
 {
 	if(!net_start_result_total) return true;
-	//add server port if don't have one in options
-	if (!strstr(m_caClientOptions.c_str(), "port=") && Server)
-	{
-		string64	PortStr;
-		sprintf_s(PortStr, "/port=%d", Server->GetPort());
-
-		string4096	tmp;
-		strcpy_s(tmp, m_caClientOptions.c_str());
-		strcat_s(tmp, PortStr);
-		
-		m_caClientOptions = tmp;
-	}
-	//add password string to client, if don't have one
-	if(m_caServerOptions.size()){
-		if (strstr(m_caServerOptions.c_str(), "psw=") && !strstr(m_caClientOptions.c_str(), "psw="))
-		{
-			string64	PasswordStr = "";
-			const char* PSW = strstr(m_caServerOptions.c_str(), "psw=") + 4;
-			if (strchr(PSW, '/')) 
-				strncpy(PasswordStr, PSW, strchr(PSW, '/') - PSW);
-			else
-				strcpy_s(PasswordStr, PSW);
-
-			string4096	tmp;
-			sprintf_s(tmp, "%s/psw=%s", m_caClientOptions.c_str(), PasswordStr);
-			m_caClientOptions = tmp;
-		};
-	};
-	//setting players GameSpy CDKey if it comes from command line
-	if (strstr(m_caClientOptions.c_str(), "/cdkey="))
-	{
-		string64 CDKey;
-		const char* start = strstr(m_caClientOptions.c_str(),"/cdkey=") +xr_strlen("/cdkey=");
-		sscanf			(start, "%[^/]",CDKey);
-		string128 cmd;
-		sprintf_s(cmd, "cdkey %s", _strupr(CDKey));
-		Console->Execute			(cmd);
-	}
 	return true;
 }
 

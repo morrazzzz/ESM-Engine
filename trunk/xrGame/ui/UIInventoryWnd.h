@@ -120,15 +120,6 @@ protected:
 
 	bool						DropItem					(PIItem itm, CUIDragDropListEx* lst);
 	bool						TryUseItem					(PIItem itm);
-	//----------------------	-----------------------------------------------
-	void						SendEvent_Item2Slot			(PIItem	pItem);
-	void						SendEvent_Item2Belt			(PIItem	pItem);
-	void						SendEvent_Item2Ruck			(PIItem	pItem);
-	void						SendEvent_Item_Drop			(PIItem	pItem);
-	void						SendEvent_Item_Eat			(PIItem	pItem);
-	void						SendEvent_ActivateSlot		(PIItem	pItem);
-
-	//---------------------------------------------------------------------
 
 	void						ProcessPropertiesBoxClicked	();
 	void						ActivatePropertiesBox		();

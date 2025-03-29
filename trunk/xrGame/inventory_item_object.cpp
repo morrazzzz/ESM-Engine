@@ -168,33 +168,6 @@ void CInventoryItemObject::on_activate_physic_shell	()
 	CPhysicItem::activate_physic_shell	();
 }
 
-void CInventoryItemObject::make_Interpolation	()
-{
-	CInventoryItem::make_Interpolation	();
-}
-
-void CInventoryItemObject::PH_B_CrPr		()
-{
-	CInventoryItem::PH_B_CrPr			();
-}	
-
-void CInventoryItemObject::PH_I_CrPr		()
-{
-	CInventoryItem::PH_I_CrPr			();
-} 
-
-#ifdef DEBUG
-void CInventoryItemObject::PH_Ch_CrPr		()
-{
-	CInventoryItem::PH_Ch_CrPr			();
-}
-#endif
-
-void CInventoryItemObject::PH_A_CrPr		()
-{
-	CInventoryItem::PH_A_CrPr			();
-}
-
 #ifdef DEBUG
 void CInventoryItemObject::OnRender			()
 {
