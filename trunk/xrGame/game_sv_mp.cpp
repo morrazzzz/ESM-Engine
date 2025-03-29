@@ -14,7 +14,6 @@
 #include "game_cl_base.h"
 #include "Spectator.h"
 #include "game_cl_base_weapon_usage_statistic.h"
-#include "xrGameSpyServer.h"
 
 #include "game_sv_mp_vote_flags.h"
 
@@ -858,18 +857,6 @@ void	game_sv_mp::OnPlayerChangeName		(NET_Packet& P, ClientID sender)
 	game_PlayerState* ps = pClient->ps;
 	if (!ps) return;
 
-	if( ((xrGameSpyServer*)m_server)->HasProtected() )
-	{
-		Msg( "Player \"%s\" try to change name on \"%s\" at protected server.", ps->getName(), NewName );
-
-		NET_Packet			P;
-		GenerateGameMessage (P);
-		P.w_u32				(GAME_EVENT_SERVER_STRING_MESSAGE);
-		P.w_stringZ			("Server is protected. Can\'t change player name!");
-		m_server->SendTo( sender, P );
-		return;
-	}
-
 	if (NewPlayerName_Exists(pClient, NewName))
 	{
 		NewPlayerName_Generate(pClient, NewName);
@@ -1186,56 +1173,6 @@ void game_sv_mp::ConsoleCommands_Clear	()
 #include "string_table.h"
 void game_sv_mp::DumpOnlineStatistic()
 {
-	xrGameSpyServer* srv		= smart_cast<xrGameSpyServer*>(m_server);
-
-	string_path					fn;
-	FS.update_path				(fn,"$logs$","mp_stats\\");
-	strcat_s					(fn, srv->HostName.c_str());
-	strcat_s					(fn, "\\online\\dmp" );
-
-	string64					t_stamp;
-	timestamp					(t_stamp);
-	strcat_s					(fn, t_stamp );
-	strcat_s					(fn, ".ltx" );
-
-	CInifile					ini(fn, FALSE, FALSE, TRUE);
-	shared_str					current_section = "global";
-	string256					str_buff;
-
-	ini.w_u32					(current_section.c_str(), "players_total_cnt", m_server->client_Count());
-
-	sprintf_s					(str_buff,"\"%s\"",CStringTable().translate(Level().name().c_str()).c_str());
-	ini.w_string				(current_section.c_str(), "current_map_name", str_buff);
-
-	sprintf_s					(str_buff,"%s",CStringTable().translate(type_name()).c_str() );
-	ini.w_string				(current_section.c_str(), "game_mode", str_buff);
-
-	MAP_ROTATION_LIST_it it		= m_pMapRotation_List.begin();
-	MAP_ROTATION_LIST_it it_e	= m_pMapRotation_List.end();
-	for(u32 idx=0;it!=it_e;++it,++idx)
-	{
-		string16					num_buf;
-		sprintf_s					(num_buf,"%d",idx);
-		sprintf_s					(str_buff,"\"%s\"", CStringTable().translate((*it).c_str()).c_str());
-		ini.w_string				("map_rotation", num_buf, str_buff);
-	}
-
-	for(u32 idx=0; idx<m_server->client_Count(); ++idx)
-	{
-		xrClientData *l_pC			= (xrClientData*)m_server->client_Get(idx);
-		
-		if(m_server->GetServerClient()==l_pC && g_dedicated_server) 
-			continue;
-		
-		if(!l_pC->net_Ready)
-			continue;
-
-		string16					num_buf;
-		sprintf_s					(num_buf,"player_%d",idx);
-
-		WritePlayerStats			(ini,num_buf,l_pC);
-	}
-	WriteGameState				(ini, current_section.c_str(), false);
 }
 
 void game_sv_mp::WritePlayerStats(CInifile& ini, LPCSTR sect, xrClientData* pCl)
@@ -1278,48 +1215,6 @@ void game_sv_mp::WriteGameState(CInifile& ini, LPCSTR sect, bool bRoundResult)
 void game_sv_mp::DumpRoundStatistics()
 {
 	if ( !g_sv_mp_iDumpStatsPeriod ) return;
-
-	string_path					fn;
-	xrGameSpyServer* srv		= smart_cast<xrGameSpyServer*>(m_server);
-
-	FS.update_path				(fn,"$logs$","mp_stats\\");
-	string64					t_stamp;
-	timestamp					(t_stamp);
-	strcat_s					(fn, srv->HostName.c_str() );
-	strcat_s					(fn, "\\games\\dmp" );
-	strcat_s					(fn, t_stamp );
-	strcat_s					(fn, ".ltx" );
-
-	CInifile					ini(fn, FALSE, FALSE, TRUE);
-	shared_str					current_section = "global";
-	string256					str_buff;
-
-	ini.w_string				(current_section.c_str(),"start_time", m_round_start_time_str);
-
-	sprintf_s					(str_buff,"%s",CStringTable().translate(type_name()).c_str() );
-	ini.w_string				(current_section.c_str(), "game_mode", str_buff);
-
-	sprintf_s					(str_buff,"\"%s\"",CStringTable().translate(Level().name().c_str()).c_str());
-	ini.w_string				(current_section.c_str(), "current_map_name", str_buff);
-
-	sprintf_s					(str_buff,"\"%s\"",Level().name().c_str());
-	ini.w_string				(current_section.c_str(), "current_map_name_internal", str_buff);
-
-	for(u32 idx=0; idx<m_server->client_Count(); ++idx)
-	{
-		xrClientData *l_pC			= (xrClientData*)m_server->client_Get(idx);
-		if(m_server->GetServerClient()==l_pC && g_dedicated_server) 
-			continue;
-
-		string16					num_buf;
-		sprintf_s					(num_buf,"player_%d",idx);
-
-		WritePlayerStats			(ini,num_buf,l_pC);
-	}
-	WriteGameState					(ini,current_section.c_str(), true);
-
-	Game().m_WeaponUsageStatistic->SaveDataLtx(ini);
-	//Game().m_WeaponUsageStatistic->Clear();
 }
 
 void game_sv_mp::SvSendChatMessage(LPCSTR str)

@@ -1538,18 +1538,6 @@
     <ClInclude Include="game_sv_mp_team.h" />
     <ClInclude Include="game_sv_mp_vote_flags.h" />
     <ClInclude Include="game_sv_mp_script.h" />
-    <ClInclude Include="GameSpy\GameSpy_Available.h" />
-    <ClInclude Include="GameSpy\GameSpy_Base_Defs.h" />
-    <ClInclude Include="GameSpy\GameSpy_Browser.h" />
-    <ClInclude Include="gamespy\GameSpy_Full.h" />
-    <ClInclude Include="GameSpy\GameSpy_FuncDefs.h" />
-    <ClInclude Include="GameSpy\GameSpy_GCD_Client.h" />
-    <ClInclude Include="GameSpy\GameSpy_GCD_Server.h" />
-    <ClInclude Include="gamespy\GameSpy_HTTP.h" />
-    <ClInclude Include="GameSpy\GameSpy_Keys.h" />
-    <ClInclude Include="GameSpy\GameSpy_Patching.h" />
-    <ClInclude Include="GameSpy\GameSpy_QR2.h" />
-    <ClInclude Include="GameSpy\GameSpy_QR2_callbacks.h" />
     <ClInclude Include="id_generator.h" />
     <ClInclude Include="PropertiesListTypes.h" />
     <ClInclude Include="ShapeData.h" />
@@ -1563,8 +1551,6 @@
     <ClInclude Include="xrServer_Objects_ALife_Monsters.h" />
     <ClInclude Include="script_value_container.h" />
     <ClInclude Include="script_value_container_impl.h" />
-    <ClInclude Include="xrGameSpyServer.h" />
-    <ClInclude Include="xrGameSpyServer_callbacks.h" />
     <ClInclude Include="PhysicsGamePars.h" />
     <ClInclude Include="PHShellCreator.h" />
     <ClInclude Include="PHNetState.h" />
@@ -4196,7 +4182,6 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="Level_GameSpy_Funcs.cpp" />
     <ClCompile Include="Level_input.cpp" />
     <ClCompile Include="Level_load.cpp" />
     <ClCompile Include="Level_network.cpp">
@@ -5648,15 +5633,6 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="GameSpy\GameSpy_Available.cpp" />
-    <ClCompile Include="GameSpy\GameSpy_Browser.cpp" />
-    <ClCompile Include="gamespy\GameSpy_Full.cpp" />
-    <ClCompile Include="GameSpy\GameSpy_GCD_Client.cpp" />
-    <ClCompile Include="GameSpy\GameSpy_GCD_Server.cpp" />
-    <ClCompile Include="gamespy\GameSpy_HTTP.cpp" />
-    <ClCompile Include="GameSpy\GameSpy_Patching.cpp" />
-    <ClCompile Include="GameSpy\GameSpy_QR2.cpp" />
-    <ClCompile Include="GameSpy\GameSpy_QR2_callbacks.cpp" />
     <ClCompile Include="xrServer_Factory.cpp" />
     <ClCompile Include="xrServer_Objects_Abstract.cpp" />
     <ClCompile Include="xrServer_Object_Base.cpp" />
@@ -5846,9 +5822,6 @@
     <ClCompile Include="xrServer_process_event_reject.cpp" />
     <ClCompile Include="xrServer_process_spawn.cpp" />
     <ClCompile Include="xrServer_process_update.cpp" />
-    <ClCompile Include="xrGameSpy_GameSpyFuncs.cpp" />
-    <ClCompile Include="xrGameSpyServer.cpp" />
-    <ClCompile Include="xrGameSpyServer_callbacks.cpp" />
     <ClCompile Include="physics_game.cpp" />
     <ClCompile Include="PhysicsGamePars.cpp" />
     <ClCompile Include="PHShellCreator.cpp" />

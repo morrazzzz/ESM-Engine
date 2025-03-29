@@ -117,8 +117,6 @@ private:
 	u32							m_dwDeltaUpdate;
 
 	bool Connect2Server();
-public:	
-	void						OnGameSpyChallenge				(NET_Packet* P);
 public:
 	//////////////////////////////////////////////	
 	// static particles

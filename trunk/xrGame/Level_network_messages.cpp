@@ -109,7 +109,6 @@ void CLevel::ClientReceive()
 			}break;
 		case M_GAMESPY_CDKEY_VALIDATION_CHALLENGE:
 			{
-				OnGameSpyChallenge(P);
 			}break;
 		case M_CHANGE_SELF_NAME:
 			{

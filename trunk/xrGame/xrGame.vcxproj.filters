@@ -1867,9 +1867,6 @@
     <Filter Include="Core\Server\Games\server\mp_script">
       <UniqueIdentifier>{4efde5f7-3ab6-457e-a58d-4e5f468b69c8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\Server\GameSpy">
-      <UniqueIdentifier>{b20c7091-83c1-4dec-a33c-2434cac32adb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core\Server\ID_Generator">
       <UniqueIdentifier>{9d04edaa-e250-4297-bb7c-9b7ac3d64262}</UniqueIdentifier>
     </Filter>
@@ -1896,9 +1893,6 @@
     </Filter>
     <Filter Include="Core\Server\ServerProcess">
       <UniqueIdentifier>{488ffe8b-c20a-408d-afa4-becdb16c2ae7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Server\xrGameSpyServer">
-      <UniqueIdentifier>{e4393c30-7601-4c95-a961-b9c9508234a1}</UniqueIdentifier>
     </Filter>
     <Filter Include="Physics">
       <UniqueIdentifier>{b42e0ab4-4185-4af9-9141-ed1c05b2145b}</UniqueIdentifier>
@@ -5442,42 +5436,6 @@
     <ClInclude Include="game_sv_mp_script.h">
       <Filter>Core\Server\Games\server\mp_script</Filter>
     </ClInclude>
-    <ClInclude Include="GameSpy\GameSpy_Available.h">
-      <Filter>Core\Server\GameSpy</Filter>
-    </ClInclude>
-    <ClInclude Include="GameSpy\GameSpy_Base_Defs.h">
-      <Filter>Core\Server\GameSpy</Filter>
-    </ClInclude>
-    <ClInclude Include="GameSpy\GameSpy_Browser.h">
-      <Filter>Core\Server\GameSpy</Filter>
-    </ClInclude>
-    <ClInclude Include="gamespy\GameSpy_Full.h">
-      <Filter>Core\Server\GameSpy</Filter>
-    </ClInclude>
-    <ClInclude Include="GameSpy\GameSpy_FuncDefs.h">
-      <Filter>Core\Server\GameSpy</Filter>
-    </ClInclude>
-    <ClInclude Include="GameSpy\GameSpy_GCD_Client.h">
-      <Filter>Core\Server\GameSpy</Filter>
-    </ClInclude>
-    <ClInclude Include="GameSpy\GameSpy_GCD_Server.h">
-      <Filter>Core\Server\GameSpy</Filter>
-    </ClInclude>
-    <ClInclude Include="gamespy\GameSpy_HTTP.h">
-      <Filter>Core\Server\GameSpy</Filter>
-    </ClInclude>
-    <ClInclude Include="GameSpy\GameSpy_Keys.h">
-      <Filter>Core\Server\GameSpy</Filter>
-    </ClInclude>
-    <ClInclude Include="GameSpy\GameSpy_Patching.h">
-      <Filter>Core\Server\GameSpy</Filter>
-    </ClInclude>
-    <ClInclude Include="GameSpy\GameSpy_QR2.h">
-      <Filter>Core\Server\GameSpy</Filter>
-    </ClInclude>
-    <ClInclude Include="GameSpy\GameSpy_QR2_callbacks.h">
-      <Filter>Core\Server\GameSpy</Filter>
-    </ClInclude>
     <ClInclude Include="id_generator.h">
       <Filter>Core\Server\ID_Generator</Filter>
     </ClInclude>
@@ -5516,12 +5474,6 @@
     </ClInclude>
     <ClInclude Include="script_value_container_impl.h">
       <Filter>Core\Server\ServerEntities\script_value_container</Filter>
-    </ClInclude>
-    <ClInclude Include="xrGameSpyServer.h">
-      <Filter>Core\Server\xrGameSpyServer</Filter>
-    </ClInclude>
-    <ClInclude Include="xrGameSpyServer_callbacks.h">
-      <Filter>Core\Server\xrGameSpyServer</Filter>
     </ClInclude>
     <ClInclude Include="PHMovementControl.h">
       <Filter>Physics\MovementControl</Filter>
@@ -7319,9 +7271,6 @@
     <ClCompile Include="Level.cpp">
       <Filter>Core\Client\Level</Filter>
     </ClCompile>
-    <ClCompile Include="Level_GameSpy_Funcs.cpp">
-      <Filter>Core\Client\Level</Filter>
-    </ClCompile>
     <ClCompile Include="Level_input.cpp">
       <Filter>Core\Client\Level</Filter>
     </ClCompile>
@@ -8195,33 +8144,6 @@
     <ClCompile Include="game_sv_mp_script.cpp">
       <Filter>Core\Server\Games\server\mp_script</Filter>
     </ClCompile>
-    <ClCompile Include="GameSpy\GameSpy_Available.cpp">
-      <Filter>Core\Server\GameSpy</Filter>
-    </ClCompile>
-    <ClCompile Include="GameSpy\GameSpy_Browser.cpp">
-      <Filter>Core\Server\GameSpy</Filter>
-    </ClCompile>
-    <ClCompile Include="gamespy\GameSpy_Full.cpp">
-      <Filter>Core\Server\GameSpy</Filter>
-    </ClCompile>
-    <ClCompile Include="GameSpy\GameSpy_GCD_Client.cpp">
-      <Filter>Core\Server\GameSpy</Filter>
-    </ClCompile>
-    <ClCompile Include="GameSpy\GameSpy_GCD_Server.cpp">
-      <Filter>Core\Server\GameSpy</Filter>
-    </ClCompile>
-    <ClCompile Include="gamespy\GameSpy_HTTP.cpp">
-      <Filter>Core\Server\GameSpy</Filter>
-    </ClCompile>
-    <ClCompile Include="GameSpy\GameSpy_Patching.cpp">
-      <Filter>Core\Server\GameSpy</Filter>
-    </ClCompile>
-    <ClCompile Include="GameSpy\GameSpy_QR2.cpp">
-      <Filter>Core\Server\GameSpy</Filter>
-    </ClCompile>
-    <ClCompile Include="GameSpy\GameSpy_QR2_callbacks.cpp">
-      <Filter>Core\Server\GameSpy</Filter>
-    </ClCompile>
     <ClCompile Include="xrServer_Factory.cpp">
       <Filter>Core\Server\ServerEntities</Filter>
     </ClCompile>
@@ -8320,15 +8242,6 @@
     </ClCompile>
     <ClCompile Include="xrServer_process_update.cpp">
       <Filter>Core\Server\ServerProcess</Filter>
-    </ClCompile>
-    <ClCompile Include="xrGameSpy_GameSpyFuncs.cpp">
-      <Filter>Core\Server\xrGameSpyServer</Filter>
-    </ClCompile>
-    <ClCompile Include="xrGameSpyServer.cpp">
-      <Filter>Core\Server\xrGameSpyServer</Filter>
-    </ClCompile>
-    <ClCompile Include="xrGameSpyServer_callbacks.cpp">
-      <Filter>Core\Server\xrGameSpyServer</Filter>
     </ClCompile>
     <ClCompile Include="PHMovementControl.cpp">
       <Filter>Physics\MovementControl</Filter>

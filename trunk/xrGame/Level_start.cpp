@@ -4,7 +4,6 @@
 #include "xrserver.h"
 #include "game_cl_base.h"
 #include "xrmessages.h"
-#include "xrGameSpyServer.h"
 #include "../xr_3da/x_ray.h"
 #include "../xr_3da/device.h"
 #include "../xr_3da/IGame_Persistent.h"
