@@ -226,7 +226,7 @@ void CRenderDevice::on_idle		()
 		     Device.seqParallel.clear_not_free();
 	    }
 	    {
-		   PROF_EVENT("pr_Frame");
+		   PROF_EVENT("Secondary frame engine");
 		   Device.seqFrameMT.Process(rp_Frame);
 	    }
 	});
@@ -377,6 +377,7 @@ void CRenderDevice::FrameMove()
 
 void ProcessLoading				(RP_FUNC *f)
 {
+	PROF_EVENT("Frame engine");
 	Device.seqFrame.Process				(rp_Frame);
 	g_bLoaded							= TRUE;
 }
