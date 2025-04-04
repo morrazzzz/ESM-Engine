@@ -10,6 +10,7 @@
 #include "../xr_3da/xr_ioconsole.h"
 #include "MainMenu.h"
 #include "UIGameCustom.h"
+#include "game_cl_single.h"
 
 BOOL CLevel::net_Start	( LPCSTR op_server, LPCSTR op_client )
 {
@@ -195,8 +196,8 @@ void CLevel::InitializeClientGame	(NET_Packet& P)
 	
 	xr_delete(game);
 	Msg("- Game configuring : Started ");
-	CLASS_ID clsid			= game_GameState::getCLASS_ID(game_type_name,false);
-	game					= smart_cast<game_cl_GameState*> ( NEW_INSTANCE ( clsid ) );
+
+	game = new game_cl_Single();
 	game->set_type_name(game_type_name);
 	game->Init();
 	m_bGameConfigStarted	= TRUE;

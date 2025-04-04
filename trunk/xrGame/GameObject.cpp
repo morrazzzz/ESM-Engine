@@ -19,7 +19,6 @@
 #include "level.h"
 #include "../../xrNetServer/net_utils.h"
 #include "script_callback_ex.h"
-#include "game_cl_base_weapon_usage_statistic.h"
 #include "game_level_cross_table.h"
 #include "animation_movement_controller.h"
 #include "../xr_3da/xr_collide_form.h"

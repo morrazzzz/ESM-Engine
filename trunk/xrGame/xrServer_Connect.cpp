@@ -1,9 +1,7 @@
 #include "stdafx.h"
 #include "xrServer.h"
 #include "game_sv_single.h"
-#include "game_sv_deathmatch.h"
 #include "xrMessages.h"
-#include "game_cl_artefacthunt.h"
 #include "game_cl_single.h"
 #include "MainMenu.h"
 
@@ -31,10 +29,7 @@ xrServer::EConnect xrServer::Connect(shared_str &session_name)
 	R_ASSERT2(xr_strlen(options) <= sizeof(type), "session_name too BIIIGGG!!!");
 	strcpy					(type,options);
 	if (strchr(type,'/'))	*strchr(type,'/') = 0;
-	game					= NULL;
-
-	CLASS_ID clsid			= game_GameState::getCLASS_ID(type,true);
-	game					= smart_cast<game_sv_GameState*> (NEW_INSTANCE(clsid));
+	game					= new game_sv_Single();
 
 	// Options
 	if (0==game)			return ErrConnect;

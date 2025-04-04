@@ -226,8 +226,10 @@ void CActor::PickupModeUpdate_COD(const CFrustum& frustum)
 
 	if (pNearestItem && m_bPickupMode)
 	{
-		//подбирание объекта
-		Game().SendPickUpEvent(ID(), pNearestItem->object().ID());
+		NET_Packet P;
+		u_EventGen(P, GE_OWNERSHIP_TAKE, ID());
+		P.w_u16(pNearestItem->object().ID());
+		u_EventSend(P);
 		
 		PickupModeOff();
 	}

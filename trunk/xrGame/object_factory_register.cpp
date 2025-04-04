@@ -21,7 +21,6 @@
 #	include "gamepersistent.h"
 #	include "hudmanager.h"
 #	include "actor.h"
-#	include "spectator.h"
 
 #	include "ai/monsters/flesh/flesh.h"
 #	include "ai/monsters/chimera/chimera.h"
@@ -176,19 +175,6 @@ void CObjectFactory::register_classes	()
 	add<CLevel>													(CLSID_GAME_LEVEL				,"level");
 	add<CGamePersistent>										(CLSID_GAME_PERSISTANT			,"game");
 	add<CHUDManager>											(CLSID_HUDMANAGER				,"hud_manager");
-	//Server Game type
-	add<game_sv_Single>											(CLSID_SV_GAME_SINGLE			,"game_sv_single");
-//	add<game_sv_Deathmatch>										(CLSID_SV_GAME_DEATHMATCH		,"game_sv_deathmatch");
-//	add<game_sv_TeamDeathmatch>									(CLSID_SV_GAME_TEAMDEATHMATCH	,"game_sv_team_deathmatch");
-//	add<game_sv_ArtefactHunt>									(CLSID_SV_GAME_ARTEFACTHUNT		,"game_sv_artefact_hunt");
-	//Client Game type
-	add<game_cl_Single>											(CLSID_CL_GAME_SINGLE			,"game_cl_single");
-//	add<game_cl_Deathmatch>										(CLSID_CL_GAME_DEATHMATCH		,"game_cl_deathmatch");
-//	add<game_cl_TeamDeathmatch>									(CLSID_CL_GAME_TEAMDEATHMATCH	,"game_cl_team_deathmatch");
-//	add<game_cl_ArtefactHunt>									(CLSID_CL_GAME_ARTEFACTHUNT		,"game_cl_artefact_hunt");
-
-	//Game UI type
-	add<CUIGameSP>												(CLSID_GAME_UI_SINGLE			,"game_ui_single");
 #endif // NO_XR_GAME
 
 	ADD(CActor					,CSE_ALifeCreatureActor			,CLSID_OBJECT_ACTOR				,"actor");
@@ -199,9 +185,6 @@ void CObjectFactory::register_classes	()
 //	add<CSE_SpawnGroup>											(CLSID_AI_SPAWN_GROUP			,"spawn_group");
 	add<CSE_ALifeGraphPoint>									(CLSID_AI_GRAPH					,"graph_point");
 	add<CSE_ALifeOnlineOfflineGroup>							(CLSID_ONLINE_OFFLINE_GROUP		,"online_offline_group");
-	
-	// client and server entities
-	ADD(CSpectator				,CSE_Spectator					,CLSID_SPECTATOR				,"spectator");
 
 	ADD(CAI_Flesh				,CSE_ALifeMonsterBase			,CLSID_AI_FLESH					,"flesh");
 	ADD(CChimera				,CSE_ALifeMonsterBase			,CLSID_AI_CHIMERA				,"chimera");
@@ -357,38 +340,4 @@ void CObjectFactory::register_classes	()
 	ADD(CDestroyablePhysicsObject,CSE_ALifeObjectPhysic			,CLSID_PHYSICS_DESTROYABLE		,"obj_phys_destroyable");
 
 	ADD(CInventoryBox			,CSE_InventoryBox				,CLSID_INVENTORY_BOX			,"inventory_box");
-
-	// hack, for dedicated server only
-	// because we do not have scripts
-	// and script functionality is not
-	// needed here
-	if (!g_dedicated_server)
-		return;
-
-	ADD(CElectricBall			,CSE_ALifeItemArtefact			,TEXT2CLSID("SCRPTART")			,"artefact_s");
-	ADD(CTorch					,CSE_ALifeItemTorch				,TEXT2CLSID("TORCH_S")			,"device_torch_s");
-	ADD(CStalkerOutfit			,CSE_ALifeItemCustomOutfit		,TEXT2CLSID("E_STLK")			,"equ_stalker_s");
-	ADD(CScope					,CSE_ALifeItem					,TEXT2CLSID("WP_SCOPE")			,"wpn_scope_s");
-	ADD(CWeaponAK74				,CSE_ALifeItemWeaponMagazinedWGL,TEXT2CLSID("WP_AK74")			,"wpn_ak74_s");
-	ADD(CWeaponLR300			,CSE_ALifeItemWeaponMagazined	,TEXT2CLSID("WP_LR300")			,"wpn_lr300_s");
-	ADD(CWeaponBinoculars		,CSE_ALifeItemWeaponMagazined	,TEXT2CLSID("WP_BINOC")			,"wpn_binocular_s");
-	ADD(CWeaponBM16				,CSE_ALifeItemWeaponShotGun		,TEXT2CLSID("WP_BM16")			,"wpn_bm16_s");
-	ADD(CWeaponGroza			,CSE_ALifeItemWeaponMagazinedWGL,TEXT2CLSID("WP_GROZA")			,"wpn_groza_s");
-	ADD(CWeaponSVD				,CSE_ALifeItemWeaponMagazined	,TEXT2CLSID("WP_SVD")			,"wpn_svd_s");
-	ADD(CWeaponHPSA				,CSE_ALifeItemWeaponMagazined	,TEXT2CLSID("WP_HPSA")			,"wpn_hpsa_s");
-	ADD(CWeaponKnife			,CSE_ALifeItemWeapon			,TEXT2CLSID("WP_KNIFE")			,"wpn_knife_s");
-	ADD(CWeaponPM				,CSE_ALifeItemWeaponMagazined	,TEXT2CLSID("WP_PM")			,"wpn_pm_s");
-	ADD(CWeaponRG6				,CSE_ALifeItemWeaponShotGun		,TEXT2CLSID("WP_RG6")			,"wpn_rg6_s");
-	ADD(CWeaponRPG7				,CSE_ALifeItemWeaponMagazined	,TEXT2CLSID("WP_RPG7")			,"wpn_rpg7_s");
-	ADD(CWeaponShotgun			,CSE_ALifeItemWeaponShotGun		,TEXT2CLSID("WP_SHOTG")			,"wpn_shotgun_s");
-	ADD(CWeaponSVU				,CSE_ALifeItemWeaponMagazined	,TEXT2CLSID("WP_SVU")			,"wpn_svu_s");
-	ADD(CWeaponUSP45			,CSE_ALifeItemWeaponMagazined	,TEXT2CLSID("WP_USP45")			,"wpn_usp45_s");
-	ADD(CWeaponVal				,CSE_ALifeItemWeaponMagazined	,TEXT2CLSID("WP_VAL")			,"wpn_val_s");
-	ADD(CWeaponVintorez			,CSE_ALifeItemWeaponMagazined	,TEXT2CLSID("WP_VINT")			,"wpn_vintorez_s");
-	ADD(CWeaponWalther			,CSE_ALifeItemWeaponMagazined	,TEXT2CLSID("WP_WALTH")			,"wpn_walther_s");
-	ADD(CHairsZone				,CSE_ALifeZoneVisual			,TEXT2CLSID("ZS_BFUZZ")			,"zone_bfuzz_s");
-	ADD(CMosquitoBald			,CSE_ALifeAnomalousZone			,TEXT2CLSID("ZS_MBALD")			,"zone_mbald_s");
-	ADD(CMincer					,CSE_ALifeAnomalousZone			,TEXT2CLSID("ZS_GALAN")			,"zone_galant_s");
-	ADD(CMincer					,CSE_ALifeAnomalousZone			,TEXT2CLSID("ZS_MINCE")			,"zone_mincer_s");
-	ADD(CSpaceRestrictor		,CSE_ALifeSpaceRestrictor		,TEXT2CLSID("SPC_RS_S")			,"script_restr");
 }

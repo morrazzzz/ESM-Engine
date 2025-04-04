@@ -1623,7 +1623,6 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask,		"dbg_draw_customdetector",	&dbg_net_Draw_Flags,	dbg_draw_customdetector);
 	CMD3(CCC_Mask,		"dbg_destroy",				&dbg_net_Draw_Flags,	dbg_destroy);
 	CMD3(CCC_Mask,		"dbg_draw_autopickupbox",	&dbg_net_Draw_Flags,	dbg_draw_autopickupbox);
-	CMD3(CCC_Mask,		"dbg_draw_rp",				&dbg_net_Draw_Flags,	dbg_draw_rp);
 	CMD3(CCC_Mask,		"dbg_draw_climbable",		&dbg_net_Draw_Flags,	dbg_draw_climbable);
 	CMD3(CCC_Mask,		"dbg_draw_skeleton",		&dbg_net_Draw_Flags,	dbg_draw_skeleton);
 

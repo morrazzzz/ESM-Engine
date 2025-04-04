@@ -10,6 +10,7 @@
 #include "Car.h"
 #include "UIGameCustom.h"
 #include "game_cl_base.h"
+#include "UIGameSP.h"
 
 extern CUIGameCustom*	CurrentGameUI()	{return HUD().GetGameUI();}
 
@@ -276,13 +277,8 @@ void CHUDManager::SetHitmarkType		(LPCSTR tex_name)
 #include "ui\UIMainInGameWnd.h"
 void CHUDManager::Load()
 {
-	if (!pUIGame)
-	{
-		pUIGame				= Game().createGameUI();
-	} else
-	{
-		pUIGame->SetClGame	(&Game());
-	}
+	pUIGame = new CUIGameSP();
+	pUIGame->Load();
 }
 
 void CHUDManager::OnScreenResolutionChanged()

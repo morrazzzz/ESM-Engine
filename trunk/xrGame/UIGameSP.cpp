@@ -21,8 +21,6 @@
 
 CUIGameSP::CUIGameSP()
 {
-	m_game			= NULL;
-	
 	TalkMenu		= xr_new<CUITalkWnd>		();
 	UICarBodyMenu	= xr_new<CUICarBodyWnd>		();
 	UIChangeLevelWnd= xr_new<CChangeLevelWnd>		();
@@ -43,12 +41,6 @@ void CUIGameSP::HideShownDialogs()
 
 }
 
-void CUIGameSP::SetClGame (game_cl_GameState* g)
-{
-	inherited::SetClGame				(g);
-	m_game = smart_cast<game_cl_Single*>(g);
-	R_ASSERT							(m_game);
-}
 #ifdef DEBUG
 	void attach_adjust_mode_keyb(int dik);
 	void attach_draw_adjust_mode();

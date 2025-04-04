@@ -2,7 +2,6 @@
 #include "xrServer.h"
 #include "hudmanager.h"
 #include "xrserver_objects.h"
-#include "game_sv_mp_script.h"//fake
 #include "Level.h"
 
 #ifdef DEBUG

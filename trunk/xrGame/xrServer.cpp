@@ -22,7 +22,6 @@ xrClientData::xrClientData	():IClient(Device.GetTimerGlobal())
 {
 	ps					= Level().Server->game->createPlayerState();
 	ps->clear			();
-	ps->m_online_time	= Level().timeServer();
 
 	Clear				();
 }
@@ -176,7 +175,6 @@ void xrServer::Update	()
 
 	ProceedDelayedPackets();
 	// game update
-	game->ProcessDelayedEvent();
 	game->Update	();
 
 	SendUpdatesToAll();
@@ -320,7 +318,6 @@ u32 xrServer::OnMessage	(NET_Packet& P, ClientID sender)			// Non-Zero means bro
 			if ( CL )	
 			{
 				CL->net_Ready	= TRUE;
-				CL->ps->DeathTime = Device.dwTimeGlobal;
 				CL->ps->setName( CL->name.c_str() );
 			};
 			game->signal_Syncronize	();

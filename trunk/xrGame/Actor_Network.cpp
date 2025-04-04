@@ -32,7 +32,6 @@
 #include "holder_custom.h"
 #include "actor_memory.h"
 #include "actor_statistic_mgr.h"
-#include "game_cl_base_weapon_usage_statistic.h"
 #include "clsid_game.h"
 #include "../xr_3da/xr_collide_form.h"
 #ifdef DEBUG

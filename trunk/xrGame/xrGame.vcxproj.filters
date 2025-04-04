@@ -1744,9 +1744,6 @@
     <Filter Include="Core\Client\Particles">
       <UniqueIdentifier>{a2431449-03f4-44be-bf22-2a0bff27ecc2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\Client\Spectator">
-      <UniqueIdentifier>{5964ce26-8796-4bef-951c-581af42c6531}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core\Common">
       <UniqueIdentifier>{de17daba-fe20-4c88-8111-3da672b3dd1f}</UniqueIdentifier>
     </Filter>
@@ -1822,50 +1819,20 @@
     <Filter Include="Core\Server\Games\client">
       <UniqueIdentifier>{1ba17b35-f30c-42f1-9535-0ff228eef6cc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\Server\Games\client\artefact_hunt">
-      <UniqueIdentifier>{16679337-d543-4635-baf8-57c162544f7c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Server\Games\client\deathmatch">
-      <UniqueIdentifier>{73251d42-8d71-4ada-baca-78bc9b53914e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Server\Games\client\team_deathmatch">
-      <UniqueIdentifier>{d63527b8-af72-4b37-8207-108efd6657b3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core\Server\Games\client\single">
       <UniqueIdentifier>{df5d324f-39c0-44ae-9f8d-c3b49d16e7e2}</UniqueIdentifier>
     </Filter>
     <Filter Include="Core\Server\Games\client\base">
       <UniqueIdentifier>{6a6d13c4-6c76-433c-865e-1547909de126}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\Server\Games\client\mp">
-      <UniqueIdentifier>{fb8b2100-cd35-426e-802d-f3df83bab07f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Server\Games\client\mp_script">
-      <UniqueIdentifier>{f19d4159-6d41-4719-a3af-6c108ac019bc}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core\Server\Games\server">
       <UniqueIdentifier>{2f42e8c9-5a1a-4bfd-a824-e296366b5aab}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Server\Games\server\artefact_hunt">
-      <UniqueIdentifier>{823a3248-453d-4ef0-abe2-8934160f1706}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Server\Games\server\deathmatch">
-      <UniqueIdentifier>{cef2abb3-5d7d-43e5-9a99-67d8e8594c84}</UniqueIdentifier>
     </Filter>
     <Filter Include="Core\Server\Games\server\single">
       <UniqueIdentifier>{0d90f017-d77f-4bf5-ba1a-23f69a972352}</UniqueIdentifier>
     </Filter>
     <Filter Include="Core\Server\Games\server\single\ServerConnect">
       <UniqueIdentifier>{55ebf6fa-7387-4ad9-bc14-8bbe52f09f7f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Server\Games\server\team_deathmatch">
-      <UniqueIdentifier>{4fe82423-8551-49cd-bb99-ddcfcc5fffb3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Server\Games\server\mp">
-      <UniqueIdentifier>{9413f4ee-3c20-49db-abd9-0a8b02fd961b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Server\Games\server\mp_script">
-      <UniqueIdentifier>{4efde5f7-3ab6-457e-a58d-4e5f468b69c8}</UniqueIdentifier>
     </Filter>
     <Filter Include="Core\Server\ID_Generator">
       <UniqueIdentifier>{9d04edaa-e250-4297-bb7c-9b7ac3d64262}</UniqueIdentifier>
@@ -5211,9 +5178,6 @@
     <ClInclude Include="ParticlesObject.h">
       <Filter>Core\Client\Particles</Filter>
     </ClInclude>
-    <ClInclude Include="Spectator.h">
-      <Filter>Core\Client\Spectator</Filter>
-    </ClInclude>
     <ClInclude Include="date_time.h">
       <Filter>Core\Common\DateTime</Filter>
     </ClInclude>
@@ -5364,77 +5328,20 @@
     <ClInclude Include="game_base_space.h">
       <Filter>Core\Server\Games</Filter>
     </ClInclude>
-    <ClInclude Include="game_cl_artefacthunt.h">
-      <Filter>Core\Server\Games\client\artefact_hunt</Filter>
-    </ClInclude>
-    <ClInclude Include="game_cl_artefacthunt_snd_msg.h">
-      <Filter>Core\Server\Games\client\artefact_hunt</Filter>
-    </ClInclude>
-    <ClInclude Include="game_cl_deathmatch.h">
-      <Filter>Core\Server\Games\client\deathmatch</Filter>
-    </ClInclude>
-    <ClInclude Include="game_cl_deathmatch_snd_messages.h">
-      <Filter>Core\Server\Games\client\deathmatch</Filter>
-    </ClInclude>
-    <ClInclude Include="game_cl_teamdeathmatch.h">
-      <Filter>Core\Server\Games\client\team_deathmatch</Filter>
-    </ClInclude>
-    <ClInclude Include="game_cl_teamdeathmatch_snd_messages.h">
-      <Filter>Core\Server\Games\client\team_deathmatch</Filter>
-    </ClInclude>
     <ClInclude Include="game_cl_single.h">
       <Filter>Core\Server\Games\client\single</Filter>
     </ClInclude>
     <ClInclude Include="game_cl_base.h">
       <Filter>Core\Server\Games\client\base</Filter>
     </ClInclude>
-    <ClInclude Include="game_cl_base_weapon_usage_statistic.h">
-      <Filter>Core\Server\Games\client\base</Filter>
-    </ClInclude>
-    <ClInclude Include="game_cl_mp.h">
-      <Filter>Core\Server\Games\client\mp</Filter>
-    </ClInclude>
-    <ClInclude Include="game_cl_mp_messages_menu.h">
-      <Filter>Core\Server\Games\client\mp</Filter>
-    </ClInclude>
-    <ClInclude Include="game_cl_mp_snd_messages.h">
-      <Filter>Core\Server\Games\client\mp</Filter>
-    </ClInclude>
-    <ClInclude Include="game_cl_mp_script.h">
-      <Filter>Core\Server\Games\client\mp_script</Filter>
-    </ClInclude>
     <ClInclude Include="game_sv_base.h">
-      <Filter>Core\Server\Games\server</Filter>
-    </ClInclude>
-    <ClInclude Include="game_sv_event_queue.h">
       <Filter>Core\Server\Games\server</Filter>
     </ClInclude>
     <ClInclude Include="xr_time.h">
       <Filter>Core\Server\Games\server</Filter>
     </ClInclude>
-    <ClInclude Include="game_sv_artefacthunt.h">
-      <Filter>Core\Server\Games\server\artefact_hunt</Filter>
-    </ClInclude>
-    <ClInclude Include="game_sv_deathmatch.h">
-      <Filter>Core\Server\Games\server\deathmatch</Filter>
-    </ClInclude>
     <ClInclude Include="game_sv_single.h">
       <Filter>Core\Server\Games\server\single</Filter>
-    </ClInclude>
-    <ClInclude Include="game_sv_teamdeathmatch.h">
-      <Filter>Core\Server\Games\server\team_deathmatch</Filter>
-    </ClInclude>
-    <ClInclude Include="game_sv_mp.h">
-      <Filter>Core\Server\Games\server\mp</Filter>
-    </ClInclude>
-    <ClInclude Include="game_sv_mp_team.h">
-      <Filter>Core\Server\Games\server\mp</Filter>
-    </ClInclude>
-    <ClInclude Include="game_sv_mp_vote_flags.h">
-      <Filter>Core\Server\Games\server\mp</Filter>
-    </ClInclude>
-    <ClInclude Include="game_sv_mp_script.h">
-      <Filter>Core\Server\Games\server\mp_script</Filter>
     </ClInclude>
     <ClInclude Include="id_generator.h">
       <Filter>Core\Server\ID_Generator</Filter>
@@ -7994,9 +7901,6 @@
     <ClCompile Include="ParticlesObject.cpp">
       <Filter>Core\Client\Particles</Filter>
     </ClCompile>
-    <ClCompile Include="Spectator.cpp">
-      <Filter>Core\Client\Spectator</Filter>
-    </ClCompile>
     <ClCompile Include="xrGame.cpp">
       <Filter>Core\Common</Filter>
     </ClCompile>
@@ -8051,44 +7955,11 @@
     <ClCompile Include="game_base_script.cpp">
       <Filter>Core\Server\Games</Filter>
     </ClCompile>
-    <ClCompile Include="game_cl_artefacthunt.cpp">
-      <Filter>Core\Server\Games\client\artefact_hunt</Filter>
-    </ClCompile>
-    <ClCompile Include="game_cl_deathmatch.cpp">
-      <Filter>Core\Server\Games\client\deathmatch</Filter>
-    </ClCompile>
-    <ClCompile Include="game_cl_deathmatch_buywnd.cpp">
-      <Filter>Core\Server\Games\client\deathmatch</Filter>
-    </ClCompile>
-    <ClCompile Include="game_cl_teamdeathmatch.cpp">
-      <Filter>Core\Server\Games\client\team_deathmatch</Filter>
-    </ClCompile>
     <ClCompile Include="game_cl_single.cpp">
       <Filter>Core\Server\Games\client\single</Filter>
     </ClCompile>
     <ClCompile Include="game_cl_base.cpp">
       <Filter>Core\Server\Games\client\base</Filter>
-    </ClCompile>
-    <ClCompile Include="game_cl_base_script.cpp">
-      <Filter>Core\Server\Games\client\base</Filter>
-    </ClCompile>
-    <ClCompile Include="game_cl_base_weapon_usage_statistic.cpp">
-      <Filter>Core\Server\Games\client\base</Filter>
-    </ClCompile>
-    <ClCompile Include="game_cl_base_weapon_usage_statistic_save.cpp">
-      <Filter>Core\Server\Games\client\base</Filter>
-    </ClCompile>
-    <ClCompile Include="game_cl_mp.cpp">
-      <Filter>Core\Server\Games\client\mp</Filter>
-    </ClCompile>
-    <ClCompile Include="game_cl_mp_messages_menu.cpp">
-      <Filter>Core\Server\Games\client\mp</Filter>
-    </ClCompile>
-    <ClCompile Include="game_cl_mp_snd_messages.cpp">
-      <Filter>Core\Server\Games\client\mp</Filter>
-    </ClCompile>
-    <ClCompile Include="game_cl_mp_script.cpp">
-      <Filter>Core\Server\Games\client\mp_script</Filter>
     </ClCompile>
     <ClCompile Include="game_sv_base.cpp">
       <Filter>Core\Server\Games\server</Filter>
@@ -8096,26 +7967,8 @@
     <ClCompile Include="game_sv_base_script.cpp">
       <Filter>Core\Server\Games\server</Filter>
     </ClCompile>
-    <ClCompile Include="game_sv_event_queue.cpp">
-      <Filter>Core\Server\Games\server</Filter>
-    </ClCompile>
     <ClCompile Include="xr_time.cpp">
       <Filter>Core\Server\Games\server</Filter>
-    </ClCompile>
-    <ClCompile Include="game_sv_artefacthunt.cpp">
-      <Filter>Core\Server\Games\server\artefact_hunt</Filter>
-    </ClCompile>
-    <ClCompile Include="game_sv_artefacthunt_process_event.cpp">
-      <Filter>Core\Server\Games\server\artefact_hunt</Filter>
-    </ClCompile>
-    <ClCompile Include="game_sv_deathmatch.cpp">
-      <Filter>Core\Server\Games\server\deathmatch</Filter>
-    </ClCompile>
-    <ClCompile Include="game_sv_deathmatch_process_event.cpp">
-      <Filter>Core\Server\Games\server\deathmatch</Filter>
-    </ClCompile>
-    <ClCompile Include="game_sv_deathmatch_script.cpp">
-      <Filter>Core\Server\Games\server\deathmatch</Filter>
     </ClCompile>
     <ClCompile Include="game_sv_single.cpp">
       <Filter>Core\Server\Games\server\single</Filter>
@@ -8131,18 +7984,6 @@
     </ClCompile>
     <ClCompile Include="xrServer_Disconnect.cpp">
       <Filter>Core\Server\Games\server\single\ServerConnect</Filter>
-    </ClCompile>
-    <ClCompile Include="game_sv_teamdeathmatch.cpp">
-      <Filter>Core\Server\Games\server\team_deathmatch</Filter>
-    </ClCompile>
-    <ClCompile Include="game_sv_teamdeathmatch_process_event.cpp">
-      <Filter>Core\Server\Games\server\team_deathmatch</Filter>
-    </ClCompile>
-    <ClCompile Include="game_sv_mp.cpp">
-      <Filter>Core\Server\Games\server\mp</Filter>
-    </ClCompile>
-    <ClCompile Include="game_sv_mp_script.cpp">
-      <Filter>Core\Server\Games\server\mp_script</Filter>
     </ClCompile>
     <ClCompile Include="xrServer_Factory.cpp">
       <Filter>Core\Server\ServerEntities</Filter>

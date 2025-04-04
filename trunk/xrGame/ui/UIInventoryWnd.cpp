@@ -259,18 +259,8 @@ void CUIInventoryWnd::Update()
 		UIProgressBarRadiation.SetProgressPos	(v);
 
 		CInventoryOwner* pOurInvOwner	= smart_cast<CInventoryOwner*>(pEntityAlive);
-		u32 _money						= 0;
+		u32 _money = pOurInvOwner->get_money();
 
-		if (GameID() != GAME_SINGLE){
-			game_PlayerState* ps = Game().GetPlayerByGameID(pEntityAlive->ID());
-			if (ps){
-				UIProgressBarRank.SetProgressPos(ps->experience_D*100);
-				_money							= ps->money_for_round;
-			}
-		}else
-		{
-			_money							= pOurInvOwner->get_money();
-		}
 		// update money
 		string64						sMoney;
 		sprintf_s							(sMoney,"%d RU", _money);
@@ -290,30 +280,6 @@ void CUIInventoryWnd::Show()
 { 
 	InitInventory			();
 	inherited::Show			();
-
-	if (!IsGameTypeSingle())
-	{
-		CActor *pActor = smart_cast<CActor*>(Level().CurrentEntity());
-		if(!pActor) return;
-
-		pActor->SetWeaponHideState(INV_STATE_INV_WND, true);
-
-		//rank icon		
-		int team = Game().local_player->team;
-		int rank = Game().local_player->rank;
-		string256 _path;		
-		if (GameID() != GAME_DEATHMATCH){
-			if (1==team)
-		        sprintf_s(_path, "ui_hud_status_green_0%d", rank+1);
-			else
-				sprintf_s(_path, "ui_hud_status_blue_0%d", rank+1);
-		}
-		else
-		{
-			sprintf_s(_path, "ui_hud_status_green_0%d", rank+1);
-		}
-		UIRank->InitTexture(_path);
-	}
 
 	SendInfoToActor						("ui_inventory");
 

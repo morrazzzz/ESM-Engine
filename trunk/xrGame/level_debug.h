@@ -239,9 +239,8 @@ enum e_dbg_net_Draw_Flags
 	dbg_draw_customdetector = (1 << 6),
 	dbg_destroy = (1 << 7),
 	dbg_draw_autopickupbox = (1 << 8),
-	dbg_draw_rp = (1 << 9),
-	dbg_draw_climbable = (1 << 10),
-	dbg_draw_skeleton = (1 << 11)
+	dbg_draw_climbable = (1 << 9),
+	dbg_draw_skeleton = (1 << 10)
 };
 
 extern Flags32 dbg_net_Draw_Flags;

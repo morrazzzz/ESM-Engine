@@ -6,7 +6,6 @@
 #include "net_queue.h"
 #include "xrServer.h"
 #include "Actor.h"
-#include "game_cl_base_weapon_usage_statistic.h"
 #include "ai_space.h"
 #include "saved_game_wrapper.h"
 #include "level_graph.h"
@@ -79,8 +78,6 @@ void CLevel::ClientReceive()
 			break;
 		case M_GAMEMESSAGE:
 			{
-				if (!game) break;
-				Game().OnGameMessage(*P);
 			}break;
 		case M_LOAD_GAME:
 		case M_CHANGE_LEVEL:

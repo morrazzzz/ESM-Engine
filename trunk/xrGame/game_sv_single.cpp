@@ -154,13 +154,6 @@ void game_sv_Single::OnDetach(u16 eid_who, u16 eid_what)
 void	game_sv_Single::Update			()
 {
 	inherited::Update	();
-/*	switch(phase) 	{
-		case GAME_PHASE_PENDING : {
-			OnRoundStart();
-			switch_Phase(GAME_PHASE_INPROGRESS);
-			break;
-		}
-	}*/
 }
 
 
