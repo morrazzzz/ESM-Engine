@@ -41,13 +41,16 @@ IC	u16	script_server_object_version	()
 {
 	static bool initialized		= false;
 	static u16  script_version	= 0;
-	if (!initialized) {
-		initialized				= true;
-		if (!pSettings->section_exist(script_section) || !pSettings->line_exist(script_section,current_version))
-			script_version		= 0;
-		script_version			= pSettings->r_u16(script_section,current_version);
+	if (!initialized) 
+	{
+		initialized	= true;
+		string_path		S;
+		FS.update_path(S, "$game_config$", "script.ltx");
+		auto ini = new CInifile(S);
+		script_version = READ_IF_EXISTS(ini, r_u16, "script", "current_server_entity_version", 7);
+		delete ini;
 	}
-	return						(script_version);
+	return script_version;
 }
 
 ////////////////////////////////////////////////////////////////////////////
