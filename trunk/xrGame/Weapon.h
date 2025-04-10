@@ -7,11 +7,9 @@
 
 #include "ShootingObject.h"
 #include "hud_item_object.h"
-#include "Actor_Flags.h"
 #include "../Include/xrRender/KinematicsAnimated.h"
 #include "firedeps.h"
-#include "game_cl_single.h"
-
+#include "Actor.h"
 
 // refs
 class CEntity;

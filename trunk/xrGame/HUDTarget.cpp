@@ -12,7 +12,6 @@
 #include "../xr_3da/CustomHUD.h"
 #include "Entity.h"
 #include "level.h"
-#include "game_cl_base.h"
 #include "../xr_3da/igame_persistent.h"
 
 #include "ui_base.h"

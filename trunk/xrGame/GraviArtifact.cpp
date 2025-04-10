@@ -9,7 +9,6 @@
 #include "../xrPhysics/PhysicsShell.h"
 #include "level.h"
 #include "xrmessages.h"
-#include "game_cl_base.h"
 #include "..\include\xrRender\Kinematics.h"
 #include "../xrPhysics/IPHWorld.h"
 //extern CPHWorld*	ph_world;

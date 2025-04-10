@@ -21,6 +21,7 @@
 #include "script_net_packet.h"
 #include "object_factory.h"
 #include "script_sound_type.h"
+#include "script_enum_types.h"
 #include "xrServer_Objects_ALife_All.h"
 
 #ifndef XRGAME_EXPORTS
@@ -61,7 +62,6 @@
 #	include "script_monster_action.h"
 #	include "script_entity_action.h"
 #	include "helicopter.h"
-#	include "game_base.h"
 #	include "game_sv_base.h"
 #	include "UIGameCustom.h"
 #	include "UIGame_custom_script.h"
@@ -119,7 +119,6 @@
 #	include "car.h"
 #	include "script_lanim.h"
 #	include "artifact.h"
-#	include "game_cl_single.h"
 #	include "alife_human_brain.h"
 #	include "alife_monster_brain.h"
 #	include "alife_monster_movement_manager.h"

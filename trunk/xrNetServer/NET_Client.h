@@ -23,25 +23,8 @@ public:
 
 class XRNETSERVER_API IPureClient
 {
-	enum ConnectionState
-	{
-		EnmConnectionFails=0,
-		EnmConnectionWait=-1,
-		EnmConnectionCompleted=1
-	};
 protected:
-	struct HOST_NODE
-	{
-		DPN_APPLICATION_DESC	dpAppDesc;
-		IDirectPlay8Address*	pHostAddress;
-		shared_str				dpSessionName;
-	};
 	CTimer*					device_timer;
-protected:
-	xr_vector<HOST_NODE>	net_Hosts;
-
-	ConnectionState			net_Connected;
-	BOOL					net_Syncronised;
 
 	INetQueue				net_Queue;
 
@@ -51,9 +34,6 @@ public:
 	virtual ~IPureClient	();
 	
 	bool Connect();
-	void					Disconnect				();
-
-	LPCSTR					net_SessionName			()	{ return *(net_Hosts.front().dpSessionName); }
 
 	// receive
 	IC virtual	NET_Packet*			net_msg_Retreive		()	{ return net_Queue.Retreive();	}
@@ -66,7 +46,5 @@ public:
 	IC u32					timeServer				()	{ return TimeGlobal(device_timer) + net_TimeDelta; }
 	IC u32					timeServer_Async		()	{ return TimerAsync(device_timer) + net_TimeDelta; }
 	IC u32					timeServer_Delta		()	{ return net_TimeDelta; }
-
-	virtual	BOOL			net_IsSyncronised		();
 };
 

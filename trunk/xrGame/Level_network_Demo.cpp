@@ -339,7 +339,6 @@ void						CLevel::Demo_Update				()
 					if (P->m_dwTimeReceive <= CurTime) 
 					{
 						Msg("tsReceive [%d] - CurTime [%d]",P->m_dwTimeReceive, CurTime);
-						Server->OnMessage(P->Packet, ClientID());
 					}
 					else 
 					{			
@@ -382,7 +381,6 @@ void						CLevel::Demo_Update				()
 				{
 					u16			m_type;					
 					P->Packet.r_begin	(m_type);
-					Server->OnMessage(P->Packet, ClientID());
 				}break;
 			}
 			m_aDemoData.pop_front();
@@ -399,8 +397,6 @@ void						CLevel::Demo_Update				()
 
 void						CLevel::Demo_StartFrame			()
 {
-	if (!IsDemoSave() || !net_IsSyncronised()) return;
-
 	DemoCS.Enter();
 
 	DemoFrameTime CurFrameTime;

@@ -9,8 +9,6 @@
 #include "level.h"
 #include "ai_debug.h"
 #include "alife_simulator.h"
-#include "game_cl_base.h"
-#include "game_cl_single.h"
 #include "game_sv_single.h"
 #include "actor.h"
 #include "Actor_Flags.h"
@@ -63,7 +61,6 @@ extern	int		psLUA_GCSTEP;
 extern	int		x_m_x;
 extern	int		x_m_z;
 extern	BOOL	net_cl_inputguaranteed	;
-extern	BOOL	net_sv_control_hit		;
 extern	int		g_dwInputUpdateDelta	;
 #ifdef DEBUG
 extern	BOOL	g_ShowAnimationInfo		;
@@ -74,7 +71,7 @@ extern	ESingleGameDifficulty g_SingleGameDifficulty;
 extern	BOOL	g_show_wnd_rect			;
 extern	BOOL	g_show_wnd_rect2			;
 //-----------------------------------------------------------
-extern	float	g_fTimeFactor;
+float	g_fTimeFactor = 0.0f;
 int				g_keypress_on_start = 1;
 //-----------------------------------------------------------
 
@@ -135,17 +132,11 @@ public:
 // console commands
 class CCC_GameDifficulty : public CCC_Token {
 public:
-	CCC_GameDifficulty(LPCSTR N) : CCC_Token(N,(u32*)&g_SingleGameDifficulty,difficulty_type_token)  {};
+	CCC_GameDifficulty(LPCSTR N) : CCC_Token(N,(u32*)&ACTOR_DEFS::g_SingleGameDifficulty,difficulty_type_token)  {};
 	virtual void Execute(LPCSTR args) {
 		CCC_Token::Execute(args);
-		if (g_pGameLevel && Level().game){
-			if (GameID() != GAME_SINGLE){
-				Msg("For this game type difficulty level is disabled.");
-				return;
-			}
-			auto* game		= smart_cast<game_cl_Single*>(Level().game); VERIFY(game);
-			game->OnDifficultyChanged	();
-		}
+		if (g_pGameLevel)
+			Actor()->OnDifficultyChanged();
 	}
 	virtual void	Info	(TInfo& I)		
 	{
@@ -199,7 +190,7 @@ public:
 			if (!OnServer())
 				return;
 
-			Level().Server->game->SetGameTimeFactor(id1);
+			Level().SetGameTimeFactor(id1);
 		}
 	}
 };
@@ -208,39 +199,40 @@ class CCC_ALifeSwitchDistance : public IConsole_Command {
 public:
 	CCC_ALifeSwitchDistance(LPCSTR N) : IConsole_Command(N)  {}
 	virtual void Execute(LPCSTR args) {
-		if ((GameID() == GAME_SINGLE)  &&ai().get_alife()) {
+		if (ai().get_alife())
+		{
 			float id1 = 0.0f;
-			sscanf(args ,"%f",&id1);
+			sscanf(args, "%f", &id1);
 			if (id1 < 2.0f)
-				Msg("Invalid online distance! (%.4f)",id1);
-			else {
-				NET_Packet		P;
-				P.w_begin		(M_SWITCH_DISTANCE);
-				P.w_float		(id1);
-				Level().Send	(P,net_flags(TRUE,TRUE));
+			{
+				Msg("! Invalid online distance! %.4f < 2.0f", id1);
+				return;
 			}
+
+			ai().get_alife()->set_switch_distance(id1);
 		}
 		else
-			Log("!Not a single player game!");
+			Msg("! ALife not loaded! Please, load game!");
 	}
 };
 
 class CCC_ALifeProcessTime : public IConsole_Command {
 public:
 	CCC_ALifeProcessTime(LPCSTR N) : IConsole_Command(N)  { };
-	virtual void Execute(LPCSTR args) {
-		if ((GameID() == GAME_SINGLE)  &&ai().get_alife()) {
-			game_sv_Single	*tpGame = smart_cast<game_sv_Single *>(Level().Server->game);
-			VERIFY			(tpGame);
+	void Execute(LPCSTR args) override {
+		if (ai().get_alife()) {
 			int id1 = 0;
-			sscanf(args ,"%d",&id1);
+			sscanf(args, "%d", &id1);
 			if (id1 < 1)
-				Msg("Invalid process time! (%d)",id1);
-			else
-				tpGame->alife().set_process_time(id1);
+			{
+				Msg("! Invalid process time! %d < 1", id1);
+				return;
+			}
+			
+			ai().get_alife()->set_process_time(id1);
 		}
 		else
-			Log("!Not a single player game!");
+			Msg("! ALife not loaded! Please, load game!");
 	}
 };
 
@@ -248,33 +240,30 @@ public:
 class CCC_ALifeObjectsPerUpdate : public IConsole_Command {
 public:
 	CCC_ALifeObjectsPerUpdate(LPCSTR N) : IConsole_Command(N)  {}
-	virtual void Execute(LPCSTR args) {
-		if ((GameID() == GAME_SINGLE)  &&ai().get_alife()) {
-			game_sv_Single	*tpGame = smart_cast<game_sv_Single *>(Level().Server->game);
-			VERIFY			(tpGame);
+	void Execute(LPCSTR args) override {
+		if (ai().get_alife()) {
 			int id1 = 0;
-			sscanf(args ,"%d",&id1);
-			tpGame->alife().objects_per_update(id1);
+			sscanf(args, "%d", &id1);
+			ai().get_alife()->objects_per_update(id1);
 		}
 		else
-			Log("!Not a single player game!");
+			Msg("! ALife not loaded! Please, load game!");
 	}
 };
 
 class CCC_ALifeSwitchFactor : public IConsole_Command {
 public:
 	CCC_ALifeSwitchFactor(LPCSTR N) : IConsole_Command(N)  {}
-	virtual void Execute(LPCSTR args) {
-		if ((GameID() == GAME_SINGLE)  &&ai().get_alife()) {
-			game_sv_Single	*tpGame = smart_cast<game_sv_Single *>(Level().Server->game);
-			VERIFY			(tpGame);
+	void Execute(LPCSTR args) override {
+		if (ai().get_alife()) 
+		{
 			float id1 = 0;
-			sscanf(args ,"%f",&id1);
-			clamp(id1,.1f,1.f);
-			tpGame->alife().set_switch_factor(id1);
+			sscanf(args, "%f", &id1);
+			clamp(id1, .1f, 1.f);
+			ai().get_alife()->set_switch_factor(id1);
 		}
 		else
-			Log		("!Not a single player game!");
+			Msg("! ALife not loaded! Please, load game!");
 	}
 };
 
@@ -414,7 +403,7 @@ public:
 			net_packet.w_begin	(M_SAVE_GAME);
 			net_packet.w_stringZ(params[0]);
 			net_packet.w_u8		(0);
-			Level().Send		(net_packet,net_flags(TRUE));
+			Level().Send		(net_packet);
 		}else{
 			if(!valid_file_name(params[0])) {
 				Msg("invalid file name");
@@ -425,7 +414,7 @@ public:
 			net_packet.w_begin	(M_SAVE_GAME);
 			net_packet.w_stringZ(params[0]);
 			net_packet.w_u8		(1);
-			Level().Send		(net_packet,net_flags(TRUE));
+			Level().Send		(net_packet);
 		}
 #ifdef DEBUG
 		Msg						("Game save overhead  : %f milliseconds",timer.GetElapsed_sec()*1000.f);
@@ -503,7 +492,7 @@ public:
 		NET_Packet					net_packet;
 		net_packet.w_begin			(M_LOAD_GAME);
 		net_packet.w_stringZ		(saved_game);
-		Level().Send				(net_packet,net_flags(TRUE));
+		Level().Send				(net_packet);
 	}
 };
 
@@ -1040,8 +1029,6 @@ public:
 		CamPos_.mad(Device.vCameraPosition, Device.vCameraDirection, HUD().GetCurrentRayQuery().range);
 
 		NET_Packet					tNetPacket;
-		ClientID					clientID;
-		clientID.set(Level().Server->GetServerClient() ? Level().Server->GetServerClient()->ID.value() : 0);
 		u32 LevelVertexIDActor = Actor()->ai_location().level_vertex_id();
 
 		while (CountItems_ > 0)
@@ -1051,7 +1038,7 @@ public:
 
 			object->Spawn_Write(tNetPacket, true);
 
-			Level().Server->Process_spawn(tNetPacket, clientID, object);
+			Level().Server->Process_spawn(tNetPacket, object);
 
 			CObject* O = Level().Objects.Create(*object->s_name);
 
@@ -1148,37 +1135,6 @@ public:
 	}
 };
 
-struct CCC_StartTimeSingle : public IConsole_Command {
-	CCC_StartTimeSingle(LPCSTR N) : IConsole_Command(N) {};
-	virtual void	Execute	(LPCSTR args)
-	{
-		u32 year = 1, month = 1, day = 1, hours = 0, mins = 0, secs = 0, milisecs = 0;
-		sscanf				(args,"%d.%d.%d %d:%d:%d.%d",&year,&month,&day,&hours,&mins,&secs,&milisecs);
-		year				= _max(year,1);
-		month				= _max(month,1);
-		day					= _max(day,1);
-		g_qwStartGameTime	= generate_time	(year,month,day,hours,mins,secs,milisecs);
-
-		if (!g_pGameLevel)
-			return;
-
-		if (!Level().Server)
-			return;
-
-		if (!Level().Server->game)
-			return;
-
-		Level().Server->game->SetGameTimeFactor(g_qwStartGameTime,g_fTimeFactor);
-	}
-
-	virtual void	Status	(TStatus& S)
-	{
-		u32 year = 1, month = 1, day = 1, hours = 0, mins = 0, secs = 0, milisecs = 0;
-		split_time	(g_qwStartGameTime, year, month, day, hours, mins, secs, milisecs);
-		sprintf_s		(S,"%d.%d.%d %d:%d:%d.%d",year,month,day,hours,mins,secs,milisecs);
-	}
-};
-
 struct CCC_TimeFactorSingle : public CCC_Float {
 	CCC_TimeFactorSingle(LPCSTR N, float* V, float _min=0.f, float _max=1.f) : CCC_Float(N,V,_min,_max) {};
 
@@ -1195,7 +1151,7 @@ struct CCC_TimeFactorSingle : public CCC_Float {
 		if (!Level().Server->game)
 			return;
 
-		Level().Server->game->SetGameTimeFactor(g_fTimeFactor);
+		Level().SetGameTimeFactor(g_fTimeFactor);
 	}
 };
 
@@ -1680,7 +1636,6 @@ void CCC_RegisterCommands()
 	CMD1(CCC_MainMenu,		"main_menu"				)
 
 #ifndef MASTER_GOLD
-	CMD1(CCC_StartTimeSingle,	"start_time_single");
 	CMD4(CCC_TimeFactorSingle,	"time_factor_single", &g_fTimeFactor, 0.f,flt_max);
 #endif // MASTER_GOLD
 

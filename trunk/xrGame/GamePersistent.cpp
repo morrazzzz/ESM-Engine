@@ -636,16 +636,7 @@ static BOOL bEntryFlag		= TRUE;
 
 void CGamePersistent::OnAppActivate		()
 {
-	bool bIsMP = (g_pGameLevel && Level().game && GameID() != GAME_SINGLE);
-	bIsMP		&= !Device.Paused();
-
-	if( !bIsMP )
-	{
-		Device.Pause			(FALSE, !bRestorePause, TRUE, "CGP::OnAppActivate");
-	}else
-	{
-		Device.Pause			(FALSE, TRUE, TRUE, "CGP::OnAppActivate MP");
-	}
+	Device.Pause			(FALSE, !bRestorePause, TRUE, "CGP::OnAppActivate");
 
 	bEntryFlag = TRUE;
 }
@@ -654,18 +645,9 @@ void CGamePersistent::OnAppDeactivate	()
 {
 	if(!bEntryFlag) return;
 
-	bool bIsMP = (g_pGameLevel && Level().game && GameID() != GAME_SINGLE);
+	bRestorePause = Device.Paused();
+	Device.Pause(TRUE, TRUE, TRUE, "CGP::OnAppDeactivate");
 
-	bRestorePause = FALSE;
-
-	if ( !bIsMP )
-	{
-		bRestorePause			= Device.Paused();
-		Device.Pause			(TRUE, TRUE, TRUE, "CGP::OnAppDeactivate");
-	}else
-	{
-		Device.Pause			(TRUE, FALSE, TRUE, "CGP::OnAppDeactivate MP");
-	}
 	bEntryFlag = FALSE;
 }
 

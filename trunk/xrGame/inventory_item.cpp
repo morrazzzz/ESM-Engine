@@ -14,7 +14,6 @@
 #include "xrserver_objects_alife_items.h"
 #include "entity_alive.h"
 #include "Level.h"
-#include "game_cl_base.h"
 #include "Actor.h"
 #include "string_table.h"
 #include "..\include\xrRender\Kinematics.h"
@@ -300,7 +299,7 @@ bool CInventoryItem::Detach(const char* item_section_name, bool b_spawn_item)
 		// Send
 		NET_Packet			P;
 		D->Spawn_Write		(P,TRUE);
-		Level().Send		(P,net_flags(TRUE));
+		Level().Send		(P);
 		// Destroy
 		F_entity_Destroy	(D);
 	}

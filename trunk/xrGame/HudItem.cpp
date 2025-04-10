@@ -170,7 +170,7 @@ void CHudItem::SendHiddenItem()
 		NET_Packet				P;
 		object().u_EventGen		(P,GE_WPN_STATE_CHANGE,object().ID());
 		P.w_u8					(u8(eHiding));
-		object().u_EventSend	(P, net_flags(TRUE, TRUE, FALSE, TRUE));
+		object().u_EventSend	(P);
 	}
 }
 
@@ -185,38 +185,38 @@ void CHudItem::UpdateCL()
 	{
 		if(m_bStopAtEndAnimIsRunning)
 		{
-			/*
-			const xr_vector<motion_marks>&	marks = m_current_motion_def->marks;
-			if(!marks.empty())
+			if (SupportMotionsMarks)
 			{
-				float motion_prev_time = ((float)m_dwMotionCurrTm - (float)m_dwMotionStartTm)/1000.0f;
-				float motion_curr_time = ((float)Device.dwTimeGlobal - (float)m_dwMotionStartTm)/1000.0f;
-				
-				xr_vector<motion_marks>::const_iterator it = marks.begin();
-				xr_vector<motion_marks>::const_iterator it_e = marks.end();
-				for(;it!=it_e;++it)
+				const xr_vector<motion_marks>& marks = m_current_motion_def->marks;
+				if (!marks.empty())
 				{
-					const motion_marks&	M = (*it);
-					if(M.is_empty())
-						continue;
-	
-					const motion_marks::interval* Iprev = M.pick_mark(motion_prev_time);
-					const motion_marks::interval* Icurr = M.pick_mark(motion_curr_time);
-					if(Iprev==NULL && Icurr!=NULL /* || M.is_mark_between(motion_prev_time, motion_curr_time))
+					float motion_prev_time = ((float)m_dwMotionCurrTm - (float)m_dwMotionStartTm) / 1000.0f;
+					float motion_curr_time = ((float)Device.dwTimeGlobal - (float)m_dwMotionStartTm) / 1000.0f;
+
+					xr_vector<motion_marks>::const_iterator it = marks.begin();
+					xr_vector<motion_marks>::const_iterator it_e = marks.end();
+					for (; it != it_e; ++it)
 					{
-						OnMotionMark				(m_startedMotionState, M);
+						const motion_marks& M = (*it);
+						if (M.is_empty())
+							continue;
+
+						const motion_marks::interval* Iprev = M.pick_mark(motion_prev_time);
+						const motion_marks::interval* Icurr = M.pick_mark(motion_curr_time);
+						if (!Iprev && Icurr)
+						{
+							OnMotionMark(m_startedMotionState);
+						}
 					}
+
 				}
-			
 			}
-			
-			else
-			*/
 
 			m_dwMotionCurrTm					= Device.dwTimeGlobal;
 			if(m_dwMotionCurrTm > m_dwMotionEndTm)
 			{
-				OnMotionMark(m_startedMotionState);
+				if (!SupportMotionsMarks)
+					OnMotionMark(m_startedMotionState);
 
 				m_current_motion_def				= NULL;
 				m_dwMotionStartTm					= 0;
@@ -364,11 +364,11 @@ u32 CHudItem::PlayHUDMotion_noCB(const shared_str& motion_name, BOOL bMixIn, pla
 */
 	if( HudItemData() )
 	{
-		return HudItemData()->anim_play(motion_name, bMixIn, m_current_motion_def, m_started_rnd_anim_idx, anm_play);
+		return HudItemData()->anim_play(motion_name, bMixIn, m_current_motion_def, m_started_rnd_anim_idx, SupportMotionsMarks, anm_play);
 	}else
 	{
 		m_started_rnd_anim_idx				= 0;
-		return g_player_hud->motion_length	(motion_name, HudSection(), m_current_motion_def );
+		return g_player_hud->motion_length(motion_name, HudSection(), m_current_motion_def, SupportMotionsMarks);
 	}
 }
 

@@ -10,7 +10,6 @@
 
 #include "../xrPhysics/IPHWorld.h"
 #include "level.h"
-#include "game_cl_base.h"
 #include "alife_registry_wrappers.h"
 #include "..\include\xrRender\Kinematics.h"
 #include "client_spawn_manager.h"
@@ -28,7 +27,6 @@
 #include "gamepersistent.h"
 #include "game_object_space.h"
 #include "GameTaskManager.h"
-#include "game_base_kill_type.h"
 #include "holder_custom.h"
 #include "actor_memory.h"
 #include "actor_statistic_mgr.h"

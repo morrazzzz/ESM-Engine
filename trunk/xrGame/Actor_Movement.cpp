@@ -11,7 +11,6 @@
 #include "level.h"
 #include "UIGameCustom.h"
 #include "actorcondition.h"
-#include "game_cl_base.h"
 #include "WeaponMagazined.h"
 #include "CharacterPhysicsSupport.h"
 #include "player_hud.h"
@@ -19,6 +18,7 @@
 #ifdef DEBUG
 #include "phdebug.h"
 #endif
+#include "Actor_Flags.h"
 static const float	s_fLandingTime1		= 0.1f;// через сколько снять флаг Landing1 (т.е. включить следующую анимацию)
 static const float	s_fLandingTime2		= 0.3f;// через сколько снять флаг Landing2 (т.е. включить следующую анимацию)
 static const float	s_fJumpTime			= 0.3f;

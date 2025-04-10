@@ -12,10 +12,8 @@
 #include "object_interfaces.h"
 #include "script_value_container.h"
 #include "alife_space.h"
-#include "../../xrNetServer/client_id.h"
 
 class NET_Packet;
-class xrClientData;
 class CSE_ALifeGroupAbstract;
 class CSE_ALifeSchedulable;
 class CSE_ALifeInventoryItem;
@@ -72,7 +70,6 @@ public:
 	u16								ID;				// internal ID
 	u16								ID_Parent;		// internal ParentID, 0xffff means no parent
 	u16								ID_Phantom;		// internal PhantomID, 0xffff means no phantom
-	xrClientData*					owner;
 
 	// spawn data
 	shared_str						s_name;
@@ -107,7 +104,7 @@ public:
 	
 									CSE_Abstract	(LPCSTR caSection);
 	virtual							~CSE_Abstract	();
-	virtual void					OnEvent			(NET_Packet &tNetPacket, u16 type, u32 time, ClientID sender ){};
+	virtual void					OnEvent			(NET_Packet &tNetPacket, u16 type, u32 time ){};
 	virtual void					FillProps		(LPCSTR pref, PropItemVec &items);
 	virtual BOOL					Net_Relevant	(){return TRUE;};
 	//

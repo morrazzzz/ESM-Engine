@@ -143,7 +143,7 @@ void CMissile::spawn_fake_missile()
 
 		NET_Packet			P;
 		object->Spawn_Write	(P,TRUE);
-		Level().Send		(P,net_flags(TRUE));
+		Level().Send		(P);
 		F_entity_Destroy	(object);
 	}
 }

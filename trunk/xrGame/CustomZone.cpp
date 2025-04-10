@@ -9,7 +9,6 @@
 #include "xrserver_objects_alife_monsters.h"
 #include "../xr_3da/LightAnimLibrary.h"
 #include "level.h"
-#include "game_cl_base.h"
 #include "../xr_3da/igame_persistent.h"
 #include "../xr_3da/xr_collide_form.h"
 #include "artifact.h"

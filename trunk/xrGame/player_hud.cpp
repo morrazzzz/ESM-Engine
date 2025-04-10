@@ -400,7 +400,7 @@ void attachable_hud_item::LoadingHudItem(const shared_str& sect_name, IKinematic
 	}
 }
 
-u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, const CMotionDef*& md, u8& rnd_idx, player_hud_motion* anm_play)
+u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, const CMotionDef*& md, u8& rnd_idx, bool& SupportMotionsMark, player_hud_motion* anm_play)
 {
 	player_hud_motion* anm;
 	if (!anm_play)
@@ -418,7 +418,8 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, co
 
 	rnd_idx					= (u8)Random.randI(anm->m_animations.size()) ;
 	const motion_descr& M	= anm->m_animations[ rnd_idx ];
-
+	
+	SupportMotionsMark = HandsModeHudItem;
 	IKinematicsAnimated* kaModel = !HandsModeHudItem ? m_model->dcast_PKinematicsAnimated() : nullptr;
 	u32 ret	= g_player_hud->anim_play(m_attach_place_idx, M.mid, bMixIn, md, kaModel);
 	
@@ -614,7 +615,7 @@ void player_hud::render_hud(IRenderable* root_object)
 
 #include "../xr_3da/motion.h"
 
-u32 player_hud::motion_length(const shared_str& anim_name, const shared_str& hud_name, const CMotionDef*& md)
+u32 player_hud::motion_length(const shared_str& anim_name, const shared_str& hud_name, const CMotionDef*& md, bool& SupportMotionsMarks)
 {
 	attachable_hud_item* pi = create_hud_item(hud_name);
 	player_hud_motion* pm = pi->m_hand_motions.find_motion(anim_name);
@@ -624,6 +625,7 @@ u32 player_hud::motion_length(const shared_str& anim_name, const shared_str& hud
 		make_string("hudItem model [%s] has no motion with alias [%s]", hud_name.c_str(), anim_name.c_str()).c_str()
 	);
 
+	SupportMotionsMarks = pi->HandsModeHudItem;
 	IKinematicsAnimated* modelMotion = pi->HandsModeHudItem ? m_model : pi->m_model->dcast_PKinematicsAnimated();
 	return motion_length(pm->m_animations[0].mid, md, modelMotion);
 }

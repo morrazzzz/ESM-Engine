@@ -1,10 +1,7 @@
 #include "stdafx.h"
 #include "xrServer.h"
-#include "game_sv_single.h"
 #include "alife_simulator.h"
 #include "xrserver_objects.h"
-#include "game_base.h"
-#include "game_cl_base.h"
 #include "ai_space.h"
 #include "alife_object_registry.h"
 
@@ -24,9 +21,8 @@ xr_string xrServer::ent_name_safe(u16 eid)
 	return buff;
 }
 
-void xrServer::Process_event_destroy	(NET_Packet& P, ClientID sender, u32 time, u16 ID, NET_Packet* pEPack)
+void xrServer::Process_event_destroy	(NET_Packet& P, u32 time, u16 ID, NET_Packet* pEPack)
 {
-	u32								MODE = net_flags(TRUE,TRUE);
 	// Parse message
 	u16								id_dest	= ID;
 #ifdef DEBUG
@@ -37,13 +33,6 @@ void xrServer::Process_event_destroy	(NET_Packet& P, ClientID sender, u32 time, 
 	CSE_Abstract* e_dest = game->get_entity_from_eid(id_dest);	// кто должен быть уничтожен
 	R_ASSERT2(e_dest, "Destroy: [%d] not found on server", id_dest);
 
-	/*
-	xrClientData					*c_dest = e_dest->owner;				// клиент, чей юнит
-	R_ASSERT						(c_dest);
-	xrClientData					*c_from = ID_to_client(sender);	// клиент, кто прислал
-	R_ASSERT						(c_from);
-	R_ASSERT						(c_dest==c_from || GetServerClient()==c_from);
-	*/
 	u16								parent_id = e_dest->ID_Parent;
 
 	//---------------------------------------------
@@ -55,17 +44,17 @@ void xrServer::Process_event_destroy	(NET_Packet& P, ClientID sender, u32 time, 
 		if (!pEventPack) pEventPack = &P2;
 
 		while (!e_dest->children.empty())
-			Process_event_destroy		(P,sender,time,*e_dest->children.begin(), pEventPack);
+			Process_event_destroy		(P,time,*e_dest->children.begin(), pEventPack);
 	};
 
 	if (0xffff == parent_id && NULL == pEventPack) 
 	{
-		SendBroadcast				(BroadcastCID,P,MODE);
+		SendBroadcast				(P);
 	}
 	else 
 	{
 		NET_Packet	tmpP;
-		if (0xffff != parent_id && Process_event_reject(P,sender,time,parent_id,ID,false)) 
+		if (0xffff != parent_id && Process_event_reject(P,time,parent_id,ID,false)) 
 		{
 			game->u_EventGen(tmpP, GE_OWNERSHIP_REJECT, parent_id);
 			tmpP.w_u16(id_dest);
@@ -85,15 +74,14 @@ void xrServer::Process_event_destroy	(NET_Packet& P, ClientID sender, u32 time, 
 
 	if (NULL == pEPack && NULL != pEventPack)
 	{
-		SendBroadcast				(BroadcastCID, *pEventPack, MODE);
+		SendBroadcast				(*pEventPack);
 	}
 
 	// Everything OK, so perform entity-destroy
-	if (e_dest->m_bALifeControl && ai().get_alife()) {
-		game_sv_Single				*_game = smart_cast<game_sv_Single*>(game);
-		VERIFY						(_game);
-		if (ai().alife().objects().object(id_dest,true))
-			_game->alife().release	(e_dest,false);
+	if (e_dest->m_bALifeControl && ai().get_alife()) 
+	{
+		if (ai().get_alife()->objects().object(id_dest,true))
+			ai().get_alife()->release(e_dest, false);
 	}
 
 	entity_Destroy					(e_dest);

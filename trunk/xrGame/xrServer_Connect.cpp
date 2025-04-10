@@ -2,7 +2,6 @@
 #include "xrServer.h"
 #include "game_sv_single.h"
 #include "xrMessages.h"
-#include "game_cl_single.h"
 #include "MainMenu.h"
 
 #pragma warning(push)
@@ -10,7 +9,7 @@
 #include <malloc.h>
 #pragma warning(pop)
 
-xrServer::EConnect xrServer::Connect(shared_str &session_name)
+bool xrServer::Connect(shared_str &session_name)
 {
 #ifdef DEBUG
 	Msg						("* sv_Connect: %s",	*session_name);
@@ -18,7 +17,7 @@ xrServer::EConnect xrServer::Connect(shared_str &session_name)
 
 	// Parse options and create game
 	if (0==strchr(*session_name,'/'))
-		return				ErrConnect;
+		return false;
 
 	string1024				options;
 	R_ASSERT2(xr_strlen(session_name) <= sizeof(options), "session_name too BIIIGGG!!!");
@@ -29,48 +28,22 @@ xrServer::EConnect xrServer::Connect(shared_str &session_name)
 	R_ASSERT2(xr_strlen(options) <= sizeof(type), "session_name too BIIIGGG!!!");
 	strcpy					(type,options);
 	if (strchr(type,'/'))	*strchr(type,'/') = 0;
-	game					= new game_sv_Single();
+	game = new game_sv_Single();
 
 	// Options
-	if (0==game)			return ErrConnect;
+	if (0 == game)
+		return false;
+	
 	csPlayers.Enter			();
-//	game->type				= type_id;
-#ifdef DEBUG
-	Msg("* Created server_game %s",game->type_name());
-#endif
 
 	game->Create			(session_name);
 	csPlayers.Leave			();
 
-	return IPureServer::Connect(*session_name);
+	return true;
 }
 
 
-IClient* xrServer::new_client( SClientConnectData* cl_data )
+void xrServer::new_client()
 {
-	IClient* CL		= client_Find_Get( cl_data->clientID );
-	VERIFY( CL );
-	
-	// copy entity
-	CL->ID			= cl_data->clientID;
-	
-	string64 new_name;
-	strcpy_s( new_name, cl_data->name );
-	CL->name._set( new_name );
-	
-	if ( !HasProtected() && game->NewPlayerName_Exists( CL, new_name ) )
-	{
-		game->NewPlayerName_Generate( CL, new_name );
-		game->NewPlayerName_Replace( CL, new_name );
-	}
-	CL->name._set( new_name );
-	CL->pass._set( cl_data->pass );
-
-	SV_Client = CL;
-
-	if ( client_Count() == 1 )
-	{
-		Update();
-	}
-	return CL;
+	Update();
 }

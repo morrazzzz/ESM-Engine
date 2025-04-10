@@ -17,7 +17,6 @@ public:
 									game_sv_Single			();
 	virtual							~game_sv_Single			();
 
-	virtual		LPCSTR				type_name				() const { return "single";};
 	virtual		void				Create					(shared_str& options);
 //	virtual		CSE_Abstract*		get_entity_from_eid		(u16 id);
 
@@ -28,19 +27,11 @@ public:
 
 	// Main
 	virtual		void				Update					();
-	virtual		ALife::_TIME_ID		GetGameTime				();
-	virtual		float				GetGameTimeFactor		();
-	virtual		void				SetGameTimeFactor		(const float fTimeFactor);
 
-	virtual		ALife::_TIME_ID		GetEnvironmentGameTime	();
-	virtual		float				GetEnvironmentGameTimeFactor		();
-	virtual		void				SetEnvironmentGameTimeFactor		(const float fTimeFactor);
-
-	virtual		bool				change_level			(NET_Packet &net_packet, ClientID sender);
-	virtual		void				save_game				(NET_Packet &net_packet, ClientID sender);
-	virtual		bool				load_game				(NET_Packet &net_packet, ClientID sender);
-	virtual		void				reload_game				(NET_Packet &net_packet, ClientID sender);
-	virtual		void				switch_distance			(NET_Packet &net_packet, ClientID sender);
+	virtual		bool				change_level			(NET_Packet &net_packet);
+	virtual		void				save_game				(NET_Packet &net_packet);
+	virtual		bool				load_game				(NET_Packet &net_packet);
+	virtual		void				reload_game				(NET_Packet &net_packet);
 	virtual		void				teleport_object			(NET_Packet &packet, u16 id);
 	virtual		void				add_restriction			(NET_Packet &packet, u16 id);
 	virtual		void				remove_restriction		(NET_Packet &packet, u16 id);

@@ -281,9 +281,9 @@ BOOL CSE_ALifeItem::Net_Relevant			()
 	return						(true);
 }
 
-void CSE_ALifeItem::OnEvent					(NET_Packet &tNetPacket, u16 type, u32 time, ClientID sender )
+void CSE_ALifeItem::OnEvent					(NET_Packet &tNetPacket, u16 type, u32 time )
 {
-	inherited1::OnEvent			(tNetPacket,type,time,sender);
+	inherited1::OnEvent			(tNetPacket,type,time);
 
 	if (type != GE_FREEZE_OBJECT)
 		return;
@@ -443,9 +443,9 @@ void CSE_ALifeItemWeapon::STATE_Write		(NET_Packet	&tNetPacket)
 	tNetPacket.w_u8				(ammo_type);
 }
 
-void CSE_ALifeItemWeapon::OnEvent			(NET_Packet	&tNetPacket, u16 type, u32 time, ClientID sender )
+void CSE_ALifeItemWeapon::OnEvent			(NET_Packet	&tNetPacket, u16 type, u32 time )
 {
-	inherited::OnEvent			(tNetPacket,type,time,sender);
+	inherited::OnEvent			(tNetPacket,type,time);
 	switch (type) {
 		case GE_WPN_STATE_CHANGE:
 			{			

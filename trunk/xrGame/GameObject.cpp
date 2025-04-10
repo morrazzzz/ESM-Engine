@@ -9,7 +9,6 @@
 #include "script_game_object.h"
 #include "xrserver_objects_alife.h"
 #include "xrServer_Objects_ALife_Items.h"
-#include "game_cl_base.h"
 #include "object_factory.h"
 #include "..\include\xrRender\Kinematics.h"
 #include "ai_object_location_impl.h"
@@ -444,7 +443,7 @@ void CGameObject::spawn_supplies()
 
 				NET_Packet					P;
 				A->Spawn_Write				(P,TRUE);
-				Level().Send				(P,net_flags(TRUE));
+				Level().Send				(P);
 				F_entity_Destroy			(A);
 		}
 	}
@@ -606,9 +605,9 @@ void CGameObject::u_EventGen(NET_Packet& P, u32 type, u32 dest)
 	P.w_u16		(u16(dest&0xffff));
 }
 
-void CGameObject::u_EventSend(NET_Packet& P, u32 dwFlags )
+void CGameObject::u_EventSend(NET_Packet& P)
 {
-	Level().Send(P, dwFlags);
+	Level().Send(P);
 }
 
 void CGameObject::OnH_B_Chield()

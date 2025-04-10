@@ -14,7 +14,7 @@
 
 ALife::_TIME_ID __game_time()
 {
-	return	(ai().get_alife() ? ai().alife().time().game_time() : Level().GetGameTime());
+	return	(Level().GetGameTime());
 }
 
 u32 get_time()

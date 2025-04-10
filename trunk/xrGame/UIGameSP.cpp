@@ -3,7 +3,6 @@
 #include "actor.h"
 #include "../xr_3da/xr_input.h"
 
-#include "game_cl_Single.h"
 #include "ui/UIPdaAux.h"
 #include "xr_level_controller.h"
 #include "actorcondition.h"
@@ -221,7 +220,7 @@ void CChangeLevelWnd::OnOk()
 	p.w_vec3								(m_position);
 	p.w_vec3								(m_angles);
 
-	Level().Send							(p,net_flags(TRUE));
+	Level().Send							(p);
 }
 
 void CChangeLevelWnd::OnCancel()

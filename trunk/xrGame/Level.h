@@ -16,7 +16,6 @@
 class	CHUDManager;
 class	CParticlesObject;
 class	xrServer;
-class	game_cl_GameState;
 class	NET_Queue_Event;
 class	CSE_Abstract;
 class	CSpaceRestrictionManager;
@@ -108,8 +107,6 @@ public:
 private:
 	CObject* pCurrentControlEntity;
 
-	xrServer::EConnect			m_connect_server_err;
-
 public:
 	CObject*					CurrentControlEntity	( void ) const		{ return pCurrentControlEntity; }
 	void						SetControlEntity		( CObject* O  )		{ pCurrentControlEntity=O; }
@@ -123,7 +120,6 @@ public:
 	DEFINE_VECTOR				(CParticlesObject*,POVec,POIt);
 	POVec						m_StaticParticles;
 
-	game_cl_GameState			*game;
 	BOOL						m_bGameConfigStarted;
 	BOOL						game_configured;
 	NET_Queue_Event				*game_events;
@@ -156,9 +152,6 @@ protected:
 	bool	xr_stdcall			net_start_client4				();
 	bool	xr_stdcall			net_start_client5				();
 	bool	xr_stdcall			net_start_client6				();
-
-	void						net_OnChangeSelfName			(NET_Packet* P);
-
 public:
 	// sounds
 	xr_vector<ref_sound*>		static_Sounds;
@@ -198,17 +191,13 @@ public:
 	virtual void				IR_OnMouseStop			( int, int);
 	virtual void				IR_OnMouseWheel			( int direction);
 	virtual void				IR_OnActivate			(void);
-	
-			int					get_RPID				(LPCSTR name);
-
 
 	// Game
-	void						InitializeClientGame	(NET_Packet& P);
 	void						ClientReceive			();
 	void						ClientSend				();
 	void						ClientSave				();
 			u32					Objects_net_Save		(NET_Packet* _Packet, u32 start, u32 count);
-	virtual	void				Send					(NET_Packet& P, u32 dwFlags=DPNSEND_GUARANTEED, u32 dwTimeout=0);
+	virtual	void				Send					(NET_Packet& P);
 	
 	void						g_cl_Spawn				(LPCSTR name, u8 rp, u16 flags, Fvector pos);	// only ask server
 	void						g_sv_Spawn				(CObject*, CSE_Abstract*);					// server reply/command spawning
@@ -236,28 +225,22 @@ public:
 
 	//названияе текущего уровня
 	virtual shared_str			name				() const;
-	virtual void				GetLevelInfo		( CServerInfo* si );
 
 	//gets the time from the game simulation
 	
 	//возвращает время в милисекундах относительно начала игры
 	ALife::_TIME_ID		GetGameTime				();
-	//возвращает время для энвайронмента в милисекундах относительно начала игры
-	ALife::_TIME_ID		GetEnvironmentGameTime	();
 	//игровое время в отформатированном виде
 	void				GetGameDateTime			(u32& year, u32& month, u32& day, u32& hours, u32& mins, u32& secs, u32& milisecs);
 
-	float				GetGameTimeFactor		();
-	void				SetGameTimeFactor		(const float fTimeFactor);
-	void				SetGameTimeFactor		(ALife::_TIME_ID GameTime, const float fTimeFactor);
-	void				SetEnvironmentGameTimeFactor		(ALife::_TIME_ID GameTime, const float fTimeFactor);
+	void SetGameTimeFactor(const float fTimeFactor);
+	float GetGameTimeFactor		();
 //	void				SetGameTime				(ALife::_TIME_ID GameTime);
 
 	// gets current daytime [0..23]
 	u8					GetDayTime				();
 	u32					GetGameDayTimeMS		();
 	float				GetGameDayTimeSec		();
-	float				GetEnvironmentGameDayTimeSec();
 
 protected:
 //	CFogOfWarMngr*		m_pFogOfWarMngr;
@@ -287,7 +270,6 @@ add_to_type_list(CLevel)
 #define script_type_list save_type_list(CLevel)
 
 IC CLevel&				Level()		{ return *((CLevel*) g_pGameLevel);			}
-IC game_cl_GameState&	Game()		{ return *Level().game;					}
 	u32					GameID();
 
 

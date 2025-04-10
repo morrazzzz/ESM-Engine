@@ -4,11 +4,8 @@
 
 int	g_Dump_Update_Read = 0;
 
-void xrServer::Process_update(NET_Packet& P, ClientID sender)
+void xrServer::Process_update(NET_Packet& P)
 {
-	xrClientData* CL		= ID_to_client(sender);
-	R_ASSERT2				(CL,"Process_update client not found");
-
 	if (g_Dump_Update_Read) Msg("---- UPDATE_Read --- ");
 
 	// while has information
@@ -40,12 +37,8 @@ void xrServer::Process_update(NET_Packet& P, ClientID sender)
 
 }
 
-void xrServer::Process_save(NET_Packet& P, ClientID sender)
+void xrServer::Process_save(NET_Packet& P)
 {
-	xrClientData* CL		= ID_to_client(sender);
-	R_ASSERT2				(CL,"Process_save client not found");
-	CL->net_Ready			= TRUE;
-
 	// while has information
 	while (!P.r_eof())
 	{

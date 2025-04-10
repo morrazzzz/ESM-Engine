@@ -83,7 +83,6 @@ CSE_Abstract::CSE_Abstract					(LPCSTR caSection)
 	ID							= 0xffff;
 	ID_Parent					= 0xffff;
 	ID_Phantom					= 0xffff;
-	owner						= 0;
 	s_gameid					= 0;
 	s_RP						= 0xFE;			// Use supplied coords
 	s_flags.assign				(0);

@@ -73,6 +73,7 @@ protected: //чтоб нельзя было вызвать на прямую
 		u32						m_startedMotionState;
 		u8						m_started_rnd_anim_idx;
 		bool					m_bStopAtEndAnimIsRunning;
+		bool SupportMotionsMarks;
 	};
 public:
 	virtual void				Load				(LPCSTR section);

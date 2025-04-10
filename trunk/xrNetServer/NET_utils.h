@@ -1,12 +1,6 @@
-#ifndef _INCDEF_NETUTILS_H_
-#define _INCDEF_NETUTILS_H_
 #pragma once
 
-#include "client_id.h"
-
 #pragma pack(push,1)
-
-
 
 //for presentation
 const	u32			NET_PacketSizeLimit	= 8192; //16384;//8192;
@@ -117,11 +111,6 @@ public:
 		w_vec3	(M.j);
 		w_vec3	(M.k);
 		w_vec3	(M.c);
-	}
-	
-	IC void w_clientID			(ClientID& C)
-	{
-		w_u32(C.value());
 	}
 	
 	IC void	w_chunk_open8		(u32& position)
@@ -273,15 +262,7 @@ public:
 		r_vec3	(M.k);	M._34_	= 0;
 		r_vec3	(M.c);	M._44_	= 1;
 	}
-	IC void		r_clientID		(ClientID& C)
-	{
-		u32 tmp;
-		r_u32(tmp);
-		C.set(tmp);
-	}
 };
 
 #pragma pack(pop)
-
-#endif /*_INCDEF_NETUTILS_H_*/
 

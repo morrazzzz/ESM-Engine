@@ -10,6 +10,7 @@
 #include "script_callback_ex.h"
 #include "object_broker.h"
 #include "weapon.h"
+#include "Actor_Flags.h"
 
 #define MAX_SATIETY					1.0f
 #define START_SATIETY				0.5f

@@ -9,7 +9,6 @@
 #include "eatable_item.h"
 #include "script_engine.h"
 #include "xrmessages.h"
-//#include "game_cl_base.h"
 #include "xr_level_controller.h"
 #include "level.h"
 #include "ai_space.h"

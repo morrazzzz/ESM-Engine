@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "net_client.h"
 #include "net_server.h"
-#include "net_messages.h"
 
 INetQueue::INetQueue()		
 #ifdef PROFILE_CRITICAL_SECTIONS
@@ -54,31 +53,7 @@ NET_Packet*		INetQueue::CreateGet()
 	cs.Leave		();
 	return	P;
 }
-/*
-NET_Packet*		INetQueue::Create	(const NET_Packet& _other)
-{
-	NET_Packet*	P			= 0;
-	cs.Enter		();
-//#ifdef _DEBUG
-//		Msg ("- INetQueue::Create - ready %d, unused %d", ready.size(), unused.size());
-//#endif
-	if (unused.empty())	
-	{
-		ready.push_back		(xr_new<NET_Packet> ());
-		P					= ready.back	();
-		//---------------------------------------------
-		LastTimeCreate = GetTickCount();
-		//---------------------------------------------
-	} else {
-		ready.push_back		(unused.back());
-		unused.pop_back		();
-		P					= ready.back	();
-	}	
-	CopyMemory	(P,&_other,sizeof(NET_Packet));	
-	cs.Leave		();
-	return			P;
-}
-*/
+
 NET_Packet*		INetQueue::Retreive	()
 {
 	NET_Packet*	P			= 0;
@@ -145,19 +120,6 @@ bool IPureClient::Connect()
 	return true;
 }
 
-void IPureClient::Disconnect()
-{
-    // Clean up Host _list_
-	for (u32 i=0; i<net_Hosts.size(); i++) {
-		HOST_NODE&	N = net_Hosts[i];
-		_RELEASE	(N.pHostAddress);
-	}
-	net_Hosts.clear					();
-
-	net_Connected = EnmConnectionWait;
-	net_Syncronised = FALSE;
-}
-
 void	IPureClient::OnMessage(void* data, u32 size)
 {
 	// One of the messages - decompress it
@@ -169,9 +131,4 @@ void	IPureClient::OnMessage(void* data, u32 size)
 	u16						tmp_type;
 	P->r_begin				(tmp_type);
 	net_Queue.CreateCommit	(P);
-}
-
-BOOL	IPureClient::net_IsSyncronised()
-{
-	return net_Syncronised;
 }

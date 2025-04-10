@@ -18,7 +18,7 @@
 #include "../xrServer_objects_ALife.h"
 #include "../alife_simulator.h"
 #include "../alife_object_registry.h"
-#include "../game_cl_base.h"
+#include "Actor_Flags.h"
 #include "../level.h"
 #include "../seniority_hierarchy_holder.h"
 

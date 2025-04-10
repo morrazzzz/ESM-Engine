@@ -3,7 +3,6 @@
 #include "Level_Bullet_Manager.h"
 #include "xrserver.h"
 #include "xrmessages.h"
-#include "game_cl_base.h"
 #include "PHCommander.h"
 #include "net_queue.h"
 #include "MainMenu.h"
@@ -90,7 +89,6 @@ void CLevel::net_Stop		()
 	remove_objects				();
 	
 	IGame_Level::net_Stop		();
-	IPureClient::Disconnect		();
 
 	if (Server) {
 		Server->Disconnect		();
@@ -178,12 +176,10 @@ void CLevel::ClientSave	()
 
 extern		float		phTimefactor;
 
-void CLevel::Send(NET_Packet& P, u32 dwFlags, u32 dwTimeout)
+void CLevel::Send(NET_Packet& P)
 {
 	// optimize the case when server located in our memory
-	ClientID	_clid;
-	_clid.set(1);
-	Server->OnMessage(P, _clid);
+	Server->OnMessage(P);
 }
 
 void CLevel::net_Update	()
@@ -217,38 +213,7 @@ bool CLevel::Connect2Server()
 	if (!Connect())		
 		return false;
 
-	net_Syncronised = TRUE;
-
-	//---------------------------------------------------------------------------
-	NET_Packet P;
-	P.w_begin(M_CLIENT_REQUEST_CONNECTION_DATA);
-	Send(P);
-	//---------------------------------------------------------------------------
+	game_configured = true;
+	
 	return true;
 };
-
-void				CLevel::net_OnChangeSelfName			(NET_Packet* P)
-{
-	if (!P) return;
-	string64 NewName			;
-	P->r_stringZ(NewName)		;
-	if (!strstr(*m_caClientOptions, "/name="))
-	{
-		string1024 tmpstr;
-		strcpy_s(tmpstr, *m_caClientOptions);
-		strcat_s(tmpstr, "/name=");
-		strcat_s(tmpstr, NewName);
-		m_caClientOptions = tmpstr;
-	}
-	else
-	{
-		string1024 tmpstr;
-		strcpy_s(tmpstr, *m_caClientOptions);
-		*(strstr(tmpstr, "name=")+5) = 0;
-		strcat_s(tmpstr, NewName);
-		const char* ptmp = strstr(strstr(*m_caClientOptions, "name="), "/");
-		if (ptmp)
-			strcat_s(tmpstr, ptmp);
-		m_caClientOptions = tmpstr;
-	}
-}

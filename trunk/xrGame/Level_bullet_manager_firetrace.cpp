@@ -4,7 +4,6 @@
 #include "../xr_3da/GameMtlLib.h"
 #include "level.h"
 #include "gamepersistent.h"
-#include "game_cl_base.h"
 #include "xrmessages.h"
 #include "clsid_game.h"
 #include "../include/xrRender/Kinematics.h"
@@ -266,15 +265,6 @@ void CBulletManager::DynamicObjectHit	(CBulletManager::_event& E)
 	if (g_clear) E.Repeated = false;
 	if (GameID() == GAME_SINGLE) E.Repeated = false;
 	bool NeedShootmark = true;//!E.Repeated;
-	
-	if (E.R.O->CLS_ID == CLSID_OBJECT_ACTOR)
-	{
-		game_PlayerState* ps = Game().GetPlayerByGameID(E.R.O->ID());
-		if (ps && ps->testFlag(GAME_PLAYER_FLAG_INVINCIBLE))
-		{
-			NeedShootmark = false;
-		};
-	}
 	
 	//визуальное обозначение попадание на объекте
 //	Fvector			hit_normal;

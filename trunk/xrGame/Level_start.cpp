@@ -2,7 +2,6 @@
 #include "level.h"
 #include "Level_Bullet_Manager.h"
 #include "xrserver.h"
-#include "game_cl_base.h"
 #include "xrmessages.h"
 #include "../xr_3da/x_ray.h"
 #include "../xr_3da/device.h"
@@ -10,7 +9,6 @@
 #include "../xr_3da/xr_ioconsole.h"
 #include "MainMenu.h"
 #include "UIGameCustom.h"
-#include "game_cl_single.h"
 
 BOOL CLevel::net_Start	( LPCSTR op_server, LPCSTR op_client )
 {
@@ -107,7 +105,7 @@ bool CLevel::net_start2				()
 {
 	if (net_start_result_total && m_caServerOptions.size())
 	{
-		if ((m_connect_server_err=Server->Connect(m_caServerOptions))!=xrServer::ErrNoError)
+		if (!Server->Connect(m_caServerOptions))
 		{
 			net_start_result_total = false;
 			Msg				("! Failed to start server.");
@@ -146,14 +144,6 @@ bool CLevel::net_start5				()
 {
 	if (net_start_result_total)
 	{
-		NET_Packet		NP;
-		NP.w_begin		(M_CLIENTREADY);
-		Send			(NP,net_flags(TRUE,TRUE));
-
-		if (OnClient() && Server)
-		{
-			Server->SLS_Clear();
-		};
 	};
 	return true;
 }
@@ -184,22 +174,5 @@ bool CLevel::net_start6()
 	}
 
 	return true;
-}
-
-
-void CLevel::InitializeClientGame	(NET_Packet& P)
-{
-	string256 game_type_name;
-	P.r_stringZ(game_type_name);
-	if(game && !xr_strcmp(game_type_name, game->type_name()) )
-		return;
-	
-	xr_delete(game);
-	Msg("- Game configuring : Started ");
-
-	game = new game_cl_Single();
-	game->set_type_name(game_type_name);
-	game->Init();
-	m_bGameConfigStarted	= TRUE;
 }
 

@@ -297,7 +297,7 @@ void CPHSkeleton::SpawnCopy()
 		// Send
 		NET_Packet			P;
 		D->Spawn_Write		(P,TRUE);
-		Level().Send		(P,net_flags(TRUE));
+		Level().Send		(P);
 		// Destroy
 		F_entity_Destroy	(D);
 	}

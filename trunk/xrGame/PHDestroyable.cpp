@@ -67,7 +67,7 @@ void CPHDestroyable::GenSpawnReplace(u16 ref_id,LPCSTR section,shared_str visual
 	{
 		NET_Packet			P;
 		D->Spawn_Write		(P,TRUE);
-		Level().Send		(P,net_flags(TRUE));
+		Level().Send		(P);
 		// Destroy
 		F_entity_Destroy	(D);
 		m_depended_objects++;

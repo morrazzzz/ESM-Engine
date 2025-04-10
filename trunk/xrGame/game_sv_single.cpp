@@ -14,7 +14,6 @@
 game_sv_Single::game_sv_Single			()
 {
 	m_alife_simulator			= NULL;
-	m_type						= GAME_SINGLE;
 };
 
 game_sv_Single::~game_sv_Single			()
@@ -28,8 +27,6 @@ void	game_sv_Single::Create			(shared_str& options)
 
 	if (strstr(*options,"/alife"))
 		m_alife_simulator				= xr_new<CALifeSimulator>(&server(),&options);
-
-	switch_Phase						(GAME_PHASE_INPROGRESS);
 }
 
 /**
@@ -156,47 +153,7 @@ void	game_sv_Single::Update			()
 	inherited::Update	();
 }
 
-
-ALife::_TIME_ID game_sv_Single::GetGameTime		()
-{
-	if (ai().get_alife() && ai().alife().initialized())
-		return(ai().alife().time_manager().game_time());
-	else
-		return(inherited::GetGameTime());
-}
-
-float game_sv_Single::GetGameTimeFactor		()
-{
-	if (ai().get_alife() && ai().alife().initialized())
-		return(ai().alife().time_manager().time_factor());
-	else
-		return(inherited::GetGameTimeFactor());
-}
-
-void game_sv_Single::SetGameTimeFactor		(const float fTimeFactor)
-{
-	if (ai().get_alife() && ai().alife().initialized())
-		return(alife().time_manager().set_time_factor(fTimeFactor));
-	else
-		return(inherited::SetGameTimeFactor(fTimeFactor));
-}
-
-ALife::_TIME_ID game_sv_Single::GetEnvironmentGameTime		()
-{
-	return(inherited::GetGameTime());
-}
-
-float game_sv_Single::GetEnvironmentGameTimeFactor		()
-{
-	return(inherited::GetGameTimeFactor());
-}
-
-void game_sv_Single::SetEnvironmentGameTimeFactor		(const float fTimeFactor)
-{
-//	return(inherited::SetGameTimeFactor(fTimeFactor));
-}
-
-bool game_sv_Single::change_level					(NET_Packet &net_packet, ClientID sender)
+bool game_sv_Single::change_level					(NET_Packet &net_packet)
 {
 	if (ai().get_alife())
 		return					(alife().change_level(net_packet));
@@ -204,7 +161,7 @@ bool game_sv_Single::change_level					(NET_Packet &net_packet, ClientID sender)
 		return					(true);
 }
 
-void game_sv_Single::save_game						(NET_Packet &net_packet, ClientID sender)
+void game_sv_Single::save_game						(NET_Packet &net_packet)
 {
 	if (!ai().get_alife())
 		return;
@@ -212,25 +169,17 @@ void game_sv_Single::save_game						(NET_Packet &net_packet, ClientID sender)
 	alife().save				(net_packet);
 }
 
-bool game_sv_Single::load_game					(NET_Packet &net_packet, ClientID sender)
+bool game_sv_Single::load_game					(NET_Packet &net_packet)
 {
 	if (!ai().get_alife())
-		return					(inherited::load_game(net_packet,sender));
+		return					(inherited::load_game(net_packet));
 	shared_str						game_name;
 	net_packet.r_stringZ		(game_name);
 	return						(alife().load_game(*game_name,true));
 }
 
-void game_sv_Single::reload_game				(NET_Packet &net_packet, ClientID sender)
+void game_sv_Single::reload_game				(NET_Packet &net_packet)
 {
-}
-
-void game_sv_Single::switch_distance			(NET_Packet &net_packet, ClientID sender)
-{
-	if (!ai().get_alife())
-		return;
-
-	alife().set_switch_distance	(net_packet.r_float());
 }
 
 void game_sv_Single::teleport_object			(NET_Packet &net_packet, u16 id)

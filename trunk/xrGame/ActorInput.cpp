@@ -11,7 +11,6 @@
 #include "UIGameSP.h"
 #include "inventory.h"
 #include "level.h"
-#include "game_cl_base.h"
 #include "xr_level_controller.h"
 #include "UsableScriptObject.h"
 #include "clsid_game.h"
@@ -202,7 +201,7 @@ void CActor::IR_OnKeyboardRelease(int cmd)
 		switch(cmd)
 		{
 		case kJUMP:		mstate_wishful &=~mcJump;		break;
-		case kDROP:		if(GAME_PHASE_INPROGRESS == Game().Phase()) g_PerformDrop();				break;
+		case kDROP:		g_PerformDrop();				break;
 		}
 	}
 }

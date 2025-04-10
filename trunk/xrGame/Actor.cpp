@@ -33,8 +33,6 @@
 #include "inventory.h"
 #include "level.h"
 #include "GamePersistent.h"
-#include "game_cl_base.h"
-#include "game_cl_single.h"
 #include "xrmessages.h"
 #include "string_table.h"
 #include "usablescriptobject.h"
@@ -76,6 +74,15 @@ static Fvector	vFootExt;
 
 Flags32			psActorFlags={0};
 
+ESingleGameDifficulty ACTOR_DEFS::g_SingleGameDifficulty = egdMaster;
+
+xr_token ACTOR_DEFS::difficulty_type_token[] = {
+	{ "gd_novice",						egdNovice									},
+	{ "gd_stalker",						egdStalker									},
+	{ "gd_veteran",						egdVeteran									},
+	{ "gd_master",						egdMaster									},
+	{ 0,							0											}
+};
 
 
 CActor::CActor() : CEntityAlive(), current_ik_cam_shift(0)
@@ -442,37 +449,6 @@ void	CActor::Hit							(SHit* pHDS)
 	bool bPlaySound = true;
 	if (!g_Alive()) bPlaySound = false;
 
-	if (!IsGameTypeSingle() && !g_dedicated_server)
-	{
-		game_PlayerState* ps = Game().GetPlayerByGameID(ID());
-		if (ps && ps->testFlag(GAME_PLAYER_FLAG_INVINCIBLE))
-		{
-			bPlaySound = false;
-			if (Device.dwFrame != last_hit_frame &&
-				HDS.bone() != BI_NONE)
-			{		
-				// вычислить позицию и направленность партикла
-				Fmatrix pos; 
-
-				CParticlesPlayer::MakeXFORM(this,HDS.bone(),HDS.dir,HDS.p_in_bone_space,pos);
-
-				// установить particles
-				CParticlesObject* ps = NULL;
-
-				if (eacFirstEye == cam_active && this == Level().CurrentEntity())
-					ps = CParticlesObject::Create(invincibility_fire_shield_1st,TRUE);
-				else
-					ps = CParticlesObject::Create(invincibility_fire_shield_3rd,TRUE);
-
-				ps->UpdateParent(pos,Fvector().set(0.f,0.f,0.f));
-				GamePersistent().ps_needtoplay.push_back(ps);
-			};
-		};
-		 
-
-		last_hit_frame = Device.dwFrame;
-	};
-
 	if(	!g_dedicated_server	&& 
 		!sndHit[HDS.hit_type].empty()			&& 
 		(ALife::eHitTypeTelepatic != HDS.hit_type))
@@ -685,10 +661,9 @@ void CActor::Die(CObject* who)
 		m_BloodSnd.stop			();		
 	}
 
-	if(IsGameTypeSingle())
-	{
-		start_tutorial		("game_over");
-	}
+	if (Level().CurrentViewEntity() == this)
+		start_tutorial("game_over");
+
 	xr_delete				(m_sndShockEffector);
 }
 

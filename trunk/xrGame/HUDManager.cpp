@@ -9,7 +9,6 @@
 #include "GamePersistent.h"
 #include "Car.h"
 #include "UIGameCustom.h"
-#include "game_cl_base.h"
 #include "UIGameSP.h"
 
 extern CUIGameCustom*	CurrentGameUI()	{return HUD().GetGameUI();}

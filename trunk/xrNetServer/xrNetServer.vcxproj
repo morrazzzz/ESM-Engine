@@ -372,9 +372,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="client_id.h" />
     <ClInclude Include="NET_Client.h" />
-    <ClInclude Include="NET_Messages.h" />
     <ClInclude Include="NET_Server.h" />
     <ClInclude Include="NET_Shared.h" />
     <ClInclude Include="NET_utils.h" />

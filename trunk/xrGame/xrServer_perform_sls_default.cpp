@@ -34,12 +34,11 @@ void xrServer::SLS_Default	()
 			u16				ID;
 			P.r_begin		(ID);
 			R_ASSERT		(M_SPAWN==ID);
-			ClientID clientID;clientID.set(0);
 
 #ifdef USE_DESIGNER_KEY
 			CSE_Abstract			*entity = 
 #endif
-				Process_spawn(P,clientID);
+				Process_spawn(P);
 #ifdef USE_DESIGNER_KEY
 			if (_designer) {
 				CSE_ALifeCreatureActor	*actor = smart_cast<CSE_ALifeCreatureActor*>(entity);
@@ -69,8 +68,6 @@ void xrServer::SLS_Default	()
 	u16						id;
 	packet.r_begin			(id);
 	R_ASSERT				(id == M_SPAWN);
-	ClientID				clientID;
-	clientID.set			(0);
-	Process_spawn			(packet,clientID);
+	Process_spawn			(packet);
 #endif
 }

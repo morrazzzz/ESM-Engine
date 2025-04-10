@@ -5,7 +5,6 @@
 #include "inventory.h"
 #include "wound.h"
 #include "level.h"
-#include "game_cl_base.h"
 #include "entity_alive.h"
 #include "../include/xrRender/Kinematics.h"
 #include "object_broker.h"

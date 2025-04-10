@@ -26,7 +26,7 @@ struct player_hud_motion
 struct player_hud_motion_container
 {
 	xr_vector<player_hud_motion>	m_anims;
-	player_hud_motion*				find_motion(const shared_str& name);
+	player_hud_motion*				find_motion(const shared_str& name);	
 	void LoadingMotions(IKinematicsAnimated* model, const shared_str& sect);
 };
 
@@ -78,8 +78,8 @@ struct attachable_hud_item
 			
 	bool HandsModeHudItem{ true };
 
-			attachable_hud_item		(player_hud* pparent):m_parent(pparent),m_upd_firedeps_frame(u32(-1)),m_parent_hud_item(NULL){}
-			~attachable_hud_item	();
+	attachable_hud_item(player_hud* pparent):m_parent(pparent),m_upd_firedeps_frame(u32(-1)),m_parent_hud_item(NULL){}
+	~attachable_hud_item();
 	void LoadingHudItem(const shared_str& sect_name, IKinematicsAnimated* hands);
 	void update						(bool bForce);
 	void update_hud_additional		(Fmatrix& trans);
@@ -102,7 +102,7 @@ struct attachable_hud_item
 //props
 	u32								m_upd_firedeps_frame;
 	void		tune				(Ivector values);
-	u32			anim_play			(const shared_str& anim_name, BOOL bMixIn, const CMotionDef*& md, u8& rnd, player_hud_motion* anm = nullptr);
+	u32			anim_play			(const shared_str& anim_name, BOOL bMixIn, const CMotionDef*& md, u8& rnd, bool&, player_hud_motion* anm = nullptr);
 };
 
 class player_hud
@@ -132,7 +132,7 @@ public:
 	void calc_transform(u16 attach_slot_idx, const Fmatrix& offset, Fmatrix& result, bool);
 	void			tune				(Ivector values);
 	u32	motion_length(const MotionID& M, const CMotionDef*& md, IKinematicsAnimated* model);
-	u32	motion_length(const shared_str& anim_name, const shared_str& hud_name, const CMotionDef*& md);
+	u32	motion_length(const shared_str& anim_name, const shared_str& hud_name, const CMotionDef*& md, bool&);
 	player_hud_motion* find_motion_length(const shared_str& anim_name, const shared_str& hud_name);
 	void			OnMovementChanged	(ACTOR_DEFS::EMoveCommand cmd)	;
 private:

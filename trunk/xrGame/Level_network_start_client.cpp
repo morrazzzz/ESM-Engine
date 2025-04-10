@@ -5,7 +5,6 @@
 #include "../xr_3da/igame_persistent.h"
 #include "PhysicsGamePars.h"
 #include "ai_space.h"
-#include "game_cl_base.h"
 
 #include "../xrPhysics/iphworld.h"
 #include "PHCommander.h"
@@ -44,7 +43,7 @@ bool	CLevel::net_start_client1				()
 
 bool	CLevel::net_start_client2				()
 {
-	Server->create_direct_client();
+	Server->new_client();
 
 	connected_to_server = Connect2Server();
 	
@@ -54,17 +53,14 @@ bool	CLevel::net_start_client2				()
 bool	CLevel::net_start_client3				()
 {
 	if(connected_to_server){
-		LPCSTR					level_name = NULL;
-		level_name	= ai().get_alife() ? *name() : Server->level_name( Server->GetConnectOptions() ).c_str();
+		LPCSTR level_name = name().c_str();
 
 		// Determine internal level-ID
 		int						level_id = pApp->Level_ID(level_name);
 		if (level_id<0)	{
-			Disconnect			();
 			pApp->LoadEnd		();
 			connected_to_server = FALSE;
 			m_name				= level_name;
-			m_connect_server_err = xrServer::ErrNoLevel;
 			return				false;
 		}
 		pApp->Level_Set			(level_id);

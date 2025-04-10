@@ -182,8 +182,6 @@ bool CSE_ALifeDynamicObject::redundant				() const
 void CSE_InventoryBox::add_online	(const bool &update_registries)
 {
 	NET_Packet					tNetPacket;
-	ClientID					clientID;
-	clientID.set				(alife().server().GetServerClient() ? alife().server().GetServerClient()->ID.value() : 0);
 
 	ALife::OBJECT_IT			I = children.begin();
 	ALife::OBJECT_IT			E = children.end();
@@ -213,7 +211,7 @@ void CSE_InventoryBox::add_online	(const bool &update_registries)
 
 		l_tpALifeDynamicObject->o_Position		= o_Position;
 		l_tpALifeDynamicObject->m_tNodeID		= m_tNodeID;
-		alife().server().Process_spawn	(tNetPacket,clientID,l_tpALifeInventoryItem->base());
+		alife().server().Process_spawn	(tNetPacket,l_tpALifeInventoryItem->base());
 		l_tpALifeDynamicObject->s_flags.And		(u16(-1) ^ M_SPAWN_UPDATE);
 		l_tpALifeDynamicObject->m_bOnline		= true;
 	}

@@ -2,7 +2,6 @@
 #include "artifact.h"
 #include "../xrPhysics/PhysicsShell.h"
 #include "PhysicsShellHolder.h"
-#include "game_cl_base.h"
 
 #include "../Include/xrRender/Kinematics.h"
 #include "../Include/xrRender/KinematicsAnimated.h"
@@ -595,7 +594,7 @@ void SArtefactActivation::SpawnAnomaly()
 
 		NET_Packet					P;
 		object->Spawn_Write			(P,TRUE);
-		Level().Send				(P,net_flags(TRUE));
+		Level().Send				(P);
 		F_entity_Destroy			(object);
 //. #ifdef DEBUG
 		Msg("artefact [%s] spawned a zone [%s] at [%f]", *m_af->cName(), zone_sect, Device.fTimeGlobal);

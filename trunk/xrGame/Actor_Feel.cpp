@@ -12,7 +12,6 @@
 #include "Grenade.h"
 #include "clsid_game.h"
 
-#include "game_cl_base.h"
 #include "Level.h"
 
 #define PICKUP_INFO_COLOR 0xFFDDDDDD

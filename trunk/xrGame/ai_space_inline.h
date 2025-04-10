@@ -55,13 +55,13 @@ IC	CGraphEngine				&CAI_Space::graph_engine			() const
 	return					(*m_graph_engine);
 }
 
-IC	const CALifeSimulator		&CAI_Space::alife					() const
+IC  CALifeSimulator		&CAI_Space::alife					() const
 {
 	VERIFY					(m_alife_simulator);
 	return					(*m_alife_simulator);
 }
 
-IC	const CALifeSimulator		*CAI_Space::get_alife				() const
+IC  CALifeSimulator		*CAI_Space::get_alife				() const
 {
 	return					(m_alife_simulator);
 }

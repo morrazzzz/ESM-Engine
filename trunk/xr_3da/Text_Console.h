@@ -33,7 +33,6 @@ private:
 	u32		m_dwLastUpdateTime;
 
 	u32		m_last_time;
-	CServerInfo m_server_info;
 
 public:
 					CTextConsole();

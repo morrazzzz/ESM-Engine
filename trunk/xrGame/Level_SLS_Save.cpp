@@ -13,9 +13,10 @@ void	CLevel::net_Save				(LPCSTR name)		// Game Save
 	// 1. Create stream
 	CMemoryWriter			fs;
 
+	R_ASSERT(false);
 	// 2. Description
 	fs.open_chunk		(fsSLS_Description);
-	fs.w_stringZ		(net_SessionName());
+	fs.w_stringZ		("");
 	fs.close_chunk		();
 
 	// 3. Server state

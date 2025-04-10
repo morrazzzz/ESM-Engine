@@ -9,7 +9,6 @@
 
 #include "Grenade.h"
 #include "level.h"
-#include "game_cl_base.h"
 
 #include "actor.h"
 #include "ai_space.h"

@@ -142,13 +142,6 @@
 #	include "DestroyablePhysicsObject.h"
 
 #	include "game_sv_single.h"
-////#	include "game_sv_teamdeathmatch.h"
-//#	include "game_sv_ArtefactHunt.h"
-
-#	include "game_cl_single.h"
-//#	include "game_cl_deathmatch.h"
-//#	include "game_cl_teamdeathmatch.h"
-//#	include "game_cl_ArtefactHunt.h"
 
 #	include "UIGameSP.h"
 #	include	"climableobject.h"

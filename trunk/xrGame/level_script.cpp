@@ -14,7 +14,6 @@
 #include "xrServer.h"
 #include "client_spawn_manager.h"
 #include "../xr_3da/igame_persistent.h"
-#include "game_cl_base.h"
 #include "ui/UIDialogWnd.h"
 #include "date_time.h"
 #include "ai_space.h"
@@ -23,7 +22,6 @@
 #include "PHCommander.h"
 #include "PHScriptCall.h"
 #include "UIGameCustom.h"
-#include "game_cl_single.h"
 #include "map_manager.h"
 #include "map_location.h"
 #include "physics_world_scripted.h"
@@ -117,8 +115,8 @@ void set_time_factor(float time_factor)
 	if (!OnServer())
 		return;
 
-	Level().Server->game->SetGameTimeFactor(time_factor);
-	GamePersistent().Environment().SetGameTime(Level().GetEnvironmentGameDayTimeSec(), Level().game->GetEnvironmentGameTimeFactor());
+	Level().SetGameTimeFactor(time_factor);
+	GamePersistent().Environment().SetGameTime(Level().GetGameDayTimeSec(), Level().GetGameTimeFactor());
 }
 
 float get_time_factor()
@@ -129,8 +127,7 @@ float get_time_factor()
 void set_game_difficulty(ESingleGameDifficulty dif)
 {
 	g_SingleGameDifficulty		= dif;
-	game_cl_Single* game		= smart_cast<game_cl_Single*>(Level().game); VERIFY(game);
-	game->OnDifficultyChanged	();
+	Actor()->OnDifficultyChanged();
 }
 ESingleGameDifficulty get_game_difficulty()
 {

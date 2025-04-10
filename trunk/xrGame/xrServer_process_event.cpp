@@ -1,16 +1,13 @@
 #include "stdafx.h"
 #include "xrServer.h"
-#include "game_sv_single.h"
 #include "alife_simulator.h"
 #include "xrserver_objects.h"
-#include "game_base.h"
-#include "game_cl_base.h"
 #include "ai_space.h"
 #include "alife_object_registry.h"
 #include "xrServer_Objects_ALife_Items.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 
-void xrServer::Process_event	(NET_Packet& P, ClientID sender)
+void xrServer::Process_event	(NET_Packet& P)
 {
 #	ifdef SLOW_VERIFY_ENTITIES
 			VERIFY					(verify_entities());
@@ -19,7 +16,6 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 	u32			timestamp;
 	u16			type;
 	u16			destination;
-	u32			MODE			= net_flags(TRUE,TRUE);
 
 	// correct timestamp with server-unique-time (note: direct message correction)
 	P.r_u32		(timestamp	);
@@ -32,7 +28,7 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 	if (receiver)	
 	{
 		//R_ASSERT(receiver->owner);
-		receiver->OnEvent						(P,type,timestamp,sender);
+		receiver->OnEvent						(P,type,timestamp);
 
 	};
 
@@ -45,31 +41,31 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 	case GEG_PLAYER_DETACH_HOLDER:
 	case GEG_PLAYER_ACTIVATEARTEFACT:
 		{
-		SendBroadcast			(BroadcastCID,P,MODE);
+		SendBroadcast			(P);
 		}break;
 	case GE_TRADE_BUY:
 	case GE_OWNERSHIP_TAKE:
 		{
-			Process_event_ownership	(P,sender,timestamp,destination);
+			Process_event_ownership	(P,timestamp,destination);
 			VERIFY					(verify_entities());
 		}break;
 	case GE_TRADE_SELL:
 	case GE_OWNERSHIP_REJECT:
 	case GE_LAUNCH_ROCKET:
 		{
-			Process_event_reject	(P,sender,timestamp,destination,P.r_u16());
+			Process_event_reject	(P,timestamp,destination,P.r_u16());
 			VERIFY					(verify_entities());
 		}break;
 	case GE_DESTROY:
 		{
-			Process_event_destroy	(P,sender,timestamp,destination, NULL);
+			Process_event_destroy	(P,timestamp,destination, NULL);
 			VERIFY					(verify_entities());
 		}
 		break;
 	case GE_HIT:
 		{
 			P.r_pos -=2;
-			SendBroadcast(BroadcastCID, P, net_flags(TRUE, TRUE));
+			SendBroadcast(P);
 		} break;
 	case GE_ASSIGN_KILLER: {
 		u16							id_src;
@@ -97,11 +93,11 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 		}break;
 	case GE_CHANGE_POS:
 		{			
-			SendTo(SV_Client->ID, P, net_flags(TRUE, TRUE));
+			SendTo(P);
 		}break;
 	case GEG_PLAYER_WEAPON_HIDE_STATE:
 		{
-			SendTo		(SV_Client->ID, P, net_flags(TRUE, TRUE));
+			SendTo(P);
 
 #	ifdef SLOW_VERIFY_ENTITIES
 			VERIFY					(verify_entities());

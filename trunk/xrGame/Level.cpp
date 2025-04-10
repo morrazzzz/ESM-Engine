@@ -6,7 +6,6 @@
 #include "Level.h"
 #include "xrServer.h"
 #include "net_queue.h"
-#include "game_cl_base.h"
 #include "hudmanager.h"
 #include "ai_space.h"
 #include "ai_debug.h"
@@ -48,6 +47,11 @@
 #include "../xr_3da/xr_object.h"
 #endif
 
+#include "alife_simulator.h"
+#include "alife_object_registry.h"
+#include "alife_graph_registry.h"
+#include "alife_time_manager.h"
+
 float		g_cl_lvInterp		= 0;
 u32			lvInterpSteps		= 0;
 //////////////////////////////////////////////////////////////////////
@@ -63,8 +67,6 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 
 	Server						= NULL;
 
-	game						= NULL;
-//	game						= xr_new<game_cl_GameState>();
 	game_events					= xr_new<NET_Queue_Event>();
 
 	game_configured				= FALSE;
@@ -220,7 +222,6 @@ CLevel::~CLevel()
 	if (!g_dedicated_server)
 		ai().script_engine().remove_script_process(ScriptEngine::eScriptProcessorLevel);
 
-	xr_delete					(game);
 	xr_delete					(game_events);
 
 
@@ -260,12 +261,6 @@ shared_str	CLevel::name		() const
 	return						(m_name);
 }
 
-void CLevel::GetLevelInfo( CServerInfo* si )
-{
-	Server->GetServerInfo( si );
-}
-
-
 void CLevel::PrefetchSound		(LPCSTR name)
 {
 	// preprocess sound name
@@ -279,27 +274,6 @@ void CLevel::PrefetchSound		(LPCSTR name)
 	// if find failed - preload sound
 	if (it==sound_registry.end())
 		sound_registry[snd_name].create(snd_name.c_str(),st_Effect,sg_SourceType);
-}
-
-// Game interface ////////////////////////////////////////////////////
-int	CLevel::get_RPID(LPCSTR /**name/**/)
-{
-	/*
-	// Gain access to string
-	LPCSTR	params = pLevel->r_string("respawn_point",name);
-	if (0==params)	return -1;
-
-	// Read data
-	Fvector4	pos;
-	int			team;
-	sscanf		(params,"%f,%f,%f,%d,%f",&pos.x,&pos.y,&pos.z,&team,&pos.w); pos.y += 0.1f;
-
-	// Search respawn point
-	svector<Fvector4,maxRP>	&rp = Level().get_team(team).RespawnPoints;
-	for (int i=0; i<(int)(rp.size()); ++i)
-		if (pos.similar(rp[i],EPS_L))	return i;
-	*/
-	return -1;
 }
 
 BOOL		g_bDebugEvents = FALSE	;
@@ -320,9 +294,6 @@ void CLevel::cl_Process_Event				(u16 dest, u16 type, NET_Packet& P)
 		Msg("! ERROR: c_EVENT[%d] : non-game-object",dest);
 		return;
 	}
-
-	if (type == GE_DESTROY)
-		Game().OnDestroy(GO);
 
 	GO->OnEvent		(P,type);
 };
@@ -407,8 +378,7 @@ void CLevel::OnFrame	()
 	// Inherited update
 	inherited::OnFrame		();
 	
-//	g_pGamePersistent->Environment().SetGameTime	(GetGameDayTimeSec(),GetGameTimeFactor());
-	g_pGamePersistent->Environment().SetGameTime	(GetEnvironmentGameDayTimeSec(),GetGameTimeFactor());
+	g_pGamePersistent->Environment().SetGameTime	(GetGameDayTimeSec(),GetGameTimeFactor());
 
 	//Device.Statistic->cripting.Begin	();
 	if (!g_dedicated_server)
@@ -462,7 +432,6 @@ void CLevel::OnRender()
 {
 	inherited::OnRender	();
 	
-	Game().OnRender();
 	//отрисовать трассы пуль
 	//Device.Statistic->TEST1.Begin();
 	BulletManager().Render();
@@ -503,9 +472,6 @@ void CLevel::OnRender()
 			CClimableObject		*climable		  = smart_cast<CClimableObject*>	(_O);
 			if(climable)
 				climable->OnRender();
-			CTeamBaseZone	*team_base_zone = smart_cast<CTeamBaseZone*>(_O);
-			if (team_base_zone)
-				team_base_zone->OnRender();
 			
 			if (GameID() != GAME_SINGLE)
 			{
@@ -629,14 +595,7 @@ void 		CLevel::PhisStepsCallback		( u32 Time0, u32 Time1 )
 
 ALife::_TIME_ID CLevel::GetGameTime()
 {
-	return			(game->GetGameTime());
-//	return			(Server->game->GetGameTime());
-}
-
-ALife::_TIME_ID CLevel::GetEnvironmentGameTime()
-{
-	return			(game->GetEnvironmentGameTime());
-//	return			(Server->game->GetGameTime());
+	return ai().get_alife()->time_manager().game_time();
 }
 
 u8 CLevel::GetDayTime() 
@@ -658,61 +617,34 @@ u32 CLevel::GetGameDayTimeMS()
 	return	(u32(s64(GetGameTime() % (24*60*60*1000))));
 }
 
-float CLevel::GetEnvironmentGameDayTimeSec()
-{
-	return	(float(s64(GetEnvironmentGameTime() % (24*60*60*1000)))/1000.f);
-}
-
 void CLevel::GetGameDateTime	(u32& year, u32& month, u32& day, u32& hours, u32& mins, u32& secs, u32& milisecs)
 {
 	split_time(GetGameTime(), year, month, day, hours, mins, secs, milisecs);
 }
 
+void CLevel::SetGameTimeFactor(const float fTimeFactor)
+{
+	ai().get_alife()->time_manager().set_time_factor(fTimeFactor);
+}
 
 float CLevel::GetGameTimeFactor()
 {
-	return			(game->GetGameTimeFactor());
-//	return			(Server->game->GetGameTimeFactor());
+	return ai().get_alife()->time_manager().time_factor();
 }
 
-void CLevel::SetGameTimeFactor(const float fTimeFactor)
-{
-	game->SetGameTimeFactor(fTimeFactor);
-//	Server->game->SetGameTimeFactor(fTimeFactor);
-}
-
-void CLevel::SetGameTimeFactor(ALife::_TIME_ID GameTime, const float fTimeFactor)
-{
-	game->SetGameTimeFactor(GameTime, fTimeFactor);
-//	Server->game->SetGameTimeFactor(fTimeFactor);
-}
-void CLevel::SetEnvironmentGameTimeFactor(ALife::_TIME_ID GameTime, const float fTimeFactor)
-{
-	game->SetEnvironmentGameTimeFactor(GameTime, fTimeFactor);
-//	Server->game->SetGameTimeFactor(fTimeFactor);
-}/*
-void CLevel::SetGameTime(ALife::_TIME_ID GameTime)
-{
-	game->SetGameTime(GameTime);
-//	Server->game->SetGameTime(GameTime);
-}
-*/
 bool CLevel::IsServer ()
 {
-	if (!Server) return false;
-	return (Server->client_Count() != 0);
-
+	return true;
 }
 
 bool CLevel::IsClient ()
 {
-	if (!Server) return true;
-	return (Server->client_Count() == 0);
+	return false;
 }
 
 u32	GameID()
 {
-	return Game().Type();
+	return GAME_SINGLE;
 }
 
 bool	IsGameTypeSingle()

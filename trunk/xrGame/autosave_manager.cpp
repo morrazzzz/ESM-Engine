@@ -72,7 +72,7 @@ void CAutosaveManager::shedule_Update		(u32 dt)
 	net_packet.w_begin			(M_SAVE_GAME);
 	net_packet.w_stringZ		(temp);
 	net_packet.w_u8				(0);
-	Level().Send				(net_packet,net_flags(TRUE));
+	Level().Send				(net_packet);
 
 	string_path					S1;
 	strcat_s					(temp,sizeof(temp),".dds");

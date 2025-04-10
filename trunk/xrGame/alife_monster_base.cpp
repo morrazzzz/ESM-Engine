@@ -36,8 +36,6 @@ void CSE_ALifeMonsterBase::on_spawn				()
 void CSE_ALifeMonsterBase::add_online(const bool& update_registries)
 {
 	NET_Packet					tNetPacket;
-	ClientID					clientID;
-	clientID.set(alife().server().GetServerClient() ? alife().server().GetServerClient()->ID.value() : 0);
 
 	for (u16 i = 0; i < children.size(); i++) {
 		//	this was for the car only
@@ -70,7 +68,7 @@ void CSE_ALifeMonsterBase::add_online(const bool& update_registries)
 		//		R_ASSERT3								(ai().level_graph().valid_vertex_id(l_tpALifeDynamicObject->m_tNodeID),"Invalid vertex for object ",l_tpALifeInventoryItem->name_replace());
 		l_tpALifeDynamicObject->o_Position = o_Position;
 		l_tpALifeDynamicObject->m_tNodeID = m_tNodeID;
-		alife().server().Process_spawn(tNetPacket, clientID, l_tpALifeInventoryItem->base());
+		alife().server().Process_spawn(tNetPacket, l_tpALifeInventoryItem->base());
 		l_tpALifeDynamicObject->s_flags.And(u16(-1) ^ M_SPAWN_UPDATE);
 		l_tpALifeDynamicObject->m_bOnline = true;
 	}

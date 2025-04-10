@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "Level.h"
 #include "Level_Bullet_Manager.h"
-#include "game_cl_base.h"
 #include "Actor.h"
 #include "gamepersistent.h"
 #include "mt_config.h"

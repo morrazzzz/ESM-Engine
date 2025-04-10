@@ -8,7 +8,6 @@
 #include "character_info.h"
 #include "relation_registry.h"
 #include "alife_registry_container.h"
-#include "game_cl_base.h"
 #include "alife_registry_wrappers.h"
 #include "map_manager.h"
 #include "ui/UIMainIngameWnd.h"

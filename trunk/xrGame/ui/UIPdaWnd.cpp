@@ -8,7 +8,6 @@
 
 #include "../UIGameCustom.h"
 #include "../level.h"
-#include "../game_cl_base.h"
 
 #include "UIStatic.h"
 #include "UIFrameWindow.h"

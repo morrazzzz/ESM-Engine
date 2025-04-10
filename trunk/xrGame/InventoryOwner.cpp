@@ -343,7 +343,7 @@ void CInventoryOwner::spawn_supplies		()
 		pda->m_original_owner				= (u16)game_object->ID();
 		NET_Packet							P;
 		abstract->Spawn_Write				(P,TRUE);
-		Level().Send						(P,net_flags(TRUE));
+		Level().Send						(P);
 		F_entity_Destroy					(abstract);
 	}
 }

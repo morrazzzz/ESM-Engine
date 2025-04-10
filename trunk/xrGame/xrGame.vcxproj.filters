@@ -1816,15 +1816,6 @@
     <Filter Include="Core\Server\Games">
       <UniqueIdentifier>{18436556-e869-4730-9d0b-a6d6242a388e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\Server\Games\client">
-      <UniqueIdentifier>{1ba17b35-f30c-42f1-9535-0ff228eef6cc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Server\Games\client\single">
-      <UniqueIdentifier>{df5d324f-39c0-44ae-9f8d-c3b49d16e7e2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Server\Games\client\base">
-      <UniqueIdentifier>{6a6d13c4-6c76-433c-865e-1547909de126}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core\Server\Games\server">
       <UniqueIdentifier>{2f42e8c9-5a1a-4bfd-a824-e296366b5aab}</UniqueIdentifier>
     </Filter>
@@ -2094,6 +2085,9 @@
     </Filter>
     <Filter Include="UI\Common\WeaponScopeWnd">
       <UniqueIdentifier>{ca6d2603-3011-4901-8584-7c367dfc31a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AI\AScript\ScriptClasses\ScriptEnum">
+      <UniqueIdentifier>{ce833e3a-f760-4cd6-b648-dc556a974340}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -5319,20 +5313,8 @@
     <ClInclude Include="xrEProps.h">
       <Filter>Core\Server\Editor</Filter>
     </ClInclude>
-    <ClInclude Include="game_base.h">
-      <Filter>Core\Server\Games</Filter>
-    </ClInclude>
-    <ClInclude Include="game_base_kill_type.h">
-      <Filter>Core\Server\Games</Filter>
-    </ClInclude>
     <ClInclude Include="game_base_space.h">
       <Filter>Core\Server\Games</Filter>
-    </ClInclude>
-    <ClInclude Include="game_cl_single.h">
-      <Filter>Core\Server\Games\client\single</Filter>
-    </ClInclude>
-    <ClInclude Include="game_cl_base.h">
-      <Filter>Core\Server\Games\client\base</Filter>
     </ClInclude>
     <ClInclude Include="game_sv_base.h">
       <Filter>Core\Server\Games\server</Filter>
@@ -5906,6 +5888,9 @@
     </ClInclude>
     <ClInclude Include="ui\UIWeaponScope.h">
       <Filter>UI\Common\WeaponScopeWnd</Filter>
+    </ClInclude>
+    <ClInclude Include="script_enum_types.h">
+      <Filter>AI\AScript\ScriptClasses\ScriptEnum</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -7946,21 +7931,6 @@
     <ClCompile Include="xrServer.cpp">
       <Filter>Core\Server</Filter>
     </ClCompile>
-    <ClCompile Include="xrServer_balance.cpp">
-      <Filter>Core\Server</Filter>
-    </ClCompile>
-    <ClCompile Include="game_base.cpp">
-      <Filter>Core\Server\Games</Filter>
-    </ClCompile>
-    <ClCompile Include="game_base_script.cpp">
-      <Filter>Core\Server\Games</Filter>
-    </ClCompile>
-    <ClCompile Include="game_cl_single.cpp">
-      <Filter>Core\Server\Games\client\single</Filter>
-    </ClCompile>
-    <ClCompile Include="game_cl_base.cpp">
-      <Filter>Core\Server\Games\client\base</Filter>
-    </ClCompile>
     <ClCompile Include="game_sv_base.cpp">
       <Filter>Core\Server\Games\server</Filter>
     </ClCompile>
@@ -7972,12 +7942,6 @@
     </ClCompile>
     <ClCompile Include="game_sv_single.cpp">
       <Filter>Core\Server\Games\server\single</Filter>
-    </ClCompile>
-    <ClCompile Include="xrServer_CL_connect.cpp">
-      <Filter>Core\Server\Games\server\single\ServerConnect</Filter>
-    </ClCompile>
-    <ClCompile Include="xrServer_CL_disconnect.cpp">
-      <Filter>Core\Server\Games\server\single\ServerConnect</Filter>
     </ClCompile>
     <ClCompile Include="xrServer_Connect.cpp">
       <Filter>Core\Server\Games\server\single\ServerConnect</Filter>
@@ -8041,15 +8005,6 @@
     </ClCompile>
     <ClCompile Include="xrServer_Objects_ALife_Monsters_script4.cpp">
       <Filter>Core\Server\ServerEntities\objects_alife_monsters</Filter>
-    </ClCompile>
-    <ClCompile Include="xrServer_perform_GameExport.cpp">
-      <Filter>Core\Server\ServerPerform</Filter>
-    </ClCompile>
-    <ClCompile Include="xrServer_perform_migration.cpp">
-      <Filter>Core\Server\ServerPerform</Filter>
-    </ClCompile>
-    <ClCompile Include="xrServer_perform_RPgen.cpp">
-      <Filter>Core\Server\ServerPerform</Filter>
     </ClCompile>
     <ClCompile Include="xrServer_perform_sls_default.cpp">
       <Filter>Core\Server\ServerPerform</Filter>
@@ -8635,6 +8590,9 @@
     </ClCompile>
     <ClCompile Include="ui\UIWeaponScope.cpp">
       <Filter>UI\Common\WeaponScopeWnd</Filter>
+    </ClCompile>
+    <ClCompile Include="script_enum_types.cpp">
+      <Filter>AI\AScript\ScriptClasses\ScriptEnum</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

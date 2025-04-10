@@ -425,7 +425,7 @@ void CPhysicsShellHolder::on_physics_disable()
 
 	NET_Packet			net_packet;
 	u_EventGen			(net_packet,GE_FREEZE_OBJECT,ID());
-	Level().Send		(net_packet,net_flags(TRUE,TRUE));
+	Level().Send		(net_packet);
 }
 
 

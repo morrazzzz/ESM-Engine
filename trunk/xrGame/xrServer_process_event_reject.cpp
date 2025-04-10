@@ -2,7 +2,7 @@
 #include "xrserver.h"
 #include "xrserver_objects.h"
 
-bool xrServer::Process_event_reject	(NET_Packet& P, const ClientID sender, const u32 time, const u16 id_parent, const u16 id_entity, bool send_message)
+bool xrServer::Process_event_reject	(NET_Packet& P, const u32 time, const u16 id_parent, const u16 id_entity, bool send_message)
 {
 	// Parse message
 	CSE_Abstract*		e_parent	= game->get_entity_from_eid	(id_parent);
@@ -33,8 +33,7 @@ bool xrServer::Process_event_reject	(NET_Packet& P, const ClientID sender, const
 	// Signal to everyone (including sender)
 	if (send_message)
 	{
-		DWORD MODE		= net_flags(TRUE,TRUE, FALSE, TRUE);
-		SendBroadcast	(BroadcastCID,P,MODE);
+		SendBroadcast	(P);
 	}
 	
 	return				(true);

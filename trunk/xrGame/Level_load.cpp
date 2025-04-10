@@ -5,7 +5,6 @@
 #include "script_engine.h"
 #include "script_engine_space.h"
 #include "level.h"
-#include "game_cl_base.h"
 #include "../xr_3da/GameMtlLib.h"
 #include "../xrPhysics/PhysicsCommon.h"
 #include "level_sounds.h"
@@ -20,10 +19,13 @@ BOOL CLevel::Load_GameSpecific_Before()
 	g_pGamePersistent->LoadTitle();
 	string_path							fn_game;
 	
-	if (GamePersistent().GameType() == GAME_SINGLE && !ai().get_alife() && FS.exist(fn_game,"$level$","level.ai"))
-		ai().load						(net_SessionName());
+	if (!ai().get_alife() && FS.exist(fn_game, "$level$", "level.ai"))
+	{
+		Msg("!!! [LEVEL]: ALife is not available!!! Failed load!!!");
+		return false;
+	}
 
-	if (!g_dedicated_server && !ai().get_alife() && ai().get_game_graph() && FS.exist(fn_game, "$level$", "level.game")) {
+	if (!ai().get_alife() && ai().get_game_graph() && FS.exist(fn_game, "$level$", "level.game")) {
 		IReader							*stream = FS.r_open		(fn_game);
 		ai().patrol_path_storage_raw	(*stream);
 		FS.r_close						(stream);

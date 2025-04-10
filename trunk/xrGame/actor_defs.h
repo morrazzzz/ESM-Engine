@@ -61,6 +61,19 @@ enum EActorAction
 
 typedef const char*		EActorSleep;
 extern EActorSleep		easCanSleepResult;
+
+// difficulty
+enum ESingleGameDifficulty {
+	egdNovice = 0,
+	egdStalker = 1,
+	egdVeteran = 2,
+	egdMaster = 3,
+	egdCount,
+	egd_force_u32 = u32(-1)
+};
+
+extern ESingleGameDifficulty g_SingleGameDifficulty;
+xr_token difficulty_type_token[];
 /*
 //результат функции GoSleep у актера
 enum EActorSleep

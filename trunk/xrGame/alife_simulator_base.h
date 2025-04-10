@@ -50,21 +50,21 @@ protected:
 	bool										m_can_register_objects;
 
 protected:
-	IC		CALifeSimulatorHeader				&header						();
-	IC		CALifeTimeManager					&time						();
-	IC		CALifeSpawnRegistry					&spawns						();
-	IC		CALifeObjectRegistry				&objects					();
-	IC		CALifeStoryRegistry					&story_objects				();
-	IC		CALifeSmartTerrainRegistry			&smart_terrains				();
-	IC		CALifeGroupRegistry					&groups						();
 	IC		void								can_register_objects		(const bool &value);
 	IC		const bool							&can_register_objects		() const;
 
 public:
+	IC		CALifeSimulatorHeader				&header						();
+	IC		CALifeTimeManager					&time						();
+	IC		CALifeSpawnRegistry					&spawns						();
+	IC		CALifeStoryRegistry					&story_objects				();
 	IC		CALifeGraphRegistry					&graph						();
 	IC		CALifeScheduleRegistry				&scheduled					();
 	IC		CALifeTimeManager					&time_manager				();
 	IC		CALifeRegistryContainer				&registry					() const;
+	IC		CALifeObjectRegistry				&objects					();
+	IC		CALifeSmartTerrainRegistry			&smart_terrains				();
+	IC		CALifeGroupRegistry					&groups						();
 
 public:
 												CALifeSimulatorBase			(xrServer *server, LPCSTR section);

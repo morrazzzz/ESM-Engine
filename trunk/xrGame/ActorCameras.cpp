@@ -17,6 +17,7 @@
 #include "CharacterPhysicsSupport.h"
 #include "EffectorShot.h"
 #include "../xrPhysics/PHShell.h"
+#include "Actor_Flags.h"
 
 void CActor::cam_Set	(EActorCameras style)
 {
