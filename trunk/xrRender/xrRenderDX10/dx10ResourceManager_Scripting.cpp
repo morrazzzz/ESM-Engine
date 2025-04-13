@@ -18,21 +18,7 @@
 
 lua_State* LSVM = nullptr;
 
-#ifdef NDEBUG
-
-namespace std
-{
-
-void terminate ()
-{
-	abort();
-}
-
-} // namespace std
-
-#endif // #ifdef NDEBUG
-
-using namespace				luabind;
+using namespace	luabind;
 
 #ifdef	DEBUG
 #define MDB	Memory.dbg_check()
@@ -151,11 +137,13 @@ void LuaError(lua_State* L)
 	Debug.fatal(DEBUG_INFO,"LUA error: %s",lua_tostring(L,-1));
 }
 
+/*
 #ifndef PURE_ALLOC
 #	ifndef USE_MEMORY_MONITOR
 #		define USE_DL_ALLOCATOR
 #	endif // USE_MEMORY_MONITOR
 #endif // PURE_ALLOC
+*/
 
 #ifndef USE_DL_ALLOCATOR
 	static void *lua_alloc_xr	(void *ud, void *ptr, size_t osize, size_t nsize) {

@@ -44,7 +44,7 @@ class ENGINE_API CSheduler
 	bool m_processing_now;
 public:
 #ifdef FRAME_SCHEDULER
-	void OnFrame() override;
+	void _BCL OnFrame() override;
 
 	void AddSchedulerFrame();
 	void RemoveSchedulerFrame();

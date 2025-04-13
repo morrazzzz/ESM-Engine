@@ -52,12 +52,7 @@
   
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>
-        $(SolutionDir);
-        $(xrSdkDir)dxSDK/Include;
-		$(SolutionDir)3rd party\Optick\include\;
-        %(AdditionalIncludeDirectories)
-      </AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(xrSdkDir)dxSDK/Include;$(SolutionDir)3rd party\Optick/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       
       <PreprocessorDefinitions>
         MSVC;
@@ -119,12 +114,7 @@
     </Link>
 
     <Lib>
-      <AdditionalLibraryDirectories>
-        $(xrLibDir);
-        $(xrSdkDir)dxSDK\Lib;
-		$(SolutionDir)3rd party\Optick\lib\;
-        %(AdditionalLibraryDirectories)
-      </AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(xrLibDir);$(SolutionDir)3rd party\Optick\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(xrLibDir)$(TargetName).lib</OutputFile>
     </Lib>
 
