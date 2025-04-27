@@ -19,22 +19,4 @@ void CMPPlayersBag::OnEvent(NET_Packet& P, u16 type)
 {
 	CInventoryItemObject::OnEvent		(P,type);
 	u16						id;
-	switch (type) {
-		case GE_OWNERSHIP_TAKE : 
-			{
-				P.r_u16(id);
-				CObject* O					= Level().Objects.net_Find(id);
-				CInventoryItem*	pIItem		= smart_cast<CInventoryItem*>(O);
-				R_ASSERT					(pIItem->m_pCurrentInventory==NULL);
-				O->H_SetParent(this);
-				O->Position().set(Position());
-			}break;
-		case GE_OWNERSHIP_REJECT : 
-			{
-				P.r_u16			(id);
-				CObject* O = Level().Objects.net_Find(id);
-				O->H_SetParent(0,!P.r_eof() && P.r_u8());
-			}break;
-
-	}
 }

@@ -112,7 +112,7 @@ void CALifeGraphRegistry::attach	(CSE_Abstract &object, CSE_ALifeInventoryItem *
 	CSE_ALifeDynamicObject		*dynamic_object = smart_cast<CSE_ALifeDynamicObject*>(&object);
 	R_ASSERT2					(!alife_query || dynamic_object,"Cannot attach an item to a non-alife object object");
 
-	dynamic_object->attach		(item,alife_query,add_children);
+	dynamic_object->attach		(item,add_children);
 }
 
 void CALifeGraphRegistry::detach	(CSE_Abstract &object, CSE_ALifeInventoryItem *item, GameGraph::_GRAPH_ID game_vertex_id, bool alife_query, bool remove_children)
@@ -137,10 +137,10 @@ void CALifeGraphRegistry::detach	(CSE_Abstract &object, CSE_ALifeInventoryItem *
 	VERIFY						(alife_query || !smart_cast<CSE_ALifeDynamicObject*>(&object) || (ai().game_graph().vertex(smart_cast<CSE_ALifeDynamicObject*>(&object)->m_tGraphID)->level_id() == level().level_id()));
 
 	if (dynamic_object)
-		dynamic_object->detach	(item,0,alife_query,remove_children);
+		dynamic_object->detach	(item,remove_children);
 	else {
 #ifdef DEBUG
-		bool					value = std::find(object.children.begin(),object.children.end(),item->base()->ID) != object.children.end();
+		bool					value = std::find(object.children.begin(),object.children.end(),item->base()) != object.children.end();
 		if (!value) {
 			Msg					("! ERROR: can't detach independant object. entity[%s:%d], parent[%s:%d], section[%s]",
 				item->base()->name_replace(),item->base()->ID,object.name_replace(),object.ID, *item->base()->s_name);
@@ -150,7 +150,7 @@ void CALifeGraphRegistry::detach	(CSE_Abstract &object, CSE_ALifeInventoryItem *
 	}
 }
 
-void CALifeGraphRegistry::add	(CSE_ALifeDynamicObject *object, GameGraph::_GRAPH_ID game_vertex_id, bool update)
+void CALifeGraphRegistry::add(CSE_ALifeDynamicObject *object, GameGraph::_GRAPH_ID game_vertex_id, bool update)
 {
 #ifdef DEBUG
 	if (psAI_Flags.test(aiALife)) {
@@ -158,8 +158,8 @@ void CALifeGraphRegistry::add	(CSE_ALifeDynamicObject *object, GameGraph::_GRAPH
 	}
 #endif
 	if (!object->m_bOnline && object->used_ai_locations() /**&& object->interactive()/**/) {
-		VERIFY					(ai().game_graph().valid_vertex_id(game_vertex_id));
-		m_objects[game_vertex_id].objects().add(object->ID,object);
+		VERIFY(ai().game_graph().valid_vertex_id(game_vertex_id));
+		m_objects[game_vertex_id].objects().add(object->ID, object);
 		object->m_tGraphID		= game_vertex_id;
 	}
 	else

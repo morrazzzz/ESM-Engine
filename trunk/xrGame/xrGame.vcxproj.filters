@@ -8009,28 +8009,10 @@
     <ClCompile Include="xrServer_perform_sls_default.cpp">
       <Filter>Core\Server\ServerPerform</Filter>
     </ClCompile>
-    <ClCompile Include="xrServer_perform_sls_load.cpp">
-      <Filter>Core\Server\ServerPerform</Filter>
-    </ClCompile>
     <ClCompile Include="xrServer_perform_sls_save.cpp">
       <Filter>Core\Server\ServerPerform</Filter>
     </ClCompile>
-    <ClCompile Include="xrServer_perform_transfer.cpp">
-      <Filter>Core\Server\ServerPerform</Filter>
-    </ClCompile>
-    <ClCompile Include="xrServer_sls_clear.cpp">
-      <Filter>Core\Server\ServerPerform</Filter>
-    </ClCompile>
     <ClCompile Include="xrServer_process_event.cpp">
-      <Filter>Core\Server\ServerProcess</Filter>
-    </ClCompile>
-    <ClCompile Include="xrServer_process_event_destroy.cpp">
-      <Filter>Core\Server\ServerProcess</Filter>
-    </ClCompile>
-    <ClCompile Include="xrServer_process_event_ownership.cpp">
-      <Filter>Core\Server\ServerProcess</Filter>
-    </ClCompile>
-    <ClCompile Include="xrServer_process_event_reject.cpp">
       <Filter>Core\Server\ServerProcess</Filter>
     </ClCompile>
     <ClCompile Include="xrServer_process_spawn.cpp">

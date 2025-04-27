@@ -473,11 +473,9 @@ void SArtefactActivation::Start()
 	
 	m_af->processing_activate();
 
-	NET_Packet						P;
-	CGameObject::u_EventGen			(P,GE_OWNERSHIP_REJECT, m_af->H_Parent()->ID());
-	P.w_u16							(m_af->ID());
-	if (OnServer())
-		CGameObject::u_EventSend		(P);
+	CGameObject* object_parent = static_cast<CGameObject*>(m_af->H_Parent());
+	object_parent->RejectItem(m_af);
+
 	m_light->set_active				(true);
 	ChangeEffects					();
 }

@@ -157,14 +157,6 @@ void CPHSkeleton::Update(u32 dt)
 		m_unsplited_shels.empty()) 
 	{
 		if (obj->Local())	obj->DestroyObject	();
-/*
-		NET_Packet			P;
-		obj->u_EventGen		(P,GE_DESTROY,obj->ID());
-#ifdef DEBUG
-		Msg					("ge_destroy: [%d] - %s",obj->ID(),*(obj->cName()));
-#endif
-		if (obj->Local())	obj->u_EventSend			(P);
-*/
 		b_removing=false;
 	}
 

@@ -3,7 +3,6 @@
 #include "xrserver_objects_alife_items.h"
 #include "explosiverocket.h"
 #include "entity.h"
-#include "level.h"
 #include "player_hud.h"
 
 CWeaponRPG7::CWeaponRPG7()
@@ -154,13 +153,8 @@ void CWeaponRPG7::switch2_Fire	()
 		VERIFY								(pGrenade);
 		pGrenade->SetInitiator				(H_Parent()->ID());
 
-		if (OnServer())
-		{
-			NET_Packet						P;
-			u_EventGen						(P,GE_LAUNCH_ROCKET,ID());
-			P.w_u16							(u16(getCurrentRocket()->ID()));
-			u_EventSend						(P);
-		}
+		CRocketLauncher::DetachRocket(getCurrentRocket(), true);
+		UpdateMissileVisibility();
 	}
 }
 
@@ -173,20 +167,14 @@ void CWeaponRPG7::PlayAnimReload()
 void CWeaponRPG7::OnEvent(NET_Packet& P, u16 type) 
 {
 	inherited::OnEvent(P,type);
-	u16 id;
-	switch (type) {
-		case GE_OWNERSHIP_TAKE : {
-			P.r_u16(id);
-			CRocketLauncher::AttachRocket(id, this);
-		} break;
-		case GE_OWNERSHIP_REJECT:
-		case GE_LAUNCH_ROCKET	: 
-			{
-			bool bLaunch = (type==GE_LAUNCH_ROCKET);
-			P.r_u16(id);
-			CRocketLauncher::DetachRocket(id, bLaunch);
-			if(bLaunch)
-				UpdateMissileVisibility();
-		} break;
-	}
+}
+
+void CWeaponRPG7::ObjectTakeItem(CGameObject* object)
+{
+	CRocketLauncher::AttachRocket(object, this);
+}
+
+void CWeaponRPG7::ObjectRejectItem(CGameObject* object, bool just_before_destroy)
+{
+	CRocketLauncher::DetachRocket(object, false);
 }

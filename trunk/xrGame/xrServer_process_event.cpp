@@ -9,10 +9,6 @@
 
 void xrServer::Process_event	(NET_Packet& P)
 {
-#	ifdef SLOW_VERIFY_ENTITIES
-			VERIFY					(verify_entities());
-#	endif
-
 	u32			timestamp;
 	u16			type;
 	u16			destination;
@@ -43,25 +39,6 @@ void xrServer::Process_event	(NET_Packet& P)
 		{
 		SendBroadcast			(P);
 		}break;
-	case GE_TRADE_BUY:
-	case GE_OWNERSHIP_TAKE:
-		{
-			Process_event_ownership	(P,timestamp,destination);
-			VERIFY					(verify_entities());
-		}break;
-	case GE_TRADE_SELL:
-	case GE_OWNERSHIP_REJECT:
-	case GE_LAUNCH_ROCKET:
-		{
-			Process_event_reject	(P,timestamp,destination,P.r_u16());
-			VERIFY					(verify_entities());
-		}break;
-	case GE_DESTROY:
-		{
-			Process_event_destroy	(P,timestamp,destination, NULL);
-			VERIFY					(verify_entities());
-		}
-		break;
 	case GE_HIT:
 		{
 			P.r_pos -=2;
@@ -98,10 +75,6 @@ void xrServer::Process_event	(NET_Packet& P)
 	case GEG_PLAYER_WEAPON_HIDE_STATE:
 		{
 			SendTo(P);
-
-#	ifdef SLOW_VERIFY_ENTITIES
-			VERIFY					(verify_entities());
-#	endif
 		}break;
 	case GE_TELEPORT_OBJECT:
 		{

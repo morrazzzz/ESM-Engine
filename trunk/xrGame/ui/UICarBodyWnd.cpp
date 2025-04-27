@@ -32,7 +32,7 @@
 #define				CAR_BODY_XML		"carbody_new.xml"
 #define				CARBODY_ITEM_XML	"carbody_item.xml"
 
-void move_item (u16 from_id, u16 to_id, u16 what_id);
+void move_item (CGameObject* from_id, CGameObject* to_id, CGameObject* what_id);
 
 CUICarBodyWnd::CUICarBodyWnd()
 {
@@ -363,9 +363,10 @@ void CUICarBodyWnd::SetCurrentItem(CUICellItem* itm)
 void CUICarBodyWnd::TakeAll()
 {
 	u32 cnt				= m_pUIOthersBagList->ItemsCount();
-	u16 tmp_id = 0;
-	if(m_pInventoryBox){
-		tmp_id	= (smart_cast<CGameObject*>(m_pOurObject))->ID();
+	CGameObject* tmp = 0;
+	if(m_pInventoryBox)
+	{
+		tmp	= smart_cast<CGameObject*>(m_pOurObject);
 	}
 
 	for(u32 i=0; i<cnt; ++i)
@@ -377,7 +378,7 @@ void CUICarBodyWnd::TakeAll()
 			if(m_pOthersObject)
 				TransferItem	(_itm, m_pOthersObject, m_pOurObject, false);
 			else{
-				move_item		(m_pInventoryBox->ID(), tmp_id, _itm->object().ID());
+				move_item		(m_pInventoryBox, tmp, _itm->cast_game_object());
 //.				Actor()->callback(GameObject::eInvBoxItemTake)( m_pInventoryBox->lua_game_object(), _itm->object().lua_game_object() );
 			}
 		
@@ -386,7 +387,7 @@ void CUICarBodyWnd::TakeAll()
 		if(m_pOthersObject)
 			TransferItem	(itm, m_pOthersObject, m_pOurObject, false);
 		else{
-			move_item		(m_pInventoryBox->ID(), tmp_id, itm->object().ID());
+			move_item		(m_pInventoryBox, tmp, itm->cast_game_object());
 //.			Actor()->callback(GameObject::eInvBoxItemTake)(m_pInventoryBox->lua_game_object(), itm->object().lua_game_object() );
 		}
 
@@ -506,11 +507,11 @@ void CUICarBodyWnd::EatItem()
 	CUIDragDropListEx* owner_list		= CurrentItem()->OwnerList();
 	if(owner_list==m_pUIOthersBagList)
 	{
-		u16 owner_id				= (m_pInventoryBox)?m_pInventoryBox->ID():smart_cast<CGameObject*>(m_pOthersObject)->ID();
+		CGameObject* owner	= m_pInventoryBox ? m_pInventoryBox : smart_cast<CGameObject*>(m_pOthersObject);
 
-		move_item(	owner_id, //from
-					Actor()->ID(), //to
-					CurrentIItem()->object().ID());
+		move_item(owner, //from
+					Actor(), //to
+					CurrentIItem()->cast_game_object());
 	}
 	
 	m_pOurObject->inventory().Eat(CurrentIItem());
@@ -539,14 +540,14 @@ bool CUICarBodyWnd::OnItemDrop(CUICellItem* itm)
 		}
 	}else
 	{
-		u16 tmp_id	= (smart_cast<CGameObject*>(m_pOurObject))->ID();
+		CGameObject* tmp	= smart_cast<CGameObject*>(m_pOurObject);
 
 		bool bMoveDirection		= (old_owner==m_pUIOthersBagList);
 
 		move_item				(
-								bMoveDirection?m_pInventoryBox->ID():tmp_id,
-								bMoveDirection?tmp_id:m_pInventoryBox->ID(),
-								CurrentIItem()->object().ID());
+								bMoveDirection?m_pInventoryBox:tmp,
+								bMoveDirection?tmp:m_pInventoryBox,
+								CurrentIItem()->cast_game_object());
 
 
 //		Actor()->callback		(GameObject::eInvBoxItemTake)(m_pInventoryBox->lua_game_object(), CurrentIItem()->object().lua_game_object() );
@@ -586,11 +587,11 @@ bool CUICarBodyWnd::OnItemDbClick(CUICellItem* itm)
 		if(false && old_owner==m_pUIOurBagList) return true;
 		bool bMoveDirection		= (old_owner==m_pUIOthersBagList);
 
-		u16 tmp_id				= (smart_cast<CGameObject*>(m_pOurObject))->ID();
+		CGameObject* tmp = smart_cast<CGameObject*>(m_pOurObject);
 		move_item				(
-								bMoveDirection?m_pInventoryBox->ID():tmp_id,
-								bMoveDirection?tmp_id:m_pInventoryBox->ID(),
-								CurrentIItem()->object().ID());
+								bMoveDirection?m_pInventoryBox:tmp,
+								bMoveDirection?tmp : m_pInventoryBox,
+								CurrentIItem()->cast_game_object());
 //.		Actor()->callback		(GameObject::eInvBoxItemTake)(m_pInventoryBox->lua_game_object(), CurrentIItem()->object().lua_game_object() );
 
 	}
@@ -612,25 +613,11 @@ bool CUICarBodyWnd::OnItemRButtonClick(CUICellItem* itm)
 	return						false;
 }
 
-void move_item (u16 from_id, u16 to_id, u16 what_id)
+void move_item (CGameObject* from, CGameObject* to, CGameObject* what)
 {
-	NET_Packet P;
-	CGameObject::u_EventGen					(	P,
-												GE_OWNERSHIP_REJECT,
-												from_id
-											);
+	from->RejectItem(what);
 
-	P.w_u16									(what_id);
-	CGameObject::u_EventSend				(P);
-
-	//другому инвентарю - взять вещь 
-	CGameObject::u_EventGen					(	P,
-												GE_OWNERSHIP_TAKE,
-												to_id
-											);
-	P.w_u16									(what_id);
-	CGameObject::u_EventSend				(P);
-
+	to->TakeItem(what);
 }
 
 bool CUICarBodyWnd::TransferItem(PIItem itm, CInventoryOwner* owner_from, CInventoryOwner* owner_to, bool b_check)
@@ -648,7 +635,7 @@ bool CUICarBodyWnd::TransferItem(PIItem itm, CInventoryOwner* owner_from, CInven
 		if(invWeight+itmWeight >=maxWeight)	return false;
 	}
 
-	move_item(go_from->ID(), go_to->ID(), itm->object().ID());
+	move_item(go_from, go_to, itm->cast_game_object());
 
 	return true;
 }

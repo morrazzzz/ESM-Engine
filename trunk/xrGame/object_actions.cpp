@@ -710,10 +710,7 @@ void CObjectActionDrop::initialize		()
 	if (!m_item || !m_item->object().H_Parent() || (m_object->ID() != m_item->object().H_Parent()->ID()))
 		return;
 
-	NET_Packet				P;
-	m_object->u_EventGen	(P,GE_OWNERSHIP_REJECT,m_object->ID());
-	P.w_u16					(u16(m_item->object().ID()));
-	m_object->u_EventSend	(P);
+	m_object->RejectItem(m_item->cast_game_object());
 }
 
 //////////////////////////////////////////////////////////////////////////

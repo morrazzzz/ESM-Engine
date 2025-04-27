@@ -53,18 +53,18 @@ void CRocketLauncher::SpawnRocket(LPCSTR rocket_section, CGameObject* parent_roc
 	F_entity_Destroy	(D);
 }
 
-void CRocketLauncher::AttachRocket(u16 rocket_id, CGameObject* parent_rocket_launcher)
+void CRocketLauncher::AttachRocket(CGameObject* rocket, CGameObject* parent_rocket_launcher)
 {
-	CCustomRocket * pRocket = smart_cast<CCustomRocket*>(Level().Objects.net_Find(rocket_id));
-	pRocket->m_pOwner = smart_cast<CGameObject*>(parent_rocket_launcher->H_Root());
+	CCustomRocket* pRocket = static_cast<CCustomRocket*>(rocket);
+	pRocket->m_pOwner = static_cast<CGameObject*>(parent_rocket_launcher->H_Root());
 	VERIFY(pRocket->m_pOwner);
 	pRocket->H_SetParent(parent_rocket_launcher);
 	m_rockets.push_back(pRocket);
 }
 
-void CRocketLauncher::DetachRocket(u16 rocket_id, bool bLaunch)
+void CRocketLauncher::DetachRocket(CGameObject* rocket, bool bLaunch)
 {
-	CCustomRocket *pRocket = smart_cast<CCustomRocket*>(Level().Objects.net_Find(rocket_id));
+	CCustomRocket *pRocket = static_cast<CCustomRocket*>(rocket);
 	if (!pRocket && OnClient()) return;
 
 	VERIFY(pRocket);

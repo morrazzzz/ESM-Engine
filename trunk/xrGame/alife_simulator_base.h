@@ -28,6 +28,7 @@ class CALifeRegistryContainer;
 class CSE_Abstract;
 class CSE_ALifeObject;
 class CSE_ALifeDynamicObject;
+class CSE_ALifeInventoryItem;
 class CSE_ALifeGroupAbstract;
 class CSE_ALifeCreatureAbstract;
 
@@ -105,7 +106,9 @@ public:
 			void								append_item_vector			(ALife::OBJECT_VECTOR	&tObjectVector,	ALife::ITEM_P_VECTOR &tItemList);
 			shared_str							level_name					() const;
 			void								on_death					(CSE_Abstract*);
-
+          
+			void OnAttach(CSE_Abstract* object, CSE_Abstract* item);
+			void OnDetach(CSE_Abstract* object, CSE_Abstract* item, bool NotNeedDeleteChildren = false);
 public:
 	ALife::ITEM_P_VECTOR						m_temp_item_vector;
 };

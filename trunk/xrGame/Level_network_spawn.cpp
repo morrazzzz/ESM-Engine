@@ -87,12 +87,10 @@ void CLevel::g_sv_Spawn(CObject* obj, CSE_Abstract* E)
 
 		if (0xffff != E->ID_Parent)
 		{
-			NET_Packet	GEN;
-			GEN.write_start();
-			GEN.read_start();
-			GEN.w_u16(obj->ID());
-			Msg("Parent: [%d]", E->ID_Parent);
-			cl_Process_Event(E->ID_Parent, GE_OWNERSHIP_TAKE, GEN);
+			CGameObject* objParent = static_cast<CGameObject*>(Objects.net_Find(E->ID_Parent));
+			R_ASSERT(objParent);
+            
+			objParent->TakeItem(static_cast<CGameObject*>(obj), false);
 		}
 	}
 #ifdef DEBUG_MEMORY_MANAGER

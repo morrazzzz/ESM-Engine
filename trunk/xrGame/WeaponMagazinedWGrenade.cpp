@@ -226,24 +226,16 @@ void CWeaponMagazinedWGrenade::state_Fire(float dt)
 void CWeaponMagazinedWGrenade::OnEvent(NET_Packet& P, u16 type)
 {
 	inherited::OnEvent(P, type);
-	u16 id;
-	switch (type)
-	{
-	case GE_OWNERSHIP_TAKE:
-	{
-		P.r_u16(id);
-		CRocketLauncher::AttachRocket(id, this);
-	}
-	break;
-	case GE_OWNERSHIP_REJECT:
-	case GE_LAUNCH_ROCKET:
-	{
-		bool bLaunch = (type == GE_LAUNCH_ROCKET);
-		P.r_u16(id);
-		CRocketLauncher::DetachRocket(id, bLaunch);
-		break;
-	}
-	}
+}
+
+void CWeaponMagazinedWGrenade::ObjectTakeItem(CGameObject* object)
+{
+	CRocketLauncher::AttachRocket(object, this);
+}
+
+void CWeaponMagazinedWGrenade::ObjectRejectItem(CGameObject* object, bool just_before_destroy)
+{
+	CRocketLauncher::DetachRocket(object, false);
 }
 
 void  CWeaponMagazinedWGrenade::LaunchGrenade()
@@ -320,15 +312,7 @@ void  CWeaponMagazinedWGrenade::LaunchGrenade()
 		VERIFY(pGrenade);
 		pGrenade->SetInitiator(H_Parent()->ID());
 
-		
-		if (Local() && OnServer())
-		{
-			NET_Packet P;
-			u_EventGen(P,GE_LAUNCH_ROCKET,ID());
-			P.w_u16(getCurrentRocket()->ID());
-			u_EventSend(P);
-		};
-
+		CRocketLauncher::DetachRocket(getCurrentRocket(), true);
 	}
 }
 

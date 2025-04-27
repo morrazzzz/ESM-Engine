@@ -457,48 +457,32 @@ void CMissile::Throw()
 	
 	m_fThrowForce						= m_fMinForce;
 
-	if (Local() && H_Parent()) 
-	{
-		NET_Packet						P;
-		u_EventGen						(P,GE_OWNERSHIP_REJECT,ID());
-		P.w_u16							(u16(m_fake_missile->ID()));
-		u_EventSend						(P);
-	}
+	RejectItem(m_fake_missile);
 }
 
 void CMissile::OnEvent(NET_Packet& P, u16 type) 
 {
 	inherited::OnEvent		(P,type);
-	u16						id;
-	switch (type) {
-		case GE_OWNERSHIP_TAKE : {
-			P.r_u16(id);
-			CMissile		*missile = smart_cast<CMissile*>(Level().Objects.net_Find(id));			
-			m_fake_missile	= missile;
-			missile->H_SetParent(this);
-			missile->Position().set(Position());
-			break;
-		} 
-		case GE_OWNERSHIP_REJECT : {
-			P.r_u16			(id);
-			bool IsFakeMissile = false;
-			if (m_fake_missile && (id == m_fake_missile->ID()))
-			{
-				m_fake_missile	= NULL;
-				IsFakeMissile = true;
-			}
+}
 
-			CMissile		*missile = smart_cast<CMissile*>(Level().Objects.net_Find(id));
-			if (!missile)
-			{
-				break;
-			}
-			missile->H_SetParent(0,!P.r_eof() && P.r_u8());
-			if (IsFakeMissile && OnClient()) 
-				missile->set_destroy_time(m_dwDestroyTimeMax);
-			break;
-		}
-	}
+void CMissile::ObjectTakeItem(CGameObject* object)
+{
+	CMissile* missile = static_cast<CMissile*>(object);
+	m_fake_missile = missile;
+	missile->H_SetParent(this);
+	missile->Position().set(Position());
+}
+
+void CMissile::ObjectRejectItem(CGameObject* object, bool just_before_destroy)
+{
+	if (m_fake_missile && object == m_fake_missile)
+		m_fake_missile = nullptr;
+
+	CMissile* missile = object->cast_inventory_item()->cast_missile();
+	if (!missile)
+		return;
+
+	missile->H_SetParent(0, just_before_destroy);
 }
 
 void CMissile::Destroy() 

@@ -38,15 +38,13 @@ void CSE_ALifeMonsterBase::add_online(const bool& update_registries)
 	NET_Packet					tNetPacket;
 
 	for (u16 i = 0; i < children.size(); i++) {
-		//	this was for the car only
-		//		if (*I == ai().alife().graph().actor()->ID)
-		//			continue;
-		//
-		CSE_ALifeDynamicObject* l_tpALifeDynamicObject = ai().alife().objects().object(children[i]);
-		CSE_ALifeInventoryItem* l_tpALifeInventoryItem = smart_cast<CSE_ALifeInventoryItem*>(l_tpALifeDynamicObject);
+		CSE_Abstract* l_tpAbstract = children[i];
+		VERIFY(l_tpAbstract);
+
+		CSE_ALifeDynamicObject* l_tpALifeDynamicObject = l_tpAbstract->cast_alife_dynamic_object();
+		CSE_ALifeInventoryItem* l_tpALifeInventoryItem = l_tpALifeDynamicObject->cast_inventory_item();
 		R_ASSERT2(l_tpALifeInventoryItem, "Non inventory item object has parent?!");
 		l_tpALifeInventoryItem->base()->s_flags.Or(M_SPAWN_UPDATE);
-		CSE_Abstract* l_tpAbstract = smart_cast<CSE_Abstract*>(l_tpALifeInventoryItem);
 		alife().server().entity_Destroy(l_tpAbstract);
 
 #ifdef DEBUG
@@ -81,15 +79,16 @@ void CSE_ALifeMonsterBase::add_online(const bool& update_registries)
 	brain().on_switch_online();
 }
 
-void CSE_ALifeMonsterBase::add_offline(const xr_vector<ALife::_OBJECT_ID> &saved_children, const bool &update_registries)
+void CSE_ALifeMonsterBase::add_offline(CSE_Abstract* children, const bool &update_registries)
 {
-	for (u32 i = 0, n = saved_children.size(); i < n; ++i) {
-		CSE_ALifeDynamicObject* child = static_cast<CSE_ALifeDynamicObject*>(ai().alife().objects().object(saved_children[i], true));
-		R_ASSERT(child);
+	if (children)
+	{
+		CSE_ALifeDynamicObject* child = static_cast<CSE_ALifeDynamicObject*>(children);
+		R_ASSERT(child && child->ID_Parent == ID);
 		child->m_bOnline = false;
 
-		CSE_ALifeInventoryItem* inventory_item = smart_cast<CSE_ALifeInventoryItem*>(child);
-		VERIFY2(inventory_item, "Non inventory item object has parent?!");
+		CSE_ALifeInventoryItem* inventory_item = child->cast_inventory_item();
+		R_ASSERT2(inventory_item, "Non inventory item object has parent?!");
 #ifdef DEBUG
 		if (psAI_Flags.test(aiALife))
 		{
@@ -111,9 +110,7 @@ void CSE_ALifeMonsterBase::add_offline(const xr_vector<ALife::_OBJECT_ID> &saved
 
 		if (!child->can_save()) {
 			alife().release(child);
-			--i;
-			--n;
-			continue;
+			return;
 		}
 
 		if (!child->client_data.empty())
@@ -123,8 +120,6 @@ void CSE_ALifeMonsterBase::add_offline(const xr_vector<ALife::_OBJECT_ID> &saved
 #endif
 			child->client_data.clear();
 		}
-        alife().graph().add(child, child->m_tGraphID, false); 
-		alife().graph().attach(*this, inventory_item, child->m_tGraphID, true);
 	}
 
 	if (update_registries)

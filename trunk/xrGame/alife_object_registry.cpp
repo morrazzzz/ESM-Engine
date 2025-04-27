@@ -43,10 +43,8 @@ void CALifeObjectRegistry::save				(IWriter &memory_stream, CSE_ALifeDynamicObje
 	memory_stream.w_u16			(u16(tNetPacket.B.count));
 	memory_stream.w				(tNetPacket.B.data,tNetPacket.B.count);
 
-	ALife::OBJECT_VECTOR::const_iterator	I = object->children.begin();
-	ALife::OBJECT_VECTOR::const_iterator	E = object->children.end();
-	for ( ; I != E; ++I) {
-		CSE_ALifeDynamicObject	*child = this->object(*I,true);
+	for (u32 i = 0; i < object->children.size(); i++) {
+		CSE_ALifeDynamicObject* child = object->children[i]->cast_alife_dynamic_object();
 		if (!child)
 			continue;
 

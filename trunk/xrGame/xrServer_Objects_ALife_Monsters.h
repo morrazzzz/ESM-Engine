@@ -78,7 +78,7 @@ public:
 
 #ifdef XRGAME_EXPORTS
 	virtual	void					add_online					(const bool &update_registries);
-	virtual	void					add_offline					(const xr_vector<ALife::_OBJECT_ID> &saved_children, const bool &update_registries);
+	virtual	void					add_offline					(CSE_Abstract* children, const bool &update_registries);
 #if 0//def DEBUG
 			bool					check_inventory_consistency	();
 #endif
@@ -102,7 +102,7 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeTrader,CSE_ALifeDynamicObjectVisual,CSE_AL
 #ifdef XRGAME_EXPORTS
 	virtual void					spawn_supplies			();
 	virtual	void					add_online				(const bool &update_registries);
-	virtual	void					add_offline				(const xr_vector<ALife::_OBJECT_ID> &saved_children, const bool &update_registries);
+	virtual	void					add_offline				(CSE_Abstract* children, const bool &update_registries);
 #endif
 #ifdef DEBUG
 	virtual bool					match_configuration		() const;
@@ -291,7 +291,7 @@ public:
 	virtual	void					vfDetachAll				(bool					bFictitious = false) {};
 			void					vfCheckForPopulationChanges();
 	virtual	void					add_online				(const bool &update_registries);
-	virtual	void					add_offline				(const xr_vector<ALife::_OBJECT_ID> &saved_children, const bool &update_registries);
+	virtual	void					add_offline				(CSE_Abstract* children, const bool &update_registries);
 	virtual Fvector					draw_level_position		() const;
 	virtual	bool					redundant				() const;
 #endif
@@ -332,7 +332,7 @@ SERVER_ENTITY_DECLARE_BEGIN3(CSE_ALifeCreatureActor,CSE_ALifeCreatureAbstract,CS
 #ifdef XRGAME_EXPORTS
 	virtual void					spawn_supplies			();
 	virtual	void					add_online				(const bool &update_registries);
-	virtual	void					add_offline				(const xr_vector<ALife::_OBJECT_ID> &saved_children, const bool &update_registries);
+	virtual	void					add_offline				(CSE_Abstract* children, const bool &update_registries);
 #endif
 #ifdef DEBUG
 	virtual bool					match_configuration		() const;
@@ -392,7 +392,7 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeMonsterBase,CSE_ALifeMonsterAbstract,CSE_P
 #ifdef XRGAME_EXPORTS
 	virtual void					on_spawn				();
 	virtual	void					add_online				(const bool &update_registries);
-	virtual	void					add_offline				(const xr_vector<ALife::_OBJECT_ID> &saved_children, const bool &update_registries);
+	virtual	void					add_offline				(CSE_Abstract* children, const bool &update_registries);
 #endif // XRGAME_EXPORTS
 SERVER_ENTITY_DECLARE_END
 add_to_type_list(CSE_ALifeMonsterBase)
@@ -442,7 +442,7 @@ public:
 	virtual void					on_register				();
 	virtual void					on_unregister			();
 	virtual	void					add_online				(const bool &update_registries);
-	virtual	void					add_offline				(const xr_vector<ALife::_OBJECT_ID> &saved_children, const bool &update_registries);
+	virtual	void					add_offline				(CSE_Abstract* children, const bool &update_registries);
 #endif
 
 private:

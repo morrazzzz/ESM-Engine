@@ -100,6 +100,9 @@ public:
 	virtual void			reload							(LPCSTR section);
 
 	virtual void			init							() {}
+	
+	void ObjectTakeItem(CGameObject* object) override;
+	void ObjectRejectItem(CGameObject* object, bool just_before_destroy = false) override;
 
 	virtual void			feel_sound_new					(CObject* who, int eType, CSound_UserDataPtr user_data, const Fvector &Position, float power);
 	virtual BOOL			feel_vision_isRelevant			(CObject* O);

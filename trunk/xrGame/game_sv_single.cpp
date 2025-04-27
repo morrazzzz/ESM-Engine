@@ -29,20 +29,6 @@ void	game_sv_Single::Create			(shared_str& options)
 		m_alife_simulator				= xr_new<CALifeSimulator>(&server(),&options);
 }
 
-/**
-CSE_Abstract*		game_sv_Single::get_entity_from_eid		(u16 id)
-{
-	if (!ai().get_alife())
-		return			(inherited::get_entity_from_eid(id));
-
-	CSE_Abstract		*object = ai().alife().objects().object(id,true);
-	if (!object)
-		return			(inherited::get_entity_from_eid(id));
-
-	return				(object);
-}
-/**/
-
 void	game_sv_Single::OnCreate		(u16 id_who)
 {
 	if (!ai().get_alife())
@@ -100,51 +86,6 @@ BOOL	game_sv_Single::OnTouch			(u16 eid_who, u16 eid_what)
 #endif
 	}
 	return TRUE;
-}
-
-void game_sv_Single::OnDetach(u16 eid_who, u16 eid_what)
-{
-	if (ai().get_alife()) 
-	{
-		CSE_Abstract*		e_who	= get_entity_from_eid(eid_who);		VERIFY(e_who	);
-		CSE_Abstract*		e_what	= get_entity_from_eid(eid_what);	VERIFY(e_what	);
-
-		CSE_ALifeInventoryItem *l_tpALifeInventoryItem = smart_cast<CSE_ALifeInventoryItem*>(e_what);
-		if (!l_tpALifeInventoryItem)
-			return;
-
-		CSE_ALifeDynamicObject *l_tpDynamicObject = smart_cast<CSE_ALifeDynamicObject*>(e_who);
-		if (!l_tpDynamicObject)
-			return;
-		
-		if	(
-				ai().alife().objects().object(e_who->ID,true) && 
-				!ai().alife().graph().level().object(l_tpALifeInventoryItem->base()->ID,true) && 
-				ai().alife().objects().object(e_what->ID,true)
-			)
-			alife().graph().detach(*e_who,l_tpALifeInventoryItem,l_tpDynamicObject->m_tGraphID,false,false);
-		else {
-			if (!ai().alife().objects().object(e_what->ID,true)) {
-				u16				id = l_tpALifeInventoryItem->base()->ID_Parent;
-				l_tpALifeInventoryItem->base()->ID_Parent	= 0xffff;
-				
-				CSE_ALifeDynamicObject *dynamic_object = smart_cast<CSE_ALifeDynamicObject*>(e_what);
-				VERIFY			(dynamic_object);
-				dynamic_object->m_tNodeID		= l_tpDynamicObject->m_tNodeID;
-				dynamic_object->m_tGraphID		= l_tpDynamicObject->m_tGraphID;
-				dynamic_object->m_bALifeControl	= true;
-				dynamic_object->m_bOnline		= true;
-				alife().create	(dynamic_object);
-				l_tpALifeInventoryItem->base()->ID_Parent	= id;
-			}
-#ifdef DEBUG
-			else
-				if (psAI_Flags.test(aiALife)) {
-					Msg			("Cannot detach object [%s][%s][%d] from object [%s][%s][%d]",l_tpALifeInventoryItem->base()->name_replace(),*l_tpALifeInventoryItem->base()->s_name,l_tpALifeInventoryItem->base()->ID,l_tpDynamicObject->base()->name_replace(),l_tpDynamicObject->base()->s_name,l_tpDynamicObject->ID);
-				}
-#endif
-		}
-	}
 }
 
 

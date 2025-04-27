@@ -125,13 +125,7 @@ void CWeaponRG6::FireStart ()
 		VERIFY(pGrenade);
 		pGrenade->SetInitiator(H_Parent()->ID());
 
-		if (OnServer())
-		{
-			NET_Packet P;
-			u_EventGen(P,GE_LAUNCH_ROCKET,ID());
-			P.w_u16(u16(getCurrentRocket()->ID()));
-			u_EventSend(P);
-		}
+		inheritedRL::DetachRocket(getCurrentRocket(), true);
 		dropCurrentRocket();
 	}
 }
@@ -151,19 +145,14 @@ u8 CWeaponRG6::AddCartridge		(u8 cnt)
 void CWeaponRG6::OnEvent(NET_Packet& P, u16 type) 
 {
 	inheritedSG::OnEvent(P,type);
+}
 
-	u16 id;
-	switch (type) {
-		case GE_OWNERSHIP_TAKE : {
-			P.r_u16(id);
-			inheritedRL::AttachRocket(id, this);
-		} break;
-		case GE_OWNERSHIP_REJECT : 
-		case GE_LAUNCH_ROCKET : 
-			{
-			bool bLaunch = (type==GE_LAUNCH_ROCKET);
-			P.r_u16						(id);
-			inheritedRL::DetachRocket	(id, bLaunch);
-		} break;
-	}
+void CWeaponRG6::ObjectTakeItem(CGameObject* object)
+{
+	inheritedRL::AttachRocket(object, this);
+}
+
+void CWeaponRG6::ObjectRejectItem(CGameObject* object, bool just_before_destroy)
+{
+	inheritedRL::DetachRocket(object, false);
 }

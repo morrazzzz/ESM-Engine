@@ -498,42 +498,24 @@ void CBaseMonster::OnEvent(NET_Packet& P, u16 type)
 {
 	inherited::OnEvent			(P,type);
 	CInventoryOwner::OnEvent	(P,type);
-
-	u16			id;
-	switch (type){
-	case GE_OWNERSHIP_TAKE:
-		{
-			P.r_u16		(id);
-			CObject		*O	= Level().Objects.net_Find	(id);
-			VERIFY		(O);
-
-			CGameObject			*GO = smart_cast<CGameObject*>(O);
-			CInventoryItem		*pIItem = smart_cast<CInventoryItem*>(GO);
-			VERIFY				(inventory().CanTakeItem(pIItem));
-			pIItem->m_eItemPlace = eItemPlaceRuck;
-
-			O->H_SetParent		(this);
-			inventory().Take	(GO, true, true);
-		break;
-		}
-	case GE_TRADE_SELL:
-
-	case GE_OWNERSHIP_REJECT:
-		{
-			P.r_u16		(id);
-			CObject* O	= Level().Objects.net_Find	(id);
-			VERIFY		(O);
-
-			bool just_before_destroy	= !P.r_eof() && P.r_u8();
-			O->SetTmpPreDestroy				(just_before_destroy);
-			if (!O->getDestroy() && inventory().DropItem(smart_cast<CGameObject*>(O)))
-			{
-				O->H_SetParent	(0,just_before_destroy);
-				feel_touch_deny	(O,2000);
-			}
-		}
-		break;
-		}
 }
 
+void CBaseMonster::ObjectTakeItem(CGameObject* object)
+{
+	CInventoryItem* pIItem = object->cast_inventory_item();
+	VERIFY(inventory().CanTakeItem(pIItem));
+	pIItem->m_eItemPlace = eItemPlaceRuck;
 
+	object->H_SetParent(this);
+	inventory().Take(object, true, true);
+}
+
+void CBaseMonster::ObjectRejectItem(CGameObject* object, bool just_before_destroy)
+{
+	object->SetTmpPreDestroy(just_before_destroy);
+	if (!object->getDestroy() && inventory().DropItem(object))
+	{
+		object->H_SetParent(0, just_before_destroy);
+		feel_touch_deny(object, 2000);
+	}
+}

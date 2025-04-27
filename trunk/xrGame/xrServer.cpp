@@ -12,6 +12,7 @@
 
 #include "../xr_3da/XR_IOConsole.h"
 #include "ui/UIInventoryUtilities.h"
+#include "GameObject.h"
 
 #ifdef DEBUG
 #include "level_debug.h"
@@ -34,22 +35,10 @@ void xrServer::Update	()
 {
 	// game update
 	game->Update	();
-
-#ifdef SLOW_VERIFY_ENTITIES
-	VERIFY						(verify_entities());
-#endif
 }
 
-xr_vector<shared_str>	_tmp_log;
-void console_log_cb(LPCSTR text)
-{
-	_tmp_log.push_back	(text);
-}
-
-extern	float	g_fCatchObjectTime;
 void xrServer::OnMessage	(NET_Packet& P)			// Non-Zero means broadcasting with "flags" as returned
 {
-	if (g_pGameLevel && Level().IsDemoSave()) Level().Demo_StoreServerData(P.B.data, P.B.count);
 	u16			type;
 	P.r_begin	(type);
 
@@ -68,17 +57,6 @@ void xrServer::OnMessage	(NET_Packet& P)			// Non-Zero means broadcasting with "
 	case M_EVENT:	
 		{
 			Process_event			(P);
-		}break;
-	case M_EVENT_PACK:
-		{
-			NET_Packet	tmpP;
-			while (!P.r_eof())
-			{
-				tmpP.B.count		= P.r_u8();
-				P.r					(&tmpP.B.data, tmpP.B.count);
-
-				OnMessage			(tmpP);
-			};			
 		}break;
 	case M_CHANGE_LEVEL:
 		{
@@ -101,10 +79,6 @@ void xrServer::OnMessage	(NET_Packet& P)			// Non-Zero means broadcasting with "
 			Process_save			(P);
 		}break;
 	}
-
-#ifdef SLOW_VERIFY_ENTITIES
-	VERIFY							(verify_entities());
-#endif
 
 	csPlayers.Leave					();
 }
@@ -136,65 +110,6 @@ void			xrServer::entity_Destroy	(CSE_Abstract *&P)
 		F_entity_Destroy		(P);
 	}
 }
-
-CSE_Abstract*	xrServer::GetEntity			(u32 Num)
-{
-	xrS_entities::iterator	I=entities.begin(),E=entities.end();
-	for (u32 C=0; I!=E; ++I,++C)
-	{
-		if (C == Num) return I->second;
-	};
-	return NULL;
-};
-
-#ifdef DEBUG
-
-static	BOOL	_ve_initialized			= FALSE;
-static	BOOL	_ve_use					= TRUE;
-
-bool xrServer::verify_entities				() const
-{
-	if (!_ve_initialized)	{
-		_ve_initialized					= TRUE;
-		if (strstr(Core.Params,"-~ve"))	_ve_use=FALSE;
-	}
-	if (!_ve_use)						return true;
-
-	xrS_entities::const_iterator		I = entities.begin();
-	xrS_entities::const_iterator		E = entities.end();
-	for ( ; I != E; ++I) {
-		VERIFY2							((*I).first != 0xffff,"SERVER : Invalid entity id as a map key - 0xffff");
-		VERIFY2							((*I).second,"SERVER : Null entity object in the map");
-		VERIFY3							((*I).first == (*I).second->ID,"SERVER : ID mismatch - map key doesn't correspond to the real entity ID",(*I).second->name_replace());
-		verify_entity					((*I).second);
-	}
-	return								(true);
-}
-
-void xrServer::verify_entity				(const CSE_Abstract *entity) const
-{
-	VERIFY(entity->m_wVersion!=0);
-	if (entity->ID_Parent != 0xffff) {
-		xrS_entities::const_iterator	J = entities.find(entity->ID_Parent);
-		VERIFY3							(J != entities.end(),"SERVER : Cannot find parent in the map",entity->name_replace());
-		VERIFY3							((*J).second,"SERVER : Null entity object in the map",entity->name_replace());
-		VERIFY3							((*J).first == (*J).second->ID,"SERVER : ID mismatch - map key doesn't correspond to the real entity ID",(*J).second->name_replace());
-		VERIFY3							(std::find((*J).second->children.begin(),(*J).second->children.end(),entity->ID) != (*J).second->children.end(),"SERVER : Parent/Children relationship mismatch - Object has parent, but corresponding parent doesn't have children",(*J).second->name_replace());
-	}
-
-	xr_vector<u16>::const_iterator		I = entity->children.begin();
-	xr_vector<u16>::const_iterator		E = entity->children.end();
-	for ( ; I != E; ++I) {
-		VERIFY3							(*I != 0xffff,"SERVER : Invalid entity children id - 0xffff",entity->name_replace());
-		xrS_entities::const_iterator	J = entities.find(*I);
-		VERIFY3							(J != entities.end(),"SERVER : Cannot find children in the map",entity->name_replace());
-		VERIFY3							((*J).second,"SERVER : Null entity object in the map",entity->name_replace());
-		VERIFY3							((*J).first == (*J).second->ID,"SERVER : ID mismatch - map key doesn't correspond to the real entity ID",(*J).second->name_replace());
-		VERIFY3							((*J).second->ID_Parent == entity->ID,"SERVER : Parent/Children relationship mismatch - Object has children, but children doesn't have parent",(*J).second->name_replace());
-	}
-}
-
-#endif // DEBUG
 
 shared_str xrServer::level_name				(const shared_str &server_options) const
 {
@@ -245,4 +160,20 @@ void xrServer::SpawnNewObjects()
 	}
 
 	EntitiesToSpawn.clear();
+}
+
+void xrServer::DestroyAllEntities()
+{
+	for (const auto& i: entities)
+	{
+		if (i.second->ID_Parent != static_cast<u16>(-1))
+			continue;
+
+		CObject* O = Level().Objects.net_Find(i.first);
+		VERIFY(O);
+
+		static_cast<CGameObject*>(O)->DestroyObject();
+	}
+
+	R_ASSERT(entities.empty());
 }

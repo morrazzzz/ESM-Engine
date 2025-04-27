@@ -1061,44 +1061,35 @@ void	CCustomZone::OnEvent (NET_Packet& P, u16 type)
 				OnStateSwitch	(EZoneState(S));
 				break;
 			}
-		case GE_OWNERSHIP_TAKE : 
-			{
-				u16 id;
-                P.r_u16(id);
-				OnOwnershipTake(id);
-				break;
-			} 
-         case GE_OWNERSHIP_REJECT : 
-			 {
-				 u16 id;
-                 P.r_u16			(id);
-                 CArtefact *artefact = smart_cast<CArtefact*>(Level().Objects.net_Find(id)); 
-				 if(artefact)
-				 {
-					 bool			just_before_destroy = !P.r_eof() && P.r_u8();
-					artefact->H_SetParent(NULL,just_before_destroy);
-					if (!just_before_destroy)
-						ThrowOutArtefact(artefact);
-				 }
-                 break;
-			}
 	}
 	inherited::OnEvent(P, type);
 };
-void CCustomZone::OnOwnershipTake(u16 id)
+
+void CCustomZone::ObjectTakeItem(CGameObject* object)
 {
-	CGameObject* GO  = smart_cast<CGameObject*>(Level().Objects.net_Find(id));  VERIFY(GO);
-	if(!smart_cast<CArtefact*>(GO))
+	CArtefact* artefact = object->cast_artefact();
+
+	if (!artefact)
 	{
-		Msg("zone_name[%s] object_name[%s]",cName().c_str(), GO->cName().c_str() );
+		Msg("~~~ Zone name: [%s], Object name: [%s]", cName().c_str(), object->cName().c_str());
 	}
-	CArtefact *artefact = smart_cast<CArtefact*>(Level().Objects.net_Find(id));  VERIFY(artefact);
 	artefact->H_SetParent(this);
-	
+
 	artefact->setVisible(FALSE);
 	artefact->setEnabled(FALSE);
 
 	m_SpawnedArtefacts.push_back(artefact);
+}
+
+void CCustomZone::ObjectRejectItem(CGameObject* object, bool just_before_destroy)
+{
+	CArtefact* artefact = object->cast_artefact();
+	if (!artefact)
+		return;
+
+	artefact->H_SetParent(NULL, just_before_destroy);
+	if (!just_before_destroy)
+		ThrowOutArtefact(artefact);
 }
 
 void CCustomZone::OnStateSwitch	(EZoneState new_state)
@@ -1211,12 +1202,7 @@ void CCustomZone::BornArtefact()
 
 	if (Local())	{
 		if (pArtefact->H_Parent() && (pArtefact->H_Parent()->ID() == this->ID())  )	//. todo: need to remove on actual message parsing
-		{
-			NET_Packet						P;
-			u_EventGen						(P,GE_OWNERSHIP_REJECT,ID());
-			P.w_u16							(pArtefact->ID());
-			u_EventSend						(P);
-		}
+			RejectItem(pArtefact);
 	}
 
 }

@@ -16,12 +16,6 @@
 #ifdef DEBUG
 #include "PHDebug.h"
 #endif
-IC BOOL BE	(BOOL A, BOOL B)
-{
-	bool a = !!A;
-	bool b = !!B;
-	return a==b;
-}
 
 void CActor::OnEvent		(NET_Packet& P, u16 type)
 {
@@ -31,74 +25,6 @@ void CActor::OnEvent		(NET_Packet& P, u16 type)
 	u16 id;
 	switch (type)
 	{
-	case GE_TRADE_BUY:
-	case GE_OWNERSHIP_TAKE:
-		{
-			P.r_u16		(id);
-			CObject* O	= Level().Objects.net_Find	(id);
-			if (!O)
-			{
-				Msg("! Error: No object to take/buy [%d]", id);
-				break;
-			}
-
-			CFoodItem* pFood = smart_cast<CFoodItem*>(O);
-			if(pFood)
-				pFood->m_eItemPlace = eItemPlaceRuck;
-
-			CGameObject* _GO = smart_cast<CGameObject*>(O);
-			
-			if (inventory().CanTakeItem(smart_cast<CInventoryItem*>(_GO)))
-			{
-				O->H_SetParent(smart_cast<CObject*>(this));
-
-				inventory().Take(_GO, false, true);
-
-				if (!CurrentGameUI())
-					return;
-		
-				if (Level().CurrentViewEntity() == this)
-					CurrentGameUI()->ReInitShownUI();
-				
-				//добавить отсоединенный аддон в инвентарь
-				if(CurrentGameUI()->TopInputReceiver() == &CurrentGameUI()->InventoryMenu())
-				{
-					CurrentGameUI()->InventoryMenu().AddItemToBag(smart_cast<CInventoryItem*>(O));
-				}
-			} 
-			else 
-			{
-				NET_Packet P;
-				u_EventGen(P,GE_OWNERSHIP_REJECT,ID());
-				P.w_u16(u16(O->ID()));
-				u_EventSend(P);
-			}
-		}
-		break;
-	case GE_TRADE_SELL:
-	case GE_OWNERSHIP_REJECT:
-		{
-			P.r_u16		(id);
-			CObject* O	= Level().Objects.net_Find	(id);
-			if (!O)
-			{
-				Msg("! Error: No object to reject/sell [%d]", id);
-				break;
-			}
-			bool just_before_destroy	= !P.r_eof() && P.r_u8();
-			O->SetTmpPreDestroy				(just_before_destroy);
-			if (!O->getDestroy() && inventory().DropItem(smart_cast<CGameObject*>(O)))
-			{
-				O->H_SetParent(0,just_before_destroy);
-//.				feel_touch_deny(O,2000);
-				Level().m_feel_deny.feel_touch_deny(O, 1000);
-
-			}
-
-			if (Level().CurrentViewEntity() == this && CurrentGameUI())
-				CurrentGameUI()->ReInitShownUI();
-		}
-		break;
 	case GEG_PLAYER_ACTIVATEARTEFACT:
 		{
 			P.r_u16		(id);

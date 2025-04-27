@@ -8,6 +8,8 @@
 #include "xrserver.h"
 #include "ai_space.h"
 #include "level_graph.h"
+#include "GameObject.h"
+#include "Level.h"
 
 using namespace ALife;
 
@@ -39,34 +41,48 @@ void CALifeSwitchManager::remove_online(CSE_ALifeDynamicObject *object, bool upd
 {
 	START_PROFILE("ALife/switch/remove_online")
 	object->m_bOnline			= false;
-	
-	m_saved_chidren				= object->children;
-	CSE_ALifeTraderAbstract		*inventory_owner = smart_cast<CSE_ALifeTraderAbstract*>(object);
-	if (inventory_owner) {
-		std::erase_if(
-			m_saved_chidren, [this](const ALife::_OBJECT_ID& id)
-			{
-				CSE_Abstract* object = m_server->game->get_entity_from_eid(id);
-				R_ASSERT(object);
-				CSE_ALifeObject* alife_object = static_cast<CSE_ALifeObject*>(object);
-				R_ASSERT(alife_object);
-				return !alife_object->can_save();
-			}
-		);
+
+	CGameObject* game_object = static_cast<CGameObject*>(Level().Objects.net_Find(object->ID));
+
+	for (u32 i = 0; i < object->children.size(); i++)
+	{
+		CSE_Abstract* child = object->children[i];
+		CGameObject* object_child = static_cast<CGameObject*>(Level().Objects.net_Find(child->ID));
+
+		game_object->ObjectRejectItem(object_child, true);
+
+		object_child->setDestroy(true);
+
+		server().entity_Destroy(child);
+
+		if (!child || !child->m_bALifeControl)
+		{
+			object->children.erase(object->children.begin() + i);
+			continue;
+		}
+
+		//if (inventory_owner && !child->cast_alife_object()->can_save())
+		//	continue;
+
+		object->add_offline(child, false);
 	}
 
-	server().Perform_destroy	(object);
-	VERIFY						(object->children.empty());
+	object->add_offline(nullptr, update_registries);
+
+	game_object->setDestroy(true);
+
+	CSE_Abstract* objectDC = object;
+
+	server().entity_Destroy(objectDC);
 
 	_OBJECT_ID					object_id = object->ID;
-	object->ID					= server().PerformIDgen(object_id);
+	object->ID = server().PerformIDgen(object_id);
 
 #ifdef DEBUG
 	if (psAI_Flags.test(aiALife))
 		Msg						("[LSS] Destroying object [%s][%s][%d]",object->name_replace(),*object->s_name,object->ID);
 #endif
 
-	object->add_offline			(m_saved_chidren,update_registries);
 	STOP_PROFILE
 }
 
@@ -102,12 +118,8 @@ void CALifeSwitchManager::synchronize_location(CSE_ALifeDynamicObject* I)
 	VERIFY3(ai().level_graph().level_id() == ai().game_graph().vertex(I->m_tGraphID)->level_id(), *I->s_name, I->name_replace());
 	
 	CTimer T; T.Start();
-	xr_vector<u16> children_copy;
-	children_copy.reserve(I->children.size());
-	std::copy(I->children.begin(), I->children.end(), std::back_inserter(children_copy));
-	std::sort(children_copy.begin(), children_copy.end());
-	for (u16 i = 1; i < children_copy.size(); i++)
-		R_ASSERT2(children_copy[i - 1] != children_copy[i], "Child is registered twice in the child list");
+	for (u16 i = 1; i < I->children.size(); i++)
+		R_ASSERT2(I->children[i - 1] != I->children[i], "Child is registered twice in the child list");
 
 	float get_ms = T.GetElapsed_sec() * 1000.f;
 

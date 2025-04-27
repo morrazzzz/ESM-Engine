@@ -339,7 +339,5 @@ void CPsyDogPhantom::destroy_from_parent()
 {
 	m_parent_id		= 0xffff;
 
-	NET_Packet		P;
-	u_EventGen		(P,GE_DESTROY,ID());
-	u_EventSend		(P);
+	DestroyObject();
 }

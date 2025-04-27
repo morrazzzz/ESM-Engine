@@ -1663,43 +1663,28 @@ void CCar::ResetKeys()
 void CCar::OnEvent(NET_Packet& P, u16 type)
 {
 	inherited::OnEvent		(P,type);
+}
 
-	//обработка сообщений, нужных для работы с багажником машины
-	u16 id;
-	switch (type)
+void CCar::ObjectTakeItem(CGameObject* object)
+{
+	if (GetInventory()->CanTakeItem(object->cast_inventory_item()))
 	{
-	case GE_OWNERSHIP_TAKE:
-		{
-			P.r_u16		(id);
-			CObject* O	= Level().Objects.net_Find	(id);
-			if( GetInventory()->CanTakeItem(smart_cast<CInventoryItem*>(O)) ) 
-			{
-				O->H_SetParent(this);
-				GetInventory()->Take(smart_cast<CGameObject*>(O), false, false);
-			}
-			else 
-			{
-				if (!O || !O->H_Parent() || (this != O->H_Parent())) return;
-				NET_Packet P;
-				u_EventGen(P,GE_OWNERSHIP_REJECT,ID());
-				P.w_u16(u16(O->ID()));
-				u_EventSend(P);
-			}
-		}break;
-	case GE_OWNERSHIP_REJECT:
-		{
-			P.r_u16		(id);
-			CObject* O	= Level().Objects.net_Find	(id);
-
-			bool just_before_destroy		= !P.r_eof() && P.r_u8();
-			O->SetTmpPreDestroy				(just_before_destroy);
-			if(GetInventory()->DropItem(smart_cast<CGameObject*>(O))) 
-			{
-				O->H_SetParent(0, just_before_destroy);
-			}
-		}break;
+		object->H_SetParent(this);
+		GetInventory()->Take(object, false, false);
 	}
+	else
+	{
+		if (!object || !object->H_Parent() || (this != object->H_Parent())) return;
 
+		RejectItem(object);
+	}
+}
+
+void CCar::ObjectRejectItem(CGameObject* object, bool just_before_destroy)
+{
+	object->SetTmpPreDestroy(just_before_destroy);
+	if (GetInventory()->DropItem(object))
+		object->H_SetParent(0, just_before_destroy);
 }
 
 void CCar::ResetScriptData(void	*P)

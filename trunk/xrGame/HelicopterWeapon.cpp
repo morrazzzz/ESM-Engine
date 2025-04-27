@@ -26,22 +26,16 @@ CHelicopter::BoneMGunCallbackY(CBoneInstance *B)
 void CHelicopter::OnEvent(	NET_Packet& P, u16 type) 
 {
 	inherited::OnEvent(P,type);
+}
 
-	u16 id;
-	switch (type) {
-		case GE_OWNERSHIP_TAKE : 
-			{
-				P.r_u16(id);
-				CRocketLauncher::AttachRocket(id, this);
-			} break;
-		case GE_OWNERSHIP_REJECT : 
-		case GE_LAUNCH_ROCKET : 
-			{
-			bool bLaunch = (type==GE_LAUNCH_ROCKET);
-				P.r_u16(id);
-				CRocketLauncher::DetachRocket(id, bLaunch);
-			} break;
-	}
+void CHelicopter::ObjectTakeItem(CGameObject* object)
+{
+	CRocketLauncher::AttachRocket(object, this);
+}
+
+void CHelicopter::ObjectRejectItem(CGameObject* object, bool just_before_destroy)
+{
+	CRocketLauncher::DetachRocket(object, false);
 }
 
 void CHelicopter::MGunUpdateFire()
@@ -305,10 +299,7 @@ void CHelicopter::startRocket(u16 idx)
 		VERIFY2(_valid(xform),"CHelicopter::startRocket. Invalid xform");
 		LaunchRocket(xform,  vel, zero_vel);
 
-		NET_Packet P;
-		u_EventGen(P,GE_LAUNCH_ROCKET,ID());
-		P.w_u16(u16( getCurrentRocket()->ID()));
-		u_EventSend(P);
+		CRocketLauncher::DetachRocket(getCurrentRocket(), true);
 
 		dropCurrentRocket();
 

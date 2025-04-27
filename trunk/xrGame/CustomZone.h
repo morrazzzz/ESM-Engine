@@ -67,7 +67,8 @@ public:
 	virtual		void	Postprocess						(float val)					{}
 	virtual		void	net_Relcase						(CObject* O	);
 	virtual		void	OnEvent							(NET_Packet& P, u16 type);
-				void	OnOwnershipTake					(u16 id);
+	void ObjectTakeItem(CGameObject* object) override;
+	void ObjectRejectItem(CGameObject* object, bool just_before_destroy = false) override;
 
 				float	GetMaxPower						()							{return m_fMaxPower;}
 				void	SetMaxPower						(float p)					{m_fMaxPower = p;}

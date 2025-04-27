@@ -21,11 +21,8 @@ extern bool	g_b_ClearGameCaptions;
 
 void CLevel::remove_objects	()
 {
-	if (OnServer()) {
-		VERIFY					(Server);
-		Server->SLS_Clear		();
-	}
-	
+	Server->DestroyAllEntities();
+
 	snd_Events.clear			();
 	for (int i=0; i<6; ++i) {
 		// ugly hack for checks that update is twice on frame
@@ -64,12 +61,6 @@ void CLevel::remove_objects	()
 	{
 		VERIFY										(client_spawn_manager().registry().empty());
 		client_spawn_manager().clear			();
-	}
-
-	for (int i=0; i<6; i++)
-	{
-		++(Device.dwFrame);
-		Objects.Update(true);
 	}
 
 	g_pGamePersistent->destroy_particles		(false);

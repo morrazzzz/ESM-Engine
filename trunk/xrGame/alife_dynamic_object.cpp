@@ -78,7 +78,7 @@ void CSE_ALifeDynamicObject::add_online				(const bool &update_registries)
 	alife().graph().remove		(this,m_tGraphID,false);
 }
 
-void CSE_ALifeDynamicObject::add_offline			(const xr_vector<ALife::_OBJECT_ID> &saved_children, const bool &update_registries)
+void CSE_ALifeDynamicObject::add_offline			(CSE_Abstract* children, const bool &update_registries)
 {
 	if (!update_registries)
 		return;
@@ -183,15 +183,15 @@ void CSE_InventoryBox::add_online	(const bool &update_registries)
 {
 	NET_Packet					tNetPacket;
 
-	ALife::OBJECT_IT			I = children.begin();
-	ALife::OBJECT_IT			E = children.end();
-	for ( ; I != E; ++I) {
-		CSE_ALifeDynamicObject	*l_tpALifeDynamicObject = ai().alife().objects().object(*I);
-		CSE_ALifeInventoryItem	*l_tpALifeInventoryItem = smart_cast<CSE_ALifeInventoryItem*>(l_tpALifeDynamicObject);
-		R_ASSERT2				(l_tpALifeInventoryItem,"Non inventory item object has parent?!");
+	for (u32 i = 0; i < children.size(); i++) {
+		CSE_Abstract* l_tpAbstract = children[i];
+		VERIFY(l_tpAbstract);
+
+		CSE_ALifeDynamicObject* l_tpALifeDynamicObject = l_tpAbstract->cast_alife_dynamic_object();
+		CSE_ALifeInventoryItem* l_tpALifeInventoryItem = l_tpALifeDynamicObject->cast_inventory_item();
+		R_ASSERT2(l_tpALifeInventoryItem, "Non inventory item object has parent?!");
 		l_tpALifeInventoryItem->base()->s_flags.Or(M_SPAWN_UPDATE);
-		CSE_Abstract			*l_tpAbstract = smart_cast<CSE_Abstract*>(l_tpALifeInventoryItem);
-	    alife().server().entity_Destroy(l_tpAbstract);
+		alife().server().entity_Destroy(l_tpAbstract);
 
 #ifdef DEBUG
 		if (psAI_Flags.test(aiALife))
@@ -219,17 +219,16 @@ void CSE_InventoryBox::add_online	(const bool &update_registries)
 	CSE_ALifeDynamicObjectVisual::add_online(update_registries);
 }
 
-void CSE_InventoryBox::add_offline(const xr_vector<ALife::_OBJECT_ID>& saved_children, const bool& update_registries)
+void CSE_InventoryBox::add_offline(CSE_Abstract* children, const bool& update_registries)
 {
-	u32 size_saved_children = saved_children.size();
-
-	for (u32 i = 0; i < size_saved_children; ++i) {
-		CSE_ALifeDynamicObject* child = smart_cast<CSE_ALifeDynamicObject*>(ai().alife().objects().object(saved_children[i], true));
-		R_ASSERT(child);
+	if (children)
+	{
+		CSE_ALifeDynamicObject* child = static_cast<CSE_ALifeDynamicObject*>(children);
+		R_ASSERT(child && child->ID_Parent == ID);
 		child->m_bOnline = false;
 
-		CSE_ALifeInventoryItem* inventory_item = smart_cast<CSE_ALifeInventoryItem*>(child);
-		VERIFY2(inventory_item, "Non inventory item object has parent?!");
+		CSE_ALifeInventoryItem* inventory_item = child->cast_inventory_item();
+		R_ASSERT2(inventory_item, "Non inventory item object has parent?!");
 #ifdef DEBUG
 		if (psAI_Flags.test(aiALife))
 		{
@@ -251,9 +250,7 @@ void CSE_InventoryBox::add_offline(const xr_vector<ALife::_OBJECT_ID>& saved_chi
 
 		if (!child->can_save()) {
 			alife().release(child);
-			--i;
-			--size_saved_children;
-			continue;
+			return;
 		}
 
 		if (!client_data.empty())
@@ -263,13 +260,7 @@ void CSE_InventoryBox::add_offline(const xr_vector<ALife::_OBJECT_ID>& saved_chi
 #endif
 			child->client_data.clear();
 		}
-
-		alife().graph().add(child, child->m_tGraphID, false);
-		//		object->alife().graph().attach	(*object,inventory_item,child->m_tGraphID,true);
-		alife().graph().remove(child, child->m_tGraphID);
-		children.push_back(child->ID);
-		child->ID_Parent = ID;
 	}
 
-	CSE_ALifeDynamicObjectVisual::add_offline(saved_children, update_registries);
+	CSE_ALifeDynamicObjectVisual::add_offline(children, update_registries);
 }

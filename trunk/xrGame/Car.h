@@ -560,6 +560,8 @@ public:
 	virtual void			OnKeyboardHold				(int dik);
 	virtual void			vfProcessInputKey			(int iCommand, bool bPressed);
 	virtual void			OnEvent						( NET_Packet& P, u16 type);
+	void ObjectTakeItem(CGameObject* object) override;
+	void ObjectRejectItem(CGameObject* object, bool just_before_destroy = false) override;
 	virtual void			OnAfterExplosion			();
 	virtual void			OnBeforeExplosion			();
 	virtual void			GetRayExplosionSourcePos	(Fvector &pos);

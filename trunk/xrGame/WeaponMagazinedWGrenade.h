@@ -44,6 +44,8 @@ public:
 	virtual void	state_Fire		(float dt);
 	virtual void	OnShot			();
 	virtual void	OnEvent			(NET_Packet& P, u16 type);
+	void ObjectTakeItem(CGameObject* object) override;
+	void ObjectRejectItem(CGameObject* object, bool just_before_destroy = false) override;
 	virtual void	ReloadMagazine	();
 
 	virtual bool	Action			(s32 cmd, u32 flags);

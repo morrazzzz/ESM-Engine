@@ -133,9 +133,6 @@ public:
 	virtual void			OnH_B_Independent	(bool just_before_destroy);
 
 	virtual bool			IsVisibleForZones	() { return true; }
-///////////////////////////////////////////////////////////////////////
-	virtual void			DestroyObject		();
-///////////////////////////////////////////////////////////////////////
 
 	// Position stack
 	virtual	SavedPosition	ps_Element			(u32 ID) const;
@@ -161,6 +158,14 @@ const animation_movement_controller*animation_movement		( ) const	{ return	m_ani
 			void			init				();
 	virtual	void			reinit				();
 	virtual	void			reload				(LPCSTR section);
+
+	void DestroyObject(bool TotalDestroy = false);
+
+	void TakeItem(CGameObject* object, bool NeedAttach = true);
+	void RejectItem(CGameObject* object, bool justBeforeDestroy = false, bool NeedDestroy = false);
+
+	virtual void ObjectTakeItem(CGameObject* object) { VERIFY(false); }
+	virtual void ObjectRejectItem(CGameObject* obejct, bool justBeforeDestroy = false) { VERIFY(false); }
 public:
 #ifdef DEBUG
 	virtual	void			dbg_DrawSkeleton	();
@@ -188,7 +193,6 @@ public:
 
 	CALLBACK_VECTOR			m_visual_callback;
 
-public:
 			void			add_visual_callback		(visual_callback *callback);
 			void			remove_visual_callback	(visual_callback *callback);
 			void			SetKinematicsCallback	(bool set);
@@ -209,7 +213,7 @@ public:
 		THROW				(m_script_clsid >= 0);
 		return				(m_script_clsid);
 	}
-public:
+
 	IC		CInifile		*spawn_ini			()
 	{
 		return				(m_ini_file);

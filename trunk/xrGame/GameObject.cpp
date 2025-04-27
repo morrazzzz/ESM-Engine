@@ -21,6 +21,8 @@
 #include "game_level_cross_table.h"
 #include "animation_movement_controller.h"
 #include "../xr_3da/xr_collide_form.h"
+#include "alife_simulator.h"
+#include "alife_object_registry.h"
 
 #ifdef DEBUG
 #include "debug_renderer.h"
@@ -161,18 +163,6 @@ void CGameObject::OnEvent		(NET_Packet& P, u16 type)
 			CObject* Hitter = Level().Objects.net_Find(HDS.whoID);
 			HDS.who		= Hitter;
 			Hit				(&HDS);
-		}
-		break;
-	case GE_DESTROY:
-		{
-			if(H_Parent())
-			{
-				Msg("GE_DESTROY arrived, but H_Parent() exist. object[%d][%s] parent[%d][%s] [%d]", 
-					ID(), cName().c_str(),
-					H_Parent()->ID(), H_Parent()->cName().c_str(),
-					Device.dwFrame);
-			}
-			setDestroy		(TRUE);
 		}
 		break;
 	}
@@ -705,19 +695,68 @@ CScriptGameObject *CGameObject::lua_game_object		() const
 	return							(m_lua_game_object);
 }
 
-void CGameObject::DestroyObject()			
+void CGameObject::DestroyObject(bool TotalDestroy)
 {
-	
-	if(m_bObjectRemoved)	return;
-	m_bObjectRemoved		= true;
 	if (getDestroy())		return;
 
-	if (Local())
-	{	
-		NET_Packet		P;
-		u_EventGen		(P,GE_DESTROY,ID());
-		u_EventSend		(P);
+	CSE_Abstract* DC_Entity{};
+
+	DC_Entity = Level().Server->ID_to_entity(ID());
+	VERIFY(DC_Entity);
+
+	if (!DC_Entity->children.empty())
+	{
+		for (u32 i = 0; i < DC_Entity->children.size(); i++)
+		{
+			CSE_Abstract* child = DC_Entity->children[i];
+
+			if (!TotalDestroy)
+				ai().get_alife()->OnDetach(DC_Entity, child, true);
+
+//			VERIFY(static_cast<u16>(-1) == child->ID_Parent);
+
+			CGameObject* child_obj = static_cast<CGameObject*>(Level().Objects.net_Find(child->ID));
+
+			//Todo: morrazzzz: implement this!
+			ObjectRejectItem(child_obj, true);
+
+			VERIFY(!child_obj->H_Parent());
+
+			child_obj->setDestroy(true);
+
+			if (TotalDestroy || !child->m_bALifeControl)
+			{
+				Level().Server->entity_Destroy(child);
+				continue;
+			}
+
+			ai().get_alife()->release(child);
+		}
+
+		DC_Entity->children.clear_not_free();
 	}
+
+	if (DC_Entity->ID_Parent != static_cast<u16>(-1))
+	{
+		u16 IDParent = DC_Entity->ID_Parent;
+		CSE_Abstract* DC_Parent = Level().Server->ID_to_entity(IDParent);
+
+		ai().get_alife()->OnDetach(DC_Parent, DC_Entity);
+
+		CGameObject* parent_obj = static_cast<CGameObject*>(Level().Objects.net_Find(IDParent));
+
+		parent_obj->ObjectRejectItem(this, true);
+	}
+
+	setDestroy(true);
+
+	if (TotalDestroy || !DC_Entity->m_bALifeControl)
+	{
+		Level().Server->entity_Destroy(DC_Entity);
+		return;
+	}
+
+	ai().get_alife()->release(DC_Entity);
 }
 
 void CGameObject::shedule_Update	(u32 dt)
@@ -852,4 +891,37 @@ void	CGameObject::		create_anim_mov_ctrl( CBlend* b )
 void	CGameObject::		destroy_anim_mov_ctrl()
 {
 	xr_delete( m_anim_mov_ctrl );
+}
+
+void CGameObject::TakeItem(CGameObject* object, bool NeedAttach)
+{
+	if (NeedAttach)
+	{
+		CSE_Abstract* e_parent = Level().Server->ID_to_entity(ID());
+		CSE_Abstract* e_entity = Level().Server->ID_to_entity(object->ID());
+		R_ASSERT(e_parent && e_entity);
+
+		ai().get_alife()->OnAttach(e_parent, e_entity);
+	}
+
+	ObjectTakeItem(object);
+}
+
+void CGameObject::RejectItem(CGameObject* object, bool justBeforeDestroy, bool NeedDestroy)
+{
+	CSE_Abstract* e_parent = Level().Server->ID_to_entity(ID());
+	CSE_Abstract* e_entity = Level().Server->ID_to_entity(object->ID());
+	R_ASSERT(e_parent && e_entity);
+
+	Msg("REJECT ITEM: [%s] for [%s]", *object->cNameSect(), *cNameSect());
+
+	ai().get_alife()->OnDetach(e_parent, e_entity);
+
+//	if (NeedDestroy)
+//		justBeforeDestroy = true; //this valid????
+
+	ObjectRejectItem(object, justBeforeDestroy);
+
+	if (NeedDestroy)
+		object->DestroyObject();
 }

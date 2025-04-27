@@ -83,10 +83,7 @@ void CTrade::TransferItem(CInventoryItem* pItem, bool bBuying)
 	if(!bBuying)
 		swap(O1,O2);
 
-	NET_Packet				P;
-	O1->u_EventGen			(P,GE_TRADE_SELL,O1->ID());
-	P.w_u16					(pItem->object().ID());
-	O1->u_EventSend			(P);
+	O1->RejectItem(pItem->cast_game_object());
 
 	if(bBuying)
 		pPartner.inv_owner->set_money( pPartner.inv_owner->get_money() + dwTransferMoney, false );
@@ -94,9 +91,7 @@ void CTrade::TransferItem(CInventoryItem* pItem, bool bBuying)
 		pThis.inv_owner->set_money( pThis.inv_owner->get_money() + dwTransferMoney, false );
 
 	// взять у партнера
-	O2->u_EventGen			(P,GE_TRADE_BUY,O2->ID());
-	P.w_u16					(pItem->object().ID());
-	O2->u_EventSend			(P);
+	O2->TakeItem(pItem->cast_game_object());
 
 	if(bBuying)
 		pThis.inv_owner->set_money( pThis.inv_owner->get_money() - dwTransferMoney, false );

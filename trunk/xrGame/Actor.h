@@ -104,6 +104,9 @@ public:
 	
 	virtual void						OnEvent				( NET_Packet& P, u16 type		);
 
+	void ObjectTakeItem(CGameObject* object) override;
+	void ObjectRejectItem(CGameObject* object, bool just_before_destroy = false) override;
+
 	// Render
 	virtual void						renderable_Render			();
 	virtual BOOL						renderable_ShadowGenerate	();

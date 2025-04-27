@@ -263,15 +263,9 @@ void CALifeSimulatorBase::release	(CSE_Abstract *abstract, bool alife_query)
 	VERIFY							(object);
 
 	if (!object->children.empty()) {
-		u32							children_count = object->children.size();
-		u32							bytes = children_count*sizeof(ALife::_OBJECT_ID);
-		ALife::_OBJECT_ID			*children = (ALife::_OBJECT_ID*)_alloca(bytes);
-		CopyMemory					(children,&*object->children.begin(),bytes);
-
-		ALife::_OBJECT_ID			*I = children;
-		ALife::_OBJECT_ID			*E = children + children_count;
-		for ( ; I != E; ++I) {
-			CSE_ALifeDynamicObject	*child = objects().object(*I,true);
+		for (u32 i = 0; i< object->children.size(); i++) 
+		{
+			CSE_ALifeDynamicObject* child = object->children[i]->cast_alife_dynamic_object();
 			if (!child)
 				continue;
 
@@ -330,6 +324,59 @@ void CALifeSimulatorBase::assign_death_position(CSE_ALifeCreatureAbstract *tpALi
 	CSE_ALifeMonsterAbstract				*l_tpALifeMonsterAbstract = smart_cast<CSE_ALifeMonsterAbstract*>(tpALifeCreatureAbstract);
 	if (l_tpALifeMonsterAbstract)
 		l_tpALifeMonsterAbstract->m_tPrevGraphID = l_tpALifeMonsterAbstract->m_tNextGraphID = l_tpALifeMonsterAbstract->m_tGraphID;
+}
+
+void CALifeSimulatorBase::OnAttach(CSE_Abstract* object, CSE_Abstract* item)
+{
+	R_ASSERT(object);
+	R_ASSERT(item);
+	
+	CSE_ALifeDynamicObject* DynamicObject = objects().object(object->ID, true);
+	CSE_ALifeInventoryItem* itemAttach = item->cast_inventory_item();
+
+	if (DynamicObject && item &&
+		graph().level().object(itemAttach->base()->ID, true))
+	{
+		graph().attach(*object, itemAttach, DynamicObject->m_tGraphID, false);
+	}
+#ifdef DEBUG
+	else if (psAI_Flags.test(aiALife)) {
+			Msg("Cannot attach object [%s][%s][%d] to object [%s][%s][%d]", item->name_replace(), *item->s_name, item->ID, object->name_replace(), *object->s_name, object->ID);
+		}
+#endif
+}
+
+void CALifeSimulatorBase::OnDetach(CSE_Abstract* object, CSE_Abstract* item, bool NotNeedDeleteChildren)
+{
+	CSE_ALifeDynamicObject* DynamicObject = objects().object(object->ID, true);
+	VERIFY(DynamicObject);
+
+	if (!item->cast_inventory_item())
+		return;
+
+	bool FindObject = objects().object(item->ID, true);
+
+	if (!graph().level().object(item->ID, true) && FindObject)
+		graph().detach(*object, item->cast_inventory_item(), DynamicObject->m_tGraphID, false, !NotNeedDeleteChildren);
+	else if (!FindObject) {
+			u16	id = item->ID_Parent;
+			item->ID_Parent = 0xffff;
+			  
+			CSE_ALifeDynamicObject* dynamic_object = item->cast_alife_dynamic_object();
+			VERIFY(dynamic_object);
+			dynamic_object->m_tNodeID = DynamicObject->m_tNodeID;
+			dynamic_object->m_tGraphID = DynamicObject->m_tGraphID;
+			dynamic_object->m_bALifeControl = true;
+			dynamic_object->m_bOnline = true;
+		    create(dynamic_object);
+			item->ID_Parent = id;
+		}
+#ifdef DEBUG
+		else
+			if (psAI_Flags.test(aiALife)) {
+				Msg("Cannot detach object [%s][%s][%d] from object [%s][%s][%d]", item->name_replace(), *item->s_name, item->ID, object->name_replace(), object->s_name, object->ID);
+			}
+#endif
 }
 
 shared_str CALifeSimulatorBase::level_name		() const

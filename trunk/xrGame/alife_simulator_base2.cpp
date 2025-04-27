@@ -40,14 +40,13 @@ void CALifeSimulatorBase::register_object	(CSE_ALifeDynamicObject *object, bool 
 		CSE_ALifeDynamicObject			*II = objects().object(item->base()->ID_Parent);
 
 #ifdef DEBUG
-		if (std::find(II->children.begin(),II->children.end(),item->base()->ID) != II->children.end()) {
+		if (std::find(II->children.begin(),II->children.end(),item->base()) != II->children.end()) {
 			Msg							("[LSS] Specified item [%s][%d] is already attached to the specified object [%s][%d]",item->base()->name_replace(),item->base()->ID,II->name_replace(),II->ID);
 			FATAL						("[LSS] Cannot recover from the previous error!");
 		}
 #endif
 
-		II->children.push_back			(item->base()->ID);
-		II->attach						(item,true,false);
+		II->attach						(item, true);
 	}
 
 	if (can_register_objects())

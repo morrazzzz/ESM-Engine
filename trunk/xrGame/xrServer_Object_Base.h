@@ -76,7 +76,7 @@ public:
 	u8								s_gameid;
 	u8								s_RP;
 	Flags16							s_flags;		// state flags
-	xr_vector<u16>					children;
+	xr_vector<CSE_Abstract*>	    children;
 
 	// update data
 	Fvector							o_Position;
@@ -104,7 +104,7 @@ public:
 	
 									CSE_Abstract	(LPCSTR caSection);
 	virtual							~CSE_Abstract	();
-	virtual void					OnEvent			(NET_Packet &tNetPacket, u16 type, u32 time ){};
+	virtual void					OnEvent			(NET_Packet &tNetPacket, u16 type, u32 time ){}
 	virtual void					FillProps		(LPCSTR pref, PropItemVec &items);
 	virtual BOOL					Net_Relevant	(){return TRUE;};
 	//
@@ -117,7 +117,7 @@ public:
 	{
 		s_name		= s;
 	};
-	virtual void		__stdcall	set_name_replace(LPCSTR s) {xr_free(s_name_replace); s_name_replace = xr_strdup(s);};
+	virtual void		__stdcall	set_name_replace(LPCSTR s) {xr_free(s_name_replace); s_name_replace = xr_strdup(s);}
 	virtual Fvector&	__stdcall	position		();
 	virtual Fvector&	__stdcall	angle			();
 	virtual Flags16&	__stdcall	flags			();
@@ -128,7 +128,7 @@ public:
 	virtual void 		__stdcall	on_render(CDUInterface* du, ISE_AbstractLEOwner* owner_on_render, bool bSelected, const Fmatrix& parent, int priority, bool strictB2F) override {};
 	//
 
-	IC		const Fvector			&Position		() const					{return o_Position;};
+	IC		const Fvector			&Position		() const					{return o_Position;}
 	// we need this to prevent virtual inheritance :-(
 	virtual CSE_Abstract			*base			();
 	virtual const CSE_Abstract		*base			() const;
@@ -139,25 +139,25 @@ public:
 			CInifile				&spawn_ini		();
 
 // for smart cast
-	virtual CSE_ALifeGroupAbstract		*cast_group_abstract		() {return 0;};
-	virtual CSE_ALifeSchedulable		*cast_schedulable			() {return 0;};
-	virtual CSE_ALifeInventoryItem		*cast_inventory_item		() {return 0;};
-	virtual CSE_ALifeTraderAbstract		*cast_trader_abstract		() {return 0;};
+	virtual CSE_ALifeGroupAbstract		*cast_group_abstract		() {return 0;}
+	virtual CSE_ALifeSchedulable		*cast_schedulable			() {return 0;}
+	virtual CSE_ALifeInventoryItem		*cast_inventory_item		() {return 0;}
+	virtual CSE_ALifeTraderAbstract		*cast_trader_abstract		() {return 0;}
 
 	virtual CSE_ALifeObject				*cast_alife_object			() {return 0;}
 	virtual CSE_ALifeDynamicObject		*cast_alife_dynamic_object	() {return 0;}
 	virtual CSE_ALifeItemAmmo			*cast_item_ammo				() {return 0;}
 	virtual CSE_ALifeItemWeapon			*cast_item_weapon			() {return 0;}
 	virtual CSE_ALifeItemDetector		*cast_item_detector			() {return 0;}
-	virtual CSE_ALifeMonsterAbstract	*cast_monster_abstract		() {return 0;};
-	virtual CSE_ALifeHumanAbstract		*cast_human_abstract		() {return 0;};
-	virtual CSE_ALifeAnomalousZone		*cast_anomalous_zone		() {return 0;};
-	virtual CSE_ALifeTrader				*cast_trader				() {return 0;};
+	virtual CSE_ALifeMonsterAbstract	*cast_monster_abstract		() {return 0;}
+	virtual CSE_ALifeHumanAbstract		*cast_human_abstract		() {return 0;}
+	virtual CSE_ALifeAnomalousZone		*cast_anomalous_zone		() {return 0;}
+	virtual CSE_ALifeTrader				*cast_trader				() {return 0;}
 
-	virtual CSE_ALifeCreatureAbstract	*cast_creature_abstract		() {return 0;};
-	virtual CSE_ALifeSmartZone			*cast_smart_zone			() {return 0;};
-	virtual CSE_ALifeOnlineOfflineGroup	*cast_online_offline_group	() {return 0;};
-	virtual CSE_ALifeItemPDA			*cast_item_pda				() {return 0;};
+	virtual CSE_ALifeCreatureAbstract	*cast_creature_abstract		() {return 0;}
+	virtual CSE_ALifeSmartZone			*cast_smart_zone			() {return 0;}
+	virtual CSE_ALifeOnlineOfflineGroup	*cast_online_offline_group	() {return 0;}
+	virtual CSE_ALifeItemPDA			*cast_item_pda				() {return 0;}
 };
 add_to_type_list(CSE_Abstract)
 #define script_type_list save_type_list(CSE_Abstract)

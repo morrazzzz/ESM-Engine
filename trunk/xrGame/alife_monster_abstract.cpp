@@ -26,9 +26,9 @@ void CSE_ALifeMonsterAbstract::add_online							(const bool &update_registries)
 	brain().on_switch_online		();
 }
 
-void CSE_ALifeMonsterAbstract::add_offline							(const xr_vector<ALife::_OBJECT_ID> &saved_children, const bool &update_registries)
+void CSE_ALifeMonsterAbstract::add_offline							(CSE_Abstract* children, const bool &update_registries)
 {
-	inherited1::add_offline			(saved_children,update_registries);
+	inherited1::add_offline			(children,update_registries);
 	brain().on_switch_offline		();
 }
 

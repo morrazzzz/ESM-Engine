@@ -489,10 +489,9 @@ void CInventoryItem::DropItem()
 {
 	SetDroppedItem(true);
 
-	NET_Packet					P;
-	object().u_EventGen(P, GE_OWNERSHIP_REJECT, object().H_Parent()->ID());
-	P.w_u16(u16(object().ID()));
-    object().u_EventSend(P);
+	CGameObject* object_parent = static_cast<CGameObject*>(object().H_Parent());
+
+	object_parent->RejectItem(cast_game_object());
 }
 
 #ifdef DEBUG

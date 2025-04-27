@@ -91,12 +91,11 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, CSE_Abstract* tpExistedEnti
 		game->OnCreate		(E->ID);
 		
 		if (0xffff != E->ID_Parent) {
-			Msg("Attach item: [%d] to parent: [%d]", E->ID, E->ID_Parent);
-			R_ASSERT					(e_parent);
+			R_ASSERT(e_parent);
 			
-			game->OnTouch			(E->ID_Parent,E->ID);
+			game->OnTouch(E->ID_Parent,E->ID);
 
-			e_parent->children.push_back(E->ID);
+			e_parent->children.push_back(E);
 		}
 	}
 

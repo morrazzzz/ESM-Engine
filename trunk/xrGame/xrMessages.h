@@ -14,17 +14,12 @@ enum {
 	M_SAVE_GAME,
 	M_SAVE_PACKET,
 
-	M_EVENT_PACK,					// Pack of M_EVENT
-
 	MSG_FORCEDWORD				= u32(-1)
 };
 
 enum {
-	GE_OWNERSHIP_TAKE,			// DUAL: Client request for ownership of an item
-	GE_OWNERSHIP_REJECT,		// DUAL: Client request ownership rejection
 	GE_HIT,						//
 	GE_ASSIGN_KILLER,			//
-	GE_DESTROY,					// authorative client request for entity-destroy
 	GE_TELEPORT_OBJECT,
 
 	GE_ADD_RESTRICTION,
@@ -32,9 +27,6 @@ enum {
 	GE_REMOVE_ALL_RESTRICTIONS,
 
 	GE_INFO_TRANSFER,			//transfer _new_ info on PDA
-	
-	GE_TRADE_SELL,
-	GE_TRADE_BUY,
 
 	GE_WPN_STATE_CHANGE,
 
@@ -53,7 +45,6 @@ enum {
 	GEG_PLAYER_DETACH_HOLDER,
 
 	GE_FREEZE_OBJECT,
-	GE_LAUNCH_ROCKET,
 
 	GE_FORCEDWORD				= u32(-1)
 };

@@ -17,19 +17,11 @@ public:
 									game_sv_GameState		();
 	virtual							~game_sv_GameState		();
 	// Main accessors							
-				CSE_Abstract*		get_entity_from_eid		(u16 id);
-	
-				CSE_Abstract*		spawn_begin				(LPCSTR N);
-				CSE_Abstract*		spawn_end				(CSE_Abstract* E);
-
-	// Utilities
-	void							u_EventGen				(NET_Packet& P, u16 type, u16 dest	);
-	void							u_EventSend				(NET_Packet& P);
+	CSE_Abstract*		get_entity_from_eid		(u16 id);
 
 	// Events
 	virtual		void				OnCreate				(u16 id_who)					{};
 	virtual		BOOL				OnTouch					(u16 eid_who, u16 eid_target)	= 0;			// TRUE=allow ownership, FALSE=denied
-	virtual		void				OnDetach				(u16 eid_who, u16 eid_target)	= 0;	
 
 	// Main
 	virtual		void				Create					(shared_str& options);

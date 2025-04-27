@@ -35,6 +35,8 @@ public:
 	virtual void 			OnH_B_Independent			(bool just_before_destroy);
 
 	virtual void 			OnEvent						(NET_Packet& P, u16 type);
+	void ObjectTakeItem(CGameObject* object) override;
+	void ObjectRejectItem(CGameObject* object, bool just_before_destroy = false) override;
 
 	virtual void 			OnAnimationEnd				(u32 state);
 	virtual void			OnMotionMark				(u32 state);

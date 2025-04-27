@@ -5667,14 +5667,8 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
     <ClCompile Include="xrServer_perform_sls_default.cpp" />
-    <ClCompile Include="xrServer_perform_sls_load.cpp" />
     <ClCompile Include="xrServer_perform_sls_save.cpp" />
-    <ClCompile Include="xrServer_perform_transfer.cpp" />
-    <ClCompile Include="xrServer_sls_clear.cpp" />
     <ClCompile Include="xrServer_process_event.cpp" />
-    <ClCompile Include="xrServer_process_event_destroy.cpp" />
-    <ClCompile Include="xrServer_process_event_ownership.cpp" />
-    <ClCompile Include="xrServer_process_event_reject.cpp" />
     <ClCompile Include="xrServer_process_spawn.cpp" />
     <ClCompile Include="xrServer_process_update.cpp" />
     <ClCompile Include="physics_game.cpp" />

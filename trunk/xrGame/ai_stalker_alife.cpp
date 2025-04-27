@@ -75,16 +75,9 @@ u32 CAI_Stalker::fill_items						(CInventory &inventory, CGameObject *old_owner,
 
 void CAI_Stalker::transfer_item					(CInventoryItem *item, CGameObject *old_owner, CGameObject *new_owner)
 {
-	NET_Packet			P;
-	CGameObject			*O = old_owner;
-	O->u_EventGen		(P,GE_TRADE_SELL,O->ID());
-	P.w_u16				(u16(item->object().ID()));
-	O->u_EventSend		(P);
+	old_owner->RejectItem(item->cast_game_object());
 
-	O					= new_owner;
-	O->u_EventGen		(P,GE_TRADE_BUY,O->ID());
-	P.w_u16				(u16(item->object().ID()));
-	O->u_EventSend		(P);
+	new_owner->TakeItem(item->cast_game_object());
 }
 
 IC	void CAI_Stalker::buy_item_virtual			(CTradeItem &item)
@@ -430,9 +423,7 @@ void CAI_Stalker::remove_personal_only_ammo			(const CInventoryItem *item)
 			if (xr_strcmp(*I,(*i)->object().cNameSect()))
 				continue;
 
-			NET_Packet		packet;
-			u_EventGen		(packet,GE_DESTROY,(*i)->object().ID());
-			u_EventSend		(packet);
+			(*i)->object().DestroyObject();
 		}
 	}
 }

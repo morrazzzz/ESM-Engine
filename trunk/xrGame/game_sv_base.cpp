@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "xrServer.h"
-#include "LevelGameDef.h"
 #include "script_process.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "script_engine.h"
@@ -8,13 +7,6 @@
 #include "level.h"
 #include "ai_space.h"
 #include "../xr_3da/XR_IOConsole.h"
-#include "../xr_3da/xr_ioc_cmd.h"
-#include "string_table.h"
-
-#ifdef DEBUG
-#include "debug_renderer.h"
-#include "level_debug.h"
-#endif
 
 ENGINE_API	bool g_dedicated_server;
 
@@ -54,44 +46,6 @@ void game_sv_GameState::Create					(shared_str &options)
 			Console->ExecuteScript(svcfg_name);
 		}
 	};
-}
-
-CSE_Abstract*		game_sv_GameState::spawn_begin				(LPCSTR N)
-{
-	CSE_Abstract*	A	=   F_entity_Create(N);	R_ASSERT(A);	// create SE
-	A->s_name			=   N;							// ltx-def
-	A->s_gameid			=	GAME_SINGLE;							// game-type
-	A->s_RP				=	0xFE;								// use supplied
-	A->ID				=	0xffff;								// server must generate ID
-	A->ID_Parent		=	0xffff;								// no-parent
-	A->ID_Phantom		=	0xffff;								// no-phantom
-	A->RespawnTime		=	0;									// no-respawn
-	return A;
-}
-
-CSE_Abstract*		game_sv_GameState::spawn_end				(CSE_Abstract* E)
-{
-	NET_Packet						P;
-	u16								skip_header;
-	E->Spawn_Write					(P,TRUE);
-	P.r_begin						(skip_header);
-	CSE_Abstract* N = m_server->Process_spawn	(P);
-	F_entity_Destroy				(E);
-
-	return N;
-}
-
-void game_sv_GameState::u_EventGen(NET_Packet& P, u16 type, u16 dest)
-{
-	P.w_begin	(M_EVENT);
-	P.w_u32		(Level().timeServer());//Device.TimerAsync());
-	P.w_u16		(type);
-	P.w_u16		(dest);
-}
-
-void game_sv_GameState::u_EventSend(NET_Packet& P)
-{
-	m_server->SendBroadcast(P);
 }
 
 void game_sv_GameState::Update		()

@@ -720,13 +720,7 @@ bool CInventory::Eat(PIItem pIItem)
 
 	if(pItemToEat->Empty() && entity_alive->Local())
 	{
-		NET_Packet					P;
-		CGameObject::u_EventGen		(P,GE_OWNERSHIP_REJECT,entity_alive->ID());
-		P.w_u16						(pIItem->object().ID());
-		CGameObject::u_EventSend	(P);
-
-		CGameObject::u_EventGen		(P,GE_DESTROY,pIItem->object().ID());
-		CGameObject::u_EventSend	(P);
+		entity_alive->RejectItem(pIItem->cast_game_object(), true);
 
 		return		false;
 	}
@@ -807,15 +801,22 @@ CInventoryItem	*CInventory::tpfGetObjectByIndex(int iIndex)
 
 CInventoryItem	*CInventory::GetItemFromInventory(LPCSTR caItemName)
 {
+	if (m_pOwner->cast_game_object()->getDestroy())
+		return 0;
+
 	TIItemContainer	&l_list = m_all;
 
 	u32 crc = crc32(caItemName, xr_strlen(caItemName));
 
-	for(TIItemContainer::iterator l_it = l_list.begin(); l_list.end() != l_it; ++l_it)
-		if ((*l_it)->object().cNameSect()._get()->dwCRC == crc){
-			VERIFY(	0 == xr_strcmp( (*l_it)->object().cNameSect().c_str(), caItemName)  );
+	for (TIItemContainer::iterator l_it = l_list.begin(); l_list.end() != l_it; ++l_it)
+	{
+		auto object = (*l_it)->cast_game_object();
+
+		if (!object->getDestroy() && object->cNameSect()._get()->dwCRC == crc) {
+			VERIFY(0 == xr_strcmp((*l_it)->object().cNameSect().c_str(), caItemName));
 			return	(*l_it);
 		}
+	}
 	return	(0);
 }
 

@@ -11,6 +11,8 @@
 #include "UIGameCustom.h"
 #include "Grenade.h"
 #include "clsid_game.h"
+#include "FoodItem.h"
+#include "ui/uiinventoryWnd.h"
 
 #include "Level.h"
 
@@ -58,6 +60,48 @@ BOOL CActor::feel_touch_on_contact	(CObject *O)
 		return	(TRUE);
 
 	return		(FALSE);
+}
+
+void CActor::ObjectTakeItem(CGameObject* object)
+{
+	CFoodItem* pFood = object->cast_inventory_item()->cast_food_item();
+	if (pFood)
+		pFood->m_eItemPlace = eItemPlaceRuck;
+
+	if (inventory().CanTakeItem(object->cast_inventory_item()))
+	{
+		object->H_SetParent(this);
+
+		inventory().Take(object, false, true);
+
+		if (!CurrentGameUI())
+			return;
+
+		if (Level().CurrentViewEntity() == this)
+			CurrentGameUI()->ReInitShownUI();
+
+		//добавить отсоединенный аддон в инвентарь
+		if (CurrentGameUI()->TopInputReceiver() == &CurrentGameUI()->InventoryMenu())
+		{
+			CurrentGameUI()->InventoryMenu().AddItemToBag(object->cast_inventory_item());
+		}
+	}
+	else
+		RejectItem(object);
+}
+
+void CActor::ObjectRejectItem(CGameObject* object, bool just_before_destroy)
+{
+	object->SetTmpPreDestroy(just_before_destroy);
+	if (!object->getDestroy() && inventory().DropItem(object))
+	{
+		object->H_SetParent(0, just_before_destroy);
+		//.				feel_touch_deny(O,2000);
+		Level().m_feel_deny.feel_touch_deny(object, 1000);
+	}
+
+	if (Level().CurrentViewEntity() == this && CurrentGameUI())
+		CurrentGameUI()->ReInitShownUI();
 }
 
 void CActor::PickupModeOn()
@@ -146,15 +190,10 @@ void CActor::PickupModeUpdate()
 //		return;
 		
 	//подбирание объекта
-	if(inventory().m_pTarget && inventory().m_pTarget->Useful() &&
+	if (inventory().m_pTarget && inventory().m_pTarget->Useful() &&
 		m_pUsableObject && m_pUsableObject->nonscript_usable() &&
-		!Level().m_feel_deny.is_object_denied(smart_cast<CGameObject*>(inventory().m_pTarget)) )
-	{
-		NET_Packet P;
-		u_EventGen(P,GE_OWNERSHIP_TAKE, ID());
-		P.w_u16(inventory().m_pTarget->object().ID());
-		u_EventSend(P);
-	}
+		!Level().m_feel_deny.is_object_denied(smart_cast<CGameObject*>(inventory().m_pTarget)))
+		TakeItem(inventory().m_pTarget->cast_game_object());
 }
 
 #include "../xr_3da/CameraBase.h"
@@ -224,12 +263,9 @@ void CActor::PickupModeUpdate_COD(const CFrustum& frustum)
 	
 
 	if (pNearestItem && m_bPickupMode)
-	{
-		NET_Packet P;
-		u_EventGen(P, GE_OWNERSHIP_TAKE, ID());
-		P.w_u16(pNearestItem->object().ID());
-		u_EventSend(P);
-		
+	{		
+		TakeItem(pNearestItem->cast_game_object());
+
 		PickupModeOff();
 	}
 };

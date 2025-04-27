@@ -67,6 +67,10 @@ public:
 	virtual	float		ffGetFov				()	const {return 150.f;}
 	virtual	float		ffGetRange				()	const {return 30.f;}
 	virtual	void		OnEvent					(NET_Packet& P, u16 type);
+
+	void ObjectTakeItem(CGameObject* object) override;
+	void ObjectRejectItem(CGameObject* object, bool just_before_destroy = false) override;
+
 	virtual	void		feel_touch_new			(CObject* O);
 	virtual	void		DropItemSendMessage		(CObject *O);
 	virtual void		shedule_Update			(u32 dt);

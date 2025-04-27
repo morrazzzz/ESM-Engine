@@ -143,37 +143,23 @@ void CAI_Trader::OnEvent		(NET_Packet& P, u16 type)
 {
 	inherited::OnEvent			(P,type);
 	CInventoryOwner::OnEvent	(P,type);
+}
 
-	u16 id;
-	CObject* Obj;
-
-	switch (type) {
-		case GE_TRADE_BUY:
-		case GE_OWNERSHIP_TAKE:
-			P.r_u16		(id);
-			Obj = Level().Objects.net_Find	(id);
-			if(inventory().CanTakeItem(smart_cast<CInventoryItem*>(Obj))){
-				Obj->H_SetParent(this);
-				inventory().Take(smart_cast<CGameObject*>(Obj), false, false);
-			}else
-			{
-				NET_Packet				P;
-				u_EventGen				(P,GE_OWNERSHIP_REJECT,ID());
-				P.w_u16					(u16(Obj->ID()));
-				u_EventSend				(P);
-			}
-			break;
-		case GE_TRADE_SELL:
-		case GE_OWNERSHIP_REJECT:
-			{
-				P.r_u16		(id);
-				Obj = Level().Objects.net_Find	(id);
-				bool just_before_destroy	= !P.r_eof() && P.r_u8();
-				Obj->SetTmpPreDestroy				(just_before_destroy);
-				if(inventory().DropItem(smart_cast<CGameObject*>(Obj))) 
-					Obj->H_SetParent(0, just_before_destroy);
-			}break;
+void CAI_Trader::ObjectTakeItem(CGameObject* object)
+{
+	if (inventory().CanTakeItem(object->cast_inventory_item())) {
+		object->H_SetParent(this);
+		inventory().Take(object, false, false);
 	}
+	else
+		RejectItem(object);
+}
+
+void CAI_Trader::ObjectRejectItem(CGameObject* object, bool just_before_destroy)
+{
+	object->SetTmpPreDestroy(just_before_destroy);
+	if (inventory().DropItem(object))
+		object->H_SetParent(0, just_before_destroy);
 }
 
 void CAI_Trader::feel_touch_new				(CObject* O)
@@ -186,10 +172,7 @@ void CAI_Trader::feel_touch_new				(CObject* O)
 
 	if (I && I->useful_for_NPC()) {
 		Msg("Taking item %s!",*I->object().cName());
-		NET_Packet		P;
-		u_EventGen		(P,GE_OWNERSHIP_TAKE,ID());
-		P.w_u16			(u16(I->object().ID()));
-		u_EventSend		(P);
+		TakeItem(I->cast_game_object());
 	}
 }
 
@@ -199,11 +182,8 @@ void CAI_Trader::DropItemSendMessage(CObject *O)
 		return;
 
 	Msg("Dropping item!");
-	// We doesn't have similar weapon - pick up it
-	NET_Packet				P;
-	u_EventGen				(P,GE_OWNERSHIP_REJECT,ID());
-	P.w_u16					(u16(O->ID()));
-	u_EventSend				(P);
+	
+	RejectItem(static_cast<CGameObject*>(O));
 }
 
 void CAI_Trader::shedule_Update	(u32 dt)

@@ -24,66 +24,40 @@ void CAI_Stalker::OnEvent		(NET_Packet& P, u16 type)
 {
 	inherited::OnEvent			(P,type);
 	CInventoryOwner::OnEvent	(P,type);
+}
 
-	switch (type)
-	{
-		case GE_TRADE_BUY :
-		case GE_OWNERSHIP_TAKE : {
+void CAI_Stalker::ObjectTakeItem(CGameObject* object)
+{
+#ifndef SILENCE
+	Msg("Trying to take - %s (%d)", *O->cName(), O->ID());
+#endif
+	if (inventory().CanTakeItem(object->cast_inventory_item())) { //GetScriptControl()
+		object->H_SetParent(this);
+		inventory().Take(object, true, false);
+		if (!inventory().ActiveItem() && GetScriptControl() && smart_cast<CShootingObject*>(static_cast<CObject*>(object)))
+			CObjectHandler::set_goal(eObjectActionIdle, object);
 
-			u16			id;
-			P.r_u16		(id);
-			CObject		*O = Level().Objects.net_Find	(id);
-
-			R_ASSERT	(O);
+		on_after_take(object);
+#ifndef SILENCE
+		Msg("TAKE - %s (%d)", *O->cName(), O->ID());
+#endif
+	}
+	else {
+		RejectItem(object);
 
 #ifndef SILENCE
-			Msg("Trying to take - %s (%d)", *O->cName(),O->ID());
+		Msg("TAKE - can't take! - Dropping for valid server information %s (%d)", *O->cName(), O->ID());
 #endif
-			CGameObject	*_O = smart_cast<CGameObject*>(O);
-			if (inventory().CanTakeItem(smart_cast<CInventoryItem*>(_O))) { //GetScriptControl()
-				O->H_SetParent(this);
-				inventory().Take(_O,true, false);
-				if (!inventory().ActiveItem() && GetScriptControl() && smart_cast<CShootingObject*>(O))
-					CObjectHandler::set_goal	(eObjectActionIdle,_O);
+	}
+}
 
-				on_after_take			(_O);
-#ifndef SILENCE
-				Msg("TAKE - %s (%d)", *O->cName(),O->ID());
-#endif
-			}
-			else {
-//				DropItemSendMessage(O);
-				NET_Packet				P;
-				u_EventGen				(P,GE_OWNERSHIP_REJECT,ID());
-				P.w_u16					(u16(O->ID()));
-				u_EventSend				(P);
+void CAI_Stalker::ObjectRejectItem(CGameObject* object, bool just_before_destroy)
+{
+	object->SetTmpPreDestroy(just_before_destroy);
 
-#ifndef SILENCE
-				Msg("TAKE - can't take! - Dropping for valid server information %s (%d)", *O->cName(),O->ID());
-#endif
-			}
-			break;
-		}
-		case GE_TRADE_SELL :
-		case GE_OWNERSHIP_REJECT : {
-			u16 id;
-			P.r_u16		(id);
-			CObject		*O = Level().Objects.net_Find(id);
-
-#pragma todo("Dima to Oles : how can this happen?")
-			if (!O)
-				break;
-
-			bool just_before_destroy	= !P.r_eof() && P.r_u8();
-			O->SetTmpPreDestroy				(just_before_destroy);
-
-			if (inventory().DropItem(smart_cast<CGameObject*>(O)) && !O->getDestroy()) {
-				O->H_SetParent	(0, just_before_destroy);
-				feel_touch_deny	(O,2000);
-			}
-
-			break;
-		}
+	if (!object->getDestroy() && inventory().DropItem(object)) {
+		object->H_SetParent(nullptr, just_before_destroy);
+		feel_touch_deny(object, 2000);
 	}
 }
 
@@ -101,10 +75,7 @@ void CAI_Stalker::feel_touch_new				(CObject* O)
 #ifndef SILENCE
 		Msg("Taking item %s (%d)!",*I->cName(),I->ID());
 #endif
-		NET_Packet		P;
-		u_EventGen		(P,GE_OWNERSHIP_TAKE,ID());
-		P.w_u16			(u16(I->object().ID()));
-		u_EventSend		(P);
+		TakeItem(I->cast_game_object());
 	}
 }
 
@@ -117,10 +88,7 @@ void CAI_Stalker::DropItemSendMessage(CObject *O)
 	Msg("Dropping item!");
 #endif
 	// We doesn't have similar weapon - pick up it
-	NET_Packet				P;
-	u_EventGen				(P,GE_OWNERSHIP_REJECT,ID());
-	P.w_u16					(u16(O->ID()));
-	u_EventSend				(P);
+	RejectItem(static_cast<CGameObject*>(O));
 }
 
 /////////////////////////

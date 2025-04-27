@@ -281,10 +281,7 @@ void CScriptGameObject::DropItem			(CScriptGameObject* pItem)
 		return;
 	}
 
-	NET_Packet						P;
-	CGameObject::u_EventGen			(P,GE_OWNERSHIP_REJECT, object().ID());
-	P.w_u16							(pItem->object().ID());
-	CGameObject::u_EventSend		(P);
+	object().RejectItem(item->cast_game_object());
 }
 
 void CScriptGameObject::DropItemAndTeleport	(CScriptGameObject* pItem, Fvector position)
@@ -313,15 +310,9 @@ void CScriptGameObject::TransferItem(CScriptGameObject* pItem, CScriptGameObject
 	}
 
 	// выбросить у себя 
-	NET_Packet						P;
-	CGameObject::u_EventGen			(P,GE_OWNERSHIP_REJECT, object().ID());
-	P.w_u16							(pIItem->object().ID());
-	CGameObject::u_EventSend		(P);
+	object().RejectItem(pIItem->cast_game_object());
 
-	// отдать партнеру
-	CGameObject::u_EventGen			(P,GE_OWNERSHIP_TAKE, pForWho->object().ID());
-	P.w_u16							(pIItem->object().ID());
-	CGameObject::u_EventSend		(P);
+	pForWho->object().TakeItem(pIItem->cast_game_object());
 }
 
 u32 CScriptGameObject::Money	()

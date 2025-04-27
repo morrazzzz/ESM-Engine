@@ -39,7 +39,7 @@ public:
 
 	IC bool operator()(CSE_ALifeDynamicObject* i, u64 cycle_count) const
 	{
-		if (i->m_switch_counter == cycle_count)
+		if (i->m_switch_counter == cycle_count )
 			return false;
 
 		i->m_switch_counter = cycle_count;
