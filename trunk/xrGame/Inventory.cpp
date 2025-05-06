@@ -720,7 +720,7 @@ bool CInventory::Eat(PIItem pIItem)
 
 	if(pItemToEat->Empty() && entity_alive->Local())
 	{
-		entity_alive->RejectItem(pIItem->cast_game_object(), true);
+		entity_alive->RejectItem(pIItem->cast_game_object(), false, true);
 
 		return		false;
 	}
