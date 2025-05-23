@@ -10,6 +10,7 @@
 #include "../xr_3da/xr_input.h"
 #include "saved_game_wrapper.h"
 #include "Include/xrRender/DebugRender.h"
+#include "GameObject.h"
 
 #ifdef DEBUG
 #include "Actor.h"
@@ -33,7 +34,7 @@ void CLevel::IR_OnMouseWheel(int direction)
 	if (Device.Paused()) return;
 
 	if (CurrentEntity()) {
-		IInputReceiver* IR = smart_cast<IInputReceiver*>	(smart_cast<CGameObject*>(CurrentEntity()));
+		IInputReceiver* IR = smart_cast<IInputReceiver*>(static_cast<CGameObject*>(CurrentEntity()));
 		if (IR)				IR->IR_OnMouseWheel(direction);
 	}
 }
@@ -54,7 +55,7 @@ void CLevel::IR_OnMouseMove(int dx, int dy)
 	if (Device.Paused())							return;
 	if (CurrentEntity()) 
 	{
-		IInputReceiver* IR = smart_cast<IInputReceiver*>	(smart_cast<CGameObject*>(CurrentEntity()));
+		IInputReceiver* IR = smart_cast<IInputReceiver*>(static_cast<CGameObject*>(CurrentEntity()));
 		if (IR)				IR->IR_OnMouseMove(dx, dy);
 	}
 }
@@ -263,9 +264,11 @@ void CLevel::IR_OnKeyboardPress(int key)
 		return;
 
 	if (b_ui_exist && CurrentGameUI()->TopInputReceiver())return;
-	if (CurrentEntity()) {
-		IInputReceiver* IR = smart_cast<IInputReceiver*>	(smart_cast<CGameObject*>(CurrentEntity()));
-		if (IR)				IR->IR_OnKeyboardPress(get_binded_action(key));
+	if (CurrentEntity())
+	{
+		IInputReceiver* IR = smart_cast<IInputReceiver*>(static_cast<CGameObject*>(CurrentEntity()));
+		if (IR)				
+			IR->IR_OnKeyboardPress(get_binded_action(key));
 	}
 }
 
@@ -275,9 +278,11 @@ void CLevel::IR_OnKeyboardRelease(int key)
 	if (CurrentGameUI() && CurrentGameUI()->IR_UIOnKeyboardRelease(key)) return;
 	if (Device.Paused()) return;
 
-	if (CurrentEntity()) {
-		IInputReceiver* IR = smart_cast<IInputReceiver*>	(smart_cast<CGameObject*>(CurrentEntity()));
-		if (IR)				IR->IR_OnKeyboardRelease(get_binded_action(key));
+	if (CurrentEntity()) 
+	{
+		IInputReceiver* IR = smart_cast<IInputReceiver*>(static_cast<CGameObject*>(CurrentEntity()));
+		if (IR)				
+			IR->IR_OnKeyboardRelease(get_binded_action(key));
 	}
 }
 
@@ -287,9 +292,11 @@ void CLevel::IR_OnKeyboardHold(int key)
 
 	if (CurrentGameUI() && CurrentGameUI()->IR_UIOnKeyboardHold(key)) return;
 	if (Device.Paused()) return;
-	if (CurrentEntity()) {
-		IInputReceiver* IR = smart_cast<IInputReceiver*>	(smart_cast<CGameObject*>(CurrentEntity()));
-		if (IR)				IR->IR_OnKeyboardHold(get_binded_action(key));
+	if (CurrentEntity())
+	{
+		IInputReceiver* IR = smart_cast<IInputReceiver*>(static_cast<CGameObject*>(CurrentEntity()));
+		if (IR)				
+			IR->IR_OnKeyboardHold(get_binded_action(key));
 	}
 }
 
