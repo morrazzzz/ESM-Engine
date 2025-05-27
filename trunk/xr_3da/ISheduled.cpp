@@ -48,8 +48,8 @@ void	ISheduled::shedule_Update			(u32 dt)
 #ifdef DEBUG
 	if (dbg_startframe==dbg_update_shedule)	
 	{
-		LPCSTR		name	= "unknown";
-		CObject*	O		= dynamic_cast<CObject*>	(this);
+		LPCSTR name = "unknown";
+		CObject* O = dcast_CObject();
 		if			(O)		name	= *O->cName();
 		Debug.fatal	(DEBUG_INFO,"'shedule_Update' called twice per frame for %s",name);
 	}

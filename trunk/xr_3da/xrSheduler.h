@@ -7,7 +7,7 @@
 #define FRAME_SCHEDULER
 
 #ifdef FRAME_SCHEDULER
-#include "device.h"
+#include "pure.h"
 
 class ENGINE_API CSheduler : public pureFrame
 #else
@@ -28,18 +28,12 @@ class ENGINE_API CSheduler
 	};
 	struct	ItemReg
 	{
-		BOOL		OP;
-		BOOL		RT;
+		bool OP;
 		ISheduled* Object;
 	};
 
-	xr_vector<Item>			ItemsRT;
 	xr_vector<Item>			Items;
-	xr_vector<Item>			ItemsProcessed;
 	xr_vector<ItemReg>		Registration;
-
-	u64	cycles_start;
-	u64	cycles_limit;
 
 	bool m_processing_now;
 public:
@@ -56,7 +50,7 @@ public:
 #ifdef DEBUG
 	bool			Registered(ISheduled* object) const;
 #endif // DEBUG
-	void			Register(ISheduled* A, BOOL RT = FALSE);
+	void			Register(ISheduled* A);
 	void			Unregister(ISheduled* A);
 
 	void			Initialize();
@@ -70,8 +64,8 @@ private:
 	{
 		return Items.front();
 	}
-	void			internal_Register(ISheduled* A, BOOL RT = FALSE);
-	bool			internal_Unregister(ISheduled* A, BOOL RT, bool warn_on_not_found = true);
+	void			internal_Register(ISheduled* A);
+	bool			internal_Unregister(ISheduled* A, bool warn_on_not_found = true);
 	void			internal_Registration();
 
 #ifdef FRAME_SCHEDULER

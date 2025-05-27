@@ -1,12 +1,13 @@
 #pragma once
 
+class CObject;
+
 class	ENGINE_API	ISheduled
 {
 public:
 	struct {
 		u32		t_min		:	14;		// minimal bound of update time (sample: 20ms)
 		u32		t_max		:	14;		// maximal bound of update time (sample: 200ms)
-		u32		b_RT		:	1;
 	}	shedule;
 
 #ifdef DEBUG
@@ -25,4 +26,5 @@ public:
 	virtual	shared_str					shedule_Name		() const	{ return shared_str("unknown"); };
 	virtual bool						shedule_Needed		()			= 0;
 
+	virtual CObject* dcast_CObject() { return nullptr; }
 };

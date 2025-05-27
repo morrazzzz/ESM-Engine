@@ -104,12 +104,6 @@ void try_change_current_entity()
 
 	Level().SetEntity		(nearest_agent);
 	actor->inventory().Items_SetCurrentEntityHud(false);
-	
-	Engine.Sheduler.Unregister	(actor);
-	Engine.Sheduler.Register	(actor);
-	
-	Engine.Sheduler.Unregister	(nearest_agent);
-	Engine.Sheduler.Register	(nearest_agent, TRUE);
 }
 
 void restore_actor()
@@ -117,13 +111,7 @@ void restore_actor()
 	VERIFY		(g_debug_actor);
 	VERIFY		(Level().CurrentEntity()->CLS_ID != CLSID_OBJECT_ACTOR);
 
-	Engine.Sheduler.Unregister	(Level().CurrentEntity());
-	Engine.Sheduler.Register	(Level().CurrentEntity());
-
 	Level().SetEntity			(g_debug_actor);
-
-	Engine.Sheduler.Unregister	(g_debug_actor);
-	Engine.Sheduler.Register	(g_debug_actor, TRUE);
 
 	g_debug_actor->inventory().Items_SetCurrentEntityHud(true);
 

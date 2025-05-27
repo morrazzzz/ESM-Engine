@@ -219,13 +219,6 @@ void CLevel::IR_OnKeyboardPress(int key)
 					if (pActor)
 						pActor->inventory().Items_SetCurrentEntityHud(false);
 				}
-				if (tpObject)
-				{
-					Engine.Sheduler.Unregister(tpObject);
-					Engine.Sheduler.Register(tpObject, TRUE);
-				};
-				Engine.Sheduler.Unregister(*I);
-				Engine.Sheduler.Register(*I, TRUE);
 
 				CActor* pActor = smart_cast<CActor*> (*I);
 				if (pActor)
