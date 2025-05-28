@@ -265,16 +265,6 @@ public:
 		return self->CGameObject::use(who_use);
 	}
 
-	virtual void			net_Export			(NET_Packet &packet)
-	{
-		call<void>("net_Export",&packet);
-	}
-
-	static	void			net_Export_static	(CGameObject *self, NET_Packet *packet)
-	{
-		self->CGameObject::net_Export(*packet);
-	}
-
 	virtual BOOL			net_Spawn			(CSE_Abstract* data)
 	{
 		return			(luabind::call_member<bool>(this,"net_Spawn",data));

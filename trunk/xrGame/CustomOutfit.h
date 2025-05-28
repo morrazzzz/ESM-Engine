@@ -49,5 +49,5 @@ public:
 	virtual	BOOL					BonePassBullet			(int boneID);
 	const shared_str&				GetFullIconName			() const	{return m_full_icon_name;};
 
-	virtual void			net_Export			(NET_Packet& P);
+	void SaveCSEObj(CSE_Abstract* data) override;
 };

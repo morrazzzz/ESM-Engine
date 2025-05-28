@@ -31,7 +31,6 @@ public:
 	virtual void UnloadMagazine				(bool spawn_ammo = true);
 protected:
 	virtual bool	AllowBore		();
-	virtual void	PlayAnimReload	();
 
     shared_str	m_sGrenadeBoneName;
 	shared_str	m_sRocketSection;

@@ -44,10 +44,6 @@ IGame_Level::~IGame_Level	()
 
 void IGame_Level::net_Stop			()
 {
-	for (int i=0; i<6; i++)
-		Objects.Update(true);
-	// Destroy all objects
-	Objects.Unload				( );
 	IR_Release					( );
 
 	bReady						= false;	
@@ -132,8 +128,7 @@ void IGame_Level::OnRender()
 
 void	IGame_Level::OnFrame		( ) 
 {
-	// Log				("- level:on-frame: ",u32(Device.dwFrame));
-//	if (_abs(Device.fTimeDelta)<EPS_S) return;
+	Objects.DestroyQueue();
 
 	// Update all objects
 	VERIFY						(bReady);

@@ -887,7 +887,7 @@ void CActor::shedule_Update(u32 DT)
 	if (GameID() == GAME_SINGLE)
 		GameTaskManager().UpdateTasks();
 
-	if (m_holder || !getEnabled() || !Ready())
+	if (m_holder || !getEnabled())
 	{
 		m_sDefaultObjAction = NULL;
 		inherited::shedule_Update(DT);
@@ -1046,6 +1046,8 @@ void CActor::shedule_Update(u32 DT)
 		setVisible(!HUDview());
 	//что актер видит перед собой
 	collide::rq_result& RQ = HUD().GetCurrentRayQuery();
+
+	GetCSEObject()->o_Position = Position();
 
 	if (inventory().m_pTarget && inventory().m_pTarget->object().getDestroy())
 	{

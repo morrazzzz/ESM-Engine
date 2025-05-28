@@ -313,7 +313,6 @@ void CExplosive::Explode()
 	VERIFY(!physics_world()->Processing());
 	//m_bExploding = true;
 	m_explosion_flags.set(flExploding,TRUE);
-	cast_game_object()->processing_activate();
 
 	Fvector& pos = m_vExplodePos;
 	Fvector& dir = m_vExplodeDir;
@@ -461,8 +460,6 @@ void CExplosive::UpdateCL()
 	if(!m_explosion_flags.test(flExploding)) return;// !m_bExploding
 	if(m_explosion_flags.test(flExploded))
 	{
-		CGameObject* go=cast_game_object();
-		go->processing_deactivate();
 		m_explosion_flags.set(flExploding,FALSE);//m_bExploding = false;
 		OnAfterExplosion();
 		return;
@@ -516,7 +513,7 @@ void CExplosive::OnAfterExplosion()
 		m_pExpParticle = NULL;
 	}
 	//ликвидировать сам объект 
-	if (cast_game_object()->Local()) cast_game_object()->DestroyObject();
+	if (cast_game_object()->Local()) cast_game_object()->DestroyObject(true);
 }
 
 void CExplosive::OnBeforeExplosion()

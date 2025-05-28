@@ -123,11 +123,6 @@ void CInventoryItemObject::net_Destroy		()
 	CPhysicItem::net_Destroy			();
 }
 
-void CInventoryItemObject::net_Export		(NET_Packet& P) 
-{	
-	CInventoryItem::net_Export			(P);
-}
-
 void CInventoryItemObject::save				(NET_Packet &packet)
 {
 	CPhysicItem::save					(packet);

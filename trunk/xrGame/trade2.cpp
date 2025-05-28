@@ -86,17 +86,17 @@ void CTrade::TransferItem(CInventoryItem* pItem, bool bBuying)
 	O1->RejectItem(pItem->cast_game_object());
 
 	if(bBuying)
-		pPartner.inv_owner->set_money( pPartner.inv_owner->get_money() + dwTransferMoney, false );
+		pPartner.inv_owner->set_money( pPartner.inv_owner->get_money() + dwTransferMoney);
 	else
-		pThis.inv_owner->set_money( pThis.inv_owner->get_money() + dwTransferMoney, false );
+		pThis.inv_owner->set_money( pThis.inv_owner->get_money() + dwTransferMoney);
 
 	// взять у партнера
 	O2->TakeItem(pItem->cast_game_object());
 
 	if(bBuying)
-		pThis.inv_owner->set_money( pThis.inv_owner->get_money() - dwTransferMoney, false );
+		pThis.inv_owner->set_money( pThis.inv_owner->get_money() - dwTransferMoney);
 	else
-		pPartner.inv_owner->set_money( pPartner.inv_owner->get_money() - dwTransferMoney, false );
+		pPartner.inv_owner->set_money( pPartner.inv_owner->get_money() - dwTransferMoney);
 
 
 	CAI_Trader* pTrader		= NULL;

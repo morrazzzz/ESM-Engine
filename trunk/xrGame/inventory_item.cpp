@@ -355,11 +355,6 @@ void CInventoryItem::save(NET_Packet &packet)
 
 typedef CSE_ALifeInventoryItem::mask_num_items	mask_num_items;
 
-void CInventoryItem::net_Export			(NET_Packet& P) 
-{	
-	P.w_u8(0);
-};
-
 void CInventoryItem::load(IReader &packet)
 {
 	m_eItemPlace			= (EItemPlace)packet.r_u8();

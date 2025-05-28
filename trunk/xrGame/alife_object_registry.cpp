@@ -37,7 +37,6 @@ void CALifeObjectRegistry::save				(IWriter &memory_stream, CSE_ALifeDynamicObje
 	memory_stream.w				(tNetPacket.B.data,tNetPacket.B.count);
 
 	// Update
-	tNetPacket.w_begin			(M_UPDATE);
 	object->UPDATE_Write		(tNetPacket);
 
 	memory_stream.w_u16			(u16(tNetPacket.B.count));
@@ -113,8 +112,6 @@ CSE_ALifeDynamicObject *CALifeObjectRegistry::get_object		(IReader &file_stream)
 	// Update
 	tNetPacket.B.count		= file_stream.r_u16();
 	file_stream.r			(tNetPacket.B.data,tNetPacket.B.count);
-	tNetPacket.r_begin		(u_id);
-	R_ASSERT2				(M_UPDATE==u_id,"Invalid packet ID (!= M_UPDATE)");
 	tpALifeDynamicObject->UPDATE_Read(tNetPacket);
 
 	return					(tpALifeDynamicObject);

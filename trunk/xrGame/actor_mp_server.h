@@ -16,5 +16,4 @@ private:
 
 public:
 							CSE_ActorMP		(LPCSTR		section);
-	virtual BOOL			Net_Relevant	();
 };

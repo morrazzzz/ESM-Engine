@@ -26,53 +26,32 @@ void CActor::OnEvent		(NET_Packet& P, u16 type)
 	switch (type)
 	{
 	case GEG_PLAYER_ACTIVATEARTEFACT:
+	{
+		P.r_u16(id);
+		CObject* O = Level().Objects.net_Find(id);
+		if (!O)		break;
+		if (O->getDestroy())
 		{
-			P.r_u16		(id);
-			CObject* O	= Level().Objects.net_Find	(id);
-			if(!O)		break;
-			if (O->getDestroy()) 
-			{
 #ifdef DEBUG
-				Msg("! something to destroyed object - %s[%d]0x%X", *O->cName(), id, smart_cast<CInventoryItem*>(O));
+			Msg("! something to destroyed object - %s[%d]0x%X", *O->cName(), id, smart_cast<CInventoryItem*>(O));
 #endif
-				break;
-			}
-			switch (type)
-			{
-			case GEG_PLAYER_ACTIVATEARTEFACT:
-				{
-					CArtefact* pArtefact		= smart_cast<CArtefact*>(O);
-					pArtefact->ActivateArtefact	();
-				}break;
-			}
+			break;
+		}
+		switch (type)
+		{
+		case GEG_PLAYER_ACTIVATEARTEFACT:
+		{
+			CArtefact* pArtefact = smart_cast<CArtefact*>(O);
+			pArtefact->ActivateArtefact();
 		}break;
+		}
+	}break;
 	case GEG_PLAYER_WEAPON_HIDE_STATE:
-		{
-			u32 State		= P.r_u32();
-			BOOL	Set		= !!P.r_u8();
-			inventory().SetSlotsBlocked	((u16)State, !!Set);
-		}break;
-	case GEG_PLAYER_ATTACH_HOLDER:
-		{
-			u32 id = P.r_u32();
-			CObject* O	= Level().Objects.net_Find	(id);
-			if (!O){
-				Msg("! Error: No object to attach holder [%d]", id);
-				break;
-			}
-			VERIFY(m_holder==NULL);
-			CHolderCustom*	holder = smart_cast<CHolderCustom*>(O);
-			if(!holder->Engaged())	use_Holder		(holder);
-
-		}break;
-	case GEG_PLAYER_DETACH_HOLDER:
-		{
-			if			(!m_holder)	break;
-			u32 id			= P.r_u32();
-			CGameObject*	GO	= smart_cast<CGameObject*>(m_holder);
-			VERIFY			(id==GO->ID());
-			use_Holder		(NULL);
-		}break;
+	{
+		u32 State = P.r_u32();
+		BOOL	Set = !!P.r_u8();
+		inventory().SetSlotsBlocked((u16)State, !!Set);
+	}break;
 	}
 }
 

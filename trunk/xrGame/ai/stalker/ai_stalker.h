@@ -176,7 +176,7 @@ public:
 	virtual void						LoadSounds							(LPCSTR section );
 	
 	virtual BOOL						net_Spawn							(CSE_Abstract* DC);
-	virtual void						net_Export							(NET_Packet& P);
+	void SaveCSEObj(CSE_Abstract* data) override;
 	virtual void						net_Destroy							();
 	virtual void						net_Save							(NET_Packet& P);
 	virtual	BOOL						net_SaveRelevant					();

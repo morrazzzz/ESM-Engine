@@ -82,8 +82,6 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeItem,CSE_ALifeDynamicObjectVisual,CSE_ALif
 	virtual CSE_Abstract			*init					();
 	virtual CSE_Abstract			*cast_abstract			() {return this;};
 	virtual CSE_ALifeInventoryItem	*cast_inventory_item	() {return this;};
-	virtual BOOL					Net_Relevant			();
-	virtual void					OnEvent					(NET_Packet &tNetPacket, u16 type, u32 time );
 SERVER_ENTITY_DECLARE_END
 add_to_type_list(CSE_ALifeItem)
 #define script_type_list save_type_list(CSE_ALifeItem)
@@ -100,7 +98,6 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemTorch,CSE_ALifeItem)
 	bool							m_attached;
 									CSE_ALifeItemTorch	(LPCSTR caSection);
     virtual							~CSE_ALifeItemTorch	();
-	virtual BOOL					Net_Relevant			();
 
 SERVER_ENTITY_DECLARE_END
 add_to_type_list(CSE_ALifeItemTorch)
@@ -157,7 +154,6 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemWeapon,CSE_ALifeItem)
 
 									CSE_ALifeItemWeapon	(LPCSTR caSection);
 	virtual							~CSE_ALifeItemWeapon();
-	virtual void					OnEvent				(NET_Packet& P, u16 type, u32 time );
 	virtual u32						ef_main_weapon_type	() const;
 	virtual u32						ef_weapon_type		() const;
 	u8								get_slot			();
@@ -165,8 +161,6 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemWeapon,CSE_ALifeItem)
 	u16								get_ammo_total		();
 	u16								get_ammo_elapsed	();
 	u16								get_ammo_magsize	();
-
-	virtual BOOL					Net_Relevant		();
 
 	virtual CSE_ALifeItemWeapon		*cast_item_weapon	() {return this;}
 SERVER_ENTITY_DECLARE_END
@@ -218,7 +212,6 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemArtefact,CSE_ALifeItem)
 	float							m_fAnomalyValue;
 									CSE_ALifeItemArtefact	(LPCSTR caSection);
 	virtual							~CSE_ALifeItemArtefact	();
-	virtual BOOL					Net_Relevant			();
 SERVER_ENTITY_DECLARE_END
 add_to_type_list(CSE_ALifeItemArtefact)
 #define script_type_list save_type_list(CSE_ALifeItemArtefact)
@@ -275,7 +268,6 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemCustomOutfit,CSE_ALifeItem)
 									CSE_ALifeItemCustomOutfit	(LPCSTR caSection);
 	virtual							~CSE_ALifeItemCustomOutfit	();
 	virtual u32						ef_equipment_type			() const;
-	virtual BOOL					Net_Relevant				();
 SERVER_ENTITY_DECLARE_END
 add_to_type_list(CSE_ALifeItemCustomOutfit)
 #define script_type_list save_type_list(CSE_ALifeItemCustomOutfit)

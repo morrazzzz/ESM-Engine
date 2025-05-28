@@ -79,7 +79,7 @@ public:
 
 	virtual	void	UpdateCL		();
 	virtual void	net_Destroy		();
-	virtual void			net_Export			(NET_Packet& P);
+	void SaveCSEObj(CSE_Abstract* data) override;
 
 	virtual void	OnH_A_Chield		();
 

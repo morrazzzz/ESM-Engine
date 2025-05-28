@@ -48,11 +48,12 @@ public:
 
 	void						SingleUpdate		( CObject*		O		);
 	void						Update				( bool bForce );
+	void DestroyQueue();
+
+	void DestroyAllObjects();
 
 	void net_Register(CObject* O);
 	void net_Unregister(CObject* O);
-
-	u32 StartExportObjects(NET_Packet& Packet, u32 start, u32 max_object_size); // start export objects to server.
 
 	CObject* net_Find(u32 ID);
 

@@ -4,7 +4,6 @@
 #include "xr_object_list.h"
 
 #include "xr_object.h"
-#include "../xrNetServer/net_utils.h"
 
 #include "CustomHUD.h"
 
@@ -63,10 +62,11 @@ void	CObjectList::SingleUpdate	(CObject* O)
 	{
 		if (O->H_Parent())
 		{
-			if (O->H_Parent()->getDestroy() || O->H_Root()->getDestroy())
+			if (O->getDestroy() || O->H_Parent()->getDestroy())
 			{
 				Msg("! ERROR: incorrect destroy sequence for object[%d:%s], section[%s], parent[%d:%s]", O->ID(), *O->cName(), *O->cNameSect(),
-					O->H_Parent()->ID(), *O->H_Parent()->cName());				
+					O->H_Parent()->ID(), *O->H_Parent()->cName());
+				return;
 			}
 
 			SingleUpdate(O->H_Parent());
@@ -115,8 +115,11 @@ void CObjectList::Update		(bool bForce)
 			Device.Statistic->UpdateClient.End		();
 		}
 	}
+}
 
-	// Destroy
+void CObjectList::DestroyQueue()
+{
+		// Destroy
 	if (!destroy_queue.empty()) 
 	{
 		// Info
@@ -157,6 +160,20 @@ void CObjectList::Update		(bool bForce)
 	}
 }
 
+void CObjectList::DestroyAllObjects()
+{
+	crows_0.clear();
+	crows_1.clear();
+	VERIFY(crows->empty());
+
+	DestroyQueue();
+
+	R_ASSERT(objects_active.empty());
+	R_ASSERT(objects_sleeping.empty());
+	R_ASSERT(destroy_queue.empty());
+	R_ASSERT(map_NETID.empty());
+}
+
 void CObjectList::net_Register		(CObject* O)
 {
 	R_ASSERT		(O);
@@ -171,32 +188,6 @@ void CObjectList::net_Unregister(CObject* O)
 		// Msg			("-------------------------------- Unregster: %s",O->cName());
 		map_NETID.erase(it);
 	}
-}
-
-u32 CObjectList::StartExportObjects(NET_Packet& Packet, u32 start, u32 max_object_size)
-{
-	u32	position;
-	for (; start < objects_active.size(); start++)
-	{
-		CObject* O = objects_active[start];
-		Packet.w_u16(u16(O->ID()));
-		Packet.w_chunk_open8(position);
-		O->net_Export(Packet);
-
-#ifdef DEBUG
-		u32 size = u32(Packet.w_tell() - position) - sizeof(u8);
-		if (size >= 256) {
-			Debug.fatal(DEBUG_INFO, "Object [%s][%d] exceed network-data limit\n size=%d, Pend=%d, Pstart=%d",
-				*O->cName(), O->ID(), size, Packet.w_tell(), position);
-		}
-#endif
-		Packet.w_chunk_close8(position);
-
-		if (max_object_size > (NET_PacketSizeLimit - Packet.w_tell()))
-			break;
-	}
-
-   return start++;
 }
 
 CObject* CObjectList::net_Find(u32 ID)
@@ -220,7 +211,7 @@ void CObjectList::Unload	( )
 	{
 		CObject*	O	= objects_sleeping.back	();
 		Msg				("! [%x] s[%4d]-[%s]-[%s]", O, O->ID(), *O->cNameSect(), *O->cName());
-		O->setDestroy	( TRUE );
+		O->setDestroy();
 		
 #ifdef DEBUG
 		Msg				("Destroying object [%d][%s]",O->ID(),*O->cName());
@@ -232,7 +223,7 @@ void CObjectList::Unload	( )
 	{
 		CObject*	O	= objects_active.back	();
 		Msg				("! [%x] a[%4d]-[%s]-[%s]", O, O->ID(), *O->cNameSect(), *O->cName());
-		O->setDestroy	( TRUE );
+		O->setDestroy();
 
 #ifdef DEBUG
 		Msg				("Destroying object [%d][%s]",O->ID(),*O->cName());
@@ -337,7 +328,7 @@ void CObjectList::register_object_to_destroy(CObject *object_to_destroy)
 		if(!O->getDestroy() && O->H_Parent()==object_to_destroy)
 		{
 			Msg("setDestroy called, but not-destroyed child found parent[%d] child[%d]",object_to_destroy->ID(), O->ID(), Device.dwFrame);
-			O->setDestroy(TRUE);
+			O->setDestroy();
 		}
 	}
 
@@ -349,7 +340,7 @@ void CObjectList::register_object_to_destroy(CObject *object_to_destroy)
 		if(!O->getDestroy() && O->H_Parent()==object_to_destroy)
 		{
 			Msg("setDestroy called, but not-destroyed child found parent[%d] child[%d]",object_to_destroy->ID(), O->ID(), Device.dwFrame);
-			O->setDestroy(TRUE);
+			O->setDestroy();
 		}
 	}
 }

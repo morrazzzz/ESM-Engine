@@ -101,8 +101,6 @@ public:
 public:
 	virtual bool			register_schedule	() const;
 
-public:
-	virtual	void			on_physics_disable	();
 private://IPhysicsShellHolder
 	virtual	Fmatrix&				_BCL					ObjectXFORM							()						;
 	virtual	Fvector&				_BCL					ObjectPosition						()						;

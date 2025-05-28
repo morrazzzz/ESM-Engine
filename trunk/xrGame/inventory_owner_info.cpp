@@ -18,25 +18,6 @@
 
 void  CInventoryOwner::OnEvent (NET_Packet& P, u16 type)
 {
-	switch (type)
-	{
-	case GE_INFO_TRANSFER:
-		{
-			u16				id;
-			shared_str		info_id;
-			u8				add_info;
-
-			P.r_u16			(id);				//отправитель
-			P.r_stringZ		(info_id);		//номер полученной информации
-			P.r_u8			(add_info);			//добавление или убирание информации
-
-			if(add_info)
-				OnReceiveInfo	(info_id);
-			else
-				OnDisableInfo	(info_id);
-		}
-		break;
-	}
 }
 
 
@@ -123,24 +104,11 @@ void CInventoryOwner::OnDisableInfo(shared_str info_id) const
 void CInventoryOwner::TransferInfo(shared_str info_id, bool add_info) const
 {
 	VERIFY( info_id.size() );
-	const CObject* pThisObject = smart_cast<const CObject*>(this); VERIFY(pThisObject);
 
-	//отправляем от нашему PDA пакет информации с номером
-	NET_Packet		P;
-	CGameObject::u_EventGen(P, GE_INFO_TRANSFER, pThisObject->ID());
-	P.w_u16			(pThisObject->ID());					//отправитель
-	P.w_stringZ		(info_id);							//сообщение
-	P.w_u8			(add_info?1:0);							//добавить/удалить информацию
-	CGameObject::u_EventSend(P);
-
-	CInfoPortion info_portion;
-	info_portion.Load(info_id);
-	{
-		if(add_info)
-			OnReceiveInfo	(info_id);
-		else
-			OnDisableInfo	(info_id);
-	}
+	if(add_info)
+		OnReceiveInfo(info_id);
+	else
+		OnDisableInfo(info_id);
 }
 
 bool CInventoryOwner::HasInfo(shared_str info_id) const

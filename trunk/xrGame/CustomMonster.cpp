@@ -212,28 +212,27 @@ void CCustomMonster::reload		(LPCSTR section)
 	m_panic_threshold			= pSettings->r_float(section,"panic_threshold");
 }
 
-void CCustomMonster::net_Export(NET_Packet& P)					// export to server
+void CCustomMonster::SaveCSEObj(CSE_Abstract* data)
 {
-	R_ASSERT(Local());
-
 	// export last known packet
 	R_ASSERT(!NET.empty());
 	net_update& N = NET.back();
-	P.w_float(GetfHealth());
-	P.w_u32(N.dwTimeStamp);
-	P.w_u8(0);
+
+	CSE_ALifeCreatureAbstract* this_object = data->cast_creature_abstract();
+	this_object->fHealth = GetfHealth();
+	this_object->timestamp = N.dwTimeStamp;
 #ifdef NO_INTERPOLATION
-	P.w_vec3(Position());
+	this_object->o_Position = Position();
 #else
-	P.w_vec3(N.p_pos);
+	this_object->o_Position = N.p_pos;
 #endif
-	P.w_float /*w_angle8*/(N.o_model);
-	P.w_float /*w_angle8*/(N.o_torso.yaw);
-	P.w_float /*w_angle8*/(N.o_torso.pitch);
-	P.w_float /*w_angle8*/(N.o_torso.roll);
-	P.w_u8(u8(g_Team()));
-	P.w_u8(u8(g_Squad()));
-	P.w_u8(u8(g_Group()));
+	this_object->o_model = N.o_model;
+	this_object->o_torso.yaw = N.o_torso.yaw;
+	this_object->o_torso.pitch = N.o_torso.pitch;
+	this_object->o_torso.roll = N.o_torso.roll;
+	this_object->s_team = g_Team();
+	this_object->s_squad = g_Squad();
+	this_object->s_group = g_Group();
 }
 
 void CCustomMonster::shedule_Update(u32 DT)

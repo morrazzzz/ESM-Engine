@@ -35,6 +35,9 @@ void CHelicopter::ObjectTakeItem(CGameObject* object)
 
 void CHelicopter::ObjectRejectItem(CGameObject* object, bool just_before_destroy)
 {
+	if (!just_before_destroy)
+		return;
+
 	CRocketLauncher::DetachRocket(object, false);
 }
 
@@ -300,8 +303,6 @@ void CHelicopter::startRocket(u16 idx)
 		LaunchRocket(xform,  vel, zero_vel);
 
 		CRocketLauncher::DetachRocket(getCurrentRocket(), true);
-
-		dropCurrentRocket();
 
 		m_last_launched_rocket = idx;
 		HUD_SOUND_ITEM::PlaySound(m_sndShotRocket, xform.c, this, false);

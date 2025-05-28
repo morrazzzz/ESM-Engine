@@ -4,11 +4,10 @@
 #include "../xrPhysics/PhysicsShell.h"
 #include "level.h"
 #include "ai_sounds.h"
-#include "clsid_game.h"
+#include "ai_object_location.h"
 #include "..\include\xrRender\Kinematics.h"
 #include "..\include\xrRender\KinematicsAnimated.h"
 #include "script_callback_ex.h"
-#include "game_object_space.h"
 #include "script_game_object.h"
 #include "../xr_3da/LightAnimLibrary.h"
 #include "ui_base.h"
@@ -152,8 +151,6 @@ BOOL CHelicopter::net_Spawn(CSE_Abstract*	DC)
 		return			(FALSE);
 
 	CPHSkeleton::Spawn((CSE_Abstract*)(DC));
-	for(u32 i=0; i<4; ++i)
-		CRocketLauncher::SpawnRocket(*m_sRocketSection, smart_cast<CGameObject*>(this));
 
 	// assigning m_animator here
 	CSE_Abstract		*abstract	=(CSE_Abstract*)(DC);
@@ -440,9 +437,22 @@ void CHelicopter::shedule_Update(u32 time_delta)
 	if(CPHDestroyable::Destroyed())CPHDestroyable::SheduleUpdate(time_delta);
 	else	CPHSkeleton::Update(time_delta);
 	
-	if(state() != CHelicopter::eDead){
-		for(u32 i=getRocketCount(); i<4; ++i)
-			CRocketLauncher::SpawnRocket(*m_sRocketSection, this);
+	if(state() != CHelicopter::eDead && getRocketCount() < 4)
+	{
+		for (u32 i = getRocketCount(); i < 4; ++i)
+		{
+			CSE_Abstract* object = Level().spawn_item(m_sRocketSection.c_str(), Position(), ai_location().level_vertex_id(), ID(), true);
+			R_ASSERT(object);
+
+			CSE_ALifeObject* alife_object =  object->cast_alife_object();
+			R_ASSERT(alife_object);
+			alife_object->m_flags.set(CSE_ALifeObject::flCanSave, false);
+
+			NET_Packet			P;
+			object->Spawn_Write(P, TRUE);
+			Level().Send(P);
+			F_entity_Destroy(object);
+		}
 	}
 	if(m_ready_explode)ExplodeHelicopter();
 }

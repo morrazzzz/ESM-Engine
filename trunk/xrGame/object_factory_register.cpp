@@ -46,11 +46,6 @@
 
 #	include "ai/crow/ai_crow.h"
 
-#	ifdef DEBUG
-#		include "../xr_3da/StatGraph.h"
-#		include "PHDebug.h"
-#	endif // DEBUG
-
 #	include "car.h"
 
 #	include "helicopter.h"
@@ -114,8 +109,6 @@
 
 #	include "explosiverocket.h"
 
-#	include "MPPlayersBag.h"
-
 #	include "customzone.h"
 #	include "mosquitobald.h"
 #	include "mincer.h"
@@ -141,22 +134,17 @@
 #	include "PhysicsSkeletonObject.h"
 #	include "DestroyablePhysicsObject.h"
 
-#	include "game_sv_single.h"
-
-#	include "UIGameSP.h"
 #	include	"climableobject.h"
 #	include "space_restrictor.h"
 #	include "smart_zone.h"
 #	include "InventoryBox.h"
 
-#	include "actor_mp_server.h"
+#include "xrServer_Objects_ALife_Items.h"
+#include "xrServer_Objects_ALife_Monsters.h"
 #endif // NO_XR_GAME
-
-ENGINE_API	bool g_dedicated_server;
 
 #ifndef NO_XR_GAME
 #	define ADD(a,b,c,d)			add<a,b>(c,d)
-#	define ADD_MP(a,b,c,d,e,f)	add(xr_new<CObjectItemClientServerSingleMp<a,b,c,d> >(e,f))
 #else
 #	define ADD(a,b,c,d)			add<b>(c,d)
 #endif
@@ -285,12 +273,8 @@ void CObjectFactory::register_classes	()
 	ADD(CRGD5					,CSE_ALifeItemGrenade			,CLSID_GRENADE_RGD5				,"wpn_grenade_rgd5");
 
 	// Rockets
-	ADD(CExplosiveRocket		,CSE_Temporary					,CLSID_OBJECT_G_RPG7			,"wpn_grenade_rpg7");
-	ADD(CExplosiveRocket		,CSE_Temporary					,CLSID_OBJECT_G_FAKE			,"wpn_grenade_fake");
-
-	//-----------------------------------------------------------------------------------------------------------------
-	ADD(CMPPlayersBag			,CSE_ALifeItem					,CLSID_OBJECT_PLAYERS_BAG		,"mp_players_bag");
-	//-----------------------------------------------------------------------------------------------------------------
+	ADD(CExplosiveRocket		,CSE_ALifeItem					,CLSID_OBJECT_G_RPG7			,"wpn_grenade_rpg7");
+	ADD(CExplosiveRocket		,CSE_ALifeItem					,CLSID_OBJECT_G_FAKE			,"wpn_grenade_fake");
 
 	// Zones
 	ADD(CCustomZone				,CSE_ALifeCustomZone			,CLSID_ZONE						,"zone");

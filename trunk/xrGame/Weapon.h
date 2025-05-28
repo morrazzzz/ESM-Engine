@@ -37,7 +37,7 @@ public:
 
 	virtual BOOL			net_Spawn			(CSE_Abstract* DC);
 	virtual void			net_Destroy			();
-	virtual void			net_Export			(NET_Packet& P);
+	void SaveCSEObj(CSE_Abstract* data) override;
 	void net_Relcase(CObject*) override;
 
 	virtual CWeapon			*cast_weapon			()					{return this;}

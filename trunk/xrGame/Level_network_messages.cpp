@@ -1,22 +1,16 @@
 #include "stdafx.h"
-#include "entity.h"
 #include "level.h"
 #include "xrmessages.h"
 #include "net_queue.h"
-#include "xrServer.h"
-#include "Actor.h"
 #include "ai_space.h"
 #include "saved_game_wrapper.h"
 #include "level_graph.h"
-#include "clsid_game.h"
-#include "../xrPhysics/IPHWorld.h"
 
 void CLevel::ClientReceive()
 {
 	for (NET_Packet* P = net_msg_Retreive(); P; P=net_msg_Retreive())
 	{
 		u16			m_type;
-		u16			ID;
 		P->r_begin	(m_type);
 		switch (m_type)
 		{

@@ -49,15 +49,19 @@ void CALifeSwitchManager::remove_online(CSE_ALifeDynamicObject *object, bool upd
 		CSE_Abstract* child = object->children[i];
 		CGameObject* object_child = static_cast<CGameObject*>(Level().Objects.net_Find(child->ID));
 
-		game_object->ObjectRejectItem(object_child, true);
+		if (object_child)
+		{
+			game_object->ObjectRejectItem(object_child, true);
 
-		object_child->setDestroy(true);
+			object_child->setDestroy();
+		}
 
 		server().entity_Destroy(child);
 
 		if (!child || !child->m_bALifeControl)
 		{
 			object->children.erase(object->children.begin() + i);
+			i--;
 			continue;
 		}
 
@@ -69,7 +73,7 @@ void CALifeSwitchManager::remove_online(CSE_ALifeDynamicObject *object, bool upd
 
 	object->add_offline(nullptr, update_registries);
 
-	game_object->setDestroy(true);
+	game_object->setDestroy();
 
 	CSE_Abstract* objectDC = object;
 
@@ -80,7 +84,7 @@ void CALifeSwitchManager::remove_online(CSE_ALifeDynamicObject *object, bool upd
 
 #ifdef DEBUG
 	if (psAI_Flags.test(aiALife))
-		Msg						("[LSS] Destroying object [%s][%s][%d]",object->name_replace(),*object->s_name,object->ID);
+		Msg						("[%s] Destroying object [%s][%s][%d]",__FUNCTION__,object->name_replace(),*object->s_name,object->ID);
 #endif
 
 	STOP_PROFILE

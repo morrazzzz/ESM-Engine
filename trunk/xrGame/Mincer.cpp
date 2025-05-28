@@ -20,7 +20,7 @@ CMincer::CMincer(void)
 CMincer::~CMincer(void) 
 {
 }
-void CMincer::OnStateSwitch(EZoneState new_state)
+void CMincer::SwitchZoneState(EZoneState new_state)
 {
 	if(m_eZoneState!=eZoneStateBlowout && new_state==eZoneStateBlowout)
 	{
@@ -36,7 +36,7 @@ void CMincer::OnStateSwitch(EZoneState new_state)
 	{
 		Telekinesis().clear_deactivate();
 	}
-	inherited::OnStateSwitch(new_state);
+	inherited::SwitchZoneState(new_state);
 }
 
 void CMincer::Load (LPCSTR section)

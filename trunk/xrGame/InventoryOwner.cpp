@@ -524,7 +524,7 @@ bool CInventoryOwner::AllowItemToTrade 			(CInventoryItem const * item, EItemPla
 	);
 }
 
-void CInventoryOwner::set_money		(u32 amount, bool bSendEvent)
+void CInventoryOwner::set_money	(u32 amount, bool SetMoneyObj)
 {
 
 	if(InfinitiveMoney())
@@ -532,13 +532,10 @@ void CInventoryOwner::set_money		(u32 amount, bool bSendEvent)
 	else
 		m_money					= amount;
 
-	if(bSendEvent)
+	if (SetMoneyObj)
 	{
-		CGameObject				*object = smart_cast<CGameObject*>(this);
-		NET_Packet				packet;
-		object->u_EventGen		(packet,GE_MONEY,object->ID());
-		packet.w_u32			(m_money);
-		object->u_EventSend		(packet);
+		CSE_ALifeDynamicObject* obj = ai().get_alife()->objects().object(cast_game_object()->ID());
+		obj->cast_trader_abstract()->m_dwMoney = m_money;
 	}
 }
 

@@ -1161,11 +1161,12 @@ void CWeaponMagazined::load(IReader &input_packet)
 	load_data		(m_iCurFireMode, input_packet);
 }
 
-void CWeaponMagazined::net_Export(NET_Packet& P)
+void CWeaponMagazined::SaveCSEObj(CSE_Abstract* data)
 {
-	inherited::net_Export(P);
+	inherited::SaveCSEObj(data);
+	CSE_ALifeItemWeaponMagazined* this_object = smart_cast<CSE_ALifeItemWeaponMagazined*>(data);
 
-	P.w_u8(u8(m_iCurFireMode & 0x00ff));
+	this_object->m_u8CurFireMode = static_cast<u8>(m_iCurFireMode & 0x00ff);
 }
 
 void CWeaponMagazined::GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count)

@@ -119,11 +119,6 @@ void	CWeaponMounted::net_Destroy()
 	xr_delete(m_pPhysicsShell);
 }
 
-void	CWeaponMounted::net_Export(NET_Packet& P)
-{
-	inherited::net_Export(P);
-}
-
 void	CWeaponMounted::UpdateCL()
 {
 	inherited::UpdateCL	();
@@ -251,7 +246,7 @@ bool	CWeaponMounted::attach_Actor		(CGameObject* actor)
 	XFORM().transform_tiny	(ap,A.c);
 	Fmatrix AP; AP.translate(ap);
 	if(OwnerActor()) OwnerActor()->SetPhPosition	(AP);
-	processing_activate		();
+//	processing_activate		();
 	return true;
 }
 void	CWeaponMounted::detach_Actor		()
@@ -268,7 +263,7 @@ void	CWeaponMounted::detach_Actor		()
 	//закончить стрельбу
 	FireEnd();
 
-	processing_deactivate		();
+//	processing_deactivate		();
 }
 
 Fvector	CWeaponMounted::ExitPosition		()

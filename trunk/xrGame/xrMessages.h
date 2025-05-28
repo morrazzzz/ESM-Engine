@@ -1,11 +1,7 @@
 #pragma once
 
-// CL	== client 2 server message
-// SV	== server 2 client message
-
 enum {
-	M_UPDATE			= 0,	// DUAL: Update state
-	M_SPAWN,					// DUAL: Spawning, full state
+	M_SPAWN = 1, //Hack! In all.spawn M_SPAWN has ID = 1
 
 	M_EVENT,					// Game Event
 	
@@ -13,40 +9,21 @@ enum {
 	M_LOAD_GAME,
 	M_SAVE_GAME,
 	M_SAVE_PACKET,
-
-	MSG_FORCEDWORD				= u32(-1)
 };
 
 enum {
 	GE_HIT,						//
-	GE_ASSIGN_KILLER,			//
 	GE_TELEPORT_OBJECT,
 
 	GE_ADD_RESTRICTION,
 	GE_REMOVE_RESTRICTION,
 	GE_REMOVE_ALL_RESTRICTIONS,
 
-	GE_INFO_TRANSFER,			//transfer _new_ info on PDA
-
-	GE_WPN_STATE_CHANGE,
-
-	GE_ZONE_STATE_CHANGE,
-
 	GE_CHANGE_POS,
-
-	GE_CHANGE_VISUAL,
-	GE_MONEY,
 
 	GEG_PLAYER_ACTIVATEARTEFACT,
 
-	GEG_PLAYER_WEAPON_HIDE_STATE,
-	
-	GEG_PLAYER_ATTACH_HOLDER,
-	GEG_PLAYER_DETACH_HOLDER,
-
-	GE_FREEZE_OBJECT,
-
-	GE_FORCEDWORD				= u32(-1)
+	GEG_PLAYER_WEAPON_HIDE_STATE
 };
 
 enum
@@ -59,6 +36,4 @@ enum
 	M_SPAWN_UPDATE				= (1<<6),	// + update packet
 	M_SPAWN_TIME				= (1<<7),	// + spawn time
 	M_SPAWN_DENIED				= (1<<8),	// don't spawn entity with this flag
-
-	M_SPAWN_OBJECT_FORCEDWORD	= u32(-1)
 };

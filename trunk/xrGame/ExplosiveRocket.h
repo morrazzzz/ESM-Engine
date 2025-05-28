@@ -48,7 +48,6 @@ public:
 
 public:
 	virtual BOOL			UsedAI_Locations	()				{return inherited::UsedAI_Locations();}
-	virtual void			net_Export			(NET_Packet& P) {inherited::net_Export(P);}
 	
 	virtual void			save				(NET_Packet &output_packet) {inherited::save(output_packet);}
 	virtual void			load				(IReader &input_packet)		{inherited::load(input_packet);}

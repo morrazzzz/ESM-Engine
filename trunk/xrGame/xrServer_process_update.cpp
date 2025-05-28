@@ -2,41 +2,6 @@
 #include "xrServer.h"
 #include "xrServer_Objects.h"
 
-int	g_Dump_Update_Read = 0;
-
-void xrServer::Process_update(NET_Packet& P)
-{
-	if (g_Dump_Update_Read) Msg("---- UPDATE_Read --- ");
-
-	// while has information
-	while (!P.r_eof())
-	{
-		// find entity
-		u16				ID;
-		u8				size;
-
-		P.r_u16			(ID);
-		P.r_u8			(size);
-		u32	_pos		= P.r_tell();
-		CSE_Abstract	*E	= ID_to_entity(ID);
-		
-		if (E) {
-			//Msg				("sv_import: %d '%s'",E->ID,E->name_replace());
-			E->net_Ready	= TRUE;
-			E->UPDATE_Read	(P);
-
-			if (g_Dump_Update_Read) Msg("* %s : %d - %d", E->name(), size, P.r_tell() - _pos);
-			
-			R_ASSERT2(P.r_tell() - _pos == size, make_string("Corruption NET-Packet at update :( Object: [%s], size object: [%d], size packet: [%d]",
-				E->name(), size, P.r_tell() - _pos));
-		}
-		else
-			P.r_advance	(size);
-	}
-	if (g_Dump_Update_Read) Msg("-------------------- ");
-
-}
-
 void xrServer::Process_save(NET_Packet& P)
 {
 	// while has information

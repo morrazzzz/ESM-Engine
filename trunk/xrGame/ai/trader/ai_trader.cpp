@@ -127,7 +127,7 @@ BOOL CAI_Trader::net_Spawn			(CSE_Abstract* DC)
 	setVisible				(TRUE);
 	setEnabled				(TRUE);
 
-	set_money				( l_tpTrader->m_dwMoney, false );
+	set_money				(l_tpTrader->m_dwMoney);
 
 	// ”становка callback на кости
 	CBoneInstance			*bone_head =	&smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_head"));

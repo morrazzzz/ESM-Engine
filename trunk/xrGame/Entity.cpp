@@ -312,10 +312,8 @@ void CEntity::shedule_Update	(u32 dt)
 	if (!getDestroy() && !g_Alive() && (m_killer_id != u16(-1))) {
 		if (Device.dwTimeGlobal > m_level_death_time + FORGET_KILLER_TIME) {
 			m_killer_id			= u16(-1);
-			NET_Packet			P;
-			u_EventGen			(P,GE_ASSIGN_KILLER,ID());
-			P.w_u16				(u16(-1));
-			if (IsGameTypeSingle())	u_EventSend			(P);
+			CSE_ALifeCreatureAbstract* CSEObject = GetCSEObject()->cast_creature_abstract();
+			CSEObject->m_killer_id = m_killer_id;
 		}
 	}
 }

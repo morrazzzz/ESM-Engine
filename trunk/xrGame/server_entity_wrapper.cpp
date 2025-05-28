@@ -39,7 +39,7 @@ void CServerEntityWrapper::save				(IWriter &stream)
 	// Update
 	stream.open_chunk		(1);
 
-	net_packet.w_begin		(M_UPDATE);
+	net_packet.w_begin(0);
 	m_object->UPDATE_Write	(net_packet);
 	stream.w_u16			(u16(net_packet.B.count));
 	stream.w				(net_packet.B.data,net_packet.B.count);
@@ -83,8 +83,8 @@ void CServerEntityWrapper::load				(IReader &stream)
 	
 	chunk->close			();
 
-	net_packet.r_begin		(ID);
-	R_ASSERT2				(M_UPDATE == ID,"Invalid packet ID (!= M_UPDATE)!");
+	u16 begin;
+	net_packet.r_begin(begin);
 	m_object->UPDATE_Read	(net_packet);
 }
 

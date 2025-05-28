@@ -145,10 +145,7 @@ CSE_Abstract *CALifeSimulatorBase::create(CSE_ALifeGroupAbstract *tpALifeGroupAb
 
 	j->Spawn_Write				(tNetPacket,TRUE);
 	k->Spawn_Read				(tNetPacket);
-	tNetPacket.w_begin			(M_UPDATE);
 	j->UPDATE_Write				(tNetPacket);
-	u16							id;
-	tNetPacket.r_begin			(id);
 	k->UPDATE_Read				(tNetPacket);
 	k->s_name					= S;
 	k->m_tSpawnID				= j->m_tSpawnID;
@@ -180,14 +177,11 @@ void CALifeSimulatorBase::create(CSE_ALifeDynamicObject *&i, CSE_ALifeDynamicObj
 	R_ASSERT3					(tpSE_Abstract,"Cannot find item with section",*j->s_name);
 	i							= smart_cast<CSE_ALifeDynamicObject*>(tpSE_Abstract);
 	R_ASSERT2					(i,"Non-ALife object in the 'game.spawn'");
-
+ 
 	NET_Packet					tNetPacket;
 	j->Spawn_Write				(tNetPacket,TRUE);
 	i->Spawn_Read				(tNetPacket);
-	tNetPacket.w_begin			(M_UPDATE);
 	j->UPDATE_Write				(tNetPacket);
-	u16							id;
-	tNetPacket.r_begin			(id);
 	i->UPDATE_Read				(tNetPacket);
 
 	R_ASSERT3					(!(i->used_ai_locations()) || (i->m_tNodeID != u32(-1)),"Invalid vertex for object ",i->name_replace());
@@ -348,10 +342,22 @@ void CALifeSimulatorBase::OnAttach(CSE_Abstract* object, CSE_Abstract* item)
 
 void CALifeSimulatorBase::OnDetach(CSE_Abstract* object, CSE_Abstract* item, bool NotNeedDeleteChildren)
 {
-	CSE_ALifeDynamicObject* DynamicObject = objects().object(object->ID, true);
-	VERIFY(DynamicObject);
+	if (!object->cast_alife_dynamic_object() || !item->cast_inventory_item())
+	{
+		item->base()->ID_Parent = 0xffff;
 
-	if (!item->cast_inventory_item())
+		if (!NotNeedDeleteChildren)
+		{
+			auto i = std::find(object->children.begin(), object->children.end(), item->base());
+			R_ASSERT2(object->children.end() != i, "Can't detach an item which is not on my own");
+			object->children.erase(i);
+		}
+		return;
+	}
+	
+	CSE_ALifeDynamicObject* DynamicObject = objects().object(object->ID, true);
+
+	if (!DynamicObject)
 		return;
 
 	bool FindObject = objects().object(item->ID, true);
@@ -359,7 +365,6 @@ void CALifeSimulatorBase::OnDetach(CSE_Abstract* object, CSE_Abstract* item, boo
 	if (!graph().level().object(item->ID, true) && FindObject)
 		graph().detach(*object, item->cast_inventory_item(), DynamicObject->m_tGraphID, false, !NotNeedDeleteChildren);
 	else if (!FindObject) {
-			u16	id = item->ID_Parent;
 			item->ID_Parent = 0xffff;
 			  
 			CSE_ALifeDynamicObject* dynamic_object = item->cast_alife_dynamic_object();
@@ -369,7 +374,13 @@ void CALifeSimulatorBase::OnDetach(CSE_Abstract* object, CSE_Abstract* item, boo
 			dynamic_object->m_bALifeControl = true;
 			dynamic_object->m_bOnline = true;
 		    create(dynamic_object);
-			item->ID_Parent = id;
+
+			if (!NotNeedDeleteChildren)
+			{
+				auto i = std::find(object->children.begin(), object->children.end(), item->base());
+				R_ASSERT2(object->children.end() != i, "Can't detach an item which is not on my own");
+				object->children.erase(i);
+			}
 		}
 #ifdef DEBUG
 		else

@@ -185,11 +185,11 @@ void CWeaponAmmo::UpdateCL()
 	VERIFY2								(_valid(renderable.xform),*cName());
 }
 
-void CWeaponAmmo::net_Export(NET_Packet& P)
+void CWeaponAmmo::SaveCSEObj(CSE_Abstract* data)
 {
-	inherited::net_Export(P);
+	CSE_ALifeItemAmmo* this_object = data->cast_item_ammo();
 
-	P.w_u16(m_boxCurr);
+	this_object->a_elapsed = m_boxCurr;
 }
 
 CInventoryItem *CWeaponAmmo::can_make_killing	(const CInventory *inventory) const

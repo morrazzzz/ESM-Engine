@@ -104,9 +104,7 @@ public:
 	
 									CSE_Abstract	(LPCSTR caSection);
 	virtual							~CSE_Abstract	();
-	virtual void					OnEvent			(NET_Packet &tNetPacket, u16 type, u32 time ){}
 	virtual void					FillProps		(LPCSTR pref, PropItemVec &items);
-	virtual BOOL					Net_Relevant	(){return TRUE;};
 	//
 	virtual void		__stdcall	Spawn_Write		(NET_Packet &tNetPacket, BOOL bLocal);
 	virtual BOOL		__stdcall	Spawn_Read		(NET_Packet &tNetPacket);

@@ -431,19 +431,17 @@ void CTorch::setup_physic_shell	()
 	CPhysicsShellHolder::setup_physic_shell();
 }
 
-void CTorch::net_Export(NET_Packet& P)
+void CTorch::SaveCSEObj(CSE_Abstract* data)
 {
-	inherited::net_Export(P);
+	CSE_ALifeItemTorch* this_object = smart_cast<CSE_ALifeItemTorch*>(data);
+	this_object->m_active = m_switched_on;
+	this_object->m_nightvision_active = m_bNightVisionOn;
 
-	BYTE F = 0;
-	F |= m_switched_on ? eTorchActive : 0;
-	F |= m_bNightVisionOn ? eNightVisionActive : 0;
 	if (const CActor* pA = smart_cast<const CActor*>(H_Parent()))
 	{
 		if (pA->attached(this))
-			F |= eAttached;
+			this_object->m_attached = true;
 	}
-	P.w_u8(F);
 }
 
 bool  CTorch::can_be_attached		() const

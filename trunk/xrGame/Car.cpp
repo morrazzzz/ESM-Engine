@@ -486,11 +486,6 @@ void	CCar::renderable_Render				( )
 		m_car_weapon->Render_internal();
 }
 
-void	CCar::net_Export			(NET_Packet& P)
-{
-	inherited::net_Export(P);
-}
-
 void CCar::OnHUDDraw()
 {
 #ifdef DEBUG
@@ -601,7 +596,6 @@ void CCar::detach_Actor()
 	///Break();
 	//H_SetParent(NULL);
 	HandBreak();
-	processing_deactivate();
 #ifdef DEBUG
 	DBgClearPlots();
 #endif
@@ -628,7 +622,6 @@ bool CCar::attach_Actor(CGameObject* actor)
 	PPhysicsShell()->Enable();
 	PPhysicsShell()->add_ObjectContactCallback(ActorObstacleCallback);
 //	VisualUpdate();
-	processing_activate();
 	ReleaseHandBreak();
 //	HUD().GetUI()->UIMainIngameWnd->CarPanel().Show(true);
 //	HUD().GetUI()->UIMainIngameWnd->CarPanel().SetCarHealth(fEntityHealth/100.f);

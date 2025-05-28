@@ -73,11 +73,10 @@ void CActor::IR_OnKeyboardPress(int cmd)
 		}
 		}
 		break;
-	case kCROUCH:
-	{
-		if (psActorFlags.test(AF_CROUCH_TOGGLE))
-			mstate_wishful ^= mcCrouch;
-	}
+	case kCROUCH_TOGGLE:
+		mstate_wishful ^= mcCrouch;
+		psActorFlags.set(AF_CROUCH_TOGGLE, mstate_wishful & mcCrouch);
+		break;
 	break;
 	case kACCEL:
 	{
@@ -368,11 +367,7 @@ void CActor::ActorUse()
 		
 	if (m_holder)
 	{
-		CGameObject*	GO			= smart_cast<CGameObject*>(m_holder);
-		NET_Packet		P;
-		CGameObject::u_EventGen		(P, GEG_PLAYER_DETACH_HOLDER, ID());
-		P.w_u32						(GO->ID());
-		CGameObject::u_EventSend	(P);
+		use_Holder(nullptr);
 		return;
 	}
 				
@@ -435,17 +430,12 @@ void CActor::ActorUse()
 		{
 			if (object && smart_cast<CHolderCustom*>(object))
 			{
-					NET_Packet		P;
-					CGameObject::u_EventGen		(P, GEG_PLAYER_ATTACH_HOLDER, ID());
-					P.w_u32						(object->ID());
-					CGameObject::u_EventSend	(P);
-					return;
+					CHolderCustom* holder_object = object->cast_holder_custom();
+					if (!holder_object->Engaged())
+						use_Holder(holder_object);
 			}
-
 		}
 	}
-
-
 }
 BOOL CActor::HUDview				( )const 
 { 

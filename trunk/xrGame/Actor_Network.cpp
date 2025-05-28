@@ -70,78 +70,27 @@ void	CActor::ConvState(u32 mstate_rl, string128 *buf)
 	if (m_bJumpKeyPressed)		strcat(*buf,"+Jumping ");
 };
 //--------------------------------------------------------------------
-void CActor::net_Export	(NET_Packet& P)					// export to server
+void CActor::SaveCSEObj(CSE_Abstract* data)
 {
-	//CSE_ALifeCreatureAbstract
-	u8					flags = 0;
-	P.w_float			(GetfHealth());
-	P.w_u32				(Level().timeServer());
-	P.w_u8				(flags);
-	Fvector				p = Position();
-	P.w_vec3			(p);//Position());
+	CSE_ALifeCreatureActor* this_object = smart_cast<CSE_ALifeCreatureActor*>(data);
 
-	P.w_float /*w_angle8*/			(angle_normalize(r_model_yaw)); //Device.vCameraDirection.getH());//
-	P.w_float /*w_angle8*/			(angle_normalize(unaffected_r_torso.yaw));//(r_torso.yaw);
-	P.w_float /*w_angle8*/			(angle_normalize(unaffected_r_torso.pitch));//(r_torso.pitch);
-	P.w_float /*w_angle8*/			(angle_normalize(unaffected_r_torso.roll));//(r_torso.roll);
-	P.w_u8				(u8(g_Team()));
-	P.w_u8				(u8(g_Squad()));
-	P.w_u8				(u8(g_Group()));
+	this_object->fHealth = GetfHealth();
+	this_object->timestamp = Level().timeServer();
+	this_object->o_Position = Position();
+	this_object->o_model = angle_normalize(r_model_yaw);
+	this_object->o_torso.yaw = angle_normalize(unaffected_r_torso.yaw);
+	this_object->o_torso.pitch = angle_normalize(unaffected_r_torso.pitch);
+	this_object->o_torso.roll = angle_normalize(unaffected_r_torso.roll);
+	this_object->s_team = g_Team();
+	this_object->s_squad = g_Squad();
+	this_object->s_group = g_Group();
 
-
-	//CSE_ALifeCreatureTrader
-//	P.w_float			(inventory().TotalWeight());
-//	P.w_u32				(m_dwMoney);
-
-	//CSE_ALifeCreatureActor
-	
-	u16 ms	= (u16)(mstate_real & 0x0000ffff);
-	P.w_u16				(u16(ms));
-	P.w_sdir			(NET_SavedAccel);
-	Fvector				v = character_physics_support()->movement()->GetVelocity();
-	P.w_sdir			(v);//m_PhysicMovementControl.GetVelocity());
-//	P.w_float_q16		(fArmor,-500,1000);
-	P.w_float			(g_Radiation());
-
-	P.w_u8				(u8(inventory().GetActiveSlot()));
-	/////////////////////////////////////////////////
-	u16 NumItems		= PHGetSyncItemsNumber();
-	
-	if (H_Parent() || (GameID() == GAME_SINGLE) || ((NumItems > 1) && OnClient()))
-		NumItems = 0;
-	
-	if (!g_Alive()) NumItems = 0;
-	
-	P.w_u16				(NumItems);
-	if (!NumItems)		return;
-
-	if (g_Alive())
-	{
-		SPHNetState	State;
-
-		CPHSynchronize* pSyncObj = nullptr;
-		pSyncObj = PHGetSyncItem(0);
-		pSyncObj->get_State(State);
-
-		P.w_u8					( State.enabled );
-
-		P.w_vec3				( State.angular_vel);
-		P.w_vec3				( State.linear_vel);
-
-		P.w_vec3				( State.force);
-		P.w_vec3				( State.torque);
-
-		P.w_vec3				( State.position);
-
-		P.w_float				( State.quaternion.x );
-		P.w_float				( State.quaternion.y );
-		P.w_float				( State.quaternion.z );
-		P.w_float				( State.quaternion.w );
-	}
-	else
-	{
-		net_ExportDeadBody(P);
-	};
+	u16 ms = static_cast<u16>(mstate_real & 0x0000ffff);
+	this_object->mstate = ms;
+	this_object->accel = NET_SavedAccel;
+	this_object->velocity = character_physics_support()->movement()->GetVelocity();
+	this_object->fRadiation = g_Radiation();
+	this_object->weapon = u8(inventory().GetActiveSlot());
 };
 
 static void w_vec_q8(NET_Packet& P,const Fvector& vec,const Fvector& min,const Fvector& max)
@@ -224,49 +173,6 @@ static void	UpdateLimits (Fvector &p, Fvector& min, Fvector& max)
 			UpdateLimits(p, min, max);
 		}
 	}
-};
-
-void		CActor::net_ExportDeadBody		(NET_Packet &P)
-{
-	/////////////////////////////
-	Fvector min,max;
-
-	min.set(F_MAX,F_MAX,F_MAX);
-	max.set(-F_MAX,-F_MAX,-F_MAX);
-	/////////////////////////////////////
-	u16 bones_number		= PHGetSyncItemsNumber();
-	for(u16 i=0;i<bones_number;i++)
-	{
-		SPHNetState state;
-		PHGetSyncItem(i)->get_State(state);
-
-		Fvector& p=state.position;
-		UpdateLimits (p, min, max);
-
-		Fvector px =state.linear_vel;
-		px.div(10.0f);
-		px.add(state.position);
-		UpdateLimits (px, min, max);
-	};
-
-	P.w_u8(10);
-	P.w_vec3(min);
-	P.w_vec3(max);
-
-	for(u16 i=0;i<bones_number;i++)
-	{
-		SPHNetState state;
-		PHGetSyncItem(i)->get_State(state);
-//		state.net_Save(P,min,max);
-		w_vec_q8(P,state.position,min,max);
-		w_qt_q8(P,state.quaternion);
-
-		//---------------------------------
-		Fvector px =state.linear_vel;
-		px.div(10.0f);
-		px.add(state.position);
-		w_vec_q8(P,px,min,max);
-	};	
 };
 
 BOOL CActor::net_Spawn		(CSE_Abstract* DC)
@@ -359,7 +265,7 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 
 	setEnabled				(E->s_flags.is(M_SPAWN_OBJECT_LOCAL));
 
-	Engine.Sheduler.Register	(this,TRUE);
+	shedule_register();
 
 	if (!IsGameTypeSingle())
 	{
@@ -533,11 +439,6 @@ void CActor::net_Relcase	(CObject* O)
 		memory().remove_links(O);
 	m_pPhysics_support->in_NetRelcase(O);
 }
-
-BOOL	CActor::net_Relevant		()				// relevant for export to server
-{ 
-	return true;
-};
 
 void	CActor::SetCallbacks()
 {

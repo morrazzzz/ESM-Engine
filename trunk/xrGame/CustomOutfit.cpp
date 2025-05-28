@@ -5,10 +5,10 @@
 #include "inventory_space.h"
 #include "Inventory.h"
 #include "Actor.h"
-#include "Level.h"
 #include "BoneProtections.h"
 #include "..\include\xrRender\Kinematics.h"
 #include "player_hud.h"
+#include "xrServer_Objects_ALife_Items.h"
 
 CCustomOutfit::CCustomOutfit()
 {
@@ -28,10 +28,11 @@ CCustomOutfit::~CCustomOutfit()
 	xr_delete(m_boneProtection);
 }
 
-void CCustomOutfit::net_Export(NET_Packet& P)
+void CCustomOutfit::SaveCSEObj(CSE_Abstract* data)
 {
-	inherited::net_Export(P);
-	P.w_float_q8(m_fCondition, 0.0f, 1.0f);
+	CSE_ALifeItemCustomOutfit* this_object = smart_cast<CSE_ALifeItemCustomOutfit*>(data);
+	this_object->m_fCondition = m_fCondition;
+//	P.w_float_q8(m_fCondition, 0.0f, 1.0f);
 }
 
 void CCustomOutfit::Load(LPCSTR section) 

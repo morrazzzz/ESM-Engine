@@ -30,9 +30,10 @@ void CLevel::remove_objects	()
 		++(Device.dwFrame);
 		ClientReceive			();
 		ProcessGameEvents		();
-		Objects.Update			(true);
 		Sleep					(100);
 	}
+
+	Objects.DestroyAllObjects();
 
 	BulletManager().Clear		();
 	ph_commander().clear		();
@@ -94,26 +95,18 @@ void CLevel::net_Stop		()
 }
 
 
-void CLevel::ClientSend()
+void CLevel::SaveAllCSEObj()
 {
-	NET_Packet P;
-
-	u32	start = 0;
-
-	while (true)
+	for (u32 i = 0; i < Objects.o_count(); i++)
 	{
-		P.w_begin(M_UPDATE);
-		start = Objects.StartExportObjects(P, start, max_objects_size);
+		CGameObject* object = static_cast<CGameObject*>(Objects.o_get_by_iterator(i));
+		VERIFY(object);
 
-		if (P.B.count>2)
-		{
-			Device.Statistic->SendNetExport.Begin();
-			Send(P);
-			Device.Statistic->SendNetExport.End();
-		}else
-			break;
+		CSE_Abstract* CSEObject = Server->ID_to_entity(object->ID());
+		VERIFY(CSEObject);
+
+		object->SaveCSEObj(CSEObject);
 	}
-
 }
 
 u32	CLevel::Objects_net_Save	(NET_Packet* _Packet, u32 start, u32 max_object_size)
@@ -175,12 +168,6 @@ void CLevel::Send(NET_Packet& P)
 
 void CLevel::net_Update	()
 {
-	if(game_configured){
-		// If we have enought bandwidth - replicate client data on to server
-		Device.Statistic->netClient2.Begin	();
-		ClientSend					();
-		Device.Statistic->netClient2.End		();
-	}
 	// If server - perform server-update
 	if (Server && OnServer())	{
 		Device.Statistic->netServer.Begin();

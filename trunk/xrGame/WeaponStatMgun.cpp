@@ -11,6 +11,7 @@
 #include "xr_level_controller.h"
 #include "game_object_space.h"
 #include "level.h"
+#include "xrServer_Objects_ALife_Items.h"
 
 void 	CWeaponStatMgun::BoneCallbackX		(CBoneInstance *B)
 {
@@ -115,7 +116,7 @@ BOOL CWeaponStatMgun::net_Spawn(CSE_Abstract* DC)
 
 	inheritedShooting::Light_Create();
 
-	processing_activate		();
+//	processing_activate		();
 	setVisible				(TRUE);
 	setEnabled				(TRUE);
 	return					TRUE;
@@ -127,11 +128,12 @@ void CWeaponStatMgun::net_Destroy()
 	processing_deactivate		();
 }
 
-void CWeaponStatMgun::net_Export(NET_Packet& P)	// export to server
+void CWeaponStatMgun::SaveCSEObj(CSE_Abstract* data)
 {
-	inheritedPH::net_Export(P);
-	P.w_u8(IsWorking() ? 1 : 0);
-	save_data(m_destEnemyDir, P);
+	CSE_ALifeStationaryMgun* this_object = smart_cast<CSE_ALifeStationaryMgun*>(data);
+
+	this_object->m_bWorking = IsWorking();
+	this_object->m_destEnemyDir = m_destEnemyDir;
 }
 
 void CWeaponStatMgun::UpdateCL()

@@ -11,7 +11,7 @@
 #include "level.h"
 #include "..\include\xrRender\Kinematics.h"
 #include "object_broker.h"
-#include "game_base_space.h"
+#include "ai_object_location.h"
 #include "../xrPhysics/MathUtils.h"
 #include "player_hud.h"
 #ifdef DEBUG
@@ -95,7 +95,17 @@ BOOL CWeaponMagazinedWGrenade::net_Spawn(CSE_Abstract* DC)
 	{
 		shared_str fake_grenade_name = pSettings->r_string(pM->back().m_ammoSect, "fake_grenade_name");
 		
-		CRocketLauncher::SpawnRocket(*fake_grenade_name, this);
+		CSE_Abstract* object = Level().spawn_item(fake_grenade_name.c_str(), Position(), ai_location().level_vertex_id(), ID(), true);
+		R_ASSERT(object);
+
+		CSE_ALifeObject* alife_object = object->cast_alife_object();
+		R_ASSERT(alife_object);
+		alife_object->m_flags.set(CSE_ALifeObject::flCanSave, false);
+
+		NET_Packet			P;
+		object->Spawn_Write(P, TRUE);
+		Level().Send(P);
+		F_entity_Destroy(object);
 	}
 
 	return l_res;
@@ -235,6 +245,9 @@ void CWeaponMagazinedWGrenade::ObjectTakeItem(CGameObject* object)
 
 void CWeaponMagazinedWGrenade::ObjectRejectItem(CGameObject* object, bool just_before_destroy)
 {
+	if (!just_before_destroy)
+		return;
+
 	CRocketLauncher::DetachRocket(object, false);
 }
 
@@ -312,6 +325,11 @@ void  CWeaponMagazinedWGrenade::LaunchGrenade()
 		VERIFY(pGrenade);
 		pGrenade->SetInitiator(H_Parent()->ID());
 
+		VERIFY(m_magazine.size());
+		m_magazine.pop_back();
+		--iAmmoElapsed;
+		VERIFY((u32)iAmmoElapsed == m_magazine.size());
+
 		CRocketLauncher::DetachRocket(getCurrentRocket(), true);
 	}
 }
@@ -325,7 +343,17 @@ void CWeaponMagazinedWGrenade::ReloadMagazine()
 	{
 		shared_str fake_grenade_name = pSettings->r_string(m_ammoTypes[m_ammoType].c_str(), "fake_grenade_name");
 		
-		CRocketLauncher::SpawnRocket(*fake_grenade_name, this);
+		CSE_Abstract* object = Level().spawn_item(fake_grenade_name.c_str(), Position(), ai_location().level_vertex_id(), ID(), true);
+		R_ASSERT(object);
+
+		CSE_ALifeObject* alife_object = object->cast_alife_object();
+		R_ASSERT(alife_object);
+		alife_object->m_flags.set(CSE_ALifeObject::flCanSave, false);
+
+		NET_Packet			P;
+		object->Spawn_Write(P, TRUE);
+		Level().Send(P);
+		F_entity_Destroy(object);
 	}
 }
 
@@ -669,11 +697,12 @@ void CWeaponMagazinedWGrenade::load(IReader &input_packet)
 		m_magazine2.push_back(l_cartridge);
 }
 
-void CWeaponMagazinedWGrenade::net_Export	(NET_Packet& P)
+void CWeaponMagazinedWGrenade::SaveCSEObj(CSE_Abstract* data)
 {
-	P.w_u8						(m_bGrenadeMode ? 1 : 0);
+	CSE_ALifeItemWeaponMagazinedWGL* this_object = smart_cast<CSE_ALifeItemWeaponMagazinedWGL*>(data);
+	this_object->m_bGrenadeMode = m_bGrenadeMode;
 
-	inherited::net_Export		(P);
+	inherited::SaveCSEObj(data);
 }
 
 bool CWeaponMagazinedWGrenade::IsNecessaryItem	    (const shared_str& item_sect)

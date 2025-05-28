@@ -398,12 +398,6 @@ void CCustomZone::net_Destroy()
 	m_ObjectInfoMap.clear();	
 }
 
-void CCustomZone::net_Export(NET_Packet& P)
-{
-	inherited::net_Export(P);
-//	P.w_u32				(m_owner_id);
-}
-
 bool CCustomZone::IdleState()
 {
 	UpdateOnOffState	();
@@ -1052,16 +1046,6 @@ void  CCustomZone::OnMove()
 
 void	CCustomZone::OnEvent (NET_Packet& P, u16 type)
 {	
-	switch (type)
-	{
-		case GE_ZONE_STATE_CHANGE:
-			{
-				u8				S;
-				P.r_u8			(S);
-				OnStateSwitch	(EZoneState(S));
-				break;
-			}
-	}
 	inherited::OnEvent(P, type);
 };
 
@@ -1092,40 +1076,26 @@ void CCustomZone::ObjectRejectItem(CGameObject* object, bool just_before_destroy
 		ThrowOutArtefact(artefact);
 }
 
-void CCustomZone::OnStateSwitch	(EZoneState new_state)
+void CCustomZone::SwitchZoneState(EZoneState new_state)
 {
 	if (eZoneStateDisabled == new_state)
 		Disable();
 	else
 		Enable();
 
-	if(m_eZoneState==eZoneStateIdle)
+	if (m_eZoneState == eZoneStateIdle)
 		StopIdleParticles();
 
-	if(new_state==eZoneStateIdle)
+	if (new_state == eZoneStateIdle)
 		PlayIdleParticles();
 
-	if(new_state==eZoneStateAccumulate)
+	if (new_state == eZoneStateAccumulate)
 		PlayAccumParticles();
 
-	if(new_state==eZoneStateAwaking)
+	if (new_state == eZoneStateAwaking)
 		PlayAwakingParticles();
 
-	m_eZoneState			= new_state;
-	m_iPreviousStateTime	= m_iStateTime = 0;
-};
-
-void CCustomZone::SwitchZoneState(EZoneState new_state)
-{
-	if (OnServer())
-	{
-		// !!! Just single entry for given state !!!
-		NET_Packet		P;
-		u_EventGen		(P,GE_ZONE_STATE_CHANGE,ID());
-		P.w_u8			(u8(new_state));
-		u_EventSend		(P);
-	};
-
+	m_eZoneState = new_state;
 	m_iPreviousStateTime = m_iStateTime = 0;
 }
 
@@ -1387,11 +1357,7 @@ void CCustomZone::UpdateOnOffState	()
 
 void CCustomZone::GoDisabledState()
 {
-	//switch to disable	
-	NET_Packet P;
-	u_EventGen		(P,GE_ZONE_STATE_CHANGE,ID());
-	P.w_u8			(u8(eZoneStateDisabled));
-	u_EventSend		(P);
+	ZoneDisable();
 
 	OBJECT_INFO_VEC_IT it		= m_ObjectInfoMap.begin();
 	OBJECT_INFO_VEC_IT it_e		= m_ObjectInfoMap.end();
@@ -1405,11 +1371,7 @@ void CCustomZone::GoDisabledState()
 
 void CCustomZone::GoEnabledState()
 {
-		//switch to idle	
-		NET_Packet P;
-		u_EventGen		(P,GE_ZONE_STATE_CHANGE,ID());
-		P.w_u8			(u8(eZoneStateIdle));
-		u_EventSend		(P);
+	ZoneEnable();
 }
 
 BOOL CCustomZone::feel_touch_on_contact	(CObject *O)

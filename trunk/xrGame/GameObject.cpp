@@ -106,7 +106,6 @@ void CGameObject::net_Destroy	()
 		smart_cast<IKinematics*>(Visual())->Callback	(0,0);
 
 	inherited::net_Destroy						();
-	setReady									(FALSE);
 	g_pGameLevel->Objects.net_Unregister		(this);
 	
 	if (this == Level().CurrentEntity())
@@ -178,6 +177,8 @@ BOOL CGameObject::net_Spawn		(CSE_Abstract*	DC)
 	CSE_Abstract* E = (CSE_Abstract*)DC;
 	R_ASSERT(E);
 
+	SetCSEObject(DC);
+
 	const CSE_Visual				*visual	= smart_cast<const CSE_Visual*>(E);
 	if (visual) {
 		cNameVisual_set				(visual_name(E));
@@ -216,8 +217,6 @@ BOOL CGameObject::net_Spawn		(CSE_Abstract*	DC)
 	m_story_id						= ALife::_STORY_ID(-1);
 	if (O)
 		m_story_id					= O->m_story_id;
-
-	setReady						(TRUE);
 
 	if (!E->ObjectCustomSpawn)
 		g_pGameLevel->Objects.net_Register(this);
@@ -294,8 +293,6 @@ BOOL CGameObject::net_Spawn		(CSE_Abstract*	DC)
 		}
  		inherited::net_Spawn	(DC);
 	}
-
-	m_bObjectRemoved			= false;
 
 	spawn_supplies				();
 #ifdef DEBUG
@@ -699,9 +696,7 @@ void CGameObject::DestroyObject(bool TotalDestroy)
 {
 	if (getDestroy())		return;
 
-	CSE_Abstract* DC_Entity{};
-
-	DC_Entity = Level().Server->ID_to_entity(ID());
+	CSE_Abstract* DC_Entity = GetCSEObject();
 	VERIFY(DC_Entity);
 
 	if (!DC_Entity->children.empty())
@@ -710,8 +705,7 @@ void CGameObject::DestroyObject(bool TotalDestroy)
 		{
 			CSE_Abstract* child = DC_Entity->children[i];
 
-			if (!TotalDestroy)
-				ai().get_alife()->OnDetach(DC_Entity, child, true);
+			ai().get_alife()->OnDetach(DC_Entity, child, true);
 
 //			VERIFY(static_cast<u16>(-1) == child->ID_Parent);
 
@@ -722,41 +716,60 @@ void CGameObject::DestroyObject(bool TotalDestroy)
 
 			VERIFY(!child_obj->H_Parent());
 
-			child_obj->setDestroy(true);
+			child_obj->setDestroy();
 
-			if (TotalDestroy || !child->m_bALifeControl)
+			if (!child->m_bALifeControl)
 			{
 				Level().Server->entity_Destroy(child);
 				continue;
 			}
 
-			ai().get_alife()->release(child);
+			child_obj->SaveCSEObj(child);
+			ai().get_alife()->release(child, TotalDestroy);
 		}
 
-		DC_Entity->children.clear_not_free();
+//		VERIFY(DC_Entity->children.empty());
+		DC_Entity->children.clear();
 	}
 
 	if (DC_Entity->ID_Parent != static_cast<u16>(-1))
 	{
 		u16 IDParent = DC_Entity->ID_Parent;
-		CSE_Abstract* DC_Parent = Level().Server->ID_to_entity(IDParent);
+		bool ClientObjNotExist = false;
+		CSE_Abstract* DC_Parent = nullptr;
+
+		if (H_Parent())
+			DC_Parent = static_cast<CGameObject*>(H_Parent())->GetCSEObject();
+
+		if (!DC_Parent)
+		{
+			DC_Parent = ai().get_alife()->objects().object(IDParent);
+			ClientObjNotExist = true;
+		}
+
+		R_ASSERT2(DC_Parent, make_string("Detaching children, but parent not exist. [%d][%d]", DC_Entity->ID, DC_Entity->ID_Parent));
 
 		ai().get_alife()->OnDetach(DC_Parent, DC_Entity);
 
-		CGameObject* parent_obj = static_cast<CGameObject*>(Level().Objects.net_Find(IDParent));
+		if (!ClientObjNotExist)
+		{
+			CGameObject* parent_obj = static_cast<CGameObject*>(Level().Objects.net_Find(IDParent));
+			R_ASSERT2(parent_obj, make_string("Reject item for client object, but client object not exist. [%d][%d]", DC_Entity->ID, DC_Entity->ID_Parent));
 
-		parent_obj->ObjectRejectItem(this, true);
+			parent_obj->ObjectRejectItem(this, true);
+		}
 	}
 
-	setDestroy(true);
+	setDestroy();
 
-	if (TotalDestroy || !DC_Entity->m_bALifeControl)
+	if (!DC_Entity->m_bALifeControl)
 	{
 		Level().Server->entity_Destroy(DC_Entity);
 		return;
 	}
 
-	ai().get_alife()->release(DC_Entity);
+	SaveCSEObj(DC_Entity);
+	ai().get_alife()->release(DC_Entity, TotalDestroy);
 }
 
 void CGameObject::shedule_Update	(u32 dt)

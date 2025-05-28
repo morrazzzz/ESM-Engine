@@ -82,13 +82,6 @@ void CPHShell::EnableObject(CPHObject* obj)
 }
 void CPHShell::DisableObject()
 {
-
-	IPhysicsShellHolder* ref_object=(*elements.begin())->PhysicsRefObject();
-//.	if (!ref_object) return;
-
-	if (ref_object)
-		ref_object->on_physics_disable	();
-
 	//InterpolateGlobalTransform(&mXFORM);
 	CPHObject::deactivate();
 	if(m_spliter_holder)m_spliter_holder->Deactivate();

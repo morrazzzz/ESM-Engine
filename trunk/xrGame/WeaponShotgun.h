@@ -13,7 +13,7 @@ public:
 	virtual void	Load				(LPCSTR section);
 	
 	virtual void	net_Destroy			();
-	virtual void	net_Export			(NET_Packet& P);
+	void SaveCSEObj(CSE_Abstract* data) override;
 
 	virtual void	Reload				();
 	virtual void	switch2_Fire		();

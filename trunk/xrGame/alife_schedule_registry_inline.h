@@ -32,7 +32,7 @@ IC	CSE_ALifeSchedulable *CALifeScheduleRegistry::object	(const ALife::_OBJECT_ID
 {
 	_const_iterator				I = objects().find(id);
 	if (I == objects().end()) {
-		THROW2					(no_assert,"The spesified object hasn't been found in the schedule registry!");
+		R_ASSERT2					(no_assert,"The spesified object hasn't been found in the schedule registry!");
 		return					(0);
 	}
 	return						((*I).second);

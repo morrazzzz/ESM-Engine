@@ -4,8 +4,7 @@
 #include "ParticlesObject.h"
 #include "xr_level_controller.h"
 #include "inventory.h"
-#include "level.h"
-#include "actor.h"
+#include "xrServer_Objects_ALife_Items.h"
 
 CWeaponShotgun::CWeaponShotgun()
 {
@@ -237,13 +236,14 @@ u8 CWeaponShotgun::AddCartridge		(u8 cnt)
 	return cnt;
 }
 
-void	CWeaponShotgun::net_Export	(NET_Packet& P)
+void CWeaponShotgun::SaveCSEObj(CSE_Abstract* data)
 {
-	inherited::net_Export(P);	
-	P.w_u8(u8(m_magazine.size()));	
-	for (u32 i=0; i<m_magazine.size(); i++)
+	inherited::SaveCSEObj(data);	
+	CSE_ALifeItemWeaponShotGun* this_object = smart_cast<CSE_ALifeItemWeaponShotGun*>(data);
+
+	for (u32 i = 0; i < m_magazine.size(); i++)
 	{
-		CCartridge& l_cartridge = *(m_magazine.begin()+i);
-		P.w_u8(l_cartridge.m_LocalAmmoType);
+		CCartridge& l_cartridge = m_magazine[i];
+		this_object->m_AmmoIDs.emplace_back(l_cartridge.m_LocalAmmoType);
 	}
 }

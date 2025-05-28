@@ -49,7 +49,6 @@ public:
 	}
 
 	CSE_Abstract*			Process_spawn			(NET_Packet& P, CSE_Abstract* tpExistedEntity = 0);
-	void					Process_update			(NET_Packet& P);
 	void					Process_save			(NET_Packet& P);
 	void					Process_event			(NET_Packet& P);
 

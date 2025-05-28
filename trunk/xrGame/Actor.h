@@ -540,9 +540,8 @@ protected:
 			void						ConvState			(u32 mstate_rl, string128 *buf);
 public:
 	virtual BOOL						net_Spawn			( CSE_Abstract* DC);
-	virtual void						net_Export			( NET_Packet& P);				// export to server
+	void SaveCSEObj(CSE_Abstract* data) override;
 	virtual void						net_Destroy			();
-	virtual BOOL						net_Relevant		();//	{ return getSVU() | getLocal(); };		// relevant for export to server
 	virtual	void						net_Relcase			( CObject* O );					//
 	virtual void xr_stdcall				on_requested_spawn  (CObject *object);
 	//object serialization
@@ -597,7 +596,6 @@ virtual	bool				can_validate_position_on_spawn	(){return false;}
 	DEF_DEQUE		(PH_STATES, SPHNetState);
 	PH_STATES				m_States;
 	u16						m_u16NumBones;
-	void					net_ExportDeadBody		(NET_Packet &P);
 #ifdef DEBUG
 	//---------------------------------------------
 	virtual void			OnRender_Network();

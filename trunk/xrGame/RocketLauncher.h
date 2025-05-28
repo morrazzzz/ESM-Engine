@@ -14,7 +14,6 @@ public:
 			void AttachRocket	(CGameObject* rocket, CGameObject* parent_rocket_launcher);
 			void DetachRocket	(CGameObject* rocket, bool bLaunch);
 
-			void SpawnRocket	(LPCSTR rocket_section, CGameObject* parent_rocket_launcher);
 			void LaunchRocket	(const Fmatrix& xform,  const Fvector& vel, const Fvector& angular_vel);
 
 protected:			   
@@ -23,7 +22,6 @@ protected:
 	ROCKET_VECTOR		m_launched_rockets;
 	
 	CCustomRocket*	getCurrentRocket();
-	void			dropCurrentRocket();
 	u32				getRocketCount();
 	//начальная скорость, придаваемая ракете во время
 	//старта

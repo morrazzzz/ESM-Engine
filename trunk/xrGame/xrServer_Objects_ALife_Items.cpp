@@ -94,93 +94,17 @@ static inline bool check (const u8 &mask, const u8 &test)
 
 void CSE_ALifeInventoryItem::UPDATE_Write	(NET_Packet &tNetPacket)
 {
-	if (!m_u8NumItems) {
-		tNetPacket.w_u8				(0);
-		return;
-	}
-
-	mask_num_items					num_items;
-	num_items.mask					= 0;
-	num_items.num_items				= m_u8NumItems;
-
-	R_ASSERT2						(
-		num_items.num_items < (u8(1) << 5),
-		make_string("%d",num_items.num_items)
-	);
-
-	if (State.enabled)									num_items.mask |= inventory_item_state_enabled;
-	if (fis_zero(State.angular_vel.square_magnitude()))	num_items.mask |= inventory_item_angular_null;
-	if (fis_zero(State.linear_vel.square_magnitude()))	num_items.mask |= inventory_item_linear_null;
-
-	tNetPacket.w_u8					(num_items.common);
-
-	tNetPacket.w_vec3				(State.position);
-
-	tNetPacket.w_float_q8			(State.quaternion.x,0.f,1.f);
-	tNetPacket.w_float_q8			(State.quaternion.y,0.f,1.f);
-	tNetPacket.w_float_q8			(State.quaternion.z,0.f,1.f);
-	tNetPacket.w_float_q8			(State.quaternion.w,0.f,1.f);	
-
-	if (!check(num_items.mask,inventory_item_angular_null)) {
-		tNetPacket.w_float_q8		(State.angular_vel.x,0.f,10*PI_MUL_2);
-		tNetPacket.w_float_q8		(State.angular_vel.y,0.f,10*PI_MUL_2);
-		tNetPacket.w_float_q8		(State.angular_vel.z,0.f,10*PI_MUL_2);
-	}
-
-	if (!check(num_items.mask,inventory_item_linear_null)) {
-		tNetPacket.w_float_q8		(State.linear_vel.x,-32.f,32.f);
-		tNetPacket.w_float_q8		(State.linear_vel.y,-32.f,32.f);
-		tNetPacket.w_float_q8		(State.linear_vel.z,-32.f,32.f);
-	}
-};
+}
 
 void CSE_ALifeInventoryItem::UPDATE_Read	(NET_Packet &tNetPacket)
 {
-	tNetPacket.r_u8					(m_u8NumItems);
-	if (!m_u8NumItems) {
-		return;
-	}
-
-	mask_num_items					num_items;
-	num_items.common				= m_u8NumItems;
-	m_u8NumItems					= num_items.num_items;
-
-	R_ASSERT2						(
-		m_u8NumItems < (u8(1) << 5),
-		make_string("%d",m_u8NumItems)
-	);
-
-	tNetPacket.r_vec3				(State.position);
-
-	tNetPacket.r_float_q8			(State.quaternion.x,0.f,1.f);
-	tNetPacket.r_float_q8			(State.quaternion.y,0.f,1.f);
-	tNetPacket.r_float_q8			(State.quaternion.z,0.f,1.f);
-	tNetPacket.r_float_q8			(State.quaternion.w,0.f,1.f);	
-
-	State.enabled					= check(num_items.mask,inventory_item_state_enabled);
-
-	if (!check(num_items.mask,inventory_item_angular_null)) {
-		tNetPacket.r_float_q8		(State.angular_vel.x,0.f,10*PI_MUL_2);
-		tNetPacket.r_float_q8		(State.angular_vel.y,0.f,10*PI_MUL_2);
-		tNetPacket.r_float_q8		(State.angular_vel.z,0.f,10*PI_MUL_2);
-	}
-	else
-		State.angular_vel.set		(0.f,0.f,0.f);
-
-	if (!check(num_items.mask,inventory_item_linear_null)) {
-		tNetPacket.r_float_q8		(State.linear_vel.x,-32.f,32.f);
-		tNetPacket.r_float_q8		(State.linear_vel.y,-32.f,32.f);
-		tNetPacket.r_float_q8		(State.linear_vel.z,-32.f,32.f);
-	}
-	else
-		State.linear_vel.set		(0.f,0.f,0.f);
-};
+}
 
 void CSE_ALifeInventoryItem::FillProps		(LPCSTR pref, PropItemVec& values)
 {
-//	PHelper().CreateFloat			(values, PrepareKey(pref, *base()->s_name, "Item condition"), 		&m_fCondition, 			0.f, 1.f);
+/*	PHelper().CreateFloat(values, PrepareKey(pref, *base()->s_name, "Item condition"), &m_fCondition, 0.f, 1.f);
 	CSE_ALifeObject					*alife_object = smart_cast<CSE_ALifeObject*>(base());
-/*	R_ASSERT(alife_object);
+	R_ASSERT(alife_object);
 	PHelper().CreateFlag32			(values, PrepareKey(pref, *base()->s_name,"ALife\\Useful for AI"),	&alife_object->m_flags,	CSE_ALifeObject::flUsefulForAI);
 	PHelper().CreateFlag32			(values, PrepareKey(pref, *base()->s_name,"ALife\\Visible for AI"),	&alife_object->m_flags,	CSE_ALifeObject::flVisibleForAI);*/
 }
@@ -265,33 +189,6 @@ void CSE_ALifeItem::FillProps				(LPCSTR pref, PropItemVec& values)
 //	inherited2::FillProps		(pref,	 values);
 }
 
-BOOL CSE_ALifeItem::Net_Relevant			()
-{
-	if (attached())
-		return					(false);
-
-	if (!m_physics_disabled && !fis_zero(State.linear_vel.square_magnitude(),EPS_L))
-		return					(true);
-
-#ifdef XRGAME_EXPORTS
-	if (Device.dwTimeGlobal < (m_last_update_time + update_rate()))
-		return					(false);
-#endif // XRGAME_EXPORTS
-
-	return						(true);
-}
-
-void CSE_ALifeItem::OnEvent					(NET_Packet &tNetPacket, u16 type, u32 time )
-{
-	inherited1::OnEvent			(tNetPacket,type,time);
-
-	if (type != GE_FREEZE_OBJECT)
-		return;
-
-//	R_ASSERT					(!m_physics_disabled);
-	m_physics_disabled			= true;
-}
-
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeItemTorch
 ////////////////////////////////////////////////////////////////////////////
@@ -304,12 +201,6 @@ CSE_ALifeItemTorch::CSE_ALifeItemTorch		(LPCSTR caSection) : CSE_ALifeItem(caSec
 
 CSE_ALifeItemTorch::~CSE_ALifeItemTorch		()
 {
-}
-
-BOOL	CSE_ALifeItemTorch::Net_Relevant			()
-{
-	if (m_attached) return true;
-	return inherited::Net_Relevant();
 }
 
 
@@ -443,23 +334,6 @@ void CSE_ALifeItemWeapon::STATE_Write		(NET_Packet	&tNetPacket)
 	tNetPacket.w_u8				(ammo_type);
 }
 
-void CSE_ALifeItemWeapon::OnEvent			(NET_Packet	&tNetPacket, u16 type, u32 time )
-{
-	inherited::OnEvent			(tNetPacket,type,time);
-	switch (type) {
-		case GE_WPN_STATE_CHANGE:
-			{			
-				tNetPacket.r_u8	(wpn_state);			
-//				u8 sub_state = 
-					tNetPacket.r_u8();		
-//				u8 NewAmmoType = 
-					tNetPacket.r_u8();
-//				u8 AmmoElapsed = 
-					tNetPacket.r_u8();	
-			}break;
-	}
-}
-
 u8	 CSE_ALifeItemWeapon::get_slot			()
 {
 	return						((u8)pSettings->r_u8(s_name,"slot"));
@@ -486,11 +360,6 @@ u16	 CSE_ALifeItemWeapon::get_ammo_magsize	()
 		return					(pSettings->r_u16(s_name,"ammo_mag_size"));
 	else
 		return					0;
-}
-
-BOOL CSE_ALifeItemWeapon::Net_Relevant()
-{
-	return (wpn_flags==1);
 }
 
 void CSE_ALifeItemWeapon::FillProps			(LPCSTR pref, PropItemVec& items)
@@ -766,11 +635,6 @@ void CSE_ALifeItemArtefact::FillProps		(LPCSTR pref, PropItemVec& items)
 {
 	inherited::FillProps			(pref,items);
 //	PHelper().CreateFloat			(items, PrepareKey(pref, *s_name, "Anomaly value:"), &m_fAnomalyValue, 0.f, 200.f);
-}
-
-BOOL CSE_ALifeItemArtefact::Net_Relevant	()
-{
-	return							(inherited::Net_Relevant());
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -1063,9 +927,4 @@ void CSE_ALifeItemCustomOutfit::UPDATE_Write		(NET_Packet	&tNetPacket)
 void CSE_ALifeItemCustomOutfit::FillProps			(LPCSTR pref, PropItemVec& items)
 {
 	inherited::FillProps			(pref,items);
-}
-
-BOOL CSE_ALifeItemCustomOutfit::Net_Relevant		()
-{
-	return							(true);
 }

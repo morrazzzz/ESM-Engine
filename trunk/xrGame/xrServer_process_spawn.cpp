@@ -1,12 +1,7 @@
 #include "stdafx.h"
 #include "xrServer.h"
-#include "hudmanager.h"
 #include "xrserver_objects.h"
 #include "Level.h"
-
-#ifdef DEBUG
-#	include "xrserver_objects_alife_items.h"
-#endif
 
 CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, CSE_Abstract* tpExistedEntity)
 {
@@ -35,16 +30,7 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, CSE_Abstract* tpExistedEnti
 //		E->m_bALifeControl = false;
 	}
 	else
-	{
 		VERIFY				(E->m_bALifeControl);
-//		E->owner			= CL;
-//		if (CL != NULL)
-//		{
-//			int x=0;
-//			x=x;
-//		};
-//		E->m_bALifeControl = true;
-	}
 
 	CSE_Abstract			*e_parent = 0;
 	if (E->ID_Parent != 0xffff) {
@@ -99,36 +85,6 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, CSE_Abstract* tpExistedEnti
 		}
 	}
 
-	// create packet and broadcast packet to everybody
-	/*
-	NET_Packet Packet;
-	E->Spawn_Write		(Packet,true);
-	if (E->s_flags.is(M_SPAWN_UPDATE))
-		E->UPDATE_Write	(Packet);
-
-	E->Spawn_Read(Packet);
-	if (E->s_flags.is(M_SPAWN_UPDATE))
-		E->UPDATE_Read(Packet);
-
-	if (CL)
-	{
-		// For local ONLY
-		E->Spawn_Write(Packet, TRUE);
-		if (E->s_flags.is(M_SPAWN_UPDATE))
-			E->UPDATE_Write(Packet);
-
-		// For everybody, except client, which contains authorative copy
-		E->Spawn_Write(Packet, FALSE);
-		if (E->s_flags.is(M_SPAWN_UPDATE))
-			E->UPDATE_Write(Packet);
-	}
-	else {
-		E->Spawn_Write(Packet, FALSE);
-		if (E->s_flags.is(M_SPAWN_UPDATE))
-			E->UPDATE_Write(Packet);
-	}
-	*/
-
 	auto it = std::find(EntitiesToSpawn.begin(), EntitiesToSpawn.end(), E);
 	VERIFY(it == EntitiesToSpawn.end());
 
@@ -138,9 +94,3 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, CSE_Abstract* tpExistedEnti
 	//Msg		("- SERVER: Spawning '%s'(%d,%d,%d) as #%d, on '%s'", E->s_name_replace, E->g_team(), E->g_squad(), E->g_group(), E->ID, CL?CL->name:"*SERVER*");
 	return E;
 }
-
-/*
-void spawn_WithPhantom
-void spawn_FromPhantom
-void spawn_Simple
-*/

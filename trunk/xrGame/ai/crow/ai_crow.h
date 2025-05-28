@@ -108,6 +108,7 @@ public:
 	virtual void	Load						( LPCSTR section );
 			void	init						();
 	virtual BOOL	net_Spawn					( CSE_Abstract* DC );
+	void SaveCSEObj(CSE_Abstract* data) override;
 	virtual void	net_Destroy					();
 	virtual BOOL	renderable_ShadowGenerate	()			{ return FALSE;	}
 	virtual BOOL	renderable_ShadowReceive	()			{ return FALSE;	}
@@ -116,8 +117,6 @@ public:
 	virtual void	UpdateCL					();
 
 	virtual CEntity*cast_entity					()			{return this;}
-
-	virtual void	net_Export					(NET_Packet& P);
 
 	virtual void	g_fireParams				(const CHudItem* /**pHudItem/**/, Fvector& /**P/**/, Fvector& /**D/**/)	{};
 	virtual void	g_WeaponBones				(int &/**L/**/, int &/**R1/**/, int &/**R2/**/)	{};

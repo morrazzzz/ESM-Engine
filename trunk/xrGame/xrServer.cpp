@@ -46,10 +46,6 @@ void xrServer::OnMessage	(NET_Packet& P)			// Non-Zero means broadcasting with "
 
 	switch (type)
 	{
-	case M_UPDATE:	
-		{
-			Process_update			(P);						// No broadcast
-		}break;
 	case M_SPAWN:	
 		{
 			Process_spawn(P);	
@@ -170,10 +166,10 @@ void xrServer::DestroyAllEntities()
 			continue;
 
 		CObject* O = Level().Objects.net_Find(i.first);
+		if (!O)
+			continue;
 		VERIFY(O);
 
-		static_cast<CGameObject*>(O)->DestroyObject();
+		static_cast<CGameObject*>(O)->DestroyObject(true);
 	}
-
-	R_ASSERT(entities.empty());
 }

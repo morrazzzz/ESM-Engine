@@ -45,7 +45,7 @@ IC	void CSALifeAbstractRegistry::add				(const _index_type &index, _data_type &d
 {
 	const_iterator	I = objects().find(index);
 	if (I != objects().end()) {
-		THROW2		(no_assert,"Specified object has been already found in the specified registry!");
+		R_ASSERT2(no_assert,"Specified object has been already found in the specified registry!");
 		return;
 	}
 	m_objects.insert(std::make_pair(index,data));
@@ -56,7 +56,7 @@ IC	void CSALifeAbstractRegistry::remove			(const _index_type &index, bool no_ass
 {
 	iterator		I = m_objects.find(index);
 	if (I == objects().end()) {
-		THROW2		(no_assert,"Specified object hasn't been found in the specified registry!");
+		R_ASSERT2(no_assert,"Specified object hasn't been found in the specified registry!");
 		return;
 	}
 	m_objects.erase	(I);
@@ -67,7 +67,7 @@ IC	_data_type *CSALifeAbstractRegistry::object	(const _index_type &index, bool n
 {
 	iterator		I = m_objects.find(index);
 	if (I == objects().end()) {
-		THROW2		(no_assert,"Specified object hasn't been found in the specified registry!");
+		R_ASSERT2(no_assert,"Specified object hasn't been found in the specified registry!");
 		return		(0);
 	}
 	return			(&(*I).second);

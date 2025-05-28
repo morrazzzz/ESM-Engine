@@ -305,7 +305,7 @@ BOOL CAI_Stalker::net_Spawn			(CSE_Abstract* DC)
 	if (!CObjectHandler::net_Spawn(DC) || !inherited::net_Spawn(DC))
 		return						(FALSE);
 	
-	set_money						(tpHuman->m_dwMoney, false);
+	set_money						(tpHuman->m_dwMoney);
 
 #ifdef DEBUG_MEMORY_MANAGER
 	u32									_start = 0;
@@ -449,56 +449,45 @@ BOOL CAI_Stalker::net_SaveRelevant	()
 	return inherited::net_SaveRelevant() || PPhysicsShell();
 }
 
-void CAI_Stalker::net_Export(NET_Packet& P)
+void CAI_Stalker::SaveCSEObj(CSE_Abstract* data)
 {
-	R_ASSERT(Local());
-
+	CSE_ALifeHumanStalker* this_object = smart_cast<CSE_ALifeHumanStalker*>(data);
+	this_object->fHealth = GetfHealth();
+	this_object->timestamp = Level().timeServer();
 #ifdef NO_INTERPOLATION
-	P.w_float(GetfHealth());
-
-	P.w_u32(Level().timeServer());
-	P.w_u8(0);
-	P.w_vec3(Position());
-	P.w_float(movement().m_body.current.yaw);
-	P.w_float(movement().m_head.current.yaw);
-	P.w_float(movement().m_head.current.pitch);
-	P.w_float(movement().m_head.current.roll);
+	this_object->o_Position = Position();
+	this_object->o_model = movement().m_body.current.yaw;
+	this_object->o_torso.yaw = movement().m_body.current.yaw;
+	this_object->o_torso.pitch = movement().m_head.current.pitch;
+	this_object->o_torso.roll = movement().m_head.current.roll;
 #else
-	// export last known packet
 	R_ASSERT(!NET.empty());
 	net_update& N = NET.back();
 
-	P.w_float(GetfHealth());
-
-	P.w_u32(N.dwTimeStamp);
-	P.w_u8(0);
-	P.w_vec3(N.p_pos);
-	P.w_float(N.o_model);
-	P.w_float(N.o_torso.yaw);
-	P.w_float(N.o_torso.pitch);
-	P.w_float(N.o_torso.roll);
+	this_object->o_Position = N.p_pos;
+	this_object->o_model = N.o_model;
+	this_object->o_torso.yaw = N.o_torso.yaw;
+	this_object->o_torso.pitch = N.o_torso.pitch;
+	this_object->o_torso.roll = N.o_torso.roll;
 #endif
-	P.w_u8(u8(g_Team()));
-	P.w_u8(u8(g_Squad()));
-	P.w_u8(u8(g_Group()));
+	this_object->s_team = g_Team();
+	this_object->s_squad = g_Squad();
+	this_object->s_group = g_Group();
 
-	float f1 = 0;
-	GameGraph::_GRAPH_ID		l_game_vertex_id = ai_location().game_vertex_id();
-	P.w(&l_game_vertex_id, sizeof(l_game_vertex_id));
-	P.w(&l_game_vertex_id, sizeof(l_game_vertex_id));
-	if (ai().game_graph().valid_vertex_id(l_game_vertex_id)) {
-		f1 = Position().distance_to(ai().game_graph().vertex(l_game_vertex_id)->level_point());
-		P.w(&f1, sizeof(f1));
-		f1 = Position().distance_to(ai().game_graph().vertex(l_game_vertex_id)->level_point());
-		P.w(&f1, sizeof(f1));
-	}
-	else
-	{
-		P.w(&f1, sizeof(f1));
-		P.w(&f1, sizeof(f1));
+	float game_vertex_id = ai_location().game_vertex_id();
+
+	this_object->m_tNextGraphID = game_vertex_id;
+	this_object->m_tPrevGraphID = game_vertex_id;
+
+	float Points = 0;
+	if (ai().game_graph().valid_vertex_id(game_vertex_id)) {
+		Points = Position().distance_to(ai().game_graph().vertex(game_vertex_id)->level_point());
 	}
 
-	P.w_stringZ(m_sStartDialog);
+	this_object->m_fDistanceFromPoint = Points;
+	this_object->m_fDistanceToPoint = Points;
+
+	this_object->m_start_dialog = m_sStartDialog;
 }
 
 void CAI_Stalker::update_object_handler()
@@ -713,6 +702,8 @@ void CAI_Stalker::shedule_Update		( u32 DT )
 	NET.push_back		(uNext);
 	STOP_PROFILE
 #endif
+
+	GetCSEObject()->o_Position = vNewPosition;
 
 	VERIFY				(_valid(Position()));
 

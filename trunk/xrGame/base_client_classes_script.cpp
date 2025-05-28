@@ -121,7 +121,6 @@ void CObjectScript::script_register		(lua_State *L)
 //			.def("renderable_ShadowGenerate",&CGameObject::renderable_ShadowGenerate,&CGameObjectWrapper::renderable_ShadowGenerate_static)
 //			.def("renderable_ShadowReceive",&CGameObject::renderable_ShadowReceive,&CGameObjectWrapper::renderable_ShadowReceive_static)
 
-			.def("net_Export",			&CGameObject::net_Export,		&CGameObjectWrapper::net_Export_static)
 			.def("net_Spawn",			&CGameObject::net_Spawn,	&CGameObjectWrapper::net_Spawn_static)
 
 			.def("use",					&CGameObject::use,	&CGameObjectWrapper::use_static)

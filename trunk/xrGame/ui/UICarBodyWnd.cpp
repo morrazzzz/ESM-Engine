@@ -163,6 +163,8 @@ void CUICarBodyWnd::InitCarBody(CInventoryOwner* pOur, CInventoryOwner* pOthers)
 	u16 our_id										= smart_cast<CGameObject*>(m_pOurObject)->ID();
 	u16 other_id									= smart_cast<CGameObject*>(m_pOthersObject)->ID();
 
+	CInventoryOwner* OurOwner = m_pOurObject->cast_inventory_owner();
+
 	m_pUICharacterInfoLeft->InitCharacter			(our_id);
 	m_pUIOthersIcon->Show							(true);
 	
@@ -193,16 +195,9 @@ void CUICarBodyWnd::InitCarBody(CInventoryOwner* pOur, CInventoryOwner* pOthers)
 		known_info_registry->registry().init		(other_id);
 		KNOWN_INFO_VECTOR& known_info				= known_info_registry->registry().objects();
 
-		KNOWN_INFO_VECTOR_IT it = known_info.begin();
-		for(int i=0;it!=known_info.end();++it,++i){
-			(*it).info_id;	
-			NET_Packet		P;
-			CGameObject::u_EventGen		(P,GE_INFO_TRANSFER, our_id);
-			P.w_u16						(0);//not used
-			P.w_stringZ					((*it).info_id);			//сообщение
-			P.w_u8						(1);						//добавление сообщения
-			CGameObject::u_EventSend	(P);
-		}
+		for(u32 i = 0; i < known_info.size(); i++)
+			OurOwner->TransferInfo(known_info[i].info_id, true);
+		
 		known_info.clear	();
 		xr_delete			(known_info_registry);
 	}

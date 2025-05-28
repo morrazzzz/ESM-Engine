@@ -140,7 +140,7 @@ public:
 	virtual void		UpdateCL				( );
 
 	// Network
-	virtual void		net_Export				(NET_Packet& P);				// export to server
+	void SaveCSEObj(CSE_Abstract* data) override;
 	virtual void		net_Relcase				(CObject*	 O);
 
 	virtual void		SelectAnimation			( const Fvector& _view, const Fvector& _move, float speed ) = 0;

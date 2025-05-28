@@ -442,10 +442,20 @@ BOOL CWeapon::net_Spawn		(CSE_Abstract* DC)
 	//iAmmoCurrent					= E->a_current;
 	iAmmoElapsed					= E->a_elapsed;
 	m_flagsAddOnState				= E->m_addon_flags.get();
+
+	R_ASSERT2(!m_ammoTypes.empty(), make_string("Ammo types empty in weapon section: [%s]", cNameSect().c_str()));
+
+	if (m_ammoTypes.size() <= E->ammo_type)
+	{
+		Msg("!! [%s]: ammo_type has a type which not registered in m_ammoTypes! ammo_type: [%d], m_ammoTypes size: [%d], weapon section: [%s]", 
+			__FUNCTION__, E->ammo_type, m_ammoTypes.size(), cNameSect().c_str());
+		E->ammo_type = 0;
+	}
+
 	m_ammoType						= E->ammo_type;
 	SetState						(E->wpn_state);
 	SetNextState					(E->wpn_state);
-	
+
 	m_DefaultCartridge.Load(m_ammoTypes[m_ammoType].c_str(), m_ammoType);
 	if(iAmmoElapsed) 
 	{
@@ -494,20 +504,19 @@ BOOL CWeapon::IsUpdating()
 	return bIsActiveItem || bWorking || IsPending() || getVisible();
 }
 
-void CWeapon::net_Export(NET_Packet& P)
+void CWeapon::SaveCSEObj(CSE_Abstract* data)
 {
-	inherited::net_Export	(P);
+	CSE_ALifeItemWeapon* this_object = data->cast_item_weapon();
 
-	P.w_float_q8			(GetCondition(),0.0f,1.0f);
-
-
-	u8 need_upd				= IsUpdating() ? 1 : 0;
-	P.w_u8					(need_upd);
-	P.w_u16					(static_cast<u16>(iAmmoElapsed));
-	P.w_u8					(m_flagsAddOnState);
-	P.w_u8					(m_ammoType);
-	P.w_u8					(static_cast<u8>(GetState()));
-	P.w_u8					(IsZoomed());
+	//?????
+	//P.w_float_q8			(GetCondition(),0.0f,1.0f);
+	this_object->m_fCondition = GetCondition(); 
+	this_object->wpn_flags = IsUpdating();
+	this_object->a_elapsed = static_cast<u16>(iAmmoElapsed);
+	this_object->m_addon_flags.flags = m_flagsAddOnState;
+	this_object->ammo_type = m_ammoType;
+	this_object->wpn_state = static_cast<u8>(GetState());
+	this_object->m_bZoom = IsZoomed();
 }
 
 void CWeapon::save(NET_Packet &output_packet)
@@ -537,32 +546,6 @@ void CWeapon::load(IReader &input_packet)
 
 void CWeapon::OnEvent(NET_Packet& P, u16 type) 
 {
-	switch (type)
-	{
-	case GE_WPN_STATE_CHANGE:
-		{
-			u8				state; 
-			P.r_u8			(state);
-			P.r_u8			(m_sub_state);		
-//			u8 NewAmmoType = 
-				P.r_u8();
-			u8 AmmoElapsed = P.r_u8();
-			u8 NextAmmo = P.r_u8();
-			if (NextAmmo == undefined_ammo_type)
-				m_set_next_ammoType_on_reload = undefined_ammo_type;
-			else
-				m_set_next_ammoType_on_reload = NextAmmo;
-
-			if (OnClient()) 
-				SetAmmoElapsed(static_cast<int>(AmmoElapsed));			
-			OnStateSwitch	(static_cast<u32>(state));
-		}
-		break;
-	default:
-		{
-			inherited::OnEvent(P,type);
-		}break;
-	}
 };
 
 void CWeapon::shedule_Update	(u32 dT)
@@ -1033,7 +1016,19 @@ void CWeapon::UpdateHUDAddonsVisibility()
 		if(m_eSilencerStatus==ALife::eAddonPermanent)
 			HudItemData()->set_bone_visible(wpn_silencer, TRUE, TRUE);
 
-	LPCSTR WpnLauncherBone = HudItemData()->HandsModeHudItem ? wpn_launcher : wpn_grenade_launcher;
+	LPCSTR WpnLauncherBone;
+
+	if (!HudItemData()->HandsModeHudItem)
+	{
+		WpnLauncherBone = wpn_grenade_launcher;
+		u16 BoneID = HudItemData()->m_model->LL_BoneID(WpnLauncherBone);
+
+		if (BoneID == BI_NONE)
+			WpnLauncherBone = wpn_launcher;
+
+	}
+	else
+		WpnLauncherBone = wpn_launcher;
 
 	if(GrenadeLauncherAttachable())
 	{
@@ -1188,19 +1183,8 @@ CUIWeaponScope* CWeapon::ZoomTexture()
 void CWeapon::SwitchState(u32 S)
 {
 	SetNextState		( S );	// Very-very important line of code!!! :)
-	if (CHudItem::object().Local() && !CHudItem::object().getDestroy()/* && (S!=NEXT_STATE)*/ 
-		&& m_pCurrentInventory && OnServer())	
-	{
-		// !!! Just single entry for given state !!!
-		NET_Packet		P;
-		CHudItem::object().u_EventGen		(P,GE_WPN_STATE_CHANGE,CHudItem::object().ID());
-		P.w_u8			(u8(S));
-		P.w_u8			(u8(m_sub_state));
-		P.w_u8			(u8(m_ammoType& 0xff));
-		P.w_u8			(u8(iAmmoElapsed & 0xff));
-		P.w_u8			(m_set_next_ammoType_on_reload);
-		CHudItem::object().u_EventSend		(P);
-	}
+	if (!CHudItem::object().getDestroy() && m_pCurrentInventory && OnServer())	
+		OnStateSwitch(S);
 }
 
 void CWeapon::OnMagazineEmpty	()

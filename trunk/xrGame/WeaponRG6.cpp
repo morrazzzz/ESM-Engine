@@ -5,6 +5,8 @@
 #include "level.h"
 #include "../xrphysics/MathUtils.h"
 #include "actor.h"
+#include "xrServer_Objects_ALife.h"
+#include "ai_object_location.h"
 
 #ifdef DEBUG
 #	include "phdebug.h"
@@ -31,7 +33,18 @@ BOOL	CWeaponRG6::net_Spawn				(CSE_Abstract* DC)
 			while (k)
 			{
 				k--;
-				inheritedRL::SpawnRocket(*fake_grenade_name, this);
+
+				CSE_Abstract* object = Level().spawn_item(fake_grenade_name.c_str(), Position(), ai_location().level_vertex_id(), ID(), true);
+				R_ASSERT(object);
+
+				CSE_ALifeObject* alife_object = object->cast_alife_object();
+				R_ASSERT(alife_object);
+				alife_object->m_flags.set(CSE_ALifeObject::flCanSave, false);
+
+				NET_Packet			P;
+				object->Spawn_Write(P, TRUE);
+				Level().Send(P);
+				F_entity_Destroy(object);
 			}
 		}
 //			inheritedRL::SpawnRocket(*fake_grenade_name, this);
@@ -126,18 +139,27 @@ void CWeaponRG6::FireStart ()
 		pGrenade->SetInitiator(H_Parent()->ID());
 
 		inheritedRL::DetachRocket(getCurrentRocket(), true);
-		dropCurrentRocket();
 	}
 }
 
-u8 CWeaponRG6::AddCartridge		(u8 cnt)
+u8 CWeaponRG6::AddCartridge(u8 cnt)
 {
 	u8 t = inheritedSG::AddCartridge(cnt);
 	u8 k = cnt-t;
 	shared_str fake_grenade_name = pSettings->r_string(m_ammoTypes[m_ammoType].c_str(), "fake_grenade_name");
 	while(k){
 		--k;
-		inheritedRL::SpawnRocket(*fake_grenade_name, this);
+		CSE_Abstract* object = Level().spawn_item(fake_grenade_name.c_str(), Position(), ai_location().level_vertex_id(), ID(), true);
+		R_ASSERT(object);
+
+		CSE_ALifeObject* alife_object = object->cast_alife_object();
+		R_ASSERT(alife_object);
+		alife_object->m_flags.set(CSE_ALifeObject::flCanSave, false);
+
+		NET_Packet			P;
+		object->Spawn_Write(P, TRUE);
+		Level().Send(P);
+		F_entity_Destroy(object);
 	}
 	return k;
 }
@@ -154,5 +176,8 @@ void CWeaponRG6::ObjectTakeItem(CGameObject* object)
 
 void CWeaponRG6::ObjectRejectItem(CGameObject* object, bool just_before_destroy)
 {
+	if (!just_before_destroy)
+		return;
+
 	inheritedRL::DetachRocket(object, false);
 }

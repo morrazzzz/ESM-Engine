@@ -56,9 +56,7 @@ class CGameObject :
 	CAI_ObjectLocation				*m_ai_location;
 	ALife::_STORY_ID				m_story_id;
 	animation_movement_controller	*m_anim_mov_ctrl;
-protected:
-	//время удаления объекта
-	bool					m_bObjectRemoved;
+	CSE_Abstract* m_pCSEObject;
 public:
 	CGameObject();
 	virtual ~CGameObject();
@@ -86,6 +84,17 @@ public:
 	virtual CHolderCustom*				cast_holder_custom			()						{return NULL;}
 	virtual CBaseMonster*				cast_base_monster			()						{return NULL;}
 
+	CSE_Abstract* GetCSEObject()
+	{
+		R_ASSERT(m_pCSEObject);
+		return m_pCSEObject;
+	}
+
+	void SetCSEObject(CSE_Abstract* data)
+	{
+		R_ASSERT(data);
+		m_pCSEObject = data;
+	}
 public:
 	virtual BOOL						feel_touch_on_contact	(CObject *)					{return TRUE;}
 	virtual bool						use						(CGameObject* who_use)		{return CUsableScriptObject::use(who_use);};
@@ -100,6 +109,7 @@ public:
 	// Methods
 	virtual void			Load				(LPCSTR section);
 	virtual BOOL			net_Spawn			(CSE_Abstract* DC);
+	virtual void SaveCSEObj(CSE_Abstract* data) {}
 	virtual void			net_Destroy			();
 	virtual	void			net_Relcase			( CObject* O );	
 	virtual void			UpdateCL			( );
@@ -111,9 +121,7 @@ public:
 	virtual void			save				(NET_Packet &output_packet);
 	virtual void			load				(IReader &input_packet);
 
-	virtual BOOL			net_Relevant		()	{ return getLocal();	}	// send messages only if active and local
 	virtual void			spatial_move		();
-	virtual BOOL			Ready				()	{ return getReady();	}	// update only if active and fully initialized by/for network
 //	virtual float			renderable_Ambient	();
 
 	virtual void			shedule_Update		(u32 dt);	

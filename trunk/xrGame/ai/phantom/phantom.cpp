@@ -64,11 +64,6 @@ BOOL CPhantom::net_Spawn(CSE_Abstract* DC)
 		u32 cnt			= _GetItemCount(visuals);
 		string256 tmp;
 		OBJ->set_visual	(_GetItem(visuals,Random.randI(cnt),tmp));
-		// inform server
-		NET_Packet		P;
-		u_EventGen		(P, GE_CHANGE_VISUAL, OBJ->ID);
-		P.w_stringZ		(tmp);
-		u_EventSend		(P);
 	}
 
 	SwitchToState		(stBirth);			// initial state (changed on load method in inherited::)
@@ -327,28 +322,19 @@ void CPhantom::load(IReader &input_packet)
 {
 	SwitchToState	(EState(input_packet.r_s32()));
 }
-void CPhantom::net_Export	(NET_Packet& P)					// export to server
+void CPhantom::SaveCSEObj(CSE_Abstract* data)
 {
-	// export 
-	R_ASSERT			(Local());
+	float yaw, pitch, bank;
+	XFORM().getHPB(yaw, pitch, bank);
 
-	u8					flags = 0;
-	P.w_float			(GetfHealth());
-
-	P.w_float			(0);
-	P.w_u32				(0);
-	P.w_u32				(0);
-
-	P.w_u32				(Device.dwTimeGlobal);
-	P.w_u8				(flags);
-
-	float				yaw, pitch, bank;
-	XFORM().getHPB		(yaw,pitch,bank);
-	P.w_float /*w_angle8*/			(yaw);
-	P.w_float /*w_angle8*/			(yaw);
-	P.w_float /*w_angle8*/			(pitch);
-	P.w_float /*w_angle8*/			(0);
-	P.w_u8				(u8(g_Team()));
-	P.w_u8				(u8(g_Squad()));
-	P.w_u8				(u8(g_Group()));
+	CSE_ALifeCreatureAbstract* this_object = data->cast_creature_abstract();
+	this_object->fHealth = GetfHealth();
+	this_object->timestamp = Device.dwTimeGlobal;
+	this_object->o_model = yaw;
+	this_object->o_torso.yaw = yaw;
+	this_object->o_torso.pitch = pitch;
+	this_object->o_torso.roll = 0;
+	this_object->s_team = g_Team();
+	this_object->s_squad = g_Squad();
+	this_object->s_group = g_Group();
 }

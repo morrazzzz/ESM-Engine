@@ -49,7 +49,6 @@ public:
 	virtual				~CCustomZone					();
 
 	virtual		BOOL	net_Spawn						(CSE_Abstract* DC);
-	virtual		void	net_Export						(NET_Packet& P);
 	virtual		void	Load							(LPCSTR section);
 	virtual		void	net_Destroy						();
 	
@@ -144,7 +143,6 @@ protected:
 	StateTimeSVec		m_StateTime;
 
 	virtual		void		SwitchZoneState				(EZoneState new_state);
-	virtual		void		OnStateSwitch				(EZoneState new_state);
 	virtual		void		CheckForAwaking				();
 	//обработка зоны в различных состояниях
 	virtual		bool		IdleState					();

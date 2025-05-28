@@ -165,10 +165,6 @@ protected:
 	float						m_fControlInertionFactor;
 	shared_str					m_icon_name;
 
-	////////// network //////////////////////////////////////////////////
-public:
-	virtual void				net_Export			(NET_Packet& P);					// export to server
-
 public:
 	virtual void				activate_physic_shell		();
 	virtual u16					bone_count_to_synchronize	() const;

@@ -13,6 +13,7 @@
 #include "../../level.h"
 #include "..\include\xrRender\Kinematics.h"
 #include "..\include\xrRender\KinematicsAnimated.h"
+#include "xrServer_Objects_ALife_Monsters.h"
 
 void CAI_Crow::SAnim::Load	(IKinematicsAnimated* visual, LPCSTR prefix)
 {
@@ -326,30 +327,21 @@ void CAI_Crow::shedule_Update		(u32 DT)
 }
 
 // Core events
-void CAI_Crow::net_Export	(NET_Packet& P)					// export to server
+void CAI_Crow::SaveCSEObj(CSE_Abstract* data)
 {
-	// export 
-	R_ASSERT			(Local());
-
-	u8					flags = 0;
-	P.w_float			(GetfHealth());
-
-	P.w_float			(0);
-	P.w_u32				(0);
-	P.w_u32				(0);
-
-	P.w_u32				(Level().timeServer());
-	P.w_u8				(flags);
-	
 	float				yaw, pitch, bank;
-	XFORM().getHPB		(yaw,pitch,bank);
-	P.w_float /*w_angle8*/			(yaw);
-	P.w_float /*w_angle8*/			(yaw);
-	P.w_float /*w_angle8*/			(pitch);
-	P.w_float /*w_angle8*/			(0);
-	P.w_u8				(u8(g_Team()));
-	P.w_u8				(u8(g_Squad()));
-	P.w_u8				(u8(g_Group()));
+	XFORM().getHPB(yaw, pitch, bank);
+
+	CSE_ALifeCreatureAbstract* this_object = data->cast_creature_abstract();
+	this_object->fHealth = GetfHealth();
+	this_object->timestamp = Level().timeServer();
+	this_object->o_model = yaw;
+	this_object->o_torso.yaw = yaw;
+	this_object->o_torso.pitch = pitch;
+	this_object->o_torso.roll = 0 ;
+	this_object->s_team = g_Team();
+	this_object->s_squad = g_Squad();
+	this_object->s_group = g_Group();
 }
 //---------------------------------------------------------------------
 void CAI_Crow::HitSignal	(float /**HitAmount/**/, Fvector& /**local_dir/**/, CObject* who, s16 /**element/**/)

@@ -127,15 +127,7 @@ static void r_qt_q16(NET_Packet& P,Fquaternion& q)
 ///////////////////////////////////////////////////////////////////////////////////
 void	SPHNetState::net_Export(NET_Packet& P)
 {
-	P.w_vec3(linear_vel);
-	//P.w_vec3(angular_vel);
-	//P.w_vec3(force);
-	//P.w_vec3(torque);
-	P.w_vec3(position);
-	P.w_vec4(*((Fvector4*)&quaternion));
-	//P.w_vec4(*((Fvector4*)&previous_quaternion));
-	P.w_u8	((u8)enabled);
-
+	R_ASSERT(false);
 }
 template<typename src>
 void	SPHNetState::read				(src&			P)

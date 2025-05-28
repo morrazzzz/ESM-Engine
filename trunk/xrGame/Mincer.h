@@ -32,7 +32,7 @@ public:
 					CMincer						();
 	virtual			~CMincer					();
 //	virtual void	SwitchZoneState				(EZoneState new_state);
-	virtual void	OnStateSwitch				(EZoneState new_state);
+	void SwitchZoneState(EZoneState new_state) override;
 	virtual	BOOL	feel_touch_contact			(CObject* O);
 	virtual void	feel_touch_new				(CObject* O);
 	virtual void	Load						(LPCSTR section);

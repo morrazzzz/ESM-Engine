@@ -4,6 +4,7 @@
 #include "explosiverocket.h"
 #include "entity.h"
 #include "player_hud.h"
+#include "ai_object_location.h"
 
 CWeaponRPG7::CWeaponRPG7()
 {
@@ -64,7 +65,17 @@ BOOL CWeaponRPG7::net_Spawn(CSE_Abstract* DC)
 	UpdateMissileVisibility();
 	if(iAmmoElapsed && !getCurrentRocket())
 	{
-		CRocketLauncher::SpawnRocket(*m_sRocketSection, this);
+		CSE_Abstract* object = Level().spawn_item(m_sRocketSection.c_str(), Position(), ai_location().level_vertex_id(), ID(), true);
+		R_ASSERT(object);
+
+		CSE_ALifeObject* alife_object = object->cast_alife_object();
+		R_ASSERT(alife_object);
+		alife_object->m_flags.set(CSE_ALifeObject::flCanSave, false);
+
+		NET_Packet			P;
+		object->Spawn_Write(P, TRUE);
+		Level().Send(P);
+		F_entity_Destroy(object);
 	}
 
 	return l_res;
@@ -86,8 +97,20 @@ void CWeaponRPG7::ReloadMagazine()
 {
 	inherited::ReloadMagazine();
 
-	if(iAmmoElapsed && !getRocketCount()) 
-		CRocketLauncher::SpawnRocket(m_sRocketSection.c_str(), this);
+	if (iAmmoElapsed && !getRocketCount())
+	{
+		CSE_Abstract* object = Level().spawn_item(m_sRocketSection.c_str(), Position(), ai_location().level_vertex_id(), ID(), true);
+		R_ASSERT(object);
+
+		CSE_ALifeObject* alife_object = object->cast_alife_object();
+		R_ASSERT(alife_object);
+		alife_object->m_flags.set(CSE_ALifeObject::flCanSave, false);
+
+		NET_Packet			P;
+		object->Spawn_Write(P, TRUE);
+		Level().Send(P);
+		F_entity_Destroy(object);
+	}
 }
 void CWeaponRPG7::SwitchState(u32 S) 
 {
@@ -99,8 +122,6 @@ void CWeaponRPG7::FireStart()
 	inherited::FireStart();
 }
 
-#include "inventory.h"
-#include "inventoryOwner.h"
 void CWeaponRPG7::switch2_Fire	()
 {
 	m_iShotNum = 0;
@@ -158,12 +179,6 @@ void CWeaponRPG7::switch2_Fire	()
 	}
 }
 
-void CWeaponRPG7::PlayAnimReload()
-{
-	VERIFY(GetState()==eReload);
-	PlayHUDMotion("anm_reload", false, GetState());
-}
-
 void CWeaponRPG7::OnEvent(NET_Packet& P, u16 type) 
 {
 	inherited::OnEvent(P,type);
@@ -176,5 +191,8 @@ void CWeaponRPG7::ObjectTakeItem(CGameObject* object)
 
 void CWeaponRPG7::ObjectRejectItem(CGameObject* object, bool just_before_destroy)
 {
+	if (!just_before_destroy)
+		return;
+
 	CRocketLauncher::DetachRocket(object, false);
 }

@@ -117,6 +117,8 @@ void CBaseMonster::shedule_Update(u32 dt)
 	
 	m_pPhysics_support->in_shedule_Update(dt);
 
+	GetCSEObject()->o_Position = NET.back().p_pos;
+
 #ifdef DEBUG	
 	show_debug_info();
 #endif

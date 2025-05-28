@@ -37,7 +37,7 @@ public:
 	virtual void	Load				(LPCSTR section);
 	virtual BOOL	net_Spawn			(CSE_Abstract* DC);
 	virtual void	net_Destroy			();
-	virtual void	net_Export			(NET_Packet& P);				// export to server
+	void SaveCSEObj(CSE_Abstract* data) override;
 
 	virtual void	OnH_A_Chield		();
 	virtual void	OnH_B_Independent	(bool just_before_destroy);
