@@ -62,66 +62,6 @@ IC	CWeaponShotEffector &CAI_Stalker::weapon_shot_effector		() const
 	return					(*m_weapon_shot_effector);
 }
 
-IC	u32 CAI_Stalker::min_queue_size_far							() const
-{
-	return					(m_min_queue_size_far);
-}
-
-IC	u32 CAI_Stalker::max_queue_size_far							() const
-{
-	return					(m_max_queue_size_far);
-}
-
-IC	u32 CAI_Stalker::min_queue_interval_far						() const
-{
-	return					(m_min_queue_interval_far);
-}
-
-IC	u32 CAI_Stalker::max_queue_interval_far						() const
-{
-	return					(m_max_queue_interval_far);
-}
-
-IC	u32 CAI_Stalker::min_queue_size_medium						() const
-{
-	return					(m_min_queue_size_medium);
-}
-
-IC	u32 CAI_Stalker::max_queue_size_medium						() const
-{
-	return					(m_max_queue_size_medium);
-}
-
-IC	u32 CAI_Stalker::min_queue_interval_medium					() const
-{
-	return					(m_min_queue_interval_medium);
-}
-
-IC	u32 CAI_Stalker::max_queue_interval_medium					() const
-{
-	return					(m_max_queue_interval_medium);
-}
-
-IC	u32 CAI_Stalker::min_queue_size_close						() const
-{
-	return					(m_min_queue_size_close);
-}
-
-IC	u32 CAI_Stalker::max_queue_size_close						() const
-{
-	return					(m_max_queue_size_close);
-}
-
-IC	u32 CAI_Stalker::min_queue_interval_close					() const
-{
-	return					(m_min_queue_interval_close);
-}
-
-IC	u32 CAI_Stalker::max_queue_interval_close					() const
-{
-	return					(m_max_queue_interval_close);
-}
-
 IC	bool CAI_Stalker::wounded									() const
 {
 	return					(m_wounded);
@@ -131,4 +71,367 @@ IC	const CAI_Stalker::CRITICAL_WOUND_WEIGHTS &CAI_Stalker::critical_wound_weight
 {
 	VERIFY					(!m_critical_wound_weights.empty());
 	return					(m_critical_wound_weights);
+}
+
+IC	u32 CAI_Stalker::pstl_min_queue_size_far						() const
+{
+	return					(m_pstl_min_queue_size_far);
+}
+
+IC	u32 CAI_Stalker::pstl_max_queue_size_far						() const
+{
+	return					(m_pstl_max_queue_size_far);
+}
+
+IC	u32 CAI_Stalker::pstl_min_queue_interval_far					() const
+{
+	return					(m_pstl_min_queue_interval_far);
+}
+
+IC	u32 CAI_Stalker::pstl_max_queue_interval_far					() const
+{
+	return					(m_pstl_max_queue_interval_far);
+}
+
+IC	u32 CAI_Stalker::pstl_min_queue_size_medium						() const
+{
+	return					(m_pstl_min_queue_size_medium);
+}
+
+IC	u32 CAI_Stalker::pstl_max_queue_size_medium						() const
+{
+	return					(m_pstl_max_queue_size_medium);
+}
+
+IC	u32 CAI_Stalker::pstl_min_queue_interval_medium					() const
+{
+	return					(m_pstl_min_queue_interval_medium);
+}
+
+IC	u32 CAI_Stalker::pstl_max_queue_interval_medium					() const
+{
+	return					(m_pstl_max_queue_interval_medium);
+}
+
+IC	u32 CAI_Stalker::pstl_min_queue_size_close						() const
+{
+	return					(m_pstl_min_queue_size_close);
+}
+
+IC	u32 CAI_Stalker::pstl_max_queue_size_close						() const
+{
+	return					(m_pstl_max_queue_size_close);
+}
+
+IC	u32 CAI_Stalker::pstl_min_queue_interval_close					() const
+{
+	return					(m_pstl_min_queue_interval_close);
+}
+
+IC	u32 CAI_Stalker::pstl_max_queue_interval_close					() const
+{
+	return					(m_pstl_max_queue_interval_close);
+}
+
+IC	u32 CAI_Stalker::shtg_min_queue_size_far						() const
+{
+	return					(m_shtg_min_queue_size_far);
+}
+
+IC	u32 CAI_Stalker::shtg_max_queue_size_far						() const
+{
+	return					(m_shtg_max_queue_size_far);
+}
+
+IC	u32 CAI_Stalker::shtg_min_queue_interval_far					() const
+{
+	return					(m_shtg_min_queue_interval_far);
+}
+
+IC	u32 CAI_Stalker::shtg_max_queue_interval_far					() const
+{
+	return					(m_shtg_max_queue_interval_far);
+}
+
+IC	u32 CAI_Stalker::shtg_min_queue_size_medium						() const
+{
+	return					(m_shtg_min_queue_size_medium);
+}
+
+IC	u32 CAI_Stalker::shtg_max_queue_size_medium						() const
+{
+	return					(m_shtg_max_queue_size_medium);
+}
+
+IC	u32 CAI_Stalker::shtg_min_queue_interval_medium					() const
+{
+	return					(m_shtg_min_queue_interval_medium);
+}
+
+IC	u32 CAI_Stalker::shtg_max_queue_interval_medium					() const
+{
+	return					(m_shtg_max_queue_interval_medium);
+}
+
+IC	u32 CAI_Stalker::shtg_min_queue_size_close						() const
+{
+	return					(m_shtg_min_queue_size_close);
+}
+
+IC	u32 CAI_Stalker::shtg_max_queue_size_close						() const
+{
+	return					(m_shtg_max_queue_size_close);
+}
+
+IC	u32 CAI_Stalker::shtg_min_queue_interval_close					() const
+{
+	return					(m_shtg_min_queue_interval_close);
+}
+
+IC	u32 CAI_Stalker::shtg_max_queue_interval_close					() const
+{
+	return					(m_shtg_max_queue_interval_close);
+}
+
+IC	u32 CAI_Stalker::snp_min_queue_size_far						() const
+{
+	return					(m_snp_min_queue_size_far);
+}
+
+IC	u32 CAI_Stalker::snp_max_queue_size_far						() const
+{
+	return					(m_snp_max_queue_size_far);
+}
+
+IC	u32 CAI_Stalker::snp_min_queue_interval_far					() const
+{
+	return					(m_snp_min_queue_interval_far);
+}
+
+IC	u32 CAI_Stalker::snp_max_queue_interval_far					() const
+{
+	return					(m_snp_max_queue_interval_far);
+}
+
+IC	u32 CAI_Stalker::snp_min_queue_size_medium						() const
+{
+	return					(m_snp_min_queue_size_medium);
+}
+
+IC	u32 CAI_Stalker::snp_max_queue_size_medium						() const
+{
+	return					(m_snp_max_queue_size_medium);
+}
+
+IC	u32 CAI_Stalker::snp_min_queue_interval_medium					() const
+{
+	return					(m_snp_min_queue_interval_medium);
+}
+
+IC	u32 CAI_Stalker::snp_max_queue_interval_medium					() const
+{
+	return					(m_snp_max_queue_interval_medium);
+}
+
+IC	u32 CAI_Stalker::snp_min_queue_size_close						() const
+{
+	return					(m_snp_min_queue_size_close);
+}
+
+IC	u32 CAI_Stalker::snp_max_queue_size_close						() const
+{
+	return					(m_snp_max_queue_size_close);
+}
+
+IC	u32 CAI_Stalker::snp_min_queue_interval_close					() const
+{
+	return					(m_snp_min_queue_interval_close);
+}
+
+IC	u32 CAI_Stalker::snp_max_queue_interval_close					() const
+{
+	return					(m_snp_max_queue_interval_close);
+}
+
+IC	u32 CAI_Stalker::mchg_min_queue_size_far						() const
+{
+	return					(m_mchg_min_queue_size_far);
+}
+
+IC	u32 CAI_Stalker::mchg_max_queue_size_far						() const
+{
+	return					(m_mchg_max_queue_size_far);
+}
+
+IC	u32 CAI_Stalker::mchg_min_queue_interval_far					() const
+{
+	return					(m_mchg_min_queue_interval_far);
+}
+
+IC	u32 CAI_Stalker::mchg_max_queue_interval_far					() const
+{
+	return					(m_mchg_max_queue_interval_far);
+}
+
+IC	u32 CAI_Stalker::mchg_min_queue_size_medium						() const
+{
+	return					(m_mchg_min_queue_size_medium);
+}
+
+IC	u32 CAI_Stalker::mchg_max_queue_size_medium						() const
+{
+	return					(m_mchg_max_queue_size_medium);
+}
+
+IC	u32 CAI_Stalker::mchg_min_queue_interval_medium					() const
+{
+	return					(m_mchg_min_queue_interval_medium);
+}
+
+IC	u32 CAI_Stalker::mchg_max_queue_interval_medium					() const
+{
+	return					(m_mchg_max_queue_interval_medium);
+}
+
+IC	u32 CAI_Stalker::mchg_min_queue_size_close						() const
+{
+	return					(m_mchg_min_queue_size_close);
+}
+
+IC	u32 CAI_Stalker::mchg_max_queue_size_close						() const
+{
+	return					(m_mchg_max_queue_size_close);
+}
+
+IC	u32 CAI_Stalker::mchg_min_queue_interval_close					() const
+{
+	return					(m_mchg_min_queue_interval_close);
+}
+
+IC	u32 CAI_Stalker::mchg_max_queue_interval_close					() const
+{
+	return					(m_mchg_max_queue_interval_close);
+}
+
+IC	u32 CAI_Stalker::auto_min_queue_size_far						() const
+{
+	return					(m_auto_min_queue_size_far);
+}
+
+IC	u32 CAI_Stalker::auto_max_queue_size_far						() const
+{
+	return					(m_auto_max_queue_size_far);
+}
+
+IC	u32 CAI_Stalker::auto_min_queue_interval_far					() const
+{
+	return					(m_auto_min_queue_interval_far);
+}
+
+IC	u32 CAI_Stalker::auto_max_queue_interval_far					() const
+{
+	return					(m_auto_max_queue_interval_far);
+}
+
+IC	u32 CAI_Stalker::auto_min_queue_size_medium						() const
+{
+	return					(m_auto_min_queue_size_medium);
+}
+
+IC	u32 CAI_Stalker::auto_max_queue_size_medium						() const
+{
+	return					(m_auto_max_queue_size_medium);
+}
+
+IC	u32 CAI_Stalker::auto_min_queue_interval_medium					() const
+{
+	return					(m_auto_min_queue_interval_medium);
+}
+
+IC	u32 CAI_Stalker::auto_max_queue_interval_medium					() const
+{
+	return					(m_auto_max_queue_interval_medium);
+}
+
+IC	u32 CAI_Stalker::auto_min_queue_size_close						() const
+{
+	return					(m_auto_min_queue_size_close);
+}
+
+IC	u32 CAI_Stalker::auto_max_queue_size_close						() const
+{
+	return					(m_auto_max_queue_size_close);
+}
+
+IC	u32 CAI_Stalker::auto_min_queue_interval_close					() const
+{
+	return					(m_auto_min_queue_interval_close);
+}
+
+IC	u32 CAI_Stalker::auto_max_queue_interval_close					() const
+{
+	return					(m_auto_max_queue_interval_close);
+}
+
+
+
+//IC	float CAI_Stalker::pstl_queue_fire_dist_close						() const
+//{
+//	return					(m_pstl_queue_fire_dist_close);
+//}
+IC	float CAI_Stalker::pstl_queue_fire_dist_med						() const
+{
+	return					(m_pstl_queue_fire_dist_med);
+}
+IC	float CAI_Stalker::pstl_queue_fire_dist_far						() const
+{
+	return					(m_pstl_queue_fire_dist_far);
+}
+//IC	float CAI_Stalker::shtg_queue_fire_dist_close						() const
+//{
+//	return					(m_shtg_queue_fire_dist_close);
+//}
+IC	float CAI_Stalker::shtg_queue_fire_dist_med						() const
+{
+	return					(m_shtg_queue_fire_dist_med);
+}
+IC	float CAI_Stalker::shtg_queue_fire_dist_far						() const
+{
+	return					(m_shtg_queue_fire_dist_far);
+}
+//IC	float CAI_Stalker::snp_queue_fire_dist_close						() const
+//{
+//	return					(m_snp_queue_fire_dist_close);
+//}
+IC	float CAI_Stalker::snp_queue_fire_dist_med						() const
+{
+	return					(m_snp_queue_fire_dist_med);
+}
+IC	float CAI_Stalker::snp_queue_fire_dist_far						() const
+{
+	return					(m_snp_queue_fire_dist_far);
+}
+//IC	float CAI_Stalker::mchg_queue_fire_dist_close						() const
+//{
+//	return					(m_mchg_queue_fire_dist_close);
+//}
+IC	float CAI_Stalker::mchg_queue_fire_dist_med						() const
+{
+	return					(m_mchg_queue_fire_dist_med);
+}
+IC	float CAI_Stalker::mchg_queue_fire_dist_far						() const
+{
+	return					(m_mchg_queue_fire_dist_far);
+}
+//IC	float CAI_Stalker::auto_queue_fire_dist_close						() const
+//{
+//	return					(m_auto_queue_fire_dist_close);
+//}
+IC	float CAI_Stalker::auto_queue_fire_dist_med						() const
+{
+	return					(m_auto_queue_fire_dist_med);
+}
+IC	float CAI_Stalker::auto_queue_fire_dist_far						() const
+{
+	return					(m_auto_queue_fire_dist_far);
 }

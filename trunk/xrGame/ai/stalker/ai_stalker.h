@@ -409,37 +409,202 @@ public:
 #endif
 
 private:
-	u32				m_min_queue_size_far;
-	u32				m_max_queue_size_far;
-	u32				m_min_queue_interval_far;
-	u32				m_max_queue_interval_far;
+	u32				m_pstl_min_queue_size_far;
+	u32				m_pstl_max_queue_size_far;
+	u32				m_pstl_min_queue_interval_far;
+	u32				m_pstl_max_queue_interval_far;
 
-	u32				m_min_queue_size_medium;
-	u32				m_max_queue_size_medium;
-	u32				m_min_queue_interval_medium;
-	u32				m_max_queue_interval_medium;
+	u32				m_pstl_min_queue_size_medium;
+	u32				m_pstl_max_queue_size_medium;
+	u32				m_pstl_min_queue_interval_medium;
+	u32				m_pstl_max_queue_interval_medium;
 
-	u32				m_min_queue_size_close;
-	u32				m_max_queue_size_close;
-	u32				m_min_queue_interval_close;
-	u32				m_max_queue_interval_close;
+	u32				m_pstl_min_queue_size_close;
+	u32				m_pstl_max_queue_size_close;
+	u32				m_pstl_min_queue_interval_close;
+	u32				m_pstl_max_queue_interval_close;
 
+
+	u32				m_shtg_min_queue_size_far;
+	u32				m_shtg_max_queue_size_far;
+	u32				m_shtg_min_queue_interval_far;
+	u32				m_shtg_max_queue_interval_far;
+
+	u32				m_shtg_min_queue_size_medium;
+	u32				m_shtg_max_queue_size_medium;
+	u32				m_shtg_min_queue_interval_medium;
+	u32				m_shtg_max_queue_interval_medium;
+
+	u32				m_shtg_min_queue_size_close;
+	u32				m_shtg_max_queue_size_close;
+	u32				m_shtg_min_queue_interval_close;
+	u32				m_shtg_max_queue_interval_close;
+
+
+	u32				m_snp_min_queue_size_far;
+	u32				m_snp_max_queue_size_far;
+	u32				m_snp_min_queue_interval_far;
+	u32				m_snp_max_queue_interval_far;
+
+	u32				m_snp_min_queue_size_medium;
+	u32				m_snp_max_queue_size_medium;
+	u32				m_snp_min_queue_interval_medium;
+	u32				m_snp_max_queue_interval_medium;
+
+	u32				m_snp_min_queue_size_close;
+	u32				m_snp_max_queue_size_close;
+	u32				m_snp_min_queue_interval_close;
+	u32				m_snp_max_queue_interval_close;
+
+
+	u32				m_mchg_min_queue_size_far;
+	u32				m_mchg_max_queue_size_far;
+	u32				m_mchg_min_queue_interval_far;
+	u32				m_mchg_max_queue_interval_far;
+
+	u32				m_mchg_min_queue_size_medium;
+	u32				m_mchg_max_queue_size_medium;
+	u32				m_mchg_min_queue_interval_medium;
+	u32				m_mchg_max_queue_interval_medium;
+
+	u32				m_mchg_min_queue_size_close;
+	u32				m_mchg_max_queue_size_close;
+	u32				m_mchg_min_queue_interval_close;
+	u32				m_mchg_max_queue_interval_close;
+
+
+	u32				m_auto_min_queue_size_far;
+	u32				m_auto_max_queue_size_far;
+	u32				m_auto_min_queue_interval_far;
+	u32				m_auto_max_queue_interval_far;
+
+	u32				m_auto_min_queue_size_medium;
+	u32				m_auto_max_queue_size_medium;
+	u32				m_auto_min_queue_interval_medium;
+	u32				m_auto_max_queue_interval_medium;
+
+	u32				m_auto_min_queue_size_close;
+	u32				m_auto_max_queue_size_close;
+	u32				m_auto_min_queue_interval_close;
+	u32				m_auto_max_queue_interval_close;
+
+//	float			m_pstl_queue_fire_dist_close;
+	float			m_pstl_queue_fire_dist_med;
+	float			m_pstl_queue_fire_dist_far;
+
+//	float			m_shtg_queue_fire_dist_close;
+	float			m_shtg_queue_fire_dist_med;
+	float			m_shtg_queue_fire_dist_far;
+
+//	float			m_snp_queue_fire_dist_close;
+	float			m_snp_queue_fire_dist_med;
+	float			m_snp_queue_fire_dist_far;
+
+//	float			m_mchg_queue_fire_dist_close;
+	float			m_mchg_queue_fire_dist_med;
+	float			m_mchg_queue_fire_dist_far;
+
+//	float			m_auto_queue_fire_dist_close;
+	float			m_auto_queue_fire_dist_med;
+	float			m_auto_queue_fire_dist_far;
 public:
-	IC		u32							min_queue_size_far				() const;
-	IC		u32							max_queue_size_far				() const;
-	IC		u32							min_queue_interval_far			() const;
-	IC		u32							max_queue_interval_far			() const;
+	IC		u32							pstl_min_queue_size_far			() const;
+	IC		u32							pstl_max_queue_size_far			() const;
+	IC		u32							pstl_min_queue_interval_far		() const;
+	IC		u32							pstl_max_queue_interval_far		() const;
 
-	IC		u32							min_queue_size_medium			() const;
-	IC		u32							max_queue_size_medium			() const;
-	IC		u32							min_queue_interval_medium		() const;
-	IC		u32							max_queue_interval_medium		() const;
+	IC		u32							pstl_min_queue_size_medium		() const;
+	IC		u32							pstl_max_queue_size_medium		() const;
+	IC		u32							pstl_min_queue_interval_medium	() const;
+	IC		u32							pstl_max_queue_interval_medium	() const;
 
-	IC		u32							min_queue_size_close			() const;
-	IC		u32							max_queue_size_close			() const;
-	IC		u32							min_queue_interval_close		() const;
-	IC		u32							max_queue_interval_close		() const;
+	IC		u32							pstl_min_queue_size_close		() const;
+	IC		u32							pstl_max_queue_size_close		() const;
+	IC		u32							pstl_min_queue_interval_close	() const;
+	IC		u32							pstl_max_queue_interval_close	() const;
 
+
+	IC		u32							shtg_min_queue_size_far			() const;
+	IC		u32							shtg_max_queue_size_far			() const;
+	IC		u32							shtg_min_queue_interval_far		() const;
+	IC		u32							shtg_max_queue_interval_far		() const;
+
+	IC		u32							shtg_min_queue_size_medium		() const;
+	IC		u32							shtg_max_queue_size_medium		() const;
+	IC		u32							shtg_min_queue_interval_medium	() const;
+	IC		u32							shtg_max_queue_interval_medium	() const;
+
+	IC		u32							shtg_min_queue_size_close		() const;
+	IC		u32							shtg_max_queue_size_close		() const;
+	IC		u32							shtg_min_queue_interval_close	() const;
+	IC		u32							shtg_max_queue_interval_close	() const;
+
+
+	IC		u32							snp_min_queue_size_far			() const;
+	IC		u32							snp_max_queue_size_far			() const;
+	IC		u32							snp_min_queue_interval_far		() const;
+	IC		u32							snp_max_queue_interval_far		() const;
+
+	IC		u32							snp_min_queue_size_medium		() const;
+	IC		u32							snp_max_queue_size_medium		() const;
+	IC		u32							snp_min_queue_interval_medium	() const;
+	IC		u32							snp_max_queue_interval_medium	() const;
+
+	IC		u32							snp_min_queue_size_close		() const;
+	IC		u32							snp_max_queue_size_close		() const;
+	IC		u32							snp_min_queue_interval_close	() const;
+	IC		u32							snp_max_queue_interval_close	() const;
+
+	IC		u32							mchg_min_queue_size_far			() const;
+	IC		u32							mchg_max_queue_size_far			() const;
+	IC		u32							mchg_min_queue_interval_far		() const;
+	IC		u32							mchg_max_queue_interval_far		() const;
+
+	IC		u32							mchg_min_queue_size_medium		() const;
+	IC		u32							mchg_max_queue_size_medium		() const;
+	IC		u32							mchg_min_queue_interval_medium	() const;
+	IC		u32							mchg_max_queue_interval_medium	() const;
+
+	IC		u32							mchg_min_queue_size_close		() const;
+	IC		u32							mchg_max_queue_size_close		() const;
+	IC		u32							mchg_min_queue_interval_close	() const;
+	IC		u32							mchg_max_queue_interval_close	() const;
+
+
+	IC		u32							auto_min_queue_size_far			() const;
+	IC		u32							auto_max_queue_size_far			() const;
+	IC		u32							auto_min_queue_interval_far		() const;
+	IC		u32							auto_max_queue_interval_far		() const;
+
+	IC		u32							auto_min_queue_size_medium		() const;
+	IC		u32							auto_max_queue_size_medium		() const;
+	IC		u32							auto_min_queue_interval_medium	() const;
+	IC		u32							auto_max_queue_interval_medium	() const;
+
+	IC		u32							auto_min_queue_size_close		() const;
+	IC		u32							auto_max_queue_size_close		() const;
+	IC		u32							auto_min_queue_interval_close	() const;
+	IC		u32							auto_max_queue_interval_close	() const;
+
+//	IC		float						pstl_queue_fire_dist_close		() const;
+	IC		float						pstl_queue_fire_dist_med		() const;
+	IC		float						pstl_queue_fire_dist_far		() const;
+
+//	IC		float						shtg_queue_fire_dist_close		() const;
+	IC		float						shtg_queue_fire_dist_med		() const;
+	IC		float						shtg_queue_fire_dist_far		() const;
+
+//	IC		float						snp_queue_fire_dist_close		() const;
+	IC		float						snp_queue_fire_dist_med			() const;
+	IC		float						snp_queue_fire_dist_far			() const;
+
+//	IC		float						mchg_queue_fire_dist_close		() const;
+	IC		float						mchg_queue_fire_dist_med			() const;
+	IC		float						mchg_queue_fire_dist_far			() const;
+
+//	IC		float						auto_queue_fire_dist_close		() const;
+	IC		float						auto_queue_fire_dist_med		() const;
+	IC		float						auto_queue_fire_dist_far		() const;
 public:
 	typedef fastdelegate::FastDelegate<void (const CCoverPoint *, const CCoverPoint *)>	on_best_cover_changed_delegate;
 

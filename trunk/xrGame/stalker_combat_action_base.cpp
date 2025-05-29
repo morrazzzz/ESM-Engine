@@ -95,119 +95,126 @@ void CStalkerActionCombatBase::select_queue_params	(const float &distance, u32 &
 	switch (weapon_type) {
 		// pistols
 		case 5 : {
-			if (distance > 30.f) {
-				min_queue_size					= 1;
-				max_queue_size					= 1;
-				min_queue_interval				= 1000;
-				max_queue_interval				= 1250;
+			if (distance > object().pstl_queue_fire_dist_far()) {
+				min_queue_size					= object().pstl_min_queue_size_far();
+				max_queue_size					= object().pstl_max_queue_size_far();
+				min_queue_interval				= object().pstl_min_queue_interval_far();
+				max_queue_interval				= object().pstl_max_queue_interval_far();
 			}
 			else
-				if (distance > 15.f) {
-					min_queue_size				= 2;
-					max_queue_size				= 4;
-					min_queue_interval			= 750;
-					max_queue_interval			= 1000;
+				if (distance > object().pstl_queue_fire_dist_med()) {
+					min_queue_size				= object().pstl_min_queue_size_medium();
+					max_queue_size				= object().pstl_max_queue_size_medium();
+					min_queue_interval			= object().pstl_min_queue_interval_medium();
+					max_queue_interval			= object().pstl_max_queue_interval_medium();
 				}
 				else {
-					min_queue_size				= 3;
-					max_queue_size				= 5;
-					min_queue_interval			= 500;
-					max_queue_interval			= 750;
+					min_queue_size				= object().pstl_min_queue_size_close();
+					max_queue_size				= object().pstl_max_queue_size_close();
+					min_queue_interval			= object().pstl_min_queue_interval_close();
+					max_queue_interval			= object().pstl_max_queue_interval_close();
 				}
 
 			break;
 		}
 		// shotguns
-		case 7 : {
-			if (distance > 30.f) {
-				min_queue_size					= 1;
-				max_queue_size					= 1;
-				min_queue_interval				= 1250;
-				max_queue_interval				= 1500;
+		case 9 : {
+			if (distance > object().shtg_queue_fire_dist_far()) {
+				min_queue_size					= object().shtg_min_queue_size_far();
+				max_queue_size					= object().shtg_max_queue_size_far();
+				min_queue_interval				= object().shtg_min_queue_interval_far();
+				max_queue_interval				= object().shtg_max_queue_interval_far();
 			}
 			else
-				if (distance > 15.f) {
-					min_queue_size				= 1;
-					max_queue_size				= 1;
-					min_queue_interval			= 750;
-					max_queue_interval			= 1250;
+				if (distance > object().shtg_queue_fire_dist_med()) {
+					min_queue_size				= object().shtg_min_queue_size_medium();
+					max_queue_size				= object().shtg_max_queue_size_medium();
+					min_queue_interval			= object().shtg_min_queue_interval_medium();
+					max_queue_interval			= object().shtg_max_queue_interval_medium();
 				}
 				else {
-					min_queue_size				= 1;
-					max_queue_size				= 1;
-					min_queue_interval			= 500;
-					max_queue_interval			= 1000;
+					min_queue_size				= object().shtg_min_queue_size_close();
+					max_queue_size				= object().shtg_max_queue_size_close();
+					min_queue_interval			= object().shtg_min_queue_interval_close();
+					max_queue_interval			= object().shtg_max_queue_interval_close();
 				}
 
 			break;
 		}
 		// sniper rifles
-		case 8 : {
-			if (distance > 30.f) {
-				min_queue_size					= 1;
-				max_queue_size					= 1;
-				min_queue_interval				= 3000;
-				max_queue_interval				= 4000;
+		case 11 :
+		case 12 : {
+			if (distance > object().snp_queue_fire_dist_far()) {
+				min_queue_size					= object().snp_min_queue_size_far();
+				max_queue_size					= object().snp_max_queue_size_far();
+				min_queue_interval				= object().snp_min_queue_interval_far();
+				max_queue_interval				= object().snp_max_queue_interval_far();
 			}
 			else
-				if (distance > 15.f) {
-					min_queue_size				= 1;
-					max_queue_size				= 1;
-					min_queue_interval			= 3000;
-					max_queue_interval			= 4000;
+				if (distance > object().snp_queue_fire_dist_med()) {
+					min_queue_size				= object().snp_min_queue_size_medium();
+					max_queue_size				= object().snp_max_queue_size_medium();
+					min_queue_interval			= object().snp_min_queue_interval_medium();
+					max_queue_interval			= object().snp_max_queue_interval_medium();
 				}
 				else {
-					min_queue_size				= 1;
-					max_queue_size				= 1;
-					min_queue_interval			= 3000;
-					max_queue_interval			= 4000;
+					min_queue_size				= object().snp_min_queue_size_close();
+					max_queue_size				= object().snp_max_queue_size_close();
+					min_queue_interval			= object().snp_min_queue_interval_close();
+					max_queue_interval			= object().snp_max_queue_interval_close();
+				}
+
+			break;
+		}
+		// machine guns
+		case 6 :
+		case 7 :
+		case 8 :
+		case 10 : {
+			if (distance > object().mchg_queue_fire_dist_far()) {
+				min_queue_size					= object().mchg_min_queue_size_far();
+				max_queue_size					= object().mchg_max_queue_size_far();
+				min_queue_interval				= object().mchg_min_queue_interval_far();
+				max_queue_interval				= object().mchg_max_queue_interval_far();
+			}
+			else
+				if (distance > object().mchg_queue_fire_dist_med()) {
+					min_queue_size				= object().mchg_min_queue_size_medium();
+					max_queue_size				= object().mchg_max_queue_size_medium();
+					min_queue_interval			= object().mchg_min_queue_interval_medium();
+					max_queue_interval			= object().mchg_max_queue_interval_medium();
+				}
+				else {
+					min_queue_size				= object().mchg_min_queue_size_close();
+					max_queue_size				= object().mchg_max_queue_size_close();
+					min_queue_interval			= object().mchg_min_queue_interval_close();
+					max_queue_interval			= object().mchg_max_queue_interval_close();
 				}
 
 			break;
 		}
 		default : {
-			if (distance > 30.f) {
-				min_queue_size					= object().min_queue_size_far();
-				max_queue_size					= object().max_queue_size_far();
-				min_queue_interval				= object().min_queue_interval_far();
-				max_queue_interval				= object().max_queue_interval_far();
+			if (distance > object().auto_queue_fire_dist_far()) {
+				min_queue_size					= object().auto_min_queue_size_far();
+				max_queue_size					= object().auto_max_queue_size_far();
+				min_queue_interval				= object().auto_min_queue_interval_far();
+				max_queue_interval				= object().auto_max_queue_interval_far();
 			}
 			else
-				if (distance > 15.f) {
-					min_queue_size				= object().min_queue_size_medium();
-					max_queue_size				= object().max_queue_size_medium();
-					min_queue_interval			= object().min_queue_interval_medium();
-					max_queue_interval			= object().max_queue_interval_medium();
+				if (distance > object().auto_queue_fire_dist_med()) {
+					min_queue_size				= object().auto_min_queue_size_medium();
+					max_queue_size				= object().auto_max_queue_size_medium();
+					min_queue_interval			= object().auto_min_queue_interval_medium();
+					max_queue_interval			= object().auto_max_queue_interval_medium();
 				}
 				else {
-					min_queue_size				= object().min_queue_size_close();
-					max_queue_size				= object().max_queue_size_close();
-					min_queue_interval			= object().min_queue_interval_close();
-					max_queue_interval			= object().max_queue_interval_close();
+					min_queue_size				= object().auto_min_queue_size_close();
+					max_queue_size				= object().auto_max_queue_size_close();
+					min_queue_interval			= object().auto_min_queue_interval_close();
+					max_queue_interval			= object().auto_max_queue_interval_close();
 				}
 		}
 	}
-	/**
-	if (distance > 30.f) {
-		min_queue_size					= object().min_queue_size_far();
-		max_queue_size					= object().max_queue_size_far();
-		min_queue_interval				= object().min_queue_interval_far();
-		max_queue_interval				= object().max_queue_interval_far();
-	}
-	else
-		if (distance > 15.f) {
-			min_queue_size				= object().min_queue_size_medium();
-			max_queue_size				= object().max_queue_size_medium();
-			min_queue_interval			= object().min_queue_interval_medium();
-			max_queue_interval			= object().max_queue_interval_medium();
-		}
-		else {
-			min_queue_size				= object().min_queue_size_close();
-			max_queue_size				= object().max_queue_size_close();
-			min_queue_interval			= object().min_queue_interval_close();
-			max_queue_interval			= object().max_queue_interval_close();
-		}
-	/**/
 }
 
 void CStalkerActionCombatBase::play_panic_sound		(u32 max_start_time, u32 min_start_time, u32 max_stop_time, u32 min_stop_time, u32 id)
