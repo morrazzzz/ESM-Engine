@@ -114,11 +114,19 @@ void attachable_hud_item::set_bone_visible(const shared_str& bone_name, BOOL bVi
 {
 	u16  bone_id;
 	BOOL bVisibleNow;
-	bone_id			= m_model->LL_BoneID			(bone_name);
+	bone_id	= m_model->LL_BoneID(bone_name);
 	if(bone_id==BI_NONE)
 	{
-		if(bSilent)	return;
-		R_ASSERT2	(0,			make_string("model [%s] has no bone [%s]",pSettings->r_string(m_sect_name, "item_visual"), bone_name.c_str()).c_str());
+		if(bSilent)	
+			return;
+
+		LPCSTR sectionVisual;
+		if (HandsModeHudItem)
+			sectionVisual = pSettings->r_string(m_sect_name, "item_visual");
+		else
+			sectionVisual = pSettings->r_string(m_sect_name, "visual");
+
+		R_ASSERT2(false, make_string("model [%s] has no bone [%s]", sectionVisual, bone_name.c_str()).c_str());
 	}
 	bVisibleNow		= m_model->LL_GetBoneVisible	(bone_id);
 	if(bVisibleNow!=bVisibility)
