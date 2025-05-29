@@ -894,111 +894,54 @@ void free_vid_mode_list()
 
 void fill_vid_mode_list(CHW* _hw)
 {
-	if(vid_mode_token != NULL)		return;
-	xr_vector<LPCSTR>	_tmp;
-	xr_vector<DXGI_MODE_DESC>	modes;
+	if (vid_mode_token)
+		return;
 
-	IDXGIOutput *pOutput;
+	xr_vector<LPCSTR> TokensList{};
+	IDXGIOutput* pOutput;
 	//_hw->m_pSwapChain->GetContainingOutput(&pOutput);
 	_hw->m_pAdapter->EnumOutputs(0, &pOutput);
 	VERIFY(pOutput);
 
 	UINT num = 0;
 	DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	UINT flags         = 0;
+	UINT flags = 0;
 
 	// Get the number of display modes available
-	pOutput->GetDisplayModeList( format, flags, &num, 0);
+	pOutput->GetDisplayModeList(format, flags, &num, 0);
 
 	// Get the list of display modes
-	modes.resize(num);
-	pOutput->GetDisplayModeList( format, flags, &num, &modes.front());
+	DXGI_MODE_DESC* pDescs = new DXGI_MODE_DESC[num];
+
+	pOutput->GetDisplayModeList(format, flags, &num, pDescs);
 
 	_RELEASE(pOutput);
 
-	for (u32 i=0; i<num; ++i)
-	{
-		DXGI_MODE_DESC &desc = modes[i];
-		string32		str;
+	string32 LastMode{};
+	for (UINT i = num - 1; i > 0; i--)
+	{	  
+		DXGI_MODE_DESC& mode_desc = pDescs[i];
 
-		if(desc.Width < 800)
+		string32 str;
+		xr_sprintf(str, sizeof(str), "%dx%d", mode_desc.Width, mode_desc.Height);
+
+		if (!xr_strcmp(LastMode, str))
 			continue;
 
-		xr_sprintf(str, sizeof(str), "%dx%d", desc.Width, desc.Height);
-
-		if(_tmp.end() != std::find_if(_tmp.begin(), _tmp.end(), _uniq_mode(str)))
-			continue;
-
-		_tmp.push_back				(NULL);
-		_tmp.back()					= xr_strdup(str);
+		TokensList.push_back(xr_strdup(str));
+		xr_strcpy(LastMode, str);
 	}
-	
+	delete[] pDescs;
 
+	vid_mode_token = xr_alloc<xr_token>(TokensList.size() + 1);
+	vid_mode_token[TokensList.size()].id = -1;
+	vid_mode_token[TokensList.size()].name = nullptr;
 
-//	_tmp.push_back				(NULL);
-//	_tmp.back()					= xr_strdup("1024x768");
-
-	u32 _cnt						= _tmp.size()+1;
-
-	vid_mode_token					= xr_alloc<xr_token>(_cnt);
-
-	vid_mode_token[_cnt-1].id			= -1;
-	vid_mode_token[_cnt-1].name		= NULL;
-
-#ifdef DEBUG
-	Msg("Available video modes[%d]:",_tmp.size());
-#endif // DEBUG
-	for( u32 i=0; i<_tmp.size(); ++i )
+	for (u32 i = 0; i < TokensList.size(); i++)
 	{
-		vid_mode_token[i].id		= i;
-		vid_mode_token[i].name		= _tmp[i];
-#ifdef DEBUG
-		Msg							("[%s]",_tmp[i]);
-#endif // DEBUG
+		vid_mode_token[i].id = i;
+		vid_mode_token[i].name = TokensList[i];
 	}
-
-	/*	Old code
-	if(vid_mode_token != NULL)		return;
-	xr_vector<LPCSTR>	_tmp;
-	u32 cnt = _hw->pD3D->GetAdapterModeCount	(_hw->DevAdapter, _hw->Caps.fTarget);
-
-	u32 i;
-	for(i=0; i<cnt;++i)
-	{
-		D3DDISPLAYMODE	Mode;
-		string32		str;
-
-		_hw->pD3D->EnumAdapterModes(_hw->DevAdapter, _hw->Caps.fTarget, i, &Mode);
-		if(Mode.Width < 800)		continue;
-
-		xr_sprintf						(str,sizeof(str),"%dx%d", Mode.Width, Mode.Height);
-
-		if(_tmp.end() != std::find_if(_tmp.begin(), _tmp.end(), _uniq_mode(str)))
-			continue;
-
-		_tmp.push_back				(NULL);
-		_tmp.back()					= xr_strdup(str);
-	}
-
-	u32 _cnt						= _tmp.size()+1;
-
-	vid_mode_token					= xr_alloc<xr_token>(_cnt);
-
-	vid_mode_token[_cnt-1].id			= -1;
-	vid_mode_token[_cnt-1].name		= NULL;
-
-#ifdef DEBUG
-	Msg("Available video modes[%d]:",_tmp.size());
-#endif // DEBUG
-	for(i=0; i<_tmp.size();++i)
-	{
-		vid_mode_token[i].id		= i;
-		vid_mode_token[i].name		= _tmp[i];
-#ifdef DEBUG
-		Msg							("[%s]",_tmp[i]);
-#endif // DEBUG
-	}
-	*/
 }
 
 void CHW::UpdateViews()
