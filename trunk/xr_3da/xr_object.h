@@ -10,8 +10,6 @@
 // refs
 class	ENGINE_API	IRender_Sector;
 class	ENGINE_API	IRender_ObjectSpecific;
-class	ENGINE_API	CCustomHUD;
-class	NET_Packet	;
 class	CSE_Abstract;
 
 //-----------------------------------------------------------------------------------------------------------
@@ -39,7 +37,6 @@ public:
 	u32	bEnabled : 1;
 	u32	bVisible : 1;
 	u32	bDestroy : 1;
-	u32	net_Ready : 1;
 	u32 crow : 1;
 	u32	bPreDestroy : 1;
 private:
@@ -73,7 +70,6 @@ public:
 	ICF BOOL							Remote				()			const	{ return false;	}
 	ICF u16								ID					()			const	{ return net_ID; }
 	ICF void							setID				(u16 _ID)			{ net_ID = _ID;		}
-	virtual BOOL						Ready				()					{ return net_Ready;	}
 	BOOL								GetTmpPreDestroy		()		const	{ return bPreDestroy;	}
 	void								SetTmpPreDestroy	(BOOL b)			{ bPreDestroy = b;}
 	virtual float						shedule_Scale		()					{ return Device.vCameraPosition.distance_to(Position())/200.f; }
@@ -134,11 +130,8 @@ public:
 	ICF BOOL							getVisible			()			const	{ return bVisible;			}
 	void								setEnabled			(BOOL _enabled);
 	ICF BOOL							getEnabled			()			const	{ return bEnabled;			}
-		void							setDestroy			(BOOL _destroy);
-	ICF BOOL							getDestroy			()			const	{ return bDestroy;			}
-	ICF BOOL							getLocal			()			const	{ return true;			}
-	ICF void							setReady			(BOOL _ready)		{ net_Ready = _ready?1:0;		}
-	ICF BOOL							getReady			()			const	{ return net_Ready;			}
+	void setDestroy();
+	ICF bool getDestroy() const	{ return bDestroy; }
 
 	//---------------------------------------------------------------------
 										CObject				();
@@ -153,8 +146,6 @@ public:
 	virtual void UpdateCL(); // Called each frame, so no need for dt
 	virtual BOOL net_Spawn(CSE_Abstract* data);
 	virtual void net_Destroy();
-	virtual void net_Export(NET_Packet& P) {} // export to server
-	virtual BOOL net_Relevant() { return FALSE; } // relevant for export to server
 	virtual void net_Relcase(CObject* O) {} // destroy all links to another objects
 
 	// Position stack

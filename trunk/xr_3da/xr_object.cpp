@@ -113,7 +113,6 @@ CObject::CObject		( )		: ISpatial(g_SpatialSpace)
 	bEnabled = false;
 	bVisible = false;
 	bDestroy = false;
-	net_Ready = false;
 	crow = false;
 	bPreDestroy = false;
 
@@ -364,18 +363,14 @@ void CObject::MakeMeCrow()
 	g_pGameLevel->Objects.AddToUpdateCL(this);
 }
 
-void CObject::setDestroy			(BOOL _destroy)
+void CObject::setDestroy()
 {
-	if (_destroy == (BOOL)bDestroy)
+	if (getDestroy())
 		return;
 
-	bDestroy = _destroy?1:0;
-	if (_destroy)
-	{
-		g_pGameLevel->Objects.register_object_to_destroy	(this);
+	bDestroy = true;
+	g_pGameLevel->Objects.register_object_to_destroy(this);
 #ifdef DEBUG
-		Msg("cl setDestroy [%d][%d]",ID(),Device.dwFrame);
+	Msg("cl setDestroy [%d][%d]",ID(),Device.dwFrame);
 #endif
-	}else
-		VERIFY		(!g_pGameLevel->Objects.registered_object_to_destroy(this));
 }
