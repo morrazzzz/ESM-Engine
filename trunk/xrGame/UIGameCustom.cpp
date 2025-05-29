@@ -80,7 +80,7 @@ void CUIGameCustom::Render()
 	CEntity* pEntity = static_cast<CEntity*>(Level().CurrentEntity());
 	if (pEntity && pEntity->g_Alive() && psHUD_Flags.is(HUD_WEAPON | HUD_WEAPON_RT))
 	{
-		CActor* pActor = static_cast<CActor*>(pEntity);
+		CActor* pActor = pEntity->cast_actor();
 		if (pActor && pActor->HUDview())
 		{
 			PIItem item = pActor->inventory().ActiveItem();

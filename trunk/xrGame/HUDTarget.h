@@ -31,4 +31,5 @@ public:
 			void	CursorOnFrame	();
 			void	Render			();
 			void	Load			();
+			void GetHudInfo(CGameFont& fontRender, u32& hudInfo);
 };
