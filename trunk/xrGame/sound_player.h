@@ -42,6 +42,23 @@ public:
 
 			return		(true);
 		}
+
+		IC bool operator<(const CSoundCollectionParams& object) const
+		{
+			if (m_sound_prefix > object.m_sound_prefix)
+				return false;
+
+			if (m_sound_player_prefix > object.m_sound_player_prefix)
+				return false;
+
+			if (m_max_count > object.m_max_count)
+				return false;
+
+			if (m_type > object.m_type)
+				return false;
+
+			return true;
+		}
 	};
 
 	struct CSoundCollectionParamsFull : 
@@ -118,7 +135,7 @@ public:
 
 public:
 	typedef std::pair<CSoundCollectionParamsFull,CSoundCollection*>	SOUND_COLLECTION;
-	typedef associative_vector<u32,SOUND_COLLECTION>				SOUND_COLLECTIONS;
+	typedef xr_map<u32,SOUND_COLLECTION>				SOUND_COLLECTIONS;
 
 private:
 	SOUND_COLLECTIONS							m_sounds;
