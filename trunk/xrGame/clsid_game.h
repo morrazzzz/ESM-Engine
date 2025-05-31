@@ -3,11 +3,9 @@
 #define CLSID_OBJECT_ACTOR			MK_CLSID('O','_','A','C','T','O','R',' ')
 #define CLSID_OBJECT_HLAMP			MK_CLSID('O','_','H','L','A','M','P',' ')
 #define CLSID_ENTITY				MK_CLSID('E','N','T','I','T','Y',' ',' ')
-#define CLSID_SPECTATOR				MK_CLSID('S','P','E','C','T',' ',' ',' ')
 #define CLSID_OBJECT_PROJECTOR		MK_CLSID('O','_','S','E','A','R','C','H')
 
 // all the monsters
-#define CLSID_LEVEL_POINT			MK_CLSID('L','V','L','P','O','I','N','T')
 #define CLSID_SCRIPT_OBJECT			MK_CLSID('S','C','R','P','T','O','B','J')
 #define CLSID_AI_GRAPH				MK_CLSID('A','I','_','G','R','A','P','H')
 #define CLSID_AI_CROW				MK_CLSID('A','I','_','C','R','O','W',' ')
@@ -120,13 +118,6 @@
 
 #define CLSID_OBJECT_TRIGGER		MK_CLSID('O','_','T','R','I','G','E','R')
 
-// Targets
-#define CLSID_TARGET				MK_CLSID('T','_','B','A','S','E',' ',' ')
-#define CLSID_TARGET_ASSAULT		MK_CLSID('T','_','A','S','S',' ',' ',' ')
-#define CLSID_TARGET_CS_BASE		MK_CLSID('T','_','C','S','B','A','S','E')
-#define CLSID_TARGET_CS				MK_CLSID('T','_','C','S',' ',' ',' ',' ')
-#define CLSID_TARGET_CS_CASK		MK_CLSID('T','_','C','S','C','A','S','K')
-
 // Standard level object
 #define CLSID_OBJECT_ITEM_STD		MK_CLSID('O','_','I','T','E','M',' ',' ')
 #define CLSID_OBJECT_BREAKABLE		MK_CLSID('O','_','B','R','K','B','L',' ')
@@ -167,7 +158,6 @@
 
 // Devices
 #define CLSID_DEVICE_TORCH			MK_CLSID('D','_','T','O','R','C','H',' ')
-#define CLSID_DEVICE_AF_MERGER		MK_CLSID('D','_','A','F','M','E','R','G')
 
 // Inventory items
 #define CLSID_IITEM_BOLT			MK_CLSID('I','I','_','B','O','L','T',' ')
@@ -191,32 +181,11 @@
 #define CLSID_GRENADE_RGD5			MK_CLSID('G','_','R','G','D','5',' ',' ')
 #define CLSID_OBJECT_G_FAKE			MK_CLSID('G','_','F','A','K','E',' ',' ')
 
-//---------------------------------------------------------------------------------
-#define CLSID_OBJECT_PLAYERS_BAG	MK_CLSID('M','P','_','P','L','B','A','G')
-//---------------------------------------------------------------------------------
-
 // Equipment
 #define CLSID_EQUIPMENT_SIMPLE		MK_CLSID('E','Q','U','_','S','M','P','L')
 #define CLSID_EQUIPMENT_SCIENTIFIC	MK_CLSID('E','Q','U','_','S','C','I','E')
 #define CLSID_EQUIPMENT_STALKER		MK_CLSID('E','Q','U','_','S','T','L','K')
 #define CLSID_EQUIPMENT_MILITARY	MK_CLSID('E','Q','U','_','M','L','T','R')
 #define CLSID_EQUIPMENT_EXO			MK_CLSID('E','Q','U','_','E','X','O',' ')
-
-// Game types
-#define CLSID_SV_GAME_SINGLE			MK_CLSID('S','V','_','S','I','N','G','L')
-#define CLSID_SV_GAME_DEATHMATCH		MK_CLSID('S','V','_','D','M',' ',' ',' ')
-#define CLSID_SV_GAME_TEAMDEATHMATCH	MK_CLSID('S','V','_','T','D','M',' ',' ')
-#define CLSID_SV_GAME_ARTEFACTHUNT		MK_CLSID('S','V','_','A','H','U','N','T')
-//#define CLSID_GAME_CS				MK_CLSID('S','V','_','C','S',' ',' ',' ')
-#define CLSID_CL_GAME_SINGLE			MK_CLSID('C','L','_','S','I','N','G','L')
-#define CLSID_CL_GAME_DEATHMATCH		MK_CLSID('C','L','_','D','M',' ',' ',' ')
-#define CLSID_CL_GAME_TEAMDEATHMATCH	MK_CLSID('C','L','_','T','D','M',' ',' ')
-#define CLSID_CL_GAME_ARTEFACTHUNT		MK_CLSID('C','L','_','A','H','U','N','T')
-
-// Game UI types
-#define CLSID_GAME_UI_SINGLE			MK_CLSID('U','I','_','S','I','N','G','L')
-#define CLSID_GAME_UI_DEATHMATCH		MK_CLSID('U','I','_','D','M',' ',' ',' ')
-#define CLSID_GAME_UI_TEAMDEATHMATCH	MK_CLSID('U','I','_','T','D','M',' ',' ')
-#define CLSID_GAME_UI_ARTEFACTHUNT		MK_CLSID('U','I','_','A','H','U','N','T')
 
 #define CLSID_ONLINE_OFFLINE_GROUP		MK_CLSID('O','N','_','O','F','F','_','G')
