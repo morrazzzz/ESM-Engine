@@ -83,12 +83,14 @@ void CCar::SCarSound::UpdateStoping()
 {
 	VERIFY(!physics_world()->Processing());
 	SetSoundPosition(snd_engine_stop);
-	if(!snd_engine_stop._feedback())SwitchOff();
+	if(!snd_engine_stop._feedback())
+		eCarSound = sndOff;
 }
 void CCar::SCarSound::UpdateStalling()
 {
 	SetSoundPosition(snd_engine_stop);
-	if(!snd_engine_stop._feedback())SwitchOff();
+	if(!snd_engine_stop._feedback())
+		eCarSound = sndOff;
 }
 void CCar::SCarSound::UpdateDrive()
 {
@@ -118,29 +120,18 @@ void CCar::SCarSound::Update()
 
 }
 
-void CCar::SCarSound::SwitchOn()
-{
-	pcar->processing_activate();
-}
 void CCar::SCarSound::Destroy()
 {
-	SwitchOff();
+	eCarSound = sndOff;
 	snd_engine.destroy	();
 	snd_transmission.destroy();
 	snd_engine_stop.destroy();
 	snd_engine_start.destroy();
 }
 
-void CCar::SCarSound::SwitchOff()
-{
-	eCarSound=sndOff;
-	pcar->processing_deactivate();
-}
-
 void CCar::SCarSound::Start()
 {
 	VERIFY(!physics_world()->Processing());
-	if(eCarSound==sndOff) SwitchOn();
 	SwitchState(sndStarting);
 	snd_engine_start.play(pcar);
 	SetSoundPosition(snd_engine_start);
@@ -169,7 +160,6 @@ void CCar::SCarSound::Stop()
 void CCar::SCarSound::Drive()
 {
 	VERIFY(!physics_world()->Processing());
-	if(eCarSound==sndOff) SwitchOn();
 	SwitchState(sndDrive);
 	if(!snd_engine._feedback())snd_engine.play(pcar,sm_Looped);
 	SetSoundPosition(snd_engine);

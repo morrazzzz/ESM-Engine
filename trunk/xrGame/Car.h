@@ -351,8 +351,6 @@ virtual void ApplyDamage(u16 level);
 		void	UpdateDrive			()							;
 		void	SwitchState			(ESoundState new_state)		;
 		void	SetSoundPosition	(ref_sound	&snd)			;
-		void	SwitchOff			()							;
-		void	SwitchOn			()							;
 		void	Init				()							;
 		void	Destroy				()							;
 		void	Start				()							;

@@ -234,6 +234,7 @@ bool CInventory::DropItem(CGameObject *pObj)
 	m_fTotalWeight -= pIItem->Weight();
 
 	m_drop_last_frame = true;
+
 	return true;
 }
 
@@ -276,8 +277,6 @@ bool CInventory::Slot(PIItem pIItem, bool bNotActivate)
 	pIItem->m_eItemPlace		= eItemPlaceSlot;
 	pIItem->OnMoveToSlot		();
 
-//	pIItem->object().processing_activate();
-
 	return						true;
 }
 
@@ -307,11 +306,6 @@ bool CInventory::Belt(PIItem pIItem)
 	pIItem->m_eItemPlace = eItemPlaceBelt;
 	m_pOwner->OnItemBelt(pIItem, p);
 	pIItem->OnMoveToBelt();
-
-	if(in_slot)
-		pIItem->object().processing_deactivate();
-
-		pIItem->object().processing_activate();
 
 	return true;
 }

@@ -61,7 +61,6 @@ CCarWeapon::CCarWeapon(CPhysicsShellHolder* obj)
 	inheritedShooting::Light_Create		();
 	Load								(pUserData->r_string("mounted_weapon_definition","wpn_section"));
 	SetBoneCallbacks					();
-	m_object->processing_activate		();
 
 	m_weapon_h							= matrices[m_rotate_y_bone].c.y;
 	m_fire_norm.set						(0,1,0);
