@@ -14,6 +14,8 @@
 
 #include "../Include/xrRender/RenderDeviceRender.h"
 
+struct SDL_Window;
+
 #pragma pack(push,4)
 
 class IRenderDevice
@@ -79,7 +81,8 @@ public:
 	CRegistrator	<pureFrame			>			seqFrame;
 	CRegistrator	<pureScreenResolutionChanged>	seqResolutionChanged;
 
-	HWND									m_hWnd;
+	SDL_Window* SDLWindow;
+	HWND m_hWnd;
 	//	CStats*									Statistic;
 
 };
@@ -96,11 +99,6 @@ public:
 class ENGINE_API CRenderDevice : public CRenderDeviceBase
 {
 private:
-    // Main objects used for creating and rendering the 3D scene
-    u32										m_dwWindowStyle;
-    RECT									m_rcWindowBounds;
-    RECT									m_rcWindowClient;
-
 	//u32										Timer_MM_Delta;
 	//CTimer_paused							Timer;
 	//CTimer_paused							TimerGlobal;

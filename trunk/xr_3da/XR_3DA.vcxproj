@@ -205,7 +205,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir);../3rd party/libogg/include;../3rd party/libvorbis/include;../3rd party/libtheora/include;../3rd party/DX9SDK/Include;../3rd party/DiscordSDK/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);../3rd party/;../3rd party/libogg/include;../3rd party/libvorbis/include;../3rd party/libtheora/include;../3rd party/DX9SDK/Include;../3rd party/DiscordSDK/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <ResourceCompile>
@@ -214,7 +214,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>%(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>d3dx9.lib;libvorbis_static.lib;libvorbisfile_static.lib;libogg_static.lib;libtheora_static.lib;discord_game_sdk.dll.lib;msacm32.lib;vfw32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3dx9.lib;sdl3.lib;libvorbis_static.lib;libvorbisfile_static.lib;libogg_static.lib;libtheora_static.lib;discord_game_sdk.dll.lib;msacm32.lib;vfw32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ShowProgress>NotSet</ShowProgress>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>libcmtd;libc;libcd;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -223,7 +223,7 @@
       </MapFileName>
       <MapExports>false</MapExports>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
-      <AdditionalLibraryDirectories>$(xrLibDir);../3rd party/DX9SDK/Lib_x64;..\3rd party\DiscordSDK\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(xrLibDir);../3rd party/d3dx/Lib_x64;..\3rd party\DiscordSDK\lib\x64;../3rd party/SDL3/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>copy /Y "..\..\Resources\Dlls\wrap_oal_x64.dll" "..\..\xr_build\bin\$(xrPlatform)\$(Configuration)\wrap_oal.dll"
@@ -299,7 +299,7 @@ copy /Y "..\3rd party\DiscordSDK\lib\x64\discord_game_sdk.dll" "..\..\xr_build\b
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir);../3rd party/libogg/include;../3rd party/libvorbis/include;../3rd party/libtheora/include;../3rd party/DPlay;../3rd party/d3dx;../3rd party/DiscordSDK/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);../3rd party/;../3rd party/libogg/include;../3rd party/libvorbis/include;../3rd party/libtheora/include;../3rd party/DPlay;../3rd party/d3dx;../3rd party/DiscordSDK/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <ResourceCompile>
@@ -309,13 +309,13 @@ copy /Y "..\3rd party\DiscordSDK\lib\x64\discord_game_sdk.dll" "..\..\xr_build\b
     <Link>
       <AdditionalOptions>
       </AdditionalOptions>
-      <AdditionalDependencies>d3dx9.lib;libvorbis_static.lib;libvorbisfile_static.lib;libogg_static.lib;libtheora_static.lib;discord_game_sdk.dll.lib;msacm32.lib;vfw32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3dx9.lib;sdl3.lib;libvorbis_static.lib;libvorbisfile_static.lib;libogg_static.lib;libtheora_static.lib;discord_game_sdk.dll.lib;msacm32.lib;vfw32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateMapFile>false</GenerateMapFile>
       <MapFileName>$(OutDir)$(ProjectName).map</MapFileName>
       <FixedBaseAddress>false</FixedBaseAddress>
-      <AdditionalLibraryDirectories>$(xrLibDir);../3rd party/d3dx/Lib_x64;..\3rd party\DiscordSDK\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(xrLibDir);../3rd party/d3dx/Lib_x64;..\3rd party\DiscordSDK\lib\x64;../3rd party/SDL3/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>copy /Y "..\..\Resources\Dlls\wrap_oal_x64.dll" "..\..\xr_build\bin\$(xrPlatform)\$(Configuration)\wrap_oal.dll"
@@ -410,7 +410,7 @@ copy /Y "..\3rd party\DiscordSDK\lib\x64\discord_game_sdk.dll" "..\..\xr_build\b
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <Optimization>Disabled</Optimization>
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>$(SolutionDir);../3rd party/libogg/include;../3rd party/libvorbis/include;../3rd party/libtheora/include;../3rd party/DX9SDK/Include;../3rd party/DiscordSDK/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);../3rd party/;../3rd party/libogg/include;../3rd party/libvorbis/include;../3rd party/libtheora/include;../3rd party/DX9SDK/Include;../3rd party/DiscordSDK/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4315</DisableSpecificWarnings>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
@@ -420,7 +420,7 @@ copy /Y "..\3rd party\DiscordSDK\lib\x64\discord_game_sdk.dll" "..\..\xr_build\b
     </ResourceCompile>
     <Link>
       <AdditionalOptions>%(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>d3dx9.lib;libvorbis_static.lib;libvorbisfile_static.lib;libogg_static.lib;libtheora_static.lib;discord_game_sdk.dll.lib;msacm32.lib;vfw32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3dx9.lib;sdl3.lib;libvorbis_static.lib;libvorbisfile_static.lib;libogg_static.lib;libtheora_static.lib;discord_game_sdk.dll.lib;msacm32.lib;vfw32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
@@ -428,7 +428,7 @@ copy /Y "..\3rd party\DiscordSDK\lib\x64\discord_game_sdk.dll" "..\..\xr_build\b
       <MapFileName>
       </MapFileName>
       <FixedBaseAddress>false</FixedBaseAddress>
-      <AdditionalLibraryDirectories>$(xrLibDir);../3rd party/DX9SDK/Lib_x64;..\3rd party\DiscordSDK\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(xrLibDir);../3rd party/d3dx/Lib_x64;..\3rd party\DiscordSDK\lib\x64;../3rd party/SDL3/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>copy /Y "..\..\Resources\Dlls\wrap_oal_x64.dll" "..\..\xr_build\bin\$(xrPlatform)\$(Configuration)\wrap_oal.dll"

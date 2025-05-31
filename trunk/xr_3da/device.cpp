@@ -15,6 +15,11 @@
 #include "x_ray.h"
 #include "render.h"
 #include "igame_persistent.h"
+#include <SDL3/SDL_video.h>
+
+#define SDL_MAIN_HANDLED
+
+#include <SDL3/SDL_main.h>
 
 #include "DiscordSDK.h"
 
@@ -291,17 +296,23 @@ void CRenderDevice::on_idle		()
 
 void CRenderDevice::message_loop()
 {
-	MSG						msg;
-    PeekMessage				(&msg, NULL, 0U, 0U, PM_NOREMOVE );
-	while (msg.message != WM_QUIT) {
-		if (PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE)) {
-			TranslateMessage(&msg);
-			DispatchMessage	(&msg);
-			continue;
+	bool Exit = false;
+
+	while (!Exit)
+	{
+		SDL_Event SDLWindowEvent;
+		if (SDL_PollEvent(&SDLWindowEvent))
+		{
+			switch (SDLWindowEvent.type)
+			{
+			case SDL_EVENT_QUIT:
+				Exit = true;
+				break;
+			}
 		}
 
-		on_idle				();
-    }
+		on_idle();
+	}
 }
 
 void CRenderDevice::Run			()

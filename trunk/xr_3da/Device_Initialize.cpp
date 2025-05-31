@@ -1,7 +1,13 @@
 #include "stdafx.h"
 #include "resource.h"
+#include <SDL3/SDL_init.h>
+#include <SDL3/SDL_video.h>
+#include <SDL3/SDL_properties.h>
 
 extern LRESULT CALLBACK WndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
+
+constexpr int BaseWeight = 800;
+constexpr int BaseHeight = 600;
 
 void CRenderDevice::Initialize()
 {
@@ -10,37 +16,16 @@ void CRenderDevice::Initialize()
 	TimerMM.Start				();
 
 	// Unless a substitute hWnd has been specified, create a window to render into
-    if( m_hWnd == NULL)
+    if(!SDLWindow)
     {
-		const char*	wndclass ="_XRAY_";
+        R_ASSERT2(SDL_Init(SDL_INIT_VIDEO), "Failed init SDL3!!");
 
-        // Register the windows class
-		HINSTANCE hInstance = (HINSTANCE)GetModuleHandle(0);
-        WNDCLASS wndClass = { 0, WndProc, 0, 0, hInstance,
-                              LoadIcon( hInstance, MAKEINTRESOURCE(IDI_ICON1) ),
-                              LoadCursor( NULL, IDC_ARROW ),
-                              (HBRUSH)GetStockObject(BLACK_BRUSH),
-                              NULL, wndclass };
-        RegisterClass( &wndClass );
+        SDLWindow = SDL_CreateWindow("S.T.A.L.K.E.R.: ESM Engine", BaseWeight,
+            BaseHeight, SDL_WINDOW_FULLSCREEN);
+        R_ASSERT2(SDLWindow, "Failed SDL_CreateWindow! ");
 
-        // Set the window's initial style
-        m_dwWindowStyle = WS_BORDER |WS_DLGFRAME;
-
-        // Set the window's initial width
-        RECT rc;
-        SetRect			( &rc, 0, 0, 640, 480 );
-        AdjustWindowRect( &rc, m_dwWindowStyle, FALSE );
-
-        // Create the render window
-		m_hWnd = CreateWindow( wndclass, "S.T.A.L.K.E.R.: ESM Engine", m_dwWindowStyle,
-                               /*rc.left, rc.top, */CW_USEDEFAULT, CW_USEDEFAULT,
-                               (rc.right-rc.left), (rc.bottom-rc.top), 0L,
-                               0, hInstance, 0L );
+        m_hWnd = static_cast<HWND>(SDL_GetPointerProperty(SDL_GetWindowProperties(SDLWindow),
+            SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr));
     }
-
-    // Save window properties
-    m_dwWindowStyle = GetWindowLong( m_hWnd, GWL_STYLE );
-    GetWindowRect	( m_hWnd, &m_rcWindowBounds );
-    GetClientRect	( m_hWnd, &m_rcWindowClient );
 }
 
