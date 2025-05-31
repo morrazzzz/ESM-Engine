@@ -60,7 +60,6 @@ class XRCDB_API ISpatial
 public:
 	struct	_spatial
 	{
-		bool SpatialUnregistered{};
 		u32	type;
 		Fsphere	sphere;
 		Fvector node_center;	// Cached node center for TBV optimization
@@ -160,6 +159,10 @@ public:
 	bool verify();
 
 	void AddToSpatialMove(ISpatial* spatial) { SpatialsMove.emplace_back(spatial); }
+	void RemoveToSpatialMove(ISpatial* spatial)
+	{
+		std::erase_if(SpatialsMove, [spatial](ISpatial* spatial_move) { return spatial_move == spatial; });
+	}
 	void UpdateSpatialMove();
 
 	enum
