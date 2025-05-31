@@ -24,6 +24,9 @@ private:
 		const char*			T;
 		R_constant_setup*	cs;
 	};
+	
+	Concurrency::task_group* TasksLoadTextures;
+	xr_vector<CTexture*>* TexturesTasks;
 public:
 	DEFINE_MAP_PRED(const char*,IBlender*,		map_Blender,	map_BlenderIt,		str_pred);
 	DEFINE_MAP_PRED(const char*,CTexture*,		map_Texture,	map_TextureIt,		str_pred);
@@ -190,7 +193,7 @@ public:
 	Shader*							_lua_Create			(LPCSTR		s_shader,	LPCSTR s_textures);
 	BOOL							_lua_HasShader		(LPCSTR		s_shader);
 
-	CResourceManager						()	: bDeferredLoad(TRUE){	}
+	CResourceManager();
 	~CResourceManager						()	;
 
 	void			OnDeviceCreate			(IReader* F);

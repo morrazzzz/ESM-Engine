@@ -28,6 +28,34 @@ BOOL	reclaim(xr_vector<T*>& vec, const T* ptr)
 	return FALSE;
 }
 
+constexpr u16 CountTexturesTasks = 5; //last texture task for load in main thread
+constexpr u16 CountTasksLoadTextures = 4;
+
+CResourceManager::CResourceManager()
+{
+	bDeferredLoad = true;
+
+	if (ps_r2_flags_parallel.is(RFLAG_MT_TEXTURES))
+	{
+		TasksLoadTextures = new Concurrency::task_group[CountTasksLoadTextures];
+		TexturesTasks = new xr_vector<CTexture*>[CountTexturesTasks];
+	}
+	else
+	{
+		TasksLoadTextures = nullptr;
+		TexturesTasks = nullptr;
+	}
+}
+
+CResourceManager::~CResourceManager()
+{
+	delete[] TexturesTasks;
+	delete[] TasksLoadTextures;
+
+	DestroyNecessaryTextures();
+	Dump(false);
+}
+
 //--------------------------------------------------------------------------------------------------------------
 IBlender* CResourceManager::_GetBlender		(LPCSTR Name)
 {
@@ -323,48 +351,63 @@ void CResourceManager::Delete(const Shader* S)
 	Msg	("! ERROR: Failed to find complete shader");
 }
 
-xr_vector<CTexture*> tex_to_load;
-
-void TextureLoading(u16 thread_num)
-{
-	Msg("TextureLoading -> thread %d started!", thread_num);
-	u16 upperbound = thread_num * 100;
-	u32 lowerbound = upperbound - 100;
-	for (size_t i = lowerbound; i < upperbound; i++)
-	{
-		if (i < tex_to_load.size())
-			tex_to_load[i]->Load();
-		else
-			break;
-	}
-	Msg("TextureLoading -> thread %d finished!", thread_num);
-}
-
-
 void	CResourceManager::DeferredUpload	()
 {
 	if (!RDEVICE.b_is_Ready)				return;
-	tex_to_load.clear();
 	Msg("CResourceManager::DeferredUpload -> START, size = %d", m_textures.size());
 	CTimer timer;
 	timer.Start();
-	if (m_textures.size() <= 100) // îêîëî 100 òåêñòóð ìîæíî çàãðóçèòü è íå ñîçäàâàÿ âòîðîé
+	if (ps_r2_flags_parallel.is(RFLAG_MT_TEXTURES))
 	{
-		Msg("CResourceManager::DeferredUpload -> one thread");
-		for (map_TextureIt t = m_textures.begin(); t != m_textures.end(); t++)
-		t->second->Load();
+		constexpr u16 maxSizeForOnlyTask = 350;
+		u16 forTaskTexture = 0;
+		u16 countLoadedTextures = 0;
+
+		for (const auto& tex : m_textures)
+		{
+			if (forTaskTexture < CountTasksLoadTextures && countLoadedTextures > maxSizeForOnlyTask)
+			{
+				countLoadedTextures = 0;
+				forTaskTexture++;
+			}
+
+			R_ASSERT(forTaskTexture < CountTexturesTasks);
+
+			TexturesTasks[forTaskTexture].emplace_back(tex.second);
+			++countLoadedTextures;
+		}
+	
+		size_t sizeMainThreadTextures = TexturesTasks[CountTexturesTasks - 1].size();
+
+		if (sizeMainThreadTextures > 0)
+			Msg("~~~ [%s]: Loading in main thread count textures: [%d]", __FUNCTION__, sizeMainThreadTextures);
+
+		for (u32 i = 0; i < CountTasksLoadTextures; i++)
+			TasksLoadTextures[i].run([i, this]()
+				{
+					for (u32 k = 0; k < TexturesTasks[i].size(); k++)
+						TexturesTasks[i][k]->Load();
+
+					TexturesTasks[i].clear();
+				});
+
+		if (sizeMainThreadTextures > 0)
+		{
+			for (size_t i = 0; i < sizeMainThreadTextures; ++i)
+			{
+				CTexture* tex = TexturesTasks[CountTexturesTasks - 1][i];
+				tex->Load();
+			}
+			TexturesTasks[CountTexturesTasks - 1].clear();
+		}
+
+		for (u32 i = 0; i < CountTasksLoadTextures; i++)
+			TasksLoadTextures[i].wait();
 	}
 	else
 	{
-		u32 th_count = (m_textures.size() / 100) + 1;
-		std::thread* th_arr = new std::thread[th_count];
-		for (auto tex : m_textures)
-			tex_to_load.push_back(tex.second);
-		for (u16 i = 0; i < th_count; i++)
-			th_arr[i] = std::thread(TextureLoading, i + 1);
-		for (size_t i = 0; i < th_count; i++)
-			th_arr[i].join();
-		tex_to_load.clear();
+		for (const auto& tex : m_textures)
+			tex.second->Load();
 	}
 	Msg("texture loading time: %d", timer.GetElapsed_ms());
 }

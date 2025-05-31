@@ -184,6 +184,7 @@ enum ParallelRenderFlags: u32
 {
 	R2FLAG_MT_HOM = 1 << 0,
 	R2FLAG_MT_DETAILS = 1 << 1,
+	RFLAG_MT_TEXTURES = 1 << 2,
 };
 
 enum

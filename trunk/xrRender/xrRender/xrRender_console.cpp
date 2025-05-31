@@ -156,7 +156,7 @@ Flags32		ps_r2_ls_flags_ext = { 0
 		/* | R2FLAGEXT_ENABLE_TESSELLATION*/
 	};
 
-Flags32 ps_r2_flags_parallel = { ParallelRenderFlags::R2FLAG_MT_HOM | ParallelRenderFlags::R2FLAG_MT_DETAILS };
+Flags32 ps_r2_flags_parallel = { ParallelRenderFlags::RFLAG_MT_TEXTURES | ParallelRenderFlags::R2FLAG_MT_HOM | ParallelRenderFlags::R2FLAG_MT_DETAILS };
 
 float		ps_r2_df_parallax_h			= 0.02f;
 float		ps_r2_df_parallax_range		= 75.f;
@@ -712,6 +712,7 @@ void		xrRender_initconsole	()
 
 	CMD3(CCC_Mask, "r2_mt_hom", &ps_r2_flags_parallel, ParallelRenderFlags::R2FLAG_MT_HOM);
 	CMD3(CCC_Mask, "r2_mt_details", &ps_r2_flags_parallel, ParallelRenderFlags::R2FLAG_MT_DETAILS);
+	CMD3(CCC_Mask, "r_mt_textures", &ps_r2_flags_parallel, ParallelRenderFlags::RFLAG_MT_TEXTURES);
 
 #ifdef DEBUG
 	CMD4(CCC_Integer,	"r2_dhemi_count",		&ps_r2_dhemi_count,			4,		25		);

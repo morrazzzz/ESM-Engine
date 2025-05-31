@@ -97,12 +97,6 @@ template<class C>	void mdump(C c)
 		Msg	("*        : %3d: %s", pair.second->dwReference, pair.second->cName.c_str());
 }
 
-CResourceManager::~CResourceManager		()
-{
-	DestroyNecessaryTextures	();
-	Dump						(false);
-}
-
 void CResourceManager::Dump(bool bBrief)
 {
 	Msg		("* RM_Dump: textures  : %d",		m_textures.size());		if(!bBrief) mdump(m_textures);
