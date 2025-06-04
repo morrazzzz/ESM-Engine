@@ -65,7 +65,7 @@ void CRenderDevice::Create	()
 	fFOV				= 90.f;
 	fASPECT				= 1.f;
 
-	m_pRender->Create(m_hWnd, dwWidth, dwHeight, fWidth_2, fHeight_2, true);
+	m_pRender->Create();
 
 	string_path			fname; 
 	FS.update_path		(fname,"$game_data$","shaders.xr");

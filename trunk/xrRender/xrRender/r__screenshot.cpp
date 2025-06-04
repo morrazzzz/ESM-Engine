@@ -24,8 +24,8 @@ IC void MouseRayFromPoint	( Fvector& direction, int x, int y, Fmatrix& m_CamMat 
 	Ivector2 point2;
 	point2.set			(x-halfwidth, halfheight-y);
 
-	float size_y		= VIEWPORT_NEAR * tanf( deg2rad(60.f) * 0.5f );
-	float size_x		= size_y / (Device.fHeight_2/Device.fWidth_2);
+	float size_y = VIEWPORT_NEAR * tanf( deg2rad(60.f) * 0.5f );
+	float size_x = size_y / ((Device.dwHeight * 0.5f) / (Device.dwWidth * 0.5f));
 
 	float r_pt			= float(point2.x) * size_x / (float) halfwidth;
 	float u_pt			= float(point2.y) * size_y / (float) halfheight;

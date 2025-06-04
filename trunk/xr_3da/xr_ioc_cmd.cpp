@@ -318,18 +318,25 @@ public:
 	virtual void	Execute(LPCSTR args) {
 		u32 _w, _h;
 		int cnt = sscanf(args, "%dx%d", &_w, &_h);
-		if (cnt == 2) {
-			psCurrentVidMode[0] = _w;
-			psCurrentVidMode[1] = _h;
-		}
-		else {
+		if (cnt != 2) 
+		{
 			Msg("! Wrong video mode [%s]", args);
 			return;
 		}
+
+		if (Device.dwWidth == _w && Device.dwHeight == _h)
+		{
+			Msg("@ [%s]: Attempt writing video mode which is now installed!", __FUNCTION__);
+			return;
+		}
+
+		Device.dwWidth = _w;
+		Device.dwHeight = _h;
+		Device.ResizeWindow();
 	}
 	virtual void	Status(TStatus& S)
 	{
-		xr_sprintf(S, sizeof(S), "%dx%d", psCurrentVidMode[0], psCurrentVidMode[1]);
+		xr_sprintf(S, sizeof(S), "%dx%d", Device.dwWidth, Device.dwHeight);
 	}
 	virtual xr_token* GetToken() { return vid_mode_token; }
 	virtual void	Info(TInfo& I)
@@ -367,6 +374,21 @@ public:
 	}
 
 };
+
+class CCC_VidFullscreen : public CCC_Mask
+{
+public:
+	CCC_VidFullscreen(LPCSTR N, Flags32* V, u32 M) :
+		CCC_Mask(N, V, M) {}
+
+	void Execute(LPCSTR N) override
+	{
+		CCC_Mask::Execute(N);
+
+		Device.SetFullscreenWindow(value->is(mask));	
+	}
+};
+
 //-----------------------------------------------------------------------
 class CCC_SND_Restart : public IConsole_Command
 {
@@ -631,7 +653,7 @@ void CCC_Register()
 
 	CMD3(CCC_Mask,		"rs_v_sync",			&psDeviceFlags,		rsVSync				);
 //	CMD3(CCC_Mask,		"rs_disable_objects_as_crows",&psDeviceFlags,	rsDisableObjectsAsCrows	);
-	CMD3(CCC_Mask,		"rs_fullscreen",		&psDeviceFlags,		rsFullscreen			);
+	CMD3(CCC_VidFullscreen, "rs_fullscreen",		&psDeviceFlags,		rsFullscreen			);
 	CMD3(CCC_Mask,		"rs_refresh_60hz",		&psDeviceFlags,		rsRefresh60hz			);
 	CMD3(CCC_Mask,		"rs_stats",				&psDeviceFlags,		rsStatistic				);
 	CMD4(CCC_Float,		"rs_vis_distance",		&psVisDistance,		0.4f,	1.5f			);

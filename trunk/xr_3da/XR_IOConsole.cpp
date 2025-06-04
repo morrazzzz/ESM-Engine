@@ -175,7 +175,7 @@ void CConsole::OnFrame()
 void CConsole::OutFont( LPCSTR text, float& pos_y )
 {
 	float str_length = pFont->SizeOf_( text );
-	float scr_width  = 1.98f * Device.fWidth_2;
+	float scr_width  = 1.98f * (Device.dwWidth * 0.5f);
 	if( str_length > scr_width ) //1024.0f
 	{
 		float f	= 0.0f;
@@ -246,10 +246,13 @@ void CConsole::OnRender()
 	float fMaxY = 0.0f;
 
 	float ypos  = fMaxY - LDIST * 1.1f;
-	float scr_x = 1.0f / Device.fWidth_2;
+
+	float dwHalfWidth = static_cast<float>(Device.dwWidth * 0.5f);
+
+	float scr_x = 1.0f / dwHalfWidth;
 
 	//---------------------------------------------------------------------------------
-	float scr_width  = 1.9f * Device.fWidth_2;
+	float scr_width  = 1.9f * dwHalfWidth;
 	float ioc_d      = pFont->SizeOf_(ioc_prompt);
 	float d1         = pFont->SizeOf_( "_" );
 

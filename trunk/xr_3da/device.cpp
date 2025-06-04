@@ -108,14 +108,6 @@ void CRenderDevice::End		(void)
 #endif // FIND_CHUNK_BENCHMARK_ENABLE
 
 			CheckPrivilegySlowdown							();
-			
-			if(g_pGamePersistent->GameType()==1)//haCk
-			{
-				WINDOWINFO	wi;
-				GetWindowInfo(m_hWnd,&wi);
-				if(wi.dwWindowStatus!=WS_ACTIVECAPTION)
-					Pause(TRUE,TRUE,TRUE,"application start");
-			}
 		}
 	}
 
@@ -162,9 +154,6 @@ void CRenderDevice::PreCache	(u32 amount, bool b_draw_loadscreen, bool b_wait_us
 		load_screen_renderer.start	(b_wait_user_input);
 	}
 }
-
-
-int g_svDedicateServerUpdateReate = 100;
 
 ENGINE_API xr_list<LOADING_EVENT>			g_loading_events;
 
@@ -260,57 +249,19 @@ void CRenderDevice::on_idle		()
 	// Release end point - allow thread to wait for startup point
 	SecondaryTaskGroup.wait();
 
-#ifdef DEDICATED_SERVER
-	u32 FrameEndTime = TimerGlobal.GetElapsed_ms();
-	u32 FrameTime = (FrameEndTime - FrameStartTime);
-	/*
-	string1024 FPS_str = "";
-	string64 tmp;
-	xr_strcat(FPS_str, "FPS Real - ");
-	if (dwTimeDelta != 0)
-		xr_strcat(FPS_str, ltoa(1000/dwTimeDelta, tmp, 10));
-	else
-		xr_strcat(FPS_str, "~~~");
-
-	xr_strcat(FPS_str, ", FPS Proj - ");
-	if (FrameTime != 0)
-		xr_strcat(FPS_str, ltoa(1000/FrameTime, tmp, 10));
-	else
-		xr_strcat(FPS_str, "~~~");
-	
-*/
-	u32 DSUpdateDelta = 1000/g_svDedicateServerUpdateReate;
-	if (FrameTime < DSUpdateDelta)
-	{
-		Sleep(DSUpdateDelta - FrameTime);
-//		Msg("sleep for %d", DSUpdateDelta - FrameTime);
-//		xr_strcat(FPS_str, ", sleeped for ");
-//		xr_strcat(FPS_str, ltoa(DSUpdateDelta - FrameTime, tmp, 10));
-	}
-//	Msg(FPS_str);
-#endif // #ifdef DEDICATED_SERVER
-
 	if (!b_is_Active)
 		Sleep		(1);
 }
 
 void CRenderDevice::message_loop()
 {
-	bool Exit = false;
-
-	while (!Exit)
+	while (true)
 	{
-		SDL_Event SDLWindowEvent;
-		if (SDL_PollEvent(&SDLWindowEvent))
-		{
-			switch (SDLWindowEvent.type)
-			{
-			case SDL_EVENT_QUIT:
-				Exit = true;
-				break;
-			}
-		}
+		EventWindow();
 
+		if (getNeedExitGame())
+			break;
+		
 		on_idle();
 	}
 }
@@ -465,30 +416,6 @@ BOOL CRenderDevice::Paused()
 {
 	return g_pauseMngr.Paused();
 };
-
-void CRenderDevice::OnWM_Activate(WPARAM wParam, LPARAM lParam)
-{
-	u16 fActive						= LOWORD(wParam);
-	BOOL fMinimized					= (BOOL) HIWORD(wParam);
-	BOOL bActive					= ((fActive!=WA_INACTIVE) && (!fMinimized))?TRUE:FALSE;
-
-	if (bActive!=Device.b_is_Active)
-	{
-		Device.b_is_Active				= bActive;
-
-		if (Device.b_is_Active)	
-		{
-			Device.seqAppActivate.Process(rp_AppActivate);
-#ifndef DEDICATED_SERVER
-				ShowCursor			(FALSE);
-#endif
-		}else	
-		{
-			Device.seqAppDeactivate.Process(rp_AppDeactivate);
-			ShowCursor				(TRUE);
-		}
-	}
-}
 
 void	CRenderDevice::AddSeqFrame			( pureFrame* f, bool mt )
 {

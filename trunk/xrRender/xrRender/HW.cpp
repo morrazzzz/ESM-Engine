@@ -3,14 +3,12 @@
 #include <d3dx9.h>
 #pragma warning(default:4995)
 #include "HW.h"
-#include "../../xr_3da/XR_IOConsole.h"
+#include <SDL3/SDL_properties.h>
+#include <SDL3/SDL_video.h>
 
 #ifndef _EDITOR
 	void	fill_vid_mode_list			(CHW* _hw);
 	void	free_vid_mode_list			();
-
-	void	fill_render_mode_list		();
-	void	free_render_mode_list		();
 #else
 	void	fill_vid_mode_list			(CHW* _hw)	{}
 	void	free_vid_mode_list			()			{}
@@ -25,22 +23,15 @@ IDirect3DStateBlock9*	dwDebugSB = 0;
 #endif
 
 CHW::CHW() : 
-	hD3D(NULL),
 	pD3D(NULL),
 	pDevice(NULL),
 	pBaseRT(NULL),
-	pBaseZB(NULL),
-	m_move_window(true)
-{
-	;
-}
+	pBaseZB(NULL)
+{}
 
-CHW::~CHW()
-{
-	;
-}
+CHW::~CHW() {}
 
-void CHW::Reset		(HWND hwnd)
+void CHW::Reset()
 {
 #ifdef DEBUG
 	_RELEASE			(dwDebugSB);
@@ -78,9 +69,9 @@ void CHW::Reset		(HWND hwnd)
 #ifdef DEBUG
 	R_CHK				(pDevice->CreateStateBlock			(D3DSBT_ALL,&dwDebugSB));
 #endif
-#ifndef _EDITOR
-	updateWindowProps	(hwnd);
-#endif
+//#ifndef _EDITOR
+//	updateWindowProps	(Device.SDLWindow);
+//#endif
 }
 
 //xr_token*				vid_mode_token = NULL;
@@ -90,6 +81,7 @@ void CHW::Reset		(HWND hwnd)
 
 void CHW::CreateD3D	()
 {
+	/*
 //#ifndef DEDICATED_SERVER
 //	LPCSTR		_name			= "d3d9.dll";
 //#else
@@ -108,14 +100,12 @@ void CHW::CreateD3D	()
 	R_ASSERT2	           	 	(hD3D,"Can't find 'd3d9.dll'\nPlease install latest version of DirectX before running this program");
     typedef IDirect3D9 * WINAPI _Direct3DCreate9(UINT SDKVersion);
 	_Direct3DCreate9* createD3D	= (_Direct3DCreate9*)GetProcAddress(hD3D,"Direct3DCreate9");	R_ASSERT(createD3D);
-    this->pD3D 					= createD3D( D3D_SDK_VERSION );
-    R_ASSERT2					(this->pD3D,"Please install DirectX 9.0c");
+	*/
 }
 
 void CHW::DestroyD3D()
 {
-	_RELEASE					(this->pD3D);
-    FreeLibrary					(hD3D);
+	_RELEASE(pD3D);
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -174,6 +164,7 @@ void	CHW::DestroyDevice	()
 }
 void	CHW::selectResolution	(u32 &dwWidth, u32 &dwHeight, BOOL bWindowed)
 {
+	/*
 	fill_vid_mode_list			(this);
 #ifndef _EDITOR
 	if (g_dedicated_server)
@@ -206,13 +197,15 @@ void	CHW::selectResolution	(u32 &dwWidth, u32 &dwHeight, BOOL bWindowed)
 		}
 	}
 //#endif
-
+     */
 }
 
-void		CHW::CreateDevice		(HWND m_hWnd, bool move_window)
+void CHW::CreateDevice()
 {
-	m_move_window			= move_window;
-	CreateD3D				();
+	//CreateD3D				();
+
+	pD3D = Direct3DCreate9(D3D_SDK_VERSION);
+	R_ASSERT2(pD3D, "Please install DirectX 9.0c");
 
 	// General - select adapter and device
 //#ifdef DEDICATED_SERVER
@@ -306,7 +299,7 @@ void		CHW::CreateDevice		(HWND m_hWnd, bool move_window)
 		fDepth  = selectDepthStencil(fTarget);
 	}
 
-	if ((D3DFMT_UNKNOWN==fTarget) || (D3DFMT_UNKNOWN==fTarget))	{
+	if (D3DFMT_UNKNOWN==fTarget)	{
 		Msg					("Failed to initialize graphics hardware.\n"
 							 "Please try to restart the game.\n"
 							 "Can not find matching format for back buffer."
@@ -322,11 +315,11 @@ void		CHW::CreateDevice		(HWND m_hWnd, bool move_window)
     ZeroMemory				( &P, sizeof(P) );
 
 #ifndef _EDITOR
-	selectResolution	(P.BackBufferWidth, P.BackBufferHeight, bWindowed);
+//	selectResolution	(P.BackBufferWidth, P.BackBufferHeight, bWindowed);
 #endif
 // Back buffer
-//.	P.BackBufferWidth		= dwWidth;
-//. P.BackBufferHeight		= dwHeight;
+	P.BackBufferWidth		= Device.dwWidth;
+    P.BackBufferHeight		= Device.dwHeight;
 	P.BackBufferFormat		= fTarget;
 	P.BackBufferCount		= 1;
 
@@ -336,7 +329,9 @@ void		CHW::CreateDevice		(HWND m_hWnd, bool move_window)
 
 	// Windoze
     P.SwapEffect			= bWindowed?D3DSWAPEFFECT_COPY:D3DSWAPEFFECT_DISCARD;
-	P.hDeviceWindow			= m_hWnd;
+	SDL_Window* window = Device.SDLWindow;
+	HWND hwnd = static_cast<HWND>(SDL_GetPointerProperty(SDL_GetWindowProperties(window), SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr));
+	P.hDeviceWindow = hwnd;
     P.Windowed				= bWindowed;
 
 	// Depth/stencil
@@ -353,7 +348,7 @@ void		CHW::CreateDevice		(HWND m_hWnd, bool move_window)
 	u32 GPU		= selectGPU();	
 	HRESULT R	= HW.pD3D->CreateDevice(DevAdapter,
 										DevT,
-										m_hWnd,
+										hwnd,
 										GPU | D3DCREATE_MULTITHREADED,	//. ? locks at present
 										&P,
 										&pDevice );
@@ -361,7 +356,7 @@ void		CHW::CreateDevice		(HWND m_hWnd, bool move_window)
 	if (FAILED(R))	{
 		R	= HW.pD3D->CreateDevice(	DevAdapter,
 										DevT,
-										m_hWnd,
+			hwnd,
 										GPU | D3DCREATE_MULTITHREADED,	//. ? locks at present
 										&P,
 										&pDevice );
@@ -404,7 +399,7 @@ void		CHW::CreateDevice		(HWND m_hWnd, bool move_window)
 	Msg		("*     Texture memory: %d M",		memory/(1024*1024));
 	Msg		("*          DDI-level: %2.1f",		float(D3DXGetDriverLevel(pDevice))/100.f);
 #ifndef _EDITOR
-	updateWindowProps							(m_hWnd);
+	updateWindowProps							(window);
 	fill_vid_mode_list							(this);
 #endif
 }
@@ -514,29 +509,16 @@ BOOL	CHW::support	(D3DFORMAT fmt, DWORD type, DWORD usage)
 	else			return TRUE;
 }
 
-void	CHW::updateWindowProps	(HWND m_hWnd)
+void	CHW::updateWindowProps	(SDL_Window* window)
 {
-//	BOOL	bWindowed				= strstr(Core.Params,"-dedicated") ? TRUE : !psDeviceFlags.is	(rsFullscreen);
-//#ifndef DEDICATED_SERVER
-//	BOOL	bWindowed				= !psDeviceFlags.is	(rsFullscreen);
-//#else
-//	BOOL	bWindowed				= TRUE;
-//#endif
+	/*
+	//	BOOL	bWindowed				= strstr(Core.Params,"-dedicated") ? TRUE : !psDeviceFlags.is	(rsFullscreen);
+	BOOL	bWindowed = !psDeviceFlags.is(rsFullscreen);
 
-	BOOL	bWindowed				= TRUE;
-#ifndef _EDITOR
-	if (!g_dedicated_server)
-		bWindowed			= !psDeviceFlags.is(rsFullscreen);
-#endif	
-
-	u32		dwWindowStyle			= 0;
+	u32		dwWindowStyle = 0;
 	// Set window properties depending on what mode were in.
-	if (bWindowed)		{
+	if (bWindowed) {
 		if (m_move_window) {
-			if (strstr(Core.Params,"-no_dialog_header"))
-				SetWindowLong	( m_hWnd, GWL_STYLE, dwWindowStyle=(WS_BORDER|WS_VISIBLE) );
-			else
-				SetWindowLong	( m_hWnd, GWL_STYLE, dwWindowStyle=(WS_BORDER|WS_DLGFRAME|WS_VISIBLE|WS_SYSMENU|WS_MINIMIZEBOX ) );
 			// When moving from fullscreen to windowed mode, it is important to
 			// adjust the window size after recreating the device rather than
 			// beforehand to ensure that you get the window size you want.  For
@@ -546,58 +528,23 @@ void	CHW::updateWindowProps	(HWND m_hWnd)
 			// changed to 1024x768, because windows cannot be larger than the
 			// desktop.
 
-			RECT			m_rcWindowBounds;
-			BOOL			bCenter = FALSE;
-			if (!strstr(Core.Params, "-no_center_screen"))	
-				bCenter = TRUE;
+			int x = SDL_WINDOWPOS_UNDEFINED, y = SDL_WINDOWPOS_UNDEFINED;
 
-#ifndef _EDITOR
-			if (g_dedicated_server)
-				bCenter		= TRUE;
-#endif
+			if (strstr(Core.Params, "-center_screen")) {
+				x = SDL_WINDOWPOS_CENTERED;
+				y = SDL_WINDOWPOS_CENTERED;
+			}
 
-			if(bCenter){
-				RECT				DesktopRect;
-				
-				GetClientRect		(GetDesktopWindow(), &DesktopRect);
-
-				SetRect(			&m_rcWindowBounds, 
-									(DesktopRect.right-DevPP.BackBufferWidth)/2, 
-									(DesktopRect.bottom-DevPP.BackBufferHeight)/2, 
-									(DesktopRect.right+DevPP.BackBufferWidth)/2, 
-									(DesktopRect.bottom+DevPP.BackBufferHeight)/2			);
-			}else{
-				SetRect(			&m_rcWindowBounds,
-									0, 
-									0, 
-									DevPP.BackBufferWidth, 
-									DevPP.BackBufferHeight );
-			};
-
-			AdjustWindowRect		(	&m_rcWindowBounds, dwWindowStyle, FALSE );
-
-			SetWindowPos			(	m_hWnd, 
-										HWND_NOTOPMOST,	
-										m_rcWindowBounds.left, 
-										m_rcWindowBounds.top,
-										( m_rcWindowBounds.right - m_rcWindowBounds.left ),
-										( m_rcWindowBounds.bottom - m_rcWindowBounds.top ),
-										SWP_SHOWWINDOW|SWP_NOCOPYBITS|SWP_DRAWFRAME );
+			SDL_SetWindowPosition(Device.SDLWindow, x, y);
 		}
 	}
 	else
 	{
-		SetWindowLong			( m_hWnd, GWL_STYLE, dwWindowStyle=(WS_POPUP|WS_VISIBLE) );
-		SetWindowLong			( m_hWnd, GWL_EXSTYLE, WS_EX_TOPMOST);
 	}
 
-#ifndef _EDITOR
-	if (!g_dedicated_server)
-	{
-		ShowCursor	(FALSE);
-		SetForegroundWindow( m_hWnd );
-	}
-#endif
+	SDL_HideCursor();
+	SDL_RaiseWindow(Device.SDLWindow);
+	*/
 }
 
 

@@ -287,7 +287,6 @@ void Startup()
 
 	// Initialize APP
 //#ifndef DEDICATED_SERVER
-	ShowWindow( Device.m_hWnd , SW_SHOWNORMAL );
 	Device.Create				( );
 //#endif
 	LALib.OnCreate				( );
@@ -818,7 +817,7 @@ void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
 {
 	if (E==eQuit)
 	{
-		PostQuitMessage	(0);
+		Device.setNeedExitGame(true);
 		
 		for (u32 i=0; i<Levels.size(); i++)
 		{

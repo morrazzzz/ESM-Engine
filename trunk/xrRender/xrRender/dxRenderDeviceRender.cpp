@@ -54,7 +54,7 @@ void dxRenderDeviceRender::DestroyHW()
 	HW.DestroyDevice			();
 }
 
-void  dxRenderDeviceRender::Reset( HWND hWnd, u32 &dwWidth, u32 &dwHeight, float &fWidth_2, float &fHeight_2)
+void  dxRenderDeviceRender::Reset()
 {
 #ifdef DEBUG
 	_SHOW_REF("*ref -CRenderDevice::ResetTotal: DeviceREF:",HW.pDevice);
@@ -62,18 +62,8 @@ void  dxRenderDeviceRender::Reset( HWND hWnd, u32 &dwWidth, u32 &dwHeight, float
 
 	Resources->reset_begin	();
 	Memory.mem_compact		();
-	HW.Reset				(hWnd);
+	HW.Reset				();
 
-#if defined(USE_DX10) || defined(USE_DX11)
-	dwWidth					= HW.m_ChainDesc.BufferDesc.Width;
-	dwHeight				= HW.m_ChainDesc.BufferDesc.Height;
-#else	//	USE_DX10
-	dwWidth					= HW.DevPP.BackBufferWidth;
-	dwHeight				= HW.DevPP.BackBufferHeight;
-#endif	//	USE_DX10
-
-	fWidth_2				= float(dwWidth/2);
-	fHeight_2				= float(dwHeight/2);
 	Resources->reset_end	();
 
 #ifdef DEBUG
@@ -149,18 +139,9 @@ void dxRenderDeviceRender::OnDeviceCreate(LPCSTR shName)
 //#endif
 }
 
-void dxRenderDeviceRender::Create( HWND hWnd, u32 &dwWidth, u32 &dwHeight, float &fWidth_2, float &fHeight_2, bool move_window)
+void dxRenderDeviceRender::Create()
 {
-	HW.CreateDevice		(hWnd, move_window);
-#if defined(USE_DX10) || defined(USE_DX11)
-	dwWidth					= HW.m_ChainDesc.BufferDesc.Width;
-	dwHeight				= HW.m_ChainDesc.BufferDesc.Height;
-#else	//	USE_DX10
-	dwWidth					= HW.DevPP.BackBufferWidth;
-	dwHeight				= HW.DevPP.BackBufferHeight;
-#endif	//	USE_DX10
-	fWidth_2			= float(dwWidth/2)			;
-	fHeight_2			= float(dwHeight/2)			;
+	HW.CreateDevice();
 	Resources			= xr_new<CResourceManager>		();
 }
 

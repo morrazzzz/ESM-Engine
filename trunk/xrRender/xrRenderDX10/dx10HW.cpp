@@ -13,6 +13,9 @@
 
 #include "StateManager\dx10SamplerStateCache.h"
 #include "StateManager\dx10StateCache.h"
+#include <SDL3/SDL_properties.h>
+#include <SDL3/SDL_video.h>
+#include <SDL3/SDL_mouse.h>
 
 #ifndef _EDITOR
 void	fill_vid_mode_list			(CHW* _hw);
@@ -40,8 +43,7 @@ CHW::CHW() :
 //	hD3D(NULL),
 	//pD3D(NULL),
 	m_pAdapter(0),
-	pDevice(NULL),
-	m_move_window(true)
+	pDevice(NULL)
 	//pBaseRT(NULL),
 	//pBaseZB(NULL)
 {
@@ -131,9 +133,8 @@ void CHW::DestroyD3D()
 //	FreeLibrary(hD3D);
 }
 
-void CHW::CreateDevice( HWND m_hWnd, bool move_window )
+void CHW::CreateDevice()
 {
-	m_move_window			= move_window;
 	CreateD3D();
 
 	/* Partially implemented dynamic load
@@ -275,13 +276,14 @@ void CHW::CreateDevice( HWND m_hWnd, bool move_window )
 	DXGI_SWAP_CHAIN_DESC	&sd	= m_ChainDesc;
 	ZeroMemory				( &sd, sizeof(sd) );
 
-	selectResolution	(sd.BufferDesc.Width, sd.BufferDesc.Height, bWindowed);
-
 	// Back buffer
 	//.	P.BackBufferWidth		= dwWidth;
 	//. P.BackBufferHeight		= dwHeight;
 	//	TODO: DX10: implement dynamic format selection
 	//sd.BufferDesc.Format		= fTarget;
+	sd.BufferDesc.Width = Device.dwWidth;
+	sd.BufferDesc.Height = Device.dwHeight;
+
 	sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	sd.BufferCount = 1;
 
@@ -294,7 +296,9 @@ void CHW::CreateDevice( HWND m_hWnd, bool move_window )
 	//P.hDeviceWindow			= m_hWnd;
 	//P.Windowed				= bWindowed;
 	sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-	sd.OutputWindow = m_hWnd;
+	SDL_Window* window = Device.SDLWindow;
+	HWND hwnd = static_cast<HWND>(SDL_GetPointerProperty(SDL_GetWindowProperties(window), SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr));
+	sd.OutputWindow = hwnd;
 	sd.Windowed = bWindowed;
 
 	// Depth/stencil
@@ -322,7 +326,7 @@ void CHW::CreateDevice( HWND m_hWnd, bool move_window )
 
 	UINT createDeviceFlags = 0;
 #ifdef DEBUG
-	//createDeviceFlags |= D3D10_CREATE_DEVICE_DEBUG;
+//	createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
    HRESULT R;
 	// Create the device
@@ -423,7 +427,7 @@ void CHW::CreateDevice( HWND m_hWnd, bool move_window )
 	Msg		("*     Texture memory: %d M",		memory/(1024*1024));
 	//Msg		("*          DDI-level: %2.1f",		float(D3DXGetDriverLevel(pDevice))/100.f);
 #ifndef _EDITOR
-	updateWindowProps							(m_hWnd);
+	updateWindowProps							(window);
 	fill_vid_mode_list							(this);
 #endif
 }
@@ -473,7 +477,7 @@ void CHW::DestroyDevice()
 //////////////////////////////////////////////////////////////////////
 // Resetting device
 //////////////////////////////////////////////////////////////////////
-void CHW::Reset (HWND hwnd)
+void CHW::Reset()
 {
 	DXGI_SWAP_CHAIN_DESC &cd = m_ChainDesc;
 
@@ -486,6 +490,9 @@ void CHW::Reset (HWND hwnd)
 	DXGI_MODE_DESC	&desc = m_ChainDesc.BufferDesc;
 
 	selectResolution(desc.Width, desc.Height, bWindowed);
+
+	desc.Width = Device.dwWidth;
+	desc.Height = Device.dwHeight;
 
 	if (bWindowed)
 	{
@@ -540,7 +547,7 @@ void CHW::Reset (HWND hwnd)
 //	R_CHK				(pDevice->CreateStateBlock			(D3DSBT_ALL,&dwDebugSB));
 //#endif
 
-	updateWindowProps	(hwnd);
+//	updateWindowProps(Device.SDLWindow);
 
 
 		/*
@@ -590,6 +597,8 @@ D3DFORMAT CHW::selectDepthStencil	(D3DFORMAT fTarget)
 
 void CHW::selectResolution( u32 &dwWidth, u32 &dwHeight, BOOL bWindowed )
 {
+	//TODO: not actually, need clean this!!
+	/*
 	fill_vid_mode_list			(this);
 
 	if(bWindowed)
@@ -611,6 +620,7 @@ void CHW::selectResolution( u32 &dwWidth, u32 &dwHeight, BOOL bWindowed )
 		dwWidth						= psCurrentVidMode[0];
 		dwHeight					= psCurrentVidMode[1];
 	}
+	*/
 }
 
 //	TODO: DX10: check if we need these
@@ -657,51 +667,47 @@ DXGI_RATIONAL CHW::selectRefresh(u32 dwWidth, u32 dwHeight, DXGI_FORMAT fmt)
 
 	float	CurrentFreq = 60.0f;
 
-	if (psDeviceFlags.is(rsRefresh60hz))	
-	{
+	if (psDeviceFlags.is(rsRefresh60hz))
 		return res;
-	}
-	else
+
+	xr_vector<DXGI_MODE_DESC>	modes;
+
+	IDXGIOutput* pOutput;
+	m_pAdapter->EnumOutputs(0, &pOutput);
+	VERIFY(pOutput);
+
+	UINT num = 0;
+	DXGI_FORMAT format = fmt;
+	UINT flags = 0;
+
+	// Get the number of display modes available
+	pOutput->GetDisplayModeList(format, flags, &num, 0);
+
+	// Get the list of display modes
+	modes.resize(num);
+	pOutput->GetDisplayModeList(format, flags, &num, &modes.front());
+
+	_RELEASE(pOutput);
+
+	for (u32 i = 0; i < num; ++i)
 	{
-		xr_vector<DXGI_MODE_DESC>	modes;
+		DXGI_MODE_DESC& desc = modes[i];
 
-		IDXGIOutput *pOutput;
-		m_pAdapter->EnumOutputs(0, &pOutput);
-		VERIFY(pOutput);
-
-		UINT num = 0;
-		DXGI_FORMAT format = fmt;
-		UINT flags         = 0;
-
-		// Get the number of display modes available
-		pOutput->GetDisplayModeList( format, flags, &num, 0);
-
-		// Get the list of display modes
-		modes.resize(num);
-		pOutput->GetDisplayModeList( format, flags, &num, &modes.front());
-
-		_RELEASE(pOutput);
-
-		for (u32 i=0; i<num; ++i)
+		if ((desc.Width == dwWidth)
+			&& (desc.Height == dwHeight)
+			)
 		{
-			DXGI_MODE_DESC &desc = modes[i];
-
-			if( (desc.Width == dwWidth) 
-				&& (desc.Height == dwHeight)
-				)
+			VERIFY(desc.RefreshRate.Denominator);
+			float TempFreq = float(desc.RefreshRate.Numerator) / float(desc.RefreshRate.Denominator);
+			if (TempFreq > CurrentFreq)
 			{
-				VERIFY(desc.RefreshRate.Denominator);
-				float TempFreq = float(desc.RefreshRate.Numerator)/float(desc.RefreshRate.Denominator);
-				if ( TempFreq > CurrentFreq )
-				{
-					CurrentFreq = TempFreq;
-					res = desc.RefreshRate;
-				}
+				CurrentFreq = TempFreq;
+				res = desc.RefreshRate;
 			}
 		}
-
-		return res;
 	}
+
+	return res;
 }
 
 void CHW::OnAppActivate()
@@ -735,8 +741,10 @@ BOOL CHW::support( D3DFORMAT fmt, DWORD type, DWORD usage)
 	return TRUE;
 }
 
-void CHW::updateWindowProps(HWND m_hWnd)
+void CHW::updateWindowProps(SDL_Window* window)
 {
+	//TODO: not actually, need clean this!!
+	/*
 	//	BOOL	bWindowed				= strstr(Core.Params,"-dedicated") ? TRUE : !psDeviceFlags.is	(rsFullscreen);
 	BOOL	bWindowed				= !psDeviceFlags.is	(rsFullscreen);
 
@@ -744,10 +752,6 @@ void CHW::updateWindowProps(HWND m_hWnd)
 	// Set window properties depending on what mode were in.
 	if (bWindowed)		{
 		if (m_move_window) {
-			if (strstr(Core.Params,"-no_dialog_header"))
-				SetWindowLong	( m_hWnd, GWL_STYLE, dwWindowStyle=(WS_BORDER|WS_VISIBLE) );
-			else
-				SetWindowLong	( m_hWnd, GWL_STYLE, dwWindowStyle=(WS_BORDER|WS_DLGFRAME|WS_VISIBLE|WS_SYSMENU|WS_MINIMIZEBOX ) );
 			// When moving from fullscreen to windowed mode, it is important to
 			// adjust the window size after recreating the device rather than
 			// beforehand to ensure that you get the window size you want.  For
@@ -757,46 +761,23 @@ void CHW::updateWindowProps(HWND m_hWnd)
 			// changed to 1024x768, because windows cannot be larger than the
 			// desktop.
 
-			RECT			m_rcWindowBounds;
-			BOOL			bCenter = FALSE;
-			if (strstr(Core.Params, "-center_screen"))	bCenter = TRUE;
+			int x = SDL_WINDOWPOS_UNDEFINED, y = SDL_WINDOWPOS_UNDEFINED;
 
-			if (bCenter) {
-				RECT				DesktopRect;
+			if (strstr(Core.Params, "-center_screen")) {
+				x = SDL_WINDOWPOS_CENTERED;
+				y = SDL_WINDOWPOS_CENTERED;
+			}
 
-				GetClientRect		(GetDesktopWindow(), &DesktopRect);
-
-				SetRect(			&m_rcWindowBounds, 
-					(DesktopRect.right-m_ChainDesc.BufferDesc.Width)/2, 
-					(DesktopRect.bottom-m_ChainDesc.BufferDesc.Height)/2, 
-					(DesktopRect.right+m_ChainDesc.BufferDesc.Width)/2, 
-					(DesktopRect.bottom+m_ChainDesc.BufferDesc.Height)/2);
-			}else{
-				SetRect(			&m_rcWindowBounds,
-					0, 
-					0, 
-					m_ChainDesc.BufferDesc.Width, 
-					m_ChainDesc.BufferDesc.Height);
-			};
-
-			AdjustWindowRect		(	&m_rcWindowBounds, dwWindowStyle, FALSE );
-
-			SetWindowPos			(	m_hWnd, 
-				HWND_NOTOPMOST,	
-				m_rcWindowBounds.left, 
-				m_rcWindowBounds.top,
-				( m_rcWindowBounds.right - m_rcWindowBounds.left ),
-				( m_rcWindowBounds.bottom - m_rcWindowBounds.top ),
-				SWP_SHOWWINDOW|SWP_NOCOPYBITS|SWP_DRAWFRAME );
+			SDL_SetWindowPosition(Device.SDLWindow, x, y);
 		}
 	}
 	else
 	{
-		SetWindowLong			( m_hWnd, GWL_STYLE, dwWindowStyle=(WS_POPUP|WS_VISIBLE) );
 	}
 
-	ShowCursor	(FALSE);
-	SetForegroundWindow( m_hWnd );
+	SDL_HideCursor();
+	SDL_RaiseWindow(Device.SDLWindow);
+	*/
 }
 
 

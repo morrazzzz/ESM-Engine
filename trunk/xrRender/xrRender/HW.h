@@ -1,9 +1,3 @@
-// HW.h: interface for the CHW class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#if !defined(AFX_HW_H__0E25CF4A_FFEC_11D3_B4E3_4854E82A090D__INCLUDED_)
-#define AFX_HW_H__0E25CF4A_FFEC_11D3_B4E3_4854E82A090D__INCLUDED_
 #pragma once
 
 #include "hwcaps.h"
@@ -25,19 +19,19 @@ public:
 
 	void					CreateD3D				();
 	void					DestroyD3D				();
-	void					CreateDevice			(HWND hw, bool move_window);
+	void CreateDevice();
 
 	void					DestroyDevice			();
 
-	void					Reset					(HWND hw);
+	void					Reset					();
 
 	void					selectResolution		(u32 &dwWidth, u32 &dwHeight, BOOL bWindowed);
 	D3DFORMAT				selectDepthStencil		(D3DFORMAT);
 	u32						selectPresentInterval	();
 	u32						selectGPU				();
 	u32						selectRefresh			(u32 dwWidth, u32 dwHeight, D3DFORMAT fmt);
-	void					updateWindowProps		(HWND hw);
-	BOOL					support					(D3DFORMAT fmt, DWORD type, DWORD usage);
+	void updateWindowProps(SDL_Window* window);
+	BOOL support(D3DFORMAT fmt, DWORD type, DWORD usage);
 
 #ifdef DEBUG
 #if defined(USE_DX10) || defined(USE_DX11)
@@ -83,9 +77,6 @@ public:
 	bool					m_bUsePerfhud;
 	D3D_FEATURE_LEVEL		FeatureLevel;
 #else
-private:
-	HINSTANCE 				hD3D;
-
 public:
 
 	IDirect3D9* 			pD3D;		// D3D
@@ -111,11 +102,6 @@ public:
 	virtual	void	OnAppActivate();
 	virtual void	OnAppDeactivate();
 #endif	//	USE_DX10
-
-private:
-	bool					m_move_window;
 };
 
-extern ECORE_API CHW		HW;
-
-#endif // !defined(AFX_HW_H__0E25CF4A_FFEC_11D3_B4E3_4854E82A090D__INCLUDED_)
+extern CHW HW;

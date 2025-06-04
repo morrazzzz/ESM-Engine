@@ -110,18 +110,20 @@ private:
 	void									_Destroy	(BOOL	bKeepTextures);
 	void									_SetupStates();
 public:
-    //HWND									m_hWnd;
-	LRESULT									MsgProc		(HWND,UINT,WPARAM,LPARAM);
+	bool needExitGame;
 
 	//u32										dwFrame;
 	//u32										dwPrecacheFrame;
 	u32										dwPrecacheTotal;
 
-	//u32										dwWidth, dwHeight;
-	float									fWidth_2, fHeight_2;
-	//BOOL									b_is_Ready;
-	//BOOL									b_is_Active;
-	void									OnWM_Activate(WPARAM wParam, LPARAM lParam);
+	void setNeedExitGame(bool value) { needExitGame = value; }
+	bool getNeedExitGame() const { return needExitGame; }
+
+	void SetWindowActive(bool active);
+	void ResizeWindow();
+	void SetFullscreenWindow(bool value);
+	void DestroyWindow();
+	void EventWindow();
 public:
 	
     BOOL									m_bNearer; 
@@ -202,11 +204,7 @@ public:
 	void End								();
 	void FrameMove							();
 	
-	void overdrawBegin						();
-	void overdrawEnd						();
-
 	// Mode control
-	void DumpFlags							();
 	IC	 CTimer_paused* GetTimerGlobal		()	{ return &TimerGlobal;								}
 	u32	 TimerAsync							()	{ return TimerGlobal.GetElapsed_ms();				}
 	u32	 TimerAsync_MMT						()	{ return TimerMM.GetElapsed_ms() +	Timer_MM_Delta; }
@@ -219,7 +217,6 @@ public:
 	void Reset								(bool precache = true);
 
 	void Initialize							(void);
-	void ShutDown							(void);
 
 public:
 	void time_factor						(const float &time_factor)
@@ -247,7 +244,6 @@ public:
 
 public:
 	void xr_stdcall		on_idle();
-	bool xr_stdcall		on_message(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& result);
 
 private:
 	void					message_loop();

@@ -21,15 +21,16 @@ void CRenderDevice::_Destroy	(BOOL bKeepTextures)
 void CRenderDevice::Destroy() {
 	if (!b_is_Ready)			return;
 
-	Log("Destroying Direct3D...");
+	Log("@ Destroying Direct3D...");
 
-	ShowCursor	(TRUE);
 	m_pRender->ValidateHW();
 
 	_Destroy					(FALSE);
 
 	// real destroy
 	m_pRender->DestroyHW();
+
+	DestroyWindow();
 
 	seqRender.R.clear			();
 	seqAppActivate.R.clear		();
@@ -50,18 +51,9 @@ void CRenderDevice::Destroy() {
 #include "CustomHUD.h"
 void CRenderDevice::Reset		(bool precache)
 {
-	u32 dwWidth_before = dwWidth;
-	u32 dwHeight_before = dwHeight;
-
-	ShowCursor				(TRUE);
 	u32 tm_start			= TimerAsync();
 
-	if (g_pGamePersistent){
-
-//.		g_pGamePersistent->Environment().OnDeviceDestroy();
-	}
-
-	m_pRender->Reset(m_hWnd, dwWidth, dwHeight, fWidth_2, fHeight_2);
+	m_pRender->Reset();
 
 	if (g_pGamePersistent)
 	{
@@ -74,18 +66,6 @@ void CRenderDevice::Reset		(bool precache)
 		PreCache			(20, false, false);
 	u32 tm_end				= TimerAsync();
 	Msg						("*** RESET [%d ms]",tm_end-tm_start);
-
-	//	TODO: Remove this! It may hide crash
-	Memory.mem_compact();
-
-#ifndef DEDICATED_SERVER
-	ShowCursor	(FALSE);
-#endif
 		
 	seqDeviceReset.Process(rp_DeviceReset);
-
-	if (dwWidth_before != dwWidth || dwHeight_before != dwHeight)
-	{
-		seqResolutionChanged.Process(rp_ScreenResolutionChanged);
-	}
 }

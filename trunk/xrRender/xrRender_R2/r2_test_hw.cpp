@@ -2,6 +2,7 @@
 
 BOOL	xrRender_test_hw		()
 {
+	/*
 	D3DCAPS9					caps	;
 	CHW							_HW;
 	_HW.CreateD3D				()		;
@@ -16,5 +17,6 @@ BOOL	xrRender_test_hw		()
 	if		(ps_ver_major<2)		return	FALSE;
 	if		(ps_instructions<256)	return	FALSE;
 	if		(mrt_count<3)			return	FALSE;
+	*/
 	return	TRUE;
 }

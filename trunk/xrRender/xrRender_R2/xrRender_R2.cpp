@@ -41,6 +41,7 @@ extern "C"
 
 bool _declspec(dllexport) SupportsAdvancedRendering()
 {
+	/*
 	D3DCAPS9					caps;
 	CHW							_HW;
 	_HW.CreateD3D();
@@ -51,5 +52,6 @@ bool _declspec(dllexport) SupportsAdvancedRendering()
 	if (ps_ver_major < 3)
 		return false;
 	else
-		return true;
+	*/
+	return true;
 }

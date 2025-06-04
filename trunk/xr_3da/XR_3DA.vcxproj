@@ -636,9 +636,6 @@ copy /Y "..\3rd party\DiscordSDK\lib\x64\discord_game_sdk.dll" "..\..\xr_build\b
     <ClCompile Include="Device_create.cpp" />
     <ClCompile Include="Device_destroy.cpp" />
     <ClCompile Include="Device_Initialize.cpp" />
-    <ClCompile Include="Device_Misc.cpp" />
-    <ClCompile Include="Device_overdraw.cpp" />
-    <ClCompile Include="Device_wndproc.cpp" />
     <ClCompile Include="StatGraph.cpp" />
     <ClCompile Include="Stats.cpp" />
     <ClCompile Include="tntQAVI.cpp" />
