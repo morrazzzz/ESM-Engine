@@ -99,6 +99,7 @@ void type_pair::on_key_press( line_edit_control* const control )
 
 		static _locale_t current_locale = _create_locale(LC_ALL, "");
 		
+		/*
 		if ( pInput->get_dik_name( m_dik, buff, sizeof(buff) ) )
 		{
 			if ( _isalpha_l(buff[0], current_locale) || buff[0] == char(-1) ) // "ÿ" = -1
@@ -109,6 +110,7 @@ void type_pair::on_key_press( line_edit_control* const control )
 				c_shift	= buff[0];
 			}
 		}
+		*/
 
 		//setlocale( LC_ALL, "C" );	// restore to ANSI
 

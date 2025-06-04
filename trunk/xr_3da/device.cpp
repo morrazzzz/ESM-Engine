@@ -261,7 +261,7 @@ void CRenderDevice::message_loop()
 
 		if (getNeedExitGame())
 			break;
-		
+
 		on_idle();
 	}
 }

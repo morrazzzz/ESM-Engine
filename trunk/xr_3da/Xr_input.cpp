@@ -4,6 +4,8 @@
 #include <stddef.h>
 #include "xr_input.h"
 #include "IInputReceiver.h"
+#include <SDL3/SDL_keyboard.h>
+#include <SDL3/SDL_events.h>
 
 CInput *	pInput	= nullptr;
 IInputReceiver		dummyController;
@@ -50,11 +52,13 @@ CInput::CInput						( BOOL bExclusive, int deviceForInit)
 	if (!pDI) CHK_DX(DirectInput8Create( GetModuleHandle(NULL), DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&pDI, NULL ));
 
 	// KEYBOARD
+	/*
 	if (deviceForInit & keyboard_device_key)
 		CHK_DX(CreateInputDevice(
 		&pKeyboard, 	GUID_SysKeyboard, 	&c_dfDIKeyboard,
 		((bExclusive)?DISCL_EXCLUSIVE:DISCL_NONEXCLUSIVE) | DISCL_FOREGROUND,
 		KEYBOARDBUFFERSIZE ));
+     */
 
 	// MOUSE
 	if (deviceForInit & mouse_device_key)
@@ -179,37 +183,28 @@ void CInput::KeyUpdate	( )
 			cbStack.back()->IR_OnKeyboardHold( i );
 
 #ifndef _EDITOR
-	if(!b_altF4 && iGetAsyncKeyState(DIK_F4) && (iGetAsyncKeyState(DIK_RMENU) || iGetAsyncKeyState(DIK_LMENU)))
+	if(iGetAsyncKeyState(DIK_RMENU) || iGetAsyncKeyState(DIK_LMENU))
 	{
-		b_altF4				= TRUE;
-		Engine.Event.Defer	("KERNEL:disconnect");
-		Engine.Event.Defer	("KERNEL:quit");
+		if (iGetAsyncKeyState(DIK_F4))
+		{
+			Engine.Event.Defer("KERNEL:disconnect");
+			Engine.Event.Defer("KERNEL:quit");
+			return;
+		}
+
+		if (iGetAsyncKeyState(DIK_RETURN))
+		{
+			Device.SetFullscreenWindow(true);
+			return;
+		}
 	}
 #endif    
 }
 
-bool CInput::get_dik_name(int dik, LPSTR dest_str, int dest_sz)
+void CInput::get_dik_name(SDL_Scancode dik, xr_string& string)
 {
-	DIPROPSTRING keyname;
-	keyname.diph.dwSize			= sizeof(DIPROPSTRING);
-	keyname.diph.dwHeaderSize	= sizeof(DIPROPHEADER);
-	keyname.diph.dwObj			= static_cast<DWORD>(dik);
-	keyname.diph.dwHow			= DIPH_BYOFFSET; // DIPH_BYID; //DIPH_DEVICE;//
-	HRESULT hr = pKeyboard->GetProperty(DIPROP_KEYNAME, &keyname.diph);
-	if(FAILED(hr))
-		return false;
-
-	const wchar_t* wct			= keyname.wsz;
-	if(0==wcslen(wct))
-		return					false;
-
-	int cnt = WideCharToMultiByte(CP_ACP, 0, keyname.wsz, -1, dest_str, dest_sz, nullptr, nullptr);
-	if (cnt == -1)
-	{
-		Msg("! cant convert dik_name for dik[%d], prop=[%S]", dik, keyname.wsz);
-		return					false;
-	}
-	return						(cnt != -1);
+	SDL_Keycode key = SDL_GetKeyFromScancode(dik, SDL_KMOD_NONE, false);
+	string = SDL_GetKeyName(key);
 }
 
 BOOL CInput::iGetAsyncKeyState( int dik )
@@ -431,4 +426,14 @@ void CInput::exclusive_mode			(const bool &exclusive)
 bool CInput::get_exclusive_mode()
 {
 	return g_exclusive;
+}
+
+void CInput::InputKeyboardPress(const SDL_Scancode& scancode, bool press)
+{
+	InputsScancodes[scancode] = press;
+
+	if (press)
+		cbStack.back()->IR_OnKeyboardPress(scancode);
+	else
+		cbStack.back()->IR_OnKeyboardRelease(scancode);
 }

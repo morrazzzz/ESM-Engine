@@ -1,5 +1,7 @@
 #pragma once
 
+#include <SDL3/SDL_scancode.h>
+
 enum	EGameActions
 {
 	kLEFT,
@@ -98,7 +100,7 @@ enum	EGameActions
 struct _keyboard		
 {
 	LPCSTR		key_name;
-	int			dik;
+	SDL_Scancode dik;
 	xr_string	key_local_name;
 };
 enum _key_group{

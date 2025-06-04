@@ -2,6 +2,7 @@
 #include <SDL3/SDL_init.h>
 #include <SDL3/SDL_video.h>
 #include <SDL3/SDL_properties.h>
+#include "xr_input.h"
 
 constexpr int BaseWidth = 800;
 constexpr int BaseHeight = 600;
@@ -70,7 +71,7 @@ void CRenderDevice::DestroyWindow()
 void CRenderDevice::EventWindow()
 {
     SDL_Event SDLWindowEvent;
-    if (SDL_PollEvent(&SDLWindowEvent))
+    while (SDL_PollEvent(&SDLWindowEvent))
     {
         switch (SDLWindowEvent.type)
         {
@@ -79,8 +80,15 @@ void CRenderDevice::EventWindow()
             break;
         case SDL_EVENT_WINDOW_FOCUS_GAINED:
         case SDL_EVENT_WINDOW_FOCUS_LOST:
+        {
             bool active = SDLWindowEvent.type == SDL_EVENT_WINDOW_FOCUS_GAINED;
             SetWindowActive(active);
+            break;
+        }
+        case SDL_EVENT_KEY_DOWN:
+        case SDL_EVENT_KEY_UP:
+            pInput->InputKeyboardPress(SDLWindowEvent.key.scancode, SDLWindowEvent.key.down);
+            break;
         }
     }
 }

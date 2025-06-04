@@ -1,5 +1,6 @@
-#ifndef __XR_INPUT__
-#define __XR_INPUT__
+#pragma once
+
+#include <SDL3/SDL_scancode.h>
 
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
@@ -90,9 +91,14 @@ public:
 public:
 			void				exclusive_mode				(const bool &exclusive);
 			bool				get_exclusive_mode();
-			bool				get_dik_name				(int dik, LPSTR dest, int dest_sz);
+			void get_dik_name(SDL_Scancode dik, xr_string& dest);
+
+
+//morrazzzz: start
+	bool InputsScancodes[SDL_SCANCODE_COUNT];
+public:
+	void InputKeyboardPress(const SDL_Scancode& scancode, bool press);
 };
 
 extern ENGINE_API CInput *		pInput;
 
-#endif //__XR_INPUT__

@@ -30,12 +30,11 @@ class ENGINE_API CRenderDeviceData
 {
 
 public:
-	u32										dwWidth;
-	u32										dwHeight;
+	int	dwWidth, dwHeight;
 
-	u32										dwPrecacheFrame;
-	BOOL									b_is_Ready;
-	BOOL									b_is_Active;
+	u32	dwPrecacheFrame;
+	bool b_is_Ready;
+	bool b_is_Active;
 public:
 
 	// Engine flow-control
@@ -187,8 +186,8 @@ public:
 		#endif // PROFILE_CRITICAL_SECTIONS
 	{
 	    m_hWnd              = NULL;
-		b_is_Active			= FALSE;
-		b_is_Ready			= FALSE;
+		b_is_Active	= false;
+		b_is_Ready = false;
 		Timer.Start			();
 		m_bNearer			= FALSE;
 		m_pRender = nullptr;

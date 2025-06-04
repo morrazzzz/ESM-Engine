@@ -102,35 +102,65 @@ _action  actions[]		= {
 };															
 
 _keyboard keyboards[] = {
-	{ "kESCAPE",	 	DIK_ESCAPE		},	{ "k1",				DIK_1			},
-	{ "k2",				DIK_2			},	{ "k3",				DIK_3			},
-	{ "k4",				DIK_4			},	{ "k5",				DIK_5			},
-	{ "k6",				DIK_6			},	{ "k7",				DIK_7			},
-	{ "k8",				DIK_8			},	{ "k9",				DIK_9			},
-	{ "k0",				DIK_0			},	{ "kMINUS",			DIK_MINUS		},
-	{ "kEQUALS",		DIK_EQUALS		},	{ "kBACK",			DIK_BACK		},
-	{ "kTAB",			DIK_TAB 		},	{ "kQ",				DIK_Q			},
-	{ "kW",				DIK_W			},	{ "kE",				DIK_E			},
-	{ "kR",				DIK_R			},	{ "kT",				DIK_T			},
-	{ "kY",				DIK_Y			},	{ "kU",				DIK_U			},
-	{ "kI",				DIK_I			},	{ "kO",				DIK_O			},
-	{ "kP",				DIK_P			},	{ "kLBRACKET",		DIK_LBRACKET	},
-	{ "kRBRACKET",		DIK_RBRACKET	},	{ "kRETURN",		DIK_RETURN		},
-	{ "kLCONTROL",		DIK_LCONTROL	},	{ "kA",				DIK_A			},
-	{ "kS",				DIK_S			},	{ "kD",				DIK_D			},
-	{ "kF",				DIK_F			},	{ "kG",				DIK_G			},
-	{ "kH",				DIK_H			},	{ "kJ",				DIK_J			},
-	{ "kK",				DIK_K			},	{ "kL",				DIK_L			},
+	{ "kA",	SDL_SCANCODE_A},
+	{ "kB", SDL_SCANCODE_B},
+	{ "kC",	SDL_SCANCODE_C},
+	{ "kD", SDL_SCANCODE_D},
+	{ "kE",	SDL_SCANCODE_E},
+	{ "kF",	SDL_SCANCODE_F},
+	{ "kG", SDL_SCANCODE_G},
+	{ "kH", SDL_SCANCODE_H},
+	{ "kI", SDL_SCANCODE_I},
+	{ "kJ", SDL_SCANCODE_J},
+	{ "kK", SDL_SCANCODE_K},
+	{ "kL", SDL_SCANCODE_L},
+	{ "kM", SDL_SCANCODE_M},
+	{ "kN", SDL_SCANCODE_N},
+	{ "kO", SDL_SCANCODE_O},
+	{ "kP", SDL_SCANCODE_P},
+	{ "kQ", SDL_SCANCODE_Q},
+	{ "kR", SDL_SCANCODE_R},
+	{ "kS", SDL_SCANCODE_S},
+	{ "kT", SDL_SCANCODE_T},
+	{ "kU", SDL_SCANCODE_U},
+	{ "kV", SDL_SCANCODE_V},
+	{ "kW", SDL_SCANCODE_W},
+	{ "kX", SDL_SCANCODE_X},
+	{ "kY", SDL_SCANCODE_Y},
+	{ "kZ", SDL_SCANCODE_Z},
+
+	{ "k1", SDL_SCANCODE_1},
+	{ "k2", SDL_SCANCODE_2},
+	{ "k3", SDL_SCANCODE_3},
+	{ "k4", SDL_SCANCODE_4},
+	{ "k5", SDL_SCANCODE_5},
+	{ "k6", SDL_SCANCODE_6},
+	{ "k7", SDL_SCANCODE_7},
+	{ "k8", SDL_SCANCODE_8},
+	{ "k9", SDL_SCANCODE_9},
+	{ "k0", SDL_SCANCODE_0},
+
+	{ "kRETURN", SDL_SCANCODE_RETURN},
+	{ "kESCAPE", SDL_SCANCODE_ESCAPE},	
+	{ "kBACK", SDL_SCANCODE_BACKSPACE},
+	{ "kTAB", SDL_SCANCODE_TAB},
+	{ "kSPACE", SDL_SCANCODE_SPACE},
+
+	{ "kMINUS",	SDL_SCANCODE_MINUS},
+	{ "kEQUALS", SDL_SCANCODE_EQUALS},
+	{ "kLBRACKET", SDL_SCANCODE_LEFTBRACKET},
+	{ "kRBRACKET", SDL_SCANCODE_RIGHTBRACKET },
+
+	{ NULL, 			SDL_SCANCODE_UNKNOWN}
+
+	/*
+	{ "kLCONTROL",		DIK_LCONTROL	},
 	{ "kSEMICOLON",		DIK_SEMICOLON	},	{ "kAPOSTROPHE",	DIK_APOSTROPHE	},
 	{ "kGRAVE",			DIK_GRAVE		},	{ "kLSHIFT",	 	DIK_LSHIFT		},
 	{ "kBACKSLASH",		DIK_BACKSLASH	},	{ "kZ",				DIK_Z			},
-	{ "kX",				DIK_X			},	{ "kC",				DIK_C			},
-	{ "kV",				DIK_V			},	{ "kB",				DIK_B			},
-	{ "kN",				DIK_N			},	{ "kM",				DIK_M			},
 	{ "kCOMMA",			DIK_COMMA		},	{ "kPERIOD",		DIK_PERIOD		},
 	{ "kSLASH",			DIK_SLASH		},	{ "kRSHIFT",		DIK_RSHIFT		},
-	{ "kMULTIPLY",		DIK_MULTIPLY	},	{ "kLMENU",			DIK_LMENU		},
-	{ "kSPACE",			DIK_SPACE		},	{ "kCAPITAL",		DIK_CAPITAL		},
+	{ "kMULTIPLY",		DIK_MULTIPLY	},	{ "kLMENU",			DIK_LMENU		},	{ "kCAPITAL",		DIK_CAPITAL		},
 	{ "kF1",			DIK_F1			},	{ "kF2",			DIK_F2			},
 	{ "kF3",			DIK_F3			},	{ "kF4",			DIK_F4			},
 	{ "kF5",			DIK_F5			},	{ "kF6",			DIK_F6			},
@@ -167,6 +197,7 @@ _keyboard keyboards[] = {
 	{ "mouse4",			MOUSE_4			},	{ "mouse5",			MOUSE_5			},
 	{ "mouse6",			MOUSE_6			},	{ "mouse7",			MOUSE_7			},
 	{ "mouse8",			MOUSE_8			},	{ NULL, 			0				}
+	*/
 };
 
 void initialize_bindings()
@@ -205,11 +236,7 @@ void remap_keys()
 	{
 		buff[0]				= 0;
 		_keyboard&	kb		= keyboards[idx];
-		bool res			= pInput->get_dik_name(kb.dik, buff, 128 );
-		if(res)
-			kb.key_local_name	= buff;
-		else
-			kb.key_local_name	= kb.key_name;
+		pInput->get_dik_name(kb.dik, kb.key_local_name);
 
 //.		Msg("[%s]-[%s]",kb.key_name, kb.key_local_name.c_str());
 		++idx;
