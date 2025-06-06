@@ -102,7 +102,7 @@ void CCameraLook2::Update(Fvector& point, Fvector&)
 {
 	if(!m_locked_enemy)
 	{//autoaim
-		if( pInput->iGetAsyncKeyState(cam_dik) )
+		if( pInput->GetPressedKey(cam_dik) )
 		{
 			const CVisualMemoryManager::VISIBLES& vVisibles = Actor()->memory().visual().objects();
 			CVisualMemoryManager::VISIBLES::const_iterator v_it = vVisibles.begin();
@@ -130,7 +130,7 @@ void CCameraLook2::Update(Fvector& point, Fvector&)
 		}
 	}else
 	{
-		if( !pInput->iGetAsyncKeyState(cam_dik) ){
+		if( !pInput->GetPressedKey(cam_dik) ){
 			m_locked_enemy	= NULL;
 //.			Msg				("enemy is NILL");
 		}

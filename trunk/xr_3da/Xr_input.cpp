@@ -1,22 +1,15 @@
 #include "stdafx.h"
-#pragma hdrstop
-
-#include <stddef.h>
 #include "xr_input.h"
 #include "IInputReceiver.h"
 #include <SDL3/SDL_keyboard.h>
-#include <SDL3/SDL_events.h>
 
 CInput *	pInput	= nullptr;
-IInputReceiver		dummyController;
 
 ENGINE_API float	psMouseSens			= 1.f;
 ENGINE_API float	psMouseSensScale	= 1.f;
 ENGINE_API Flags32	psMouseInvert		= {FALSE};
 
 #define MOUSEBUFFERSIZE			64
-#define KEYBOARDBUFFERSIZE		64
-#define _KEYDOWN(name,key)		( name[key] & 0x80 )
 
 static bool g_exclusive	= true;
 void on_error_dialog			(bool before)
@@ -27,7 +20,7 @@ void on_error_dialog			(bool before)
 	pInput->exclusive_mode		(!before);
 }
 
-CInput::CInput						( BOOL bExclusive, int deviceForInit)
+CInput::CInput(BOOL bExclusive)
 {
 	g_exclusive							= !!bExclusive;
 
@@ -41,33 +34,23 @@ CInput::CInput						( BOOL bExclusive, int deviceForInit)
 	mouse_property.mouse_dt				=	25;
 
 	ZeroMemory							( mouseState,	sizeof(mouseState) );
-	ZeroMemory							( KBState,		sizeof(KBState) );
 	ZeroMemory							( timeStamp,	sizeof(timeStamp) );
 	ZeroMemory							( timeSave,		sizeof(timeStamp) );
 	ZeroMemory							( offs,			sizeof(offs) );
 
-	//===================== Dummy pack
-	iCapture	(&dummyController);
-
 	if (!pDI) CHK_DX(DirectInput8Create( GetModuleHandle(NULL), DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&pDI, NULL ));
 
-	// KEYBOARD
-	/*
-	if (deviceForInit & keyboard_device_key)
-		CHK_DX(CreateInputDevice(
-		&pKeyboard, 	GUID_SysKeyboard, 	&c_dfDIKeyboard,
-		((bExclusive)?DISCL_EXCLUSIVE:DISCL_NONEXCLUSIVE) | DISCL_FOREGROUND,
-		KEYBOARDBUFFERSIZE ));
-     */
-
 	// MOUSE
-	if (deviceForInit & mouse_device_key)
-		CHK_DX(CreateInputDevice(
-		&pMouse,		GUID_SysMouse,		&c_dfDIMouse2,
-		((bExclusive)?DISCL_EXCLUSIVE:DISCL_NONEXCLUSIVE) | DISCL_FOREGROUND | DISCL_NOWINKEY,
-		MOUSEBUFFERSIZE ));
+	CHK_DX(CreateInputDevice(
+	&pMouse,		GUID_SysMouse,		&c_dfDIMouse2,
+	((bExclusive)?DISCL_EXCLUSIVE:DISCL_NONEXCLUSIVE) | DISCL_FOREGROUND | DISCL_NOWINKEY,
+	MOUSEBUFFERSIZE ));
 
 	Debug.set_on_dialog				(&on_error_dialog);
+
+	InputsScancodes = nullptr;
+	for (int i = 0; i < CountInputsScancode; i++)
+		InputsScancodesPrev[i] = false;
 
 #ifdef ENGINE_BUILD
 	Device.seqAppActivate.Add		(this);
@@ -89,11 +72,6 @@ CInput::~CInput(void)
 	if( pMouse ){
 		pMouse->Unacquire();
 		_RELEASE	(pMouse);
-	}
-
-	if( pKeyboard ){
-		pKeyboard->Unacquire();
-		_RELEASE	(pKeyboard);
 	}
 
 	_SHOW_REF	("Input: ",pDI);
@@ -139,77 +117,37 @@ HRESULT CInput::CreateInputDevice( LPDIRECTINPUTDEVICE8* device, GUID guidDevice
 void CInput::SetAllAcquire( BOOL bAcquire )
 {
 	if (pMouse)		bAcquire ? pMouse->Acquire() 	: pMouse->Unacquire();
-	if (pKeyboard)	bAcquire ? pKeyboard->Acquire()	: pKeyboard->Unacquire();
 }
 
-void CInput::SetMouseAcquire( BOOL bAcquire )
-{
-	if (pMouse)		bAcquire ? pMouse->Acquire() : pMouse->Unacquire();
-}
-void CInput::SetKBDAcquire( BOOL bAcquire )
-{
-	if (pKeyboard)	bAcquire ? pKeyboard->Acquire()	: pKeyboard->Unacquire();
-}
 //-----------------------------------------------------------------------
-BOOL b_altF4 = FALSE;
-void CInput::KeyUpdate	( )
+void CInput::KeyUpdate()
 {
-	HRESULT						hr;
-	DWORD dwElements			= KEYBOARDBUFFERSIZE;
-	DIDEVICEOBJECTDATA			od[KEYBOARDBUFFERSIZE];
-	DWORD key					= 0;
+	if (cbStack.empty())
+		return;
 
-	VERIFY(pKeyboard);
+	InputsScancodes = SDL_GetKeyboardState(nullptr);
 
-	hr = pKeyboard->GetDeviceData( sizeof(DIDEVICEOBJECTDATA), &od[0], &dwElements, 0 );
-	if (( hr == DIERR_INPUTLOST )||( hr == DIERR_NOTACQUIRED )){
-		hr = pKeyboard->Acquire();
-		if ( hr != S_OK ) return;
-		hr = pKeyboard->GetDeviceData( sizeof(DIDEVICEOBJECTDATA), &od[0], &dwElements, 0 );
-		if ( hr != S_OK ) return;
-	}
-
-	for (u32 i = 0; i < dwElements; i++)
+	for (int i = 0; i < CountInputsScancode; i++)
 	{
-		key					= od[i].dwOfs;
-		KBState[key]		= od[i].dwData & 0x80;
-		if ( KBState[key])	
-			cbStack.back()->IR_OnKeyboardPress	( key );
-		if (!KBState[key])	
-			cbStack.back()->IR_OnKeyboardRelease	( key );
-	}
-	for ( u32 i = 0; i < COUNT_KB_BUTTONS; i++ )
-		if (KBState[i]) 
-			cbStack.back()->IR_OnKeyboardHold( i );
+		if (!InputsScancodes[i] && !InputsScancodesPrev[i])
+			continue;
 
-#ifndef _EDITOR
-	if(iGetAsyncKeyState(DIK_RMENU) || iGetAsyncKeyState(DIK_LMENU))
-	{
-		if (iGetAsyncKeyState(DIK_F4))
+		if (!InputsScancodes[i] && InputsScancodesPrev[i])
 		{
-			Engine.Event.Defer("KERNEL:disconnect");
-			Engine.Event.Defer("KERNEL:quit");
-			return;
+			cbStack.back()->IR_OnKeyboardRelease(i);
+			continue;
 		}
 
-		if (iGetAsyncKeyState(DIK_RETURN))
+		if (InputsScancodes[i] && InputsScancodesPrev[i])
 		{
-			Device.SetFullscreenWindow(true);
-			return;
+			cbStack.back()->IR_OnKeyboardHold(i);
+			continue;
 		}
+
+		cbStack.back()->IR_OnKeyboardPress(i);
 	}
-#endif    
-}
 
-void CInput::get_dik_name(SDL_Scancode dik, xr_string& string)
-{
-	SDL_Keycode key = SDL_GetKeyFromScancode(dik, SDL_KMOD_NONE, false);
-	string = SDL_GetKeyName(key);
-}
-
-BOOL CInput::iGetAsyncKeyState( int dik )
-{
-	return !!KBState[dik];
+	pInput->InputBeforeNewFrame();
 }
 
 BOOL CInput::iGetAsyncBtnState( int btn )
@@ -219,6 +157,9 @@ BOOL CInput::iGetAsyncBtnState( int btn )
 
 void CInput::MouseUpdate( )
 {
+	if (cbStack.empty())
+		return;
+
 	HRESULT hr;
 	DWORD dwElements	= MOUSEBUFFERSIZE;
 	DIDEVICEOBJECTDATA	od[MOUSEBUFFERSIZE];
@@ -352,6 +293,10 @@ void CInput::iRelease(IInputReceiver *p)
 	{
 		cbStack.back()->IR_OnDeactivate();
 		cbStack.pop_back();
+
+		if (cbStack.empty())
+			return;
+
 		IInputReceiver * ir = cbStack.back();
 		ir->IR_OnActivate();
 	}else{// we are not topmost receiver, so remove the nearest one
@@ -373,7 +318,6 @@ void CInput::OnAppActivate		(void)
 
 	SetAllAcquire	( true );
 	ZeroMemory		( mouseState,	sizeof(mouseState) );
-	ZeroMemory		( KBState,		sizeof(KBState) );
 	ZeroMemory		( timeStamp,	sizeof(timeStamp) );
 	ZeroMemory		( timeSave,		sizeof(timeStamp) );
 	ZeroMemory		( offs,			sizeof(offs) );
@@ -386,7 +330,6 @@ void CInput::OnAppDeactivate	(void)
 
 	SetAllAcquire	( false );
 	ZeroMemory		( mouseState,	sizeof(mouseState) );
-	ZeroMemory		( KBState,		sizeof(KBState) );
 	ZeroMemory		( timeStamp,	sizeof(timeStamp) );
 	ZeroMemory		( timeSave,		sizeof(timeStamp) );
 	ZeroMemory		( offs,			sizeof(offs) );
@@ -396,7 +339,7 @@ void CInput::OnFrame			(void)
 {
 	Device.Statistic->Input.Begin			();
 	dwCurTime		= Device.TimerAsync_MMT	();
-	if (pKeyboard)	KeyUpdate				();
+	KeyUpdate();
 	if (pMouse)		MouseUpdate				();
 	Device.Statistic->Input.End				();
 }
@@ -428,12 +371,49 @@ bool CInput::get_exclusive_mode()
 	return g_exclusive;
 }
 
-void CInput::InputKeyboardPress(const SDL_Scancode& scancode, bool press)
+void CInput::InputBeforeNewFrame()
 {
-	InputsScancodes[scancode] = press;
+	for (int i = 0; i < CountInputsScancode; ++i)
+		InputsScancodesPrev[i] = InputsScancodes[i];
+}
 
-	if (press)
-		cbStack.back()->IR_OnKeyboardPress(scancode);
-	else
-		cbStack.back()->IR_OnKeyboardRelease(scancode);
+bool CInput::GetModState(const SDL_Keymod& mode) const
+{
+	return SDL_GetModState() & mode;
+}
+
+bool CInput::GetPressedKey(int dik) const
+{
+	return InputsScancodes[dik];
+}
+
+const char* CInput::GetKeyName(SDL_Scancode dik)
+{
+	SDL_Keycode key = SDL_GetKeyFromScancode(dik, SDL_KMOD_NONE, false);
+	const char* name = SDL_GetKeyName(key);
+
+	return UTF8ToANSI(name);
+}
+
+void CInput::TextInputStart(IInputReceiver* receiver)
+{
+	R_ASSERT2(TextInputReceiver == nullptr, "InputText was started, but not stopped! Need call TextInputStop() for this receiver, and set new receiver!");
+	SDL_StartTextInput(Device.SDLWindow);
+
+	TextInputReceiver = receiver;
+}
+
+void CInput::TextInputStop()
+{
+	R_ASSERT2(TextInputReceiver != nullptr, "InputText was stopped or even have not started! Need delete this call TextInputStop() or call TextInputStart() for set receiver");
+	SDL_StopTextInput(Device.SDLWindow);
+
+	TextInputReceiver = nullptr;
+}
+
+void CInput::TextInputProcess(const char* text)
+{
+	const char* TextInput = UTF8ToANSI(text);
+
+	TextInputReceiver->IR_OnTextInput(TextInput);
 }

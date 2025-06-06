@@ -13,6 +13,7 @@
 #include "xr_input.h"
 
 #include "edit_actions.h"
+#include <SDL3/SDL_scancode.h>
 
 ENGINE_API float g_console_sensitive = 0.15f;
 
@@ -54,14 +55,7 @@ line_edit_control::line_edit_control( u32 str_buffer_size )
 	m_buf2		= NULL;
 	m_buf3		= NULL;
 
-	for ( u32 i = 0; i < DIK_COUNT; ++i )
-	{
-		m_actions[i] = NULL;
-	}
-
 	init( str_buffer_size );
-
-	update_key_states	();
 }
 
 line_edit_control::~line_edit_control()
@@ -74,52 +68,10 @@ line_edit_control::~line_edit_control()
 	xr_free( m_buf2 );
 	xr_free( m_buf3 );
 
-	size_t const array_size	= sizeof(m_actions)/sizeof(m_actions[0]);
-	buffer_vector<Base*>	actions(m_actions, array_size, &m_actions[0], &m_actions[0] + array_size);
-	std::sort				(actions.begin(), actions.end());
-	actions.erase			(
-		std::unique(
-			actions.begin(),
-			actions.end()
-		),
-		actions.end()
-	);
-	delete_data				( actions );
-}
+	for (const auto& action : m_actions)
+		delete action.second;
 
-static inline bool get_caps_lock_state	()
-{
-#if 0
-	static bool first_time					= true;
-	static bool is_windows_vista_or_later	= false;
-	if ( first_time ) {
-		first_time							= false;
-		OSVERSIONINFO						version_info;
-		ZeroMemory							( &version_info, sizeof(version_info) );
-		version_info.dwOSVersionInfoSize	= sizeof(version_info);
-		GetVersionEx						( &version_info );
-		is_windows_vista_or_later			= version_info.dwMajorVersion >= 6;
-	}
-
-	if ( is_windows_vista_or_later )
-		return		!!(GetKeyState(VK_CAPITAL) & 1);
-	else
-#else // #if 0
-		return		false;
-#endif // #if 0
-}
-
-void line_edit_control::update_key_states	()
-{
-	m_key_state.zero( );
-
-	set_key_state	( ks_LShift,	!!pInput->iGetAsyncKeyState(DIK_LSHIFT)		);
-	set_key_state	( ks_RShift,	!!pInput->iGetAsyncKeyState(DIK_RSHIFT)		);
-	set_key_state	( ks_LCtrl,		!!pInput->iGetAsyncKeyState(DIK_LCONTROL)	);
-	set_key_state	( ks_RCtrl,		!!pInput->iGetAsyncKeyState(DIK_RCONTROL)	);
-	set_key_state	( ks_LAlt,		!!pInput->iGetAsyncKeyState(DIK_LALT)		);
-	set_key_state	( ks_RAlt,		!!pInput->iGetAsyncKeyState(DIK_RALT)		);
-	set_key_state	( ks_CapsLock,	text_editor::get_caps_lock_state()			);
+	m_actions.clear();
 }
 
 void line_edit_control::clear_states()
@@ -152,8 +104,6 @@ void line_edit_control::clear_states()
 	m_cursor_view		= false;
 	m_need_update		= false;
 	m_unselected_mode	= false;
-
-	update_key_states	( );
 }
 
 void line_edit_control::init( u32 str_buffer_size, init_mode mode )
@@ -172,14 +122,15 @@ void line_edit_control::init( u32 str_buffer_size, init_mode mode )
 
 	clear_states();
 
-	for ( u32 i = 0; i < DIK_COUNT; ++i )
+	//for ( u32 i = 0; i < DIK_COUNT; ++i )
 	{
-		xr_delete( m_actions[i] );
-		m_actions[i] = NULL;
+		//xr_delete( m_actions[i] );
+		//m_actions[i] = NULL;
 	}
 
 	if ( mode == im_read_only )
 	{
+		/*
 		assign_callback( DIK_A     , ks_Ctrl, Callback( this, &line_edit_control::select_all_buf       ) );
 		assign_callback( DIK_C     , ks_Ctrl, Callback( this, &line_edit_control::copy_to_clipboard    ) );
 		assign_callback( DIK_INSERT, ks_Ctrl, Callback( this, &line_edit_control::copy_to_clipboard    ) );
@@ -190,15 +141,17 @@ void line_edit_control::init( u32 str_buffer_size, init_mode mode )
 		assign_callback( DIK_RIGHT , ks_free, Callback( this, &line_edit_control::move_pos_right       ) );
 		assign_callback( DIK_LEFT  , ks_Ctrl, Callback( this, &line_edit_control::move_pos_left_word   ) );
 		assign_callback( DIK_RIGHT , ks_Ctrl, Callback( this, &line_edit_control::move_pos_right_word  ) );
+		*/
 	}
 	else
 	{
 		assign_char_pairs( mode );
 
-		assign_callback( DIK_INSERT, ks_free, Callback( this, &line_edit_control::flip_insert_mode     ) );
-		assign_callback( DIK_A     , ks_Ctrl, Callback( this, &line_edit_control::select_all_buf       ) );
-		assign_callback( DIK_Z     , ks_Ctrl, Callback( this, &line_edit_control::undo_buf             ) );
+		//assign_callback( DIK_INSERT, ks_free, Callback( this, &line_edit_control::flip_insert_mode     ) );
+		//assign_callback( DIK_A     , ks_Ctrl, Callback( this, &line_edit_control::select_all_buf       ) );
+		//assign_callback( DIK_Z     , ks_Ctrl, Callback( this, &line_edit_control::undo_buf             ) );
 
+		/*
 		assign_callback( DIK_C     , ks_Ctrl, Callback( this, &line_edit_control::copy_to_clipboard    ) );
 		assign_callback( DIK_V     , ks_Ctrl, Callback( this, &line_edit_control::paste_from_clipboard ) );
 		assign_callback( DIK_X     , ks_Ctrl, Callback( this, &line_edit_control::cut_to_clipboard     ) );
@@ -213,27 +166,27 @@ void line_edit_control::init( u32 str_buffer_size, init_mode mode )
 		assign_callback( DIK_RIGHT , ks_free, Callback( this, &line_edit_control::move_pos_right       ) );
 		assign_callback( DIK_LEFT  , ks_Ctrl, Callback( this, &line_edit_control::move_pos_left_word   ) );
 		assign_callback( DIK_RIGHT , ks_Ctrl, Callback( this, &line_edit_control::move_pos_right_word  ) );
+		*/
 
-		assign_callback( DIK_BACK  , ks_free, Callback( this, &line_edit_control::delete_selected_back ) );
-		assign_callback( DIK_DELETE, ks_free, Callback( this, &line_edit_control::delete_selected_forward ) );
-		assign_callback( DIK_BACK  , ks_Ctrl, Callback( this, &line_edit_control::delete_word_back     ) );
-		assign_callback( DIK_DELETE, ks_Ctrl, Callback( this, &line_edit_control::delete_word_forward  ) );
+		auto action_prev = new callback_base(Callback(this, &line_edit_control::delete_selected_back), SDL_KMOD_NONE);
+		auto action = new callback_base(Callback(this, &line_edit_control::delete_word_back), SDL_KMOD_CTRL);
+		
+		assign_callback(SDL_SCANCODE_BACKSPACE, action, action_prev);
 
-		assign_callback( DIK_LSHIFT, ks_Ctrl, Callback( this, &line_edit_control::SwitchKL ) );
-		assign_callback( DIK_LSHIFT, ks_Alt, Callback( this, &line_edit_control::SwitchKL  ) );
+		//assign_callback( DIK_DELETE, ks_free, Callback( this, &line_edit_control::delete_selected_forward ) );
+
+		//assign_callback( DIK_DELETE, ks_Ctrl, Callback( this, &line_edit_control::delete_word_forward  ) );
+
+//		assign_callback( DIK_LSHIFT, ks_Ctrl, Callback( this, &line_edit_control::SwitchKL ) );
+//		assign_callback( DIK_LSHIFT, ks_Alt, Callback( this, &line_edit_control::SwitchKL  ) );
 
 	} // if mode
-
-	create_key_state( DIK_LSHIFT  , ks_LShift );
-	create_key_state( DIK_RSHIFT  , ks_RShift );
-	create_key_state( DIK_LCONTROL, ks_LCtrl  );
-	create_key_state( DIK_RCONTROL, ks_RCtrl  );
-	create_key_state( DIK_LALT    , ks_LAlt   );
-	create_key_state( DIK_RALT    , ks_RAlt   );
 }
 
 void line_edit_control::assign_char_pairs( init_mode mode )
 {
+	//TODO: Not fix this!!! Not relevant!!!
+	/*
 	create_char_pair( DIK_NUMPAD0, '0', '0' );
 	create_char_pair( DIK_NUMPAD1, '1', '1' );
 	create_char_pair( DIK_NUMPAD2, '2', '2' );
@@ -312,60 +265,49 @@ void line_edit_control::assign_char_pairs( init_mode mode )
 	create_char_pair( DIK_SPACE       , ' ', ' ' );
 	create_char_pair( DIK_GRAVE       , '`', '~', true );
 
-	create_char_pair( DIK_A, 'a', 'A', true );
-	create_char_pair( DIK_B, 'b', 'B', true );
-	create_char_pair( DIK_C, 'c', 'C', true );
-	create_char_pair( DIK_D, 'd', 'D', true );
-	create_char_pair( DIK_E, 'e', 'E', true );
-	create_char_pair( DIK_F, 'f', 'F', true );
-	create_char_pair( DIK_G, 'g', 'G', true );
-	create_char_pair( DIK_H, 'h', 'H', true );
-	create_char_pair( DIK_I, 'i', 'I', true );
-	create_char_pair( DIK_J, 'j', 'J', true );
-	create_char_pair( DIK_K, 'k', 'K', true );
-	create_char_pair( DIK_L, 'l', 'L', true );
-	create_char_pair( DIK_M, 'm', 'M', true );
-	create_char_pair( DIK_N, 'n', 'N', true );
-	create_char_pair( DIK_O, 'o', 'O', true );
-	create_char_pair( DIK_P, 'p', 'P', true );
-	create_char_pair( DIK_Q, 'q', 'Q', true );
-	create_char_pair( DIK_R, 'r', 'R', true );
-	create_char_pair( DIK_S, 's', 'S', true );
-	create_char_pair( DIK_T, 't', 'T', true );
-	create_char_pair( DIK_U, 'u', 'U', true );
-	create_char_pair( DIK_V, 'v', 'V', true );
-	create_char_pair( DIK_W, 'w', 'W', true );
-	create_char_pair( DIK_X, 'x', 'X', true );
-	create_char_pair( DIK_Y, 'y', 'Y', true );
-	create_char_pair( DIK_Z, 'z', 'Z', true );
+	create_char_pair(SDL_SCANCODE_A, 'a', 'A', true );
+	create_char_pair(SDL_SCANCODE_B, 'b', 'B', true );
+	create_char_pair(SDL_SCANCODE_C, 'c', 'C', true );
+	create_char_pair(SDL_SCANCODE_D, 'd', 'D', true );
+	create_char_pair(SDL_SCANCODE_E, 'e', 'E', true );
+	create_char_pair(SDL_SCANCODE_F, 'f', 'F', true );
+	create_char_pair(SDL_SCANCODE_G, 'g', 'G', true );
+	create_char_pair(SDL_SCANCODE_H, 'h', 'H', true );
+	create_char_pair(SDL_SCANCODE_I, 'i', 'I', true );
+	create_char_pair(SDL_SCANCODE_J, 'j', 'J', true );
+	create_char_pair(SDL_SCANCODE_K, 'k', 'K', true );
+	create_char_pair(SDL_SCANCODE_L, 'l', 'L', true );
+	create_char_pair(SDL_SCANCODE_M, 'm', 'M', true );
+	create_char_pair(SDL_SCANCODE_N, 'n', 'N', true );
+	create_char_pair(SDL_SCANCODE_O, 'o', 'O', true );
+	create_char_pair(SDL_SCANCODE_P, 'p', 'P', true );
+	create_char_pair(SDL_SCANCODE_Q, 'q', 'Q', true );
+	create_char_pair(SDL_SCANCODE_R, 'r', 'R', true );
+	create_char_pair(SDL_SCANCODE_S, 's', 'S', true );
+	create_char_pair(SDL_SCANCODE_T, 't', 'T', true );
+	create_char_pair(SDL_SCANCODE_U, 'u', 'U', true );
+	create_char_pair(SDL_SCANCODE_V, 'v', 'V', true );
+	create_char_pair(SDL_SCANCODE_W, 'w', 'W', true );
+	create_char_pair(SDL_SCANCODE_X, 'x', 'X', true );
+	create_char_pair(SDL_SCANCODE_Y, 'y', 'Y', true );
+	create_char_pair(SDL_SCANCODE_Z, 'z', 'Z', true );
+	*/
 }
 
-void line_edit_control::create_key_state( u32 const dik, key_state state )
+void line_edit_control::create_char_pair(const SDL_Scancode& key, char c, char c_shift, bool translate )
 {
-	Base* prev = m_actions[dik];
-	//if ( m_actions[dik] )
-	//{
-	//	xr_delete( m_actions[dik] );
-	//}
-	m_actions[dik] = xr_new<text_editor::key_state_base>( state, prev );
+	m_actions[key] = new text_editor::type_pair(key, c, c_shift, translate);
 }
 
-void line_edit_control::create_char_pair( u32 const dik, char c, char c_shift, bool translate )
+void line_edit_control::assign_callback(const SDL_Scancode& key, const SDL_Keymod& state, Callback const& callback )
 {
-	if ( m_actions[dik] )
-	{
-		xr_delete( m_actions[dik] );
-	}
-
-	m_actions[dik] = xr_new<text_editor::type_pair>( dik, c, c_shift, translate );
+	m_actions[key] = new text_editor::callback_base(callback, state);
 }
 
-void line_edit_control::assign_callback( u32 const dik, key_state state, Callback const& callback )
+void line_edit_control::assign_callback(const SDL_Scancode& key, text_editor::callback_base* first, text_editor::callback_base* second)
 {
-	VERIFY( dik < DIK_COUNT );
-	Base* prev_action = m_actions[dik];
-	m_actions[dik] = xr_new<text_editor::callback_base>( callback, state );
-	m_actions[dik]->on_assign( prev_action );
+	first->SetPrevCallback(second);
+	m_actions[key] = first;
 }
 
 void line_edit_control::insert_character( char c )
@@ -396,14 +338,26 @@ void line_edit_control::set_edit( LPCSTR str )
 	update_bufs();
 }
 
+void line_edit_control::InputConsoleText(const char* text)
+{
+	u32 text_size = xr_strlen(text) + xr_strlen(m_edit_str);
+	
+	if (text_size == (m_buffer_size - 1))
+		return;
+
+	strncat_s(m_edit_str, m_buffer_size,  text, text_size);
+	m_edit_str[text_size] = 0;
+
+	m_cur_pos = text_size;
+	m_select_start = m_cur_pos;
+	m_accel = 1.0f;
+	update_bufs();
+}
+
 // ========================================================
 
 void line_edit_control::on_key_press( int dik )
 {
-	if ( DIK_COUNT <= dik )
-	{
-		return;
-	}
 	if ( !m_hold_mode )
 	{
 		m_last_key_time = 0.0f;
@@ -415,10 +369,11 @@ void line_edit_control::on_key_press( int dik )
 	clear_inserted();
 	compute_positions();
 
-	if ( m_actions[dik] )
-	{
-		m_actions[dik]->on_key_press( this );
-	}
+	auto it = m_actions.find((SDL_Scancode)dik);
+
+	if (it != m_actions.end())
+		it->second->on_key_press(this);
+
 	// ===========
 	if ( dik == DIK_LCONTROL || dik == DIK_RCONTROL )
 	{
@@ -429,7 +384,7 @@ void line_edit_control::on_key_press( int dik )
 	clamp_cur_pos();
 
 	add_inserted_text();
-	if ( m_mark && (!get_key_state( ks_Shift ) || !empty_inserted() ) )
+	if ( m_mark && (!pInput->GetModState(SDL_KMOD_SHIFT) || !empty_inserted()))
 	{
 		m_select_start = m_cur_pos;
 	}
@@ -438,7 +393,6 @@ void line_edit_control::on_key_press( int dik )
 	m_repeat_mode = false;
 	m_rep_time    = 0.0f;
 	
-	update_key_states( );
 	update_bufs();
 }
 
@@ -446,12 +400,11 @@ void line_edit_control::on_key_press( int dik )
 
 void line_edit_control::on_key_hold( int dik )
 {
-	update_key_states( );
 	update_bufs();
 	switch ( dik )
 	{
 	case DIK_TAB:
-	case DIK_LSHIFT:   case DIK_RSHIFT:
+//	case DIK_LSHIFT:   case DIK_RSHIFT:
 	case DIK_LCONTROL: case DIK_RCONTROL:
 	case DIK_LALT:     case DIK_RALT:
 		return;
@@ -476,14 +429,11 @@ void line_edit_control::on_key_release( int dik )
 	m_rep_time      = 0.0f;
 	m_last_key_time = 0.0f;
 
-	update_key_states( );
 	update_bufs		( );
 }
 
 void line_edit_control::on_frame()
 {
-	update_key_states	( );
-
 	u32   fr_time = Device.dwTimeContinual;
 	float dt      = (fr_time - m_last_frame_time) * 0.001f;
 	if ( dt > 0.06666f )
@@ -667,25 +617,16 @@ void line_edit_control::delete_selected( bool back )
 
 void line_edit_control::delete_word_back()
 {
-	bool const left_shift	= get_key_state(ks_LShift);
-	bool const right_shift	= get_key_state(ks_RShift);
-	set_key_state			( ks_Shift, true );
-
 	move_pos_left_word		( );
 	compute_positions		( );
 	delete_selected			( true );
-
-	set_key_state			( ks_LShift, left_shift );
-	set_key_state			( ks_RShift, right_shift );
 }
 
 void line_edit_control::delete_word_forward()
 {
-	set_key_state( ks_Shift, true );
 	move_pos_right_word();
 	compute_positions();
 	delete_selected( false );
-	set_key_state( ks_Shift, false );
 }
 
 void line_edit_control::move_pos_home()

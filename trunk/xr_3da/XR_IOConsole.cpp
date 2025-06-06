@@ -563,7 +563,7 @@ void CConsole::ExecuteCommand( LPCSTR cmd_str, bool record_cmd )
 		IConsole_Command* cc = it->second;
 		if ( cc && cc->bEnabled )
 		{
-			if ( cc->bLowerCaseArgs && !ec().get_key_state(text_editor::ks_LShift))
+			if ( cc->bLowerCaseArgs && (pInput->GetModState(SDL_KMOD_CAPS) || pInput->GetModState(SDL_KMOD_SHIFT)))
 			{
 				strlwr( last );
 			}
@@ -622,11 +622,12 @@ void CConsole::Show()
 	update_tips();
 
 	m_editor->IR_Capture();
+
+	pInput->TextInputStart(m_editor);
+
 	Device.seqRender.Add( this, 1 );
 	Device.seqFrame.Add( this );
 }
-
-extern CInput* pInput;
 
 void CConsole::Hide()
 {
@@ -649,6 +650,8 @@ void CConsole::Hide()
 	bVisible = false;
 	reset_selected_tip();
 	update_tips();
+
+	pInput->TextInputStop();
 
 	Device.seqFrame.Remove( this );
 	Device.seqRender.Remove( this );

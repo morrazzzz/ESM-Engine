@@ -311,6 +311,7 @@ public:
 };
 
 XRCORE_API xr_string ANSIToUTF8(const xr_string& string);
+XRCORE_API const char* UTF8ToANSI(const char* string);
 
 //Borland class dll interface
 #define	_BCL			__stdcall	

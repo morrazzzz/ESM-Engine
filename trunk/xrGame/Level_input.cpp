@@ -177,10 +177,10 @@ void CLevel::IR_OnKeyboardPress(int key)
 		return;
 
 	case DIK_F4: {
-		if (pInput->iGetAsyncKeyState(DIK_LALT))
+		if (pInput->GetPressedKey(DIK_LALT))
 			break;
 
-		if (pInput->iGetAsyncKeyState(DIK_RALT))
+		if (pInput->GetPressedKey(DIK_RALT))
 			break;
 
 		bool bOk = false;
@@ -236,7 +236,7 @@ void CLevel::IR_OnKeyboardPress(int key)
 		return;
 	}
 	case MOUSE_1: {
-		if (pInput->iGetAsyncKeyState(DIK_LALT)) {
+		if (pInput->GetPressedKey(DIK_LALT)) {
 			if (!CurrentEntity())
 				break;
 
@@ -294,7 +294,7 @@ void CLevel::IR_OnActivate()
 {
 	if(!pInput) return;
 	int i;
-	for (i = 0; i < CInput::COUNT_KB_BUTTONS; i++ )
+	for (i = 0; i < CountInputsScancode; i++ )
 	{
 		if(IR_GetKeyState(i))
 		{

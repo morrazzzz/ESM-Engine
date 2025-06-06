@@ -265,7 +265,10 @@ void CUISequencer::IR_OnActivate()
 {
 	if(!pInput) return;
 	int i;
-	for (i = 0; i < CInput::COUNT_KB_BUTTONS; i++ )
+	if (pInput->InputsScancodes)
+	{ 
+
+	for (i = 0; i < CountInputsScancode; i++ )
 	{
 		if(IR_GetKeyState(i))
 		{
@@ -289,5 +292,6 @@ void CUISequencer::IR_OnActivate()
 				}break;
 			};
 		};
+	}
 	}
 }

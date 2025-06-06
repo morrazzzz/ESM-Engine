@@ -85,9 +85,13 @@ void CRenderDevice::EventWindow()
             SetWindowActive(active);
             break;
         }
-        case SDL_EVENT_KEY_DOWN:
-        case SDL_EVENT_KEY_UP:
-            pInput->InputKeyboardPress(SDLWindowEvent.key.scancode, SDLWindowEvent.key.down);
+        case SDL_EVENT_TEXT_INPUT:
+        {
+            pInput->TextInputProcess(SDLWindowEvent.text.text);
+            break;
+        }
+        case SDL_EVENT_TEXT_EDITING:
+            __debugbreak();
             break;
         }
     }

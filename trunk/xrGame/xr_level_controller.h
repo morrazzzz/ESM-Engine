@@ -101,7 +101,7 @@ struct _keyboard
 {
 	LPCSTR		key_name;
 	SDL_Scancode dik;
-	xr_string	key_local_name;
+	string32 key_local_name;
 };
 enum _key_group{
 	_both	=	(1<<0)			,

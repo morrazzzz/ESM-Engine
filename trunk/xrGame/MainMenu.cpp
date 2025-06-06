@@ -244,6 +244,8 @@ void	CMainMenu::IR_OnKeyboardPress(int dik)
 {
 	if(!IsActive()) return;
 
+
+//	Console->Show();
 	if( is_binded(kCONSOLE, dik) )
 	{
 		Console->Show();

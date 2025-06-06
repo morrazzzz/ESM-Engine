@@ -28,6 +28,7 @@ protected:
 	virtual void	IR_OnKeyboardPress	( int dik );
 	virtual void	IR_OnKeyboardHold	( int dik );
 	virtual void	IR_OnKeyboardRelease( int dik );
+	void IR_OnTextInput(const char* text) override;
 
 private:
 	line_edit_control		m_control;

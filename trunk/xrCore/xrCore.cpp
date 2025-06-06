@@ -159,6 +159,31 @@ xr_string ANSIToUTF8(const xr_string& string)
 	return result;
 }
 
+const char* UTF8ToANSI(const char* text)
+{
+	static xr_string result;
+
+	wchar_t* UTF8WideChar{};
+	size_t text_lenght = xr_strlen(text);
+	int UTF8WideCharLenght = MultiByteToWideChar(CP_UTF8, 0, text, text_lenght, nullptr, 0);
+	UTF8WideChar = new wchar_t[UTF8WideCharLenght + 1];
+	MultiByteToWideChar(CP_UTF8, 0, text, text_lenght, UTF8WideChar, UTF8WideCharLenght);
+	UTF8WideChar[UTF8WideCharLenght] = L'\0';
+
+	char* ANSIChar = nullptr;
+	int ANSILenght = WideCharToMultiByte(CP_ACP, 0, UTF8WideChar, std::wcslen(UTF8WideChar), nullptr, 0, nullptr, nullptr);
+	ANSIChar = new char[ANSILenght + 1];
+	WideCharToMultiByte(CP_ACP, 0, UTF8WideChar, std::wcslen(UTF8WideChar), ANSIChar, ANSILenght, nullptr, nullptr);
+	ANSIChar[ANSILenght] = '\0';
+
+	result = ANSIChar;
+
+	delete[] ANSIChar;
+	delete[] UTF8WideChar;
+
+	return result.c_str();
+}
+
 #ifndef XRCORE_STATIC
 	BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD ul_reason_for_call, LPVOID lpvReserved)
 {

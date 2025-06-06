@@ -150,31 +150,61 @@ _keyboard keyboards[] = {
 	{ "kEQUALS", SDL_SCANCODE_EQUALS},
 	{ "kLBRACKET", SDL_SCANCODE_LEFTBRACKET},
 	{ "kRBRACKET", SDL_SCANCODE_RIGHTBRACKET },
+	{ "kBACKSLASH", SDL_SCANCODE_BACKSLASH},
 
-	{ NULL, 			SDL_SCANCODE_UNKNOWN}
+	{ "kSEMICOLON", SDL_SCANCODE_SEMICOLON},
+	{ "kAPOSTROPHE", SDL_SCANCODE_APOSTROPHE},
+	{ "kGRAVE", SDL_SCANCODE_GRAVE},
+	{ "kCOMMA", SDL_SCANCODE_COMMA},
+	{ "kPERIOD", SDL_SCANCODE_PERIOD},
+	{ "kSLASH", SDL_SCANCODE_SLASH},
+
+	{ "kCAPITAL", SDL_SCANCODE_CAPSLOCK },
+
+	{ "kF1", SDL_SCANCODE_F1 },
+	{ "kF2", SDL_SCANCODE_F2 },
+	{ "kF3", SDL_SCANCODE_F3 },
+	{ "kF4", SDL_SCANCODE_F4 },
+	{ "kF5", SDL_SCANCODE_F5 },
+	{ "kF6", SDL_SCANCODE_F6 },
+	{ "kF7", SDL_SCANCODE_F7 },
+	{ "kF8", SDL_SCANCODE_F8 },
+	{ "kF9", SDL_SCANCODE_F9 },
+	{ "kF10", SDL_SCANCODE_F10 },
+	{ "kF11", SDL_SCANCODE_F11 },
+	{ "kF12", SDL_SCANCODE_F12 },
+
+    //TODO: Need implement print screen???
+	//
+	{ "kSCROLL", SDL_SCANCODE_SCROLLLOCK },
+	{ "kPAUSE", SDL_SCANCODE_PAUSE },
+	{ "kINSERT", SDL_SCANCODE_INSERT },
+
+	{ "kHOME", SDL_SCANCODE_HOME },
+	{ "kPRIOR", SDL_SCANCODE_PAGEUP },
+	{ "kDELETE", SDL_SCANCODE_DELETE },
+	{ "kEND", SDL_SCANCODE_END },
+	{ "kNEXT", SDL_SCANCODE_PAGEDOWN },
+	{ "kRIGHT", SDL_SCANCODE_RIGHT },
+	{ "kLEFT", SDL_SCANCODE_LEFT },
+	{ "kDOWN", SDL_SCANCODE_DOWN },
+	{ "kUP", SDL_SCANCODE_UP },
+
+	{ nullptr, SDL_SCANCODE_UNKNOWN}
 
 	/*
 	{ "kLCONTROL",		DIK_LCONTROL	},
-	{ "kSEMICOLON",		DIK_SEMICOLON	},	{ "kAPOSTROPHE",	DIK_APOSTROPHE	},
-	{ "kGRAVE",			DIK_GRAVE		},	{ "kLSHIFT",	 	DIK_LSHIFT		},
-	{ "kBACKSLASH",		DIK_BACKSLASH	},	{ "kZ",				DIK_Z			},
-	{ "kCOMMA",			DIK_COMMA		},	{ "kPERIOD",		DIK_PERIOD		},
-	{ "kSLASH",			DIK_SLASH		},	{ "kRSHIFT",		DIK_RSHIFT		},
-	{ "kMULTIPLY",		DIK_MULTIPLY	},	{ "kLMENU",			DIK_LMENU		},	{ "kCAPITAL",		DIK_CAPITAL		},
-	{ "kF1",			DIK_F1			},	{ "kF2",			DIK_F2			},
-	{ "kF3",			DIK_F3			},	{ "kF4",			DIK_F4			},
-	{ "kF5",			DIK_F5			},	{ "kF6",			DIK_F6			},
-	{ "kF7",			DIK_F7			},	{ "kF8",			DIK_F8			},
-	{ "kF9",			DIK_F9			},	{ "kF10",			DIK_F10			},
-	{ "kNUMLOCK",		DIK_NUMLOCK		},	{ "kSCROLL",		DIK_SCROLL		},
+	{ "kLSHIFT",	 	DIK_LSHIFT		},
+	{ "kRSHIFT",		DIK_RSHIFT		},
+	{ "kMULTIPLY",		DIK_MULTIPLY	},	{ "kLMENU",			DIK_LMENU		},
+	{ "kNUMLOCK",		DIK_NUMLOCK		},
 	{ "kNUMPAD7",		DIK_NUMPAD7		},	{ "kNUMPAD8",		DIK_NUMPAD8		},
 	{ "kNUMPAD9",		DIK_NUMPAD9		},	{ "kSUBTRACT",		DIK_SUBTRACT	},
 	{ "kNUMPAD4",		DIK_NUMPAD4		},	{ "kNUMPAD5",		DIK_NUMPAD5		},
 	{ "kNUMPAD6",		DIK_NUMPAD6		},	{ "kADD",			DIK_ADD			},
 	{ "kNUMPAD1",		DIK_NUMPAD1		},	{ "kNUMPAD2",		DIK_NUMPAD2		},
 	{ "kNUMPAD3",		DIK_NUMPAD3		},	{ "kNUMPAD0",		DIK_NUMPAD0		},
-	{ "kDECIMAL",		DIK_DECIMAL		},	{ "kF11",			DIK_F11			},
-	{ "kF12",			DIK_F12			},	{ "kF13",			DIK_F13			},
+	{ "kDECIMAL",		DIK_DECIMAL		},	{ "kF13",			DIK_F13			},
 	{ "kF14",			DIK_F14			},	{ "kF15",			DIK_F15			},
 	{ "kKANA",			DIK_KANA		},	{ "kCONVERT",		DIK_CONVERT		},
 	{ "kNOCONVERT",		DIK_NOCONVERT	},	{ "kYEN",			DIK_YEN			},
@@ -185,14 +215,10 @@ _keyboard keyboards[] = {
 	{ "kUNLABELED",		DIK_UNLABELED	},	{ "kNUMPADENTER",	DIK_NUMPADENTER	},
 	{ "kRCONTROL",		DIK_RCONTROL	},	{ "kNUMPADCOMMA",	DIK_NUMPADCOMMA	},
 	{ "kDIVIDE",		DIK_DIVIDE		},	{ "kSYSRQ",			DIK_SYSRQ		},
-	{ "kRMENU",			DIK_RMENU		},	{ "kHOME",			DIK_HOME		},
-	{ "kUP",			DIK_UP			},	{ "kPRIOR",			DIK_PRIOR		},
-	{ "kLEFT",			DIK_LEFT		},	{ "kRIGHT",			DIK_RIGHT		},
-	{ "kEND",			DIK_END			},	{ "kDOWN",			DIK_DOWN		},
-	{ "kNEXT",			DIK_NEXT		},	{ "kINSERT",		DIK_INSERT		},
-	{ "kDELETE",		DIK_DELETE		},	{ "kLWIN",			DIK_LWIN		},
+	{ "kRMENU",			DIK_RMENU		},
+	{ "kLWIN",			DIK_LWIN		},
 	{ "kRWIN",			DIK_RWIN		},	{ "kAPPS",			DIK_APPS		},
-	{ "kPAUSE",			DIK_PAUSE		},	{ "mouse1",			MOUSE_1			},
+	{ "mouse1",			MOUSE_1			},
 	{ "mouse2",			MOUSE_2			},	{ "mouse3",			MOUSE_3			},
 	{ "mouse4",			MOUSE_4			},	{ "mouse5",			MOUSE_5			},
 	{ "mouse6",			MOUSE_6			},	{ "mouse7",			MOUSE_7			},
@@ -231,12 +257,10 @@ void initialize_bindings()
 void remap_keys()
 {
 	int idx				= 0;
-	string128			buff;
 	while(keyboards[idx].key_name)
 	{
-		buff[0]				= 0;
 		_keyboard&	kb		= keyboards[idx];
-		pInput->get_dik_name(kb.dik, kb.key_local_name);
+		strcpy(kb.key_local_name, pInput->GetKeyName(kb.dik));
 
 //.		Msg("[%s]-[%s]",kb.key_name, kb.key_local_name.c_str());
 		++idx;
@@ -383,21 +407,21 @@ void GetActionAllBinding		(LPCSTR _action, char* dst_buff, int dst_buff_sz)
 
 	_binding*	pbinding	= &g_key_bindings[action_id];
 
-	string128	prim;
-	string128	sec;
+	string32	prim;
+	string32	sec;
 	prim[0]		= 0;
 	sec[0]		= 0;
 
 	if(pbinding->m_keyboard[0])
 	{
-		strcpy_s(prim, pbinding->m_keyboard[0]->key_local_name.c_str());
+		strcpy_s(prim, pbinding->m_keyboard[0]->key_local_name);
 	}
 	if(pbinding->m_keyboard[1])
 	{
-		strcpy_s(sec, pbinding->m_keyboard[1]->key_local_name.c_str());
+		strcpy_s(sec, pbinding->m_keyboard[1]->key_local_name);
 	}
 	
-	sprintf_s		(dst_buff, dst_buff_sz, "%s%s%s", prim[0]?prim:"", (sec[0]&&prim[0])?" , ":"", sec[0]?sec:"");
+	sprintf_s		(dst_buff, dst_buff_sz, "%s%s%s", prim?prim:"", (sec[0]&&prim[0])?" , ":"", sec[0]?sec:"");
 					
 }
 
@@ -555,8 +579,8 @@ public:
 			_binding* pbinding		= &g_key_bindings[idx];
 			sprintf_s		(buff,"[%s] primary is[%s] secondary is[%s]",
 						pbinding->m_action->action_name,
-						(pbinding->m_keyboard[0])?pbinding->m_keyboard[0]->key_local_name.c_str():"NULL",
-						(pbinding->m_keyboard[1])?pbinding->m_keyboard[1]->key_local_name.c_str():"NULL");
+						(pbinding->m_keyboard[0])?pbinding->m_keyboard[0]->key_local_name:"NULL",
+						(pbinding->m_keyboard[1])?pbinding->m_keyboard[1]->key_local_name:"NULL");
 			Log		(buff);
 		}
 		Log				("- --- Bind list end   ---");

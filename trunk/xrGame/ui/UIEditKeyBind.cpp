@@ -88,7 +88,7 @@ bool CUIEditKeyBind::OnMouseDown(int mouse_btn)
 		
 		m_keyboard				= dik_to_ptr(mouse_btn, true);
 		if(!m_keyboard)			return true;
-		SetText					(m_keyboard->key_local_name.c_str());
+		SetText					(m_keyboard->key_local_name);
 		OnFocusLost				();
 		m_bChanged				= true;
 
@@ -121,7 +121,7 @@ bool CUIEditKeyBind::OnKeyboardAction(int dik, EUIMessages keyboard_action){
 		strcpy				(message, m_action->action_name);
 		strcat				(message, "=");
 		strcat				(message, m_keyboard->key_name);		
-		SetText				(m_keyboard->key_local_name.c_str());
+		SetText				(m_keyboard->key_local_name);
 		OnFocusLost			();
 		m_bChanged			= true;
 		SendMessage2Group	("key_binding",message);
@@ -161,7 +161,7 @@ void CUIEditKeyBind::SetCurrentValue()
 	m_keyboard				= pbinding->m_keyboard[idx];
 
 	if(m_keyboard)
-		SetText				(m_keyboard->key_local_name.c_str());
+		SetText				(m_keyboard->key_local_name);
 	else
 		SetText				(NULL);
 }

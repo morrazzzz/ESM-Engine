@@ -41,4 +41,9 @@ void line_editor::IR_OnKeyboardRelease( int dik )
 	m_control.on_key_release( dik );
 }
 
+void line_editor::IR_OnTextInput(const char* text)
+{
+	m_control.InputConsoleText(text);
+}
+
 } // namespace text_editor

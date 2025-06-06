@@ -22,11 +22,18 @@ void	IInputReceiver::IR_GetLastMouseDelta			(Ivector2& p)
 	pInput->iGetLastMouseDelta( p );
 }
 
-void IInputReceiver::IR_OnDeactivate					(void)
+void IInputReceiver::IR_OnDeactivate()
 {
 	int i;
-	for (i = 0; i < CInput::COUNT_KB_BUTTONS; i++ )
-		if (IR_GetKeyState(i))	IR_OnKeyboardRelease	(i);
+	if (pInput->InputsScancodes)
+	{
+		for (i = 0; i < CountInputsScancode; i++)
+		{
+			if (IR_GetKeyState(i))
+				IR_OnKeyboardRelease(i);
+		}
+	}
+
 	for (i = 0; i < CInput::COUNT_MOUSE_BUTTONS; i++ )
 		if(IR_GetBtnState(i))   IR_OnMouseRelease( i );
 	IR_OnMouseStop	( DIMOFS_X, 0 );
@@ -40,7 +47,7 @@ void IInputReceiver::IR_OnActivate(void)
 BOOL IInputReceiver::IR_GetKeyState(int dik)
 {
 	VERIFY(pInput);
-	return pInput->iGetAsyncKeyState(dik);
+	return pInput->GetPressedKey(dik);
 }
 
 BOOL IInputReceiver::IR_GetBtnState(int btn)

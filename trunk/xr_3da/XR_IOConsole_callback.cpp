@@ -15,6 +15,7 @@
 
 void CConsole::Register_callbacks()
 {
+	/*
 	ec().assign_callback( DIK_PRIOR, text_editor::ks_free,  Callback( this, &CConsole::Prev_log      ) );
 	ec().assign_callback( DIK_NEXT,  text_editor::ks_free,  Callback( this, &CConsole::Next_log      ) );
 	ec().assign_callback( DIK_PRIOR, text_editor::ks_Ctrl,  Callback( this, &CConsole::Begin_log     ) );
@@ -39,6 +40,7 @@ void CConsole::Register_callbacks()
 	
 	ec().assign_callback( DIK_ESCAPE, text_editor::ks_free, Callback( this, &CConsole::Hide_cmd_esc ) );
 	ec().assign_callback( DIK_GRAVE,  text_editor::ks_free, Callback( this, &CConsole::Hide_cmd     ) );
+	*/
 }
 
 void CConsole::Prev_log() // DIK_PRIOR=PAGE_UP

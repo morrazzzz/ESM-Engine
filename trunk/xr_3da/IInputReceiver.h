@@ -33,6 +33,8 @@ public:
 	virtual void	IR_OnKeyboardPress				(int dik)		{};
 	virtual void	IR_OnKeyboardRelease			(int dik)		{};
 	virtual void	IR_OnKeyboardHold				(int dik)		{};
+
+	virtual void IR_OnTextInput(const char* text) {}
 };
 
 ENGINE_API extern float			psMouseSens;
