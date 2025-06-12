@@ -21,7 +21,7 @@ bool is_attachable_item_tuning_mode()
 			pInput->GetPressedKey(DIK_C);
 }
 
-void tune_remap(const Ivector& in_values, Ivector& out_values)
+void tune_remap(const Fvector& in_values, Fvector& out_values)
 {
 	if( pInput->GetPressedKey(DIK_LSHIFT) )
 	{
@@ -100,7 +100,7 @@ void calc_cam_diff_rot(Fmatrix item_transform, Fvector diff, Fvector& res)
 	res.mul					(180.0f/PI);
 }
 
-void attachable_hud_item::tune(Ivector values)
+void attachable_hud_item::tune(const Fvector& values)
 {
 #ifndef MASTER_GOLD
 	if(!is_attachable_item_tuning_mode() )
@@ -201,14 +201,14 @@ void attachable_hud_item::debug_draw_firedeps()
 }
 
 
-void player_hud::tune(Ivector _values)
+void player_hud::tune(Fvector _values)
 {
 #ifndef MASTER_GOLD
 	if (hud_adj_item_idx > 0 && !m_attached_items[hud_adj_item_idx])
 		return;
 
-	Ivector				values;
-	tune_remap			(_values,values);
+	Fvector values{};
+	tune_remap(_values, values);
 
 	bool is_16x9		= UI().is_widescreen();
 

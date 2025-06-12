@@ -38,24 +38,26 @@ void CLevel::IR_OnMouseWheel(int direction)
 	}
 }
 
-static int mouse_button_2_key []	=	{MOUSE_1,MOUSE_2,MOUSE_3};
-
 void CLevel::IR_OnMousePress(int btn)
-{	IR_OnKeyboardPress(mouse_button_2_key[btn]);}
+{	IR_OnKeyboardPress(btn);}
 void CLevel::IR_OnMouseRelease(int btn)
-{	IR_OnKeyboardRelease(mouse_button_2_key[btn]);}
+{	IR_OnKeyboardRelease(btn);}
 void CLevel::IR_OnMouseHold(int btn)
-{	IR_OnKeyboardHold(mouse_button_2_key[btn]);}
+{	IR_OnKeyboardHold(btn);}
 
-void CLevel::IR_OnMouseMove(int dx, int dy)
+void CLevel::IR_OnMouseMove(float dx, float dy)
 {
-	if (g_bDisableAllInput)						return;
-	if (CurrentGameUI()->IR_UIOnMouseMove(dx, dy))		return;
-	if (Device.Paused())							return;
-	if (CurrentEntity()) 
+	if (g_bDisableAllInput)						
+		return;
+	if (CurrentGameUI()->IR_UIOnMouseMove(dx, dy))		
+		return;
+	if (Device.Paused())							
+		return;
+	if (CurrentEntity())
 	{
 		IInputReceiver* IR = smart_cast<IInputReceiver*>	(smart_cast<CGameObject*>(CurrentEntity()));
-		if (IR)				IR->IR_OnMouseMove(dx, dy);
+		if (IR)				
+			IR->IR_OnMouseMove(dx, dy);
 	}
 }
 
@@ -284,10 +286,6 @@ void CLevel::IR_OnKeyboardHold(int key)
 		IInputReceiver* IR = smart_cast<IInputReceiver*>	(smart_cast<CGameObject*>(CurrentEntity()));
 		if (IR)				IR->IR_OnKeyboardHold(get_binded_action(key));
 	}
-}
-
-void CLevel::IR_OnMouseStop( int /**axis/**/, int /**value/**/)
-{
 }
 
 void CLevel::IR_OnActivate()

@@ -159,7 +159,7 @@ u32 last_hold_time =0;
 
 bool CUIScrollBar::OnKeyboardHold(int dik)
 {
-	if(dik==MOUSE_1 && (last_hold_time+100)<Device.dwTimeContinual)
+	if(dik == MOUSE_LEFT && (last_hold_time + 100) < Device.dwTimeContinual)
 	{
 		Fvector2 cursor_pos			= GetUICursor().GetCursorPosition();
 		Frect	dec_rect;

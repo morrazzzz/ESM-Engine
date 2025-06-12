@@ -458,6 +458,7 @@ copy /Y "..\3rd party\DiscordSDK\lib\x64\discord_game_sdk.dll" "..\..\xr_build\b
     <ClInclude Include="DiscordSDK.h" />
     <ClInclude Include="edit_actions.h" />
     <ClInclude Include="GameMtlLib.h" />
+    <ClInclude Include="InputKeyEnum.h" />
     <ClInclude Include="IObjectPhysicsCollision.h" />
     <ClInclude Include="IPhysicsGeometry.h" />
     <ClInclude Include="IPhysicsShell.h" />

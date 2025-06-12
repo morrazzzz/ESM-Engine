@@ -79,7 +79,7 @@ public:
 	virtual	BOOL			UsedAI_Locations	(){return FALSE;}
 
 	// control functions
-	virtual void			OnMouseMove			(int x, int y);
+	void OnMouseMove(float x, float y) override;
 	virtual void			OnKeyboardPress		(int dik);
 	virtual void			OnKeyboardRelease	(int dik);
 	virtual void			OnKeyboardHold		(int dik);

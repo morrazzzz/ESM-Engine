@@ -477,12 +477,12 @@ protected:
 	// User input/output
 	//////////////////////////////////////////////////////////////////////////
 public:
-	virtual void			IR_OnMouseMove			(int x, int y);
-	virtual void			IR_OnKeyboardPress		(int dik);
-	virtual void			IR_OnKeyboardRelease	(int dik);
-	virtual void			IR_OnKeyboardHold		(int dik);
-	virtual void			IR_OnMouseWheel			(int direction);
-	virtual	float			GetLookFactor			();
+	void IR_OnMouseMove(float x, float y) override;
+	void IR_OnKeyboardPress(int dik) override;
+	void IR_OnKeyboardRelease(int dik) override;
+	void IR_OnKeyboardHold(int dik) override;
+	void IR_OnMouseWheel(int direction) override;
+	float GetLookFactor();
 
 	//////////////////////////////////////////////////////////////////////////
 	// Weapon fire control (оружие актрера)

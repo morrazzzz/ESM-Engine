@@ -1,6 +1,6 @@
 #pragma once
 
-#include <SDL3/SDL_scancode.h>
+#include "../xr_3da/InputKeyEnum.h"
 
 enum	EGameActions
 {
@@ -100,7 +100,7 @@ enum	EGameActions
 struct _keyboard		
 {
 	LPCSTR		key_name;
-	SDL_Scancode dik;
+	u16 dik;
 	string32 key_local_name;
 };
 enum _key_group{

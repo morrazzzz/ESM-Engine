@@ -42,6 +42,7 @@ CDialogHolder::~CDialogHolder()
 {
 }
 #include "HUDManager.h"
+#include <xr_3da/xr_input.h>
 
 void CDialogHolder::StartMenu (CUIDialogWnd* pDialog, bool bDoHideIndicators)
 {
@@ -66,8 +67,11 @@ void CDialogHolder::StartMenu (CUIDialogWnd* pDialog, bool bDoHideIndicators)
 	pDialog->SetHolder(this);
 	pDialog->Show();
 
-	if( pDialog->NeedCursor() )
+	if (pDialog->NeedCursor())
+	{
 		GetUICursor().Show();
+		pInput->SetInputRelativeMouseMode(false);
+	}
 
 	if(g_pGameLevel)
 	{
@@ -112,8 +116,11 @@ void CDialogHolder::StopMenu (CUIDialogWnd* pDialog)
 		pDialog->Hide();
 	}
 
-	if(!TopInputReceiver() || !TopInputReceiver()->NeedCursor() )
+	if (!TopInputReceiver() || !TopInputReceiver()->NeedCursor())
+	{
 		GetUICursor().Hide();
+		pInput->SetInputRelativeMouseMode(true);
+	}
 }
 
 void CDialogHolder::AddDialogToRender(CUIWindow* pDialog)
@@ -265,10 +272,10 @@ bool CDialogHolder::IR_UIOnKeyboardPress(int dik)
 	if (!TIR)				return false;
 	if (!TIR->IR_process())	return false;
 	//mouse click
-	if (dik == MOUSE_1 || dik == MOUSE_2 || dik == MOUSE_3)
+	if (dik == MOUSE_LEFT || dik == MOUSE_MIDDLE || dik == MOUSE_RIGHT)
 	{
 		Fvector2 cp = GetUICursor().GetCursorPosition();
-		EUIMessages action = (dik == MOUSE_1) ? WINDOW_LBUTTON_DOWN : (dik == MOUSE_2) ? WINDOW_RBUTTON_DOWN : WINDOW_CBUTTON_DOWN;
+		EUIMessages action = (dik == MOUSE_LEFT) ? WINDOW_LBUTTON_DOWN : (dik == MOUSE_RIGHT) ? WINDOW_RBUTTON_DOWN : WINDOW_CBUTTON_DOWN;
 		if (TIR->OnMouseAction(cp.x, cp.y, action))
 			return true;
 	}
@@ -302,10 +309,10 @@ bool CDialogHolder::IR_UIOnKeyboardRelease(int dik)
 	if (!TIR->IR_process())	return false;
 
 	//mouse click
-	if (dik == MOUSE_1 || dik == MOUSE_2 || dik == MOUSE_3)
+	if (dik == MOUSE_LEFT || dik == MOUSE_MIDDLE || dik == MOUSE_RIGHT)
 	{
 		Fvector2 cp = GetUICursor().GetCursorPosition();
-		EUIMessages action = (dik == MOUSE_1) ? WINDOW_LBUTTON_UP : (dik == MOUSE_2) ? WINDOW_RBUTTON_UP : WINDOW_CBUTTON_UP;
+		EUIMessages action = (dik == MOUSE_LEFT) ? WINDOW_LBUTTON_UP : (dik == MOUSE_RIGHT) ? WINDOW_RBUTTON_UP : WINDOW_CBUTTON_UP;
 		if (TIR->OnMouseAction(cp.x, cp.y, action))
 			return true;
 	}
@@ -362,7 +369,7 @@ bool CDialogHolder::IR_UIOnMouseWheel(int direction)
 	return					true;
 }
 
-bool CDialogHolder::IR_UIOnMouseMove(int dx, int dy)
+bool CDialogHolder::IR_UIOnMouseMove(float dx, float dy)
 {
 	CUIDialogWnd* TIR = TopInputReceiver();
 	if (!TIR)				return false;

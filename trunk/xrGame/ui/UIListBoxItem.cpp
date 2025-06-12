@@ -59,14 +59,15 @@ bool CUIListBoxItem::OnDbClick()
 
 bool CUIListBoxItem::OnMouseDown(int mouse_btn)
 {
-	if (mouse_btn==MOUSE_1)
+	if (mouse_btn == MOUSE_LEFT)
 	{
 		smart_cast<CUIScrollView*>(GetParent()->GetParent())->SetSelected(this);
 		GetMessageTarget()->SendMessage(this, LIST_ITEM_SELECT, &tag);
 		GetMessageTarget()->SendMessage(this, LIST_ITEM_CLICKED, &tag);
 		return true;
-	}else
-		return false;
+	}
+
+	return false;
 }
 
 void CUIListBoxItem::SetSelected(bool b)

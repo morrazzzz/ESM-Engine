@@ -68,11 +68,10 @@ public:
 	virtual bool	IgnorePause						()	{return true;}
 
 
-	virtual void	IR_OnMousePress					(int btn);
-	virtual void	IR_OnMouseRelease				(int btn);
-	virtual void	IR_OnMouseHold					(int btn);
-	virtual void	IR_OnMouseMove					(int x, int y);
-	virtual void	IR_OnMouseStop					(int x, int y);
+	void IR_OnMousePress(int btn) override;
+	void IR_OnMouseRelease(int btn) override;
+	void IR_OnMouseHold(int btn) override;
+	void IR_OnMouseMove(float x, float y) override;
 
 	virtual void	IR_OnKeyboardPress				(int dik);
 	virtual void	IR_OnKeyboardRelease			(int dik);

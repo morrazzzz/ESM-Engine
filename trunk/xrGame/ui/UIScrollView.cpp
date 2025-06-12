@@ -217,15 +217,15 @@ bool CUIScrollView::OnMouseAction(float x, float y, EUIMessages mouse_action)
 			return true;
 		break;
 		case WINDOW_MOUSE_MOVE:
-			if( pInput->iGetAsyncBtnState(0) ){
-				Fvector2	curr_pad_pos = m_pad->GetWndPos	();
-				curr_pad_pos.y				+= GetUICursor().GetCursorPositionDelta().y;
-				
+			if (pInput->GetPressedMouseKey(SDL_BUTTON_LMASK)) {
+				Fvector2	curr_pad_pos = m_pad->GetWndPos();
+				curr_pad_pos.y += GetUICursor().GetCursorPositionDelta().y;
+
 				float max_pos = m_pad->GetHeight() - GetHeight();
-				max_pos							= _max(0.0f,max_pos);
-				clamp							(curr_pad_pos.y,-max_pos,0.0f);
-				m_pad->SetWndPos				(curr_pad_pos);
-				UpdateScroll					();
+				max_pos = _max(0.0f, max_pos);
+				clamp(curr_pad_pos.y, -max_pos, 0.0f);
+				m_pad->SetWndPos(curr_pad_pos);
+				UpdateScroll();
 				return true;
 			}
 		break;

@@ -399,11 +399,11 @@ bool CUIMapWnd::OnMouseAction(float x, float y, EUIMessages mouse_action)
 		switch (mouse_action)
 		{
 		case WINDOW_MOUSE_MOVE:
-			if( pInput->iGetAsyncBtnState(0) ){
-				GlobalMap()->MoveWndDelta	(GetUICursor().GetCursorPositionDelta());
-				UpdateScroll					();
-				m_hint->SetOwner				(NULL);
-				return							true;
+			if (pInput->GetPressedMouseKey(SDL_BUTTON_LMASK)) {
+				GlobalMap()->MoveWndDelta(GetUICursor().GetCursorPositionDelta());
+				UpdateScroll();
+				m_hint->SetOwner(NULL);
+				return true;
 			}
 		break;
 /*

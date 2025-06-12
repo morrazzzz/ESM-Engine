@@ -81,7 +81,7 @@ protected:
 //HolderCustom
 public:
 	virtual bool			Use					(const Fvector& pos,const Fvector& dir,const Fvector& foot_pos) {return !Owner();};
-	virtual void			OnMouseMove			(int x, int y);
+	void OnMouseMove(float x, float y) override;
 	virtual void			OnKeyboardPress		(int dik);
 	virtual void			OnKeyboardRelease	(int dik);
 	virtual void			OnKeyboardHold		(int dik);

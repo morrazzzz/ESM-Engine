@@ -93,6 +93,12 @@ void CRenderDevice::EventWindow()
         case SDL_EVENT_TEXT_EDITING:
             __debugbreak();
             break;
+        case SDL_EVENT_MOUSE_MOTION:
+            pInput->mouseX += SDLWindowEvent.motion.xrel;
+            pInput->mouseY += SDLWindowEvent.motion.yrel;
+            pInput->mouseMove = true;
+
+            break;
         }
     }
 }

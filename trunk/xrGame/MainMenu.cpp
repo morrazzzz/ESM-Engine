@@ -13,6 +13,7 @@
 
 #include "object_broker.h"
 #include "../xr_3da/DiscordSDK.h"
+#include <xr_3da/xr_input.h>
 
 //#define DEMO_BUILD
 
@@ -206,39 +207,34 @@ bool CMainMenu::IsActive()
 }
 
 //IInputReceiver
-static int mouse_button_2_key []	=	{MOUSE_1,MOUSE_2,MOUSE_3};
-void	CMainMenu::IR_OnMousePress				(int btn)	
+void CMainMenu::IR_OnMousePress(int btn)	
 {	
 	if(!IsActive()) return;
 
-	IR_OnKeyboardPress(mouse_button_2_key[btn]);
-};
+	IR_OnKeyboardPress(btn);
+}
 
-void	CMainMenu::IR_OnMouseRelease(int btn)	
+void CMainMenu::IR_OnMouseRelease(int btn)	
 {
 	if(!IsActive()) return;
 
-	IR_OnKeyboardRelease(mouse_button_2_key[btn]);
-};
+	IR_OnKeyboardRelease(btn);
+}
 
-void	CMainMenu::IR_OnMouseHold(int btn)	
+void CMainMenu::IR_OnMouseHold(int btn)	
 {
 	if(!IsActive()) return;
 
-	IR_OnKeyboardHold(mouse_button_2_key[btn]);
+	IR_OnKeyboardHold(btn);
 
-};
+}
 
-void	CMainMenu::IR_OnMouseMove(int x, int y)
+void CMainMenu::IR_OnMouseMove(float x, float y)
 {
 	if(!IsActive()) return;
 
 	CDialogHolder::IR_UIOnMouseMove(x, y);
-};
-
-void	CMainMenu::IR_OnMouseStop(int x, int y)
-{
-};
+}
 
 void	CMainMenu::IR_OnKeyboardPress(int dik)
 {
@@ -346,8 +342,10 @@ void CMainMenu::OnFrame()
 	if (m_Flags.test(flNeedChangeCapture))
 	{
 		m_Flags.set					(flNeedChangeCapture,FALSE);
-		if (m_Flags.test(flActive))	IR_Capture();
-		else						IR_Release();
+		if (m_Flags.test(flActive))
+			IR_Capture();
+		else
+			IR_Release();
 	}
 	CDialogHolder::OnFrame		();
 

@@ -269,12 +269,13 @@ void CUIStalkerRankingInfoItem::SetSelected	(bool b)
 
 bool CUIStalkerRankingInfoItem::OnMouseDown		(int mouse_btn)
 {
-	if(mouse_btn==MOUSE_1)
+	if (mouse_btn == MOUSE_LEFT)
 	{
-		m_StalkersRankingWnd->GetTopList().SetSelected	(this);
+		m_StalkersRankingWnd->GetTopList().SetSelected(this);
 		return true;
-	}else
-		return false;
+	}
+
+	return false;
 }
 
 CUIStalkerRankingElipsisItem::CUIStalkerRankingElipsisItem(CUIStalkersRankingWnd* w)

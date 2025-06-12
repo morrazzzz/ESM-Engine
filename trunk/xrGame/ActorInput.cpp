@@ -160,7 +160,7 @@ void CActor::IR_OnMouseWheel(int direction)
 {
 	if(hud_adj_mode)
 	{
-		g_player_hud->tune	(Ivector().set(0,0,direction));
+		g_player_hud->tune(Fvector().set(0, 0, static_cast<float>(direction)));
 		return;
 	}
 	
@@ -209,6 +209,8 @@ void CActor::IR_OnKeyboardHold(int cmd)
 {
 	if (hud_adj_mode && pInput->GetPressedKey(DIK_LSHIFT))
 	{
+		//repair me!!!
+		/*
 		if (pInput->GetPressedKey(DIK_UP))
 			g_player_hud->tune(Ivector().set(0, -1, 0));
 		if (pInput->GetPressedKey(DIK_DOWN))
@@ -221,6 +223,7 @@ void CActor::IR_OnKeyboardHold(int cmd)
 			g_player_hud->tune(Ivector().set(0, 0, -1));
 		if (pInput->GetPressedKey(DIK_NEXT))
 			g_player_hud->tune(Ivector().set(0, 0, 1));
+			*/
 
 		return;
 	}
@@ -280,12 +283,11 @@ void CActor::IR_OnKeyboardHold(int cmd)
 	}
 }
 
-void CActor::IR_OnMouseMove(int dx, int dy)
+void CActor::IR_OnMouseMove(float dx, float dy)
 {
-
 	if(hud_adj_mode)
 	{
-		g_player_hud->tune	(Ivector().set(dx,dy,0));
+		g_player_hud->tune(Fvector().set(dx, dy, 0));
 		return;
 	}
 	if (Remote())		return;

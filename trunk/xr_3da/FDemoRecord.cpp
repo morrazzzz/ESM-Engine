@@ -13,6 +13,7 @@
 #include "xr_object.h"
 #include "render.h"
 #include "CustomHUD.h"
+#include "InputKeyEnum.h"
 
 CDemoRecord * xrDemoRecord = 0;
 
@@ -302,8 +303,8 @@ BOOL CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 		m_vT.mul				(m_vVelocity, Device.fTimeDelta * speed);
 		m_vR.mul				(m_vAngularVelocity, Device.fTimeDelta * ang_speed);
 
-		m_HPB.x -= m_vR.y;
-		m_HPB.y -= m_vR.x;
+		m_HPB.x -= m_vR.x;
+		m_HPB.y -= m_vR.y;
 		m_HPB.z += m_vR.z;
 
 		// move
@@ -342,24 +343,37 @@ BOOL CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 
 void CDemoRecord::IR_OnKeyboardPress	(int dik)
 {
-	if (dik == DIK_GRAVE)
-							Console->Show			();
-
-	if (dik == DIK_SPACE)	RecordKey				();
-	if (dik == DIK_BACK)	MakeCubemap				();
-	if (dik == DIK_F11)		MakeLevelMapScreenshot	();
-	if (dik == DIK_F12)		MakeScreenshot			();
-	if (dik == DIK_ESCAPE)	fLifeTime				= -1;
-	if (dik == DIK_RETURN)
-	{	
+	switch (dik)
+	{
+	case SDL_SCANCODE_GRAVE:
+		Console->Show();
+		break;
+	case SDL_SCANCODE_SPACE:
+		RecordKey();
+		break;
+	case SDL_SCANCODE_BACKSPACE:
+		MakeCubemap();
+		break;
+	case SDL_SCANCODE_F11:
+		MakeLevelMapScreenshot();
+		break;
+	case SDL_SCANCODE_F12:
+		MakeScreenshot();
+		break;
+	case SDL_SCANCODE_ESCAPE:
+		fLifeTime = -1.0f;
+		break;
+	case SDL_SCANCODE_RETURN:
 		if (g_pGameLevel->CurrentEntity())
 		{
 			g_pGameLevel->CurrentEntity()->ForceTransform(m_Camera);
-			fLifeTime		= -1; 
+			fLifeTime = -1.0f;
 		}
-	}
-	if	(dik == DIK_PAUSE)		
+		break;
+	case SDL_SCANCODE_PAUSE:
 		Device.Pause(!Device.Paused(), TRUE, TRUE, "demo_record");
+		break;
+	}
 }
 
 void CDemoRecord::IR_OnKeyboardHold	(int dik)
@@ -374,31 +388,33 @@ void CDemoRecord::IR_OnKeyboardHold	(int dik)
 	case DIK_S:			m_vT.y -= 1.0f; break; // Slide Down
 	case DIK_W:			m_vT.y += 1.0f; break; // Slide Up
 	// rotate	
-	case DIK_NUMPAD2:	m_vR.x -= 1.0f; break; // Pitch Down
-	case DIK_NUMPAD8:	m_vR.x += 1.0f; break; // Pitch Up
+	case DIK_NUMPAD2:	m_vR.y -= 1.0f; break; // Pitch Down
+	case DIK_NUMPAD8:	m_vR.y += 1.0f; break; // Pitch Up
 	case DIK_E:	
-	case DIK_NUMPAD6:	m_vR.y += 1.0f; break; // Turn Left
+	case DIK_NUMPAD6:	m_vR.x += 1.0f; break; // Turn Left
 	case DIK_Q:	
-	case DIK_NUMPAD4:	m_vR.y -= 1.0f; break; // Turn Right
+	case DIK_NUMPAD4:	m_vR.x -= 1.0f; break; // Turn Right
 	case DIK_NUMPAD9:	m_vR.z -= 2.0f; break; // Turn Right
 	case DIK_NUMPAD7:	m_vR.z += 2.0f; break; // Turn Right
 	}
 }
 
-void CDemoRecord::IR_OnMouseMove		(int dx, int dy)
+void CDemoRecord::IR_OnMouseMove(float dx, float dy)
 {
-	float scale			= .5f;//psMouseSens;
+	float scale = 1.0f;
 	if (dx||dy){
-		m_vR.y			+= float(dx)*scale; // heading
-		m_vR.x			+= ((psMouseInvert.test(1))?-1:1)*float(dy)*scale*(3.f/4.f); // pitch
+		m_vR.x += dx * scale; // heading
+		m_vR.y += ((psMouseInvert.test(1)) ? -1 : 1) * dy * scale * (3.f / 4.f); // pitch
 	}
 }
 
 void CDemoRecord::IR_OnMouseHold		(int btn)
 {
 	switch (btn){
-	case 0:			m_vT.z += 1.0f; break; // Move Backward
-	case 1:			m_vT.z -= 1.0f; break; // Move Forward
+	case MOUSE_LEFT:			
+		m_vT.z += 1.0f; break; // Move Backward
+	case MOUSE_RIGHT:			
+		m_vT.z -= 1.0f; break; // Move Forward
 	}
 }
 

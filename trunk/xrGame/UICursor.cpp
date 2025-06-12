@@ -81,7 +81,7 @@ Fvector2 CUICursor::GetCursorPositionDelta()
 	return res_delta;
 }
 
-void CUICursor::UpdateCursorPosition(int _dx, int _dy)
+void CUICursor::UpdateCursorPosition(float _dx, float _dy)
 {
 	Fvector2	p;
 	vPrevPos	= vPos;

@@ -5,6 +5,7 @@
 #include "../xr_3da/xr_ioc_cmd.h"
 #include "xr_level_controller.h"
 #include "string_table.h"
+#include <SDL3/SDL_mouse.h>
 
 _binding	g_key_bindings		[bindings_count]; 
 _key_group	g_current_keygroup	= _sp;
@@ -190,6 +191,10 @@ _keyboard keyboards[] = {
 	{ "kDOWN", SDL_SCANCODE_DOWN },
 	{ "kUP", SDL_SCANCODE_UP },
 
+	{ "mouse1", MOUSE_LEFT },
+	{ "mouse2", MOUSE_RIGHT },
+	{ "mouse3", MOUSE_MIDDLE },
+
 	{ nullptr, SDL_SCANCODE_UNKNOWN}
 
 	/*
@@ -218,11 +223,6 @@ _keyboard keyboards[] = {
 	{ "kRMENU",			DIK_RMENU		},
 	{ "kLWIN",			DIK_LWIN		},
 	{ "kRWIN",			DIK_RWIN		},	{ "kAPPS",			DIK_APPS		},
-	{ "mouse1",			MOUSE_1			},
-	{ "mouse2",			MOUSE_2			},	{ "mouse3",			MOUSE_3			},
-	{ "mouse4",			MOUSE_4			},	{ "mouse5",			MOUSE_5			},
-	{ "mouse6",			MOUSE_6			},	{ "mouse7",			MOUSE_7			},
-	{ "mouse8",			MOUSE_8			},	{ NULL, 			0				}
 	*/
 };
 

@@ -52,7 +52,7 @@ public:
 
 	virtual bool 			IR_UIOnKeyboardPress			(int dik);
 	virtual bool 			IR_UIOnKeyboardRelease			(int dik);
-	virtual bool 			IR_UIOnMouseMove				(int dx, int dy);
+	bool IR_UIOnMouseMove(float dx, float dy);
 	virtual bool 			IR_UIOnMouseWheel				(int direction);
 	virtual bool 			IR_UIOnKeyboardHold				(int dik);
 

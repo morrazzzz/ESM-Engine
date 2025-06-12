@@ -157,10 +157,8 @@ void	CWeaponMounted::renderable_Render()
 	inherited::renderable_Render	();
 }
 
-void	CWeaponMounted::OnMouseMove			(int dx, int dy)
+void CWeaponMounted::OnMouseMove(float dx, float dy)
 {
-	if (Remote())	return;
-
 	CCameraBase* C	= camera;
 	float scale		= (C->f_fov/g_fov)*psMouseSens * psMouseSensScale/50.f;
 	if (dx){

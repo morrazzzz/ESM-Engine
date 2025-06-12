@@ -1,11 +1,9 @@
 #pragma once
 
-#include <SDL3/SDL_scancode.h>
 #include <SDL3/SDL_keycode.h>
+#include <SDL3/SDL_mouse.h>
 
 constexpr int CountInputsScancode = 322;
-
-#define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
 
 class	ENGINE_API				IInputReceiver;
@@ -18,32 +16,8 @@ class ENGINE_API CInput
 	public pureAppDeactivate
 #endif
 {
-public:
-	enum {
-		COUNT_MOUSE_BUTTONS			= 3,
-		COUNT_MOUSE_AXIS			= 3,
-	};
-	struct sxr_mouse
-	{
-		DIDEVCAPS					capabilities;
-		DIDEVICEINSTANCE			deviceInfo;
-		DIDEVICEOBJECTINSTANCE		objectInfo;
-		u32							mouse_dt;
-	};
 private:
-	LPDIRECTINPUT8				pDI;			// The DInput object
-	LPDIRECTINPUTDEVICE8		pMouse;			// The DIDevice7 interface
-	LPDIRECTINPUTDEVICE8		pKeyboard;		// The DIDevice7 interface
 	//----------------------
-	u32							timeStamp	[COUNT_MOUSE_AXIS];
-	u32							timeSave	[COUNT_MOUSE_AXIS];
-	int 						offs		[COUNT_MOUSE_AXIS];
-	BOOL						mouseState	[COUNT_MOUSE_BUTTONS];
-
-	HRESULT						CreateInputDevice(	LPDIRECTINPUTDEVICE8* device, GUID guidDevice,
-													const DIDATAFORMAT* pdidDataFormat, u32 dwFlags,
-													u32 buf_size );
-
 //	xr_stack<IInputReceiver*>	cbStack;
 	xr_vector<IInputReceiver*>	cbStack;
 
@@ -51,15 +25,8 @@ private:
 	void						KeyUpdate					( );
 
 public:
-	sxr_mouse					mouse_property;
-	u32							dwCurTime;
-
-	void						SetAllAcquire				( BOOL bAcquire = TRUE );
-
 	void						iCapture					( IInputReceiver *pc );
 	void						iRelease					( IInputReceiver *pc );
-	BOOL						iGetAsyncBtnState			( int btn );
-	void						iGetLastMouseDelta			( Ivector2& p )	{ p.set(offs[0],offs[1]); }
 
 	CInput						( BOOL bExclusive = true);
 	~CInput						( );
@@ -75,20 +42,32 @@ public:
 			bool				get_exclusive_mode();
 
 private:
+	void MouseKeyHold();
+	void MouseKeyPress();
+private:
 	IInputReceiver* TextInputReceiver = nullptr;
 
 	bool InputsScancodesPrev[CountInputsScancode];
+	u32 mouseStatePrev;
 public:
-//morrazzzz: start
+	bool mouseMove = false;
+    float mouseX{}, mouseY{};
+
+	SDL_MouseButtonFlags mouseState;
 	const bool* InputsScancodes;
 public:
-	void InputBeforeNewFrame();
+	void MouseKeyRelease();
+
 	void TextInputStart(IInputReceiver* receiver);
 	void TextInputStop();
 	void TextInputProcess(const char* text);
+
+	void SetInputRelativeMouseMode(bool mode);
+
 	bool GetPressedKey(int dik) const;
+	bool GetPressedMouseKey(u32 key);
 	bool GetModState(const SDL_Keymod& mode) const;
-	const char* GetKeyName(SDL_Scancode dik);
+	const char* GetKeyName(u16 dik);
 };
 
 extern ENGINE_API CInput *		pInput;

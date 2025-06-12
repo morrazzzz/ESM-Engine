@@ -89,9 +89,9 @@ void type_pair::on_key_press( line_edit_control* const control )
 
 		static _locale_t current_locale = _create_locale(LC_ALL, "");
 
-		strcpy(buff, pInput->GetKeyName(m_dik));
-		_strlwr_l(buff, current_locale);
-		c = buff[0];
+//		strcpy(buff, pInput->GetKeyName(m_dik));
+//		_strlwr_l(buff, current_locale);
+//		c = buff[0];
 
 		if (pInput->GetModState(SDL_KMOD_CAPS) || pInput->GetModState(SDL_KMOD_SHIFT))
 		{

@@ -181,14 +181,13 @@ public:
 	void						ProcessGameEvents		( );
 
 	// Input
-	virtual	void				IR_OnKeyboardPress		( int btn );
-	virtual void				IR_OnKeyboardRelease	( int btn );
-	virtual void				IR_OnKeyboardHold		( int btn );
-	virtual void				IR_OnMousePress			( int btn );
-	virtual void				IR_OnMouseRelease		( int btn );
-	virtual void				IR_OnMouseHold			( int btn );
-	virtual void				IR_OnMouseMove			( int, int);
-	virtual void				IR_OnMouseStop			( int, int);
+	void IR_OnKeyboardPress(int btn) override;
+	void IR_OnKeyboardRelease(int btn) override;
+	void IR_OnKeyboardHold(int btn) override;
+	void IR_OnMousePress(int btn) override;
+	void IR_OnMouseRelease(int btn) override;
+	void IR_OnMouseHold(int btn) override;
+	void IR_OnMouseMove(float x, float y) override;
 	virtual void				IR_OnMouseWheel			( int direction);
 	virtual void				IR_OnActivate			(void);
 

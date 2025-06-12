@@ -320,12 +320,10 @@ void CUIActorStaticticHeader::Init	(CUIXml* xml, LPCSTR path, int idx_in_xml)
 
 bool CUIActorStaticticHeader::OnMouseDown	(int mouse_btn)
 {
-	if(mouse_btn==MOUSE_1 && m_id!="total")
-	{
-		m_actorInfoWnd->MasterList().SetSelected	(this);
-		return true;
-	}else
-		return true;
+	if (mouse_btn == MOUSE_LEFT && m_id != "total")
+		m_actorInfoWnd->MasterList().SetSelected(this);
+
+	return true;
 }
 
 void CUIActorStaticticHeader::SetSelected(bool b)

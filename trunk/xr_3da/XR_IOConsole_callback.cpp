@@ -9,12 +9,12 @@
 #include "XR_IOConsole.h"
 
 #include "line_editor.h"
-#include "xr_input.h"
 #include "xr_ioc_cmd.h"
 
 
 void CConsole::Register_callbacks()
 {
+
 	/*
 	ec().assign_callback( DIK_PRIOR, text_editor::ks_free,  Callback( this, &CConsole::Prev_log      ) );
 	ec().assign_callback( DIK_NEXT,  text_editor::ks_free,  Callback( this, &CConsole::Next_log      ) );
@@ -34,13 +34,14 @@ void CConsole::Register_callbacks()
 	ec().assign_callback( DIK_END,   text_editor::ks_Alt,   Callback( this, &CConsole::End_tips      ) );
 	ec().assign_callback( DIK_PRIOR, text_editor::ks_Alt,   Callback( this, &CConsole::PageUp_tips   ) );
 	ec().assign_callback( DIK_NEXT,  text_editor::ks_Alt,   Callback( this, &CConsole::PageDown_tips ) );
-	
-	ec().assign_callback( DIK_RETURN,      text_editor::ks_free, Callback( this, &CConsole::Execute_cmd ) );
-	ec().assign_callback( DIK_NUMPADENTER, text_editor::ks_free, Callback( this, &CConsole::Execute_cmd ) );
-	
-	ec().assign_callback( DIK_ESCAPE, text_editor::ks_free, Callback( this, &CConsole::Hide_cmd_esc ) );
-	ec().assign_callback( DIK_GRAVE,  text_editor::ks_free, Callback( this, &CConsole::Hide_cmd     ) );
 	*/
+	
+	ec().assign_callback(SDL_SCANCODE_RETURN, Callback(this, &CConsole::Execute_cmd));
+	ec().assign_callback(SDL_SCANCODE_KP_ENTER, Callback(this, &CConsole::Execute_cmd));
+	
+	ec().assign_callback(SDL_SCANCODE_ESCAPE, Callback(this, &CConsole::Hide_cmd_esc));
+	ec().assign_callback(SDL_SCANCODE_GRAVE, Callback(this, &CConsole::Hide_cmd));
+	
 }
 
 void CConsole::Prev_log() // DIK_PRIOR=PAGE_UP

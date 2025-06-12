@@ -299,7 +299,7 @@ void line_edit_control::create_char_pair(const SDL_Scancode& key, char c, char c
 	m_actions[key] = new text_editor::type_pair(key, c, c_shift, translate);
 }
 
-void line_edit_control::assign_callback(const SDL_Scancode& key, const SDL_Keymod& state, Callback const& callback )
+void line_edit_control::assign_callback(const SDL_Scancode& key, Callback const& callback, const SDL_Keymod& state)
 {
 	m_actions[key] = new text_editor::callback_base(callback, state);
 }

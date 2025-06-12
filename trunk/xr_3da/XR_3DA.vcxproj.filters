@@ -459,6 +459,9 @@
     <ClInclude Include="IObjectPhysicsCollision.h">
       <Filter>Interfaces\Physics</Filter>
     </ClInclude>
+    <ClInclude Include="InputKeyEnum.h">
+      <Filter>Interfaces\Input</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="defines.cpp">

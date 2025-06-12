@@ -52,10 +52,10 @@ public:
 				CDemoRecord				(const char *name, float life_time=60*60*1000);
 	virtual		~CDemoRecord();
 
-	virtual void IR_OnKeyboardPress		(int dik);
-	virtual void IR_OnKeyboardHold		(int dik);
-	virtual void IR_OnMouseMove			(int dx, int dy);
-	virtual void IR_OnMouseHold			(int btn);
+    void IR_OnKeyboardPress(int dik) override;
+	void IR_OnKeyboardHold(int dik) override;
+	void IR_OnMouseMove(float dx, float dy) override;
+	void IR_OnMouseHold(int btn) override;
 	
 	virtual BOOL Overlapped				(){return m_bOverlapped;}
 	virtual BOOL ProcessCam				(SCamEffectorInfo& info);

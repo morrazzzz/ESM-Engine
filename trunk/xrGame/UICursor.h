@@ -22,7 +22,7 @@ public:
 
 	Fvector2		GetCursorPosition		();
 	void			SetUICursorPosition		(Fvector2 pos);
-	void			UpdateCursorPosition		(int _dx, int _dy);
+	void UpdateCursorPosition(float dx, float dy);
 
 	bool			IsVisible		() {return bVisible;}
 	void			Show			() {bVisible = true;}
