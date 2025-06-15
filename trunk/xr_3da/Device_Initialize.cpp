@@ -2,6 +2,9 @@
 #include <SDL3/SDL_init.h>
 #include <SDL3/SDL_video.h>
 #include <SDL3/SDL_properties.h>
+#include <backends/imgui_impl_sdl3.h>
+#include <backends/imgui_impl_dx11.h>
+#include <imgui.h>
 #include "xr_input.h"
 
 constexpr int BaseWidth = 800;
@@ -37,6 +40,26 @@ void CRenderDevice::Initialize()
         SDL_HideCursor();
         SDL_RaiseWindow(Device.SDLWindow);
     }
+    
+    IMGUI_CHECKVERSION();
+    ImguiContext = ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    //   io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    //   io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+
+       // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
+    //ImGui::StyleColorsLight();
+
+    ImGui_ImplSDL3_InitForD3D(SDLWindow);
+    
+    /*
+    IMGUI_CHECKVERSION();
+    ImguiContext = ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    //   io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    //   io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+    */
 }
 
 void CRenderDevice::ResizeWindow()
@@ -63,6 +86,7 @@ void CRenderDevice::SetFullscreenWindow(bool value)
 
 void CRenderDevice::DestroyWindow()
 {
+    ImGui_ImplSDL3_Shutdown();
     SDL_DestroyWindow(SDLWindow);
 
     SDL_Quit();
@@ -73,6 +97,12 @@ void CRenderDevice::EventWindow()
     SDL_Event SDLWindowEvent;
     while (SDL_PollEvent(&SDLWindowEvent))
     {
+        if (getImGuiActivated())
+        {
+            if (ImGui_ImplSDL3_ProcessEvent(&SDLWindowEvent))
+                continue;
+        }
+
         switch (SDLWindowEvent.type)
         {
         case SDL_EVENT_QUIT:
@@ -114,4 +144,24 @@ void CRenderDevice::SetWindowActive(bool active)
         else
             Device.seqAppDeactivate.Process(rp_AppDeactivate);
     }
+}
+
+void test_imgui(bool* new_bool)
+{
+    bool test = ImGui::Begin("My random2");
+    VERIFY(test);
+
+    ImGui::End();
+}
+
+bool costil = true;
+void CRenderDevice::WindowNewFrameImGui()
+{
+    ImGui_ImplSDL3_NewFrame();
+    ImGui::NewFrame();
+
+    //morrazzzz: Fake!! Need normal ImGui manager!!! For test.
+    if (costil)
+        ImGui::ShowDemoWindow(&costil);
+
 }

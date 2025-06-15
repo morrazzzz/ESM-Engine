@@ -296,7 +296,7 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <AdditionalIncludeDirectories>.;../../xrCore;../../3rd party/;../../../SDK/boost_1_30_0;../../Luabind;../../LuaJIT/src;../../3rd party/d3dx;../../3rd party/DPlay;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;../../xrCore;../../3rd party/;../../3rd party/ImGui;../../Luabind;../../LuaJIT/src;../../3rd party/d3dx;../../3rd party/DPlay;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>MIXED;WIN32;DEBUG;_WINDOWS;_USRDLL;XRRENDER_R4_EXPORTS;_SECURE_SCL=0;USE_DX11;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -735,6 +735,9 @@
     <ClCompile Include="xrRender_R4.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\3rd party\ImGui\ImGui.vcxproj">
+      <Project>{472f0126-2211-400f-8c0b-95c811bc6521}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\xrCDB\xrCDB.vcxproj">
       <Project>{a19b1df2-82ec-4364-8bdf-85d13a1c89b5}</Project>
     </ProjectReference>

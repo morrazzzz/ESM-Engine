@@ -15,7 +15,11 @@
 #include "StateManager\dx10StateCache.h"
 #include <SDL3/SDL_properties.h>
 #include <SDL3/SDL_video.h>
-#include <SDL3/SDL_mouse.h>
+
+#ifdef USE_DX11
+#include <backends/imgui_impl_dx11.h>
+#include <backends/imgui_impl_sdl3.h>
+#endif
 
 #ifndef _EDITOR
 void	fill_vid_mode_list			(CHW* _hw);
@@ -351,7 +355,7 @@ void CHW::CreateDevice()
                                           &m_pSwapChain,
 		                                  &pDevice,
 										  &FeatureLevel,		
-										  &pContext);
+										  &pContext);   
 #else
    R =  D3DX10CreateDeviceAndSwapChain(   m_pAdapter,
                                           m_DriverType,
@@ -430,10 +434,20 @@ void CHW::CreateDevice()
 	updateWindowProps							(window);
 	fill_vid_mode_list							(this);
 #endif
+
+#ifdef USE_DX11
+	ImGui::SetCurrentContext(Device.getImguiContext());
+
+	ImGui_ImplDX11_Init(pDevice, pContext);
+#endif
 }
 
 void CHW::DestroyDevice()
 {
+#ifdef USE_DX11
+	ImGui_ImplDX11_Shutdown();
+#endif
+
 	//	Destroy state managers
 	StateManager.Reset();
 	RSManager.ClearStateArray();
@@ -479,6 +493,10 @@ void CHW::DestroyDevice()
 //////////////////////////////////////////////////////////////////////
 void CHW::Reset()
 {
+#ifdef USE_DX11
+	ImGui_ImplDX11_InvalidateDeviceObjects();
+#endif
+
 	DXGI_SWAP_CHAIN_DESC &cd = m_ChainDesc;
 
 	BOOL	bWindowed		= !psDeviceFlags.is	(rsFullscreen);

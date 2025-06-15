@@ -2,6 +2,9 @@
 #include "dxRenderDeviceRender.h"
 
 #include "ResourceManager.h"
+#ifdef USE_DX11
+#include <backends/imgui_impl_dx11.h>
+#endif
 
 dxRenderDeviceRender::dxRenderDeviceRender()
 	:	Resources(0)
@@ -309,8 +312,16 @@ void dxRenderDeviceRender::Clear()
 
 void DoAsyncScreenshot();
 
-void dxRenderDeviceRender::End()
+void dxRenderDeviceRender::End(bool NeedRenderImgui)
 {
+#ifdef USE_DX11
+	if (NeedRenderImgui && Device.getImGuiActivated())
+	{
+		ImGui::Render();
+		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+	}
+#endif
+
 	VERIFY	(HW.pDevice);
 
 	if (HW.Caps.SceneMode)	overdrawEnd();

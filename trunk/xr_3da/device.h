@@ -15,6 +15,7 @@
 #include "../Include/xrRender/RenderDeviceRender.h"
 
 struct SDL_Window;
+struct ImGuiContext;
 
 #pragma pack(push,4)
 
@@ -105,11 +106,13 @@ private:
 
 	Concurrency::task_group SecondaryTaskGroup;
 
+	ImGuiContext* ImguiContext;
+
 	void									_Create		(LPCSTR shName);
 	void									_Destroy	(BOOL	bKeepTextures);
 	void									_SetupStates();
 public:
-	bool needExitGame;
+	bool needExitGame{}, ImGuiActivated{};
 
 	//u32										dwFrame;
 	//u32										dwPrecacheFrame;
@@ -118,11 +121,19 @@ public:
 	void setNeedExitGame(bool value) { needExitGame = value; }
 	bool getNeedExitGame() const { return needExitGame; }
 
+	void setImGuiActivated(bool value) { ImGuiActivated = value; }
+	bool getImGuiActivated() const { return ImGuiActivated; }
+
 	void SetWindowActive(bool active);
 	void ResizeWindow();
 	void SetFullscreenWindow(bool value);
 	void DestroyWindow();
 	void EventWindow();
+
+	void WindowNewFrameImGui();
+
+
+	ImGuiContext* getImguiContext() { return ImguiContext; }
 public:
 	
     BOOL									m_bNearer; 
@@ -200,7 +211,7 @@ public:
 	void PreCache							(u32 amount, bool b_draw_loadscreen, bool b_wait_user_input);
 	BOOL Begin								();
 	void Clear								();
-	void End								();
+	void End(bool NeedRenderImgui);
 	void FrameMove							();
 	
 	// Mode control

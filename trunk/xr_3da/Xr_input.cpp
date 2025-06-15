@@ -85,6 +85,9 @@ void CInput::KeyUpdate()
 			continue;
 		}
 
+		if (i == SDL_SCANCODE_F8)
+			Device.setImGuiActivated(true);
+
 		cbStack.back()->IR_OnKeyboardPress(i);
 		InputsScancodesPrev[i] = InputsScancodes[i];
 	}

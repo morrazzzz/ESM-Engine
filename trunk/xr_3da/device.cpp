@@ -15,11 +15,12 @@
 #include "x_ray.h"
 #include "render.h"
 #include "igame_persistent.h"
-#include <SDL3/SDL_video.h>
-
 #define SDL_MAIN_HANDLED
 
 #include <SDL3/SDL_main.h>
+
+#include <backends/imgui_impl_dx11.h>
+#include <backends/imgui_impl_sdl3.h>
 
 #include "DiscordSDK.h"
 
@@ -71,7 +72,7 @@ void CRenderDevice::Clear	()
 extern void CheckPrivilegySlowdown();
 
 
-void CRenderDevice::End		(void)
+void CRenderDevice::End(bool NeedRenderImgui)
 {
 #ifndef DEDICATED_SERVER
 
@@ -116,7 +117,7 @@ void CRenderDevice::End		(void)
 	//	Present goes here, so call OA Frame end.
 //	if (g_SASH.IsBenchmarkRunning())
 //		g_SASH.DisplayFrame(Device.fTimeGlobal);
-	m_pRender->End();
+	m_pRender->End(NeedRenderImgui);
 	//RCache.OnFrameEnd	();
 	//Memory.dbg_check		();
     //CHK_DX				(HW.pDevice->EndScene());
@@ -132,6 +133,7 @@ void CRenderDevice::End		(void)
 }
 
 #include "igame_level.h"
+#include <imgui.h>
 void CRenderDevice::PreCache	(u32 amount, bool b_draw_loadscreen, bool b_wait_user_input)
 {
 	if (m_pRender->GetForceGPU_REF()) amount=0;
@@ -237,7 +239,7 @@ void CRenderDevice::on_idle		()
 			//	TEST!!!
 			//Statistic->RenderTOTAL_Real.End			();
 			//	Present goes here
-			End										();
+			End(true);
 		}
 	}
 	Statistic->RenderTOTAL_Real.End			();
@@ -334,6 +336,9 @@ void CRenderDevice::FrameMove()
 		ProcessLoading				(rp_Frame);
 //	else
 //		seqFrame.Process			(rp_Frame);
+
+//	if (getImGuiActivated())
+
 	Statistic->EngineTOTAL.End	();
 }
 

@@ -932,7 +932,7 @@ PROTECT_API void CApplication::LoadDraw		()
 	else
 		load_draw_internal			();
 
-	Device.End					();
+	Device.End(false);
 	CheckCopyProtection			();
 }
 

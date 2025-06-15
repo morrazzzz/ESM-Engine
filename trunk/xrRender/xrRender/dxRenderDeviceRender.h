@@ -61,7 +61,7 @@ public:
 	virtual u32		GetCacheStatPolys();
 	virtual void	Begin();
 	virtual void	Clear();
-	virtual void	End();
+	virtual void	End(bool NeedRenderImgui);
 	virtual void	ClearTarget();
 	virtual void	SetCacheXform(Fmatrix &mView, Fmatrix &mProject);
 	virtual void	OnAssetsChanged();

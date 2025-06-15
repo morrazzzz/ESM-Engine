@@ -15,6 +15,7 @@
 #include "../xrRender/ShaderResourceTraits.h"
 
 #include <D3DX10Core.h>
+#include <backends/imgui_impl_dx11.h>
 
 CRender										RImplementation;
 
@@ -427,6 +428,13 @@ void CRender::OnFrame()
 		// MT-HOM (@front)
 		Device.seqParallel.insert(Device.seqParallel.begin(),
 			fastdelegate::FastDelegate0<>(&HOM, &CHOM::MT_RENDER));
+	}
+
+	//ImGui Frame
+	if (Device.getImGuiActivated())
+	{
+		ImGui_ImplDX11_NewFrame();
+		Device.WindowNewFrameImGui();
 	}
 }
 
