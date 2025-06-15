@@ -22,6 +22,7 @@
 #include "ui/UIMainIngameWnd.h"
 #include "ui/UIPdaWnd.h"
 #include "xr_3da/DiscordSDK.h"
+#include "ImguiManager.h"
 
 #ifdef DEBUG
 #include "profiler.h"
@@ -475,6 +476,7 @@ void CGamePersistent::update_game_intro			()
 	}
 }
 #include "holder_custom.h"
+#include <xr_3da/xr_input.h>
 extern CUISequencer * g_tutorial;
 extern CUISequencer * g_tutorial2;
 
@@ -501,6 +503,9 @@ void CGamePersistent::OnFrame	()
 
 //	if (!g_dedicated_server && Device.dwPrecacheFrame == 0 && !m_intro && m_intro_event.empty())
 //		load_screen_renderer.stop();
+
+	if (Device.getImGuiActivated())
+		ImGuiManager.UpdateImgui();
 
 	if( !m_pMainMenu->IsActive() )
 		m_pMainMenu->DestroyInternal(false);

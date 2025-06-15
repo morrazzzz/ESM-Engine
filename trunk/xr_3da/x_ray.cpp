@@ -112,10 +112,13 @@ ENGINE_API	string_path		g_sLaunchWorkingFolder;
 // startup point
 void InitEngine		()
 {
-	Engine.Initialize			( );
+	Device.InitializeImGuiContext();
+
+	Engine.Initialize();
 	while (!g_bIntroFinished)
 		Sleep(100);
 	Device.Initialize();
+
 #ifdef FRAME_SCHEDULER
 	Engine.Sheduler.AddSchedulerFrame();
 #endif
@@ -692,17 +695,9 @@ int APIENTRY WinMain(HINSTANCE hInstance,
                      char *    lpCmdLine,
                      int       nCmdShow)
 {
-	__try 
-	{
-		WinMain_impl		(hInstance,hPrevInstance,lpCmdLine,nCmdShow);
-	}
-	__except(stack_overflow_exception_filter(GetExceptionCode()))
-	{
-		_resetstkoflw		();
-		FATAL				("stack overflow");
-	}
+	WinMain_impl		(hInstance,hPrevInstance,lpCmdLine,nCmdShow);
 
-	return					(0);
+	return	(0);
 }
 
 LPCSTR _GetFontTexName (LPCSTR section)

@@ -285,7 +285,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4237;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)xrGame;../3rd party/;../3rd party/DPlay;../3rd party/ode/Public/;../3rd party/DiscordSDK/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)xrGame;../3rd party/;../3rd party/ImGui;../3rd party/DPlay;../3rd party/ode/Public/;../3rd party/DiscordSDK/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <ResourceCompile>
@@ -383,7 +383,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4237;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <PreprocessToFile>false</PreprocessToFile>
-      <AdditionalIncludeDirectories>$(SolutionDir);../3rd party/DX9SDK/Include;../3rd party/ode/Public/;../3rd party/DiscordSDK/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);../3rd party/ImGui;../3rd party/DX9SDK/Include;../3rd party/ode/Public/;../3rd party/DiscordSDK/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <Optimization>Full</Optimization>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
@@ -412,6 +412,7 @@
     <ClInclude Include="death_anims.h" />
     <ClInclude Include="IKFoot.h" />
     <ClInclude Include="IKFoot_inl.h" />
+    <ClInclude Include="ImguiManager.h" />
     <ClInclude Include="imotion_position.h" />
     <ClInclude Include="imotion_velocity.h" />
     <ClInclude Include="mt_config.h" />
@@ -1701,6 +1702,7 @@
     <ClCompile Include="death_anims.cpp" />
     <ClCompile Include="death_anims_predicates.cpp" />
     <ClCompile Include="IKFoot.cpp" />
+    <ClCompile Include="ImguiManager.cpp" />
     <ClCompile Include="imotion_position.cpp" />
     <ClCompile Include="imotion_velocity.cpp" />
     <ClCompile Include="PHCommander.cpp" />
@@ -6219,6 +6221,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\3rd party\ImGui\ImGui.vcxproj">
+      <Project>{472f0126-2211-400f-8c0b-95c811bc6521}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\3rd party\ode\contrib\msvc7\ode_default\default.vcxproj">
       <Project>{1bf75feb-87dd-486c-880b-227987d191c2}</Project>
     </ProjectReference>

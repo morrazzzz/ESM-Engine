@@ -122,7 +122,7 @@ public:
 	bool getNeedExitGame() const { return needExitGame; }
 
 	void setImGuiActivated(bool value) { ImGuiActivated = value; }
-	bool getImGuiActivated() const { return ImGuiActivated; }
+	bool getImGuiActivated() const { return b_is_Active && ImGuiActivated; }
 
 	void SetWindowActive(bool active);
 	void ResizeWindow();
@@ -132,6 +132,7 @@ public:
 
 	void WindowNewFrameImGui();
 
+	void InitializeImGuiContext();
 
 	ImGuiContext* getImguiContext() { return ImguiContext; }
 public:

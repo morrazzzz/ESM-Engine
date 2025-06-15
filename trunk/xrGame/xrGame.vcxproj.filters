@@ -2089,6 +2089,9 @@
     <Filter Include="AI\AScript\ScriptClasses\ScriptEnum">
       <UniqueIdentifier>{ce833e3a-f760-4cd6-b648-dc556a974340}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ImGui">
+      <UniqueIdentifier>{1825e7aa-c99f-4c82-8b8d-64dacb078899}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mt_config.h">
@@ -5892,6 +5895,9 @@
     <ClInclude Include="script_enum_types.h">
       <Filter>AI\AScript\ScriptClasses\ScriptEnum</Filter>
     </ClInclude>
+    <ClInclude Include="ImguiManager.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -8575,6 +8581,9 @@
     </ClCompile>
     <ClCompile Include="script_enum_types.cpp">
       <Filter>AI\AScript\ScriptClasses\ScriptEnum</Filter>
+    </ClCompile>
+    <ClCompile Include="ImguiManager.cpp">
+      <Filter>ImGui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -3,7 +3,6 @@
 #include <SDL3/SDL_video.h>
 #include <SDL3/SDL_properties.h>
 #include <backends/imgui_impl_sdl3.h>
-#include <backends/imgui_impl_dx11.h>
 #include <imgui.h>
 #include "xr_input.h"
 
@@ -40,7 +39,20 @@ void CRenderDevice::Initialize()
         SDL_HideCursor();
         SDL_RaiseWindow(Device.SDLWindow);
     }
+   
+    ImGui_ImplSDL3_InitForD3D(SDLWindow);
     
+    /*
+    IMGUI_CHECKVERSION();
+    ImguiContext = ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    //   io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    //   io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+    */
+}
+
+void CRenderDevice::InitializeImGuiContext()
+{
     IMGUI_CHECKVERSION();
     ImguiContext = ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
@@ -48,7 +60,9 @@ void CRenderDevice::Initialize()
     //   io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
-       // Setup Dear ImGui style
+    io.MouseDrawCursor = true;
+
+    // Setup Dear ImGui style
     ImGui::StyleColorsDark();
     //ImGui::StyleColorsLight();
 
@@ -59,16 +73,6 @@ void CRenderDevice::Initialize()
         style.WindowRounding = 0.0f;
         style.Colors[ImGuiCol_WindowBg].w = 1.0f;
     }
-
-    ImGui_ImplSDL3_InitForD3D(SDLWindow);
-    
-    /*
-    IMGUI_CHECKVERSION();
-    ImguiContext = ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
-    //   io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-    //   io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-    */
 }
 
 void CRenderDevice::ResizeWindow()
@@ -107,10 +111,7 @@ void CRenderDevice::EventWindow()
     while (SDL_PollEvent(&SDLWindowEvent))
     {
         if (getImGuiActivated())
-        {
-            if (ImGui_ImplSDL3_ProcessEvent(&SDLWindowEvent))
-                continue;
-        }
+            ImGui_ImplSDL3_ProcessEvent(&SDLWindowEvent);
 
         switch (SDLWindowEvent.type)
         {
@@ -129,10 +130,17 @@ void CRenderDevice::EventWindow()
             pInput->TextInputProcess(SDLWindowEvent.text.text);
             break;
         }
+        case SDL_EVENT_KEY_UP:
+            if (SDLWindowEvent.key.scancode == SDL_SCANCODE_F9)
+                Device.setImGuiActivated(!Device.getImGuiActivated());
+            break;
         case SDL_EVENT_TEXT_EDITING:
             __debugbreak();
             break;
         case SDL_EVENT_MOUSE_MOTION:
+            if (getImGuiActivated())
+                break;
+
             pInput->mouseX += SDLWindowEvent.motion.xrel;
             pInput->mouseY += SDLWindowEvent.motion.yrel;
             pInput->mouseMove = true;
@@ -155,18 +163,8 @@ void CRenderDevice::SetWindowActive(bool active)
     }
 }
 
-bool costil = true;
 void CRenderDevice::WindowNewFrameImGui()
 {
     ImGui_ImplSDL3_NewFrame();
-    ImGui::NewFrame();
-
-    //morrazzzz: Fake!! Need normal ImGui manager!!! For test.
-    if (costil)
-        ImGui::ShowDemoWindow(&costil);
-
-    ImGui::Begin("Test");
-
-    ImGui::End();
-    
+    ImGui::NewFrame();    
 }

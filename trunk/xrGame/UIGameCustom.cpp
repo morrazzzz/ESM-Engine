@@ -184,6 +184,7 @@ void CUIGameCustom::UnLoad()
 {
 	xr_delete					(m_msgs_xml);
 	delete WpnScopeXml;
+	WpnScopeXml = nullptr;
 	xr_delete					(m_InventoryMenu);
 	xr_delete					(m_PdaMenu);
 //	xr_delete					(m_window);

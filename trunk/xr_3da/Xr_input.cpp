@@ -85,9 +85,6 @@ void CInput::KeyUpdate()
 			continue;
 		}
 
-		if (i == SDL_SCANCODE_F8)
-			Device.setImGuiActivated(true);
-
 		cbStack.back()->IR_OnKeyboardPress(i);
 		InputsScancodesPrev[i] = InputsScancodes[i];
 	}
@@ -178,10 +175,13 @@ void CInput::OnAppDeactivate	(void)
 
 void CInput::OnFrame			(void)
 {
-	Device.Statistic->Input.Begin			();
+	if (Device.getImGuiActivated())
+		return;
+
+	Device.Statistic->Input.Begin();
 	KeyUpdate();
 	MouseUpdate();
-	Device.Statistic->Input.End				();
+	Device.Statistic->Input.End	();
 }
 
 IInputReceiver*	 CInput::CurrentIR()
