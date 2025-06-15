@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="ImGui">
+      <UniqueIdentifier>{9ed84d53-e082-4d91-95e7-328a5b31b6af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Backends">
+      <UniqueIdentifier>{10e25f92-3c60-4e7d-98e5-88d722ef6ccf}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="imgui.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui_internal.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="imstb_rectpack.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="imstb_textedit.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="imstb_truetype.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="backends\imgui_impl_dx9.h">
+      <Filter>Backends</Filter>
+    </ClInclude>
+    <ClInclude Include="backends\imgui_impl_dx10.h">
+      <Filter>Backends</Filter>
+    </ClInclude>
+    <ClInclude Include="backends\imgui_impl_dx11.h">
+      <Filter>Backends</Filter>
+    </ClInclude>
+    <ClInclude Include="backends\imgui_impl_sdl3.h">
+      <Filter>Backends</Filter>
+    </ClInclude>
+    <ClInclude Include="imconfig.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="imgui_demo.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_draw.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_tables.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_widgets.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="backends\imgui_impl_dx9.cpp">
+      <Filter>Backends</Filter>
+    </ClCompile>
+    <ClCompile Include="backends\imgui_impl_dx10.cpp">
+      <Filter>Backends</Filter>
+    </ClCompile>
+    <ClCompile Include="backends\imgui_impl_dx11.cpp">
+      <Filter>Backends</Filter>
+    </ClCompile>
+    <ClCompile Include="backends\imgui_impl_sdl3.cpp">
+      <Filter>Backends</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
