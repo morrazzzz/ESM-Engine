@@ -46,10 +46,19 @@ void CRenderDevice::Initialize()
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     //   io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     //   io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
        // Setup Dear ImGui style
     ImGui::StyleColorsDark();
     //ImGui::StyleColorsLight();
+
+    ImGuiStyle& style = ImGui::GetStyle();
+    // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    {
+        style.WindowRounding = 0.0f;
+        style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+    }
 
     ImGui_ImplSDL3_InitForD3D(SDLWindow);
     
@@ -146,14 +155,6 @@ void CRenderDevice::SetWindowActive(bool active)
     }
 }
 
-void test_imgui(bool* new_bool)
-{
-    bool test = ImGui::Begin("My random2");
-    VERIFY(test);
-
-    ImGui::End();
-}
-
 bool costil = true;
 void CRenderDevice::WindowNewFrameImGui()
 {
@@ -164,4 +165,8 @@ void CRenderDevice::WindowNewFrameImGui()
     if (costil)
         ImGui::ShowDemoWindow(&costil);
 
+    ImGui::Begin("Test");
+
+    ImGui::End();
+    
 }

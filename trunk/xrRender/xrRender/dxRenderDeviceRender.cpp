@@ -320,6 +320,12 @@ void dxRenderDeviceRender::End(bool NeedRenderImgui)
 		ImGui::Render();
 		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 	}
+
+	if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	{
+		ImGui::UpdatePlatformWindows();
+		ImGui::RenderPlatformWindowsDefault();
+	}
 #endif
 
 	VERIFY	(HW.pDevice);
