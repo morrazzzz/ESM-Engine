@@ -49,14 +49,7 @@ ref_constant R_constant_table::get	(LPCSTR S)
 }
 ref_constant R_constant_table::get	(shared_str& S)
 {
-	// linear search, but only ptr-compare
-	c_table::iterator I	= table.begin	();
-	c_table::iterator E	= table.end		();
-	for (; I!=E; ++I)	{
-		ref_constant	C		= *I;
-		if (C->name.equal(S))	return C;
-	}
-	return	0;
+	return get(S.c_str());
 }
 
 #if !defined(USE_DX10) && !defined(USE_DX11)
