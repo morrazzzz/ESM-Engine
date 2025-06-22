@@ -269,7 +269,7 @@ void CUIStalkerRankingInfoItem::SetSelected	(bool b)
 
 bool CUIStalkerRankingInfoItem::OnMouseDown		(int mouse_btn)
 {
-	if (mouse_btn == MOUSE_LEFT)
+	if (mouse_btn == MOUSE_LEFT_BUTTON_IDX)
 	{
 		m_StalkersRankingWnd->GetTopList().SetSelected(this);
 		return true;

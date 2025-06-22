@@ -285,16 +285,16 @@ BOOL CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 		m_vAngularVelocity.lerp	(m_vAngularVelocity,m_vR,0.3f);
 
 		float speed = m_fSpeed1, ang_speed = m_fAngSpeed1;
-		if (IR_GetKeyState(DIK_LSHIFT))		
+		if (pInput->GetModState(SDL_KMOD_LSHIFT))
 		{ 
 			speed=m_fSpeed0; ang_speed=m_fAngSpeed0;
 		}
-		else if (IR_GetKeyState(DIK_LALT))	
+		else if (pInput->GetModState(SDL_KMOD_LALT))
 		{ 
 			speed=m_fSpeed2; 
 			ang_speed=m_fAngSpeed2;
 		}
-		else if (IR_GetKeyState(DIK_LCONTROL)) 
+		else if (pInput->GetModState(SDL_KMOD_LCTRL))
 		{
 			speed=m_fSpeed3; 
 			ang_speed=m_fAngSpeed3;
@@ -404,16 +404,16 @@ void CDemoRecord::IR_OnMouseMove(float dx, float dy)
 	float scale = 1.0f;
 	if (dx||dy){
 		m_vR.x += dx * scale; // heading
-		m_vR.y += ((psMouseInvert.test(1)) ? -1 : 1) * dy * scale * (3.f / 4.f); // pitch
+		m_vR.y += (psMouseInvert ? -1 : 1) * dy * scale * (3.f / 4.f); // pitch
 	}
 }
 
 void CDemoRecord::IR_OnMouseHold		(int btn)
 {
 	switch (btn){
-	case MOUSE_LEFT:			
+	case MOUSE_LEFT_BUTTON_IDX:
 		m_vT.z += 1.0f; break; // Move Backward
-	case MOUSE_RIGHT:			
+	case MOUSE_RIGHT_BUTTON_IDX:			
 		m_vT.z -= 1.0f; break; // Move Forward
 	}
 }

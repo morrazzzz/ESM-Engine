@@ -23,7 +23,7 @@ public:
 	virtual void IR_OnTextInput(const char* text) {}
 };
 
-ENGINE_API extern float			psMouseSens;
-ENGINE_API extern float			psMouseSensScale;
-ENGINE_API extern Flags32		psMouseInvert;
+ENGINE_API extern float	psMouseSens;
+ENGINE_API extern float psMouseSensScale;
+ENGINE_API extern BOOL psMouseInvert;
 

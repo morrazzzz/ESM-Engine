@@ -40,7 +40,7 @@ bool CUITrackBar::OnMouseAction(float x, float y, EUIMessages mouse_action)
 
 	if (m_bCursorOverWindow)
 	{
-		if (pInput->GetPressedMouseKey(SDL_BUTTON_LMASK))
+		if (pInput->GetPressedMouseKey(MOUSE_LEFT_BUTTON))
 			UpdatePosRelativeToMouse();
 	}
 	return true;

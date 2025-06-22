@@ -100,14 +100,14 @@ bool CUIEditKeyBind::OnMouseDown(int mouse_btn)
 		return					true;
 	}
 
-	if (mouse_btn == MOUSE_LEFT)
+	if (mouse_btn == MOUSE_LEFT_BUTTON_IDX)
 		m_bEditMode = m_bCursorOverWindow;
 
 	return CUILabel::OnMouseDown(mouse_btn);
 }
 
 bool CUIEditKeyBind::OnKeyboardAction(int dik, EUIMessages keyboard_action){
-	if (dik == MOUSE_LEFT || dik == MOUSE_MIDDLE || dik == MOUSE_RIGHT)
+	if (dik >= MOUSE_LEFT_BUTTON_IDX)
 		return false;
 	if (CUILabel::OnKeyboardAction(dik, keyboard_action))
 		return true;

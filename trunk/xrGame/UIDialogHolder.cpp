@@ -272,10 +272,30 @@ bool CDialogHolder::IR_UIOnKeyboardPress(int dik)
 	if (!TIR)				return false;
 	if (!TIR->IR_process())	return false;
 	//mouse click
-	if (dik == MOUSE_LEFT || dik == MOUSE_MIDDLE || dik == MOUSE_RIGHT)
+	if (dik >= MOUSE_LEFT_BUTTON_IDX)
 	{
 		Fvector2 cp = GetUICursor().GetCursorPosition();
-		EUIMessages action = (dik == MOUSE_LEFT) ? WINDOW_LBUTTON_DOWN : (dik == MOUSE_RIGHT) ? WINDOW_RBUTTON_DOWN : WINDOW_CBUTTON_DOWN;
+		EUIMessages action = WINDOW_LBUTTON_DOWN;
+
+		switch (dik)
+		{
+		case MOUSE_LEFT_BUTTON_IDX:
+			action = WINDOW_LBUTTON_DOWN;
+			break;
+		case MOUSE_MIDDLE_BUTTON_IDX:
+			action = WINDOW_CBUTTON_DOWN;
+			break;
+		case MOUSE_RIGHT_BUTTON_IDX:
+			action = WINDOW_RBUTTON_DOWN;
+			break;
+		case MOUSE_BACK_BUTTON_IDX:
+			action = WINDOW_BACK_BUTTON_DOWN;
+			break;
+		case MOUSE_FORWARD_BUTTON_IDX:
+			action = WINDOW_FORWARD_BUTTON_DOWN;
+			break;
+		}
+
 		if (TIR->OnMouseAction(cp.x, cp.y, action))
 			return true;
 	}
@@ -309,10 +329,31 @@ bool CDialogHolder::IR_UIOnKeyboardRelease(int dik)
 	if (!TIR->IR_process())	return false;
 
 	//mouse click
-	if (dik == MOUSE_LEFT || dik == MOUSE_MIDDLE || dik == MOUSE_RIGHT)
+	//mouse click
+	if (dik >= MOUSE_LEFT_BUTTON_IDX)
 	{
 		Fvector2 cp = GetUICursor().GetCursorPosition();
-		EUIMessages action = (dik == MOUSE_LEFT) ? WINDOW_LBUTTON_UP : (dik == MOUSE_RIGHT) ? WINDOW_RBUTTON_UP : WINDOW_CBUTTON_UP;
+		EUIMessages action = WINDOW_LBUTTON_UP;
+
+		switch (dik)
+		{
+		case MOUSE_LEFT_BUTTON_IDX:
+			action = WINDOW_LBUTTON_UP;
+			break;
+		case MOUSE_MIDDLE_BUTTON_IDX:
+			action = WINDOW_CBUTTON_UP;
+			break;
+		case MOUSE_RIGHT_BUTTON_IDX:
+			action = WINDOW_RBUTTON_UP;
+			break;
+		case MOUSE_BACK_BUTTON_IDX:
+			action = WINDOW_BACK_BUTTON_UP;
+			break;
+		case MOUSE_FORWARD_BUTTON_IDX:
+			action = WINDOW_FORWARD_BUTTON_UP;
+			break;
+		}
+
 		if (TIR->OnMouseAction(cp.x, cp.y, action))
 			return true;
 	}

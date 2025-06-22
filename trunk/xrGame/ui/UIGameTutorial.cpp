@@ -259,8 +259,6 @@ void CUISequencer::IR_OnActivate()
 {
 	if(!pInput) return;
 	int i;
-	if (pInput->InputsScancodes)
-	{ 
 
 	for (i = 0; i < CountInputsScancode; i++ )
 	{
@@ -286,6 +284,5 @@ void CUISequencer::IR_OnActivate()
 				}break;
 			};
 		};
-	}
 	}
 }

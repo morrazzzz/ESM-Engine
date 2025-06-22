@@ -140,19 +140,22 @@ const char* xrCore::GetEngineVersion() {
 
 xr_string ANSIToUTF8(const xr_string& string)
 {
+	static xr_string result;
+
 	wchar_t* wcs{};
-    int Lenght_ = MultiByteToWideChar(1251, 0, string.c_str(), (int)string.size(), wcs, 0);
+    int Lenght_ = MultiByteToWideChar(CP_ACP, 0, string.c_str(), (int)string.size(), wcs, 0);
 	wcs = new wchar_t[Lenght_ + 1];
-	MultiByteToWideChar(1251, 0, string.c_str(), (int)string.size(), wcs, Lenght_);
+	MultiByteToWideChar(CP_ACP, 0, string.c_str(), (int)string.size(), wcs, Lenght_);
 	wcs[Lenght_] = L'\0';
 
 	char* u8s = nullptr;
-	Lenght_ = WideCharToMultiByte(CP_UTF8, 0, wcs, (int)std::wcslen(wcs), u8s, 0, nullptr, nullptr);
+	Lenght_ = WideCharToMultiByte(CP_UTF8, 0, wcs, std::wcslen(wcs), u8s, 0, nullptr, nullptr);
 	u8s = new char[Lenght_ + 1];
-	WideCharToMultiByte(CP_UTF8, 0, wcs, (int)std::wcslen(wcs), u8s, Lenght_, nullptr, nullptr);
+	int return_value = WideCharToMultiByte(CP_UTF8, 0, wcs, std::wcslen(wcs), u8s, Lenght_, nullptr, nullptr);
 	u8s[Lenght_] = '\0';
 
-	xr_string result(u8s);
+	result = u8s;
+
 	delete[] wcs;
 	delete[] u8s;
 
@@ -173,7 +176,8 @@ const char* UTF8ToANSI(const char* text)
 	char* ANSIChar = nullptr;
 	int ANSILenght = WideCharToMultiByte(CP_ACP, 0, UTF8WideChar, std::wcslen(UTF8WideChar), nullptr, 0, nullptr, nullptr);
 	ANSIChar = new char[ANSILenght + 1];
-	WideCharToMultiByte(CP_ACP, 0, UTF8WideChar, std::wcslen(UTF8WideChar), ANSIChar, ANSILenght, nullptr, nullptr);
+	int return_value = WideCharToMultiByte(CP_ACP, 0, UTF8WideChar, std::wcslen(UTF8WideChar), ANSIChar, ANSILenght, nullptr, nullptr);
+	VERIFY(return_value);
 	ANSIChar[ANSILenght] = '\0';
 
 	result = ANSIChar;

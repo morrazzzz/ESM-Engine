@@ -51,7 +51,7 @@ bool CUI3tButton::OnMouseDown(int mouse_btn)
 {
 	if (m_bCheckMode)
 	{
-		if (mouse_btn == MOUSE_LEFT)
+		if (mouse_btn == MOUSE_LEFT_BUTTON_IDX)
 		{
 			if (m_eButtonState == BUTTON_NORMAL)
 				m_eButtonState = BUTTON_PUSHED;

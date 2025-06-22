@@ -121,7 +121,7 @@ public:
 	void setNeedExitGame(bool value) { needExitGame = value; }
 	bool getNeedExitGame() const { return needExitGame; }
 
-	void setImGuiActivated(bool value) { ImGuiActivated = value; }
+	void setImGuiActivated(bool value);
 	bool getImGuiActivated() const { return b_is_Active && ImGuiActivated; }
 
 	void SetWindowActive(bool active);

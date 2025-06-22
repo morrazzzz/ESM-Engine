@@ -33,8 +33,7 @@ public:
 	virtual void Draw();
 	virtual void Update();
 
-	bool OnKeyboardPress(int dik);
-
+	bool KeyboardIngameWnd(int dik);
 protected:
 	
 	CUIStatic			UIStaticDiskIO;

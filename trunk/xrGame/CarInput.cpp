@@ -26,7 +26,7 @@ void CCar::OnMouseMove(float dx, float dy)
 		C->Move((d < 0) ? kLEFT : kRIGHT, _abs(d));
 	}
 	if (dy) {
-		float d = ((psMouseInvert.test(1)) ? -1 : 1) * float(dy) * scale * 3.f / 4.f;
+		float d = (psMouseInvert ? -1 : 1) * float(dy) * scale * 3.f / 4.f;
 		C->Move((d > 0) ? kUP : kDOWN, _abs(d));
 	}
 }

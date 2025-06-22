@@ -114,7 +114,7 @@ void						CLevel::Demo_PrepareToStore			()
 	//---------------------------------------------------------------
 	string1024 CName = "";
 	u32 CNameSize = 1024;
-	GetComputerName(CName, (DWORD*)&CNameSize);
+	 GetComputerName(CName, (DWORD*)&CNameSize);
 	SYSTEMTIME Time;
 	GetLocalTime(&Time);
 	sprintf_s(m_sDemoName, "xray_%s_%02d-%02d-%02d_%02d-%02d-%02d.tdemo", CName, Time.wMonth, Time.wDay, Time.wYear, Time.wHour, Time.wMinute, Time.wSecond);

@@ -60,7 +60,9 @@ void CRenderDevice::InitializeImGuiContext()
     //   io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
-    io.MouseDrawCursor = true;
+//    io.MouseDrawCursor = true;
+
+    io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\sitkavf.ttf", 15.0f, nullptr, io.Fonts->GetGlyphRangesCyrillic());
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
@@ -115,7 +117,7 @@ void CRenderDevice::EventWindow()
 
         switch (SDLWindowEvent.type)
         {
-        case SDL_EVENT_QUIT:
+        case SDL_EVENT_QUIT:    
             setNeedExitGame(true);
             break;
         case SDL_EVENT_WINDOW_FOCUS_GAINED:
@@ -125,8 +127,17 @@ void CRenderDevice::EventWindow()
             SetWindowActive(active);
             break;
         }
+        case SDL_EVENT_WINDOW_LEAVE_FULLSCREEN:
+        case SDL_EVENT_WINDOW_ENTER_FULLSCREEN:
+        {
+            Reset();
+            break;
+        }
         case SDL_EVENT_TEXT_INPUT:
         {
+            if (getImGuiActivated())
+                break;
+
             pInput->TextInputProcess(SDLWindowEvent.text.text);
             break;
         }
@@ -141,9 +152,8 @@ void CRenderDevice::EventWindow()
             if (getImGuiActivated())
                 break;
 
-            pInput->mouseX += SDLWindowEvent.motion.xrel;
-            pInput->mouseY += SDLWindowEvent.motion.yrel;
-            pInput->mouseMove = true;
+            pInput->SetMouseMotion(SDLWindowEvent.motion.xrel,
+                SDLWindowEvent.motion.yrel);
 
             break;
         }
@@ -157,9 +167,15 @@ void CRenderDevice::SetWindowActive(bool active)
         Device.b_is_Active = active;
 
         if (Device.b_is_Active)
+        {
+//            SDL_MaximizeWindow(SDLWindow);
             Device.seqAppActivate.Process(rp_AppActivate);
+        }
         else
+        {
+//            SDL_MinimizeWindow(SDLWindow);
             Device.seqAppDeactivate.Process(rp_AppDeactivate);
+        }
     }
 }
 
@@ -167,4 +183,24 @@ void CRenderDevice::WindowNewFrameImGui()
 {
     ImGui_ImplSDL3_NewFrame();
     ImGui::NewFrame();    
+}
+
+bool OldRelativeMode = false;
+void CRenderDevice::setImGuiActivated(bool value)
+{
+    ImGuiActivated = value;
+    
+    if (value && SDL_GetWindowRelativeMouseMode(SDLWindow))
+    {
+        OldRelativeMode = true;
+        pInput->SetInputRelativeMouseMode(false);
+    }
+
+    if (!value)
+    {
+        SDL_HideCursor();
+
+        if (OldRelativeMode)
+            pInput->SetInputRelativeMouseMode(true);
+    }
 }

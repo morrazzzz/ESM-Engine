@@ -73,7 +73,7 @@ void CUICheckButton::Undo()
 
 void CUICheckButton::OnFocusLost()
 {
-	if (m_eButtonState == BUTTON_PUSHED && pInput->GetPressedMouseKey(SDL_BUTTON_LMASK))
+	if (m_eButtonState == BUTTON_PUSHED && pInput->GetPressedMouseKey(MOUSE_LEFT_BUTTON))
 		return;
 
 	inherited::OnFocusLost();

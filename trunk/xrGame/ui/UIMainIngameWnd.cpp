@@ -40,7 +40,6 @@
 #include "UIArtefactPanel.h"
 
 #ifdef DEBUG
-#	include "../attachable_item.h"
 #	include "../../xr_3da/xr_input.h"
 #include "../../Include/xrRender/Kinematics.h"
 #endif
@@ -486,101 +485,24 @@ void CUIMainIngameWnd::Update()
 	CUIWindow::Update				();
 }
 
-bool CUIMainIngameWnd::OnKeyboardPress(int dik)
+bool CUIMainIngameWnd::KeyboardIngameWnd(int dik)
 {
-
-#ifdef DEBUG
-		if(CAttachableItem::m_dbgItem){
-			static float rot_d = deg2rad(0.5f);
-			static float mov_d = 0.01f;
-			bool shift = !!pInput->GetPressedKey(DIK_LSHIFT);
-			bool flag = true;
-			switch (dik)
-			{
-				// Shift +x
-			case DIK_A:
-				if(shift)	CAttachableItem::rot_dx(rot_d);
-				else		CAttachableItem::mov_dx(rot_d);
-				break;
-				// Shift -x
-			case DIK_D:
-				if(shift)	CAttachableItem::rot_dx(-rot_d);
-				else		CAttachableItem::mov_dx(-rot_d);
-				break;
-				// Shift +z
-			case DIK_Q:
-				if(shift)	CAttachableItem::rot_dy(rot_d);
-				else		CAttachableItem::mov_dy(rot_d);
-				break;
-				// Shift -z
-			case DIK_E:
-				if(shift)	CAttachableItem::rot_dy(-rot_d);
-				else		CAttachableItem::mov_dy(-rot_d);
-				break;
-				// Shift +y
-			case DIK_S:
-				if(shift)	CAttachableItem::rot_dz(rot_d);
-				else		CAttachableItem::mov_dz(rot_d);
-				break;
-				// Shift -y
-			case DIK_W:
-				if(shift)	CAttachableItem::rot_dz(-rot_d);
-				else		CAttachableItem::mov_dz(-rot_d);
-				break;
-
-			case DIK_SUBTRACT:
-				if(shift)	rot_d-=deg2rad(0.01f);
-				else		mov_d-=0.001f;
-				Msg("rotation delta=[%f]; moving delta=[%f]",rot_d,mov_d);
-				break;
-			case DIK_ADD:
-				if(shift)	rot_d+=deg2rad(0.01f);
-				else		mov_d+=0.001f;
-				Msg("rotation delta=[%f]; moving delta=[%f]",rot_d,mov_d);
-				break;
-
-			case DIK_P:
-				Msg("LTX section [%s]",*CAttachableItem::m_dbgItem->item().object().cNameSect());
-				Msg("attach_angle_offset [%f,%f,%f]",VPUSH(CAttachableItem::get_angle_offset()));
-				Msg("attach_position_offset [%f,%f,%f]",VPUSH(CAttachableItem::get_pos_offset()));
-				break;
-			default:
-				flag = false;
-				break;
-			}		
-		if(flag)return true;
-		}
-#endif		
-
-	if(Level().IR_GetKeyState(DIK_LSHIFT) || Level().IR_GetKeyState(DIK_RSHIFT))
+	switch (dik)
 	{
-		switch(dik)
-		{
-		case DIK_NUMPADMINUS:
+	case SDL_SCANCODE_KP_MINUS:
+		if (pInput->GetModState(SDL_KMOD_SHIFT))
 			UIZoneMap->ZoomOut();
-			return true;
-			break;
-		case DIK_NUMPADPLUS:
-			UIZoneMap->ZoomIn();
-			return true;
-			break;
-		}
-	}
-	else
-	{
-		switch(dik)
-		{
-		case DIK_NUMPADMINUS:
-			//.HideAll();
+		else
 			CurrentGameUI()->ShowGameIndicators(false);
-			return true;
-			break;
-		case DIK_NUMPADPLUS:
-			//.ShowAll();
+
+		return true;
+	case SDL_SCANCODE_KP_PLUS:
+		if (pInput->GetModState(SDL_KMOD_SHIFT))
+			UIZoneMap->ZoomIn();
+		else
 			CurrentGameUI()->ShowGameIndicators(true);
-			return true;
-			break;
-		}
+
+		return true;
 	}
 
 	return false;

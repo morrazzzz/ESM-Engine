@@ -1,12 +1,15 @@
 #pragma once
 
 #include <SDL3/SDL_keycode.h>
-#include <SDL3/SDL_mouse.h>
 
 constexpr int CountInputsScancode = 322;
+constexpr int CountMouseButton = 5;
+
+#define BUTTON_MASK(button) (1u << button);
+
 #include <dinput.h>
 
-class	ENGINE_API				IInputReceiver;
+class ENGINE_API IInputReceiver;
 
 class ENGINE_API CInput
 #ifndef M_BORLAND
@@ -16,58 +19,46 @@ class ENGINE_API CInput
 	public pureAppDeactivate
 #endif
 {
-private:
-	//----------------------
-//	xr_stack<IInputReceiver*>	cbStack;
-	xr_vector<IInputReceiver*>	cbStack;
+	bool mouseMove = false;
 
-	void						MouseUpdate					( );
-	void						KeyUpdate					( );
+	bool KeyboardStatePrev[CountInputsScancode];
+	bool mouseState[CountMouseButton];
+	bool mouseStatePrev[CountMouseButton];
 
-public:
-	void						iCapture					( IInputReceiver *pc );
-	void						iRelease					( IInputReceiver *pc );
+	float mouseX{}, mouseY{};
 
-	CInput						( BOOL bExclusive = true);
-	~CInput						( );
-
-	virtual void				OnFrame						(void);
-	virtual void				OnAppActivate				(void);
-	virtual void				OnAppDeactivate				(void);
-
-	IInputReceiver*				CurrentIR					();
-
-public:
-			void				exclusive_mode				(const bool &exclusive);
-			bool				get_exclusive_mode();
-
-private:
-	void MouseKeyHold();
-	void MouseKeyPress();
-private:
+	const bool* KeyboardState;
 	IInputReceiver* TextInputReceiver = nullptr;
 
-	bool InputsScancodesPrev[CountInputsScancode];
-	u32 mouseStatePrev;
-public:
-	bool mouseMove = false;
-    float mouseX{}, mouseY{};
+	xr_vector<IInputReceiver*> cbStack;
 
-	SDL_MouseButtonFlags mouseState;
-	const bool* InputsScancodes;
 public:
-	void MouseKeyRelease();
+	CInput();
+	~CInput();
+
+	void OnFrame() override;
+    void OnAppActivate() override;
+	void OnAppDeactivate() override;
+
+	void iCapture(IInputReceiver* pc);
+	void iRelease(IInputReceiver* pc);
 
 	void TextInputStart(IInputReceiver* receiver);
 	void TextInputStop();
 	void TextInputProcess(const char* text);
 
 	void SetInputRelativeMouseMode(bool mode);
+	void SetMouseMotion(float x, float y);
 
 	bool GetPressedKey(int dik) const;
-	bool GetPressedMouseKey(u32 key);
+	bool GetPressedMouseKey(int key);
 	bool GetModState(const SDL_Keymod& mode) const;
 	const char* GetKeyName(u16 dik);
+
+	IInputReceiver* CurrentIR();
+private:
+	void MouseUpdate();
+	void KeyUpdate();
 };
 
 extern ENGINE_API CInput *		pInput;

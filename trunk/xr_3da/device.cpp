@@ -230,7 +230,8 @@ void CRenderDevice::on_idle		()
 #ifndef DEDICATED_SERVER
 	Statistic->RenderTOTAL_Real.FrameStart	();
 	Statistic->RenderTOTAL_Real.Begin		();
-	if (b_is_Active)							{
+	if (b_is_Active)							
+    {
 		if (Begin())				{
 
 			seqRender.Process						(rp_Render);
@@ -337,7 +338,13 @@ void CRenderDevice::FrameMove()
 //	else
 //		seqFrame.Process			(rp_Frame);
 
-//	if (getImGuiActivated())
+	if (getImGuiActivated())
+	{
+		ImGui::EndFrame();
+
+		if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+			ImGui::UpdatePlatformWindows();
+	}
 
 	Statistic->EngineTOTAL.End	();
 }

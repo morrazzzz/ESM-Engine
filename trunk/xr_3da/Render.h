@@ -18,6 +18,8 @@ class IRenderVisual;
 class IKinematics;
 class CGameFont;
 
+struct ImTextureRef;
+
 const	float		fLightSmoothFactor = 4.f;
 
 //////////////////////////////////////////////////////////////////////////
@@ -200,6 +202,9 @@ public:
 	virtual IRenderVisual*			getVisual				(int id)									= 0;
 	virtual IRender_Sector*			detectSector			(const Fvector& P)							= 0;
 	virtual IRender_Target*			getTarget				()											= 0;
+
+	virtual void getImguiTextureRef(const char* name, ImTextureRef& texture_ref,
+		u32& texture_width, u32& texture_height) {}
 
 	// Main 
 	IC		void					set_Frustum				(CFrustum*	O	)							{ VERIFY(O);	View = O;			}

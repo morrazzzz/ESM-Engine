@@ -145,8 +145,6 @@ void line_edit_control::init( u32 str_buffer_size, init_mode mode )
 	}
 	else
 	{
-		assign_char_pairs( mode );
-
 		//assign_callback( DIK_INSERT, ks_free, Callback( this, &line_edit_control::flip_insert_mode     ) );
 		//assign_callback( DIK_A     , ks_Ctrl, Callback( this, &line_edit_control::select_all_buf       ) );
 		//assign_callback( DIK_Z     , ks_Ctrl, Callback( this, &line_edit_control::undo_buf             ) );
@@ -181,122 +179,6 @@ void line_edit_control::init( u32 str_buffer_size, init_mode mode )
 //		assign_callback( DIK_LSHIFT, ks_Alt, Callback( this, &line_edit_control::SwitchKL  ) );
 
 	} // if mode
-}
-
-void line_edit_control::assign_char_pairs( init_mode mode )
-{
-	//TODO: Not fix this!!! Not relevant!!!
-	/*
-	create_char_pair( DIK_NUMPAD0, '0', '0' );
-	create_char_pair( DIK_NUMPAD1, '1', '1' );
-	create_char_pair( DIK_NUMPAD2, '2', '2' );
-	create_char_pair( DIK_NUMPAD3, '3', '3' );
-	create_char_pair( DIK_NUMPAD4, '4', '4' );
-	create_char_pair( DIK_NUMPAD5, '5', '5' );
-	create_char_pair( DIK_NUMPAD6, '6', '6' );
-	create_char_pair( DIK_NUMPAD7, '7', '7' );
-	create_char_pair( DIK_NUMPAD8, '8', '8' );
-	create_char_pair( DIK_NUMPAD9, '9', '9' );
-
-	if ( mode == im_number_only )
-	{
-		create_char_pair( DIK_0, '0', '0' );
-		create_char_pair( DIK_1, '1', '1' );
-		create_char_pair( DIK_2, '2', '2' );
-		create_char_pair( DIK_3, '3', '3' );
-		create_char_pair( DIK_4, '4', '4' );
-		create_char_pair( DIK_5, '5', '5' );
-		create_char_pair( DIK_6, '6', '6' );
-		create_char_pair( DIK_7, '7', '7' );
-		create_char_pair( DIK_8, '8', '8' );
-		create_char_pair( DIK_9, '9', '9' );
-		create_char_pair( DIK_NUMPADMINUS , '-', '-' );
-		create_char_pair( DIK_MINUS       , '-', '-' );
-		create_char_pair( DIK_NUMPADPLUS  , '+', '+' );
-		create_char_pair( DIK_EQUALS	  , '+', '+' );
-		return;
-	}
-
-	if ( mode != im_file_name_mode )
-	{
-		create_char_pair( DIK_0, '0', ')', true );
-		create_char_pair( DIK_1, '1', '!', true );
-		create_char_pair( DIK_2, '2', '@', true );
-		create_char_pair( DIK_3, '3', '#', true );
-		create_char_pair( DIK_4, '4', '$', true );
-		create_char_pair( DIK_5, '5', '%', true );
-		create_char_pair( DIK_6, '6', '^', true );
-		create_char_pair( DIK_7, '7', '&', true );
-		create_char_pair( DIK_8, '8', '*', true );
-		create_char_pair( DIK_9, '9', '(', true );
-
-		create_char_pair( DIK_BACKSLASH , '\\', '|', true );
-		create_char_pair( DIK_LBRACKET  , '[' , '{', true );
-		create_char_pair( DIK_RBRACKET  , ']' , '}', true );
-		create_char_pair( DIK_APOSTROPHE, '\'', '\"',true );
-		create_char_pair( DIK_COMMA     , ',' , '<', true );
-		create_char_pair( DIK_PERIOD    , '.' , '>', true );
-		create_char_pair( DIK_EQUALS    , '=' , '+', true );
-		create_char_pair( DIK_SEMICOLON , ';' , ':', true );
-		create_char_pair( DIK_SLASH     , '/' , '?', true );
-
-		create_char_pair( DIK_NUMPADSTAR , '*', '*' );
-		create_char_pair( DIK_NUMPADSLASH, '/', '/' );
-	}
-	else
-	{
-		create_char_pair( DIK_0, '0', '0' );
-		create_char_pair( DIK_1, '1', '1' );
-		create_char_pair( DIK_2, '2', '2' );
-		create_char_pair( DIK_3, '3', '3' );
-		create_char_pair( DIK_4, '4', '4' );
-		create_char_pair( DIK_5, '5', '5' );
-		create_char_pair( DIK_6, '6', '6' );
-		create_char_pair( DIK_7, '7', '7' );
-		create_char_pair( DIK_8, '8', '8' );
-		create_char_pair( DIK_9, '9', '9' );
-	}
-
-	create_char_pair( DIK_NUMPADMINUS , '-', '-' );
-	create_char_pair( DIK_NUMPADPLUS  , '+', '+' );
-	create_char_pair( DIK_NUMPADPERIOD, '.', '.' );
-
-	create_char_pair( DIK_MINUS       , '-', '_', true );
-	create_char_pair( DIK_SPACE       , ' ', ' ' );
-	create_char_pair( DIK_GRAVE       , '`', '~', true );
-
-	create_char_pair(SDL_SCANCODE_A, 'a', 'A', true );
-	create_char_pair(SDL_SCANCODE_B, 'b', 'B', true );
-	create_char_pair(SDL_SCANCODE_C, 'c', 'C', true );
-	create_char_pair(SDL_SCANCODE_D, 'd', 'D', true );
-	create_char_pair(SDL_SCANCODE_E, 'e', 'E', true );
-	create_char_pair(SDL_SCANCODE_F, 'f', 'F', true );
-	create_char_pair(SDL_SCANCODE_G, 'g', 'G', true );
-	create_char_pair(SDL_SCANCODE_H, 'h', 'H', true );
-	create_char_pair(SDL_SCANCODE_I, 'i', 'I', true );
-	create_char_pair(SDL_SCANCODE_J, 'j', 'J', true );
-	create_char_pair(SDL_SCANCODE_K, 'k', 'K', true );
-	create_char_pair(SDL_SCANCODE_L, 'l', 'L', true );
-	create_char_pair(SDL_SCANCODE_M, 'm', 'M', true );
-	create_char_pair(SDL_SCANCODE_N, 'n', 'N', true );
-	create_char_pair(SDL_SCANCODE_O, 'o', 'O', true );
-	create_char_pair(SDL_SCANCODE_P, 'p', 'P', true );
-	create_char_pair(SDL_SCANCODE_Q, 'q', 'Q', true );
-	create_char_pair(SDL_SCANCODE_R, 'r', 'R', true );
-	create_char_pair(SDL_SCANCODE_S, 's', 'S', true );
-	create_char_pair(SDL_SCANCODE_T, 't', 'T', true );
-	create_char_pair(SDL_SCANCODE_U, 'u', 'U', true );
-	create_char_pair(SDL_SCANCODE_V, 'v', 'V', true );
-	create_char_pair(SDL_SCANCODE_W, 'w', 'W', true );
-	create_char_pair(SDL_SCANCODE_X, 'x', 'X', true );
-	create_char_pair(SDL_SCANCODE_Y, 'y', 'Y', true );
-	create_char_pair(SDL_SCANCODE_Z, 'z', 'Z', true );
-	*/
-}
-
-void line_edit_control::create_char_pair(const SDL_Scancode& key, char c, char c_shift, bool translate )
-{
-	m_actions[key] = new text_editor::type_pair(key, c, c_shift, translate);
 }
 
 void line_edit_control::assign_callback(const SDL_Scancode& key, Callback const& callback, const SDL_Keymod& state)

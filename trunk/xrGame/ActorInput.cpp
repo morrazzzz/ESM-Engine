@@ -308,7 +308,7 @@ void CActor::IR_OnMouseMove(float dx, float dy)
 		cam_Active()->Move((d<0)?kLEFT:kRIGHT, _abs(d));
 	}
 	if (dy){
-		float d = ((psMouseInvert.test(1))?-1:1)*float(dy)*scale*3.f/4.f;
+		float d = (psMouseInvert ? -1 : 1)*float(dy)*scale*3.f/4.f;
 		cam_Active()->Move((d>0)?kUP:kDOWN, _abs(d));
 	}
 }

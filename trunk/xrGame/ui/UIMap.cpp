@@ -217,7 +217,7 @@ void	CUICustomMap::SendMessage			(CUIWindow* pWnd, s16 msg, void* pData)
 bool CUIGlobalMap::OnMouseAction(float x, float y, EUIMessages mouse_action)
 {
 	if(inherited::OnMouseAction(x,y,mouse_action)) return true;
-	if (mouse_action == WINDOW_MOUSE_MOVE && !pInput->GetPressedMouseKey(SDL_BUTTON_LMASK))
+	if (mouse_action == WINDOW_MOUSE_MOVE && !pInput->GetPressedMouseKey(MOUSE_LEFT_BUTTON))
 	{
 		if (MapWnd())
 		{
@@ -474,7 +474,7 @@ bool CUILevelMap::OnMouseAction(float x, float y, EUIMessages mouse_action)
 		return true;
 	};
 */
-	if (mouse_action == WINDOW_MOUSE_MOVE && !pInput->GetPressedMouseKey(SDL_BUTTON_LMASK))
+	if (mouse_action == WINDOW_MOUSE_MOVE && !pInput->GetPressedMouseKey(MOUSE_LEFT_BUTTON))
 	{
 		if (MapWnd())
 		{

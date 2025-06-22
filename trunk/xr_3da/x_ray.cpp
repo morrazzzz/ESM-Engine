@@ -167,15 +167,11 @@ void InitConsole	()
 
 void InitInput		()
 {
-	BOOL bCaptureInput			= !strstr(Core.Params,"-i");
-	if(g_dedicated_server)
-		bCaptureInput			= FALSE;
-
-	pInput						= xr_new<CInput>		(bCaptureInput);
+	pInput = new CInput();
 }
 void destroyInput	()
 {
-	xr_delete					( pInput		);
+     delete pInput;
 }
 
 PROTECT_API void InitSound1		()

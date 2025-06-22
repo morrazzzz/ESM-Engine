@@ -237,6 +237,7 @@ void CLevel::IR_OnKeyboardPress(int key)
 		}
 		return;
 	}
+			   /*
 	case MOUSE_1: {
 		if (pInput->GetPressedKey(DIK_LALT)) {
 			if (!CurrentEntity())
@@ -250,6 +251,7 @@ void CLevel::IR_OnKeyboardPress(int key)
 		}
 		break;
 	}
+	*/
 #endif
 	}
 #endif // MASTER_GOLD

@@ -7,6 +7,8 @@
 
 class CUIStatic;
 
+#define EQUIPMENT_ICONS  "ui\\ui_icon_equipment"
+
 //размеры сетки в текстуре инвентаря
 #define INV_GRID_WIDTH			50
 #define INV_GRID_HEIGHT			50

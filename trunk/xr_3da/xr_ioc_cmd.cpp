@@ -704,7 +704,7 @@ void CCC_Register()
 #endif // DEBUG
 
 	// Mouse
-	CMD3(CCC_Mask,		"mouse_invert",			&psMouseInvert,1);
+	CMD4(CCC_Integer, "mouse_invert", &psMouseInvert, 0, 1);
 	psMouseSens			= 0.12f;
 	CMD4(CCC_Float,		"mouse_sens",			&psMouseSens,		0.05f, 0.6f);
 

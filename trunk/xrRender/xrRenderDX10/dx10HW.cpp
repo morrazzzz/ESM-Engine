@@ -730,22 +730,11 @@ DXGI_RATIONAL CHW::selectRefresh(u32 dwWidth, u32 dwHeight, DXGI_FORMAT fmt)
 
 void CHW::OnAppActivate()
 {
-	if ( m_pSwapChain && !m_ChainDesc.Windowed )
-	{
-		ShowWindow( m_ChainDesc.OutputWindow, SW_RESTORE );
-		m_pSwapChain->SetFullscreenState( TRUE, NULL );
-	}
 }
 
 void CHW::OnAppDeactivate()
 {
-	if ( m_pSwapChain && !m_ChainDesc.Windowed )
-	{
-		m_pSwapChain->SetFullscreenState( FALSE, NULL );
-		ShowWindow( m_ChainDesc.OutputWindow, SW_MINIMIZE );
-	}
 }
-
 
 BOOL CHW::support( D3DFORMAT fmt, DWORD type, DWORD usage)
 {

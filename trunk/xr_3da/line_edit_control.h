@@ -87,9 +87,6 @@ private:
 	void xr_stdcall	delete_word_back	();
 	void xr_stdcall	delete_word_forward	();
 	void xr_stdcall SwitchKL			();
-			
-			void	assign_char_pairs	( init_mode mode );
-			void	create_char_pair	(const SDL_Scancode& dik, char c, char c_shift, bool translate = false );
 
 			void	clear_inserted		();
 			bool	empty_inserted		();

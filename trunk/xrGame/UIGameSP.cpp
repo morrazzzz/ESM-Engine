@@ -88,6 +88,9 @@ bool CUIGameSP::IR_UIOnKeyboardPress(int dik)
 	if(!pActor->g_Alive())	
 		return false;
 
+	if (UIMainIngameWnd->KeyboardIngameWnd(dik))
+		return true;
+
 	switch ( get_binded_action(dik) )
 	{
 	case kINVENTORY: 
