@@ -504,6 +504,18 @@ ID3DIndexBuffer*	CRender::getIB					(int id, BOOL	_alt)	{
 FSlideWindowItem*		CRender::getSWI					(int id)			{ VERIFY(id<int(SWIs.size()));		return &SWIs[id];	}
 IRender_Target*			CRender::getTarget				()					{ return Target;										}
 
+void CRender::getImguiTextureRef(const char* name, ImTextureRef& texture_ref, 
+	u32& texture_width, u32& texture_height)
+{
+	CTexture* texture = DEV->_CreateTexture(name);
+	ImTextureID textureID = (intptr_t)texture->get_SRView();
+
+	texture_width = texture->get_Width();
+	texture_height = texture->get_Height();
+
+	texture_ref = textureID;
+}
+
 IRender_Light*			CRender::light_create			()					{ return Lights.Create();								}
 IRender_Glow*			CRender::glow_create			()					{ return xr_new<CGlow>();								}
 

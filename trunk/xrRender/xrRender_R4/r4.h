@@ -278,6 +278,9 @@ public:
 	virtual IRender_Sector*			detectSector				(const Fvector& P);
 	virtual IRender_Target*			getTarget					();
 
+	void getImguiTextureRef(const char* name, ImTextureRef& texture_ref,
+		u32& texture_width, u32& texture_height) override;
+
 	// Main 
 	virtual void					flush						();
 	virtual	void					add_Occluder				(Fbox2&	bb_screenspace	);			// mask screen region as oclluded

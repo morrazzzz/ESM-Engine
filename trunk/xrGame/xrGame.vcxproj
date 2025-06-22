@@ -1703,6 +1703,7 @@
     <ClCompile Include="death_anims_predicates.cpp" />
     <ClCompile Include="IKFoot.cpp" />
     <ClCompile Include="ImguiManager.cpp" />
+    <ClCompile Include="ImguiManagerSpawn.cpp" />
     <ClCompile Include="imotion_position.cpp" />
     <ClCompile Include="imotion_velocity.cpp" />
     <ClCompile Include="PHCommander.cpp" />
