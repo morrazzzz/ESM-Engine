@@ -108,11 +108,14 @@ private:
 
 	ImGuiContext* ImguiContext;
 
-	void									_Create		(LPCSTR shName);
-	void									_Destroy	(BOOL	bKeepTextures);
+	void									_Create(LPCSTR shName);
+	void									_Destroy(BOOL	bKeepTextures);
 	void									_SetupStates();
 public:
+	Concurrency::task_group* ImGuiTask;
+
 	bool needExitGame{}, ImGuiActivated{};
+	bool imGuiClosed{}; //ImGui closed, but need end frame imgui and set activated imgui in false.
 
 	//u32										dwFrame;
 	//u32										dwPrecacheFrame;
@@ -124,11 +127,18 @@ public:
 	void setImGuiActivated(bool value);
 	bool getImGuiActivated() const { return b_is_Active && ImGuiActivated; }
 
+	void setImGuiClosed(bool value) { imGuiClosed = value; }
+	bool getImGuiClosed() const { return imGuiClosed; }
+
 	void SetWindowActive(bool active);
 	void ResizeWindow();
 	void SetFullscreenWindow(bool value);
 	void DestroyWindow();
 	void EventWindow();
+
+	void StartWindowTextInput();
+	void StopWindowTextInput();
+	bool GetWindowActiveTextInput() const;
 
 	void WindowNewFrameImGui();
 

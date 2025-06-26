@@ -31,6 +31,7 @@ void CRenderDevice::Destroy() {
 	m_pRender->DestroyHW();
 
 	DestroyWindow();
+	delete ImGuiTask;
 
 	seqRender.R.clear			();
 	seqAppActivate.R.clear		();

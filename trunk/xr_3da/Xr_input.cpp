@@ -234,7 +234,7 @@ const char* CInput::GetKeyName(u16 dik)
 void CInput::TextInputStart(IInputReceiver* receiver)
 {
 	R_ASSERT2(TextInputReceiver == nullptr, "InputText was started, but not stopped! Need call TextInputStop() for this receiver, and set new receiver!");
-	SDL_StartTextInput(Device.SDLWindow);
+	Device.StartWindowTextInput();
 
 	TextInputReceiver = receiver;
 }
@@ -242,7 +242,7 @@ void CInput::TextInputStart(IInputReceiver* receiver)
 void CInput::TextInputStop()
 {
 	R_ASSERT2(TextInputReceiver != nullptr, "InputText was stopped or even have not started! Need delete this call TextInputStop() or call TextInputStart() for set receiver");
-	SDL_StopTextInput(Device.SDLWindow);
+	Device.StopWindowTextInput();
 
 	TextInputReceiver = nullptr;
 }

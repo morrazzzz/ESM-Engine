@@ -505,7 +505,12 @@ void CGamePersistent::OnFrame	()
 //		load_screen_renderer.stop();
 
 	if (Device.getImGuiActivated())
-		ImGuiManager.UpdateImgui();
+	{
+		Device.ImGuiTask->run([]()
+			{
+				ImGuiManager.UpdateImgui();
+			});
+	}
 
 	if( !m_pMainMenu->IsActive() )
 		m_pMainMenu->DestroyInternal(false);

@@ -75,6 +75,8 @@ void CRenderDevice::InitializeImGuiContext()
         style.WindowRounding = 0.0f;
         style.Colors[ImGuiCol_WindowBg].w = 1.0f;
     }
+
+    ImGuiTask = new Concurrency::task_group();
 }
 
 void CRenderDevice::ResizeWindow()
@@ -202,5 +204,23 @@ void CRenderDevice::setImGuiActivated(bool value)
 
         if (OldRelativeMode)
             pInput->SetInputRelativeMouseMode(true);
+
+        if (GetWindowActiveTextInput())
+            StopWindowTextInput();
     }
+}
+
+void CRenderDevice::StartWindowTextInput()
+{
+    SDL_StartTextInput(Device.SDLWindow);
+}
+
+void CRenderDevice::StopWindowTextInput()
+{
+    SDL_StopTextInput(Device.SDLWindow);
+}
+
+bool CRenderDevice::GetWindowActiveTextInput() const
+{
+    return SDL_TextInputActive(Device.SDLWindow);
 }

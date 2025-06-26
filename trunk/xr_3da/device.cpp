@@ -338,14 +338,6 @@ void CRenderDevice::FrameMove()
 //	else
 //		seqFrame.Process			(rp_Frame);
 
-	if (getImGuiActivated())
-	{
-		ImGui::EndFrame();
-
-		if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-			ImGui::UpdatePlatformWindows();
-	}
-
 	Statistic->EngineTOTAL.End	();
 }
 
