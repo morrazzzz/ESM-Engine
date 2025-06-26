@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "ImguiManager.h"
 #include <imgui.h>
-#include <xr_3da/InputKeyEnum.h>
-#include <string_table.h>
 
 CImguiManager ImGuiManager;
 
@@ -21,21 +19,21 @@ CImguiManager::~CImguiManager()
 
 void CImguiManager::UpdateImgui()
 {
-	ImGui::Begin("ImGui Manager", &OpenBeginWindow);
+	ImGui::Begin("ImGui Manager", &openBeginWindow);
 
-	if (!OpenBeginWindow)
+	if (!openBeginWindow)
 	{
-		OpenBeginWindow = true;
-		Device.setImGuiActivated(false);
+		openBeginWindow = true;
+		Device.setImGuiClosed(true);
 		ImGui::End();
 		return;
 	}
 
 	if (ImGui::Button("Spawn menu"))
-		OpenSpawnMenu = true;
+		openSpawnMenu = true;
 	
-	if (OpenSpawnMenu)
-		SpawnMenuWindow(&OpenSpawnMenu);
+	if (openSpawnMenu)
+		SpawnMenuWindow(&openSpawnMenu);
 
 	if (ImGui::Button("Write to log"))
 		Msg("~~~ [%s]: Write to log :)", __FUNCTION__);
@@ -53,7 +51,6 @@ void CImguiManager::UpdateImgui()
 
 	ImGui::End();
 }
-bool Test = true;
 
 void CImguiManager::SpawnMenuWindow(bool* OpenedSpawnWindow)
 {

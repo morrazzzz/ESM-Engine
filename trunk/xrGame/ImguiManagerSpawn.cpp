@@ -14,16 +14,16 @@ float ParamsItem[4];
 
 void CImguiManagerSpawnMenu::RenderTextureEquipment(const bool find, const int currentItem)
 {
-	if (GetTextureRef)
+	if (getTextureRef)
 	{
 		Render->getImguiTextureRef(EQUIPMENT_ICONS,
 			equipmentTextureRef, textureWidth, textureHeight);
 
-		GetTextureRef = false;
+		getTextureRef = false;
 	}
 
-	xr_vector<CImguiManagerObjectSpawn>& vector = find ? SectionsSpawnMenu :
-		SectionsSpawnMenu;
+	xr_vector<CImguiManagerObjectSpawn>& vector = find ? sectionsSpawnMenu :
+		sectionsSpawnMenu;
 
 	for (int i = 0; i < 4; ++i)
 	{
@@ -52,14 +52,10 @@ void CImguiManagerSpawnMenu::SpawnMenuBar()
 	{
 		if (ImGui::BeginMenu("More"))
 		{
-			if (ImGui::MenuItem("Views all sections"))
-			{
-
-			}
 			if (ImGui::MenuItem("View all icon equipments"))
 			{
 				iconEquipmentsView = !iconEquipmentsView;
-			}
+ 			}
 			ImGui::EndMenu();
 		}
 		ImGui::EndMenuBar();
@@ -69,17 +65,24 @@ void CImguiManagerSpawnMenu::SpawnMenuBar()
 		WindowEquipment();
 }
 
+
 float color[4]{};
 void CImguiManagerSpawnMenu::WindowEquipment()
 {
-	ImGui::Begin("Viewport icon equipments");
+	ImGui::Begin("Viewport icon equipments", &iconEquipmentsView);
 
-	if (GetTextureRef)
+	if (!iconEquipmentsView)
+	{
+		ImGui::End();
+		return;
+	}
+
+	if (getTextureRef)
 	{
 		Render->getImguiTextureRef(EQUIPMENT_ICONS,
 			equipmentTextureRef, textureWidth, textureHeight);
 
-		GetTextureRef = false;
+		getTextureRef = false;
 	}
 
 	ImGui::Image(equipmentTextureRef, ImVec2(textureWidth, textureHeight));
@@ -134,7 +137,7 @@ void CImguiManagerSpawnMenu::UISpawnMenu()
 
 	ImGui::InputText("Find section", findSections, sizeof findSections);
 
-	if (SectionsSpawnMenu.empty())
+	if (sectionsSpawnMenu.empty())
 	{
 		for (const auto& sect : pSettings->sections())
 		{
@@ -154,7 +157,7 @@ void CImguiManagerSpawnMenu::UISpawnMenu()
 				object.translateAndSectName = traslateAndSect;
 			}
 
-			SectionsSpawnMenu.emplace_back(object);
+			sectionsSpawnMenu.emplace_back(object);
 		}
 	}
 
@@ -173,10 +176,10 @@ void CImguiManagerSpawnMenu::UISpawnMenu()
 			if (sizeFindSections)
 				findSectionsSpawnMenu.clear();
 
-			for (u32 i = 0; i < SectionsSpawnMenu.size(); i++)
+			for (u32 i = 0; i < sectionsSpawnMenu.size(); i++)
 			{
-				if (strstr(SectionsSpawnMenu[i].sectName.c_str(), findSections))
-					findSectionsSpawnMenu.emplace_back(SectionsSpawnMenu[i]);
+				if (strstr(sectionsSpawnMenu[i].sectName.c_str(), findSections))
+					findSectionsSpawnMenu.emplace_back(sectionsSpawnMenu[i]);
 			}
 		}
 
@@ -198,7 +201,7 @@ void CImguiManagerSpawnMenu::UISpawnMenu()
 
 void CImguiManagerSpawnMenu::UISpawnMenuList(const bool find)
 {
-	auto& vec = find ? findSectionsSpawnMenu : SectionsSpawnMenu;
+	auto& vec = find ? findSectionsSpawnMenu : sectionsSpawnMenu;
 
 	ImGui::ListBox("Sections", &CurrentItemInList, SpawnMenuGetter, vec.data(), vec.size(), 10);
 
@@ -207,7 +210,7 @@ void CImguiManagerSpawnMenu::UISpawnMenuList(const bool find)
 
 void CImguiManagerSpawnMenu::UISpawnMenuImageButton(const bool find)
 {	
-	auto& vec = find ? findSectionsSpawnMenu : SectionsSpawnMenu;
+	auto& vec = find ? findSectionsSpawnMenu : sectionsSpawnMenu;
 
 	for (u32 i = 0; i < vec.size(); i++)
 	{

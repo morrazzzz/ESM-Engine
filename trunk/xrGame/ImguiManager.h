@@ -12,14 +12,14 @@ struct CImguiManagerObjectSpawn
 struct CImguiManagerSpawnMenu
 {
 	bool iconEquipmentsView{ false };
-	bool GetTextureRef{ true };
+	bool getTextureRef{ true };
 	int typeLocationSpawn{ 0 };
 	int countItemToSpawn{ 1 };
 
 	u32 textureWidth{ 0 }, textureHeight{ 0 };
 	ImTextureRef equipmentTextureRef;
 
-	xr_vector<CImguiManagerObjectSpawn> SectionsSpawnMenu{};
+	xr_vector<CImguiManagerObjectSpawn> sectionsSpawnMenu{};
 	xr_vector<CImguiManagerObjectSpawn> findSectionsSpawnMenu{};
 	string64 findSections{};
 
@@ -37,8 +37,8 @@ private:
 
 class CImguiManager
 {
-	bool OpenBeginWindow{ true };
-	bool OpenSpawnMenu{ true };
+	bool openBeginWindow{ true };
+	bool openSpawnMenu{ true };
 
 	CImguiManagerSpawnMenu* managerSpawnMenu;
 public:
