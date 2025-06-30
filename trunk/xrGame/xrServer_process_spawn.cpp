@@ -73,17 +73,8 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, CSE_Abstract* tpExistedEnti
 	}
 
 	// Parent-Connect
-	if (!tpExistedEntity || tpExistedEntity->ObjectCustomSpawn) {
-		game->OnCreate		(E->ID);
-		
-		if (0xffff != E->ID_Parent) {
-			R_ASSERT(e_parent);
-			
-			game->OnTouch(E->ID_Parent,E->ID);
-
-			e_parent->children.push_back(E);
-		}
-	}
+	if(!tpExistedEntity || tpExistedEntity->ObjectCustomSpawn)
+		E->objectCreateAlife = true;
 
 	auto it = std::find(EntitiesToSpawn.begin(), EntitiesToSpawn.end(), E);
 	VERIFY(it == EntitiesToSpawn.end());

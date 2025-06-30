@@ -90,7 +90,7 @@ void CLevel::g_sv_Spawn(CObject* obj, CSE_Abstract* E)
 			CGameObject* objParent = static_cast<CGameObject*>(Objects.net_Find(E->ID_Parent));
 			R_ASSERT(objParent);
             
-			objParent->TakeItem(static_cast<CGameObject*>(obj), false);
+			objParent->TakeItem(static_cast<CGameObject*>(obj));
 		}
 	}
 #ifdef DEBUG_MEMORY_MANAGER

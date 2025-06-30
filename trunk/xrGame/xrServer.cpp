@@ -123,6 +123,9 @@ void xrServer::SpawnNewObjects()
 		CSE_Abstract* DC = EntitiesToSpawn[i];
 		VERIFY(DC);
 
+		if (DC->objectCreateAlife)
+			game->OnCreate(DC->ID);
+
 		if (OnServer()) {
 			DC->s_flags.set(M_SPAWN_OBJECT_LOCAL, TRUE);
 		};

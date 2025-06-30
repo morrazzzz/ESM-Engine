@@ -2,6 +2,10 @@
 #include "ImguiManager.h"
 #include <ui/UIInventoryUtilities.h>
 #include <string_table.h>
+#include <Actor.h>
+#include <ai_object_location.h>
+#include <HUDManager.h>
+#include <xrServer_Objects_ALife_All.h>
 
 constexpr const char* InvGridParams[4] = { "inv_grid_x", "inv_grid_y",
   "inv_grid_width", "inv_grid_height" };
@@ -105,6 +109,53 @@ static const char* SpawnMenuGetter(void* data, int idx)
 	return objects[idx].sectName.c_str();
 }
 
+
+void CImguiManagerSpawnMenu::UISpawnObject(const char* section)
+{
+	NET_Packet tNetPacket;
+	u32 LevelVertexIDActor = Actor()->ai_location().level_vertex_id();
+	Fvector PosObject{};
+	if (typeLocationSpawn == 0)
+		PosObject.mad(Device.vCameraPosition, Device.vCameraDirection, HUD().GetCurrentRayQuery().range);
+
+	switch (typeLocationSpawn)
+	{
+	case 0:
+		PosObject.mad(Device.vCameraPosition, Device.vCameraDirection, HUD().GetCurrentRayQuery().range);
+		break;
+	default:
+		PosObject = Actor()->Position();
+		break;
+	}
+
+	u16 Parent = typeLocationSpawn == 2 ? Actor()->ID() : static_cast<u16>(-1);
+
+	for (int i = 0; i < countItemToSpawn; ++i)
+	{
+		auto object = Level().spawn_item(section, PosObject, LevelVertexIDActor, Parent, true);
+
+		object->ObjectCustomSpawn = true;
+
+		object->Spawn_Write(tNetPacket, true);
+
+		Level().Server->Process_spawn(tNetPacket, object);
+
+		CObject* O = Level().Objects.Create(*object->s_name);
+
+		if (!O)
+		{
+			Msg("! Failed spawn object in g_spawn: [%s] :(", object->s_name.c_str());
+			Level().Server->entity_Destroy(object);
+			continue;
+		}
+
+		O->setID(object->ID);
+		Level().Objects.net_Register(O);
+	}
+
+	processSpawnItem = false;
+}
+
 xr_string lastStringFind{};
 int sizeFindSections{};
 
@@ -132,8 +183,8 @@ void CImguiManagerSpawnMenu::UISpawnMenu()
 	ImGui::SameLine();
 	ImGui::Checkbox("Image button interface", &ButtonImageInterface);	
 
-	ImGui::InputInt("Count item spawn", &countItemToSpawn,
-		1, 50);
+	ImGui::InputInt("Count item spawn", &countItemToSpawn);
+	clamp(countItemToSpawn, 1, 75);
 
 	ImGui::InputText("Find section", findSections, sizeof findSections);
 
@@ -190,13 +241,9 @@ void CImguiManagerSpawnMenu::UISpawnMenu()
 		findSectionsSpawnMenu.clear();
 
 	if (ButtonImageInterface)
-	{
 		UISpawnMenuImageButton(find);
-	}
 	else
 		UISpawnMenuList(find);
-
-	ImGui::SameLine();
 }
 
 void CImguiManagerSpawnMenu::UISpawnMenuList(const bool find)
@@ -204,8 +251,16 @@ void CImguiManagerSpawnMenu::UISpawnMenuList(const bool find)
 	auto& vec = find ? findSectionsSpawnMenu : sectionsSpawnMenu;
 
 	ImGui::ListBox("Sections", &CurrentItemInList, SpawnMenuGetter, vec.data(), vec.size(), 10);
+	
+	ImGui::SameLine();
 
 	RenderTextureEquipment(find, CurrentItemInList);
+
+	if (ImGui::Button("Spawn item"))
+	{
+		sectNameToSpawn = vec[CurrentItemInList].sectName.c_str();
+		processSpawnItem = true;
+	}
 }
 
 void CImguiManagerSpawnMenu::UISpawnMenuImageButton(const bool find)
@@ -259,8 +314,20 @@ void CImguiManagerSpawnMenu::UISpawnMenuImageButton(const bool find)
 		ImGui::Text("%s", string.c_str());
 
 //		ImGui::PushStyleColor(ImGuiCol_Button, color_vec);
-		ImGui::ImageButton(object_spawn.sectName.c_str(), equipmentTextureRef,
-			ImVec2(width_render, height_render), uv0, uv1);
+		if (ImGui::ImageButton(object_spawn.sectName.c_str(), equipmentTextureRef,
+			ImVec2(width_render, height_render), uv0, uv1))
+		{
+			processSpawnItem = true;
+			sectNameToSpawn = object_spawn.sectName.c_str();
+		}
 //		ImGui::PopStyleColor();
 	}
+}
+
+void CImguiManagerSpawnMenu::UIProcessSpawn()
+{
+	if (!processSpawnItem)
+		return;
+
+	UISpawnObject(sectNameToSpawn);
 }

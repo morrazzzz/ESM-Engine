@@ -17,6 +17,11 @@ CImguiManager::~CImguiManager()
 	delete managerSpawnMenu;
 }
 
+void CImguiManager::PreUpdateImGui()
+{
+	managerSpawnMenu->UIProcessSpawn();
+}
+
 void CImguiManager::UpdateImgui()
 {
 	ImGui::Begin("ImGui Manager", &openBeginWindow);

@@ -506,6 +506,8 @@ void CGamePersistent::OnFrame	()
 
 	if (Device.getImGuiActivated())
 	{
+		ImGuiManager.PreUpdateImGui();
+
 		Device.ImGuiTask->run([]()
 			{
 				ImGuiManager.UpdateImgui();

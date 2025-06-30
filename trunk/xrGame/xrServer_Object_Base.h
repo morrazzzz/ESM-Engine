@@ -89,6 +89,7 @@ public:
 	// for ALife control
 	bool							m_bALifeControl;
 	bool ObjectCustomSpawn{ false };
+	bool objectCreateAlife{ false };
 
 	ALife::_SPAWN_ID				m_tSpawnID;
 
