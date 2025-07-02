@@ -315,14 +315,23 @@ void DoAsyncScreenshot();
 void dxRenderDeviceRender::End(bool NeedRenderImgui)
 {
 #ifdef USE_DX11
+	Device.ImGuiTask->wait();
+
 	if (NeedRenderImgui && Device.getImGuiActivated())
 	{
+		if (Device.getImGuiClosed())
+		{
+			Device.setImGuiActivated(false);
+			ImGui::EndFrame();
+			return;
+		}
+
 		ImGui::Render();
 		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
 		if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 		{
-//			ImGui::UpdatePlatformWindows();
+			ImGui::UpdatePlatformWindows();
 			ImGui::RenderPlatformWindowsDefault();
 		}
 	}
