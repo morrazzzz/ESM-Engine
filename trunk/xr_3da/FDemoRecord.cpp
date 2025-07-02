@@ -378,24 +378,35 @@ void CDemoRecord::IR_OnKeyboardPress	(int dik)
 
 void CDemoRecord::IR_OnKeyboardHold	(int dik)
 {
-	switch(dik){
-	case DIK_A:
-	case DIK_NUMPAD1:
-	case DIK_LEFT:		m_vT.x -= 1.0f; break; // Slide Left
-	case DIK_D:
-	case DIK_NUMPAD3:
-	case DIK_RIGHT:		m_vT.x += 1.0f; break; // Slide Right
-	case DIK_S:			m_vT.y -= 1.0f; break; // Slide Down
-	case DIK_W:			m_vT.y += 1.0f; break; // Slide Up
-	// rotate	
-	case DIK_NUMPAD2:	m_vR.y -= 1.0f; break; // Pitch Down
-	case DIK_NUMPAD8:	m_vR.y += 1.0f; break; // Pitch Up
-	case DIK_E:	
-	case DIK_NUMPAD6:	m_vR.x += 1.0f; break; // Turn Left
-	case DIK_Q:	
-	case DIK_NUMPAD4:	m_vR.x -= 1.0f; break; // Turn Right
-	case DIK_NUMPAD9:	m_vR.z -= 2.0f; break; // Turn Right
-	case DIK_NUMPAD7:	m_vR.z += 2.0f; break; // Turn Right
+	switch (dik)
+	{
+	case SDL_SCANCODE_A:
+		m_vT.x -= 1.0f;
+		break; // Slide Left
+	case SDL_SCANCODE_D:		
+		m_vT.x += 1.0f; 
+		break; // Slide Right
+	case SDL_SCANCODE_S:			
+		m_vT.y -= 1.0f; 
+		break; // Slide Down
+	case SDL_SCANCODE_W:			
+		m_vT.y += 1.0f; 
+        break; // Slide Up
+		// rotate	
+	case SDL_SCANCODE_DOWN:	
+		m_vR.y -= 1.0f; 
+		break; // Pitch Down
+	case SDL_SCANCODE_UP:	
+		m_vR.y += 1.0f; 
+		break; // Pitch Up
+	case SDL_SCANCODE_LEFT:
+	case SDL_SCANCODE_E:	
+		m_vR.x += 1.0f; 
+		break; // Turn Left
+	case SDL_SCANCODE_RIGHT:
+	case SDL_SCANCODE_Q: 
+		m_vR.x -= 1.0f; 
+		break; // Turn Right
 	}
 }
 

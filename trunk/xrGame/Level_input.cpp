@@ -155,29 +155,26 @@ void CLevel::IR_OnKeyboardPress(int key)
 
 #if defined(DEBUG) || defined(OPTICK_ENABLE)
 	switch (key) {
-	case DIK_NUMPAD0:
+	case SDL_SCANCODE_KP_0:
 	{
 		Console->Hide();
 		Console->Execute("optick_capture");
 	}
 	break;
 #ifdef DEBUG
-	case DIK_NUMPAD5:
+	case SDL_SCANCODE_KP_5:
 	{
 		Console->Hide();
 		Console->Execute("demo_record 1");
 	}
 	break;
-	case DIK_RETURN:
+	case SDL_SCANCODE_RETURN:
 		bDebug = !bDebug;
 		return;
-
-	case DIK_BACK:
-		if (GameID() == GAME_SINGLE)
-			DRender->NextSceneMode();
+	case SDL_SCANCODE_BACKSPACE:
+		DRender->NextSceneMode();
 		//HW.Caps.SceneMode			= (HW.Caps.SceneMode+1)%3;
 		return;
-
 	case DIK_F4: {
 		if (pInput->GetPressedKey(DIK_LALT))
 			break;
