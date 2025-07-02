@@ -19,6 +19,8 @@ bool enableButtonImage = false;
 bool buttonImageInTable = false;
 int countColumnInTable = 5;
 
+xr_string lastStringFind{};
+
 void CImguiManagerSpawnMenu::RenderTextureEquipment(const bool find, const int currentItem)
 {
 	if (getTextureRef)
@@ -195,15 +197,12 @@ void CImguiManagerSpawnMenu::UISpawnMenuOptions()
 		clamp(countColumnInTable, 1, 10);
 		ImGui::EndDisabled();
 
-		ImGuiPushTextHelper("Becomes actived after enable 'Enable ImageButton' and 'ImageButton interface in table' flag.",
+		ImGuiPushTextHelper("Becomes actived after enable 'Enable ImageButton' and 'ImageButton interface in table' flag.  If count finded items < this number, that count columns will depend from count finded items.",
 			ImGuiHoveredFlags_AllowWhenDisabled);
 	}
 
 	ImGui::Separator();
 }
-
-xr_string lastStringFind{};
-int sizeFindSections{};
 
 void CImguiManagerSpawnMenu::UISpawnMenu()
 {
@@ -254,43 +253,41 @@ void CImguiManagerSpawnMenu::UISpawnMenu()
 
 			sectionsSpawnMenu.emplace_back(object);
 		}
+
+		findSectionsSpawnMenu.reserve(sectionsSpawnMenu.size());
 	}
 
 	bool find = xr_strlen(findSections) > 0;
 	if (find && lastStringFind != findSections)
 	{
-		int checkSections = 0;
+		if (!findSectionsSpawnMenu.empty())
+			findSectionsSpawnMenu.clear();
+
 		for (u32 i = 0; i < sectionsSpawnMenu.size(); i++)
 		{
-			if (strstr(findSectionsSpawnMenu[i].translateAndSectName.c_str(), findSections))
-				checkSections++;
+			if (!strstr(sectionsSpawnMenu[i].translateAndSectName.c_str(), findSections))
+				continue;
+
+			findSectionsSpawnMenu.emplace_back(sectionsSpawnMenu[i]);
 		}
 
-		if (!sizeFindSections || sizeFindSections != checkSections)
-		{
-			if (sizeFindSections)
-				findSectionsSpawnMenu.clear();
-
-			for (u32 i = 0; i < sectionsSpawnMenu.size(); i++)
-			{
-				if (strstr(sectionsSpawnMenu[i].translateAndSectName.c_str(), findSections))
-					findSectionsSpawnMenu.emplace_back(sectionsSpawnMenu[i]);
-			}
-
-			if (currentItemInList > static_cast<int>(sectionsSpawnMenu.size()))
-				currentItemInList = 0;
-		}
+		if (currentItemInList > static_cast<int>(findSectionsSpawnMenu.size()))
+			currentItemInList = 0;
 
 		lastStringFind = findSections;
-		sizeFindSections = findSectionsSpawnMenu.size();
 	}
 	else if (!find)
+	{
 		findSectionsSpawnMenu.clear();
+		lastStringFind = "";
+	}
 
 	if (enableButtonImage)
 	{
 		static ImGuiTableFlags flags = ImGuiTableFlags_Borders;
-		if (buttonImageInTable && ImGui::BeginTable("tableImageButton", countColumnInTable, flags))
+		int colums = static_cast<int>(findSectionsSpawnMenu.size()) < countColumnInTable ? findSectionsSpawnMenu.size() : countColumnInTable;
+
+		if (buttonImageInTable && ImGui::BeginTable("tableImageButton", colums, flags))
 		{
 			UISpawnMenuImageButton(find, true);
 			ImGui::EndTable();
