@@ -207,6 +207,8 @@ void CRenderDevice::setImGuiActivated(bool value)
 
         if (GetWindowActiveTextInput())
             StopWindowTextInput();
+
+        imGuiClosed = false;
     }
 }
 

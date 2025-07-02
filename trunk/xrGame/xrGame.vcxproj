@@ -57,7 +57,7 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <PlatformToolset>v143</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
     <EnableASAN>false</EnableASAN>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -1703,6 +1703,8 @@
     <ClCompile Include="death_anims_predicates.cpp" />
     <ClCompile Include="IKFoot.cpp" />
     <ClCompile Include="ImguiManager.cpp" />
+    <ClCompile Include="ImguiManagerDebug.cpp" />
+    <ClCompile Include="ImguiManagerHelper.cpp" />
     <ClCompile Include="ImguiManagerSpawn.cpp" />
     <ClCompile Include="imotion_position.cpp" />
     <ClCompile Include="imotion_velocity.cpp" />

@@ -10,10 +10,12 @@ CImguiManager::CImguiManager()
 	ImGui::SetCurrentContext(Device.getImguiContext());
 
 	managerSpawnMenu = new CImguiManagerSpawnMenu();
+	managerDebugMenu = new CImguiManagerDebugMenu();
 }
 
 CImguiManager::~CImguiManager()
 {
+	delete managerDebugMenu;
 	delete managerSpawnMenu;
 }
 
@@ -37,31 +39,28 @@ void CImguiManager::UpdateImgui()
 	if (ImGui::Button("Spawn menu"))
 		openSpawnMenu = true;
 	
+	if (ImGui::Button("Debug menu"))
+		openDebugMenu = true;
+
 	if (openSpawnMenu)
-		SpawnMenuWindow(&openSpawnMenu);
+		SpawnMenuWindow();
+
+	if (openDebugMenu)
+		DebugMenuWindow();
+
+	ImGui::ShowDemoWindow();
 
 	if (ImGui::Button("Write to log"))
 		Msg("~~~ [%s]: Write to log :)", __FUNCTION__);
 
-	static int CurreItem = 1;
-
-	const char* item1 = "Привет!";
-	const char* item2 = "Пока";
-	xr_string test1 = ANSIToUTF8(item1);
-	xr_string test2 = ANSIToUTF8(item2);
-
-	const char* test[] = { test1.c_str(), test2.c_str()};
-
-	ImGui::ListBox("Test", &CurreItem, test, std::size(test), 1);
-
 	ImGui::End();
 }
 
-void CImguiManager::SpawnMenuWindow(bool* OpenedSpawnWindow)
+void CImguiManager::SpawnMenuWindow()
 {
-	ImGui::Begin("Spawn menu", OpenedSpawnWindow, ImGuiWindowFlags_MenuBar);
+	ImGui::Begin("Spawn menu", &openSpawnMenu, ImGuiWindowFlags_MenuBar);
 
-	if (OpenedSpawnWindow && *OpenedSpawnWindow == false)
+	if (!openSpawnMenu)
 	{
 		ImGui::End();
 		return;
@@ -76,5 +75,27 @@ void CImguiManager::SpawnMenuWindow(bool* OpenedSpawnWindow)
 
 	managerSpawnMenu->UISpawnMenu();
 	
+	ImGui::End();
+}
+
+void CImguiManager::DebugMenuWindow()
+{
+	ImGui::Begin("Debug menu", &openDebugMenu);
+
+	if (!openDebugMenu)
+	{
+		ImGui::End();
+		return;
+	}
+
+	if (!g_pGameLevel)
+	{
+		ImGui::Text("Level is not loaded! Please, load game or create new game!");
+		ImGui::End();
+		return;
+	}
+
+	managerDebugMenu->UIDebugMenu();
+
 	ImGui::End();
 }

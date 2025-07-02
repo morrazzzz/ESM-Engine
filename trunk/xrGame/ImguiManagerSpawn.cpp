@@ -5,16 +5,19 @@
 #include <Actor.h>
 #include <ai_object_location.h>
 #include <HUDManager.h>
-#include <xrServer_Objects_ALife_All.h>
+#include "xrServer_Object_Base.h"
 
 constexpr const char* InvGridParams[4] = { "inv_grid_x", "inv_grid_y",
   "inv_grid_width", "inv_grid_height" };
 
-bool ButtonImageInterface = false;
+float ParamsItem[4]; 
+
 bool visibleSectName = false;
-int CurrentItemInList = 1;
-int countColumnTableImageB = 5;
-float ParamsItem[4];
+int currentItemInList = 0;
+
+bool enableButtonImage = false;
+bool buttonImageInTable = false;
+int countColumnInTable = 5;
 
 void CImguiManagerSpawnMenu::RenderTextureEquipment(const bool find, const int currentItem)
 {
@@ -26,8 +29,8 @@ void CImguiManagerSpawnMenu::RenderTextureEquipment(const bool find, const int c
 		getTextureRef = false;
 	}
 
-	xr_vector<CImguiManagerObjectSpawn>& vector = find ? sectionsSpawnMenu :
-		sectionsSpawnMenu;
+	bool find_vector = find && !findSectionsSpawnMenu.empty();
+	xr_vector<CImguiManagerObjectSpawn>& vector = find_vector ? findSectionsSpawnMenu : sectionsSpawnMenu;
 
 	for (int i = 0; i < 4; ++i)
 	{
@@ -36,6 +39,8 @@ void CImguiManagerSpawnMenu::RenderTextureEquipment(const bool find, const int c
 
 		ParamsItem[i] = pSettings->r_float(vector[currentItem].sectName.c_str(), InvGridParams[i]);
 	}
+
+	ImGui::SameLine();
 
 	float x = ParamsItem[0] * INV_GRID_WIDTH;
 	float y = ParamsItem[1] * INV_GRID_HEIGHT;
@@ -156,6 +161,47 @@ void CImguiManagerSpawnMenu::UISpawnObject(const char* section)
 	processSpawnItem = false;
 }
 
+void CImguiManagerSpawnMenu::UISpawnMenuOptions()
+{
+	ImGui::Separator();
+
+	if (ImGui::CollapsingHeader("Options"))
+	{
+		if (ImGui::BeginTable("TableOptions", 2, ImGuiTableFlags_BordersV))
+		{
+			ImGui::TableNextColumn();
+			ImGui::Checkbox("Enable ImageButton", &enableButtonImage);
+
+			ImGuiPushTextHelper("Replace ListBox on ImageButton with icon item.");
+
+			ImGui::TableNextColumn();
+			ImGui::Checkbox("Visible section item", &visibleSectName);
+
+			ImGuiPushTextHelper("Enable visible item section. It will be displayed nearby item name. Example: Medusa (af_medusa)");
+
+			ImGui::TableNextColumn();
+			ImGui::BeginDisabled(!enableButtonImage);
+			ImGui::Checkbox("ImageButton interface in table", &buttonImageInTable);
+			ImGui::EndDisabled();
+
+			ImGuiPushTextHelper("Becomes actived after enable 'Enable ImageButton' flag.",
+				ImGuiHoveredFlags_AllowWhenDisabled);
+
+			ImGui::EndTable();
+		}
+
+		ImGui::BeginDisabled(!buttonImageInTable || !enableButtonImage);
+		ImGui::InputInt("Count column for ImageButton table", &countColumnInTable);
+		clamp(countColumnInTable, 1, 10);
+		ImGui::EndDisabled();
+
+		ImGuiPushTextHelper("Becomes actived after enable 'Enable ImageButton' and 'ImageButton interface in table' flag.",
+			ImGuiHoveredFlags_AllowWhenDisabled);
+	}
+
+	ImGui::Separator();
+}
+
 xr_string lastStringFind{};
 int sizeFindSections{};
 
@@ -176,12 +222,7 @@ void CImguiManagerSpawnMenu::UISpawnMenu()
 	if (ImGui::RadioButton("Actor inventory", typeLocationSpawn == 2))
 		typeLocationSpawn = 2;
 
-	ImGui::SameLine();
-
-	ImGui::Checkbox("Visible sect name item", &visibleSectName);
-
-	ImGui::SameLine();
-	ImGui::Checkbox("Image button interface", &ButtonImageInterface);	
+	UISpawnMenuOptions();
 
 	ImGui::InputInt("Count item spawn", &countItemToSpawn);
 	clamp(countItemToSpawn, 1, 75);
@@ -192,7 +233,10 @@ void CImguiManagerSpawnMenu::UISpawnMenu()
 	{
 		for (const auto& sect : pSettings->sections())
 		{
-			CImguiManagerObjectSpawn object{ "", sect->Name.c_str(), "" };
+			if (!pSettings->line_exist(sect->Name, "class"))
+				continue;
+
+			CImguiManagerObjectSpawn object{ "", sect->Name.c_str(), sect->Name.c_str() };
 
 			if (pSettings->line_exist(sect->Name, "inv_name"))
 			{
@@ -216,9 +260,9 @@ void CImguiManagerSpawnMenu::UISpawnMenu()
 	if (find && lastStringFind != findSections)
 	{
 		int checkSections = 0;
-		for (u32 i = 0; i < findSectionsSpawnMenu.size(); i++)
+		for (u32 i = 0; i < sectionsSpawnMenu.size(); i++)
 		{
-			if (strstr(findSectionsSpawnMenu[i].sectName.c_str(), findSections))
+			if (strstr(findSectionsSpawnMenu[i].translateAndSectName.c_str(), findSections))
 				checkSections++;
 		}
 
@@ -229,9 +273,12 @@ void CImguiManagerSpawnMenu::UISpawnMenu()
 
 			for (u32 i = 0; i < sectionsSpawnMenu.size(); i++)
 			{
-				if (strstr(sectionsSpawnMenu[i].sectName.c_str(), findSections))
+				if (strstr(sectionsSpawnMenu[i].translateAndSectName.c_str(), findSections))
 					findSectionsSpawnMenu.emplace_back(sectionsSpawnMenu[i]);
 			}
+
+			if (currentItemInList > static_cast<int>(sectionsSpawnMenu.size()))
+				currentItemInList = 0;
 		}
 
 		lastStringFind = findSections;
@@ -240,8 +287,17 @@ void CImguiManagerSpawnMenu::UISpawnMenu()
 	else if (!find)
 		findSectionsSpawnMenu.clear();
 
-	if (ButtonImageInterface)
-		UISpawnMenuImageButton(find);
+	if (enableButtonImage)
+	{
+		static ImGuiTableFlags flags = ImGuiTableFlags_Borders;
+		if (buttonImageInTable && ImGui::BeginTable("tableImageButton", countColumnInTable, flags))
+		{
+			UISpawnMenuImageButton(find, true);
+			ImGui::EndTable();
+		}
+		else
+			UISpawnMenuImageButton(find, false);
+	}        
 	else
 		UISpawnMenuList(find);
 }
@@ -250,20 +306,18 @@ void CImguiManagerSpawnMenu::UISpawnMenuList(const bool find)
 {
 	auto& vec = find ? findSectionsSpawnMenu : sectionsSpawnMenu;
 
-	ImGui::ListBox("Sections", &CurrentItemInList, SpawnMenuGetter, vec.data(), vec.size(), 10);
+	ImGui::ListBox("Sections", &currentItemInList, SpawnMenuGetter, vec.data(), vec.size(), 10);
 	
-	ImGui::SameLine();
-
-	RenderTextureEquipment(find, CurrentItemInList);
+	RenderTextureEquipment(find, currentItemInList);
 
 	if (ImGui::Button("Spawn item"))
 	{
-		sectNameToSpawn = vec[CurrentItemInList].sectName.c_str();
+		sectNameToSpawn = vec[currentItemInList].sectName.c_str();
 		processSpawnItem = true;
 	}
 }
 
-void CImguiManagerSpawnMenu::UISpawnMenuImageButton(const bool find)
+void CImguiManagerSpawnMenu::UISpawnMenuImageButton(const bool find, const bool table)
 {	
 	auto& vec = find ? findSectionsSpawnMenu : sectionsSpawnMenu;
 
@@ -286,15 +340,6 @@ void CImguiManagerSpawnMenu::UISpawnMenuImageButton(const bool find)
 		if (!RenderImageButton)
 			continue;
 
-		/*
-		bool NeedSameLine = countObjectsTable < countColumnTableImageB;
-
-		if (NeedSameLine)
-			countObjectsTable++;
-		else
-			countObjectsTable = 0;
-        */
-
 		float x = ParamsItem[0] * INV_GRID_WIDTH;
 		float y = ParamsItem[1] * INV_GRID_HEIGHT;
 
@@ -310,6 +355,9 @@ void CImguiManagerSpawnMenu::UISpawnMenuImageButton(const bool find)
 
 //		if (NeedSameLine)
 //			ImGui::SameLine();
+
+		if (table)
+			ImGui::TableNextColumn();
 
 		ImGui::Text("%s", string.c_str());
 

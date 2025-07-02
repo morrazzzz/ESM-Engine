@@ -70,6 +70,10 @@ public:
 		if (_it<objects_active.size())	return objects_active	[_it];
 		else							return objects_sleeping	[_it-objects_active.size()];
 	}
+
+	IC u32 CountActiveObjects() { return objects_active.size(); }
+	IC CObject** GetDataObjectsActive() { return objects_active.data(); }
+
 	bool						dump_all_objects	();
 
 public:

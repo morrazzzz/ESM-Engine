@@ -8588,6 +8588,12 @@
     <ClCompile Include="ImguiManagerSpawn.cpp">
       <Filter>ImGui</Filter>
     </ClCompile>
+    <ClCompile Include="ImguiManagerDebug.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="ImguiManagerHelper.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="graph_abstract.h">

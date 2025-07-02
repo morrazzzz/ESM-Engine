@@ -34,17 +34,29 @@ struct CImguiManagerSpawnMenu
 	void UIProcessSpawn();
 private:
 	void WindowEquipment();
+	void UISpawnMenuOptions();
 	void UISpawnMenuList(const bool find);
-	void UISpawnMenuImageButton(const bool find);
+	void UISpawnMenuImageButton(const bool find, const bool table);
 	void UISpawnObject(const char* section);
+};
+
+struct CImguiManagerDebugMenu
+{
+	xr_vector<CObject*> objectsList;
+
+	void UIDebugMenu();
+private:
+	void ListDebugMenuEntity();
 };
 
 class CImguiManager
 {
 	bool openBeginWindow{ true };
-	bool openSpawnMenu{ true };
+	bool openSpawnMenu{ false };
+	bool openDebugMenu{ false };
 
 	CImguiManagerSpawnMenu* managerSpawnMenu;
+	CImguiManagerDebugMenu* managerDebugMenu;
 public:
 	CImguiManager();
 	~CImguiManager();
@@ -52,7 +64,10 @@ public:
 	void UpdateImgui();
 	void PreUpdateImGui();
 private:
-	void SpawnMenuWindow(bool* OpenSpawnWindow);
+	void SpawnMenuWindow();
+	void DebugMenuWindow();
 };
+
+void ImGuiPushTextHelper(const char* text, ImGuiHoveredFlags flags = 0);
 
 extern CImguiManager ImGuiManager;
