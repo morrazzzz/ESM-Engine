@@ -1,40 +1,8 @@
 #include "stdafx.h"
-//#include "../../xr_3da/xr_effgamma.h"
-#include "xr_effgamma.h"
-#include "dxRenderDeviceRender.h"
 #include "../xrRender/tga.h"
 #include "../../xr_3da/xrImage_Resampler.h"
 
-#if defined(USE_DX10) || defined(USE_DX11)
-#include "d3dx10tex.h"
-#endif	//	USE_DX10
-
 #define	GAMESAVE_SIZE	128
-
-IC u32 convert				(float c)	{
-	u32 C=iFloor(c);
-	if (C>255) C=255;
-	return C;
-}
-IC void MouseRayFromPoint	( Fvector& direction, int x, int y, Fmatrix& m_CamMat )
-{
-	int halfwidth		= Device.dwWidth/2;
-	int halfheight		= Device.dwHeight/2;
-
-	Ivector2 point2;
-	point2.set			(x-halfwidth, halfheight-y);
-
-	float size_y = VIEWPORT_NEAR * tanf( deg2rad(60.f) * 0.5f );
-	float size_x = size_y / ((Device.dwHeight * 0.5f) / (Device.dwWidth * 0.5f));
-
-	float r_pt			= float(point2.x) * size_x / (float) halfwidth;
-	float u_pt			= float(point2.y) * size_y / (float) halfheight;
-
-	direction.mul		( m_CamMat.k, VIEWPORT_NEAR );
-	direction.mad		( direction, m_CamMat.j, u_pt );
-	direction.mad		( direction, m_CamMat.i, r_pt );
-	direction.normalize	();
-}
 
 #define SM_FOR_SEND_WIDTH 640
 #define SM_FOR_SEND_HEIGHT 480
@@ -97,62 +65,6 @@ void CRender::ScreenshotImpl	(ScreenshotMode mode, LPCSTR name, CMemoryWriter* m
 
 				// cleanup
 				_RELEASE			(pSrcSmallTexture);
-			}
-			break;
-		case IRender_interface::SM_FOR_MPSENDING:
-			{
-				
-				ID3DTexture2D		*pSrcSmallTexture;
-	
-				D3D_TEXTURE2D_DESC desc;
-				ZeroMemory( &desc, sizeof(desc) );
-				desc.Width = SM_FOR_SEND_WIDTH;
-				desc.Height = SM_FOR_SEND_HEIGHT;
-				desc.MipLevels = 1;
-				desc.ArraySize = 1;
-				desc.Format = DXGI_FORMAT_BC1_UNORM;
-				desc.SampleDesc.Count = 1;
-				desc.Usage = D3D_USAGE_DEFAULT;
-				desc.BindFlags = D3D_BIND_SHADER_RESOURCE;
-				CHK_DX( HW.pDevice->CreateTexture2D( &desc, NULL, &pSrcSmallTexture ) );
-
-				//	D3DX10_TEXTURE_LOAD_INFO *pLoadInfo
-
-#ifdef USE_DX11
-				CHK_DX(D3DX11LoadTextureFromTexture(HW.pContext, pSrcTexture,
-					NULL, pSrcSmallTexture ));
-#else
-				CHK_DX(D3DX10LoadTextureFromTexture( pSrcTexture,
-					NULL, pSrcSmallTexture ));
-#endif
-				// save (logical & physical)
-				ID3DBlob*		saved	= 0;
-#ifdef USE_DX11
-				HRESULT hr	= D3DX11SaveTextureToMemory(HW.pContext, pSrcSmallTexture, D3DX11_IFF_DDS, &saved, 0);
-#else
-				HRESULT hr					= D3DX10SaveTextureToMemory( pSrcSmallTexture, D3DX10_IFF_DDS, &saved, 0);
-				//HRESULT hr					= D3DXSaveTextureToFileInMemory (&saved,D3DXIFF_DDS,texture,0);
-#endif
-				if(hr==D3D_OK)
-				{
-					if (!memory_writer)
-					{
-						IWriter*			fs		= FS.w_open	(name); 
-						if (fs)				
-						{
-							fs->w				(saved->GetBufferPointer(),(u32)saved->GetBufferSize());
-							FS.w_close			(fs);
-						}
-					} else
-					{
-						memory_writer->w		(saved->GetBufferPointer(),(u32)saved->GetBufferSize());
-					}
-				}
-				_RELEASE			(saved);
-
-				// cleanup
-				_RELEASE			(pSrcSmallTexture);
-				
 			}
 			break;
 		case IRender_interface::SM_NORMAL:
@@ -242,13 +154,6 @@ void CRender::ScreenshotImpl	(ScreenshotMode mode, LPCSTR name, CMemoryWriter* m
 void CRender::ScreenshotImpl	(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer)
 {
 	if (!Device.b_is_Ready)			return;
-	if ((psDeviceFlags.test(rsFullscreen)) == 0) {
-		if(name && FS.exist(name))
-			FS.file_delete(0,name);
-
-		Log("~ Can't capture screen while in windowed mode...");
-		return;
-	}
 
 	// Create temp-surface
 	IDirect3DSurface9*	pFB;
@@ -336,46 +241,6 @@ void CRender::ScreenshotImpl	(ScreenshotMode mode, LPCSTR name, CMemoryWriter* m
 				_RELEASE			(texture);
 			}
 			break;
-		case IRender_interface::SM_FOR_MPSENDING:
-			{
-				// texture
-				ID3DTexture2D*	texture	= NULL;
-				hr					= D3DXCreateTexture(HW.pDevice,SM_FOR_SEND_WIDTH,SM_FOR_SEND_HEIGHT,1,0,D3DFMT_R8G8B8,D3DPOOL_SCRATCH,&texture);
-				if(hr!=D3D_OK)		goto _end_;
-				if(NULL==texture)	goto _end_;
-
-				// resize&convert to surface
-				IDirect3DSurface9*	surface = 0;
-				hr					= texture->GetSurfaceLevel(0,&surface);
-				if(hr!=D3D_OK)		goto _end_;
-				VERIFY				(surface);
-				hr					= D3DXLoadSurfaceFromSurface(surface,0,0,pFB,0,0,D3DX_DEFAULT,0);
-				_RELEASE			(surface);
-				if(hr!=D3D_OK)		goto _end_;
-
-				// save (logical & physical)
-				ID3DBlob*		saved	= 0;
-				hr					= D3DXSaveTextureToFileInMemory (&saved,D3DXIFF_DDS,texture,0);
-				if(hr!=D3D_OK)		goto _end_;
-				
-				if (!memory_writer)
-				{
-					IWriter*			fs		= FS.w_open	(name); 
-					if (fs)				{
-						fs->w				(saved->GetBufferPointer(),saved->GetBufferSize());
-						FS.w_close			(fs);
-					}
-				} else
-				{
-					memory_writer->w(saved->GetBufferPointer(),saved->GetBufferSize());
-				}
-		
-				_RELEASE			(saved);
-
-				// cleanup
-				_RELEASE			(texture);
-
-			}break;
 		case IRender_interface::SM_NORMAL:
 		{
 			ID3DBlob* saved = 0;
@@ -452,148 +317,8 @@ void CRender::Screenshot(ScreenshotMode mode, LPCSTR name)
 
 void CRender::Screenshot(ScreenshotMode mode, CMemoryWriter& memory_writer)
 {
-	if (mode != SM_FOR_MPSENDING)
-	{
-		Log("~ Not implemented screenshot mode...");
-		return;
-	} 
 	ScreenshotImpl(mode, NULL, &memory_writer);
 }
-
-void CRender::ScreenshotAsyncBegin()
-{
-	VERIFY(!m_bMakeAsyncSS);
-	m_bMakeAsyncSS = true;
-}
-
-#if defined(USE_DX10) || defined(USE_DX11)
-
-void CRender::ScreenshotAsyncEnd(CMemoryWriter &memory_writer)
-{
-	VERIFY(!m_bMakeAsyncSS);
-
-	//	Don't own. No need to release.
-	ID3DTexture2D*	pTex = Target->t_ss_async;
-
-	D3D_MAPPED_TEXTURE2D	MappedData;
-
-#ifdef USE_DX11
-	HW.pContext->Map(pTex, 0, D3D_MAP_READ, 0, &MappedData);
-#else
-	pTex->Map(0, D3D_MAP_READ, 0, &MappedData);
-#endif
-
-	{
-
-		u32* pPixel		= (u32*)MappedData.pData;
-		u32* pEnd		= pPixel+(Device.dwWidth*Device.dwHeight);
-
-		//	Kill alpha and swap r and b.
-		for (;pPixel!=pEnd; pPixel++)	
-		{
-			u32 p = *pPixel;
-			*pPixel = color_xrgb	(
-				color_get_B(p),
-				color_get_G(p),
-				color_get_R(p)
-				);
-		}
-
-		memory_writer.w( &Device.dwWidth, sizeof(Device.dwWidth) );
-		memory_writer.w( &Device.dwHeight, sizeof(Device.dwHeight) );
-		memory_writer.w( MappedData.pData, (Device.dwWidth*Device.dwHeight)*4 );
-	}
-
-#ifdef USE_DX11
-	HW.pContext->Unmap(pTex, 0);
-#else
-	pTex->Unmap(0);
-#endif
-}
-
-#else	//	USE_DX10
-
-void CRender::ScreenshotAsyncEnd(CMemoryWriter &memory_writer)
-{
-	if (!Device.b_is_Ready)			return;
-
-	VERIFY(!m_bMakeAsyncSS);
-
-	D3DLOCKED_RECT		D;
-	HRESULT				hr;
-	IDirect3DSurface9*	pFB;
-
-	pFB = Target->pFB;
-
-	hr					= pFB->LockRect(&D,0,D3DLOCK_NOSYSLOCK);
-	if(hr!=D3D_OK)		return;
-
-#if	RENDER == R_R1
-	u32 rtWidth = Target->get_rtwidth();
-	u32 rtHeight = Target->get_rtheight();
-#else	//	RENDER != R_R1
-	u32 rtWidth = Device.dwWidth;
-	u32 rtHeight = Device.dwHeight;
-#endif	//	RENDER != R_R1
-
-	// Image processing (gamma-correct)
-	u32* pPixel		= (u32*)D.pBits;
-	u32* pOrigin	= pPixel;
-	u32* pEnd		= pPixel+(rtWidth*rtHeight);
-	
-	//	Kill alpha
-#if	RENDER != R_R1
-	if (Target->rt_Color->fmt == D3DFMT_A16B16G16R16F)
-	{
-		static const int iMaxPixelsInARow = 1024;
-		D3DXFLOAT16*	pPixelElement16 = (D3DXFLOAT16*) pPixel;
-
-		FLOAT	tmpArray[4*iMaxPixelsInARow];
-		while(pPixel!=pEnd)
-		{
-			const int iProcessPixels = _min(iMaxPixelsInARow, (s32)(pEnd-pPixel));
-
-			D3DXFloat16To32Array( tmpArray, pPixelElement16, iProcessPixels*4);			
-
-			for ( int i=0; i<iProcessPixels; ++i)
-			{
-				*pPixel = color_argb_f	(
-					1.0f,
-					tmpArray[i*4],
-					tmpArray[i*4+1],
-					tmpArray[i*4+2]
-					);
-
-				++pPixel;
-			}
-
-			pPixelElement16 += iProcessPixels * 4;
-		}
-	}
-	else
-#endif	//	RENDER != R_R1
-	{
-		for (;pPixel!=pEnd; pPixel++)	
-		{
-			u32 p = *pPixel;
-			*pPixel = color_xrgb	(
-				color_get_R(p),
-				color_get_G(p),
-				color_get_B(p)
-				);
-		}
-	}
-
-	{
-		memory_writer.w( &rtWidth, sizeof(rtWidth) );
-		memory_writer.w( &rtHeight, sizeof(rtHeight) );
-		memory_writer.w( pOrigin, (rtWidth*rtHeight)*4 );
-	}
-
-	hr					= pFB->UnlockRect();
-}
-
-#endif	//	USE_DX10
 
 void DoAsyncScreenshot()
 {

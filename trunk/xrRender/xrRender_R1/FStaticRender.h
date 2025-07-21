@@ -146,7 +146,6 @@ public:
 	virtual IRender_Target*			getTarget				();
 	
 	// Main 
-	virtual void					flush					();
 	virtual	void					add_Occluder			(Fbox2&	bb_screenspace	);			// mask screen region as oclluded
 	virtual void					add_Visual(IRenderable* pRenderable, IRenderVisual* visual, Fmatrix* xform, bool hud);			// add visual leaf (no culling performed at all)
 	virtual void					add_Geometry			(IRenderVisual*	V	);			// add visual(s)	(all culling performed)
@@ -198,8 +197,6 @@ public:
 	virtual void RenderFrame();
 	virtual void					Screenshot				(ScreenshotMode mode=SM_NORMAL, LPCSTR name = 0);
 	virtual void					Screenshot				(ScreenshotMode mode, CMemoryWriter& memory_writer);
-	virtual void					ScreenshotAsyncBegin	();
-	virtual void					ScreenshotAsyncEnd		(CMemoryWriter& memory_writer);
 	virtual void					OnFrame					();
 	
 	// Render mode
@@ -211,7 +208,7 @@ public:
 	CRender							();
 	virtual ~CRender				();
 protected:
-	virtual	void					ScreenshotImpl			(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer);
+	void ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer);
 
 private:
 	FS_FileSet						m_file_set;

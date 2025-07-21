@@ -519,8 +519,6 @@ void CRender::getImguiTextureRef(const char* name, ImTextureRef& texture_ref,
 IRender_Light*			CRender::light_create			()					{ return Lights.Create();								}
 IRender_Glow*			CRender::glow_create			()					{ return xr_new<CGlow>();								}
 
-void					CRender::flush					()					{ r_dsgraph_render_graph	(0);						}
-
 BOOL					CRender::occ_visible			(vis_data& P)		{ return HOM.visible(P);								}
 BOOL					CRender::occ_visible			(sPoly& P)			{ return HOM.visible(P);								}
 BOOL					CRender::occ_visible			(Fbox& P)			{ return HOM.visible(P);								}

@@ -155,8 +155,6 @@ public:
 		SM_FOR_CUBEMAP				= 1,		// tga,		name used as postfix
 		SM_FOR_GAMESAVE				= 2,		// dds/dxt1,name used as full-path
 		SM_FOR_LEVELMAP				= 3,		// tga,		name used as postfix (level_name)
-		SM_FOR_MPSENDING			= 4,
-		SM_forcedword				= u32(-1)
 	};
 public:
 	// options
@@ -209,7 +207,6 @@ public:
 	// Main 
 	IC		void					set_Frustum				(CFrustum*	O	)							{ VERIFY(O);	View = O;			}
 	virtual void					set_Invisible			(BOOL 		V	)							= 0;
-	virtual void					flush					()											= 0;	
 	virtual	void					add_Occluder			(Fbox2&	bb_screenspace	)					= 0;	// mask screen region as oclluded (-1..1, -1..1)
 	virtual void					add_Visual				(IRenderable*, IRenderVisual* visual = nullptr, Fmatrix* xform = nullptr, bool hud = false) = 0; // add visual leaf	(no culling performed at all)
 	virtual void					add_Geometry			(IRenderVisual*	V	)					= 0;	// add visual(s)	(all culling performed)
@@ -252,8 +249,6 @@ public:
 
 	virtual void					Screenshot				(ScreenshotMode mode=SM_NORMAL, LPCSTR name = 0) = 0;
 	virtual	void					Screenshot				(ScreenshotMode mode, CMemoryWriter& memory_writer) = 0;
-	virtual void					ScreenshotAsyncBegin	() = 0;
-	virtual void					ScreenshotAsyncEnd		(CMemoryWriter& memory_writer) = 0;
 
 	// Render mode
 	virtual void					rmNear					()											= 0;
@@ -262,8 +257,6 @@ public:
 
 	// Constructor/destructor
 	virtual ~IRender_interface();
-protected:
-	virtual	void					ScreenshotImpl			(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer) = 0;
 };
 
 //extern ENGINE_API	IRender_interface*	Render;
