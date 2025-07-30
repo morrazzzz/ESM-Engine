@@ -10,7 +10,7 @@ public:
 	virtual void CreateUIGeom();
 	virtual void DestroyUIGeom();
 
-	virtual void SetShader(IUIShader &shader);
+	void SetShader(IUIShader &shader) override;
 	virtual void SetAlphaRef(int aref);
 //.	virtual void StartTriList(u32 iMaxVerts);
 //.	virtual void FlushTriList();
@@ -30,7 +30,8 @@ public:
 	virtual void PushPoint(float x, float y, float z, u32 C, float u, float v);
 
 	virtual void StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePointType pointType);
-	virtual void FlushPrimitive();
+	void FlushPrimitive() override;
+	void FlushPrimitive(IUIShader& shader) override;
 
 	virtual LPCSTR	UpdateShaderName(LPCSTR tex_name, LPCSTR sh_name);
 

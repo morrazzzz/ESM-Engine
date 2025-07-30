@@ -46,7 +46,7 @@ void dxThunderboltRender::Render(CEffect_Thunderbolt &owner)
 	RCache.Vertex.Unlock(vCount_Lock,hGeom_model->vb_stride);
 	RCache.Index.Unlock	(iCount_Lock);
 	RCache.set_xform_world(Fidentity);
-	RCache.set_Shader	(pThRen->l_model->shader);
+	RCache.set_Shader	(pThRen->l_model->shader, 0, &*hGeom_model);
 	RCache.set_Geometry	(hGeom_model);
 	RCache.Render		(D3DPT_TRIANGLELIST,v_offset,0,vCount_Lock,i_offset,iCount_Lock/3);
 	RCache.set_CullMode	(CULL_CCW);
@@ -80,7 +80,8 @@ void dxThunderboltRender::Render(CEffect_Thunderbolt &owner)
 	RCache.Vertex.Unlock	(8,hGeom_gradient.stride());
 	RCache.set_xform_world	(Fidentity);
 	RCache.set_Geometry		(hGeom_gradient);
-	RCache.set_Shader		(((dxFlareRender*)&*owner.current->m_GradientTop->m_pFlare)->hShader);
+	RCache.set_Shader		(((dxFlareRender*)&*owner.current->m_GradientTop->m_pFlare)->hShader, 
+		0, &*hGeom_gradient);
 
 #if defined(USE_DX10) || defined(USE_DX11)
 	//	Hack. Since lightning gradient uses sun shader override z write settings manually
@@ -94,7 +95,8 @@ void dxThunderboltRender::Render(CEffect_Thunderbolt &owner)
 	RCache.set_ZFunc(D3DCMP_LESSEQUAL);
 #endif	//	USE_DX10
 	RCache.Render			(D3DPT_TRIANGLELIST,VS_Offset, 0,4,0,2);
-	RCache.set_Shader		(((dxFlareRender*)&*owner.current->m_GradientCenter->m_pFlare)->hShader);
+	RCache.set_Shader		(((dxFlareRender*)&*owner.current->m_GradientCenter->m_pFlare)->hShader,
+		0, &*hGeom_gradient);
 
 #if defined(USE_DX10) || defined(USE_DX11)
 	//	Hack. Since lightning gradient uses sun shader override z write settings manually

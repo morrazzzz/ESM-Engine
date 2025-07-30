@@ -37,7 +37,7 @@ void	CRenderTarget::phase_smap_spot_tsh	(light* L)
 		// Select color-mask
 		ref_shader		shader			= L->s_spot;
 		if (!shader)	shader			= s_accum_spot;
-		RCache.set_Element				(shader->E[ SE_L_FILL ]	);
+		RCache.set_Element				(shader->E[ SE_L_FILL ], 0, &*g_combine);
 
 		// Fill vertex buffer
 		Fvector2						p0,p1;

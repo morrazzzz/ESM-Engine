@@ -413,9 +413,9 @@ void dx103DFluidManager::AdvectColorBFECC( float timestep, bool bTeperature )
 
 	RCache.set_RT(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR]);
 	if (bTeperature)
-		RCache.set_Element(m_SimulationTechnique[SS_AdvectTemp]);
+		RCache.set_Element(m_SimulationTechnique[SS_AdvectTemp], 0, m_pGrid->getGeomSlices());
 	else
-		RCache.set_Element(m_SimulationTechnique[SS_Advect]);
+		RCache.set_Element(m_SimulationTechnique[SS_Advect], 0, m_pGrid->getGeomSlices());
 	// Advect forward to get \phi^(n+1)
 	//pShaderResourceVariables[RENDER_TARGET_TEMPVECTOR]->SetResource( NULL );
 	//TimeStepShaderVariable->SetFloat(timestep);
@@ -439,7 +439,7 @@ void dx103DFluidManager::AdvectColorBFECC( float timestep, bool bTeperature )
 	else
 		AdvectElement = m_SimulationTechnique[SS_Advect];
 
-	RCache.set_Element(AdvectElement);
+	RCache.set_Element(AdvectElement, 0, m_pGrid->getGeomSlices());
 	//pShaderResourceVariables[RENDER_TARGET_TEMPSCALAR]->SetResource( NULL );
 	//pShaderResourceVariables[RENDER_TARGET_COLOR0]->SetResource( pRenderTargetShaderViews[RENDER_TARGET_TEMPVECTOR] );
 	//	Overwrite RENDER_TARGET_COLOR0 with RENDER_TARGET_TEMPVECTOR
@@ -479,9 +479,9 @@ void dx103DFluidManager::AdvectColorBFECC( float timestep, bool bTeperature )
 	//}
 	RCache.set_RT(pRenderTargetViews[RENDER_TARGET_COLOR]);
 	if (bTeperature)
-		RCache.set_Element(m_SimulationTechnique[SS_AdvectBFECCTemp]);
+		RCache.set_Element(m_SimulationTechnique[SS_AdvectBFECCTemp], 0, m_pGrid->getGeomSlices());
 	else
-		RCache.set_Element(m_SimulationTechnique[SS_AdvectBFECC]);
+		RCache.set_Element(m_SimulationTechnique[SS_AdvectBFECC], 0, m_pGrid->getGeomSlices());
 
 	//D3DXVECTOR3 halfVol( grid->dim[0]/2.0f, grid->dim[1]/2.0f, grid->dim[2]/2.0f );
 	//HalfVolumeDimShaderVariable->SetFloatVector( (float*)&halfVol);
@@ -517,9 +517,9 @@ void dx103DFluidManager::AdvectColor( float timestep, bool bTeperature )
 	RCache.set_RT(pRenderTargetViews[RENDER_TARGET_COLOR]);
 
 	if (bTeperature)
-		RCache.set_Element(m_SimulationTechnique[SS_AdvectTemp]);
+		RCache.set_Element(m_SimulationTechnique[SS_AdvectTemp], 0, m_pGrid->getGeomSlices());
 	else
-		RCache.set_Element(m_SimulationTechnique[SS_Advect]);
+		RCache.set_Element(m_SimulationTechnique[SS_Advect], 0, m_pGrid->getGeomSlices());
 
 	//TimeStepShaderVariable->SetFloat(timestep);
 	RCache.set_c(strTimeStep, timestep);
@@ -544,10 +544,10 @@ void dx103DFluidManager::AdvectVelocity( float timestep, float fGravity )
 	RCache.set_RT(pRenderTargetViews[RENDER_TARGET_VELOCITY1]);
 
 	if (_abs(fGravity)<0.000001)
-		RCache.set_Element(m_SimulationTechnique[SS_AdvectVel]);
+		RCache.set_Element(m_SimulationTechnique[SS_AdvectVel], 0, m_pGrid->getGeomSlices());
 	else
 	{
-		RCache.set_Element(m_SimulationTechnique[SS_AdvectVelGravity]);
+		RCache.set_Element(m_SimulationTechnique[SS_AdvectVelGravity], 0, m_pGrid->getGeomSlices());
 		RCache.set_c(strGravityBuoyancy, fGravity);
 	}
 
@@ -575,14 +575,14 @@ void dx103DFluidManager::ApplyVorticityConfinement( float timestep )
 	//SetRenderTarget( RENDER_TARGET_TEMPVECTOR );
 	RCache.set_RT(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR]);
 	//TechniqueVorticity->GetPassByIndex(0)->Apply(0);
-	RCache.set_Element(m_SimulationTechnique[SS_Vorticity]);	
+	RCache.set_Element(m_SimulationTechnique[SS_Vorticity], 0, m_pGrid->getGeomSlices());	
 	m_pGrid->DrawSlices(); 
 	//m_pD3DDevice->OMSetRenderTargets(0, NULL, NULL);
 	//pShaderResourceVariables[RENDER_TARGET_TEMPVECTOR]->SetResource( pRenderTargetShaderViews[RENDER_TARGET_TEMPVECTOR] );
 
 	// Compute and apply vorticity confinement force
 	RCache.set_RT(pRenderTargetViews[RENDER_TARGET_VELOCITY1]);
-	RCache.set_Element(m_SimulationTechnique[SS_Confinement]);
+	RCache.set_Element(m_SimulationTechnique[SS_Confinement], 0, m_pGrid->getGeomSlices());
 	//pShaderResourceVariables[RENDER_TARGET_VELOCITY1]->SetResource( NULL );
 	//EpsilonShaderVariable->SetFloat(confinementScale);
 	RCache.set_c(strEpsilon, m_fConfinementScale);
@@ -616,7 +616,7 @@ void dx103DFluidManager::ComputeVelocityDivergence( float timestep )
 	HW.pContext->ClearRenderTargetView( pRenderTargetViews[RENDER_TARGET_TEMPVECTOR], color );
 
 	RCache.set_RT(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR]);
-	RCache.set_Element(m_SimulationTechnique[SS_Divergence]);
+	RCache.set_Element(m_SimulationTechnique[SS_Divergence], 0, m_pGrid->getGeomSlices());
 
 	//pShaderResourceVariables[RENDER_TARGET_TEMPVECTOR]->SetResource( NULL );
 	//SetRenderTarget( RENDER_TARGET_TEMPVECTOR );
@@ -641,7 +641,7 @@ void dx103DFluidManager::ComputePressure( float timestep )
 	//TechniqueAdvectBFECC->GetPassByIndex(0)->Apply(0);
 	RCache.set_RT(0);
 	ref_selement	CurrentTechnique = m_SimulationTechnique[SS_Jacobi];
-	RCache.set_Element(CurrentTechnique);
+	RCache.set_Element(CurrentTechnique, 0, m_pGrid->getGeomSlices());
 
 	//	Find texture index and patch texture manually using DirecX call!
 	static shared_str	strPressureName(m_pEngineTextureNames[RENDER_TARGET_PRESSURE]);
@@ -704,7 +704,7 @@ void dx103DFluidManager::ProjectVelocity( float timestep )
 	//pShaderResourceVariables[RENDER_TARGET_VELOCITY0]->SetResource( NULL );
 	//SetRenderTarget( RENDER_TARGET_VELOCITY0 );
 	RCache.set_RT(pRenderTargetViews[RENDER_TARGET_VELOCITY0]);
-	RCache.set_Element(m_SimulationTechnique[SS_Project]);
+	RCache.set_Element(m_SimulationTechnique[SS_Project], 0, m_pGrid->getGeomSlices());
 	//ModulateShaderVariable->SetFloat(1.0f);
 	RCache.set_c(strModulate, 1.0f);
 	//TechniqueProject->GetPassByIndex(0)->Apply(0);

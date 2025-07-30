@@ -156,7 +156,7 @@ void dx103DFluidObstacles::RenderStaticOOBB( const Fmatrix &Transform)
 
 void dx103DFluidObstacles::ProcessStaticObstacles( const dx103DFluidData &FluidData, const Fmatrix &WorldToFluid )
 {
-	RCache.set_Element(m_ObstacleTechnique[OS_OOBB]);
+	RCache.set_Element(m_ObstacleTechnique[OS_OOBB], 0, m_pGrid->getGeomSlices());
 
 	const xr_vector<Fmatrix> &Obstacles = FluidData.GetObstaclesList();
 	int iObstNum = Obstacles.size();
@@ -229,7 +229,7 @@ void dx103DFluidObstacles::ProcessDynamicObstacles( const dx103DFluidData &Fluid
 	if (! (m_lstShells.size() || m_lstElements.size()))
 		return;
 
-	RCache.set_Element(m_ObstacleTechnique[OS_DynamicOOBB]);
+	RCache.set_Element(m_ObstacleTechnique[OS_DynamicOOBB], 0, m_pGrid->getGeomSlices());
 
 	Fmatrix	FluidToWorld;
 	FluidToWorld.invert(WorldToFluid);

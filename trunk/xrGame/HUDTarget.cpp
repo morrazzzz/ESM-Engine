@@ -279,8 +279,7 @@ void CHUDTarget::Render()
 		UIRender->PushPoint(cx + size_x, cy - size_y, 0, C, 1, 0);
 
 		// unlock VB and Render it as triangle LIST
-		UIRender->SetShader(*hShader);
-		UIRender->FlushPrimitive();
+		UIRender->FlushPrimitive(*hShader);
 	}
 	else
 	{

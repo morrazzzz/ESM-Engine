@@ -335,8 +335,8 @@ void CRenderTarget::End		()
 		RCache.set_RT		(RT_color_map->pRT);
 
 		//	Prepare colormapped buffer
-		RCache.set_Element	(bDistort ? s_postprocess_D[1]->E[4] : s_postprocess[1]->E[4]);
-		RCache.set_Geometry	(g_postprocess);
+		RCache.set_Element(bDistort ? s_postprocess_D[1]->E[4] : s_postprocess[1]->E[4], 0, &*g_postprocess);
+		RCache.set_Geometry(g_postprocess);
 		RCache.set_c		(s_colormap, param_color_map_influence,param_color_map_interpolate,0,0);
 		RCache.Render		(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
 

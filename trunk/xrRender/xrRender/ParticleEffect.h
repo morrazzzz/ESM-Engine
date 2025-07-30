@@ -44,7 +44,8 @@ namespace PS
 		void	 			OnFrame				(u32 dt);
 
 		u32					RenderTO			();
-		virtual void		Render				(float LOD);
+		void RenderModelVisual(R_dsgraph::_MatrixItemS* matrixItem, float LOD, ShaderElement* shaderElement = nullptr,
+			u32 pass = 0, ID3DBlob* signature = nullptr /*ugly hack!!! delete this!!!!*/) override;	// LOD - Level Of Detail  [0.0f - min, 1.0f - max], Ignored ?
 		virtual void		Copy				(dxRender_Visual* pFrom);
 
 		virtual void 		OnDeviceCreate		();

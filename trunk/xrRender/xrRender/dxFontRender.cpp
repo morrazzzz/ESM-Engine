@@ -24,7 +24,9 @@ extern ENGINE_API Fvector2		g_current_font_scale;
 void dxFontRender::OnRender(CGameFont &owner)
 {
 	VERIFY				(g_bRendering);
-	if (pShader)		RCache.set_Shader	(pShader);
+	RCache.set_Geometry(pGeom);
+	if (pShader)		
+		RCache.set_Shader(pShader, 0, &*pGeom);
 
 	if (!(owner.uFlags&CGameFont::fsValid)){
 		CTexture* T		= RCache.get_ActiveTexture(0);
@@ -142,7 +144,6 @@ void dxFontRender::OnRender(CGameFont &owner)
 		u32 vCount = (u32)(v-start);
 		RCache.Vertex.Unlock		(vCount,pGeom.stride());
 		if (vCount){
-			RCache.set_Geometry		(pGeom);
 			RCache.Render			(D3DPT_TRIANGLELIST,vOffset,0,vCount,0,vCount/2);
 		}
 	}

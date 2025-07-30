@@ -328,7 +328,7 @@ ICF void FlushStream(ref_geom hGeom, ref_shader shader, u32& w_offset, FVF::LIT*
 	RCache.Vertex.Unlock		(w_count,hGeom->vb_stride);
 	if (w_count)			
 	{
-		RCache.set_Shader		(shader);
+		RCache.set_Shader		(shader, 0, &*hGeom);
 		RCache.set_Geometry		(hGeom);
 		if (bSuppressCull)		RCache.set_CullMode (CULL_NONE);
 		RCache.Render			(D3DPT_TRIANGLELIST,w_offset,w_count/3);

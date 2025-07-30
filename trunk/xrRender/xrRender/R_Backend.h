@@ -1,5 +1,3 @@
-#ifndef r_backendH
-#define r_backendH
 #pragma once
 
 //#define RBackend_PGO
@@ -84,7 +82,6 @@ public:
 	_IndexStream					Index;
 	ID3DIndexBuffer*				QuadIB;
 	ID3DIndexBuffer*				old_QuadIB;
-	ID3DIndexBuffer*				CuboidIB;
 	R_xforms						xforms;
 	R_hemi							hemi;
 	R_tree							tree;
@@ -101,8 +98,6 @@ public:
 	ref_cbuffer						m_aDomainConstants[MaxCBuffers];
 	ref_cbuffer						m_aComputeConstants[MaxCBuffers];
 #	endif
-	D3D_PRIMITIVE_TOPOLOGY			m_PrimitiveTopology;
-	ID3DInputLayout*				m_pInputLayout;
 	DWORD							dummy0;	//	Padding to avoid warning	
 	DWORD							dummy1;	//	Padding to avoid warning	
 	DWORD							dummy2;	//	Padding to avoid warning	
@@ -114,30 +109,23 @@ private:
 
 	// Vertices/Indices/etc
 #if defined(USE_DX10) || defined(USE_DX11)
-	SDeclaration*					decl;
-#else	//	USE_DX10
+	SDeclaration* decl; //delete me?
+#else
 	IDirect3DVertexDeclaration9*	decl;
-#endif	//	USE_DX10
-	ID3DVertexBuffer*			vb;
-	ID3DIndexBuffer*			ib;
-	u32								vb_stride;
 
+	ID3DVertexBuffer* vb;
+	ID3DIndexBuffer* ib;
+	u32 vb_stride;
+
+	ID3DPixelShader* ps;
+	ID3DVertexShader* vs;
+#endif	//	USE_DX10
 	// Pixel/Vertex constants
 	ALIGN(16)	R_constants			constants;
 	R_constant_table*				ctable;
 
 	// Shaders/State
 	ID3DState*						state;
-	ID3DPixelShader*				ps;
-	ID3DVertexShader*				vs;
-#if defined(USE_DX10) || defined(USE_DX11)
-	ID3DGeometryShader*				gs;
-#	ifdef USE_DX11
-	ID3D11HullShader*				hs;
-	ID3D11DomainShader*				ds;
-	ID3D11ComputeShader*			cs;
-#	endif
-#endif	//	USE_DX10
 
 #ifdef DEBUG
 	LPCSTR							ps_name;
@@ -211,17 +199,25 @@ public:
 		R_statistics					r	;
 	}									stat;
 public:
-	IC	CTexture*					get_ActiveTexture			(u32 stage)
+#if defined(USE_DX10) || defined(USE_DX11)
+	IC	void						get_ConstantDirect	(shared_str& n, u32 DataSize, void** pVData, void** pGData, void** pPData);
+//	IC	CTexture* get_ActiveTexture(u32 stage);
+#else	//USE_DX10
+	IC	R_constant_array&			get_ConstantCache_Vertex	()			{ return constants.a_vertex;	}
+	IC	R_constant_array&			get_ConstantCache_Pixel		()			{ return constants.a_pixel;		}
+#endif	//	USE_DX10\
+
+	IC	CTexture* get_ActiveTexture(u32 stage)
 	{
-		if (stage<CTexture::rstVertex)			return textures_ps[stage];
-		else if (stage<CTexture::rstGeometry)	return textures_vs[stage-CTexture::rstVertex];
+		if (stage < CTexture::rstVertex)			return textures_ps[stage];
+		else if (stage < CTexture::rstGeometry)	return textures_vs[stage - CTexture::rstVertex];
 #ifdef USE_DX10
-		else									return textures_gs[stage-CTexture::rstGeometry];
+		else									return textures_gs[stage - CTexture::rstGeometry];
 #elif USE_DX11
-		else if (stage<CTexture::rstHull)	return textures_gs[stage-CTexture::rstGeometry];
-		else if (stage<CTexture::rstDomain) return textures_hs[stage-CTexture::rstHull];
-		else if (stage<CTexture::rstCompute) return textures_ds[stage-CTexture::rstDomain];
-		else if (stage<CTexture::rstInvalid) return textures_cs[stage-CTexture::rstCompute];
+		else if (stage < CTexture::rstHull)	return textures_gs[stage - CTexture::rstGeometry];
+		else if (stage < CTexture::rstDomain) return textures_hs[stage - CTexture::rstHull];
+		else if (stage < CTexture::rstCompute) return textures_ds[stage - CTexture::rstDomain];
+		else if (stage < CTexture::rstInvalid) return textures_cs[stage - CTexture::rstCompute];
 		else
 		{
 			VERIFY(!"Invalid texture stage");
@@ -232,14 +228,6 @@ public:
 		return 0;
 #endif	//	USE_DX10
 	}
-
-#if defined(USE_DX10) || defined(USE_DX11)
-	IC	void						get_ConstantDirect	(shared_str& n, u32 DataSize, void** pVData, void** pGData, void** pPData);
-#else	//USE_DX10
-	IC	R_constant_array&			get_ConstantCache_Vertex	()			{ return constants.a_vertex;	}
-	IC	R_constant_array&			get_ConstantCache_Pixel		()			{ return constants.a_pixel;		}
-#endif	//	USE_DX10
-
 	// API
 	IC	void						set_xform			(u32 ID, const Fmatrix& M);
 	IC	void						set_xform_world		(const Fmatrix& M);
@@ -265,19 +253,25 @@ public:
 	IC	void						set_Matrices		(ref_matrix_list& M)				{ set_Matrices(&*M);			}
 #endif
 
-	IC	void						set_Element			(ShaderElement* S, u32	pass=0);
-	IC	void						set_Element			(ref_selement& S, u32	pass=0)		{ set_Element(&*S,pass);		}
+	IC	void						set_Element			(ShaderElement* S, u32 pass = 0, SGeometry* geom = nullptr);
+	IC	void						set_Element(ref_selement& S, u32 pass = 0, SGeometry* geom = nullptr) { set_Element(&*S, pass, geom); }
 
-	IC	void						set_Shader			(Shader* S, u32 pass=0);
-	IC	void						set_Shader			(ref_shader& S, u32 pass=0)			{ set_Shader(&*S,pass);			}
+#pragma todo("return this!")
+//#ifndef USE_DX11 
+//	IC	void						set_Shader			(Shader* S, u32 pass=0);
+//	IC	void						set_Shader			(ref_shader& S, u32 pass=0)			{ set_Shader(&*S,pass);			}
+//#else
+	IC	void set_Shader(Shader* S, u32 pass = 0, SGeometry* geom = nullptr);
+	IC	void set_Shader(ref_shader& S, u32 pass = 0, SGeometry* geom = nullptr ) { set_Shader(&*S, pass, geom); }
+//#endif
 
 	ICF	void						set_States			(ID3DState* _state);
 	ICF	void						set_States			(ref_state& _state)					{ set_States(_state->state);	}
 
 #if defined(USE_DX10) || defined(USE_DX11)
-	ICF  void						set_Format			(SDeclaration* _decl);
+	IC  void setInputLayout(SDeclaration* _decl, ID3DBlob* inputSignature);
 #else	//	USE_DX10
-	ICF  void						set_Format			(IDirect3DVertexDeclaration9* _decl);
+	ICF  void setDeclaration(IDirect3DVertexDeclaration9* _decl);
 #endif	//	USE_DX10
 
 	ICF void						set_PS				(ID3DPixelShader* _ps, LPCSTR _n=0);
@@ -318,8 +312,10 @@ public:
 
 	ICF	void						set_Vertices		(ID3DVertexBuffer* _vb, u32 _vb_stride);
 	ICF	void						set_Indices			(ID3DIndexBuffer* _ib);
+//#ifndef USE_DX11
 	ICF void						set_Geometry		(SGeometry* _geom);
 	ICF void						set_Geometry		(ref_geom& _geom)					{	set_Geometry(&*_geom);		}
+//#endif
 	IC  void						set_Stencil			(u32 _enable, u32 _func=D3DCMP_ALWAYS, u32 _ref=0x00, u32 _mask=0x00, u32 _writemask=0x00, u32 _fail=D3DSTENCILOP_KEEP, u32 _pass=D3DSTENCILOP_KEEP, u32 _zfail=D3DSTENCILOP_KEEP);
 	IC  void						set_Z				(u32 _enable);
 	IC  void						set_ZFunc			(u32 _func);
@@ -420,14 +416,20 @@ private:
 	//	DirectX 10 internal functionality
 	//void CreateConstantBuffers();
 	//void DestroyConstantBuffers();
-	void	ApplyVertexLayout();
 	void	ApplyRTandZB();
 	void	ApplyPrimitieTopology( D3D_PRIMITIVE_TOPOLOGY Topology );
 	bool	CBuffersNeedUpdate(ref_cbuffer	buf1[MaxCBuffers], ref_cbuffer	buf2[MaxCBuffers], u32	&uiMin, u32	&uiMax);
+	
+	inline void processPixelResourceClear(int lastPS_ID);
+	inline void processVertexResourceClear(int lastVS_ID);
+	inline void processGeometryResourceClear(int lastGS_ID);
+#ifdef USE_DX11
+	inline void processHullResourceClear(int lastHS_ID);
+	inline void processDomainResourceClear(int lastDS_ID);
+	inline void processComputeResourceClear(int lastCS_ID);
+#endif
 
 private:
-	ID3DBlob*				m_pInputSignature;
-
 	bool					m_bChangedRTorZB;
 #endif	//	USE_DX10
 };
@@ -439,4 +441,3 @@ extern  ECORE_API CBackend			RCache;
 #	include "D3DUtils.h"
 #endif
 
-#endif

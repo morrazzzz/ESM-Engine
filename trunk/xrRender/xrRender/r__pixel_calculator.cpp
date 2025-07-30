@@ -52,12 +52,11 @@ r_aabb_ssa		r_pixel_calculator::calculate	(dxRender_Visual* V)	{
 
 		// render-0
 		Device.Clear				();	// clear-ZB
-		RCache.set_Shader			(V->shader);
-		V->Render					(1.f);
+		V->RenderModelVisual(nullptr, 1.f, &*V->shader->E[0], 0, nullptr);
 
 		// render-1
 		RImplementation.HWOCC.occq_begin	(id[face]);
-		V->Render							(1.f);
+		V->RenderModelVisual(nullptr, 1.f, &*V->shader->E[0], 0, nullptr);
 		RImplementation.HWOCC.occq_end		(id[face]);
 	}
 

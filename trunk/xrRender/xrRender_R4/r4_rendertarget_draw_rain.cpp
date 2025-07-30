@@ -27,33 +27,6 @@ void CRenderTarget::draw_rain( light &RainSetup )
 	Device.mView.transform_dir	(W_dirZ,Fvector().set(0.0f, 0.0f, 1.0f));
 	W_dirZ.normalize				();
 
-	// Perform masking (only once - on the first/near phase)
-	//RCache.set_CullMode			(CULL_NONE	);
-	//if (SE_SUN_NEAR==sub_phase)	//.
-	{
-		// Fill vertex buffer
-		FVF::TL* pv					= (FVF::TL*)	RCache.Vertex.Lock	(4,g_combine->vb_stride,Offset);
-		pv->set						(EPS,			float(_h+EPS),	d_Z,	d_W, C, p0.x, p1.y);	pv++;
-		pv->set						(EPS,			EPS,			d_Z,	d_W, C, p0.x, p0.y);	pv++;
-		pv->set						(float(_w+EPS),	float(_h+EPS),	d_Z,	d_W, C, p1.x, p1.y);	pv++;
-		pv->set						(float(_w+EPS),	EPS,			d_Z,	d_W, C, p1.x, p0.y);	pv++;
-		RCache.Vertex.Unlock		(4,g_combine->vb_stride);
-		RCache.set_Geometry			(g_combine);
-
-		// setup
-//		float	intensity			= 0.3f*fuckingsun->color.r + 0.48f*fuckingsun->color.g + 0.22f*fuckingsun->color.b;
-//		Fvector	dir					= L_dir;
-//		dir.normalize().mul	(- _sqrt(intensity+EPS));
-//		RCache.set_Element			(s_accum_mask->E[SE_MASK_DIRECT]);		// masker
-//		RCache.set_c				("Ldynamic_dir",		dir.x,dir.y,dir.z,0		);
-
-		// if (stencil>=1 && aref_pass)	stencil = light_id
-		//	Done in blender!
-		//RCache.set_ColorWriteEnable	(FALSE		);
-//		RCache.set_Stencil			(TRUE,D3DCMP_LESSEQUAL,dwLightMarkerID,0x01,0xff,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE,D3DSTENCILOP_KEEP);
-//		RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
-	}
-
 	// recalculate d_Z, to perform depth-clipping
 	const float fRainFar = ps_r3_dyn_wet_surf_far;
 
@@ -234,14 +207,14 @@ void CRenderTarget::draw_rain( light &RainSetup )
 			u_setrt	(rt_Accumulator,NULL,NULL,rt_MSAADepth->pZRT);
 
       //u_setrt	(rt_Normal,NULL,NULL,HW.pBaseZB);
-		RCache.set_Element		(s_rain->E[1]);
-		RCache.set_c				("Ldynamic_dir",		L_dir.x,L_dir.y,L_dir.z,0		);
-		RCache.set_c				("WorldX",				W_dirX.x,W_dirX.y,W_dirX.z,0		);
-		RCache.set_c				("WorldZ",				W_dirZ.x,W_dirZ.y,W_dirZ.z,0		);
-		RCache.set_c				("m_shadow",			m_shadow						);
-		RCache.set_c				("m_sunmask",			m_clouds_shadow					);
-		RCache.set_c				("RainDensity",			fRainFactor, 0, 0, 0			);
-		RCache.set_c				("RainFallof",			ps_r3_dyn_wet_surf_near, ps_r3_dyn_wet_surf_far, 0, 0			);
+		RCache.set_Element(s_rain->E[1], 0, &*g_combine_2UV);
+		RCache.set_c("Ldynamic_dir", L_dir.x, L_dir.y, L_dir.z, 0);
+		RCache.set_c("WorldX", W_dirX.x, W_dirX.y, W_dirX.z, 0);
+		RCache.set_c("WorldZ", W_dirZ.x, W_dirZ.y, W_dirZ.z, 0);
+		RCache.set_c("m_shadow", m_shadow);
+		RCache.set_c("m_sunmask", m_clouds_shadow);
+		RCache.set_c("RainDensity", fRainFactor, 0, 0, 0);
+		RCache.set_c("RainFallof", ps_r3_dyn_wet_surf_near, ps_r3_dyn_wet_surf_far, 0, 0);
 		if( !RImplementation.o.dx10_msaa )
 		{
 			RCache.set_Stencil( TRUE, D3DCMP_EQUAL, 0x01, 0x01, 0 );

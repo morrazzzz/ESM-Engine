@@ -112,10 +112,6 @@ public:
 	ID3DTexture2D*			t_noise_surf_mipped;
 	ref_texture					t_noise_mipped;
 private:
-	// OCCq
-
-	ref_shader					s_occq;
-
 	// SSAO
 	ref_rt						rt_ssao_temp;
 	ref_rt						rt_half_depth;
@@ -194,6 +190,9 @@ private:
    ref_shader				s_combine_msaa[8];
 	ref_shader				s_combine_volumetric;
 public:
+	// OCCq
+	ref_shader					s_occq;
+
 	ref_shader				s_postprocess;
    ref_shader           s_postprocess_msaa;
 	ref_geom					g_postprocess;
@@ -281,7 +280,7 @@ public:
 
 	void						disable_aniso			();
 
-	void						draw_volume				(light* L);
+	void draw_volume(ShaderElement* shader, light* L);
 	void accum_direct_cascade(const light& sun_light, u32	sub_phase, Fmatrix& xform, Fmatrix& xform_prev, float fBias);
 	void accum_direct_f(const light& sun_light, u32 sub_phase);
 	void accum_direct_lum(const light& sun_light);

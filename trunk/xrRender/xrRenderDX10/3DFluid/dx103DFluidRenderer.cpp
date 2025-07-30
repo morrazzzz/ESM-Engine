@@ -576,7 +576,8 @@ void dx103DFluidRenderer::Draw(const dx103DFluidData &FluidData)
 
 	//	Set shader element to set up all necessary constants to constant buffer
 	//	If you change constant buffer layout make sure this hack works ok.
-	RCache.set_Element(m_RendererTechnique[RS_CompRayData_Back]);
+#pragma todo("morrazzzz: ???")
+	//RCache.set_Element(m_RendererTechnique[RS_CompRayData_Back]);
 
 	// Set some variables required by the shaders:
 	//=========================================================================
@@ -713,9 +714,9 @@ void dx103DFluidRenderer::Draw(const dx103DFluidData &FluidData)
 
 	//pTechnique->GetPassByName("QuadRaycast")->Apply(0);
 	if (bRenderFire)
-		RCache.set_Element(m_RendererTechnique[RS_QuadRaycastFire]);
+		RCache.set_Element(m_RendererTechnique[RS_QuadRaycastFire], 0, &*m_GeomQuadVertex);
 	else
-		RCache.set_Element(m_RendererTechnique[RS_QuadRaycastFog]);
+		RCache.set_Element(m_RendererTechnique[RS_QuadRaycastFog], 0, &*m_GeomQuadVertex);
 
 	//pRTWidthVar->SetFloat((float)renderTextureWidth);
 	RCache.set_c(strRTWidth, (float)m_iRenderTextureWidth);
@@ -740,9 +741,9 @@ void dx103DFluidRenderer::Draw(const dx103DFluidData &FluidData)
 		pTarget->u_setrt( pTarget->rt_Generic_0_r,0,0,pTarget->rt_MSAADepth->pZRT);		// LDR RT
 
 	if (bRenderFire)
-		RCache.set_Element(m_RendererTechnique[RS_QuadRaycastCopyFire]);
+		RCache.set_Element(m_RendererTechnique[RS_QuadRaycastCopyFire], 0, &*m_GeomQuadVertex);
 	else
-		RCache.set_Element(m_RendererTechnique[RS_QuadRaycastCopyFog]);
+		RCache.set_Element(m_RendererTechnique[RS_QuadRaycastCopyFog], 0, &*m_GeomQuadVertex);
 
 	//rtViewport.Width = g_Width;
 	//rtViewport.Height = g_Height;
@@ -773,7 +774,7 @@ void dx103DFluidRenderer::ComputeRayData()
 	CRenderTarget* pTarget = RImplementation.Target;
 	pTarget->u_setrt(RT[RRT_RayDataTex],0,0,0);		// LDR RT
 	//pEffect->GetVariableByName("sceneDepthTex")->AsShaderResource()->SetResource(g_pSceneDepthSRV);
-	RCache.set_Element(m_RendererTechnique[RS_CompRayData_Back]);
+	RCache.set_Element(m_RendererTechnique[RS_CompRayData_Back], 0, &*m_GeomGridBox);
 
 	// Setup viewport to match the window's backbuffer
 	//D3Dxx_VIEWPORT rtViewport;
@@ -800,7 +801,7 @@ void dx103DFluidRenderer::ComputeRayData()
 	//  unless the pixel is occluded by the scene, in which case we output xyzw=(1,0,0,0)
 	//m_pD3DDevice->OMSetRenderTargets(1, &pRayDataRTV, NULL);
 	pTarget->u_setrt(RT[RRT_RayDataTex],0,0,0);		// LDR RT
-	RCache.set_Element(m_RendererTechnique[RS_CompRayData_Front]);
+	RCache.set_Element(m_RendererTechnique[RS_CompRayData_Front], 0, &*m_GeomGridBox);
 	//pTechnique->GetPassByName("CompRayData_Front")->Apply(0);
 	DrawBox();
 
@@ -810,7 +811,7 @@ void dx103DFluidRenderer::ComputeEdgeTexture()
 {
 	CRenderTarget* pTarget = RImplementation.Target;
 	pTarget->u_setrt(RT[RRT_RayDataTexSmall],0,0,0);		// LDR RT
-	RCache.set_Element(m_RendererTechnique[RS_QuadDownSampleRayDataTexture]);
+	RCache.set_Element(m_RendererTechnique[RS_QuadDownSampleRayDataTexture], 0, &*m_GeomQuadVertex);
 
 	// First setup viewport to match the size of the destination low-res texture
 	//D3Dxx_VIEWPORT rtViewport;
@@ -835,7 +836,7 @@ void dx103DFluidRenderer::ComputeEdgeTexture()
 
 	// Create an edge texture, performing edge detection on 'rayDataTexSmall'
 	pTarget->u_setrt(RT[RRT_EdgeTex],0,0,0);		// LDR RT
-	RCache.set_Element(m_RendererTechnique[RS_QuadEdgeDetect]);
+	RCache.set_Element(m_RendererTechnique[RS_QuadEdgeDetect], 0, &*m_GeomQuadVertex);
 	//m_pD3DDevice->OMSetRenderTargets( 1, &pEdgeRTV , NULL ); 
 	//pRayDataSmallVar->SetResource(pRayDataSmallSRV);
 	//pTechnique->GetPassByName("QuadEdgeDetect")->Apply(0);

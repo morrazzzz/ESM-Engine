@@ -5,6 +5,12 @@
 #include "StateManager/dx10StateManager.h"
 #include "StateManager/dx10ShaderResourceStateCache.h"
 
+#ifdef USE_DX11
+#define ARGS_CONTEXT_SETS(a,b,c) a, b, c
+#else
+#define ARGS_CONTEXT_SETS(a,b,c) a
+#endif
+
 IC void CBackend::set_xform( u32 ID, const Fmatrix& M )
 {
 	stat.xforms			++;
@@ -46,143 +52,225 @@ IC void	CBackend::set_ZB(ID3DDepthStencilView* ZB)
 	}
 }
 
-ICF void CBackend::set_Format(SDeclaration* _decl)
+IC void CBackend::setInputLayout(SDeclaration* declaration, ID3DBlob* inputSignature)
 {
-	if (decl!=_decl)
+	auto it = declaration->vs_to_layout.find(inputSignature);
+
+	if (it == declaration->vs_to_layout.end())
 	{
-		PGO				(Msg("PGO:v_format:%x",_decl));
-#ifdef DEBUG
-		stat.decl		++;
+		ID3DInputLayout* pLayout{};
+
+		HRESULT hr = HW.pDevice->CreateInputLayout(
+			&declaration->dx10_dcl_code[0],
+			declaration->dx10_dcl_code.size() - 1,
+			inputSignature->GetBufferPointer(),
+			inputSignature->GetBufferSize(),
+			&pLayout
+		);
+
+		R_ASSERT(SUCCEEDED(hr));
+
+		//For SoC this normal. 
+#if DEBUG
+		if (!pLayout)
+		{
+			Msg("! Broken shader vertex layout");
+			Msg("! VS Name: [%s]", vs_name);
+			Msg("! Semantic name: [%s]", declaration->dx10_dcl_code[0].SemanticName);
+			Msg("! Semantic index: [%x]", declaration->dx10_dcl_code[0].SemanticIndex);
+			Msg("! Format: [%x]", declaration->dx10_dcl_code[0].Format);
+			Msg("! InputSlot [%x]", declaration->dx10_dcl_code[0].InputSlot);
+
+			Msg("!! [%s]: Failed CreateInputLayout!!! Check log for detail info.", __FUNCTION__);
+		}
 #endif
-		decl			= _decl;
+
+		it = declaration->vs_to_layout.insert(
+			std::pair<ID3DBlob*, ID3DInputLayout*>(inputSignature, pLayout)).first;
 	}
+
+	ID3DInputLayout* pInputLayout;
+	HW.pContext->IAGetInputLayout(&pInputLayout);
+
+	if (pInputLayout != it->second)
+		HW.pContext->IASetInputLayout(it->second);
+
+	if (pInputLayout)
+		pInputLayout->Release();
 }
 
 ICF void CBackend::set_PS(ID3DPixelShader* _ps, LPCSTR _n)
 {
-	if (ps!=_ps)
+	ID3DPixelShader* pixelShader;
+	HW.pContext->PSGetShader(ARGS_CONTEXT_SETS(&pixelShader, nullptr, nullptr));
+	if (pixelShader != _ps)
 	{
-		PGO				(Msg("PGO:Pshader:%x",_ps));
-		stat.ps			++;
-		ps				= _ps;
-#ifdef USE_DX11
-		HW.pContext->PSSetShader(ps, 0, 0);
-#else
-		HW.pContext->PSSetShader(ps);
-#endif
+		PGO(Msg("PGO:Pshader:%x", _ps));
+		stat.ps++;
+		//		ps				= _ps;
+
+		HW.pContext->PSSetShader(ARGS_CONTEXT_SETS(_ps, nullptr, 0));
 
 #ifdef DEBUG
-		ps_name			= _n;
+		ps_name = _n;
 #endif
 	}
+
+	if (pixelShader)
+		pixelShader->Release();
+}
+
+ICF void CBackend::set_VS(ID3DVertexShader* _vs, LPCSTR _n)
+{
+	ID3DVertexShader* vertexShader;
+	HW.pContext->VSGetShader(ARGS_CONTEXT_SETS(&vertexShader, nullptr, nullptr));
+
+	if (vertexShader != _vs)
+	{
+		PGO(Msg("PGO:Vshader:%x", _vs));
+		stat.vs++;
+//		vs = _vs;
+
+		HW.pContext->VSSetShader(ARGS_CONTEXT_SETS(_vs, nullptr, 0));
+
+#ifdef DEBUG
+		vs_name = _n;
+#endif
+	}
+	
+	if (vertexShader)
+		vertexShader->Release();
 }
 
 ICF void CBackend::set_GS(ID3DGeometryShader* _gs, LPCSTR _n)
 {
-	if (gs!=_gs)
+	ID3DGeometryShader* geometryShader;
+	HW.pContext->GSGetShader(ARGS_CONTEXT_SETS(&geometryShader, nullptr, nullptr));
+
+	if (geometryShader != _gs)
 	{
-		PGO				(Msg("PGO:Gshader:%x",_ps));
+		PGO(Msg("PGO:Gshader:%x", _ps));
 		//	TODO: DX10: Get statistics for G Shader change
 		//stat.gs			++;
-		gs				= _gs;
-#ifdef USE_DX11
-		HW.pContext->GSSetShader(gs, 0, 0);
-#else
-		HW.pContext->GSSetShader(gs);
-#endif
+//		gs				= _gs;
+
+		HW.pContext->GSSetShader(ARGS_CONTEXT_SETS(_gs, 0, 0));
 
 #ifdef DEBUG
-		gs_name			= _n;
+		gs_name = _n;
 #endif
 	}
+
+	if (geometryShader)
+		geometryShader->Release();
 }
 
 #	ifdef USE_DX11
 ICF void CBackend::set_HS(ID3D11HullShader* _hs, LPCSTR _n)
 {
-	if (hs!=_hs)
+	ID3D11HullShader* hullShader;
+	HW.pContext->HSGetShader(&hullShader, nullptr, nullptr);
+
+	if (hullShader != _hs)
 	{
-		PGO				(Msg("PGO:Hshader:%x",_ps));
+		PGO(Msg("PGO:Hshader:%x", _ps));
 		//	TODO: DX10: Get statistics for H Shader change
 		//stat.hs			++;
-		hs				= _hs;
-		HW.pContext->HSSetShader(hs, 0, 0);
+//		hs = _hs;
+		HW.pContext->HSSetShader(_hs, 0, 0);
 
 #ifdef DEBUG
-		hs_name			= _n;
+		hs_name = _n;
 #endif
 	}
+
+	if (hullShader)
+		hullShader->Release();
 }
 
 ICF void CBackend::set_DS(ID3D11DomainShader* _ds, LPCSTR _n)
 {
-	if (ds!=_ds)
+	ID3D11DomainShader* domainShader;
+	HW.pContext->DSGetShader(&domainShader, nullptr, nullptr);
+
+	if (domainShader != _ds)
 	{
-		PGO				(Msg("PGO:Dshader:%x",_ps));
+		PGO(Msg("PGO:Dshader:%x", _ps));
 		//	TODO: DX10: Get statistics for D Shader change
 		//stat.ds			++;
-		ds				= _ds;
-		HW.pContext->DSSetShader(ds, 0, 0);
+		//ds = _ds;
+		HW.pContext->DSSetShader(_ds, 0, 0);
 
 #ifdef DEBUG
-		ds_name			= _n;
+		ds_name = _n;
 #endif
 	}
+
+	if (domainShader)
+		domainShader->Release();
 }
 
 ICF void CBackend::set_CS(ID3D11ComputeShader* _cs, LPCSTR _n)
 {
-	if (cs!=_cs)
+	ID3D11ComputeShader* computeShader;
+	HW.pContext->CSGetShader(&computeShader, nullptr, nullptr);
+
+	if (computeShader != _cs)
 	{
-		PGO				(Msg("PGO:Cshader:%x",_ps));
+		PGO(Msg("PGO:Cshader:%x", _ps));
 		//	TODO: DX10: Get statistics for D Shader change
 		//stat.cs			++;
-		cs				= _cs;
-		HW.pContext->CSSetShader(cs, 0, 0);
+		//cs = _cs;
+		HW.pContext->CSSetShader(_cs, 0, 0);
 
 #ifdef DEBUG
-		cs_name			= _n;
+		cs_name = _n;
 #endif
 	}
+
+	if (computeShader)
+		computeShader->Release();
 }
 
 ICF	bool CBackend::is_TessEnabled()
 {
-	return HW.FeatureLevel>=D3D_FEATURE_LEVEL_11_0 && (ds!=0 || hs!=0);
+	if (HW.FeatureLevel < D3D_FEATURE_LEVEL_11_0)
+		return false;
+
+	ID3D11DomainShader* domainShader;
+	HW.pContext->DSGetShader(&domainShader, nullptr, nullptr);
+	
+	if (domainShader)
+	{
+		domainShader->Release();
+		return true;
+	}
+
+	ID3D11HullShader* hullShader;
+	HW.pContext->HSGetShader(&hullShader, nullptr, nullptr);
+
+	if (hullShader)
+	{
+		hullShader->Release();
+		return true;
+	}
+
+	return false;
 }
 
 #	endif
 
-
-ICF void CBackend::set_VS(ID3DVertexShader* _vs, LPCSTR _n)
-{
-	if (vs!=_vs)
-	{
-		PGO				(Msg("PGO:Vshader:%x",_vs));
-		stat.vs			++;
-		vs				= _vs;
-#ifdef USE_DX11
-		HW.pContext->VSSetShader(vs, 0, 0);
-#else
-		HW.pContext->VSSetShader(vs);
-#endif
-
-#ifdef DEBUG
-		vs_name			= _n;
-#endif
-	}
-}
-
 ICF void CBackend::set_Vertices(ID3DVertexBuffer* _vb, u32 _vb_stride)
 {
-	if ((vb!=_vb) || (vb_stride!=_vb_stride))
+	ID3DVertexBuffer* bufferVertex;
+	UINT stridesVertex;
+	HW.pContext->IAGetVertexBuffers(0, 1, &bufferVertex, &stridesVertex, nullptr);
+	if ((bufferVertex != _vb) || (stridesVertex != _vb_stride))
 	{
-		PGO				(Msg("PGO:VB:%x,%d",_vb,_vb_stride));
+		PGO(Msg("PGO:VB:%x,%d", _vb, _vb_stride));
 #ifdef DEBUG
-		stat.vb			++;
+		stat.vb++;
 #endif
-		vb				= _vb;
-		vb_stride		= _vb_stride;
 		//CHK_DX			(HW.pDevice->SetStreamSource(0,vb,0,vb_stride));
 		//UINT StreamNumber,
 		//IDirect3DVertexBuffer9 * pStreamData,
@@ -195,21 +283,38 @@ ICF void CBackend::set_Vertices(ID3DVertexBuffer* _vb, u32 _vb_stride)
 		//const UINT *pStrides,
 		//const UINT *pOffsets
 		u32	iOffset = 0;
-		HW.pContext->IASetVertexBuffers( 0, 1, &vb, &_vb_stride, &iOffset);
+		HW.pContext->IASetVertexBuffers(0, 1, &_vb, &_vb_stride, &iOffset);
 	}
+
+	if (bufferVertex)
+		bufferVertex->Release();
 }
 
 ICF void CBackend::set_Indices(ID3DIndexBuffer* _ib)
 {
-	if (ib!=_ib)
+	ID3DIndexBuffer* indexBuffer;
+	HW.pContext->IAGetIndexBuffer(&indexBuffer, nullptr, nullptr);
+	
+	if (indexBuffer != _ib)
 	{
-		PGO				(Msg("PGO:IB:%x",_ib));
+		PGO(Msg("PGO:IB:%x", _ib));
 #ifdef DEBUG
-		stat.ib			++;
+		stat.ib++;
 #endif
-		ib				= _ib;
-		HW.pContext->IASetIndexBuffer(ib, DXGI_FORMAT_R16_UINT, 0);
+		HW.pContext->IASetIndexBuffer(_ib, DXGI_FORMAT_R16_UINT, 0);
 	}
+
+	if (indexBuffer)
+		indexBuffer->Release();
+}
+
+IC void CBackend::ApplyPrimitieTopology(D3D_PRIMITIVE_TOPOLOGY newTopology)
+{
+	D3D_PRIMITIVE_TOPOLOGY Topology;
+	HW.pContext->IAGetPrimitiveTopology(&Topology);
+
+	if (Topology != newTopology)
+		HW.pContext->IASetPrimitiveTopology(newTopology);
 }
 
 IC D3D_PRIMITIVE_TOPOLOGY TranslateTopology(D3DPRIMITIVETYPE T)
@@ -256,15 +361,6 @@ IC u32 GetIndexCount(D3DPRIMITIVETYPE T, u32 iPrimitiveCount)
 	}
 }
 
-IC void CBackend::ApplyPrimitieTopology( D3D_PRIMITIVE_TOPOLOGY Topology )
-{
-	if ( m_PrimitiveTopology != Topology )
-	{
-		m_PrimitiveTopology = Topology;
-		HW.pContext->IASetPrimitiveTopology(m_PrimitiveTopology);
-	}
-}
-
 #ifdef USE_DX11
 IC void CBackend::Compute(UINT ThreadGroupCountX, UINT ThreadGroupCountY, UINT ThreadGroupCountZ)
 {
@@ -288,6 +384,7 @@ IC void CBackend::Render(D3DPRIMITIVETYPE T, u32 baseV, u32 startV, u32 countV, 
 	u32	iIndexCount = GetIndexCount(T, PC);
 
 	//!!! HACK !!!
+	/*
 #ifdef USE_DX11
 	if (hs != 0 || ds != 0)
 	{
@@ -295,6 +392,7 @@ IC void CBackend::Render(D3DPRIMITIVETYPE T, u32 baseV, u32 startV, u32 countV, 
 		Topology = D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST;
 	}
 #endif
+    */
 
 	stat.calls++;
 	stat.verts += countV;
@@ -315,7 +413,7 @@ IC void CBackend::Render(D3DPRIMITIVETYPE T, u32 baseV, u32 startV, u32 countV, 
 	//INT BaseVertexLocation
 	SRVSManager.Apply();
 	ApplyRTandZB();
-	ApplyVertexLayout();
+//	ApplyVertexLayout();
 	StateManager.Apply();
 	//	State manager may alter constants
 	constants.flush();
@@ -346,7 +444,7 @@ IC void CBackend::Render(D3DPRIMITIVETYPE T, u32 startV, u32 PC)
 	ApplyPrimitieTopology(Topology);
 	SRVSManager.Apply();
 	ApplyRTandZB();
-	ApplyVertexLayout();
+//	ApplyVertexLayout();
 	StateManager.Apply();
 	//	State manager may alter constants
 	constants.flush();
@@ -360,10 +458,11 @@ IC void CBackend::Render(D3DPRIMITIVETYPE T, u32 startV, u32 PC)
 
 IC void CBackend::set_Geometry(SGeometry* _geom)
 {
-	set_Format			(&*_geom->dcl);
-	
-	set_Vertices		(_geom->vb, _geom->vb_stride);
-	set_Indices			(_geom->ib);
+	if (decl != _geom->dcl)
+		decl = &*_geom->dcl;
+
+	set_Vertices(_geom->vb, _geom->vb_stride);
+	set_Indices(_geom->ib);
 }
 
 IC void	CBackend::set_Scissor(Irect*	R)
@@ -446,61 +545,13 @@ ICF void CBackend::set_CullMode(u32 _mode)
 	//if (cull_mode		!= _mode)		{ cull_mode = _mode;			CHK_DX(HW.pDevice->SetRenderState	( D3DRS_CULLMODE,			_mode				)); }
 }
 
-IC void CBackend::ApplyVertexLayout()
-{
-	VERIFY(vs);
-	VERIFY(decl);
-	VERIFY(m_pInputSignature);
-
-	auto it = decl->vs_to_layout.find(m_pInputSignature);
-
-	if (it==decl->vs_to_layout.end())
-	{
-		ID3DInputLayout* pLayout{};
-
-		HW.pDevice->CreateInputLayout(
-			&decl->dx10_dcl_code[0],
-			decl->dx10_dcl_code.size()-1,
-			m_pInputSignature->GetBufferPointer(),
-			m_pInputSignature->GetBufferSize(),
-			&pLayout
-			);
-
-		//For SoC this normal. 
-#if DEBUG
-		if (!pLayout)
-		{
-			Msg("! Broken shader vertex layout");
-			Msg("! VS Name: [%s]", vs_name);
-			Msg("! Semantic name: [%s]", decl->dx10_dcl_code[0].SemanticName);
-			Msg("! Semantic index: [%x]", decl->dx10_dcl_code[0].SemanticIndex);
-			Msg("! Format: [%x]", decl->dx10_dcl_code[0].Format);
-			Msg("! InputSlot [%x]", decl->dx10_dcl_code[0].InputSlot);
-
-			Msg("!! [%s]: Failed CreateInputLayout!!! Check log for detail info.", __FUNCTION__);
-		}
-#endif
-
-		it = decl->vs_to_layout.insert(
-			std::pair<ID3DBlob*, ID3DInputLayout*>(m_pInputSignature, pLayout)).first;
-	}
-
-	if ( m_pInputLayout != it->second)
-	{
-		m_pInputLayout = it->second;
-		HW.pContext->IASetInputLayout(m_pInputLayout);
-	}	
-}
-
 ICF void CBackend::set_VS(ref_vs& _vs)
 {
-	m_pInputSignature = _vs->signature->signature;
 	set_VS(_vs->vs,_vs->cName.c_str());
 }
 
 ICF void CBackend::set_VS(SVS* _vs)
 {
-	m_pInputSignature = _vs->signature->signature;
 	set_VS(_vs->vs,_vs->cName.c_str());
 }
 
@@ -775,5 +826,105 @@ IC	void CBackend::get_ConstantDirect(shared_str& n, u32 DataSize, void** pVData,
 		if (pPData)	*pPData = 0;
 	}
 }
+
+/*
+IC CTexture* CBackend::get_ActiveTexture(u32 dwStage)
+{
+	auto it = T->begin();
+	auto it_e = T->end();
+
+	for (; it != it_e; ++it)
+	{
+		std::pair<u32, ref_texture>& loader = *it;
+		u32	load_id = loader.first;
+		CTexture* load_surf = &*loader.second;
+
+		if (load_id == dwStage)
+			return load_surf;
+	}
+
+	return nullptr;
+}
+*/
+
+inline void CBackend::processPixelResourceClear(int lastPS_ID)
+{
+	if (lastPS_ID >= 16)
+		return;
+
+	if (!textures_ps[lastPS_ID])
+		return;
+
+	textures_ps[lastPS_ID] = nullptr;
+
+	SRVSManager.SetPSResource(lastPS_ID, nullptr);
+}
+
+inline void CBackend::processVertexResourceClear(int lastVS_ID)
+{
+	if (lastVS_ID >= 4)
+		return;
+
+	if (!textures_vs[lastVS_ID])
+		return;
+
+	textures_vs[lastVS_ID] = nullptr;
+
+	SRVSManager.SetVSResource(lastVS_ID, nullptr);
+}
+
+inline void CBackend::processGeometryResourceClear(int lastGS_ID)
+{
+	if (lastGS_ID >= 16)
+		return;
+
+	if (!textures_gs[lastGS_ID])
+		return;
+
+	textures_gs[lastGS_ID] = nullptr;
+
+	SRVSManager.SetGSResource(lastGS_ID, nullptr);
+}
+
+#ifdef USE_DX11
+inline void CBackend::processHullResourceClear(int lastHS_ID)
+{
+	if (lastHS_ID >= 16)
+		return;
+
+	if (!textures_hs[lastHS_ID])
+		return;
+
+	textures_hs[lastHS_ID] = nullptr;
+
+	SRVSManager.SetHSResource(lastHS_ID, nullptr);
+}
+
+inline void CBackend::processDomainResourceClear(int lastHS_ID)
+{
+	if (lastHS_ID >= 16)
+		return;
+
+	if (!textures_ds[lastHS_ID])
+		return;
+
+	textures_ds[lastHS_ID] = nullptr;
+
+	SRVSManager.SetDSResource(lastHS_ID, nullptr);
+}
+
+inline void CBackend::processComputeResourceClear(int lastCS_ID)
+{
+	if (lastCS_ID >= 16)
+		return;
+
+	if (!textures_cs[lastCS_ID])
+		return;
+
+	textures_cs[lastCS_ID] = nullptr;
+
+	SRVSManager.SetCSResource(lastCS_ID, nullptr);
+}
+#endif
 
 #endif	//	dx10R_Backend_Runtime_included

@@ -200,16 +200,53 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 		rm_geom.create		(vFormat,p_rm_Vertices,p_rm_Indices);
 }
 
-void Fvisual::Render		(float )
+void Fvisual::RenderModelVisual(R_dsgraph::_MatrixItemS* matrixItem, float, ShaderElement* shaderElement, u32 pass, ID3DBlob* signature)
 {
 #if (RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4)
 	if (m_fast && RImplementation.phase==CRender::PHASE_SMAP &&
 		!shader->E[2]._get()->flags.bAlphaRef && !RCache.is_TessEnabled())
 	{
+
+		//SOME UGLY HACK!!!
+		if (!matrixItem)
+		{
+			if (shaderElement)
+				RCache.set_Element(shaderElement, pass, &*m_fast->rm_geom);
+#if defined(USE_DX10) || defined(USE_DX11)
+			else
+				RCache.setInputLayout(&*m_fast->rm_geom->dcl, signature);
+#endif
+		}
+		else
+		{
+			RCache.set_Element(matrixItem->se, 0, &*m_fast->rm_geom);
+			RCache.set_xform_world(matrixItem->Matrix);
+			RImplementation.apply_object(matrixItem->pObject);
+			RImplementation.apply_lmaterial();
+		}
+
 		RCache.set_Geometry		(m_fast->rm_geom);
 		RCache.Render			(D3DPT_TRIANGLELIST,m_fast->vBase,0,m_fast->vCount,m_fast->iBase,m_fast->dwPrimitives);
 		RCache.stat.r.s_static.add	(m_fast->vCount);
 	} else {
+		//SOME UGLY HACK!!!
+		if (!matrixItem)
+		{
+			if (shaderElement)
+				RCache.set_Element(shaderElement, pass, &*rm_geom);
+#if defined(USE_DX10) || defined(USE_DX11)
+			else
+				RCache.setInputLayout(&*rm_geom->dcl, signature);
+#endif
+		}
+		else
+		{
+			RCache.set_Element(matrixItem->se, 0, &*rm_geom);
+			RCache.set_xform_world(matrixItem->Matrix);
+			RImplementation.apply_object(matrixItem->pObject);
+			RImplementation.apply_lmaterial();
+		}
+
 		RCache.set_Geometry		(rm_geom);
 		RCache.Render			(D3DPT_TRIANGLELIST,vBase,0,vCount,iBase,dwPrimitives);
 		RCache.stat.r.s_static.add	(vCount);

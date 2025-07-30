@@ -10,6 +10,7 @@ public:
 	void	ResetDeviceState();
 
 	void	Apply();
+	void ClearViews();
 
 	void	SetPSResource( u32 uiSlot, ID3DShaderResourceView	*pRes );
 	void	SetGSResource( u32 uiSlot, ID3DShaderResourceView	*pRes );

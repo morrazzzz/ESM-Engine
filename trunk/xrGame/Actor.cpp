@@ -1228,8 +1228,7 @@ void CActor::RenderIndicator			(Fvector dpos, float r1, float r2, const ui_shade
 
 	UIRender->CacheSetXformWorld(Fidentity);
 
-	UIRender->SetShader(*IndShader);
-	UIRender->FlushPrimitive();
+	UIRender->FlushPrimitive(*IndShader);
 };
 
 static float mid_size = 0.097f;

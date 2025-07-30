@@ -78,7 +78,7 @@ void dx103DFluidEmitters::RenderVelocity(const dx103DFluidData &FluidData)
 void dx103DFluidEmitters::ApplyDensity( const CEmitter &Emitter)
 {
 	// Draw gaussian ball of color
-	RCache.set_Element(m_EmitterTechnique[ET_SimpleGausian]);
+	RCache.set_Element(m_EmitterTechnique[ET_SimpleGausian], 0, m_pGrid->getGeomSlices());
 
 	float t = Device.fTimeGlobal;
 
@@ -126,7 +126,7 @@ static float lilrand()
 void dx103DFluidEmitters::ApplyVelocity( const CEmitter &Emitter)
 {
 	// Draw gaussian ball of velocity
-	RCache.set_Element(m_EmitterTechnique[ET_SimpleGausian]);
+	RCache.set_Element(m_EmitterTechnique[ET_SimpleGausian], 0, m_pGrid->getGeomSlices());
 
 	float fRadius = Emitter.m_fRadius;
 	Fvector FlowVelocity = Emitter.m_vFlowVelocity;

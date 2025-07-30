@@ -60,10 +60,7 @@ void CUIStaticItem::Init(LPCSTR tex, LPCSTR sh, float left, float top, u32 align
 void CUIStaticItem::Render()
 {
 	VERIFY(g_bRendering);
-	// установить обязательно перед вызовом CustomItem::Render() !!!
-	UIRender->SetShader(*hShader);
-	if(alpha_ref!=-1)
-		UIRender->SetAlphaRef(alpha_ref);
+	// установить обязательно перед вызовом CustomItem::Render() !!!;
 	// convert&set pos
 	Fvector2		bp;
 	UI().ClientToScreenScaled	(bp,float(iPos.x),float(iPos.y));
@@ -80,6 +77,11 @@ void CUIStaticItem::Render()
 	if (!(tile_x&&tile_y))		return;
 	// render
 	UIRender->StartPrimitive(8 * tile_x * tile_y, IUIRender::ptTriList, IUIRender::ePointType::pttTL);
+	UIRender->SetShader(*hShader);
+
+	if (alpha_ref != -1)
+		UIRender->SetAlphaRef(alpha_ref);
+
 	for (int x = 0; x < tile_x; ++x) 
 	{
 		for (int y = 0; y<tile_y; ++y){
@@ -103,11 +105,6 @@ void CUIStaticItem::Render()
 void CUIStaticItem::Render(float angle)
 {
 	VERIFY						(g_bRendering);
-	// установить обязательно перед вызовом CustomItem::Render() !!!
-	UIRender->SetShader(*hShader);
-
-	if(alpha_ref!=-1)
-		UIRender->SetAlphaRef(alpha_ref);
 	// convert&set pos
 	Fvector2		bp_ns;
 	bp_ns.set		(iPos);
@@ -115,6 +112,13 @@ void CUIStaticItem::Render(float angle)
 
 	// actual rendering
 	UIRender->StartPrimitive(32, IUIRender::ptTriList, IUIRender::ePointType::pttTL);
+
+	// установить обязательно перед вызовом CustomItem::Render() !!!
+	UIRender->SetShader(*hShader);
+
+	if (alpha_ref != -1)
+		UIRender->SetAlphaRef(alpha_ref);
+
 	inherited::Render(bp_ns, dwColor, angle);
 
 	UIRender->FlushPrimitive();

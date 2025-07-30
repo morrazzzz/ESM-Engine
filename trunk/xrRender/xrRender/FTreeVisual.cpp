@@ -112,7 +112,7 @@ struct	FTreeVisual_setup
 	}
 };
 
-void FTreeVisual::Render	(float LOD)
+void FTreeVisual::RenderModelVisual(R_dsgraph::_MatrixItemS* matrixItem, float LOD, ShaderElement* shaderElement, u32 pass, ID3DBlob* signature)
 {
 	static FTreeVisual_setup	tvs;
 	if (tvs.dwFrame!=Device.dwFrame)	tvs.calculate();
@@ -181,9 +181,27 @@ void FTreeVisual_ST::Load		(const char* N, IReader *data, u32 dwFlags)
 {
 	inherited::Load				(N,data,dwFlags);
 }
-void FTreeVisual_ST::Render		(float LOD)
+void FTreeVisual_ST::RenderModelVisual(R_dsgraph::_MatrixItemS* matrixItem, float LOD, ShaderElement* shaderElement, u32 pass, ID3DBlob* signature)
 {
-	inherited::Render			(LOD);
+	//SOME UGLY HACK!!!
+	if (!matrixItem)
+	{
+		if (shaderElement)
+			RCache.set_Element(shaderElement, pass, &*rm_geom);
+#if defined(USE_DX10) || defined(USE_DX11)
+		else
+			RCache.setInputLayout(&*rm_geom->dcl, signature);
+#endif
+	}
+	else
+	{
+		RCache.set_Element(matrixItem->se, 0, &*rm_geom);
+		RCache.set_xform_world(matrixItem->Matrix);
+		RImplementation.apply_object(matrixItem->pObject);
+		RImplementation.apply_lmaterial();
+	}
+
+	inherited::RenderModelVisual(matrixItem, LOD, shaderElement, pass, signature);
 	RCache.set_Geometry			(rm_geom);
 	RCache.Render				(D3DPT_TRIANGLELIST,vBase,0,vCount,iBase,dwPrimitives);
 	RCache.stat.r.s_flora.add	(vCount);
@@ -217,9 +235,27 @@ void FTreeVisual_PM::Load		(const char* N, IReader *data, u32 dwFlags)
 		pSWI					= RImplementation.getSWI	(ID);
 	}
 }
-void FTreeVisual_PM::Render		(float LOD)
+void FTreeVisual_PM::RenderModelVisual(R_dsgraph::_MatrixItemS* matrixItem, float LOD, ShaderElement* shaderElement, u32 pass, ID3DBlob* signature)
 {
-	inherited::Render			(LOD);
+	//SOME UGLY HACK!!!
+	if (!matrixItem)
+	{
+		if (shaderElement)
+			RCache.set_Element(shaderElement, pass, &*rm_geom);
+#if defined(USE_DX10) || defined(USE_DX11)
+		else
+			RCache.setInputLayout(&*rm_geom->dcl, signature);
+#endif
+	}
+	else
+	{
+		RCache.set_Element(matrixItem->se, 0, &*rm_geom);
+		RCache.set_xform_world(matrixItem->Matrix);
+		RImplementation.apply_object(matrixItem->pObject);
+		RImplementation.apply_lmaterial();
+	}
+
+	inherited::RenderModelVisual(matrixItem, LOD, shaderElement, pass, signature);
 	int lod_id					= last_lod;
 	if (LOD>=0.f) {
 		lod_id					= iFloor((1.f-LOD)*float(pSWI->count-1)+0.5f);

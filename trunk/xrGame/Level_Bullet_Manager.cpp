@@ -386,8 +386,7 @@ void CBulletManager::Render	()
 
 	UIRender->CacheSetCullMode(IUIRender::cmNONE);
 	UIRender->CacheSetXformWorld(Fidentity);
-	UIRender->SetShader(*tracers.sh_Tracer);
-	UIRender->FlushPrimitive();
+	UIRender->FlushPrimitive(*tracers.sh_Tracer);
 	UIRender->CacheSetCullMode(IUIRender::cmCCW);
 }
 

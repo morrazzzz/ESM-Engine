@@ -108,7 +108,7 @@ void dxLensFlareRender::Render(CLensFlare &owner, BOOL bSun, BOOL bFlares, BOOL 
 		if (_2render[i])
 		{
 			u32						vBase	= i*4+VS_Offset;
-			RCache.set_Shader		(_2render[i]);
+			RCache.set_Shader		(_2render[i], 0, &*hGeom);
 			RCache.Render			(D3DPT_TRIANGLELIST,vBase, 0,4,0,2);
 		}
 	}

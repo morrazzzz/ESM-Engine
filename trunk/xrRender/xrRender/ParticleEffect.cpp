@@ -278,7 +278,7 @@ IC void FillSprite	(FVF::LIT*& pv, const Fvector& pos, const Fvector& dir, const
 }
 
 extern ENGINE_API float		psHUD_FOV;
-void CParticleEffect::Render(float )
+void CParticleEffect::RenderModelVisual(R_dsgraph::_MatrixItemS* matrixItem, float LOD, ShaderElement* shaderElement, u32 pass, ID3DBlob* signature)
 {
 	u32			dwOffset,dwCount;
 	// Get a pointer to the particles in gp memory
@@ -359,6 +359,24 @@ void CParticleEffect::Render(float )
 			RCache.Vertex.Unlock(dwCount,geom->vb_stride);
 			if (dwCount)    
 			{
+				//SOME UGLY HACK!!!
+				if (!matrixItem)
+				{
+					if (shaderElement)
+						RCache.set_Element(shaderElement, pass, &*geom);
+#if defined(USE_DX10) || defined(USE_DX11)
+					else
+						RCache.setInputLayout(&*geom->dcl, signature);
+#endif
+				}
+				else
+				{
+					RCache.set_Element(matrixItem->se, 0, &*geom);
+					RCache.set_xform_world(matrixItem->Matrix);
+					RImplementation.apply_object(matrixItem->pObject);
+					RImplementation.apply_lmaterial();
+				}
+
 #ifndef _EDITOR
 				Fmatrix Pold						= Device.mProject;
 				Fmatrix FTold						= Device.mFullTransform;

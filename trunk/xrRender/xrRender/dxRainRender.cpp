@@ -171,8 +171,8 @@ void dxRainRender::Render(CEffect_Rain &owner)
 		//HW.pDevice->SetRenderState	(D3DRS_CULLMODE,D3DCULL_NONE);
 		RCache.set_CullMode(CULL_NONE);
 		RCache.set_xform_world		(Fidentity);
-		RCache.set_Shader			(SH_Rain);
-		RCache.set_Geometry			(hGeom_Rain);
+		RCache.set_Shader(SH_Rain, 0, &*hGeom_Rain);
+		RCache.set_Geometry(hGeom_Rain);
 		RCache.Render				(D3DPT_TRIANGLELIST,vOffset,0,vCount,0,vCount/2);
 		//HW.pDevice->SetRenderState	(D3DRS_CULLMODE,D3DCULL_CCW);
 		RCache.set_CullMode(CULL_CCW);
@@ -185,7 +185,7 @@ void dxRainRender::Render(CEffect_Rain &owner)
 	{
 		float	dt				= Device.fTimeDelta;
 		_IndexStream& _IS		= RCache.Index;
-		RCache.set_Shader		(DM_Drop->shader);
+		RCache.set_Shader(DM_Drop->shader, 0, &*hGeom_Drops);
 
 		Fmatrix					mXform,mScale;
 		int						pcount  = 0;

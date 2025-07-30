@@ -22,7 +22,17 @@ void dxUIRender::SetShader(IUIShader &shader)
 	dxUIShader *pShader = (dxUIShader*) &shader;
 	VERIFY(&pShader);
 	VERIFY(pShader->hShader);
-	RCache.set_Shader(pShader->hShader);
+	//RCache.set_Shader(pShader->hShader);
+
+	switch (m_PointType)
+	{
+	case pttTL:
+		RCache.set_Shader(pShader->hShader, 0, &*hGeom_TL);
+		break;
+	case pttLIT:
+		RCache.set_Shader(pShader->hShader, 0, &*hGeom_LIT);
+		break;
+	}
 }
 
 void dxUIRender::SetAlphaRef(int aref)
@@ -205,7 +215,9 @@ void dxUIRender::StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePointTy
 
 	m_iMaxVerts = iMaxVerts;
 	PrimitiveType = primType;
-	m_PointType = pointType;
+
+	if (m_PointType != pointType)
+		m_PointType = pointType;
 
 	switch(m_PointType)
 	{
@@ -218,6 +230,12 @@ void dxUIRender::StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePointTy
 		TL_pv			= TL_start_pv;
 		break;
 	}
+}
+
+void dxUIRender::FlushPrimitive(IUIShader& shader)
+{
+	SetShader(shader);
+	FlushPrimitive();
 }
 
 void dxUIRender::FlushPrimitive()

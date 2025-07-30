@@ -17,7 +17,8 @@ protected:
 	_5color						c_bias;
 	Fmatrix						xform;
 public:
-	virtual void Render			(float LOD		);									// LOD - Level Of Detail  [0.0f - min, 1.0f - max], Ignored
+	void RenderModelVisual(R_dsgraph::_MatrixItemS* matrixItem, float LOD, ShaderElement* shaderElement = nullptr,
+		u32 pass = 0, ID3DBlob* signature = nullptr /*ugly hack!!! delete this!!!!*/) override;	// LOD - Level Of Detail  [0.0f - min, 1.0f - max], Ignored ?
 	virtual void Load			(LPCSTR N, IReader *data, u32 dwFlags);
 	virtual void Copy			(dxRender_Visual *pFrom	);
 	virtual void Release		();
@@ -33,7 +34,8 @@ public:
 					FTreeVisual_ST	(void);
 	virtual			~FTreeVisual_ST	(void);
 
-	virtual void	Render			(float LOD		);									// LOD - Level Of Detail  [0.0f - min, 1.0f - max], Ignored
+	void RenderModelVisual(R_dsgraph::_MatrixItemS* matrixItem, float LOD, ShaderElement* shaderElement = nullptr,
+		u32 pass = 0, ID3DBlob* signature = nullptr /*ugly hack!!! delete this!!!!*/) override;	// LOD - Level Of Detail  [0.0f - min, 1.0f - max], Ignored ?
 	virtual void	Load			(LPCSTR N, IReader *data, u32 dwFlags);
 	virtual void	Copy			(dxRender_Visual *pFrom	);
 	virtual void	Release			();
@@ -52,7 +54,8 @@ public:
 					FTreeVisual_PM	(void);
 	virtual			~FTreeVisual_PM	(void);
 
-	virtual void	Render			(float LOD		);									// LOD - Level Of Detail  [0.0f - min, 1.0f - max], Ignored
+	void RenderModelVisual(R_dsgraph::_MatrixItemS* matrixItem, float LOD, ShaderElement* shaderElement = nullptr,
+		u32 pass = 0, ID3DBlob* signature = nullptr /*ugly hack!!! delete this!!!!*/) override;	// LOD - Level Of Detail  [0.0f - min, 1.0f - max], Ignored ?
 	virtual void	Load			(LPCSTR N, IReader *data, u32 dwFlags);
 	virtual void	Copy			(dxRender_Visual *pFrom	);
 	virtual void	Release			();

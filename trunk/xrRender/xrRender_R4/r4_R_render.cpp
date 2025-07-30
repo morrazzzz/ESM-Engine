@@ -167,8 +167,8 @@ void CRender::render_menu	()
 
 	// Actual Display
 	Target->u_setrt					( Device.dwWidth,Device.dwHeight,HW.pBaseRT,NULL,NULL,HW.pBaseZB);
-	RCache.set_Shader				( Target->s_menu	);
-	RCache.set_Geometry				( Target->g_menu	);
+	RCache.set_Shader(Target->s_menu, 0, &*Target->g_menu);
+	RCache.set_Geometry(Target->g_menu);
 
 	Fvector2						p0,p1;
 	u32								Offset;

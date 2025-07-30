@@ -143,7 +143,7 @@ void	CRenderTarget::phase_scene_end		()
 	RCache.Vertex.Unlock		(4,g_combine->vb_stride);
 
 	// if (stencil>=1 && aref_pass)	stencil = light_id
-	RCache.set_Element			(s_accum_mask->E[SE_MASK_ALBEDO]);		// masker
+	RCache.set_Element			(s_accum_mask->E[SE_MASK_ALBEDO], 0, &*g_combine);		// masker
 	RCache.set_Geometry			(g_combine);
 	RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
 }

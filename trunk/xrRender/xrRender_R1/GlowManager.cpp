@@ -305,7 +305,7 @@ void CGlowManager::render_selected()
 		int vCount				= int(pv-pvs);
 		RCache.Vertex.Unlock	(vCount,hGeom->vb_stride);
 		if (vCount) {
-			RCache.set_Shader		(T);
+			RCache.set_Shader		(T, 0, &*hGeom);
 			RCache.set_Geometry		(hGeom);
 			RCache.Render			(D3DPT_TRIANGLELIST,vOffset,0,vCount,0,vCount/2);
 		}

@@ -44,7 +44,8 @@ private:
 public:
 							CSkeletonX_ST	()	{}
 	virtual					~CSkeletonX_ST	()	{}
-	virtual void			Render			(float LOD);
+	void RenderModelVisual(R_dsgraph::_MatrixItemS* matrixItem, float LOD, ShaderElement* shaderElement = nullptr,
+		u32 pass = 0, ID3DBlob * signature = nullptr /*ugly hack!!! delete this!!!!*/) override;
 	virtual void			Load			(const char* N, IReader *data, u32 dwFlags);
 	virtual void			Copy			(dxRender_Visual *pFrom);
 	virtual void			Release			();
@@ -65,7 +66,8 @@ private:
 public:
 							CSkeletonX_PM	()	{}
 	virtual					~CSkeletonX_PM	()	{}
-	virtual void			Render			(float LOD);
+	void RenderModelVisual(R_dsgraph::_MatrixItemS* matrixItem, float LOD, ShaderElement* shaderElement = nullptr,
+		u32 pass = 0, ID3DBlob* signature = nullptr /*ugly hack!!! delete this!!!!*/) override;
 	virtual void			Load			(const char* N, IReader *data, u32 dwFlags);
 	virtual void			Copy			(dxRender_Visual *pFrom);
 	virtual void			Release			();

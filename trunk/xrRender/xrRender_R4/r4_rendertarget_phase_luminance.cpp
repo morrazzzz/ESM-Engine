@@ -52,9 +52,9 @@ void	CRenderTarget::phase_luminance()
 		pv->p.set	(eps,			eps,			eps,1.f);	pv->uv0.set	(a_0.x,a_0.y);	pv->uv1.set	(a_1.x,a_1.y);	pv->uv2.set	(a_2.x,a_2.y);	pv->uv3.set	(a_3.x,a_3.y);	pv++;
 		pv->p.set	(float(ts+eps), float(ts+eps),	eps,1.f);	pv->uv0.set	(b_0.x,b_0.y);	pv->uv1.set	(b_1.x,b_1.y);	pv->uv2.set	(b_2.x,b_2.y);	pv->uv3.set	(b_3.x,b_3.y);	pv++;
 		pv->p.set	(float(ts+eps), eps,			eps,1.f);	pv->uv0.set	(b_0.x,a_0.y);	pv->uv1.set	(b_1.x,a_1.y);	pv->uv2.set	(b_2.x,a_2.y);	pv->uv3.set	(b_3.x,a_3.y);	pv++;
-		RCache.Vertex.Unlock		(4,g_bloom_build->vb_stride);
-		RCache.set_Element			(s_luminance->E[0]);
-		RCache.set_Geometry			(g_bloom_build		);
+		RCache.Vertex.Unlock(4,g_bloom_build->vb_stride);
+		RCache.set_Shader(s_luminance, 0, &*g_bloom_build);
+		RCache.set_Geometry(g_bloom_build);
 		RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
 	}
 
@@ -84,7 +84,7 @@ void	CRenderTarget::phase_luminance()
 		pv->p.set	(float(_ts+eps),eps,			eps,1.f);	for (int t=0; t<8; t++)	pv->uv[t].set(b[t].x,a[t].y, a[t+8].y,b[t+8].x);	// xy/yx	- right+up
 		pv++;
 		RCache.Vertex.Unlock		(4,g_bloom_filter->vb_stride);
-		RCache.set_Element			(s_luminance->E[1]	);
+		RCache.set_Element			(s_luminance->E[1], 0, &*g_bloom_filter);
 		RCache.set_Geometry			(g_bloom_filter		);
 		RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
 	}
@@ -124,8 +124,8 @@ void	CRenderTarget::phase_luminance()
 				_full.set			(ps_r2_tonemap_middlegray,	1.f,	ps_r2_tonemap_low_lum	);
 				_result.lerp		(_none, _full, amount	);
 
-		RCache.set_Element			(s_luminance->E[2]		);
-		RCache.set_Geometry			(g_bloom_filter			);
+		RCache.set_Element(s_luminance->E[2]);
+		RCache.set_Geometry(g_bloom_filter);
 		RCache.set_c("MiddleGray",	_result.x,_result.y,_result.z,f_luminance_adapt	);
 		RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
 	}

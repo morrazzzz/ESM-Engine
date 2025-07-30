@@ -2,6 +2,7 @@
 
 #include "../../xr_3da/vis_common.h"
 #include "../../Include/xrRender/RenderVisual.h"
+#include "r__dsgraph_types.h"
 
 #define VLOAD_NOVERTICES		(1<<0)
 
@@ -45,7 +46,8 @@ public:
 	vis_data					vis			;				// visibility-data
 	ref_shader					shader		;				// pipe state, shared
 
-	virtual void				Render						(float LOD)		{};		// LOD - Level Of Detail  [0..1], Ignored
+	virtual void RenderModelVisual(R_dsgraph::_MatrixItemS* matrixItem, float LOD, ShaderElement* shaderElement = nullptr,
+		u32 pass = 0, ID3DBlob * signature = nullptr /*ugly hack!!! delete this!!!!*/) {}		// LOD - Level Of Detail  [0..1], Ignored
 	virtual void				Load						(const char* N, IReader *data, u32 dwFlags);
 	virtual void				Release						();						// Shared memory release
 	virtual void				Copy						(dxRender_Visual* from);

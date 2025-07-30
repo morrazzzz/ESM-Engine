@@ -125,7 +125,7 @@ void	CRenderTarget::u_stencil_optimize	(eStencilOptimizeMode eSOM)
 	pv->set						(_w-_dw,	_h-_dh,		eps,	1.f, C, 0, 0);	pv++;
 	pv->set						(_w-_dw,	-_dh,		eps,	1.f, C, 0, 0);	pv++;
 	RCache.Vertex.Unlock		(4,g_combine->vb_stride);
-	RCache.set_Element			(s_occq->E[1]	);
+	RCache.set_Element			(s_occq->E[1], 0, &*g_combine);
 
 	switch(eSOM)
 	{
@@ -1068,7 +1068,7 @@ void CRenderTarget::reset_light_marker( bool bResetStencil)
 		pv->set						(_w-_dw,	_h-_dh,		eps,	1.f, C, 0, 0);	pv++;
 		pv->set						(_w-_dw,	-_dh,		eps,	1.f, C, 0, 0);	pv++;
 		RCache.Vertex.Unlock		(4,g_combine->vb_stride);
-		RCache.set_Element			(s_occq->E[2]	);
+		RCache.set_Element			(s_occq->E[2], 0, &*g_combine);
 		RCache.set_Geometry			(g_combine		);
 		RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
 	}

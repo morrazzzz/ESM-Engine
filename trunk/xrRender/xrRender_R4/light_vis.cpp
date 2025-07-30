@@ -60,8 +60,9 @@ void	light::vis_prepare			()
 		RCache.set_Stencil			(FALSE);
 	else
 		RCache.set_Stencil			(TRUE,D3DCMP_LESSEQUAL,0x01,0xff,0x00);
-	RImplementation.Target->draw_volume				(this);
-	RImplementation.occq_end						(vis.query_id);
+
+	RImplementation.Target->draw_volume(&*RImplementation.Target->s_occq->E[0], this);
+	RImplementation.occq_end(vis.query_id);
 }
 
 void	light::vis_update			()

@@ -65,20 +65,16 @@ void CBackend::Invalidate	()
 	pRT[2]						= NULL;
 	pRT[3]						= NULL;
 	pZB							= NULL;
+	state = NULL;
 
+#if !defined(USE_DX10) && !defined(USE_DX11)
 	decl						= NULL;
 	vb							= NULL;
 	ib							= NULL;
 	vb_stride					= 0;
 
-	state						= NULL;
 	ps							= NULL;
 	vs							= NULL;
-DX10_ONLY(gs					= NULL);
-#ifdef USE_DX11
-	hs = 0;
-	ds = 0;
-	cs = 0;
 #endif
 	ctable						= NULL;
 
@@ -105,10 +101,7 @@ DX10_ONLY(gs					= NULL);
 	xforms.unmap	();
 
 #if defined(USE_DX10) || defined(USE_DX11)
-	m_pInputLayout				= NULL;
-	m_PrimitiveTopology			= D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
 	m_bChangedRTorZB			= false;
-	m_pInputSignature			= NULL;
 	for (int i=0; i<MaxCBuffers; ++i)
 	{
 		m_aPixelConstants[i] = 0;
@@ -361,7 +354,37 @@ void CBackend::set_Textures			(STextureList* _T)
 #endif	//	UDE_DX10
 	}
 
+#ifdef USE_DX11
+	++_last_ps;
+	++_last_vs;
+	++_last_gs;
+	++_last_hs;
+	++_last_ds;
+	++_last_cs;
 
+	while (true)
+	{
+		processPixelResourceClear(_last_ps);
+		processVertexResourceClear(_last_vs);
+		processGeometryResourceClear(_last_gs);
+		processHullResourceClear(_last_hs);
+		processDomainResourceClear(_last_ds);
+		processComputeResourceClear(_last_cs);
+
+		bool needBreak = _last_ps >= 16 && _last_vs >= 4 && _last_gs >= 16
+			&& _last_hs >= 16 && _last_ds >= 16 && _last_cs >= 16;
+
+		if (needBreak)
+			break;
+
+		_last_ps++;
+		_last_vs++;
+		_last_gs++;
+		_last_hs++;
+		_last_ds++;
+		_last_cs++;
+	}
+#else
 	// clear remaining stages (PS)
 	for (++_last_ps; _last_ps<mtMaxPixelShaderTextures; _last_ps++)
 	{
@@ -394,57 +417,7 @@ void CBackend::set_Textures			(STextureList* _T)
 		CHK_DX							(HW.pDevice->SetTexture(_last_vs+CTexture::rstVertex,NULL));
 #endif	//	USE_DX10
 	}
-
-#if defined(USE_DX10) || defined(USE_DX11)
-	// clear remaining stages (VS)
-	for (++_last_gs; _last_gs<mtMaxGeometryShaderTextures; _last_gs++)
-	{
-		if (!textures_gs[_last_gs])
-			continue;
-
-		textures_gs[_last_gs]			= 0;
-
-		//	TODO: DX10: Optimise: set all resources at once
-		ID3DShaderResourceView	*pRes = 0;
-		//HW.pDevice->GSSetShaderResources(_last_gs, 1, &pRes);
-		SRVSManager.SetGSResource(_last_gs, pRes);
-	}
-#ifdef USE_DX11
-	for (++_last_hs; _last_hs<mtMaxHullShaderTextures; _last_hs++)
-	{
-		if (!textures_hs[_last_hs])
-			continue;
-
-		textures_hs[_last_hs]			= 0;
-
-		//	TODO: DX10: Optimise: set all resources at once
-		ID3DShaderResourceView	*pRes = 0;
-		SRVSManager.SetHSResource(_last_hs, pRes);
-	}
-	for (++_last_ds; _last_ds<mtMaxDomainShaderTextures; _last_ds++)
-	{
-		if (!textures_ds[_last_ds])
-			continue;
-
-		textures_ds[_last_ds]			= 0;
-
-		//	TODO: DX10: Optimise: set all resources at once
-		ID3DShaderResourceView	*pRes = 0;
-		SRVSManager.SetDSResource(_last_ds, pRes);
-	}
-	for (++_last_cs; _last_cs<mtMaxComputeShaderTextures; _last_cs++)
-	{
-		if (!textures_cs[_last_cs])
-			continue;
-
-		textures_cs[_last_cs]			= 0;
-
-		//	TODO: DX10: Optimise: set all resources at once
-		ID3DShaderResourceView	*pRes = 0;
-		SRVSManager.SetCSResource(_last_cs, pRes);
-	}
 #endif
-#endif	//	USE_DX10
 }
 #else
 

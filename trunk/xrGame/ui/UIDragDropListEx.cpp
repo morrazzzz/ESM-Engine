@@ -727,8 +727,7 @@ void CUICellContainer::Draw()
 
 	UI().PushScissor					(clientArea);
 
-	UIRender->SetShader(*hShader);
-	UIRender->FlushPrimitive();
+	UIRender->FlushPrimitive(*hShader);
 
 	//draw shown items in range
 	if( GetCellsInRange(tgt_cells,m_cells_to_draw) ){

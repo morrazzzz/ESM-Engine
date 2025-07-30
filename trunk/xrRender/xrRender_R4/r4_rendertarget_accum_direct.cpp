@@ -81,7 +81,7 @@ void CRenderTarget::accum_direct_cascade(const light& sun_light, u32 sub_phase, 
 		float	intensity = 0.3f * sun_light.color.r + 0.48f * sun_light.color.g + 0.22f * sun_light.color.b;
 		Fvector	dir = L_dir;
 		dir.normalize().mul(-_sqrt(intensity + EPS));
-		RCache.set_Element(s_accum_mask->E[SE_MASK_DIRECT]);		// masker
+		RCache.set_Element(s_accum_mask->E[SE_MASK_DIRECT], 0, &*g_combine);		// masker
 		RCache.set_c("Ldynamic_dir", dir.x, dir.y, dir.z, 0);
 
 		// if (stencil>=1 && aref_pass)	stencil = light_id
@@ -101,7 +101,7 @@ void CRenderTarget::accum_direct_cascade(const light& sun_light, u32 sub_phase, 
 			// per sample rendering
 			if (RImplementation.o.dx10_msaa_opt)
 			{
-				RCache.set_Element(s_accum_mask_msaa[0]->E[SE_MASK_DIRECT]);		// masker
+				RCache.set_Element(s_accum_mask_msaa[0]->E[SE_MASK_DIRECT], 0, nullptr);		// masker
 				RCache.set_CullMode(CULL_NONE);
 				RCache.set_Stencil(TRUE, D3DCMP_EQUAL, dwLightMarkerID | 0x80, 0x81, 0x7f, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 				RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
@@ -110,7 +110,7 @@ void CRenderTarget::accum_direct_cascade(const light& sun_light, u32 sub_phase, 
 			{
 				for (u32 i = 0; i < RImplementation.o.dx10_msaa_samples; ++i)
 				{
-					RCache.set_Element(s_accum_mask_msaa[i]->E[SE_MASK_DIRECT]);		// masker
+					RCache.set_Element(s_accum_mask_msaa[i]->E[SE_MASK_DIRECT], 0, nullptr);		// masker
 					RCache.set_CullMode(CULL_NONE);
 					RCache.set_Stencil(TRUE, D3DCMP_EQUAL, dwLightMarkerID | 0x80, 0x81, 0x7f, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 					StateManager.SetSampleMask(u32(1) << i);
@@ -251,7 +251,7 @@ void CRenderTarget::accum_direct_cascade(const light& sun_light, u32 sub_phase, 
 		RCache.set_Geometry(g_combine_cuboid);
 
 		// setup
-		RCache.set_Element(s_accum_direct->E[uiElementIndex]);
+		RCache.set_Element(s_accum_direct->E[uiElementIndex], 0, &*g_combine_cuboid);
 		RCache.set_c("m_texgen", m_Texgen);
 		RCache.set_c("Ldynamic_dir", L_dir.x, L_dir.y, L_dir.z, 0);
 		RCache.set_c("Ldynamic_color", L_clr.x, L_clr.y, L_clr.z, L_spec);
@@ -339,7 +339,7 @@ void CRenderTarget::accum_direct_cascade(const light& sun_light, u32 sub_phase, 
 			// per sample
 			if (RImplementation.o.dx10_msaa_opt)
 			{
-				RCache.set_Element(s_accum_direct_msaa[0]->E[uiElementIndex]);
+				RCache.set_Element(s_accum_direct_msaa[0]->E[uiElementIndex], 0, nullptr);
 
 				if ((SE_SUN_NEAR == sub_phase || SE_SUN_MIDDLE == sub_phase))
 					RCache.set_ZFunc(D3DCMP_GREATEREQUAL);
@@ -358,7 +358,7 @@ void CRenderTarget::accum_direct_cascade(const light& sun_light, u32 sub_phase, 
 			{
 				for (u32 i = 0; i < RImplementation.o.dx10_msaa_samples; ++i)
 				{
-					RCache.set_Element(s_accum_direct_msaa[i]->E[uiElementIndex]);
+					RCache.set_Element(s_accum_direct_msaa[i]->E[uiElementIndex], 0, nullptr);
 
 					if ((SE_SUN_NEAR == sub_phase || SE_SUN_MIDDLE == sub_phase))
 						RCache.set_ZFunc(D3DCMP_GREATEREQUAL);
@@ -430,7 +430,7 @@ void CRenderTarget::accum_direct_blend	()
 		pv->set						(1,		1,	d_Z,	d_W, C, 1, 0, 1,	0);	pv++;
 		RCache.Vertex.Unlock		(4,g_combine_2UV->vb_stride);
 		RCache.set_Geometry			(g_combine_2UV);
-		RCache.set_Element			(s_accum_mask->E[SE_MASK_ACCUM_2D]	);
+		RCache.set_Element			(s_accum_mask->E[SE_MASK_ACCUM_2D], 0, &*g_combine_2UV);
       if( ! RImplementation.o.dx10_msaa )
       {
 		   RCache.set_Stencil			(TRUE,D3DCMP_LESSEQUAL,dwLightMarkerID,0xff,0x00);
@@ -445,18 +445,18 @@ void CRenderTarget::accum_direct_blend	()
 		   // per sample
          if( RImplementation.o.dx10_msaa_opt )
          {
-		      RCache.set_Element			(s_accum_mask_msaa[0]->E[SE_MASK_ACCUM_2D]	);
-            RCache.set_Stencil			(TRUE,D3DCMP_EQUAL,dwLightMarkerID|0x80,0xff,0x00);
-            RCache.Render					(D3DPT_TRIANGLELIST,Offset,0,4,0,2	);
+			 RCache.set_Element(s_accum_mask_msaa[0]->E[SE_MASK_ACCUM_2D]);
+			 RCache.set_Stencil(TRUE, D3DCMP_EQUAL, dwLightMarkerID | 0x80, 0xff, 0x00);
+			 RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
          }
          else // checked Holger
          {
 		      for( u32 i = 0; i < RImplementation.o.dx10_msaa_samples; ++i )
 		      {
-			      RCache.set_Element		   (s_accum_mask_msaa[i]->E[SE_MASK_ACCUM_2D]	);
-               RCache.set_Stencil			(TRUE,D3DCMP_EQUAL,dwLightMarkerID|0x80,0xff,0x00);
-               StateManager.SetSampleMask ( u32(1) << i );
-               RCache.Render					(D3DPT_TRIANGLELIST,Offset,0,4,0,2	);
+				  RCache.set_Element(s_accum_mask_msaa[i]->E[SE_MASK_ACCUM_2D]);
+				  RCache.set_Stencil(TRUE, D3DCMP_EQUAL, dwLightMarkerID | 0x80, 0xff, 0x00);
+				  StateManager.SetSampleMask(u32(1) << i);
+				  RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 		      }
 		      StateManager.SetSampleMask( 0xffffffff );
          }
@@ -520,7 +520,7 @@ void CRenderTarget::accum_direct_f(const light& sun_light, u32 sub_phase)
 		float	intensity = 0.3f * sun_light.color.r + 0.48f * sun_light.color.g + 0.22f * sun_light.color.b;
 		Fvector	dir = L_dir;
 		dir.normalize().mul(-_sqrt(intensity + EPS));
-		RCache.set_Element(s_accum_mask->E[SE_MASK_DIRECT]);		// masker
+		RCache.set_Element(s_accum_mask->E[SE_MASK_DIRECT], 0, &*g_combine);		// masker
 		RCache.set_c("Ldynamic_dir", dir.x, dir.y, dir.z, 0);
 
 		// if (stencil>=1 && aref_pass)	stencil = light_id
@@ -632,7 +632,7 @@ void CRenderTarget::accum_direct_f(const light& sun_light, u32 sub_phase)
 		RCache.set_Geometry(g_combine_2UV);
 
 		// setup
-		RCache.set_Element(s_accum_direct->E[sub_phase]);
+		RCache.set_Element(s_accum_direct->E[sub_phase], 0, &*g_combine_2UV);
 		RCache.set_c("Ldynamic_dir", L_dir.x, L_dir.y, L_dir.z, 0);
 		RCache.set_c("Ldynamic_color", L_clr.x, L_clr.y, L_clr.z, L_spec);
 		RCache.set_c("m_shadow", m_shadow);
@@ -748,9 +748,9 @@ void CRenderTarget::accum_direct_lum(const light& sun_light)
 		RCache.set_Geometry			(g_aa_AA);
 
 		// setup
-		RCache.set_Element	(s_accum_direct->E[SE_SUN_LUMINANCE]);
-		RCache.set_c				("Ldynamic_dir",		L_dir.x,L_dir.y,L_dir.z,0		);
-		RCache.set_c				("Ldynamic_color",		L_clr.x,L_clr.y,L_clr.z,L_spec	);
+		RCache.set_Element(s_accum_direct->E[SE_SUN_LUMINANCE], 0, &*g_aa_AA);
+		RCache.set_c("Ldynamic_dir", L_dir.x, L_dir.y, L_dir.z, 0);
+		RCache.set_c("Ldynamic_color", L_clr.x, L_clr.y, L_clr.z, L_spec);
 
       if( ! RImplementation.o.dx10_msaa )
       {
@@ -767,20 +767,20 @@ void CRenderTarget::accum_direct_lum(const light& sun_light)
 		   // per sample
          if( RImplementation.o.dx10_msaa_opt )
          {
-		      RCache.set_Element	(s_accum_direct_msaa[0]->E[SE_SUN_LUMINANCE]);
-            RCache.set_Stencil	(TRUE,D3DCMP_EQUAL,dwLightMarkerID|0x80,0xff,0x00);
-	         RCache.set_CullMode	(CULL_NONE	);
-            RCache.Render			(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
+			 RCache.set_Element(s_accum_direct_msaa[0]->E[SE_SUN_LUMINANCE]);
+			 RCache.set_Stencil(TRUE, D3DCMP_EQUAL, dwLightMarkerID | 0x80, 0xff, 0x00);
+			 RCache.set_CullMode(CULL_NONE);
+			 RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
          }
          else
          {
 	         for( u32 i = 0; i < RImplementation.o.dx10_msaa_samples; ++i )
 	         {
-		         RCache.set_Element	      (s_accum_direct_msaa[i]->E[SE_SUN_LUMINANCE]);
-               StateManager.SetSampleMask ( u32(1) << i );
-               RCache.set_Stencil	      (TRUE,D3DCMP_EQUAL,dwLightMarkerID|0x80,0xff,0x00);
-	            RCache.set_CullMode	      (CULL_NONE	);
-               RCache.Render				   (D3DPT_TRIANGLELIST,Offset,0,4,0,2);	
+				 RCache.set_Element(s_accum_direct_msaa[i]->E[SE_SUN_LUMINANCE]);
+				 StateManager.SetSampleMask(u32(1) << i);
+				 RCache.set_Stencil(TRUE, D3DCMP_EQUAL, dwLightMarkerID | 0x80, 0xff, 0x00);
+				 RCache.set_CullMode(CULL_NONE);
+				 RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 	         }
 	         StateManager.SetSampleMask( 0xffffffff );
          }
@@ -846,7 +846,8 @@ void CRenderTarget::accum_direct_volumetric(const light& sun_light, u32 sub_phas
 
 	// setup
 	//RCache.set_Element			(s_accum_direct_volumetric->E[sub_phase]);
-	RCache.set_Element(Element);
+#pragma todo("morrazzzz: this is valid??")
+	RCache.set_Element(Element); 
 	RCache.set_CullMode(CULL_CCW);
 	//		RCache.set_c				("Ldynamic_dir",		L_dir.x,L_dir.y,L_dir.z,0 );
 	RCache.set_c("Ldynamic_color", L_clr.x, L_clr.y, L_clr.z, 0);

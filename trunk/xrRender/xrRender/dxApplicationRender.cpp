@@ -139,8 +139,8 @@ void dxApplicationRender::load_draw_internal(CApplication &owner)
 	VERIFY						(u32(pv-_pv)==2*(v_cnt+1));
 	RCache.Vertex.Unlock		(2*(v_cnt+1),ll_hGeom2.stride());
 
-	RCache.set_Shader			(sh_progress);
-	RCache.set_Geometry			(ll_hGeom2);
+	RCache.set_Geometry(ll_hGeom2);
+	RCache.set_Shader(sh_progress, 0 , &*ll_hGeom2);
 	RCache.Render				(D3DPT_TRIANGLESTRIP, Offset, 2*v_cnt);
 
 	//background picture
@@ -264,8 +264,8 @@ void dxApplicationRender::draw_face(ref_shader& sh, Frect& coords, Frect& tex_co
 	pv->set						(coords.rb.x,	coords.lt.y,	C, tex_coords.rb.x,	tex_coords.lt.y);	pv++;
 	RCache.Vertex.Unlock		(4,ll_hGeom.stride());
 
-	RCache.set_Shader			(sh);
-	RCache.set_Geometry			(ll_hGeom);
+	RCache.set_Geometry(ll_hGeom);
+	RCache.set_Shader(sh, 0, &*ll_hGeom);
 	RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
 }
 

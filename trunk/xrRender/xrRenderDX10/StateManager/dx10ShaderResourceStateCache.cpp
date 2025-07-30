@@ -97,6 +97,18 @@ void dx10ShaderResourceStateCache::Apply()
 #endif
 }
 
+void dx10ShaderResourceStateCache::ClearViews()
+{
+	std::memset(m_PSViews, 0, sizeof m_PSViews);
+	std::memset(m_VSViews, 0, sizeof m_VSViews);
+	std::memset(m_GSViews, 0, sizeof m_GSViews);
+#ifdef USE_DX11
+	std::memset(m_HSViews, 0, sizeof m_HSViews);
+	std::memset(m_DSViews, 0, sizeof m_DSViews);
+	std::memset(m_CSViews, 0, sizeof m_CSViews);
+#endif
+}
+
 void dx10ShaderResourceStateCache::SetPSResource( u32 uiSlot, ID3DShaderResourceView	*pRes )
 {
 	VERIFY(uiSlot<CBackend::mtMaxPixelShaderTextures);

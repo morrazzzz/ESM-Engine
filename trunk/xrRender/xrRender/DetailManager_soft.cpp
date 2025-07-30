@@ -51,7 +51,7 @@ void CDetailManager::soft_Render	()
 			if  (o_total > (o_per_lock*lock_count))	o_per_lock++;
 
 			// Fill VB (and flush it as nesessary)
-			RCache.set_Shader	(Object.shader);
+			RCache.set_Shader	(Object.shader, 0, &*soft_Geom);
 
 			Fmatrix		mXform;
 			for (u32 L_ID=0; L_ID<lock_count; L_ID++){

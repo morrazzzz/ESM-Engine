@@ -116,7 +116,7 @@ void R_dsgraph_structure::r_dsgraph_render_lods	(bool _setup_zb, bool _clear)
 				u32 uiNumPasses			= lstLODs[current].pVisual->shader->E[shid]->passes.size();
 				if (uiPass<uiNumPasses)
 				{
-					RCache.set_Element		(lstLODs[current].pVisual->shader->E[shid], uiPass);
+					RCache.set_Element		(lstLODs[current].pVisual->shader->E[shid], uiPass, &*firstV->geom);
 					RCache.set_Geometry		(firstV->geom);
 					RCache.Render			(D3DPT_TRIANGLELIST,vCurOffset,0,4*p_count,0,2*p_count);
 				}

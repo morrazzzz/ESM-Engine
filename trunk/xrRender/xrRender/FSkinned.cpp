@@ -352,7 +352,7 @@ void CSkeletonX_ST::Copy	(dxRender_Visual *P)
 	_Copy					((CSkeletonX*)X);
 }
 //////////////////////////////////////////////////////////////////////
-void CSkeletonX_PM::Render	(float LOD) 
+void CSkeletonX_PM::RenderModelVisual(R_dsgraph::_MatrixItemS* matrixItem, float LOD, ShaderElement* shaderElement, u32 pass, ID3DBlob * signature)
 {
 	int lod_id				= inherited1::last_lod;
 	if (LOD>=0.f){
@@ -362,10 +362,47 @@ void CSkeletonX_PM::Render	(float LOD)
 	}
 	VERIFY					(lod_id>=0 && lod_id<int(nSWI.count));
 	FSlideWindow& SW		= nSWI.sw[lod_id];
+
+	//SOME UGLY HACK!!!
+	if (!matrixItem)
+	{
+		if (shaderElement)
+			RCache.set_Element(shaderElement, pass, &*rm_geom);
+#if defined(USE_DX10) || defined(USE_DX11)
+		else
+			RCache.setInputLayout(&*rm_geom->dcl, signature);
+#endif
+	}
+	else
+	{
+		RCache.set_Element(matrixItem->se, 0, &*rm_geom);
+		RCache.set_xform_world(matrixItem->Matrix);
+		RImplementation.apply_object(matrixItem->pObject);
+		RImplementation.apply_lmaterial();
+	}
+
 	_Render					(rm_geom,SW.num_verts,SW.offset,SW.num_tris);
 }
-void CSkeletonX_ST::Render	(float LOD) 
+void CSkeletonX_ST::RenderModelVisual(R_dsgraph::_MatrixItemS* matrixItem, float LOD, ShaderElement* shaderElement, u32 pass, ID3DBlob* signature)
 {
+	//SOME UGLY HACK!!!
+	if (!matrixItem)
+	{
+		if (shaderElement)
+			RCache.set_Element(shaderElement, pass, &*rm_geom);
+#if defined(USE_DX10) || defined(USE_DX11)
+		else
+			RCache.setInputLayout(&*rm_geom->dcl, signature);
+#endif
+	}
+	else
+	{
+		RCache.set_Element(matrixItem->se, 0, &*rm_geom);
+		RCache.set_xform_world(matrixItem->Matrix);
+		RImplementation.apply_object(matrixItem->pObject);
+		RImplementation.apply_lmaterial();
+	}
+
 	_Render		(rm_geom,vCount,0,dwPrimitives);
 }
 

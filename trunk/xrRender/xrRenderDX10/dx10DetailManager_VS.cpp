@@ -103,7 +103,7 @@ void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave
 
 				// Setup matrices + colors (and flush it as necessary)
 				//RCache.set_Element				(Object.shader->E[lod_id]);
-				RCache.set_Element(Object.shader->E[lod_id], iPass);
+				RCache.set_Element(Object.shader->E[lod_id], iPass, &*hw_Geom);
 				RImplementation.apply_lmaterial();
 
 				//	This could be cached in the corresponding consatant buffer

@@ -111,16 +111,9 @@ void CRenderTarget::phase_pp		()
 	//	Element 4 for color map post-process
 	bool	bCMap = u_need_CM();
 	//RCache.set_Element	(s_postprocess->E[bCMap ? 4 : 0]);
-	if( !RImplementation.o.dx10_msaa )
-	{
-		//		RCache.set_Shader	(s_postprocess	);
-		RCache.set_Element	(s_postprocess->E[bCMap ? 4 : 0]);
-	}
-	else
-	{
-		//		RCache.set_Shader( s_postprocess_msaa );
-		RCache.set_Element	(s_postprocess_msaa->E[bCMap ? 4 : 0]);
-	}
+	ref_shader& shader = RImplementation.o.dx10_msaa ? s_postprocess_msaa : s_postprocess;
+
+	RCache.set_Element(shader->E[bCMap ? 4 : 0], 0, &*g_postprocess);
 
 	int		gblend		= clampr		(iFloor((1-param_gray)*255.f),0,255);
 	int		nblend		= clampr		(iFloor((1-param_noise)*255.f),0,255);

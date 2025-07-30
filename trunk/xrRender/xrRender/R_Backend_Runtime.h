@@ -89,7 +89,7 @@ IC void CBackend::set_Matrices			(SMatrixList*	_M)
 }
 #endif
 
-IC void CBackend::set_Element			(ShaderElement* S, u32	pass)
+IC void CBackend::set_Element(ShaderElement* S, u32	pass, SGeometry* geometry)
 {
 	SPass&	P		= *(S->passes[pass]);
 	set_States		(P.state);
@@ -105,14 +105,20 @@ IC void CBackend::set_Element			(ShaderElement* S, u32	pass)
 #endif	//	USE_DX10
 	set_Constants	(P.constants);
 	set_Textures	(P.T);
+
+#ifdef USE_DX11
+	if (geometry)
+		setInputLayout(&*geometry->dcl, P.vs->signature->signature);
+#endif
+
 #ifdef _EDITOR
 	set_Matrices	(P.M);
 #endif
 }
 
-ICF void CBackend::set_Shader			(Shader* S, u32 pass)
+ICF void CBackend::set_Shader(Shader* S, u32 pass, SGeometry* geometry)
 {
-	set_Element			(S->E[0],pass);
+	set_Element(S->E[0], pass, geometry);
 }
 
 #endif

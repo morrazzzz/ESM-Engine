@@ -18,7 +18,8 @@ ICF float calcLOD	(float ssa/*fDistSq*/)
 	return			_sqrt(clampr((ssa - r_ssaGLOD_end)/(r_ssaGLOD_start-r_ssaGLOD_end),0.f,1.f));
 }
 
-void __fastcall mapNormal_Render(mapNormalItems& N)
+//UGGGGLYYYY HACK ID3DLOB!!!
+void __fastcall mapNormal_Render(mapNormalItems& N, ID3DBlob* inputSignature)
 {
 	// *** DIRECT ***
 	for (u32 i = 0; i < N.size(); i++) 
@@ -28,13 +29,13 @@ void __fastcall mapNormal_Render(mapNormalItems& N)
 #ifdef USE_DX11
 		RCache.LOD.set_LOD(LOD);
 #endif
-		Ni.pVisual->Render(LOD);
+		Ni.pVisual->RenderModelVisual(nullptr, LOD, nullptr, 0, inputSignature);
 	}
 }
 
 
 // Matrix
-void __fastcall mapMatrix_Render	(mapMatrixItems& N)
+void __fastcall mapMatrix_Render(mapMatrixItems& N, ID3DBlob* inputSignature)
 {
 	// *** DIRECT ***
 	for (u32 i = 0; i < N.size(); i++) 
@@ -50,7 +51,7 @@ void __fastcall mapMatrix_Render	(mapMatrixItems& N)
 #ifdef USE_DX11
 		RCache.LOD.set_LOD(LOD);
 #endif
-		Ni.pVisual->Render(LOD);
+		Ni.pVisual->RenderModelVisual(nullptr, LOD, nullptr, 0, inputSignature);
 	}
 	N.clear	();
 }
@@ -61,11 +62,7 @@ void __fastcall sorted_L1		(mapSorted_Node *N)
 	VERIFY (N);
 	dxRender_Visual *V				= N->val.pVisual;
 	VERIFY (V && V->shader._get());
-	RCache.set_Element				(N->val.se);
-	RCache.set_xform_world			(N->val.Matrix);
-	RImplementation.apply_object	(N->val.pObject);
-	RImplementation.apply_lmaterial	();
-	V->Render						(calcLOD(N->key));
+	V->RenderModelVisual(&N->val ,calcLOD(N->key));
 }
 
 void R_dsgraph_structure::r_dsgraph_render_graph	(u32	_priority, bool _clear)
@@ -141,7 +138,11 @@ void R_dsgraph_structure::r_dsgraph_render_graph	(u32	_priority, bool _clear)
 
 								mapNormalItems& items = Ntex.val;
 								items.ssa = 0;
-								mapNormal_Render(items);
+#if defined(USE_DX10) || defined(USE_DX11)
+								mapNormal_Render(items, Nvs.key->signature->signature);
+#else
+								mapNormal_Render(items, nullptr);
+#endif
 								if (_clear)				items.clear();
 							}
 							if (_clear) tex.clear();
@@ -222,7 +223,11 @@ void R_dsgraph_structure::r_dsgraph_render_graph	(u32	_priority, bool _clear)
 							mapMatrixItems& items_matrix = Ntex_matrix.val;
 							items_matrix.ssa = 0;
 
-							mapMatrix_Render(items_matrix);
+#if defined(USE_DX10) || defined(USE_DX11)
+							mapMatrix_Render(items_matrix, Nvs_matrix.key->signature->signature);
+#else
+							mapMatrix_Render(items_matrix, nullptr);
+#endif
 						}
 						if (_clear) tex_matrix.clear();
 					}
@@ -573,7 +578,7 @@ void	R_dsgraph_structure::r_dsgraph_render_R1_box	(dxRender_Visual* V, Fbox& BB,
 			for (u32 pass = 0; pass < E->passes.size(); pass++)
 			{
 				RCache.set_Element(E, pass);
-				V->Render(-1.f);
+				V->RenderModelVisual(nullptr, -1.f, E, pass);
 			}
 		}
 	}

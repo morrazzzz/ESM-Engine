@@ -124,7 +124,7 @@ void CPortalTraverser::fade_render	()
 
 	// render
 	RCache.set_xform_world			(Fidentity);
-	RCache.set_Shader				(f_shader);
+	RCache.set_Shader				(f_shader, 0, &*f_geom);
 	RCache.set_Geometry				(f_geom);
 	RCache.set_CullMode				(CULL_NONE);
 	RCache.Render					(D3DPT_TRIANGLELIST,_offset,_pcount);
