@@ -50,12 +50,18 @@ void CBlender_Compile::r_dx10Texture(LPCSTR ResourceName,	LPCSTR texture)
 	fix_texture_name		(TexName);
 
 	// Find index
-	ref_constant C			= ctable.get(ResourceName);
+//	ref_constant C			= ctable.get(ResourceName);
 	//VERIFY(C);
-	if (!C)					return;
+//	if (!C)					return;
 
-	R_ASSERT				(C->type == RC_dx10texture);
-	u32 stage				= C->samp.index;
+//	R_ASSERT				(C->type == RC_dx10texture);
+	u32 stage = 0;
+#ifdef USE_DX11
+	stage = resourcesShader.findResourceShader(ResourceName);//C->samp.index;
+#endif
+
+	if (stage == static_cast<u32>(-1))
+		return;
 
 	passTextures.push_back	(mk_pair(stage, ref_texture(DEV->_CreateTexture(TexName))));
 }
@@ -119,12 +125,20 @@ u32 CBlender_Compile::r_dx10Sampler(LPCSTR ResourceName)
 
 	// Find index
 	//ref_constant C			= ctable.get(ResourceName);
-	ref_constant C			= ctable.get(name);
-	//VERIFY(C);
-	if (!C)					return	u32(-1);
+//	ref_constant C			= ctable.get(name);
+//	u32 index = resourcesShader.findResourceShader(name);
 
-	R_ASSERT				(C->type == RC_sampler);
-	u32 stage				= C->samp.index;
+	//VERIFY(C);
+//	if (!C)					return	u32(-1);
+
+//	R_ASSERT				(C->type == RC_sampler);
+	u32 stage = 0;
+#ifdef USE_DX11
+	stage = resourcesShader.findResourceShader(name);//C->samp.index;
+#endif
+
+	if (stage == static_cast<u32>(-1))
+		return stage;
 
 	//	init defaults here
 
@@ -186,6 +200,9 @@ void	CBlender_Compile::r_Pass		(LPCSTR _vs, LPCSTR _gs, LPCSTR _ps, bool bFog, B
 {
 	RS.Invalidate			();
 	ctable.clear			();
+#ifdef USE_DX11
+	resourcesShader.clearShaderResources();
+#endif
 	passTextures.clear		();
 	passMatrices.clear		();
 	passConstants.clear		();
@@ -211,6 +228,10 @@ void	CBlender_Compile::r_Pass		(LPCSTR _vs, LPCSTR _gs, LPCSTR _ps, bool bFog, B
 	ctable.merge			(&vs->constants);
 	ctable.merge			(&gs->constants);
 
+#ifdef USE_DX11
+	resourcesShader.mergeShaderResouces({ &dest.ps->shaderResources, &dest.vs->shaderResources, &dest.gs->shaderResources });
+#endif
+
 	// Last Stage - disable
 	if (0==stricmp(_ps,"null"))	{
 		RS.SetTSS				(0,D3DTSS_COLOROP,D3DTOP_DISABLE);
@@ -228,6 +249,8 @@ void CBlender_Compile::r_TessPass(LPCSTR vs, LPCSTR hs, LPCSTR ds, LPCSTR gs, LP
 
 	ctable.merge(&dest.hs->constants);
 	ctable.merge(&dest.ds->constants);
+
+	resourcesShader.mergeShaderResouces({ &dest.hs->shaderResources, &dest.ds->shaderResources });
 }
 
 void CBlender_Compile::r_ComputePass(LPCSTR cs)
@@ -235,6 +258,8 @@ void CBlender_Compile::r_ComputePass(LPCSTR cs)
 	dest.cs = DEV->_CreateCS(cs);
 
 	ctable.merge(&dest.cs->constants);
+
+	resourcesShader.mergeShaderResouces({ &dest.cs->shaderResources });
 }
 #endif
 

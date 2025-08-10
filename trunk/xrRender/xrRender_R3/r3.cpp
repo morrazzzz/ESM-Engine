@@ -734,7 +734,7 @@ static HRESULT create_shader				(
 		if (SUCCEEDED(_result) && pReflection)
 		{
 			//	Let constant table parse it's data
-			sps_result->constants.parse(pReflection,RC_dest_pixel);
+//			sps_result->constants.parse(pReflection,RC_dest_pixel);
 
 			_RELEASE(pReflection);
 		}
@@ -782,7 +782,7 @@ static HRESULT create_shader				(
 			_RELEASE	(pSignatureBlob);
 
 			//	Let constant table parse it's data
-			svs_result->constants.parse(pReflection,RC_dest_vertex);
+//			svs_result->constants.parse(pReflection,RC_dest_vertex);
 
 			_RELEASE	(pReflection);
 		}
@@ -818,7 +818,7 @@ static HRESULT create_shader				(
 		if (SUCCEEDED(_result) && pReflection)
 		{
 			//	Let constant table parse it's data
-			sgs_result->constants.parse(pReflection,RC_dest_geometry);
+//			sgs_result->constants.parse(pReflection,RC_dest_geometry);
 
 			_RELEASE(pReflection);
 		}

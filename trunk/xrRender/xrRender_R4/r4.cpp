@@ -682,6 +682,62 @@ static HRESULT create_shader				(
 	return				_hr;
 }
 
+#include "dx11ShaderResources.h"
+
+static HRESULT deviceCreateShaders(LPCSTR const pTarget, DWORD const* buffer, u32 const buffer_size, void* result, u32& typeShader)
+{
+	switch (pTarget[0])
+	{
+	case 'p':
+	{
+		SPS* ps_struct = static_cast<SPS*>(result);
+		typeShader = RC_dest_pixel;
+		return HW.pDevice->CreatePixelShader(buffer, buffer_size, 0, &ps_struct->ps);
+	}
+	case 'v':
+	{
+		SVS* vs_struct = static_cast<SVS*>(result);
+		typeShader = RC_dest_vertex;
+		HRESULT hr = HW.pDevice->CreateVertexShader(buffer, buffer_size, 0, &vs_struct->vs);
+		ID3DBlob* pSignatureBlob = nullptr;
+		CHK_DX(D3DGetInputSignatureBlob(buffer, buffer_size, &pSignatureBlob));
+		R_ASSERT(pSignatureBlob);
+
+		vs_struct->signature = dxRenderDeviceRender::Instance().Resources->_CreateInputSignature(pSignatureBlob);
+
+		pSignatureBlob->Release();
+		return hr;
+	}
+	case 'g':
+	{
+		SGS* gs_struct = static_cast<SGS*>(result);
+		typeShader = RC_dest_geometry;
+		return HW.pDevice->CreateGeometryShader(buffer, buffer_size, 0, &gs_struct->gs);
+	}
+	case 'h':
+	{
+		SHS* hs_struct = static_cast<SHS*>(result);
+		typeShader = RC_dest_hull;
+		return HW.pDevice->CreateHullShader(buffer, buffer_size, 0, &hs_struct->sh);
+	}
+	case 'd':
+	{
+		SDS* ds_struct = static_cast<SDS*>(result);
+		typeShader = RC_dest_domain;
+		return HW.pDevice->CreateDomainShader(buffer, buffer_size, 0, &ds_struct->sh);
+	}
+	case 'c':
+	{
+		SCS* cs_struct = static_cast<SCS*>(result);
+		typeShader = RC_dest_compute;
+		return HW.pDevice->CreateComputeShader(buffer, buffer_size, 0, &cs_struct->sh);
+	}
+	}
+
+	typeShader = 0;
+	return E_FAIL;
+}
+
 static HRESULT create_shader				(
 		LPCSTR const	pTarget,
 		DWORD const*	buffer,
@@ -691,174 +747,29 @@ static HRESULT create_shader				(
 		bool const		disasm
 	)
 {
-	HRESULT		_result = E_FAIL;
-	if (pTarget[0] == 'p') {
-		SPS* sps_result = (SPS*)result;
-#ifdef USE_DX11
-		_result			= HW.pDevice->CreatePixelShader(buffer, buffer_size, 0, &sps_result->ps);
-#else // #ifdef USE_DX11
-		_result			= HW.pDevice->CreatePixelShader(buffer, buffer_size, &sps_result->ps);
-#endif // #ifdef USE_DX11
-		if ( !SUCCEEDED(_result) ) {
-			Log			("! PS: ", file_name);
-			Msg			("! CreatePixelShader hr == 0x%08x", _result);
-			return		E_FAIL;
-		}
-
-		ID3DShaderReflection *pReflection = 0;
-
-#ifdef USE_DX11
-		_result			= D3DReflect( buffer, buffer_size, IID_ID3DShaderReflection, (void**)&pReflection);
-#else
-		_result			= D3D10ReflectShader( buffer, buffer_size, &pReflection);
-#endif
-
-		//	Parse constant, texture, sampler binding
-		//	Store input signature blob
-		if (SUCCEEDED(_result) && pReflection)
-		{
-			//	Let constant table parse it's data
-			sps_result->constants.parse(pReflection,RC_dest_pixel);
-
-			_RELEASE(pReflection);
-		}
-		else
-		{
-			Log	("! PS: ", file_name);
-			Msg	("! D3DReflectShader hr == 0x%08x", _result);
-		}
+	u32 typeShader = 0;
+	HRESULT hr = deviceCreateShaders(pTarget, buffer, buffer_size, result, typeShader);
+	
+	if (!SUCCEEDED(hr))
+	{
+		Msg("! Failed CreateShader: [%s]", file_name);
+		return hr;
 	}
-	else if (pTarget[0] == 'v') {
-		SVS* svs_result = (SVS*)result;
-#ifdef USE_DX11
-		_result			= HW.pDevice->CreateVertexShader(buffer, buffer_size, 0, &svs_result->vs);
-#else // #ifdef USE_DX11
-		_result			= HW.pDevice->CreateVertexShader(buffer, buffer_size, &svs_result->vs);
-#endif // #ifdef USE_DX11
 
-		if ( !SUCCEEDED(_result) ) {
-			Log			("! VS: ", file_name);
-			Msg			("! CreatePixelShader hr == 0x%08x", _result);
-			return		E_FAIL;
-		}
+	ID3D11ShaderReflection* pReflection = nullptr;
+	HRESULT hr_reflect = D3DReflect(buffer, buffer_size, IID_ID3DShaderReflection, (void**)&pReflection);
 
-		ID3DShaderReflection *pReflection = 0;
-#ifdef USE_DX11
-		_result			= D3DReflect( buffer, buffer_size, IID_ID3DShaderReflection, (void**)&pReflection);
-#else
-		_result			= D3D10ReflectShader( buffer, buffer_size, &pReflection);
-#endif
-		
-		//	Parse constant, texture, sampler binding
-		//	Store input signature blob
-		if (SUCCEEDED(_result) && pReflection)
-		{
-			//	TODO: DX10: share the same input signatures
+	if (SUCCEEDED(hr_reflect) && pReflection)
+	{
+		D3D_SHADER_DESC	ShaderDesc;
+		pReflection->GetDesc(&ShaderDesc);
 
-			//	Store input signature (need only for VS)
-			//CHK_DX( D3DxxGetInputSignatureBlob(pShaderBuf->GetBufferPointer(), pShaderBuf->GetBufferSize(), &_vs->signature) );
-			ID3DBlob*	pSignatureBlob;
-			CHK_DX		( D3DGetInputSignatureBlob(buffer, buffer_size, &pSignatureBlob) );
-			VERIFY		(pSignatureBlob);
+		otherForShaders* otherForShader = static_cast<otherForShaders*>(result);
+		if (ShaderDesc.ConstantBuffers)
+			otherForShader->constants.parseConstantsShader(pReflection, ShaderDesc.ConstantBuffers, typeShader);
 
-			svs_result->signature = dxRenderDeviceRender::Instance().Resources->_CreateInputSignature(pSignatureBlob);
-
-			_RELEASE	(pSignatureBlob);
-
-			//	Let constant table parse it's data
-			svs_result->constants.parse(pReflection,RC_dest_vertex);
-
-			_RELEASE	(pReflection);
-		}
-		else
-		{
-			Log			("! VS: ", file_name);
-			Msg			("! D3DXFindShaderComment hr == 0x%08x", _result);
-		}
-	}
-	else if (pTarget[0] == 'g') {
-		SGS* sgs_result = (SGS*)result;
-#ifdef USE_DX11
-		_result			= HW.pDevice->CreateGeometryShader(buffer, buffer_size, 0, &sgs_result->gs);
-#else // #ifdef USE_DX11
-		_result			= HW.pDevice->CreateGeometryShader(buffer, buffer_size, &sgs_result->gs);
-#endif // #ifdef USE_DX11
-		if ( !SUCCEEDED(_result) ) {
-			Log			("! GS: ", file_name);
-			Msg			("! CreateGeometryShaderhr == 0x%08x", _result);
-			return		E_FAIL;
-		}
-
-		ID3DShaderReflection *pReflection = 0;
-
-#ifdef USE_DX11
-		_result			= D3DReflect( buffer, buffer_size, IID_ID3DShaderReflection, (void**)&pReflection);
-#else
-		_result			= D3D10ReflectShader( buffer, buffer_size, &pReflection);
-#endif
-
-		//	Parse constant, texture, sampler binding
-		//	Store input signature blob
-		if (SUCCEEDED(_result) && pReflection)
-		{
-			//	Let constant table parse it's data
-			sgs_result->constants.parse(pReflection,RC_dest_geometry);
-
-			_RELEASE(pReflection);
-		}
-		else
-		{
-			Log	("! PS: ", file_name);
-			Msg	("! D3DReflectShader hr == 0x%08x", _result);
-		}
-	}
-//	else if (pTarget[0] == 'c') {
-//		SCS* scs_result = (SCS*)result;
-//#ifdef USE_DX11
-//		_result			= HW.pDevice->CreateComputeShader(buffer, buffer_size, 0, &scs_result->sh);
-//#else // #ifdef USE_DX11
-//		_result			= HW.pDevice->CreateComputeShader(buffer, buffer_size, &scs_result->sh);
-//#endif // #ifdef USE_DX11
-//		if ( !SUCCEEDED(_result) ) {
-//			Log			("! CS: ", file_name);
-//			Msg			("! CreateComputeShaderhr == 0x%08x", _result);
-//			return		E_FAIL;
-//		}
-//
-//		ID3DShaderReflection *pReflection = 0;
-//
-//#ifdef USE_DX11
-//		_result			= D3DReflect( buffer, buffer_size, IID_ID3DShaderReflection, (void**)&pReflection);
-//#else
-//		_result			= D3D10ReflectShader( buffer, buffer_size, &pReflection);
-//#endif
-//
-//		//	Parse constant, texture, sampler binding
-//		//	Store input signature blob
-//		if (SUCCEEDED(_result) && pReflection)
-//		{
-//			//	Let constant table parse it's data
-//			scs_result->constants.parse(pReflection,RC_dest_pixel);
-//
-//			_RELEASE(pReflection);
-//		}
-//		else
-//		{
-//			Log	("! PS: ", file_name);
-//			Msg	("! D3DReflectShader hr == 0x%08x", _result);
-//		}
-//	}
-	else if (pTarget[0] == 'c') {
-		_result = create_shader	( pTarget, buffer, buffer_size, file_name, (SCS*&)result, disasm );
-	}
-	else if (pTarget[0] == 'h') {
-		_result = create_shader	( pTarget, buffer, buffer_size, file_name, (SHS*&)result, disasm );
-	}
-	else if (pTarget[0] == 'd') {
-		_result = create_shader	( pTarget, buffer, buffer_size, file_name, (SDS*&)result, disasm );
-	}
-	else {
-		NODEFAULT;
+		if (ShaderDesc.BoundResources)
+			otherForShader->shaderResources.parseShaderResource(pReflection, ShaderDesc.BoundResources, typeShader);
 	}
 
 	if ( disasm )
@@ -874,7 +785,7 @@ static HRESULT create_shader				(
 		_RELEASE		(disasm);
 	}
 
-	return				_result;
+	return hr;
 }
 
 //--------------------------------------------------------------------------------------------------------------

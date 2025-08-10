@@ -6,6 +6,10 @@
 
 #if defined(USE_DX10) || defined(USE_DX11)
 #include "../xrRenderDX10/StateManager/dx10State.h"
+
+#ifdef USE_DX11
+#include <dx11ShaderResources.h>
+#endif
 #endif	//	USE_DX10
 
 #pragma pack(push,4)
@@ -24,10 +28,18 @@ struct ECORE_API SInputSignature : public xr_resource_flagged
 typedef	resptr_core<SInputSignature,resptr_base<SInputSignature> >	ref_input_sign;
 #endif	//	USE_DX10
 //////////////////////////////////////////////////////////////////////////
-struct ECORE_API SVS : public xr_resource_named							
+
+struct otherForShaders
+{
+	R_constant_table constants;
+#ifdef USE_DX11
+	dx11ShaderResources shaderResources;
+#endif
+};
+
+struct SVS : public otherForShaders, public xr_resource_named
 {
 	ID3DVertexShader*					vs;
-	R_constant_table					constants;
 #if defined(USE_DX10) || defined(USE_DX11)
 	ref_input_sign						signature;
 #endif	//	USE_DX10
@@ -37,51 +49,44 @@ struct ECORE_API SVS : public xr_resource_named
 typedef	resptr_core<SVS,resptr_base<SVS> >	ref_vs;
 
 //////////////////////////////////////////////////////////////////////////
-struct ECORE_API SPS : public xr_resource_named
+struct SPS : public otherForShaders, public xr_resource_named
 {
-	ID3DPixelShader*					ps;
-	R_constant_table					constants;
+	ID3DPixelShader* ps;
 	~SPS			();
 };
 typedef	resptr_core<SPS,resptr_base<SPS> > ref_ps;
 
 #if defined(USE_DX10) || defined(USE_DX11)
 //////////////////////////////////////////////////////////////////////////
-struct ECORE_API SGS : public xr_resource_named
+struct SGS : public otherForShaders, public xr_resource_named
 {
-	ID3DGeometryShader*					gs;
-	R_constant_table					constants;
-	~SGS			();
+	ID3DGeometryShader* gs;
+	~SGS();
 };
 typedef	resptr_core<SGS,resptr_base<SGS> > ref_gs;
 #endif	//	USE_DX10
 
 #ifdef USE_DX11
-
-struct ECORE_API SHS : public xr_resource_named
+struct SHS : public otherForShaders, public xr_resource_named
 {
-	ID3D11HullShader*					sh;
-	R_constant_table					constants;
-	~SHS			();
+	ID3D11HullShader* sh;
+	~SHS();
 };
 typedef	resptr_core< SHS, resptr_base<SHS> >	ref_hs;
 
-struct ECORE_API SDS : public xr_resource_named
+struct SDS : public otherForShaders, public xr_resource_named
 {
-	ID3D11DomainShader*					sh;
-	R_constant_table					constants;
-	~SDS			();
+	ID3D11DomainShader* sh;
+	~SDS();
 };
 typedef	resptr_core< SDS, resptr_base<SDS> >	ref_ds;
 
-struct ECORE_API SCS : public xr_resource_named
+struct SCS : public otherForShaders, public xr_resource_named
 {
-	ID3D11ComputeShader*					sh;
-	R_constant_table					constants;
-	~SCS			();
+	ID3D11ComputeShader* sh;
+	~SCS();
 };
 typedef	resptr_core< SCS, resptr_base<SCS> >	ref_cs;
-
 #endif
 
 //////////////////////////////////////////////////////////////////////////

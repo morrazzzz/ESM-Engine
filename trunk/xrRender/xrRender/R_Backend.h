@@ -16,6 +16,7 @@
 
 #ifdef USE_DX11
 #	include "..\xrRender_R4\r_backend_lod.h"
+#include "..\xrRender_R4\dx11ShaderResources.h"
 #endif
 
 #include "fvf.h"

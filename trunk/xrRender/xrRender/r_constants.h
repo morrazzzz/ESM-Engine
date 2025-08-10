@@ -165,15 +165,19 @@ private:
 	void					fatal		(LPCSTR s);
 
 #if defined(USE_DX10) || defined(USE_DX11)
-	BOOL					parseConstants(ID3DShaderReflectionConstantBuffer* pTable, u32 destination);
-	BOOL					parseResources(ID3DShaderReflection* pReflection, int ResNum, u32 destination);
+	BOOL addConstantShader(ID3DShaderReflectionConstantBuffer* pTable, u32 destination);
 #endif	//	USE_DX10
 
 public:
 	~R_constant_table					();
 
 	void					clear		();
+
+#if defined(USE_DX10) || defined(USE_DX11)
+	void parseConstantsShader(ID3DShaderReflection* pShader, u32 constantBuffers, u32 destination);
+#else
 	BOOL					parse		(void* desc, u32 destination);
+#endif
 	void					merge		(R_constant_table* C);
 	ref_constant			get			(LPCSTR		name);		// slow search
 	ref_constant			get			(shared_str&	name);		// fast search

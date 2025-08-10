@@ -13,6 +13,9 @@ void	CBlender_Compile::r_Pass		(LPCSTR _vs, LPCSTR _ps, bool bFog, BOOL bZtest, 
 {
 	RS.Invalidate			();
 	ctable.clear			();
+#ifdef USE_DX11
+	resourcesShader.clearShaderResources();
+#endif
 	passTextures.clear		();
 	passMatrices.clear		();
 	passConstants.clear		();
@@ -45,6 +48,10 @@ void	CBlender_Compile::r_Pass		(LPCSTR _vs, LPCSTR _ps, bool bFog, BOOL bZtest, 
 #endif	//	USE_DX10
 	ctable.merge			(&ps->constants);
 	ctable.merge			(&vs->constants);
+
+#ifdef USE_DX11
+	resourcesShader.mergeShaderResouces({ &ps->shaderResources, &vs->shaderResources });
+#endif
 
 	// Last Stage - disable
 	if (0==stricmp(_ps,"null"))	{

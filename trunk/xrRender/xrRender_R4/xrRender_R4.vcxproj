@@ -501,6 +501,7 @@
     <ClInclude Include="DetailFormat.h" />
     <ClInclude Include="dx11HDAOCSBlender.h" />
     <ClInclude Include="dx11MinMaxSMBlender.h" />
+    <ClInclude Include="dx11ShaderResources.h" />
     <ClInclude Include="light.h" />
     <ClInclude Include="light_gi.h" />
     <ClInclude Include="Light_Render_Direct.h" />
@@ -684,6 +685,7 @@
     <ClCompile Include="CSCompiler.cpp" />
     <ClCompile Include="dx11HDAOCSBlender.cpp" />
     <ClCompile Include="dx11MinMaxSMBlender.cpp" />
+    <ClCompile Include="dx11ShaderResources.cpp" />
     <ClCompile Include="light_GI.cpp" />
     <ClCompile Include="Light_Render_Direct.cpp" />
     <ClCompile Include="Light_Render_Direct_ComputeXFS.cpp" />

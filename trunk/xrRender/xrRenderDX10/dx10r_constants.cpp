@@ -19,7 +19,7 @@ IC bool	p_sort		(ref_constant C1, ref_constant C2)
 	return xr_strcmp(C1->name,C2->name)<0;
 }
 
-BOOL R_constant_table::parseConstants(ID3DShaderReflectionConstantBuffer* pTable, u32 destination)
+BOOL R_constant_table::addConstantShader(ID3DShaderReflectionConstantBuffer* pTable, u32 destination)
 {
 	//VERIFY(_desc);
 	//ID3D10ShaderReflectionConstantBuffer *pTable = (ID3D10ShaderReflectionConstantBuffer *)_desc;
@@ -223,90 +223,6 @@ BOOL R_constant_table::parseConstants(ID3DShaderReflectionConstantBuffer* pTable
 	return TRUE;
 }
 
-BOOL R_constant_table::parseResources(ID3DShaderReflection* pReflection, int ResNum, u32 destination)
-{
-	for (int i=0; i<ResNum; ++i)
-	{
-		D3D_SHADER_INPUT_BIND_DESC	ResDesc;
-		pReflection->GetResourceBindingDesc(i, &ResDesc);
-
-		u16	type = 0;
-
-		switch(ResDesc.Type)
-		{
-		case D3D10_SIT_TEXTURE:
-			type = RC_dx10texture;
-			break;
-		case D3D10_SIT_SAMPLER:
-			type = RC_sampler;
-			break;
-		case D3D11_SIT_UAV_RWTYPED:
-			type = RC_dx11UAV;
-			break;
-		default:
-			continue;
-		}
-
-		VERIFY(ResDesc.BindCount==1);
-
-		//u16	r_index = u16( ResDesc.BindPoint + ((destination&1)? 0 : CTexture::rstVertex) );
-
-		u16	r_index = u16(-1);
-
-		if (destination&RC_dest_pixel)
-		{
-			r_index = u16( ResDesc.BindPoint + CTexture::rstPixel );
-		}
-		else if (destination&RC_dest_vertex)
-		{
-			r_index = u16( ResDesc.BindPoint + CTexture::rstVertex );
-		}
-		else if (destination&RC_dest_geometry)
-		{
-			r_index = u16( ResDesc.BindPoint + CTexture::rstGeometry );
-		}
-		else if (destination&RC_dest_hull)
-		{
-			r_index = u16( ResDesc.BindPoint + CTexture::rstHull );
-		}
-		else if (destination&RC_dest_domain)
-		{
-			r_index = u16( ResDesc.BindPoint + CTexture::rstDomain );
-		}
-		else if (destination&RC_dest_compute)
-		{
-			r_index = u16( ResDesc.BindPoint + CTexture::rstCompute );
-		}
-		else
-		{
-			VERIFY(0);
-		}
-
-		ref_constant	C		=	get	(ResDesc.Name);
-		if (!C)	
-		{
-			C					=	xr_new<R_constant>();//.g_constant_allocator.create();
-			C->name				=	ResDesc.Name;
-			C->destination		=	RC_dest_sampler;
-			C->type				=	type;
-			R_constant_load& L	=	C->samp;
-			L.index				=	r_index;
-			L.cls				=	type;
-			table.push_back		(C);
-		} 
-		else 
-		{
-			R_ASSERT			(C->destination	==	RC_dest_sampler);
-			R_ASSERT			(C->type		==	type);
-			R_constant_load& L	=	C->samp;
-			R_ASSERT			(L.index		==	r_index);
-			R_ASSERT			(L.cls			==	type);
-		}
-		
-	}
-	return TRUE;
-}
-
 IC u32 dest_to_shift_value(u32 destination)
 {
 	switch (destination&0xFF)
@@ -359,22 +275,17 @@ IC u32 dest_to_cbuf_type(u32 destination)
 	return 0;
 }
 
-BOOL	R_constant_table::parse	(void* _desc, u32 destination)
+void R_constant_table::parseConstantsShader(ID3DShaderReflection* shaderReflection, u32 constantBuffers, u32 destination)
 {
-	ID3DShaderReflection *pReflection = (ID3DShaderReflection *)_desc;
-
-	D3D_SHADER_DESC	ShaderDesc;
-	pReflection->GetDesc(&ShaderDesc);
-
-	if (ShaderDesc.ConstantBuffers)
+	if (constantBuffers)
 	{
-		m_CBTable.reserve(ShaderDesc.ConstantBuffers);
+		m_CBTable.reserve(constantBuffers);
 		//	Parse single constant table
 		ID3DShaderReflectionConstantBuffer *pTable=0;
 
-		for (u16 iBuf = 0; iBuf<ShaderDesc.ConstantBuffers; ++iBuf)
+		for (u16 iBuf = 0; iBuf< constantBuffers; ++iBuf)
 		{
-			pTable = pReflection->GetConstantBufferByIndex(iBuf);
+			pTable = shaderReflection->GetConstantBufferByIndex(iBuf);
 			if (pTable)
 			{
 				//	Encode buffer index into destination
@@ -389,18 +300,17 @@ BOOL	R_constant_table::parse	(void* _desc, u32 destination)
 					? CB_BufferPixelShader : (destination&RC_dest_vertex)
 					? CB_BufferVertexShader : CB_BufferGeometryShader;*/
 
-				parseConstants(pTable,updatedDest);
+				addConstantShader(pTable,updatedDest);
 				ref_cbuffer	tempBuffer = dxRenderDeviceRender::Instance().Resources->_CreateConstantBuffer(pTable);
 				m_CBTable.push_back(cb_table_record(uiBufferIndex, tempBuffer));
 			}
 		}
 	}
 
-	if (ShaderDesc.BoundResources)
-	{
-		parseResources(pReflection, ShaderDesc.BoundResources, destination);
-	}
+//	if (ShaderDesc.BoundResources)
+//	{
+//		parseResources(pReflection, ShaderDesc.BoundResources, destination);
+//	}
 
-	std::sort	(table.begin(),table.end(),p_sort);
-	return		TRUE;
+	std::sort(table.begin(), table.end(), p_sort);
 }

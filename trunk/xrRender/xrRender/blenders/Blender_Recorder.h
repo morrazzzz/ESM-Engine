@@ -38,6 +38,9 @@ public:
 private:
 	SPass				dest;
 	R_constant_table	ctable;
+#ifdef USE_DX11
+	dx11ShaderResources	resourcesShader;
+#endif
 
 	STextureList		passTextures;
 	SMatrixList			passMatrices;
