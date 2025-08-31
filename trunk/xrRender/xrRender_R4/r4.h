@@ -158,6 +158,7 @@ public:
 
 	bool														m_bMakeAsyncSS;
 	bool														m_bFirstFrameAfterReset;	// Determines weather the frame is the first after resetting device.
+
 	xr_vector<sun::cascade>										m_sun_cascades;
 
 private:
@@ -260,23 +261,20 @@ public:
 	virtual void					level_Unload				();
 
 			ID3DBaseTexture*		texture_load				(LPCSTR	fname, u32& msize, bool bStaging = false);
-	virtual HRESULT					shader_compile			(
-		LPCSTR							name,
-		DWORD const*					pSrcData,
-		UINT                            SrcDataLen,
-		LPCSTR                          pFunctionName,
-		LPCSTR                          pTarget,
-		DWORD                           Flags,
-		void*&							result);
+
+	void fillShadersStaticMacro();
+	void fillShadersDynamicMacro();
 
 	// Information
 	virtual void					Statistics					(CGameFont* F);
-	virtual LPCSTR					getShaderPath				()									{ return "r3\\";	}
 	virtual ref_shader				getShader					(int id);
 	virtual IRender_Sector*			getSector					(int id);
 	virtual IRenderVisual*			getVisual					(int id);
 	virtual IRender_Sector*			detectSector				(const Fvector& P);
 	virtual IRender_Target*			getTarget					();
+
+	static constexpr xr_string getShaderFolder() { return "r3"; }
+	static constexpr xr_string getRenderName() { return "r4"; }
 
 	void getImguiTextureRef(const char* name, ImTextureRef& texture_ref,
 		u32& texture_width, u32& texture_height) override;

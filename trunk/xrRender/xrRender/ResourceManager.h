@@ -12,10 +12,35 @@
 
 class dx10ConstantBuffer;
 
+extern xr_string pathShaderFolder;
+
 // defs
 class CResourceManager
 {
-private:
+	//TODO: Need add special flags shader compilation for ONLY DirectX9 and ONLY DirectX11
+	enum ShaderCompilerFlags
+	{
+		SHADER_DEBUG = 1 << 0,
+		SHADER_SKIP_VALIDATION = 1 << 1,
+		SHADER_SKIP_OPTIMIZATION = 1 << 2,
+		SHADER_PACK_MATRIX_ROW_MAJOR = 1 << 3,
+		SHADER_PACK_MATRIX_COLUMN_MAJOR = 1 << 4,
+		SHADER_PARTIAL_PRECISION = 1 << 5,
+		SHADER_FORCE_VS_SOFTWARE_NO_OPT = 1 << 6,
+		SHADER_FORCE_PS_SOFTWARE_NO_OPT = 1 << 7,
+		SHADER_NO_PRESHADER = 1 << 8,
+		SHADER_AVOID_FLOW_CONTROL = 1 << 9,
+		SHADER_PREFER_FLOW_CONTROL = 1 << 10,
+		SHADER_ENABLE_STRICTNESS = 1 << 11,
+		SHADER_ENABLE_BACKWARDS_COMPATIBILITY = 1 << 12,
+		SHADER_IEEE_STRICTNESS = 1 << 13,
+
+		SHADER_OPTIMIZATION_LEVEL0 = 1 << 14,
+		SHADER_OPTIMIZATION_LEVEL1 = 0,
+		SHADER_OPTIMIZATION_LEVEL2 = (1 << 14) | (1 << 15),
+		SHADER_OPTIMIZATION_LEVEL3 = 1 << 15
+	};
+
 	struct str_pred	{
 		IC bool operator()(LPCSTR x, LPCSTR y) const
 		{	return xr_strcmp(x,y)<0;	}
@@ -144,11 +169,15 @@ public:
 
 	//	DX10 cut CRTC*							_CreateRTC			(LPCSTR Name, u32 size,	D3DFORMAT f);
 	//	DX10 cut void							_DeleteRTC			(const CRTC*	RT	);
+
+	void addShaderToCompile(const char* nameFile, const char* fileFornat, const char* shaderEntrypoint,
+		const char* shaderTarget, void*& result,
+		bool defaultShader = true,
+		u32 shaderCompilationFlags = ShaderCompilerFlags::SHADER_PACK_MATRIX_ROW_MAJOR);
+
 #if defined(USE_DX10) || defined(USE_DX11)
 	SGS*							_CreateGS			(LPCSTR Name);
 	void							_DeleteGS			(const SGS*	GS	);
-#endif	//	USE_DX10
-
 #ifdef USE_DX11
 	SHS*							_CreateHS			(LPCSTR Name);
 	void							_DeleteHS			(const SHS*	HS	);
@@ -159,6 +188,7 @@ public:
     SCS*							_CreateCS			(LPCSTR Name);
 	void							_DeleteCS			(const SCS*	CS	);
 #endif	//	USE_DX10
+#endif 
 
 	SPS*							_CreatePS			(LPCSTR Name);
 	void							_DeletePS			(const SPS*	PS	);

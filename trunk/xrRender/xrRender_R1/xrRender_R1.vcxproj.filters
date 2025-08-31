@@ -154,6 +154,12 @@
     <Filter Include="ColorMap">
       <UniqueIdentifier>{70ceb815-5fdf-41b8-aebc-5dc2f717302a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="DirectX9 NR">
+      <UniqueIdentifier>{be91a149-f07f-400c-8f8e-d6ef3c70cbe4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NR">
+      <UniqueIdentifier>{362d8c7a-b244-427b-9749-7116c0a4cf3d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\xrRender\cl_intersect.h">
@@ -597,6 +603,9 @@
     <ClInclude Include="..\xrRender\ColorMapManager.h">
       <Filter>ColorMap</Filter>
     </ClInclude>
+    <ClInclude Include="..\xrRender\D3DCompileShaders.h">
+      <Filter>NR</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -997,6 +1006,12 @@
     </ClCompile>
     <ClCompile Include="..\xrRender\ColorMapManager.cpp">
       <Filter>ColorMap</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRenderDX9\dx9CompileShaders.cpp">
+      <Filter>DirectX9 NR</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\D3DCompileShaders.cpp">
+      <Filter>NR</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

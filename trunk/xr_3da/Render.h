@@ -182,20 +182,10 @@ public:
 
 	//virtual IDirect3DBaseTexture9*	texture_load			(LPCSTR	fname, u32& msize)					= 0;
 			void					shader_option_skinning	(s32 mode)									{ m_skinning=mode;	}
-	virtual HRESULT					shader_compile(
-				LPCSTR							name,
-				DWORD const* pSrcData,
-				UINT                            SrcDataLen,
-				LPCSTR                          pFunctionName,
-				LPCSTR                          pTarget,
-				DWORD                           Flags,
-				void*& result
-			) = 0;
 
 	// Information
 	virtual	void					Statistics				(CGameFont* F	)							{};
 
-	virtual LPCSTR					getShaderPath			()											= 0;
 	virtual IRender_Sector*			getSector				(int id)									= 0;
 	virtual IRenderVisual*			getVisual				(int id)									= 0;
 	virtual IRender_Sector*			detectSector			(const Fvector& P)							= 0;

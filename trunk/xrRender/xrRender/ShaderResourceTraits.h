@@ -1,5 +1,6 @@
 #pragma once
 
+/*
 #ifdef USE_DX11
 
 #	include "ResourceManager.h"
@@ -99,7 +100,7 @@
 
 			// Open file
 			string_path					cname;
-			strconcat					(sizeof(cname), cname,::Render->getShaderPath(),/*name*/shName, ShaderTypeTraits<T>::GetShaderExt());
+			strconcat					(sizeof(cname), cname,::Render->getShaderPath(),/*nameshName, ShaderTypeTraits<T>::GetShaderExt());
 			FS.update_path				(cname,	"$game_shaders$", cname);
 
 			// duplicate and zero-terminate
@@ -146,3 +147,4 @@
 	}
 
 #endif
+*/

@@ -228,23 +228,20 @@ public:
 	virtual void					level_Unload				();
 
 	virtual IDirect3DBaseTexture9*	texture_load			(LPCSTR	fname, u32& msize);
-	virtual HRESULT					shader_compile			(
-		LPCSTR							name,
-		DWORD const*					pSrcData,
-		UINT                            SrcDataLen,
-		LPCSTR                          pFunctionName,
-		LPCSTR                          pTarget,
-		DWORD                           Flags,
-		void*&							result);
+
+	void fillShadersStaticMacro();
+	void fillShadersDynamicMacro();
 
 	// Information
 	virtual void					Statistics					(CGameFont* F);
-	virtual LPCSTR					getShaderPath				()									{ return "r2\\";	}
 	virtual ref_shader				getShader					(int id);
 	virtual IRender_Sector*			getSector					(int id);
 	virtual IRenderVisual*			getVisual					(int id);
 	virtual IRender_Sector*			detectSector				(const Fvector& P);
 	virtual IRender_Target*			getTarget					();
+
+	static constexpr xr_string getShaderFolder() { return "r2"; }
+	static constexpr xr_string getRenderName() { return "r2"; }
 
 	// Main 
 	virtual	void					add_Occluder				(Fbox2&	bb_screenspace	);			// mask screen region as oclluded

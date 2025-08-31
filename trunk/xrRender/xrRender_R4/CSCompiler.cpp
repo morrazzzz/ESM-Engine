@@ -9,6 +9,8 @@
 #include "ComputeShader.h"
 #include "..\xrRender\dxRenderDeviceRender.h"
 
+/*
+
 CSCompiler::CSCompiler(ComputeShader& target):
 	m_Target(target), m_cs(0)
 {
@@ -206,3 +208,4 @@ void CSCompiler::compile(const char* name)
 		make_string("Your video card doesn't meet game requirements.\n\nTry to lower game settings.")
 	);
 }
+*/

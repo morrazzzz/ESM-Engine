@@ -187,6 +187,9 @@
     <Filter Include="DirectX 11 NR">
       <UniqueIdentifier>{3c1b5e41-8397-479f-8c33-14aad9063c31}</UniqueIdentifier>
     </Filter>
+    <Filter Include="NR">
+      <UniqueIdentifier>{453decc3-1b17-4056-b2b9-1a043e35769a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cl_intersect.h">
@@ -738,6 +741,9 @@
     <ClInclude Include="..\xrRender\r_sun_support.h" />
     <ClInclude Include="dx11ShaderResources.h">
       <Filter>DirectX 11 NR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\D3DCompileShaders.h">
+      <Filter>NR</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1333,6 +1339,12 @@
     <ClCompile Include="..\..\xr_3da\ai_script_lua_extension.cpp" />
     <ClCompile Include="..\xrRender\r_sun.cpp" />
     <ClCompile Include="dx11ShaderResources.cpp">
+      <Filter>DirectX 11 NR</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\D3DCompileShaders.cpp">
+      <Filter>NR</Filter>
+    </ClCompile>
+    <ClCompile Include="dx11CompileShaders.cpp">
       <Filter>DirectX 11 NR</Filter>
     </ClCompile>
   </ItemGroup>

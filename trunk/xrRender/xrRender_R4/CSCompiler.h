@@ -4,6 +4,8 @@
 //	Copyright (C) GSC Game World - 2009
 ////////////////////////////////////////////////////////////////////////////
 
+/*
+
 #ifndef CSCOMPILER_H_INCLUDED
 #define CSCOMPILER_H_INCLUDED
 
@@ -37,3 +39,4 @@ private:
 }; // class CSCompiler
 
 #endif // #ifndef CSCOMPILER_H_INCLUDED
+*/

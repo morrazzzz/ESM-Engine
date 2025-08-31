@@ -14,7 +14,9 @@
 #include "tss.h"
 #include "blenders\blender.h"
 #include "blenders\blender_recorder.h"
-#include <thread>
+#include "D3DCompileShaders.h"
+
+xr_string pathShaderFolder = RImplementation.getShaderFolder() + "\\";
 
 void fix_texture_name(LPSTR fn);
 
@@ -351,7 +353,7 @@ void CResourceManager::Delete(const Shader* S)
 	Msg	("! ERROR: Failed to find complete shader");
 }
 
-void	CResourceManager::DeferredUpload	()
+void	CResourceManager::DeferredUpload()
 {
 	if (!RDEVICE.b_is_Ready)				return;
 	Msg("CResourceManager::DeferredUpload -> START, size = %d", m_textures.size());
@@ -376,7 +378,7 @@ void	CResourceManager::DeferredUpload	()
 			TexturesTasks[forTaskTexture].emplace_back(tex.second);
 			++countLoadedTextures;
 		}
-	
+
 		size_t sizeMainThreadTextures = TexturesTasks[CountTexturesTasks - 1].size();
 
 		if (sizeMainThreadTextures > 0)
@@ -410,6 +412,13 @@ void	CResourceManager::DeferredUpload	()
 			tex.second->Load();
 	}
 	Msg("texture loading time: %d", timer.GetElapsed_ms());
+}
+
+void CResourceManager::addShaderToCompile(const char* fileName, const char* fileFormat, const char* shaderEntrypoint, 
+	const char* shaderTarget, void*& result, bool defaultShader, u32 shaderCompilationFlags)
+{
+	D3DCompileShaders.CompileShaders(fileName, fileFormat, 
+		shaderEntrypoint, shaderTarget, defaultShader, shaderCompilationFlags, result);
 }
 /*
 void	CResourceManager::DeferredUnload	()

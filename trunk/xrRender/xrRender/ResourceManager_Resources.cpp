@@ -13,6 +13,7 @@
 #include "tss.h"
 #include "blenders\blender.h"
 #include "blenders\blender_recorder.h"
+#include <charconv>
 
 void fix_texture_name(LPSTR fn);
 
@@ -134,59 +135,35 @@ void		CResourceManager::_DeleteDecl		(const SDeclaration* dcl)
 
 //--------------------------------------------------------------------------------------------------------------
 SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
-{
-	string_path			name;
-	xr_strcpy(name, _name);
-	if (0 == ::Render->m_skinning)	xr_strcat(name, "_0");
-	if (1 == ::Render->m_skinning)	xr_strcat(name, "_1");
-	if (2 == ::Render->m_skinning)	xr_strcat(name, "_2");
-	if (3 == ::Render->m_skinning)	xr_strcat(name, "_3");
-	if (4 == ::Render->m_skinning)	xr_strcat(name, "_4");
-	LPSTR N				= LPSTR		(name);
-	map_VS::iterator I	= m_vs.find	(N);
+{	
+	xr_string name = _name;
+	
+	if (RImplementation.m_skinning > -1)
+	{
+		char prefixSkinning[3]{'_'};
+		
+		auto result = std::to_chars(prefixSkinning + 1, prefixSkinning + 2, RImplementation.m_skinning);
+		R_ASSERT(result.ec == std::errc());
+		prefixSkinning[2] = '\0';
+		name += prefixSkinning;
+	}
+	map_VS::iterator I	= m_vs.find(name.c_str());
 	if (I!=m_vs.end())	return I->second;
 	else
 	{
 		SVS*	_vs					= xr_new<SVS>	();
 		_vs->dwFlags				|= xr_resource_flagged::RF_REGISTERED;
-		m_vs.insert					(mk_pair(_vs->set_name(name),_vs));
+		m_vs.insert					(mk_pair(_vs->set_name(name.c_str()),_vs));
 		if (0==stricmp(_name,"null"))	{
 			_vs->vs				= NULL;
 			return _vs;
 		}
 
-		string_path cname;
-		strconcat					(sizeof(cname),cname,::Render->getShaderPath(),_name,".vs");
-		FS.update_path				(cname,	"$game_shaders$", cname);
-//		LPCSTR						target		= NULL;
-
-		IReader*					fs			= FS.r_open(cname);
-		R_ASSERT3					(fs, "shader file doesnt exist", cname);
-
-		// Select target
-		LPCSTR c_target = "vs_2_0";
-		LPCSTR c_entry = "main";
-		if (HW.Caps.geometry_major >= 2)
-			c_target = "vs_2_0";
-		else
+		const char* c_target = "vs_2_0";
+		if (HW.Caps.geometry_major < 2)
 			c_target = "vs_1_1";
-		
-		// duplicate and zero-terminate
-		IReader* file = FS.r_open(cname);
-		R_ASSERT2(file, cname);
-		size_t const size = file->length();
-		char* const data = (LPSTR)_alloca(size + 1);
-		CopyMemory(data, file->pointer(), size);
-		data[size] = 0;
-		FS.r_close(file);
 
-		if (strstr(data, "main_vs_1_1")) { c_target = "vs_1_1"; c_entry = "main_vs_1_1"; }
-		if (strstr(data, "main_vs_2_0")) { c_target = "vs_2_0"; c_entry = "main_vs_2_0"; }
-
-		Msg("compiling shader %s", name);
-		HRESULT const _hr = ::Render->shader_compile(name, (DWORD const*)data, (UINT)size, c_entry, c_target, D3DXSHADER_DEBUG | D3DXSHADER_PACKMATRIX_ROWMAJOR, (void*&)_vs);
-
-		R_ASSERT2(SUCCEEDED(_hr), "Failed shader`s compilation. Check log for details info.");
+		addShaderToCompile(name.c_str(), ".vs", "main", c_target, reinterpret_cast<void*&>(_vs), false);
 
 		return _vs;
 	}
@@ -207,8 +184,7 @@ void	CResourceManager::_DeleteVS			(const SVS* vs)
 //--------------------------------------------------------------------------------------------------------------
 SPS*	CResourceManager::_CreatePS			(LPCSTR name)
 {
-	LPSTR N				= LPSTR(name);
-	map_PS::iterator I	= m_ps.find	(N);
+	map_PS::iterator I = m_ps.find(name);
 	if (I!=m_ps.end())	return		I->second;
 	else
 	{
@@ -221,33 +197,7 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR name)
 		}
 
 		// Open file
-		string_path cname;
-		LPCSTR shader_path = ::Render->getShaderPath();
-		strconcat(sizeof(cname), cname, shader_path, name, ".ps");
-		FS.update_path				(cname,	"$game_shaders$", cname);
-
-		// duplicate and zero-terminate
-		IReader* file = FS.r_open(cname);
-		R_ASSERT2(file, cname);
-		size_t const size = file->length();
-		char* const data = (LPSTR)_alloca(size + 1);
-		CopyMemory(data, file->pointer(), size);
-		data[size]				= 0;
-		FS.r_close				(file);
-
-		// Select target
-		LPCSTR						c_target	= "ps_2_0";
-		LPCSTR						c_entry		= "main";
-		if (strstr(data,"main_ps_1_1"))			{ c_target = "ps_1_1"; c_entry = "main_ps_1_1";	}
-		if (strstr(data,"main_ps_1_2"))			{ c_target = "ps_1_2"; c_entry = "main_ps_1_2";	}
-		if (strstr(data,"main_ps_1_3"))			{ c_target = "ps_1_3"; c_entry = "main_ps_1_3";	}
-		if (strstr(data,"main_ps_1_4"))			{ c_target = "ps_1_4"; c_entry = "main_ps_1_4";	}
-		if (strstr(data,"main_ps_2_0"))			{ c_target = "ps_2_0"; c_entry = "main_ps_2_0";	}
-
-		Msg("compiling shader %s", name);
-		HRESULT const _hr = ::Render->shader_compile(name, (DWORD const*)data, (UINT)size, c_entry, c_target, D3DXSHADER_DEBUG | D3DXSHADER_PACKMATRIX_ROWMAJOR, (void*&)_ps);
-
-		R_ASSERT2(SUCCEEDED(_hr), "Failed shader`s compilation. Check log for details info.");
+		addShaderToCompile(name, ".ps", "main", "ps_2_0", reinterpret_cast<void*&>(_ps), false);
 
 		return _ps;
 	}

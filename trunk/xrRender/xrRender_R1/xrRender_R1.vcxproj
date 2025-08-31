@@ -157,7 +157,7 @@
       <GenerateMapFile>false</GenerateMapFile>
       <MapFileName>
       </MapFileName>
-      <AdditionalDependencies>xr_3da.lib;xrCore.lib;d3dx9.lib;d3d9.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xr_3da.lib;D3DCompiler.lib;xrCore.lib;d3dx9.lib;d3d9.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(xrLibDir);../../3rd party/d3dx/Lib_x64;%(AdditionalLibraryDirectories)
       </AdditionalLibraryDirectories>
     </Link>
@@ -221,7 +221,7 @@
       <GenerateMapFile>false</GenerateMapFile>
       <MapFileName>
       </MapFileName>
-      <AdditionalDependencies>xr_3da.lib;xrCore.lib;d3dx9.lib;d3d9.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xr_3da.lib;D3DCompiler.lib;xrCore.lib;d3dx9.lib;d3d9.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(xrLibDir);../../3rd party/d3dx/Lib_x64;%(AdditionalLibraryDirectories)
       </AdditionalLibraryDirectories>
     </Link>
@@ -273,7 +273,7 @@
     <Link>
       <GenerateMapFile>false</GenerateMapFile>
       <MapFileName>$(OutDir)$(ProjectName).map</MapFileName>
-      <AdditionalDependencies>xr_3da.lib;sdl3.lib;xrCore.lib;d3dx9.lib;d3d9.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xr_3da.lib;D3DCompiler.lib;sdl3.lib;xrCore.lib;d3dx9.lib;d3d9.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(xrLibDir);../../3rd party/d3dx/Lib_x64;../../3rd party/SDL3/lib;%(AdditionalLibraryDirectories)
       </AdditionalLibraryDirectories>
     </Link>
@@ -315,6 +315,7 @@
     <ClInclude Include="..\xrRender\blenders\Blender_Recorder.h" />
     <ClInclude Include="..\xrRender\cl_intersect.h" />
     <ClInclude Include="..\xrRender\ColorMapManager.h" />
+    <ClInclude Include="..\xrRender\D3DCompileShaders.h" />
     <ClInclude Include="..\xrRender\D3DUtils.h" />
     <ClInclude Include="..\xrRender\du_box.h" />
     <ClInclude Include="..\xrRender\du_cone.h" />
@@ -430,6 +431,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\xr_3da\ai_script_lua_debug.cpp" />
     <ClCompile Include="..\..\xr_3da\ai_script_lua_extension.cpp" />
+    <ClCompile Include="..\xrRenderDX9\dx9CompileShaders.cpp" />
     <ClCompile Include="..\xrRenderDX9\dx9r_constants_cache.cpp" />
     <ClCompile Include="..\xrRender\Animation.cpp" />
     <ClCompile Include="..\xrRender\blenders\Blender.cpp" />
@@ -438,6 +440,7 @@
     <ClCompile Include="..\xrRender\Blender_Recorder_R2.cpp" />
     <ClCompile Include="..\xrRender\Blender_Recorder_StandartBinding.cpp" />
     <ClCompile Include="..\xrRender\ColorMapManager.cpp" />
+    <ClCompile Include="..\xrRender\D3DCompileShaders.cpp" />
     <ClCompile Include="..\xrRender\D3DUtils.cpp" />
     <ClCompile Include="..\xrRender\du_box.cpp" />
     <ClCompile Include="..\xrRender\du_cone.cpp" />

@@ -226,7 +226,7 @@ void CRender::ScreenshotImpl	(ScreenshotMode mode, LPCSTR name, CMemoryWriter* m
 				if(hr!=D3D_OK)		goto _end_;
 
 				// save (logical & physical)
-				ID3DBlob*		saved	= 0;
+				ID3DXBuffer* saved = 0;
 				hr					= D3DXSaveTextureToFileInMemory (&saved,D3DXIFF_DDS,texture,0);
 				if(hr!=D3D_OK)		goto _end_;
 				
@@ -243,7 +243,7 @@ void CRender::ScreenshotImpl	(ScreenshotMode mode, LPCSTR name, CMemoryWriter* m
 			break;
 		case IRender_interface::SM_NORMAL:
 		{
-			ID3DBlob* saved = 0;
+			ID3DXBuffer* saved = 0;
 			string64 t_stemp{};
 			string_path	buf{};
 			LPCSTR SuffixFormatImage_ = ".png";

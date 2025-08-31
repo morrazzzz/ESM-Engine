@@ -273,12 +273,14 @@ public:
 
 	// Information
 	virtual void					Statistics					(CGameFont* F);
-	virtual LPCSTR					getShaderPath				()									{ return "r3\\";	}
 	virtual ref_shader				getShader					(int id);
 	virtual IRender_Sector*			getSector					(int id);
 	virtual IRenderVisual*			getVisual					(int id);
 	virtual IRender_Sector*			detectSector				(const Fvector& P);
 	virtual IRender_Target*			getTarget					();
+
+	static constexpr xr_string getShaderFolder() { return "r3"; }
+	static constexpr xr_string getRenderName() { return "r3"; }
 
 	// Main 
 	virtual	void					add_Occluder				(Fbox2&	bb_screenspace	);			// mask screen region as oclluded

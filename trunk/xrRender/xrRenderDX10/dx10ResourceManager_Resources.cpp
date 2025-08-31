@@ -20,37 +20,98 @@
 #include "../xrRenderDX10/dx10ConstantBuffer.h"
 
 #include "../xrRender/ShaderResourceTraits.h"
+#include <charconv>
 
 #ifdef USE_DX11
-	SHS*	CResourceManager::_CreateHS			(LPCSTR Name)
-	{
-		return CreateShader<SHS>(Name);
+SHS* CResourceManager::_CreateHS(LPCSTR name)
+{
+	auto I = m_hs.find(name);
+	if (I != m_hs.end())
+		return I->second;
+
+	SHS* _hs = new SHS();
+	_hs->dwFlags |= xr_resource_flagged::RF_REGISTERED;
+	m_hs.insert(mk_pair(_hs->set_name(name), _hs));
+
+	if (0 == stricmp(name, "null")) {
+		return _hs;
 	}
 
-	void	CResourceManager::_DeleteHS			(const SHS*	HS	)
-	{
-		DestroyShader(HS);
+	addShaderToCompile(name, ".hs", "main", "hs_5_0", reinterpret_cast<void*&>(_hs), false);
+
+	return _hs;
+}
+
+void	CResourceManager::_DeleteHS(const SHS* hs)
+{
+	if (0 == (hs->dwFlags & xr_resource_flagged::RF_REGISTERED))	return;
+	auto I = m_hs.find(hs->cName.c_str());
+	if (I != m_hs.end()) {
+		m_hs.erase(I);
+		return;
+	}
+	Msg("! ERROR: Failed to find compiled pixel-shader '%s'", hs->cName.c_str());
+}
+
+SDS* CResourceManager::_CreateDS(LPCSTR name)
+{
+	auto I = m_ds.find(name);
+	if (I != m_ds.end())
+		return I->second;
+
+	SDS* _ds = new SDS();
+	_ds->dwFlags |= xr_resource_flagged::RF_REGISTERED;
+	m_ds.insert(mk_pair(_ds->set_name(name), _ds));
+
+	if (0 == stricmp(name, "null")) {
+		return _ds;
 	}
 
-	SDS*	CResourceManager::_CreateDS			(LPCSTR Name)
-	{
-		return CreateShader<SDS>(Name);
+	addShaderToCompile(name, ".ds", "main", "ds_5_0", reinterpret_cast<void*&>(_ds), false);
+
+	return _ds;
+}
+
+void CResourceManager::_DeleteDS(const SDS* ds)
+{
+	if (0 == (ds->dwFlags & xr_resource_flagged::RF_REGISTERED))	return;
+	auto I = m_ds.find(ds->cName.c_str());
+	if (I != m_ds.end()) {
+		m_ds.erase(I);
+		return;
+	}
+	Msg("! ERROR: Failed to find compiled pixel-shader '%s'", ds->cName.c_str());
+}
+
+SCS* CResourceManager::_CreateCS(LPCSTR name)
+{
+	auto I = m_cs.find(name);
+	if (I != m_cs.end())
+		return I->second;
+
+	SCS* _cs = new SCS();
+	_cs->dwFlags |= xr_resource_flagged::RF_REGISTERED;
+	m_cs.insert(mk_pair(_cs->set_name(name), _cs));
+
+	if (0 == stricmp(name, "null")) {
+		return _cs;
 	}
 
-	void	CResourceManager::_DeleteDS			(const SDS*	DS	)
-	{
-		DestroyShader(DS);
-	}
+	addShaderToCompile(name, ".cs", "main", "cs_5_0", reinterpret_cast<void*&>(_cs), false);
 
-    SCS*	CResourceManager::_CreateCS			(LPCSTR Name)
-	{
-		return CreateShader<SCS>(Name);
-	}
+	return _cs;
+}
 
-	void	CResourceManager::_DeleteCS			(const SCS*	CS	)
-	{
-		DestroyShader(CS);
+void CResourceManager::_DeleteCS(const SCS* cs)
+{
+	if (0 == (cs->dwFlags & xr_resource_flagged::RF_REGISTERED))	return;
+	auto I = m_cs.find(cs->cName.c_str());
+	if (I != m_cs.end()) {
+		m_cs.erase(I);
+		return;
 	}
+	Msg("! ERROR: Failed to find compiled pixel-shader '%s'", cs->cName.c_str());
+}
 #endif	//	USE_DX10
 
 void fix_texture_name(LPSTR fn);
@@ -133,70 +194,32 @@ void		CResourceManager::_DeletePass			(const SPass* P)
 //--------------------------------------------------------------------------------------------------------------
 SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 {
-	string_path			name;
-	xr_strcpy				(name,_name);
-	if (0 == ::Render->m_skinning)	xr_strcat(name,"_0");
-	if (1 == ::Render->m_skinning)	xr_strcat(name,"_1");
-	if (2 == ::Render->m_skinning)	xr_strcat(name,"_2");
-	if (3 == ::Render->m_skinning)	xr_strcat(name,"_3");
-	if (4 == ::Render->m_skinning)	xr_strcat(name,"_4");
-	LPSTR N				= LPSTR		(name);
-	map_VS::iterator I	= m_vs.find	(N);
+	xr_string name = _name;
+
+	if (RImplementation.m_skinning > -1)
+	{
+		char prefixSkinning[3]{ '_' };
+
+		auto result = std::to_chars(prefixSkinning + 1, prefixSkinning + 2, RImplementation.m_skinning);
+		R_ASSERT(result.ec == std::errc());
+		prefixSkinning[2] = '\0';
+		name += prefixSkinning;
+	}
+
+	map_VS::iterator I = m_vs.find(name.c_str());
 	if (I!=m_vs.end())	return I->second;
 	else
 	{
 		SVS*	_vs					= xr_new<SVS>	();
 		_vs->dwFlags				|= xr_resource_flagged::RF_REGISTERED;
-		m_vs.insert					(mk_pair(_vs->set_name(name),_vs));
+		m_vs.insert					(mk_pair(_vs->set_name(name.c_str()),_vs));
 		//_vs->vs				= NULL;
 		//_vs->signature		= NULL;
 		if (0==stricmp(_name,"null"))	{
 			return _vs;
 		}
 
-		string_path					shName;
-		{
-			const char*	pchr = strchr(_name, '(');
-			ptrdiff_t	size = pchr?pchr-_name:xr_strlen(_name);
-			strncpy(shName, _name, size);
-			shName[size] = 0;
-		}
-
-		string_path					cname;
-		strconcat					(sizeof(cname),cname,::Render->getShaderPath(),/*_name*/shName,".vs");
-		FS.update_path				(cname,	"$game_shaders$", cname);
-		//		LPCSTR						target		= NULL;
-
-		IReader* file			= FS.r_open(cname);
-
-		if (!file)
-		{
-			string1024			tmp;
-			xr_sprintf(tmp, "! [DX10]: %s is missing. Replace with stub_default.vs", cname);
-			Msg(tmp);
-			strconcat(sizeof(cname), cname, ::Render->getShaderPath(), "stub_default", ".vs");
-			FS.update_path(cname, "$game_shaders$", cname);
-			file = FS.r_open(cname);
-		}
-
-		u32	const size			= file->length();
-		char* const data		= (LPSTR)_alloca(size + 1);
-		CopyMemory				( data, file->pointer(), size );
-		data[size]				= 0;
-		FS.r_close				( file );
-
-		// Select target
-		LPCSTR						c_target	= "vs_2_0";
-		LPCSTR						c_entry		= "main";
-		if (HW.Caps.geometry_major>=2)	c_target="vs_2_0";
-		else 							c_target="vs_1_1";
-
-		if (strstr(data, "main_vs_1_1"))	{ c_target = "vs_1_1"; c_entry = "main_vs_1_1";	}
-		if (strstr(data, "main_vs_2_0"))	{ c_target = "vs_2_0"; c_entry = "main_vs_2_0";	}
-
-		HRESULT	const _hr = Render->shader_compile(name, (DWORD const*)data, size, c_entry, c_target, D3D10_SHADER_PACK_MATRIX_ROW_MAJOR, (void*&)_vs);
-
-		R_ASSERT2(SUCCEEDED(_hr), "Failed shader`s compilation. Check log for details info.");
+		addShaderToCompile(name.c_str(), ".vs", "main", "vs_5_0", reinterpret_cast<void*&>(_vs));
 
 		return					_vs;
 	}
@@ -230,71 +253,30 @@ void	CResourceManager::_DeleteVS			(const SVS* vs)
 //--------------------------------------------------------------------------------------------------------------
 SPS*	CResourceManager::_CreatePS			(LPCSTR _name)
 {
-	string_path			name;
-	xr_strcpy				(name,_name);
-	if (0 == ::Render->m_MSAASample)	xr_strcat(name,"_0");
-	if (1 == ::Render->m_MSAASample)	xr_strcat(name,"_1");
-	if (2 == ::Render->m_MSAASample)	xr_strcat(name,"_2");
-	if (3 == ::Render->m_MSAASample)	xr_strcat(name,"_3");
-	if (4 == ::Render->m_MSAASample)	xr_strcat(name,"_4");
-	if (5 == ::Render->m_MSAASample)	xr_strcat(name,"_5");
-	if (6 == ::Render->m_MSAASample)	xr_strcat(name,"_6");
-	if (7 == ::Render->m_MSAASample)	xr_strcat(name,"_7");
-	LPSTR N				= LPSTR(name);
-	map_PS::iterator I	= m_ps.find	(N);
+	xr_string name = _name;
+
+	if (RImplementation.m_MSAASample >= 0)
+	{
+		char nameWithMSAASample[3]{ '_' };
+		auto result = std::to_chars(nameWithMSAASample + 1, nameWithMSAASample + 2, RImplementation.m_MSAASample);
+		R_ASSERT(result.ec == std::errc());
+		nameWithMSAASample[2] = '\0';
+		name += nameWithMSAASample;
+	}
+
+	map_PS::iterator I	= m_ps.find	(name.c_str());
 	if (I!=m_ps.end())	return		I->second;
 	else
 	{
 		SPS*	_ps					=	xr_new<SPS>	();
 		_ps->dwFlags				|=	xr_resource_flagged::RF_REGISTERED;
-		m_ps.insert					(mk_pair(_ps->set_name(name),_ps));
+		m_ps.insert					(mk_pair(_ps->set_name(name.c_str()),_ps));
 		if (0==stricmp(_name,"null"))	{
 			_ps->ps				= NULL;
 			return _ps;
 		}
 
-		string_path					shName;
-		const char*	pchr = strchr(_name, '(');
-		ptrdiff_t	strSize = pchr?pchr-_name:xr_strlen(_name);
-		strncpy(shName, _name, strSize );
-		shName[strSize] = 0;
-
-		// Open file
-		string_path					cname;
-		strconcat					(sizeof(cname), cname,::Render->getShaderPath(),/*_name*/shName,".ps");
-		FS.update_path				(cname,	"$game_shaders$", cname);
-
-		IReader* file			= FS.r_open(cname);
-
-		if (!file)
-		{
-			string512 tmp;
-			xr_sprintf(tmp, "! [DX10]: %s is missing. Replace with stub_default.ps", cname);
-			Msg(tmp);
-			strconcat(sizeof cname, cname, Render->getShaderPath(), "stub_default", ".ps");
-			FS.update_path(cname, "$game_shaders$", cname);
-			file = FS.r_open(cname);
-		}
-
-		R_ASSERT2				( file, cname );
-		u32	const size			= file->length();
-		char* const data		= (LPSTR)_alloca(size + 1);
-		CopyMemory				( data, file->pointer(), size );
-		data[size]				= 0;
-		FS.r_close				( file );
-
-		// Select target
-		LPCSTR						c_target	= "ps_2_0";
-		LPCSTR						c_entry		= "main";
-		if (strstr(data,"main_ps_1_1"))			{ c_target = "ps_1_1"; c_entry = "main_ps_1_1";	}
-		if (strstr(data,"main_ps_1_2"))			{ c_target = "ps_1_2"; c_entry = "main_ps_1_2";	}
-		if (strstr(data,"main_ps_1_3"))			{ c_target = "ps_1_3"; c_entry = "main_ps_1_3";	}
-		if (strstr(data,"main_ps_1_4"))			{ c_target = "ps_1_4"; c_entry = "main_ps_1_4";	}
-		if (strstr(data,"main_ps_2_0"))			{ c_target = "ps_2_0"; c_entry = "main_ps_2_0";	}
-
-		HRESULT	const _hr		= ::Render->shader_compile(name,(DWORD const*)data,size, c_entry, c_target, D3D10_SHADER_PACK_MATRIX_ROW_MAJOR, (void*&)_ps );
-		
-		R_ASSERT2(SUCCEEDED(_hr), "Failed shader`s compilation. Check log for details info.");
+		addShaderToCompile(name.c_str(), ".ps", "main", "ps_5_0", reinterpret_cast<void*&>(_ps), true);
 
 		return			_ps;
 	}
@@ -328,33 +310,8 @@ SGS*	CResourceManager::_CreateGS			(LPCSTR name)
 			return _gs;
 		}
 
-		// Open file
-		string_path					cname;
-		strconcat(sizeof(cname), cname, ::Render->getShaderPath(), name, ".gs");
-		FS.update_path(cname, "$game_shaders$", cname);
 
-		IReader* file = FS.r_open(cname);
-		R_ASSERT2(file, cname);
-
-		if (!file)
-		{
-			string512 tmp;
-			xr_sprintf(tmp, "! [DX10]: %s is missing. Replace with stub_default.gs", cname);
-			Msg(tmp);
-			strconcat(sizeof cname, cname, Render->getShaderPath(), "stub_default", ".gs");
-			FS.update_path(cname, "$game_shaders$", cname);
-			file = FS.r_open(cname);
-		}
-
-		// Select target
-		LPCSTR						c_target = "gs_4_0";
-		LPCSTR						c_entry = "main";
-
-		HRESULT	const _hr = Render->shader_compile(name, (DWORD const*)file->pointer(), file->length(), c_entry, c_target, D3D10_SHADER_PACK_MATRIX_ROW_MAJOR, (void*&)_gs);
-
-		FS.r_close(file);
-
-		R_ASSERT2(SUCCEEDED(_hr), "Failed shader`s compilation. Check log for details info.");
+		addShaderToCompile(name, ".gs", "main", "gs_5_0", reinterpret_cast<void*&>(_gs), true);
 
 		return					_gs;
 	}
