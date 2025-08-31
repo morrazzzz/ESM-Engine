@@ -372,7 +372,6 @@ void CConsole::DrawBackgrounds()
 	Frect r;
 	r.set( 0.0f, 0.0f, float(Device.dwWidth), 0.5f * float(Device.dwHeight) );
 
-	UIRender->SetShader( **m_hShader_back );
 	// 6 = back, 12 = tips, (VIEW_TIPS_COUNT+1)*6 = highlight_words, 12 = scroll
 	UIRender->StartPrimitive( 6 + 12 + (VIEW_TIPS_COUNT+1)*6 + 12, IUIRender::ptTriList, IUIRender::pttTL );
 
@@ -380,7 +379,7 @@ void CConsole::DrawBackgrounds()
 
 	if ( m_tips.size() == 0 || m_disable_tips )
 	{
-		UIRender->FlushPrimitive();
+		UIRender->FlushPrimitive(**m_hShader_back);
 		return;
 	}
 
@@ -508,7 +507,7 @@ void CConsole::DrawBackgrounds()
 		DrawRect( rs, tips_scroll_pos_color );
 	}
 
-	UIRender->FlushPrimitive();
+	UIRender->FlushPrimitive(**m_hShader_back);
 }
 
 void CConsole::DrawRect( Frect const& r, u32 color )

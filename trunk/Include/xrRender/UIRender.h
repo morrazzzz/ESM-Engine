@@ -57,6 +57,7 @@ public:
 
 	virtual void StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePointType pointType) = 0;
 	virtual void FlushPrimitive() = 0;
+	virtual void FlushPrimitive(IUIShader& shader) = 0;
 
 	virtual LPCSTR	UpdateShaderName(LPCSTR tex_name, LPCSTR sh_name) = 0;
 
