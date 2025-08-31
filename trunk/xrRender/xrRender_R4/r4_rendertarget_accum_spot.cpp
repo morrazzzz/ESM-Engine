@@ -50,7 +50,7 @@ void CRenderTarget::accum_spot	(light* L)
 		// *** in practice, 'cause we "clear" it back to 0x1 it usually allows us to > 200 lights :)
 		//	Done in blender!
 		//RCache.set_ColorWriteEnable		(FALSE);
-		RCache.set_Element		(s_accum_mask->E[SE_MASK_SPOT]);		// masker
+		RCache.set_Element		(s_accum_mask->E[SE_MASK_SPOT], 0, &*geometry);		// masker
 
 		// backfaces: if (stencil>=1 && zfail)			stencil = light_id
 		RCache.set_CullMode		(CULL_CW);
