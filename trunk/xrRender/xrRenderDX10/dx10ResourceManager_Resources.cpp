@@ -700,7 +700,7 @@ void			CResourceManager::_DeleteConstantList(const SConstantList* L )
 	Msg	("! ERROR: Failed to find compiled list of r1-constant-defs");
 }
 //--------------------------------------------------------------------------------------------------------------
-dx10ConstantBuffer* CResourceManager::_CreateConstantBuffer(ID3DShaderReflectionConstantBuffer* pTable)
+dx10ConstantBuffer* CResourceManager::_CreateConstantBuffer(ID3D11ShaderReflectionConstantBuffer* pTable)
 {
 	VERIFY(pTable);
 	dx10ConstantBuffer	*pTempBuffer = xr_new<dx10ConstantBuffer>(pTable);

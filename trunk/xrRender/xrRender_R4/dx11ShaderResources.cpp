@@ -10,7 +10,7 @@ void dx11ShaderResources::addShaderResource(LPCSTR name, u32 index)
 	mapResourcesShader[string] = index;
 }
 
-void dx11ShaderResources::parseShaderResource(ID3DShaderReflection* pReflection, u32 resNum, u32 destination)
+void dx11ShaderResources::parseShaderResource(ID3D11ShaderReflection* pReflection, u32 resNum, u32 destination)
 {
 	for (u32 i = 0; i < resNum; i++)
 	{

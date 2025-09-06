@@ -165,7 +165,7 @@ private:
 	void					fatal		(LPCSTR s);
 
 #if defined(USE_DX10) || defined(USE_DX11)
-	BOOL addConstantShader(ID3DShaderReflectionConstantBuffer* pTable, u32 destination);
+	BOOL addConstantShader(ID3D11ShaderReflectionConstantBuffer* pTable, u32 destination);
 #endif	//	USE_DX10
 
 public:
@@ -174,7 +174,7 @@ public:
 	void					clear		();
 
 #if defined(USE_DX10) || defined(USE_DX11)
-	void parseConstantsShader(ID3DShaderReflection* pShader, u32 constantBuffers, u32 destination);
+	void parseConstantsShader(ID3D11ShaderReflection* pShader, u32 constantBuffers, u32 destination);
 #else
 	BOOL					parse		(void* desc, u32 destination);
 #endif

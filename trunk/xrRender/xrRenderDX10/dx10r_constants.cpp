@@ -19,7 +19,7 @@ IC bool	p_sort		(ref_constant C1, ref_constant C2)
 	return xr_strcmp(C1->name,C2->name)<0;
 }
 
-BOOL R_constant_table::addConstantShader(ID3DShaderReflectionConstantBuffer* pTable, u32 destination)
+BOOL R_constant_table::addConstantShader(ID3D11ShaderReflectionConstantBuffer* pTable, u32 destination)
 {
 	//VERIFY(_desc);
 	//ID3D10ShaderReflectionConstantBuffer *pTable = (ID3D10ShaderReflectionConstantBuffer *)_desc;
@@ -33,9 +33,9 @@ BOOL R_constant_table::addConstantShader(ID3DShaderReflectionConstantBuffer* pTa
 	//for (u32 dwCount = desc->Constants; dwCount; dwCount--,it++)
 	for (u32 i = 0; i < TableDesc.Variables; ++i)
 	{
-		ID3DShaderReflectionVariable* pVar;
+		ID3D11ShaderReflectionVariable* pVar;
 		D3D_SHADER_VARIABLE_DESC		VarDesc;
-		ID3DShaderReflectionType*		pType;
+		ID3D11ShaderReflectionType*		pType;
 		D3D_SHADER_TYPE_DESC			TypeDesc;
 
 		pVar = pTable->GetVariableByIndex(i);
@@ -275,13 +275,13 @@ IC u32 dest_to_cbuf_type(u32 destination)
 	return 0;
 }
 
-void R_constant_table::parseConstantsShader(ID3DShaderReflection* shaderReflection, u32 constantBuffers, u32 destination)
+void R_constant_table::parseConstantsShader(ID3D11ShaderReflection* shaderReflection, u32 constantBuffers, u32 destination)
 {
 	if (constantBuffers)
 	{
 		m_CBTable.reserve(constantBuffers);
 		//	Parse single constant table
-		ID3DShaderReflectionConstantBuffer *pTable=0;
+		ID3D11ShaderReflectionConstantBuffer *pTable=0;
 
 		for (u16 iBuf = 0; iBuf< constantBuffers; ++iBuf)
 		{

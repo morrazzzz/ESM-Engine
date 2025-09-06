@@ -61,8 +61,8 @@ HRESULT CD3DCompileShaders::SetDeviceShader(const char* pTarget, const void* fil
 	}
 	}
 
-	ID3DShaderReflection* pReflection = nullptr;
-	hrResult = D3DReflect(fileData, fileSize, IID_ID3DShaderReflection, (void**)&pReflection);
+	ID3D11ShaderReflection* pReflection = nullptr;
+	hrResult = D3DReflect(fileData, fileSize, IID_ID3D11ShaderReflection, (void**)&pReflection);
 
 	if (SUCCEEDED(hrResult) && pReflection)
 	{

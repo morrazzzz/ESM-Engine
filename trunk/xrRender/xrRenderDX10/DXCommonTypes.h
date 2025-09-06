@@ -2,6 +2,8 @@
 
 class	dx10State;
 
+#pragma todo("Refactor this!!!!")
+
 #if defined(USE_DX11)
 
 typedef	D3D11_BLEND						D3D_BLEND;
@@ -54,8 +56,6 @@ typedef	ID3D11RenderTargetView					ID3DRenderTargetView;
 typedef	ID3D11DepthStencilView					ID3DDepthStencilView;
 typedef	ID3D11ShaderResourceView				ID3DShaderResourceView;
 typedef	ID3D11Query								ID3DQuery;
-typedef	ID3D11Device							ID3DDevice;
-typedef ID3D11DeviceContext						ID3DDeviceContext;
 
 #define D3D_COMMONSHADER_SAMPLER_SLOT_COUNT		D3D11_COMMONSHADER_SAMPLER_SLOT_COUNT
 
@@ -246,14 +246,6 @@ typedef	D3D11_SHADER_VARIABLE_DESC		D3D_SHADER_VARIABLE_DESC;
 typedef D3D11_SHADER_INPUT_BIND_DESC	D3D_SHADER_INPUT_BIND_DESC;
 typedef	D3D11_SHADER_TYPE_DESC			D3D_SHADER_TYPE_DESC;
 typedef D3D11_CBUFFER_TYPE				D3D_CBUFFER_TYPE;
-
-typedef ID3D11ShaderReflection							ID3DShaderReflection;
-typedef	ID3D11ShaderReflectionConstantBuffer			ID3DShaderReflectionConstantBuffer;
-typedef	ID3D11ShaderReflectionVariable					ID3DShaderReflectionVariable;
-typedef	ID3D11ShaderReflectionType						ID3DShaderReflectionType;
-
-
-#define	IID_ID3DShaderReflection	IID_ID3D11ShaderReflection
 
 #elif	defined(USE_DX10)
 
@@ -506,10 +498,6 @@ typedef ID3D10ShaderReflection	ID3DShaderReflection;
 typedef	ID3D10ShaderReflectionConstantBuffer			ID3DShaderReflectionConstantBuffer;
 typedef	ID3D10ShaderReflectionVariable					ID3DShaderReflectionVariable;
 typedef	ID3D10ShaderReflectionType						ID3DShaderReflectionType;
-
-#define	IID_ID3DShaderReflection	IID_ID3D10ShaderReflection
-
 #endif
 
 typedef	dx10State				ID3DState;
-#define DX10_ONLY(expr)			expr

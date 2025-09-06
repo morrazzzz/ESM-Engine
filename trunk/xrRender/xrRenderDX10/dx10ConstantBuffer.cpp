@@ -12,7 +12,7 @@ dx10ConstantBuffer::~dx10ConstantBuffer()
 	xr_free(m_pBufferData);
 }
 
-dx10ConstantBuffer::dx10ConstantBuffer(ID3DShaderReflectionConstantBuffer* pTable)
+dx10ConstantBuffer::dx10ConstantBuffer(ID3D11ShaderReflectionConstantBuffer* pTable)
 	: m_bChanged(true)
 {
 	D3D_SHADER_BUFFER_DESC Desc;
@@ -28,8 +28,8 @@ dx10ConstantBuffer::dx10ConstantBuffer(ID3DShaderReflectionConstantBuffer* pTabl
 	m_MembersNames.resize(Desc.Variables);
 	for (u32 i=0; i<Desc.Variables; ++i)
 	{
-		ID3DShaderReflectionVariable* pVar;
-		ID3DShaderReflectionType*		pType;
+		ID3D11ShaderReflectionVariable* pVar;
+		ID3D11ShaderReflectionType*		pType;
 
 		D3D_SHADER_VARIABLE_DESC		var_desc;
 

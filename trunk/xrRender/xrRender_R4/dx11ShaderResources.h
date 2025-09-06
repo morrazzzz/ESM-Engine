@@ -12,7 +12,7 @@ public:
 
 	void addShaderResource(LPCSTR name, u32 index);
 	void mergeShaderResouces(std::initializer_list<dx11ShaderResources*> oldMapResourcesShader);
-	void parseShaderResource(ID3DShaderReflection* pReflection, u32 ResNum, u32 destination);
+	void parseShaderResource(ID3D11ShaderReflection* pReflection, u32 ResNum, u32 destination);
 	void clearShaderResources() { mapResourcesShader.clear(); }
 	u32 findResourceShader(LPCSTR name);
 
