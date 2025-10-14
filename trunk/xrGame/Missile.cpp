@@ -132,7 +132,7 @@ void CMissile::spawn_fake_missile()
 		CSE_Abstract		*object = Level().spawn_item(
 			*cNameSect(),
 			Position(),
-			(g_dedicated_server)?u32(-1):ai_location().level_vertex_id(),
+			ai_location().level_vertex_id(),
 			ID(),
 			true
 		);
@@ -224,6 +224,7 @@ void CMissile::shedule_Update(u32 dt)
 		if(m_dwDestroyTime <= Level().timeServer()) 
 		{
 			m_dwDestroyTime = 0xffffffff;
+			GetCSEObject()->ID_Parent = static_cast<u16>(-1);
 			VERIFY	(!m_pCurrentInventory);
 			Destroy	();
 			return;
