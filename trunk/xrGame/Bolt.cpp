@@ -34,7 +34,7 @@ void CBolt::OnH_A_Chield()
 
 void CBolt::Throw() 
 {
-	if (const auto actor = smart_cast<CActor*>(H_Parent()))
+	if (const auto* actor = static_cast<CGameObject*>(H_Parent())->cast_actor())
 		HUD_SOUND_ITEM::PlaySound(m_ThrowSnd, actor->Position(), nullptr, true);
 
 	auto					*l_pBolt = smart_cast<CMissile*>(m_fake_missile);
