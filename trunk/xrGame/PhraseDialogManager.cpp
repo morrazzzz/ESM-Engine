@@ -111,6 +111,11 @@ bool CPhraseDialogManager::AddAvailableDialog(shared_str dialog_id, CPhraseDialo
 	const CGameObject*	pSpeakerGO2 = smart_cast<const CGameObject*>(partner);	VERIFY(pSpeakerGO2);
 
 	bool predicate_result = phrase_dialog->Precondition(pSpeakerGO1, pSpeakerGO2);
-	if(predicate_result) m_AvailableDialogs.push_back(phrase_dialog);
+	if (predicate_result)
+	{
+		m_AvailableDialogs.push_back(phrase_dialog);
+		phrase_dialog->RandomTextsForPhrase();
+	}
+
 	return predicate_result;
 }

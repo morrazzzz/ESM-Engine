@@ -29,12 +29,18 @@ public:
 	bool				IsDummy			()	const;
 	CPhraseScript*		GetPhraseScript	()					{return &m_PhraseScript;};
 
+	void AddTextsForPhrase(const char* text);
+	void ReserveCountTextsForPhrase(int reserve);
+
+	void RandomSetTextFromTexts();
 protected:
+	xr_vector<xr_string> phraseTexts{};
+
 	//уникальный индекс в списке фраз диалога
 	shared_str		m_ID;
 	//текстовое представление фразы
 	xr_string		m_text;
-	
+
 	//минимальный уровень благосклоггости, необходимый для того
 	//чтоб фразу можно было сказать
 	int				m_iGoodwillLevel;

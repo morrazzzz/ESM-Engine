@@ -123,8 +123,8 @@ public:
 
 public:
 	//information receive & dialogs
-	virtual bool OnReceiveInfo		(shared_str info_id) const;
-	virtual void OnDisableInfo		(shared_str info_id) const;
+	virtual bool OnReceiveInfo(shared_str info_id, CInfoPortion* infoPortion) const;
+	virtual void OnDisableInfo		(shared_str info_id);
 //	virtual void ReceivePdaMessage	(u16 who, EPdaMsg msg, shared_str info_id);
 
 	virtual void	 NewPdaContact		(CInventoryOwner*);

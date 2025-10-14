@@ -14,16 +14,20 @@ struct SPhraseDialogData : CSharedResource
 	SPhraseDialogData ();
 	virtual ~SPhraseDialogData ();
 
-	//заголовок диалога, если NULL, то принимается за стартовую фразу
-	shared_str		m_sCaption;
-
-	//однонаправленый граф фраз
-	//описывает все возможные варианты развития диалога
-	CPhraseGraph	m_PhraseGraph;
-
 	//список скриптовых предикатов, выполнение, которых необходимо
 	//для начала диалога
 	CPhraseScript	m_PhraseScript;
+
+	//однонаправленый граф фраз
+    //описывает все возможные варианты развития диалога
+	CPhraseGraph	m_PhraseGraph;
+
+	xr_vector<xr_string> idPhrasesWithRandomText{};
+
+	//заголовок диалога, если NULL, то принимается за стартовую фразу
+	shared_str		m_sCaption;
+
+	u32 lastFrameRandomTextForPhrases{};
 
 	//произвольное число - приоритет диалога (0 по умолчанию), может быть отрицательным
 	//в окне выбора у актера диалоги будут сортироваться по этому значению от меньшего (снизу) к большему (сверху)
@@ -128,10 +132,13 @@ protected:
 	//рекурсивное добавление фраз в граф
 	void					AddPhrase	(CUIXml* pXml, XML_NODE* phrase_node, const shared_str& phrase_id, const shared_str& prev_phrase_id);
 public:
-	CPhrase*				AddPhrase			(LPCSTR text, const shared_str& phrase_id, const shared_str& prev_phrase_id, int goodwil_level);
-	CPhrase*				AddPhrase_script	(LPCSTR text, LPCSTR phrase_id, LPCSTR prev_phrase_id, int goodwil_level){return AddPhrase(text, phrase_id, prev_phrase_id, goodwil_level);};
+	CPhrase* AddPhrase(const shared_str& phrase_id, const shared_str& prev_phrase_id);
+	CPhrase* AddPhrase_script(LPCSTR text, LPCSTR phrase_id, LPCSTR prev_phrase_id, int goodwil_level);
+
 	void					SetCaption	(LPCSTR str);
 	void					SetPriority	(int val);
+
+	void RandomTextsForPhrase();
 
 protected:
 

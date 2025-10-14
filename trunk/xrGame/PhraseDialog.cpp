@@ -119,7 +119,8 @@ bool CPhraseDialog::SayPhrase (DIALOG_SHARED_PTR& phrase_dialog, const shared_st
 			shared_str next_phrase_id	= next_phrase_vertex->vertex_id();
 			if(next_phrase_vertex->data()->m_PhraseScript.Precondition(pSpeakerGO2, pSpeakerGO1, *phrase_dialog->m_DialogId, phrase_id.c_str(), next_phrase_id.c_str()))
 			{
-				phrase_dialog->m_PhraseVector.push_back(next_phrase_vertex->data());
+				CPhrase* data_vertex = next_phrase_vertex->data();
+				phrase_dialog->m_PhraseVector.push_back(data_vertex);
 #ifdef DEBUG
 				if(psAI_Flags.test(aiDialogs)){
 					LPCSTR phrase_text = next_phrase_vertex->data()->GetText();
@@ -249,34 +250,60 @@ void CPhraseDialog::SetPriority	(int val)
 	data()->m_iPriority = val;
 }
 
-CPhrase* CPhraseDialog::AddPhrase	(LPCSTR text, const shared_str& phrase_id, const shared_str& prev_phrase_id, int goodwil_level)
+CPhrase* CPhraseDialog::AddPhrase(const shared_str& phrase_id, const shared_str& prev_phrase_id)
 {
-	CPhrase* phrase					= NULL;
-	CPhraseGraph::CVertex* _vertex	= data()->m_PhraseGraph.vertex(phrase_id);
+	CPhrase* phrase = nullptr;
+	CPhraseGraph::CVertex* _vertex = data()->m_PhraseGraph.vertex(phrase_id);
 	if(!_vertex) 
 	{
-		phrase						= xr_new<CPhrase>(); VERIFY(phrase);
-		phrase->SetID				(phrase_id);
+		phrase = new CPhrase();
+		R_ASSERT(phrase);
+		phrase->SetID(phrase_id);
 
-		phrase->SetText				(text);
-		phrase->m_iGoodwillLevel	= goodwil_level;
-
-		data()->m_PhraseGraph.add_vertex	(phrase, phrase_id);
+		data()->m_PhraseGraph.add_vertex(phrase, phrase_id);
 	}
 
 	if(prev_phrase_id != "")
-		data()->m_PhraseGraph.add_edge		(prev_phrase_id, phrase_id, 0.f);
+		data()->m_PhraseGraph.add_edge(prev_phrase_id, phrase_id, 0.f);
 	
 	return phrase;
 }
 
 void CPhraseDialog::AddPhrase	(CUIXml* pXml, XML_NODE* phrase_node, const shared_str& phrase_id, const shared_str& prev_phrase_id)
 {
+	CPhrase* ph = AddPhrase(phrase_id, prev_phrase_id);
 
-	LPCSTR sText		= pXml->Read		(phrase_node, "text", 0, "");
-	int		gw			= pXml->ReadInt		(phrase_node, "goodwill", 0, -10000);
-	CPhrase* ph			= AddPhrase			(sText, phrase_id, prev_phrase_id, gw);
-	if(!ph)				return;
+	if(!ph)				
+		return;
+
+	if (XML_NODE* texts = pXml->NavigateToNode(phrase_node, "texts", 0))
+	{
+		int onlyFirstRandom = pXml->ReadAttribInt(texts, "only_first_random", 0);
+
+		if (onlyFirstRandom <= 0)
+			data()->idPhrasesWithRandomText.emplace_back(phrase_id.c_str());
+
+		int countTexts = pXml->GetNodesNum(texts, "text");
+	    
+		ph->ReserveCountTextsForPhrase(countTexts);
+		for (int i = 0; i < countTexts; i++)
+		{
+			const char* text = pXml->Read(texts, "text", i, "");
+			ph->AddTextsForPhrase(text);
+		}
+
+		data()->lastFrameRandomTextForPhrases = Device.dwFrame;
+	}
+	else
+	{
+		const char* text = pXml->Read(phrase_node, "text", 0, "");
+		ph->SetText(text);
+	}
+
+	ph->RandomSetTextFromTexts();
+
+	int gw = pXml->ReadInt(phrase_node, "goodwill", 0, -10000);
+	ph->m_iGoodwillLevel = gw;
 
 	ph->m_PhraseScript.Load					(pXml, phrase_node);
 
@@ -290,6 +317,38 @@ void CPhraseDialog::AddPhrase	(CUIXml* pXml, XML_NODE* phrase_node, const shared
 //.		int next_phrase_id				= atoi(next_phrase_id_str);
 
 		AddPhrase						(pXml, next_phrase_node, next_phrase_id_str, phrase_id);
+	}
+}
+
+CPhrase* CPhraseDialog::AddPhrase_script(LPCSTR text, LPCSTR phrase_id, LPCSTR prev_phrase_id, int goodwill_level)
+{
+	CPhrase* phrase = AddPhrase(phrase_id, prev_phrase_id);
+
+	if (!phrase)
+		return phrase;
+
+	phrase->SetText(text);
+	phrase->m_iGoodwillLevel = goodwill_level;
+}
+
+void CPhraseDialog::RandomTextsForPhrase()
+{
+	if (data()->lastFrameRandomTextForPhrases == Device.dwFrame)
+		return;
+
+	if (data()->idPhrasesWithRandomText.empty())
+		return;
+
+	for (u32 i = 0; i < data()->idPhrasesWithRandomText.size(); i++)
+	{
+		auto vertex = data()->m_PhraseGraph.vertex(data()->idPhrasesWithRandomText[i].c_str());
+		if (!vertex)
+		{
+			R_ASSERT(false);
+			return;
+		}
+
+		vertex->data()->RandomSetTextFromTexts();
 	}
 }
 

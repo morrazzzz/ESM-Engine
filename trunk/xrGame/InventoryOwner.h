@@ -19,6 +19,7 @@ class CPda;
 class CGameObject;
 class CEntityAlive;
 class CCustomZone;
+class CInfoPortion;
 class CInfoPortionWrapper;
 class NET_Packet;
 class CCharacterInfo;
@@ -107,7 +108,7 @@ protected:
 	// сюжетная информация
 public:
 	//персонаж получил новую порцию информации
-	virtual bool OnReceiveInfo	(shared_str info_id) const;
+	virtual bool OnReceiveInfo(shared_str info_id, CInfoPortion* infoPortion) const;
 	//убрать информацию
 	virtual void OnDisableInfo	(shared_str info_id) const;
 	//передать/удалить информацию через сервер
@@ -120,7 +121,7 @@ public:
 	void DumpInfo() const;
 	#endif
 
-	CInfoPortionWrapper			*m_known_info_registry;
+	CInfoPortionWrapper* m_known_info_registry;
 
 	//////////////////////////////////////////////////////////////////////////
 	// инвентарь 

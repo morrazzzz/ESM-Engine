@@ -100,16 +100,17 @@ void  CActor::AddGameNews(GAME_NEWS_DATA& news_data)
 }
 
 
-bool CActor::OnReceiveInfo(shared_str info_id) const
+bool CActor::OnReceiveInfo(shared_str info_id, CInfoPortion* infoPortion) const
 {
-	if(!CInventoryOwner::OnReceiveInfo(info_id))
+	CInfoPortion infoPortionLoad;
+	infoPortionLoad.Load(info_id);
+	infoPortion = &infoPortionLoad;
+
+	if(!CInventoryOwner::OnReceiveInfo(info_id, infoPortion))
 		return false;
 
-	CInfoPortion info_portion;
-	info_portion.Load(info_id);
-
-	AddEncyclopediaArticle	(&info_portion);
-	AddGameTask				(&info_portion);
+	AddEncyclopediaArticle	(&infoPortionLoad);
+	AddGameTask				(&infoPortionLoad);
 
 	callback(GameObject::eInventoryInfo)(lua_game_object(), *info_id);
 
@@ -127,7 +128,7 @@ bool CActor::OnReceiveInfo(shared_str info_id) const
 }
 
 
-void CActor::OnDisableInfo(shared_str info_id) const
+void CActor::OnDisableInfo(shared_str info_id)
 {
 	CInventoryOwner::OnDisableInfo(info_id);
 
@@ -158,12 +159,13 @@ void   CActor::UpdateAvailableDialogs	(CPhraseDialogManager* partner)
 	m_AvailableDialogs.clear();
 	m_CheckedDialogs.clear();
 
+	CTimer T; T.Start();
+
 	if(CInventoryOwner::m_known_info_registry->registry().objects_ptr())
 	{
 		for(KNOWN_INFO_VECTOR::const_iterator it = CInventoryOwner::m_known_info_registry->registry().objects_ptr()->begin();
 			CInventoryOwner::m_known_info_registry->registry().objects_ptr()->end() != it; ++it)
 		{
-			//подгрузить кусочек информации с которым мы работаем
 			CInfoPortion info_portion;
 			info_portion.Load((*it).info_id);
 
@@ -171,6 +173,8 @@ void   CActor::UpdateAvailableDialogs	(CPhraseDialogManager* partner)
 				AddAvailableDialog(*info_portion.DialogNames()[i], partner);
 		}
 	}
+
+	Msg("update dialogs %fms", T.GetElapsed_sec() * 1000.f);
 
 	//добавить актерский диалог собеседника
 	CInventoryOwner* pInvOwnerPartner = smart_cast<CInventoryOwner*>(partner); VERIFY(pInvOwnerPartner);

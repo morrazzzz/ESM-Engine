@@ -31,7 +31,7 @@ private:
 };
 
 
-bool CInventoryOwner::OnReceiveInfo(shared_str info_id) const
+bool CInventoryOwner::OnReceiveInfo(shared_str info_id, CInfoPortion* infoPortion) const
 {
 	VERIFY( info_id.size() );
 	//добавить запись в реестр
@@ -55,16 +55,22 @@ bool CInventoryOwner::OnReceiveInfo(shared_str info_id) const
 //	pThisGameObject->callback(GameObject::eInventoryInfo)(pThisGameObject->lua_game_object(), *info_id);
 	
 
-	CInfoPortion info_portion;
-	info_portion.Load(info_id);
+	CInfoPortion* infoPortionReceive = nullptr;
+	if (!infoPortion)
+	{
+		CInfoPortion infoPortionLoad;
+		infoPortionLoad.Load(info_id);
+		infoPortionReceive = &infoPortionLoad;
+	}
+	else
+		infoPortionReceive = infoPortion;
 
 	//запустить скриптовые функции
-	info_portion.RunScriptActions(pThisGameObject);
+	infoPortionReceive->RunScriptActions(pThisGameObject);
 
 	//выкинуть те info portions которые стали неактуальными
-	for(u32 i=0; i<info_portion.DisableInfos().size(); i++)
-		TransferInfo(info_portion.DisableInfos()[i], false);
-
+	for (u32 i = 0; i < infoPortionReceive->DisableInfos().size(); i++)
+		TransferInfo(infoPortionReceive->DisableInfos()[i], false);
 
 	return true;
 }
@@ -106,7 +112,7 @@ void CInventoryOwner::TransferInfo(shared_str info_id, bool add_info) const
 	VERIFY( info_id.size() );
 
 	if(add_info)
-		OnReceiveInfo(info_id);
+		OnReceiveInfo(info_id, nullptr);
 	else
 		OnDisableInfo(info_id);
 }
