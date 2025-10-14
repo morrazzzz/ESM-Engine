@@ -130,6 +130,9 @@ void CInput::KeyUpdate()
 
 	for (int i = 0; i < CountInputsScancode; i++)
 	{
+		if (!CurrentIR())
+			break;
+
 		if (!KeyboardState[i] && !KeyboardStatePrev[i])
 			continue;
 
@@ -168,6 +171,9 @@ void CInput::MouseUpdate( )
 
 	for (int i = 0; i < 5; i++)
 	{
+		if (!CurrentIR())
+			break;
+
 		mouseState[i] = mouseButtonFlags & BUTTON_MASK(i);
 
 		if (!mouseState[i] && !mouseStatePrev[i])
