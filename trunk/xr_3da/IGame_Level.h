@@ -16,8 +16,7 @@ class ENGINE_API	IGame_Level		:
 	public DLL_Pure,
 	public IInputReceiver,
 	public pureRender,
-	public pureFrame,
-	public IEventReceiver
+	public pureFrame
 {
 protected:
 	// Network interface
@@ -55,13 +54,11 @@ public:
 
 	virtual shared_str			name					() const = 0;
 
-	virtual BOOL				net_Start				( LPCSTR op_server, LPCSTR op_client)	= 0;
-	virtual void				net_Load				( LPCSTR name )							= 0;
-	virtual void				net_Save				( LPCSTR name )							= 0;
+	virtual BOOL				net_Start				( LPCSTR op_server)	                    = 0;
 	virtual void				net_Stop				( );
 	virtual void				net_Update				( )										= 0;
 
-	virtual BOOL				Load					( u32 dwNum );
+	BOOL LoadLevel();
 	virtual BOOL				Load_GameSpecific_Before( )										{ return TRUE; };		// before object loading
 	virtual BOOL				Load_GameSpecific_After	( )										{ return TRUE; };		// after object loading
 	virtual void				Load_GameSpecific_CFORM	( CDB::TRI* T, u32 count )				= 0;

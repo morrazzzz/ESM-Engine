@@ -187,9 +187,6 @@ public:
 		if (id1 < EPS_L)
 			Msg("Invalid time factor! (%.4f)",id1);
 		else {
-			if (!OnServer())
-				return;
-
 			Level().SetGameTimeFactor(id1);
 		}
 	}

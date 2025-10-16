@@ -126,9 +126,7 @@ void xrServer::SpawnNewObjects()
 		if (DC->objectCreateAlife)
 			game->OnCreate(DC->ID);
 
-		if (OnServer()) {
-			DC->s_flags.set(M_SPAWN_OBJECT_LOCAL, TRUE);
-		};
+		DC->s_flags.set(M_SPAWN_OBJECT_LOCAL, TRUE);
 
 		//DC->Spawn_Read(Packet);
 		//if (DC->s_flags.is(M_SPAWN_UPDATE))

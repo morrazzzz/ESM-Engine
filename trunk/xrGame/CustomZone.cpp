@@ -1267,21 +1267,18 @@ void CCustomZone::CreateHit	(	u16 id_to,
 								float hit_impulse, 
 								ALife::EHitType hit_type)
 {
-	if (OnServer())
-	{
-		if(m_owner_id != u32(-1) )
-			id_from	= (u16)m_owner_id;
+	if(m_owner_id != u32(-1) )
+		id_from	= (u16)m_owner_id;
 
-		NET_Packet	l_P;
-		Fvector hdir = hit_dir;
-		SHit	Hit = SHit(hit_power, hdir, this, bone_id, pos_in_bone, hit_impulse, hit_type);		
-		Hit.GenHeader(GE_HIT, id_to);
-		Hit.whoID = id_from;
-		Hit.weaponID = this->ID();
-		Hit.Write_Packet(l_P);
+	NET_Packet	l_P;
+	Fvector hdir = hit_dir;
+	SHit	Hit = SHit(hit_power, hdir, this, bone_id, pos_in_bone, hit_impulse, hit_type);		
+	Hit.GenHeader(GE_HIT, id_to);
+	Hit.whoID = id_from;
+	Hit.weaponID = this->ID();
+	Hit.Write_Packet(l_P);
 
-		u_EventSend	(l_P);
-	};
+	u_EventSend	(l_P);
 }
 
 void CCustomZone::net_Relcase(CObject* O)

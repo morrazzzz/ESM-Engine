@@ -819,7 +819,6 @@ void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
 	else if(E==eStart) 
 	{
 		LPSTR		op_server		= LPSTR	(P1);
-		LPSTR		op_client		= LPSTR	(P2);
 		R_ASSERT	(0==g_pGameLevel);
 		R_ASSERT	(0!=g_pGamePersistent);
 
@@ -833,12 +832,11 @@ void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
 			g_pGameLevel					= (IGame_Level*)NEW_INSTANCE(CLSID_GAME_LEVEL);
 			pApp->LoadBegin					(); 
 			g_pGamePersistent->Start		(op_server);
-			g_pGameLevel->net_Start			(op_server,op_client);
+			g_pGameLevel->net_Start			(op_server);
 			pApp->LoadEnd					(); 
 		}
 		FlushLog			();
 		xr_free							(op_server);
-		xr_free							(op_client);
 	} 
 	else if (E==eDisconnect) 
 	{
@@ -1019,9 +1017,6 @@ void CApplication::Level_Set(u32 L)
 		m_pRender->setLevelLogo(temp);
 	else
 		m_pRender->setLevelLogo("intro\\intro_no_start_picture");
-		
-
-	CheckCopyProtection		();
 }
 
 int CApplication::Level_ID(LPCSTR name)

@@ -16,7 +16,6 @@ void CLevel::ClientReceive()
 		{
 		case M_EVENT:
 			game_events->insert		(*P);
-			if (g_bDebugEvents)		ProcessGameEvents();
 			break;
 		case M_LOAD_GAME:
 		case M_CHANGE_LEVEL:
@@ -37,7 +36,7 @@ void CLevel::ClientReceive()
 					}
 				}
 				Engine.Event.Defer	("KERNEL:disconnect");
-				Engine.Event.Defer	("KERNEL:start",size_t(xr_strdup(*m_caServerOptions)),size_t(xr_strdup(*m_caClientOptions)));
+				Engine.Event.Defer	("KERNEL:start",size_t(xr_strdup(*m_caServerOptions)));
 			}break;
 		case M_SAVE_GAME:
 			{
@@ -47,8 +46,6 @@ void CLevel::ClientReceive()
 
 		net_msg_Release();
 	}	
-
-//	if (!g_bDebugEvents) ProcessGameSpawns();
 }
 
 void				CLevel::OnMessage				(void* data, u32 size)

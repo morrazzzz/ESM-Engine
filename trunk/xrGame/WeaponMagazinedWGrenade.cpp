@@ -449,8 +449,7 @@ bool CWeaponMagazinedWGrenade::Attach(PIItem pIItem, bool b_send_event)
 		if(b_send_event)
 		{
 //.			pIItem->Drop();
-			if (OnServer()) 
-				pIItem->object().DestroyObject	();
+			pIItem->object().DestroyObject	();
 		}
 		InitAddons				();
 		UpdateAddonsVisibility	();

@@ -190,12 +190,8 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 	//force actor to be local on server client
 	CSE_Abstract			*e	= (CSE_Abstract*)(DC);
 	CSE_ALifeCreatureActor	*E	= smart_cast<CSE_ALifeCreatureActor*>(e);	
-	if (OnServer())
-	{
-		E->s_flags.set(M_SPAWN_OBJECT_LOCAL, TRUE);
-	}
 	
-	if(	TRUE == E->s_flags.test(M_SPAWN_OBJECT_LOCAL) && TRUE == E->s_flags.is(M_SPAWN_OBJECT_ASPLAYER))
+	if(TRUE == E->s_flags.is(M_SPAWN_OBJECT_ASPLAYER))
 		g_actor = this;
 
 	VERIFY(m_pActorEffector == NULL);
@@ -294,25 +290,6 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 #endif
 //*
 	
-//	if (OnServer())// && E->s_flags.is(M_SPAWN_OBJECT_LOCAL))
-/*	
-	if (OnClient())
-	{
-		if (!pStatGraph)
-		{
-			static g_Y = 0;
-			pStatGraph = xr_new<CStatGraph>();
-			pStatGraph->SetRect(0, g_Y, Device.dwWidth, 100, 0xff000000, 0xff000000);
-			g_Y += 110;
-			if (g_Y > 700) g_Y = 100;
-			pStatGraph->SetGrid(0, 0.0f, 10, 1.0f, 0xff808080, 0xffffffff);
-			pStatGraph->SetMinMax(0, 10, 300);
-			pStatGraph->SetStyle(CStatGraph::stBar);
-			pStatGraph->AppendSubGraph(CStatGraph::stCurve);
-			pStatGraph->AppendSubGraph(CStatGraph::stCurve);
-		}
-	}
-*/	
 	SetDefaultVisualOutfit(cNameVisual());
 
 	smart_cast<IKinematics*>(Visual())->CalculateBones();
@@ -946,27 +923,6 @@ BOOL CActor::net_SaveRelevant()
 	return TRUE;
 }
 
-void				CActor::OnHitHealthLoss					(float NewHealth)
-{
-	if (GameID() == GAME_SINGLE || !OnServer()) return;
-};
-
-
-void				CActor::OnCriticalHitHealthLoss			()
-{
-	if (GameID() == GAME_SINGLE || !OnServer()) return;
-};
-
-void				CActor::OnCriticalWoundHealthLoss		() 
-{
-	if (GameID() == GAME_SINGLE || !OnServer()) return;
-};
-
-void				CActor::OnCriticalRadiationHealthLoss	() 
-{
-	if (GameID() == GAME_SINGLE || !OnServer()) return;
-};
-
 bool				CActor::InventoryAllowSprint			()
 {
 	PIItem pActiveItem = inventory().ActiveItem();
@@ -980,20 +936,6 @@ bool				CActor::InventoryAllowSprint			()
 		return false;
 	}
 	return true;
-};
-
-BOOL				CActor::BonePassBullet					(int boneID)
-{
-	if (GameID() == GAME_SINGLE) return inherited::BonePassBullet(boneID);
-
-	CCustomOutfit* pOutfit			= (CCustomOutfit*)inventory().m_slots[OUTFIT_SLOT].m_pIItem;
-	if(!pOutfit)
-	{
-		IKinematics* V		= smart_cast<IKinematics*>(Visual()); VERIFY(V);
-		CBoneInstance			&bone_instance = V->LL_GetBoneInstance(u16(boneID));
-		return (bone_instance.get_param(3)> 0.5f);
-	}
-	return pOutfit->BonePassBullet(boneID);
 }
 
 void			CActor::On_B_NotCurrentEntity		()

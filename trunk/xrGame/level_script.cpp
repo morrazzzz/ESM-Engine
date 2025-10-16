@@ -112,9 +112,6 @@ bool is_wfx_playing	()
 
 void set_time_factor(float time_factor)
 {
-	if (!OnServer())
-		return;
-
 	Level().SetGameTimeFactor(time_factor);
 	GamePersistent().Environment().SetGameTime(Level().GetGameDayTimeSec(), Level().GetGameTimeFactor());
 }

@@ -113,13 +113,6 @@ IPureClient::~IPureClient	()
 {
 }
 
-bool IPureClient::Connect()
-{
-	// Sync
-	net_TimeDelta = 0;	
-	return true;
-}
-
 void	IPureClient::OnMessage(void* data, u32 size)
 {
 	// One of the messages - decompress it

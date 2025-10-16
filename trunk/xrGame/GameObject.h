@@ -130,8 +130,6 @@ public:
 	virtual void			renderable_Render	();
 	virtual void			OnEvent				(NET_Packet& P, u16 type);
 	virtual	void			Hit					(SHit* pHDS) {};
-	virtual	BOOL			BonePassBullet		(int boneID) { return FALSE; }
-
 
 	//игровое имя объекта
 	virtual LPCSTR			Name                () const;

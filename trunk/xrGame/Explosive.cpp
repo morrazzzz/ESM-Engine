@@ -376,7 +376,7 @@ void CExplosive::Explode()
 		Level().BulletManager().AddBullet(	pos, frag_dir, m_fFragmentSpeed,
 											m_fFragHit, m_fFragHitImpulse, Initiator(),
 											cast_game_object()->ID(), m_eHitTypeFrag, m_fFragsRadius, 
-											cartridge, true );
+											cartridge );
 	}	
 
 	/////////////////////////////////

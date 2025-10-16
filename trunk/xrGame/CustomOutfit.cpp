@@ -96,12 +96,7 @@ float	CCustomOutfit::HitThruArmour(float hit_power, s16 element, float AP)
 	float NewHitPower = hit_power - BoneArmour;
 	if (NewHitPower < hit_power*m_boneProtection->m_fHitFrac) return hit_power*m_boneProtection->m_fHitFrac;
 	return NewHitPower;
-};
-
-BOOL	CCustomOutfit::BonePassBullet					(int boneID)
-{
-	return m_boneProtection->getBonePassBullet(s16(boneID));
-};
+}
 
 #include "torch.h"
 void	CCustomOutfit::OnMoveToSlot		()

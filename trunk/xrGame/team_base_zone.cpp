@@ -113,16 +113,10 @@ void CTeamBaseZone::shedule_Update(u32 dt)
 
 void CTeamBaseZone::feel_touch_new	(CObject *tpObject)
 {
-	if(OnServer() && tpObject->CLS_ID == CLSID_OBJECT_ACTOR)
-	{
-	};
 }
 
 void CTeamBaseZone::feel_touch_delete	(CObject *tpObject)
 {
-	if(OnServer() && tpObject->CLS_ID == CLSID_OBJECT_ACTOR)
-	{
-	};
 }
 
 BOOL CTeamBaseZone::feel_touch_contact	(CObject* O)

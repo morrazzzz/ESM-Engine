@@ -619,36 +619,32 @@ void CActor::Die(CObject* who)
 {
 	inherited::Die		(who);
 
-	if (OnServer())
+	xr_vector<CInventorySlot>::iterator I = inventory().m_slots.begin();
+	xr_vector<CInventorySlot>::iterator E = inventory().m_slots.end();
+
+	for (u32 slot_idx = 0; I != E; ++I, ++slot_idx)
 	{
-		xr_vector<CInventorySlot>::iterator I = inventory().m_slots.begin();
-		xr_vector<CInventorySlot>::iterator E = inventory().m_slots.end();
-
-		for (u32 slot_idx = 0; I != E; ++I, ++slot_idx)
+		if (slot_idx == inventory().GetActiveSlot())
 		{
-			if (slot_idx == inventory().GetActiveSlot())
-			{
-				if ((*I).m_pIItem)
-					(*I).m_pIItem->DropItem();
-
-				continue;
-			}
-			else
-			{
-				CCustomOutfit* pOutfit = smart_cast<CCustomOutfit*>((*I).m_pIItem);
-				if (pOutfit) continue;
-			}
 			if ((*I).m_pIItem)
-				inventory().Ruck((*I).m_pIItem);
+				(*I).m_pIItem->DropItem();
+
+			continue;
 		}
-
-
-		///!!! чистка пояса
-		TIItemContainer& l_blist = inventory().m_belt;
-		while (!l_blist.empty())
-			inventory().Ruck(l_blist.front());
+		else
+		{
+			CCustomOutfit* pOutfit = smart_cast<CCustomOutfit*>((*I).m_pIItem);
+			if (pOutfit) continue;
+		}
+		if ((*I).m_pIItem)
+			inventory().Ruck((*I).m_pIItem);
 	}
 
+	///!!! чистка пояса
+	TIItemContainer& l_blist = inventory().m_belt;
+	while (!l_blist.empty())
+		inventory().Ruck(l_blist.front());
+	
 	cam_Set					(eacFreeLook);
 	mstate_wishful	&=		~mcAnyMove;
 	mstate_real		&=		~mcAnyMove;
@@ -907,8 +903,7 @@ void CActor::shedule_Update(u32 DT)
 	// Check controls, create accel, prelimitary setup "mstate_real"
 
 	//----------- for E3 -----------------------------
-//	if (Local() && (OnClient() || Level().CurrentEntity()==this))
-	if (Level().CurrentControlEntity() == this && (!Level().IsDemoPlay() || Level().IsServerDemo()))
+	if (Level().CurrentControlEntity() == this)
 		//------------------------------------------------
 	{
 		g_cl_CheckControls(mstate_wishful, NET_SavedAccel, NET_Jump, dt);
@@ -937,23 +932,21 @@ void CActor::shedule_Update(u32 DT)
 		else {
 			f_DropPower = 0.f;
 		}
-		if (!Level().IsDemoPlay())
-		{
-			if (!psActorFlags.test(AF_CROUCH_TOGGLE))
-				mstate_wishful &= ~mcCrouch;
-			if (!psActorFlags.test(AF_WALK_TOGGLE))
-				mstate_wishful &= ~mcAccel;
-			if (!psActorFlags.test(AF_SPRINT_TOGGLE))
-				mstate_wishful &= ~mcSprint;
-			//-----------------------------------------------------
-			mstate_wishful &= ~mcLStrafe;
-			mstate_wishful &= ~mcRStrafe;
-			mstate_wishful &= ~mcLLookout;
-			mstate_wishful &= ~mcRLookout;
-			mstate_wishful &= ~mcFwd;
-			mstate_wishful &= ~mcBack;
-			//-----------------------------------------------------
-		}
+
+		if (!psActorFlags.test(AF_CROUCH_TOGGLE))
+			mstate_wishful &= ~mcCrouch;
+		if (!psActorFlags.test(AF_WALK_TOGGLE))
+			mstate_wishful &= ~mcAccel;
+		if (!psActorFlags.test(AF_SPRINT_TOGGLE))
+			mstate_wishful &= ~mcSprint;
+		//-----------------------------------------------------
+		mstate_wishful &= ~mcLStrafe;
+		mstate_wishful &= ~mcRStrafe;
+		mstate_wishful &= ~mcLLookout;
+		mstate_wishful &= ~mcRLookout;
+		mstate_wishful &= ~mcFwd;
+		mstate_wishful &= ~mcBack;
+		//-----------------------------------------------------
 	}
 	else
 	{
@@ -1331,7 +1324,6 @@ ALife::_TIME_ID	 CActor::TimePassedAfterDeath()	const
 void CActor::OnItemTake			(CInventoryItem *inventory_item)
 {
 	CInventoryOwner::OnItemTake(inventory_item);
-	if (OnClient()) return;
 }
 
 void CActor::OnItemDrop			(CInventoryItem *inventory_item)

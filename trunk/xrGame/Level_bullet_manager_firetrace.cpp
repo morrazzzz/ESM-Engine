@@ -300,11 +300,8 @@ void CBulletManager::DynamicObjectHit	(CBulletManager::_event& E)
 	}
 
 	//отправить хит пораженному объекту
-	if (E.bullet.flags.allow_sendhit && !E.Repeated)
+	if (!E.Repeated)
 	{
-		//-------------------------------------------------
-		bool AddStatistic = false;
-
 		SHit	Hit = SHit(	power, 
 							original_dir, 
 							NULL, 

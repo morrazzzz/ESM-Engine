@@ -60,10 +60,9 @@ static void __stdcall	build_callback	(Fvector* V, int Vcnt, CDB::TRI* T, int Tcn
 	g_pGameLevel->Load_GameSpecific_CFORM( T, Tcnt );
 }
 
-BOOL IGame_Level::Load			(u32 dwNum) 
+BOOL IGame_Level::LoadLevel() 
 {
 	// Initialize level data
-	pApp->Level_Set				( dwNum );
 	string_path					temp;
 	if (!FS.exist(temp, "$level$", "level.ltx"))
 		Debug.fatal	(DEBUG_INFO,"Can't find level configuration file '%s'.",temp);

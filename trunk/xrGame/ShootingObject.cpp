@@ -355,11 +355,6 @@ void CShootingObject::RenderLight()
 	}
 }
 
-bool CShootingObject::SendHitAllowed		(CObject* pUser)
-{
-	return OnServer();
-};
-
 extern void random_dir(Fvector& tgt_dir, const Fvector& src_dir, float dispersion);
 
 void CShootingObject::FireBullet(const Fvector& pos, 
@@ -367,8 +362,7 @@ void CShootingObject::FireBullet(const Fvector& pos,
 								 float fire_disp,
 								 const CCartridge& cartridge,
 								 u16 parent_id,
-								 u16 weapon_id,
-								 bool send_hit)
+								 u16 weapon_id)
 {
 	Fvector dir;
 	random_dir(dir,shot_dir,fire_disp);
@@ -421,7 +415,7 @@ void CShootingObject::FireBullet(const Fvector& pos,
 
 	Level().BulletManager().AddBullet(	pos, dir, m_fStartBulletSpeed, l_fHitPower, 
 										fHitImpulse, parent_id, weapon_id, 
-										ALife::eHitTypeFireWound, fireDistance, cartridge, send_hit, aim_bullet);
+										ALife::eHitTypeFireWound, fireDistance, cartridge, aim_bullet);
 }
 
 void CShootingObject::FireStart	()

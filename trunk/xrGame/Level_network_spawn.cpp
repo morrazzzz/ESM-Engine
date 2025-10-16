@@ -9,33 +9,6 @@
 #include "../xr_3da/xr_object.h"
 #include "../xr_3da/IGame_Persistent.h"
 
-void CLevel::g_cl_Spawn		(LPCSTR name, u8 rp, u16 flags, Fvector pos)
-{
-	// Create
-	CSE_Abstract*		E	= F_entity_Create(name);
-	VERIFY				(E);
-
-	// Fill
-	E->s_name			= name;
-	E->set_name_replace	("");
-	E->s_gameid			=	u8(GameID());
-	E->s_RP				=	rp;
-	E->ID				=	0xffff;
-	E->ID_Parent		=	0xffff;
-	E->ID_Phantom		=	0xffff;
-	E->s_flags.assign	(flags);
-	E->RespawnTime		=	0;
-	E->o_Position		= pos;
-
-	// Send
-	NET_Packet			P;
-	E->Spawn_Write		(P,TRUE);
-	Send				(P);
-
-	// Destroy
-	F_entity_Destroy	(E);
-}
-
 #ifdef DEBUG
 	extern Flags32				psAI_Flags;
 	extern float				debug_on_frame_gather_stats_frequency;

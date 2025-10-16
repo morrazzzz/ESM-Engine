@@ -32,8 +32,6 @@ protected:
 public:
 	IPureClient				(CTimer* tm);
 	virtual ~IPureClient	();
-	
-	bool Connect();
 
 	// receive
 	IC virtual	NET_Packet*			net_msg_Retreive		()	{ return net_Queue.Retreive();	}

@@ -218,8 +218,13 @@ void CScriptGameObject::IterateInventory	(luabind::functor<void> functor, luabin
 
 	TIItemContainer::iterator	I = inventory_owner->inventory().m_all.begin();
 	TIItemContainer::iterator	E = inventory_owner->inventory().m_all.end();
-	for ( ; I != E; ++I)
-		functor				(object,(*I)->object().lua_game_object());
+	for (; I != E; ++I)
+	{
+		if ((*I)->object().getDestroy())
+			continue;
+
+		functor(object, (*I)->object().lua_game_object());
+	}
 }
 
 void CScriptGameObject::MarkItemDropped		(CScriptGameObject *item)

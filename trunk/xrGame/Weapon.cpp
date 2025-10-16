@@ -730,10 +730,8 @@ bool CWeapon::Action(s32 cmd, u32 flags)
 			return true;
 		case kWPN_NEXT: 
 			{
-				if(IsPending() || OnClient()) 
-				{
+				if(IsPending()) 
 					return false;
-				}
 
 				if (Core.Features.test(xrCore::Feature::lock_reload_in_sprint) && ParentIsActor() && g_actor->get_state() & mcSprint)
 					return true;
@@ -753,7 +751,7 @@ bool CWeapon::Action(s32 cmd, u32 flags)
 					{
 						m_set_next_ammoType_on_reload = static_cast<u8>(l_newType);
 
-						if(OnServer()) Reload();
+						Reload();
 					}
 				}
 			} 
@@ -788,8 +786,7 @@ void CWeapon::SpawnAmmo(u32 boxCurr, LPCSTR ammoSect, u32 ParentID)
 {
 	if(m_ammoTypes.empty())			
 		return;
-	if (OnClient())					
-		return;
+
 	m_bAmmoWasSpawned				= true;
 	
 	int l_type						= 0;
@@ -1183,7 +1180,7 @@ CUIWeaponScope* CWeapon::ZoomTexture()
 void CWeapon::SwitchState(u32 S)
 {
 	SetNextState		( S );	// Very-very important line of code!!! :)
-	if (!CHudItem::object().getDestroy() && m_pCurrentInventory && OnServer())	
+	if (!CHudItem::object().getDestroy() && m_pCurrentInventory)	
 		OnStateSwitch(S);
 }
 

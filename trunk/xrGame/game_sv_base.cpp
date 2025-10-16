@@ -34,29 +34,15 @@ void game_sv_GameState::Create					(shared_str &options)
 
 		xr_delete					(l_tpIniFile);
 	}
-
-	LPCSTR		svcfg_ltx_name = "-svcfg ";
-	if (strstr(Core.Params, svcfg_ltx_name))
-	{
-		string_path svcfg_name = "";
-		int		sz = xr_strlen(svcfg_ltx_name);
-		sscanf		(strstr(Core.Params,svcfg_ltx_name)+sz,"%[^ ] ",svcfg_name);
-//		if (FS.exist(svcfg_name))
-		{
-			Console->ExecuteScript(svcfg_name);
-		}
-	};
 }
 
 void game_sv_GameState::Update		()
 {	
 	if (!g_dedicated_server)
 	{
-		if (Level().game_configured) {
-			CScriptProcess				*script_process = ai().script_engine().script_process(ScriptEngine::eScriptProcessorGame);
-			if (script_process)
-				script_process->update	();
-		}
+		CScriptProcess				*script_process = ai().script_engine().script_process(ScriptEngine::eScriptProcessorGame);
+		if (script_process)
+			script_process->update	();
 	}
 }
 

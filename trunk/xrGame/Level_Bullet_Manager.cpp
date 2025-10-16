@@ -35,8 +35,7 @@ void SBullet::Init(const Fvector& position,
 				   u16 sendersweapon_id,
 				   ALife::EHitType e_hit_type,
 				   float maximum_distance,
-				   const CCartridge& cartridge,
-				   bool SendHit)
+				   const CCartridge& cartridge)
 {
 	flags._storage		= 0;
 	pos 				= position;
@@ -53,7 +52,6 @@ void SBullet::Init(const Fvector& position,
 	fly_dist			= 0;
 
 	parent_id			= sender_id;
-	flags.allow_sendhit	= SendHit;
 	weapon_id			= sendersweapon_id;
 	hit_type			= e_hit_type;
 
@@ -162,7 +160,6 @@ void CBulletManager::AddBullet(const Fvector& position,
 	ALife::EHitType e_hit_type,
 	float maximum_distance,
 	const CCartridge& cartridge,
-	bool SendHit,
 	bool AimBullet)
 {
 	m_Lock.Enter();
@@ -171,7 +168,7 @@ void CBulletManager::AddBullet(const Fvector& position,
 	//	u32 OwnerID = sender_id;
 
 	SBullet bullet;
-	bullet.Init(position, direction, starting_speed, power, impulse, sender_id, sendersweapon_id, e_hit_type, maximum_distance, cartridge, SendHit);
+	bullet.Init(position, direction, starting_speed, power, impulse, sender_id, sendersweapon_id, e_hit_type, maximum_distance, cartridge);
 	bullet.frame_num = Device.dwFrame;
 	bullet.flags.aim_bullet = AimBullet;
 	m_Bullets.push_back(bullet);
@@ -450,19 +447,7 @@ void CBulletManager::RegisterEvent			(EventType Type, BOOL _dynamic, SBullet* bu
 				//	bullet->targetID = R.O->ID();
 
 				E.Repeated = (R.O->ID() == E.bullet.targetID);
-				if (GameID() == GAME_SINGLE)
-				{
-					bullet->targetID = R.O->ID();
-				}
-				else
-				{
-					if (bullet->targetID != R.O->ID())
-					{
-						CGameObject* pGO = smart_cast<CGameObject*>(R.O);
-						if (!pGO || !pGO->BonePassBullet(R.element))
-							bullet->targetID = R.O->ID();						
-					}
-				}
+				bullet->targetID = R.O->ID();
 			};
 		}break;
 	case EVENT_REMOVE:

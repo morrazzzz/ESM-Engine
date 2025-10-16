@@ -675,17 +675,10 @@ public:
 	virtual bool				natural_detector			() const {return false;}
 	virtual bool				use_center_to_aim			() const;
 public:
-	virtual	void				OnHitHealthLoss					(float NewHealth);	
-	virtual	void				OnCriticalHitHealthLoss			();
-	virtual	void				OnCriticalWoundHealthLoss		();
-	virtual void				OnCriticalRadiationHealthLoss	();
-
 	virtual	bool				InventoryAllowSprint			();
 	virtual void				OnNextWeaponSlot				();
 	virtual void				OnPrevWeaponSlot				();
 
-public:
-	
 	virtual	void				on_weapon_shot_start			(CWeapon *weapon);
 	virtual	void				on_weapon_shot_stop				(CWeapon *weapon);
 	virtual	void				on_weapon_hide					(CWeapon *weapon);
@@ -708,7 +701,6 @@ public:
 	IC float					HitProbability					() {return hit_probability;}
 	virtual	CVisualMemoryManager*visual_memory					() const;
 
-	virtual	BOOL				BonePassBullet					(int boneID);
 	virtual	void				On_B_NotCurrentEntity			();
 
 private:

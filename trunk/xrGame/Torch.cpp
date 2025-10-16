@@ -90,7 +90,6 @@ void CTorch::Load(LPCSTR section)
 
 void CTorch::SwitchNightVision()
 {
-	if (OnClient()) return;
 	SwitchNightVision(!m_bNightVisionOn);	
 }
 
@@ -156,8 +155,6 @@ void CTorch::SwitchNightVision(bool vision_on)
 void CTorch::UpdateSwitchNightVision   ()
 {
 	if(!m_bNightVisionEnabled) return;
-	if (OnClient()) return;
-
 
 	/*if(m_bNightVisionOn)
 	{
@@ -176,7 +173,6 @@ void CTorch::UpdateSwitchNightVision   ()
 
 void CTorch::Switch()
 {
-	if (OnClient()) return;
 	bool bActive			= !m_switched_on;
 	Switch					(bActive);
 }

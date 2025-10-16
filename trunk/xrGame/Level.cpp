@@ -52,8 +52,6 @@
 #include "alife_graph_registry.h"
 #include "alife_time_manager.h"
 
-float		g_cl_lvInterp		= 0;
-u32			lvInterpSteps		= 0;
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -63,31 +61,15 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 	,DemoCS(MUTEX_PROFILE_ID(DemoCS))
 #endif // PROFILE_CRITICAL_SECTIONS
 {
-	g_bDebugEvents				= strstr(Core.Params,"-debug_ge")?TRUE:FALSE;
-
 	Server						= NULL;
 
 	game_events					= xr_new<NET_Queue_Event>();
 
-	game_configured				= FALSE;
-	m_bGameConfigStarted		= FALSE;
-
-	eChangeRP					= Engine.Event.Handler_Attach	("LEVEL:ChangeRP",this);
-	eDemoPlay					= Engine.Event.Handler_Attach	("LEVEL:PlayDEMO",this);
-	eChangeTrack				= Engine.Event.Handler_Attach	("LEVEL:PlayMusic",this);
-	eEnvironment				= Engine.Event.Handler_Attach	("LEVEL:Environment",this);
-
-	eEntitySpawn				= Engine.Event.Handler_Attach	("LEVEL:spawn",this);
-
 	m_pBulletManager			= xr_new<CBulletManager>();
 
-	if(!g_dedicated_server)
-		m_map_manager				= xr_new<CMapManager>();
-	else
-		m_map_manager				= NULL;
+	m_map_manager				= xr_new<CMapManager>();
 
 //	m_pFogOfWarMngr				= xr_new<CFogOfWarMngr>();
-	m_dwDeltaUpdate				= u32(fixed_step*1000);
 	//VERIFY						( physics_world() );
 	//physics_world()->set_step_time_callback((PhysicsStepTimeCallback*) &PhisStepsCallback);
 	//physics_step_time_callback	= (PhysicsStepTimeCallback*) &PhisStepsCallback;
@@ -122,17 +104,8 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 	m_ph_commander				= xr_new<CPHCommander>();
 	m_ph_commander_scripts		= xr_new<CPHCommander>();
 
-#ifdef DEBUG
-	m_bSynchronization			= false;
-#endif
 	pCurrentControlEntity = NULL;
-	//---------------------------------------------------------	
-	m_sDemoName[0] = 0;
-	m_bDemoSaveMode = FALSE;
-	m_dwStoredDemoDataSize = 0;
-	m_pStoredDemoData = NULL;
-	m_pOldCrashHandler = NULL;
-	m_we_used_old_crach_handler	= false;
+	
 	R_ASSERT				(NULL==g_player_hud);
 	g_player_hud			= xr_new<player_hud>();
 	g_player_hud->LoadDefaultActorHudIfExist();
@@ -175,13 +148,6 @@ CLevel::~CLevel()
 	xr_delete					(g_player_hud);
 
 	Msg							("- Destroying level");
-
-	Engine.Event.Handler_Detach	(eEntitySpawn,	this);
-
-	Engine.Event.Handler_Detach	(eEnvironment,	this);
-	Engine.Event.Handler_Detach	(eChangeTrack,	this);
-	Engine.Event.Handler_Detach	(eDemoPlay,		this);
-	Engine.Event.Handler_Detach	(eChangeRP,		this);
 
 	if (physics_world())
 	{
@@ -242,18 +208,11 @@ CLevel::~CLevel()
 	//-----------------------------------------------------------
 	xr_delete					(m_map_manager);
 //	xr_delete					(m_pFogOfWarMngr);
-	//-----------------------------------------------------------
-	Demo_Clear					();
-	m_aDemoData.clear			();
 
 	// here we clean default trade params
 	// because they should be new for each saved/loaded game
 	// and I didn't find better place to put this code in
 	CTradeParameters::clean		();
-
-	if (m_we_used_old_crach_handler)
-		Debug.set_crashhandler	(m_pOldCrashHandler);
-
 }
 
 shared_str	CLevel::name		() const
@@ -275,9 +234,6 @@ void CLevel::PrefetchSound		(LPCSTR name)
 	if (it==sound_registry.end())
 		sound_registry[snd_name].create(snd_name.c_str(),st_Effect,sg_SourceType);
 }
-
-BOOL		g_bDebugEvents = FALSE	;
-
 
 void CLevel::cl_Process_Event				(u16 dest, u16 type, NET_Packet& P)
 {
@@ -422,10 +378,6 @@ void	CLevel::script_gc				()
 	lua_gc	(ai().script_engine().lua(), LUA_GCSTEP, psLUA_GCSTEP);
 }
 
-#ifdef DEBUG_PRECISE_PATH
-void test_precise_path	();
-#endif
-
 extern void draw_wnds_rects();
 
 void CLevel::OnRender()
@@ -449,10 +401,6 @@ void CLevel::OnRender()
 #ifdef DEBUG
 	if (ai().get_level_graph())
 		ai().level_graph().render();
-
-#ifdef DEBUG_PRECISE_PATH
-	test_precise_path		();
-#endif
 
 	CAI_Stalker				*stalker = smart_cast<CAI_Stalker*>(Level().CurrentEntity());
 	if (stalker)
@@ -502,7 +450,6 @@ void CLevel::OnRender()
 
 		if(Server)UI().Font().pFontStat->OutNext	("Client Objects:      [%d]",Server->GetEntitiesNum());
 		UI().Font().pFontStat->OutNext	("Server Objects:      [%d]",Objects.o_count());
-		UI().Font().pFontStat->OutNext	("Interpolation Steps: [%d]", Level().GetInterpolationSteps());
 		UI().Font().pFontStat->SetHeight	(8.0f);
 		//---------------------------------------------------------------------
 	}
@@ -540,39 +487,6 @@ void CLevel::OnRender()
 	}
 #endif
 }
-
-void CLevel::OnEvent(EVENT E, u64 P1, u64 /**P2/**/)
-{
-	if (E==eEntitySpawn)	{
-		char	Name[128];	Name[0]=0;
-		sscanf	(LPCSTR(P1),"%s", Name);
-		Level().g_cl_Spawn	(Name,0xff, M_SPAWN_OBJECT_LOCAL, Fvector().set(0,0,0));
-	} else if (E==eChangeRP && P1) {
-	} else if (E==eDemoPlay && P1) {
-		char* name = (char*)P1;
-		string_path RealName;
-		strcpy_s		(RealName,name);
-		strcat			(RealName,".xrdemo");
-		Cameras().AddCamEffector(xr_new<CDemoPlay> (RealName,1.3f,0));
-	} else if (E==eChangeTrack && P1) {
-		// int id = atoi((char*)P1);
-		// Environment->Music_Play(id);
-	} else if (E==eEnvironment) {
-		// int id=0; float s=1;
-		// sscanf((char*)P1,"%d,%f",&id,&s);
-		// Environment->set_EnvMode(id,s);
-	} else return;
-}
-
-u32			CLevel::GetInterpolationSteps	()
-{
-	return lvInterpSteps;
-};
-
-bool		CLevel::InterpolationDisabled	()
-{
-	return g_cl_lvInterp < 0; 
-};
 
 void 		CLevel::PhisStepsCallback		( u32 Time0, u32 Time1 )
 {
@@ -630,16 +544,6 @@ void CLevel::SetGameTimeFactor(const float fTimeFactor)
 float CLevel::GetGameTimeFactor()
 {
 	return ai().get_alife()->time_manager().time_factor();
-}
-
-bool CLevel::IsServer ()
-{
-	return true;
-}
-
-bool CLevel::IsClient ()
-{
-	return false;
 }
 
 u32	GameID()

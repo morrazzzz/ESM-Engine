@@ -75,8 +75,6 @@ void CLevel::net_Stop		()
 {
 	Msg							("- Disconnect");
 	bReady						= false;
-	m_bGameConfigStarted		= FALSE;
-	game_configured				= FALSE;
 
 	remove_objects				();
 	
@@ -169,7 +167,7 @@ void CLevel::Send(NET_Packet& P)
 void CLevel::net_Update	()
 {
 	// If server - perform server-update
-	if (Server && OnServer())	{
+	if (Server)	{
 		Device.Statistic->netServer.Begin();
 		Server->Update					();
 		Device.Statistic->netServer.End	();
@@ -185,13 +183,3 @@ struct _NetworkProcessor	: public pureFrame
 }	NET_processor;
 
 pureFrame*	g_pNetProcessor	= &NET_processor;
-
-bool CLevel::Connect2Server()
-{
-	if (!Connect())		
-		return false;
-
-	game_configured = true;
-	
-	return true;
-};

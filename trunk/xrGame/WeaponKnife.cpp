@@ -192,7 +192,6 @@ void CWeaponKnife::MakeShot(Fvector const & pos, Fvector const & dir, float cons
 
 	while(m_magazine.size() < 2)	m_magazine.push_back(cartridge);
 	iAmmoElapsed					= m_magazine.size();
-	bool SendHit					= SendHitAllowed(H_Parent());
 
 	PlaySound						("sndShot",pos);
 
@@ -205,8 +204,7 @@ void CWeaponKnife::MakeShot(Fvector const & pos, Fvector const & dir, float cons
 										ID(), 
 										m_eHitType, 
 										fireDistance, 
-										cartridge, 
-										SendHit);
+										cartridge);
 }
 
 void CWeaponKnife::OnMotionMark(u32 state)

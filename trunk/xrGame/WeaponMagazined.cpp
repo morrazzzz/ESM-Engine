@@ -632,9 +632,6 @@ void CWeaponMagazined::switch2_Fire	()
 	m_bFireSingleShot = true;
 	m_iShotNum = 0;
 
-    if((OnClient() || Level().IsDemoPlay())&& !IsWorking())
-		FireStart();
-
 /*	if(SingleShotMode())
 	{
 		m_bFireSingleShot = true;
@@ -842,7 +839,7 @@ bool CWeaponMagazined::Attach(PIItem pIItem, bool b_send_event)
 
 	if(result)
 	{
-		if (b_send_event && OnServer())
+		if (b_send_event)
 		{
 			//уничтожить подсоединенную вещь из инвентаря
 //.			pIItem->Drop					();

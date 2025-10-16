@@ -290,9 +290,7 @@ void CWeaponMounted::OnShot		()
 {
 	VERIFY(Owner());
 
-	FireBullet(get_CurrentFirePoint(),fire_dir, 
-		fireDispersionBase,
-		m_CurrentAmmo, Owner()->ID(),ID(), SendHitAllowed(Owner()));
+	FireBullet(get_CurrentFirePoint(),fire_dir, fireDispersionBase, m_CurrentAmmo, Owner()->ID(),ID());
 
 	StartShotParticles			();
 

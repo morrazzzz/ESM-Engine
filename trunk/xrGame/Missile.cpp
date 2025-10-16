@@ -125,8 +125,6 @@ void CMissile::OnHiddenItem()
 
 void CMissile::spawn_fake_missile()
 {
-	if (OnClient()) return;
-
 	if (!getDestroy())
 	{
 		CSE_Abstract		*object = Level().spawn_item(

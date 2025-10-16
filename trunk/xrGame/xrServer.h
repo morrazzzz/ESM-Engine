@@ -68,14 +68,12 @@ public:
 	CSE_Abstract*			ID_to_entity		(u16 ID);
 
 	// main
-	bool Connect(shared_str& session_name);
+	void Connect(shared_str& options);
 	virtual void			Disconnect			();
 	virtual void			Update				();
 	void					SLS_Default			();
 	void					SLS_Save			(IWriter&	fs);
 			shared_str		level_name			(const shared_str &server_options) const;
-
-    void new_client();
 
 	void SpawnNewObjects();
 	void DestroyAllEntities();

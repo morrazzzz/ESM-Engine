@@ -56,11 +56,6 @@ public:
 
 class CLevel					: public IGame_Level, public IPureClient
 {
-	#include "Level_network_Demo.h"
-private:
-#ifdef DEBUG
-	bool						m_bSynchronization;
-#endif
 protected:
 	typedef IGame_Level			inherited;
 	
@@ -85,12 +80,6 @@ protected:
 	
 	// level name
 	shared_str					m_name;
-	// Local events
-	EVENT						eChangeRP;
-	EVENT						eDemoPlay;
-	EVENT						eChangeTrack;
-	EVENT						eEnvironment;
-	EVENT						eEntitySpawn;
 public:
 #ifdef DEBUG
 	// level debugger
@@ -99,8 +88,6 @@ public:
 
 public:
 	////////////// network ////////////////////////
-	u32							GetInterpolationSteps	();
-	bool						InterpolationDisabled	();
 	static void 				PhisStepsCallback		( u32 Time0, u32 Time1 );
 
 	virtual void				OnMessage				(void* data, u32 size);
@@ -110,20 +97,13 @@ private:
 public:
 	CObject*					CurrentControlEntity	( void ) const		{ return pCurrentControlEntity; }
 	void						SetControlEntity		( CObject* O  )		{ pCurrentControlEntity=O; }
-private:
-	u32							m_dwDeltaUpdate;
-
-	bool Connect2Server();
 public:
 	//////////////////////////////////////////////	
 	// static particles
 	DEFINE_VECTOR				(CParticlesObject*,POVec,POIt);
 	POVec						m_StaticParticles;
 
-	BOOL						m_bGameConfigStarted;
-	BOOL						game_configured;
 	NET_Queue_Event				*game_events;
-	xr_deque<CSE_Abstract*>		game_spawn_queue;
 	xrServer*					Server;
 	GlobalFeelTouch				m_feel_deny;
 
@@ -136,36 +116,23 @@ public:
 	void						PrefetchSound (LPCSTR name);
 
 protected:
-	BOOL						net_start_result_total;
-	BOOL						connected_to_server;
-
 	bool	xr_stdcall			net_start1				();
 	bool	xr_stdcall			net_start2				();
 	bool	xr_stdcall			net_start3				();
-	bool	xr_stdcall			net_start4				();
-	bool	xr_stdcall			net_start5				();
-	bool	xr_stdcall			net_start6				();
 
 	bool	xr_stdcall			net_start_client1				();
 	bool	xr_stdcall			net_start_client2				();
 	bool	xr_stdcall			net_start_client3				();
-	bool	xr_stdcall			net_start_client4				();
-	bool	xr_stdcall			net_start_client5				();
-	bool	xr_stdcall			net_start_client6				();
 public:
 	// sounds
 	xr_vector<ref_sound*>		static_Sounds;
 
 	// startup options
 	shared_str					m_caServerOptions;
-	shared_str					m_caClientOptions;
 
 	// Starting/Loading
-	virtual BOOL				net_Start				( LPCSTR op_server, LPCSTR op_client);
-	virtual void				net_Load				( LPCSTR name );
-	virtual void				net_Save				( LPCSTR name );
+	virtual BOOL				net_Start				( LPCSTR op_server);
 	virtual void				net_Stop				( );
-	virtual BOOL				net_Start_client		( LPCSTR name );
 	virtual void				net_Update				( );
 
 
@@ -174,7 +141,6 @@ public:
 	virtual void				Load_GameSpecific_CFORM	( CDB::TRI* T, u32 count );
 
 	// Events
-	virtual void				OnEvent					( EVENT E, u64 P1, u64 P2 );
 	virtual void				OnFrame					( void );
 	virtual void				OnRender				( );
 	void						cl_Process_Event		(u16 dest, u16 type, NET_Packet& P);
@@ -198,11 +164,9 @@ public:
 			u32					Objects_net_Save		(NET_Packet* _Packet, u32 start, u32 count);
 	virtual	void				Send					(NET_Packet& P);
 	
-	void						g_cl_Spawn				(LPCSTR name, u8 rp, u16 flags, Fvector pos);	// only ask server
+	virtual	NET_Packet* net_msg_Retreive();
+
 	void						g_sv_Spawn				(CObject*, CSE_Abstract*);					// server reply/command spawning
-	
-	// Save/Load/State
-	void						SLS_Default				();					// Default/Editor Load
 	
 	IC CSpaceRestrictionManager		&space_restriction_manager	();
 	IC CSeniorityHierarchyHolder	&seniority_holder			();
@@ -254,12 +218,9 @@ protected:
 public:
 	IC CBulletManager&	BulletManager() {return	*m_pBulletManager;}
 
-	//by Mad Max 
-			bool			IsServer					();
-			bool			IsClient					();
-			CSE_Abstract	*spawn_item					(LPCSTR section, const Fvector &position, u32 level_vertex_id, u16 parent_id, bool return_item = false);
+	CSE_Abstract	*spawn_item					(LPCSTR section, const Fvector &position, u32 level_vertex_id, u16 parent_id, bool return_item = false);
 public:
-			void			remove_objects				();
+	void			remove_objects				();
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
@@ -325,12 +286,6 @@ IC CPHCommander& CLevel::ph_commander_physics_worldstep()
 	VERIFY(m_ph_commander_scripts);
 	return *m_ph_commander_physics_worldstep;
 }
-//by Mad Max 
-IC bool					OnServer()	{ return Level().IsServer();}
-IC bool					OnClient()	{ return Level().IsClient();}
 
 	bool				IsGameTypeSingle();
 
-//class  CPHWorld;
-//extern CPHWorld*				ph_world;
-extern BOOL						g_bDebugEvents;
