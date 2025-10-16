@@ -74,6 +74,7 @@ void CSE_ALifeDynamicObject::attach	(CSE_ALifeInventoryItem *tpALifeInventoryIte
 	if (!bAddChildren)
 		return;
 
+	tpALifeInventoryItem->base()->objectAddedForChildrenParent = true;
 	children.push_back	(tpALifeInventoryItem->base());
 }
 

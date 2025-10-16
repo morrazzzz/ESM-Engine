@@ -21,11 +21,6 @@
 #include "xrserver.h"
 #include "level_graph.h"
 
-#pragma warning(push)
-#pragma warning(disable:4995)
-#include <malloc.h>
-#pragma warning(pop)
-
 using namespace ALife;
 
 CALifeSimulatorBase::CALifeSimulatorBase	(xrServer *server, LPCSTR section)
@@ -324,18 +319,26 @@ void CALifeSimulatorBase::OnAttach(CSE_Abstract* object, CSE_Abstract* item)
 {
 	R_ASSERT(object);
 	R_ASSERT(item);
-	
+
+	if (!item || item->objectAddedForChildrenParent)
+		return;
+
 	CSE_ALifeDynamicObject* DynamicObject = objects().object(object->ID, true);
 	CSE_ALifeInventoryItem* itemAttach = item->cast_inventory_item();
 
-	if (DynamicObject && item &&
-		graph().level().object(itemAttach->base()->ID, true))
+	bool graphLevelObject = graph().level().object(itemAttach->base()->ID, true);
+
+	if (DynamicObject)
 	{
-		graph().attach(*object, itemAttach, DynamicObject->m_tGraphID, false);
+		if (graphLevelObject)
+			graph().attach(*object, itemAttach, DynamicObject->m_tGraphID, false);
+		else
+			DynamicObject->attach(itemAttach);
 	}
 #ifdef DEBUG
 	else if (psAI_Flags.test(aiALife)) {
-			Msg("Cannot attach object [%s][%s][%d] to object [%s][%s][%d]", item->name_replace(), *item->s_name, item->ID, object->name_replace(), *object->s_name, object->ID);
+			Msg("Cannot attach object [%s][%s][%d] to object [%s][%s][%d]", item->name_replace(), item->s_name.c_str(), item->ID,
+				object->name_replace(), object->s_name.c_str(), object->ID);
 		}
 #endif
 }
@@ -385,7 +388,8 @@ void CALifeSimulatorBase::OnDetach(CSE_Abstract* object, CSE_Abstract* item, boo
 #ifdef DEBUG
 		else
 			if (psAI_Flags.test(aiALife)) {
-				Msg("Cannot detach object [%s][%s][%d] from object [%s][%s][%d]", item->name_replace(), *item->s_name, item->ID, object->name_replace(), object->s_name, object->ID);
+				Msg("Cannot detach object [%s][%s][%d] from object [%s][%s][%d]", item->name_replace(), item->s_name.c_str(), item->ID, 
+					object->name_replace(), object->s_name.c_str(), object->ID);
 			}
 #endif
 }

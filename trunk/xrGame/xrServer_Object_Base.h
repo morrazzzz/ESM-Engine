@@ -90,6 +90,7 @@ public:
 	bool							m_bALifeControl;
 	bool ObjectCustomSpawn{ false };
 	bool objectCreateAlife{ false };
+	bool objectAddedForChildrenParent{ false };
 
 	ALife::_SPAWN_ID				m_tSpawnID;
 
