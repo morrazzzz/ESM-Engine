@@ -285,7 +285,11 @@ void CImguiManagerSpawnMenu::UISpawnMenu()
 	if (enableButtonImage)
 	{
 		static ImGuiTableFlags flags = ImGuiTableFlags_Borders;
-		int colums = static_cast<int>(findSectionsSpawnMenu.size()) < countColumnInTable ? findSectionsSpawnMenu.size() : countColumnInTable;
+		
+		auto& vec = find ? findSectionsSpawnMenu : sectionsSpawnMenu;
+		int size = static_cast<int>(vec.size());
+
+		int colums = size < countColumnInTable ? size : countColumnInTable;
 
 		if (buttonImageInTable && ImGui::BeginTable("tableImageButton", colums, flags))
 		{
