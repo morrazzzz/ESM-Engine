@@ -19,19 +19,21 @@ class ENGINE_API CInput
 	public pureAppDeactivate
 #endif
 {
-	bool mouseMove = false;
+
+	xr_vector<IInputReceiver*> cbStack;
+
+	const bool* KeyboardState;
+	IInputReceiver* TextInputReceiver = nullptr;
+
+	float mouseX{}, mouseY{};
+	float mouseWheelY{};
 
 	bool KeyboardStatePrev[CountInputsScancode];
 	bool mouseState[CountMouseButton];
 	bool mouseStatePrev[CountMouseButton];
 
-	float mouseX{}, mouseY{};
-
-	const bool* KeyboardState;
-	IInputReceiver* TextInputReceiver = nullptr;
-
-	xr_vector<IInputReceiver*> cbStack;
-
+	bool mouseMove{};
+	bool mouseWheel{};
 public:
 	CInput();
 	~CInput();
@@ -49,6 +51,7 @@ public:
 
 	void SetInputRelativeMouseMode(bool mode);
 	void SetMouseMotion(float x, float y);
+	void SetMouseWheel(float x);
 
 	bool GetPressedKey(int dik) const;
 	bool GetPressedMouseKey(int key);

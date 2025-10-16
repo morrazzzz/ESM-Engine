@@ -158,6 +158,14 @@ void CRenderDevice::EventWindow()
                 SDLWindowEvent.motion.yrel);
 
             break;
+        case SDL_EVENT_MOUSE_WHEEL:
+            if (getImGuiActivated())
+                break;
+            
+            pInput->SetMouseWheel(SDLWindowEvent.wheel.y);
+            break;
+        default:
+            break;
         }
     }
 }

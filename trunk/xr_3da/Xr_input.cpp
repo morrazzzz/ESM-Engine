@@ -154,12 +154,15 @@ void CInput::KeyUpdate()
 	}
 }
 
-void CInput::MouseUpdate( )
+void CInput::MouseUpdate()
 {
 	if (cbStack.empty())
 		return;
 
-   	if (CurrentIR() && mouseMove)
+	if (!CurrentIR())
+		return;
+
+   	if (mouseMove)
 	{
 		CurrentIR()->IR_OnMouseMove(mouseX, mouseY);
 		mouseMove = false;
@@ -167,12 +170,20 @@ void CInput::MouseUpdate( )
 		mouseX = mouseY = 0.0f;
 	}
 
+	if (mouseWheel)
+	{
+		CurrentIR()->IR_OnMouseWheel(static_cast<int>(mouseWheelY));
+		mouseWheel = false;
+
+		mouseWheelY = 0.0f;
+	}
+
 	SDL_MouseButtonFlags mouseButtonFlags = SDL_GetMouseState(nullptr, nullptr);
 
 	for (int i = 0; i < 5; i++)
 	{
 		if (!CurrentIR())
-			break;
+			return;
 
 		mouseState[i] = mouseButtonFlags & BUTTON_MASK(i);
 
@@ -270,4 +281,10 @@ void CInput::SetMouseMotion(float x, float y)
 	mouseX += x;
 	mouseY += y;
 	mouseMove = true;
+}
+
+void CInput::SetMouseWheel(float y)
+{
+	mouseWheelY = y;
+	mouseWheel = true;
 }

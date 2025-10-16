@@ -17,9 +17,7 @@ void	IInputReceiver::IR_Release						(void)
 
 void IInputReceiver::IR_OnDeactivate()
 {
-	int i;
-
-	for (i = 0; i < CountInputsScancode; i++)
+	for (int i = 0; i < CountInputsScancode; i++)
 	{
 		if (IR_GetKeyState(i))
 			IR_OnKeyboardRelease(i);
