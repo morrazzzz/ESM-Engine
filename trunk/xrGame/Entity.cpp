@@ -99,11 +99,11 @@ void	CEntity::Hit		(SHit* pHDS)
 	float lost_health = CalcCondition(pHDS->damage());
 
 	// Signal hit
-	if(BI_NONE!=pHDS->bone())	HitSignal(lost_health,vLocalDir,pHDS->who,pHDS->boneID);
+	if(BI_NONE!=pHDS->bone())	HitSignal(lost_health,vLocalDir,pHDS->initiator(), pHDS->boneID);
 
 	// If Local() - perform some logic
 	if (Local() && !g_Alive() && !AlreadyDie() && (m_killer_id == ALife::_OBJECT_ID(-1))) {
-		KillEntity	(pHDS->whoID);
+		KillEntity	(pHDS->initiator()->ID());
 	}
 	//must be last!!! @slipch
 	inherited::Hit(pHDS);

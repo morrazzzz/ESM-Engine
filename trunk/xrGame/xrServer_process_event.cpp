@@ -21,11 +21,6 @@ void xrServer::Process_event	(NET_Packet& P)
 		{
 		SendBroadcast			(P);
 		}break;
-	case GE_HIT:
-		{
-			P.r_pos -=2;
-			SendBroadcast(P);
-		} break;
 	case GE_CHANGE_POS:
 		{			
 			SendTo(P);

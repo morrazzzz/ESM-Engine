@@ -29,8 +29,6 @@ protected:
 
 	Fvector		m_vCurrentShootDir;
 	Fvector		m_vCurrentShootPos;
-	//ID персонажа который иницировал действие
-	u16			m_iCurrentParentID;
 
 
 //////////////////////////////////////////////////////////////////////////

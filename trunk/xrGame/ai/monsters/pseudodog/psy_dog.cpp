@@ -278,7 +278,7 @@ void CPsyDogPhantom::Think()
 void CPsyDogPhantom::Hit(SHit* pHDS)
 {
 	if (is_wait_to_destroy_object()) return;
-	if ((pHDS->who == EnemyMan.get_enemy())  && (pHDS->who != nullptr)) destroy_me();
+	if ((pHDS->initiator() == EnemyMan.get_enemy()) && (pHDS->initiator() != nullptr)) destroy_me();
 }
 
 void CPsyDogPhantom::net_Destroy()

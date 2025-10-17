@@ -333,8 +333,8 @@ CWound* CEntityCondition::AddWound(float hit_power, ALife::EHitType hit_type, u1
 CWound* CEntityCondition::ConditionHit(SHit* pHDS)
 {
 	//кто нанес последний хит
-	m_pWho = pHDS->who;
-	m_iWhoID = (NULL != pHDS->who) ? pHDS->who->ID() : 0;
+	m_pWho = pHDS->initiator();
+	m_iWhoID = (NULL != pHDS->initiator()) ? pHDS->initiator()->ID() : 0;
 
 	float hit_power_org = pHDS->damage();
 	float hit_power = hit_power_org;

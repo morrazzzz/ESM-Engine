@@ -119,7 +119,7 @@ void	CPhysicsShellHolder::PHHit( SHit &H )
 //						 Fvector p_in_object_space, float impulse, ALife::EHitType hit_type)
 void	CPhysicsShellHolder::Hit					(SHit* pHDS)
 {
-	bool const is_special_burn_hit_2_self	=	(pHDS->who == this) && (pHDS->boneID == BI_NONE) && 
+	bool const is_special_burn_hit_2_self	=	(pHDS->initiator() == this) && (pHDS->boneID == BI_NONE) &&
 												( (pHDS->hit_type == ALife::eHitTypeBurn)/*|| (pHDS->hit_type == ALife::eHitTypeLightBurn)*/);
 	if ( !is_special_burn_hit_2_self )
 	{

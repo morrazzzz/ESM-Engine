@@ -489,9 +489,7 @@ void	CActor::Hit							(SHit* pHDS)
 	//---------------------------------------------------------------
 	if (Level().CurrentViewEntity() == this && !g_dedicated_server && HDS.hit_type == ALife::eHitTypeFireWound)
 	{
-		CObject* pLastHitter = pHDS->who;
-		CObject* pLastHittingWeapon = Level().Objects.net_Find(pHDS->weaponID);
-		HitSector(pLastHitter, pLastHittingWeapon);
+		HitSector(pHDS->objectHitted, pHDS->objectWeapon);
 	};
 
 	if ((mstate_real&mcSprint) && Level().CurrentControlEntity() == this && 
@@ -504,7 +502,7 @@ void	CActor::Hit							(SHit* pHDS)
 	};
 	if(!g_dedicated_server)
 	{
-		HitMark			(HDS.damage(), HDS.dir, HDS.who, HDS.bone(), HDS.p_in_bone_space, HDS.impulse, HDS.hit_type);
+		HitMark			(HDS.damage(), HDS.dir, pHDS->objectHitted, HDS.bone(), HDS.p_in_bone_space, HDS.impulse, HDS.hit_type);
 	}
 
 	float hit_power	= HitArtefactsOnBelt(HDS.damage(), HDS.hit_type);
@@ -709,16 +707,8 @@ void CActor::g_Physics(Fvector& _accel, float jump, float dt)
 			//				Hit	(m_PhysicMovementControl->gcontact_HealthLost,hdir,di->DamageInitiator(),m_PhysicMovementControl->ContactBone(),di->HitPos(),0.f,ALife::eHitTypeStrike);//s16(6 + 2*::Random.randI(0,2))
 			if (Level().CurrentControlEntity() == this)
 			{
-				SHit HDS = SHit(character_physics_support()->movement()->gcontact_HealthLost,hdir,di->DamageInitiator(),character_physics_support()->movement()->ContactBone(),di->HitPos(),0.f,di->HitType());
-//				Hit(&HDS);
-
-				NET_Packet	l_P;
-				HDS.GenHeader(GE_HIT, ID());
-				HDS.whoID = di->DamageInitiator()->ID();
-				HDS.weaponID = di->DamageInitiator()->ID();
-				HDS.Write_Packet(l_P);
-
-				u_EventSend	(l_P);
+				AddHitObject(character_physics_support()->movement()->gcontact_HealthLost, hdir, ID(), di->DamageInitiator()->ID(),
+					di->DamageInitiator()->ID(), character_physics_support()->movement()->ContactBone(), di->HitPos(), 0.f, ALife::eHitTypeStrike, 0.0f);
 			}
 		}
 	}

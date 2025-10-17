@@ -123,6 +123,8 @@ protected:
 	bool	xr_stdcall			net_start_client1				();
 	bool	xr_stdcall			net_start_client2				();
 	bool	xr_stdcall			net_start_client3				();
+private:
+	void __stdcall BeginFrameLevel();
 public:
 	// sounds
 	xr_vector<ref_sound*>		static_Sounds;

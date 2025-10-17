@@ -12,7 +12,6 @@ enum {
 };
 
 enum {
-	GE_HIT,						//
 	GE_TELEPORT_OBJECT,
 
 	GE_ADD_RESTRICTION,

@@ -302,25 +302,8 @@ void CBulletManager::DynamicObjectHit	(CBulletManager::_event& E)
 	//отправить хит пораженному объекту
 	if (!E.Repeated)
 	{
-		SHit	Hit = SHit(	power, 
-							original_dir, 
-							NULL, 
-							u16(E.R.element), 
-							position_in_bone_space, 
-							impulse, 
-							E.bullet.hit_type,
-							E.bullet.ap,
-							E.bullet.flags.aim_bullet);
-
-		Hit.GenHeader(GE_HIT, E.R.O->ID());
-		Hit.whoID			= E.bullet.parent_id;
-		Hit.weaponID		= E.bullet.weapon_id;
-
-		NET_Packet			np;
-		Hit.Write_Packet	(np);
-		
-//		Msg("Hit sended: %d[%d,%d]", Hit.whoID, Hit.weaponID, Hit.BulletID);
-		CGameObject::u_EventSend(np);
+		AddHitObject(power, original_dir, E.R.O->ID(), E.bullet.parent_id, E.bullet.weapon_id, E.R.element, position_in_bone_space, impulse,
+			E.bullet.hit_type, E.bullet.ap, E.bullet.flags.aim_bullet);
 	}
 }
 

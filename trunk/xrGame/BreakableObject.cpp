@@ -252,20 +252,9 @@ void CBreakableObject::CollisionHit( u16 source_id, u16 bone_id, float c_damage,
 
 void CBreakableObject::ProcessDamage()
 {
-	NET_Packet			P;
-	SHit				HS;
-	HS.GenHeader		(GE_HIT, ID());
-	HS.whoID			= (ID());			
-	HS.weaponID			= (ID());			
-	HS.dir				= (m_contact_damage_dir);
-	HS.power			= (m_max_frame_damage);					
-	HS.boneID			= (PKinematics(Visual())->LL_GetBoneRoot());				
-	HS.p_in_bone_space	= (m_contact_damage_pos);
-	HS.impulse			= (0.f);
-	HS.hit_type			= (ALife::eHitTypeStrike);
-	HS.Write_Packet		(P);
-	
-	u_EventSend			(P);
+	u16 bone = (PKinematics(Visual())->LL_GetBoneRoot());
+
+	AddHitObject(m_max_frame_damage, m_contact_damage_dir, ID(), ID(), ID(), bone, m_contact_damage_pos, 0.0f, ALife::eHitTypeStrike, 0.0f);
 
 	m_max_frame_damage		= 0.f;
 	b_resived_damage		=false;

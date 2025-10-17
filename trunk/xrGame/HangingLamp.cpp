@@ -277,7 +277,7 @@ void	CHangingLamp::Hit					(SHit* pHDS)
 		lua_game_object(), 
 		HDS.power,
 		HDS.dir,
-		smart_cast<const CGameObject*>(HDS.who)->lua_game_object(),
+		smart_cast<const CGameObject*>(HDS.initiator())->lua_game_object(),
 		HDS.bone()
 		);
 	BOOL	bWasAlive		= Alive		();

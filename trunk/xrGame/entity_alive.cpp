@@ -289,7 +289,7 @@ void CEntityAlive::Hit(SHit* pHDS)
 	inherited::Hit(&HDS);
 
 	if (g_Alive()&&IsGameTypeSingle()) {
-		CEntityAlive* EA = smart_cast<CEntityAlive*>(HDS.who);
+		CEntityAlive* EA = smart_cast<CEntityAlive*>(HDS.initiator());
 		if(EA && EA->g_Alive() && EA->ID() != ID())
 		{
 			RELATION_REGISTRY().FightRegister(EA->ID(), ID(), this->tfGetRelationType(EA), HDS.damage());

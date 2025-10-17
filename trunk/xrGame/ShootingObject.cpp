@@ -28,7 +28,6 @@ CShootingObject::CShootingObject(void)
 
 	m_vCurrentShootDir.set			(0,0,0);
 	m_vCurrentShootPos.set			(0,0,0);
-	m_iCurrentParentID				= 0xFFFF;
 
 	m_fPredBulletTime				= 0.0f;
 	m_bUseAimBullet					= false;
@@ -369,8 +368,7 @@ void CShootingObject::FireBullet(const Fvector& pos,
 
 	m_vCurrentShootDir = dir;
 	m_vCurrentShootPos = pos;
-	m_iCurrentParentID = parent_id;
-	
+
 	bool aim_bullet;
 	if (m_bUseAimBullet)
 	{

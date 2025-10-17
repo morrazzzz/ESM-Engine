@@ -77,7 +77,7 @@ void	CDestroyablePhysicsObject::Hit					(SHit* pHDS)
 		lua_game_object(), 
 		HDS.power,
 		HDS.dir,
-		smart_cast<const CGameObject*>(HDS.who)->lua_game_object(),
+		smart_cast<const CGameObject*>(HDS.initiator())->lua_game_object(),
 		HDS.bone()
 		);
 	HDS.power=CHitImmunity::AffectHit(HDS.power,HDS.hit_type);

@@ -317,19 +317,11 @@ void CStalkerActionKillWounded::execute					()
 	for (int i = 0; i < 100; i++)
 		Msg("!! Fake hit for kill wounded!!!");
 	Msg("!! AHTUNG KILL WOUNDED END!!!!!");
-	NET_Packet				P;
-	SHit					HS;
-	HS.GenHeader			(GE_HIT, enemy->ID());
-	HS.whoID				= object().ID();
-	HS.weaponID				= weapon_to_kill(&object())->object().ID();
-	HS.dir					= Fvector().set(0.f,0.f,1.f);
-	HS.power				= 1.f;
-	HS.boneID				= smart_cast<IKinematics*>((const_cast<CEntityAlive*>(enemy))->Visual())->LL_GetBoneRoot();
-	HS.p_in_bone_space		= Fvector().set(0.f,0.f,0.f);
-	HS.impulse				= 1.f;
-	HS.hit_type				= ALife::eHitTypeWound;
-	HS.Write_Packet			(P);
-	object().u_EventSend	(P);
+	u16 weaponID			= weapon_to_kill(&object())->object().ID();
+	u16 bone = smart_cast<IKinematics*>((const_cast<CEntityAlive*>(enemy))->Visual())->LL_GetBoneRoot();
+
+	AddHitObject(1.0f, Fvector().set(0.f, 0.f, 1.f), enemy->ID(), object().ID(), weaponID, bone, Fvector().set(0.f, 0.f, 0.f), 1.0f,
+		ALife::eHitTypeWound, 0.0f);
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -124,20 +124,6 @@ void CGameObject::net_Destroy	()
 
 void CGameObject::OnEvent		(NET_Packet& P, u16 type)
 {
-	switch (type)
-	{
-	case GE_HIT:
-		{
-			SHit	HDS;
-			HDS.PACKET_TYPE = type;
-			HDS.Read_Packet_Cont(P);
-//			Msg("Hit received: %d[%d,%d]", HDS.whoID, HDS.weaponID, HDS.BulletID);
-			CObject* Hitter = Level().Objects.net_Find(HDS.whoID);
-			HDS.who		= Hitter;
-			Hit				(&HDS);
-		}
-		break;
-	}
 }
 
 void VisualCallback(IKinematics *tpKinematics);

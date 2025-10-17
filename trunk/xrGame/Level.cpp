@@ -296,6 +296,13 @@ struct debug_memory_guard {
 };
 #endif // DEBUG_MEMORY_MANAGER
 
+void CLevel::BeginFrameLevel()
+{
+	m_map_manager->Update();
+
+	UpdateHitObjects();
+}
+
 void CLevel::OnFrame	()
 {
 #ifdef DEBUG_MEMORY_MANAGER
@@ -322,14 +329,24 @@ void CLevel::OnFrame	()
 //	CTimer T;
 //	T.Start();
 
-	ProcessGameEvents	();
+	ProcessGameEvents();
 
 	Server->SpawnNewObjects();
 
+	/*
 	if (g_mt_config.test(mtMap))
-		Device.seqParallel.emplace_back(fastdelegate::FastDelegate0(m_map_manager, &CMapManager::Update));
+		Device.seqParallel.emplace_back(m_map_manager, &CMapManager::Update);
 	else
 		MapManager().Update	();
+
+	 auto functionUpdateHitObjects = [&]() {
+		UpdateHitObjects();
+		};
+
+	Device.seqParallel.emplace_back(this, &functionUpdateHitObjects);
+	*/
+	
+	Device.seqParallel.emplace_back(this, &CLevel::BeginFrameLevel);
 
 	// Inherited update
 	inherited::OnFrame		();

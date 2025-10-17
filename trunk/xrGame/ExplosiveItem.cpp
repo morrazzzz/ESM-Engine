@@ -42,7 +42,7 @@ void	CExplosiveItem::Hit					(SHit* pHDS)
 	if(!CDelayedActionFuse::isActive()&&CDelayedActionFuse::CheckCondition(GetCondition())&&CExplosive::Initiator()==u16(-1))
 	{
 		//запомнить того, кто взорвал вещь
-		SetInitiator( pHDS->who->ID());
+		SetInitiator( pHDS->initiator()->ID());
 
 	}
 }

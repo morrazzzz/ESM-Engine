@@ -214,7 +214,7 @@ void	CHelicopter::Hit							(SHit* pHDS)
 
 	if(state() == CHelicopter::eDead ) return;
 
-	if(pHDS->who==this)
+	if(pHDS->initiator() ==this)
 		return;
 
 	bonesIt It = m_hitBones.find(pHDS->bone());
@@ -235,12 +235,12 @@ void	CHelicopter::Hit							(SHit* pHDS)
 			Log("----Helicopter::Hit(). health=",GetfHealth());
 #endif
 	};
-	if (pHDS->who&&
-		( pHDS->who->CLS_ID==CLSID_OBJECT_ACTOR	||
-		smart_cast<CAI_Stalker*>(pHDS->who)		||
-		smart_cast<CCustomZone*>(pHDS->who) )
+	if (pHDS->initiator() &&
+		( pHDS->initiator()->CLS_ID==CLSID_OBJECT_ACTOR	||
+		smart_cast<CAI_Stalker*>(pHDS->initiator())		||
+		smart_cast<CCustomZone*>(pHDS->initiator()) )
 		){
-			callback(GameObject::eHelicopterOnHit)(pHDS->damage(),pHDS->impulse,pHDS->hit_type,pHDS->who->ID());
+			callback(GameObject::eHelicopterOnHit)(pHDS->damage(),pHDS->impulse,pHDS->hit_type,pHDS->initiator()->ID());
 		}
 
 	CPHDestroyable::SetFatalHit(*pHDS);

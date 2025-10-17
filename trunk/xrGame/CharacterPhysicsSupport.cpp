@@ -422,7 +422,7 @@ void CCharacterPhysicsSupport::KillHit( SHit &H )
 	Fvector velocity;
 	Fvector death_position;
 
-	CreateShell( H.who, death_position, velocity);
+	CreateShell( H.initiator(), death_position, velocity);
 	//ActivateShell( H.who );
 
 //	if(Type() == etStalker && xr_strcmp(dbg_stalker_death_anim, "none") != 0)
@@ -465,7 +465,7 @@ void CCharacterPhysicsSupport::KillHit( SHit &H )
 //		}
 #endif
 		
-		EndActivateFreeShell( H.who, start, death_position, velocity);
+		EndActivateFreeShell( H.initiator(), start, death_position, velocity);
 		m_flags.set( fl_block_hit, TRUE );
 	}
 }

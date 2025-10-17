@@ -7,120 +7,62 @@
 #include "xrMessages.h"
 #include "Level.h"
 #include "../xrPhysics/mathutils.h"
-SHit::SHit(float aPower,Fvector &adir,CObject *awho, u16 aelement, Fvector ap_in_bone_space, float aimpulse,  ALife::EHitType ahit_type, float aAP, bool AimBullet)
+#include "GameObject.h"
+
+xr_vector<SHit> vectorHits;
+
+void AddHitObject(float powerHit, const Fvector& dirHit, u16 newObjectWhoGetHit, u16 newIDObjectHitted, u16 newObjectWeapon,
+	u16 boneIDHit, const Fvector& pInBonePaceHit, float impulseHit, ALife::EHitType typeHit, float apHit, bool aimBulletHit)
 {
-		power					=aPower									;
-		dir						.set(adir)								;
-		who						=awho									;
-		if (awho)
-			whoID				= awho->ID()							;
-		else 
-			whoID				= 0										;
-		boneID					=aelement								;
-		p_in_bone_space			.set(ap_in_bone_space)					;
-		impulse					=aimpulse								;
-		hit_type				=ahit_type								;
-		ap						= aAP									;
-		PACKET_TYPE				= 0										;
-		aim_bullet				= AimBullet								;
+	vectorHits.emplace_back(powerHit, dirHit, Level().Objects.net_Find(newIDObjectHitted), Level().Objects.net_Find(newObjectWeapon), newObjectWhoGetHit, boneIDHit, pInBonePaceHit, impulseHit, typeHit, apHit, aimBulletHit);
 }
 
-SHit::SHit()
+void UpdateHitObjects()
 {
-	invalidate();
+	if (vectorHits.empty())
+		return;
+
+	CTimer T; T.Start();
+
+	for (u32 i = 0; i < vectorHits.size(); i++)
+	{
+		CGameObject* object = static_cast<CGameObject*>(Level().Objects.net_Find(vectorHits[i].objectWhoGetHit));
+
+		if (!object)
+			continue;
+
+		object->Hit(&vectorHits[i]);
+	}
+
+	vectorHits.clear();
+
+	Msg("##PROCESS HITS OBJECTS: [%fms]", T.GetElapsed_sec() * 1000.f);
 }
+
+SHit::SHit(float powerHit, const Fvector& dirHit, CObject* newObjectHitted, CObject* newObjectWeapon, u16 newObjectWhoGetHit, u16 boneIDHit,
+	const Fvector& pInBonePaceHit, float impulseHit, ALife::EHitType typeHit, float apHit, bool aimBulletHit)
+{
+	power = powerHit;
+	dir = dirHit;
+	objectHitted = newObjectHitted;
+	objectWhoGetHit = newObjectWhoGetHit;
+	objectWeapon = newObjectWeapon;
+	boneID = boneIDHit;
+	p_in_bone_space = pInBonePaceHit;
+	impulse = impulseHit;
+	hit_type = typeHit;
+	ap = apHit;
+	aim_bullet = aimBulletHit;
+}
+
 void SHit::invalidate()
 {
-	Time					= 0;
-	PACKET_TYPE				= 0;
-	DestID					= 0;
-
-	power					=-phInfinity;
-	dir						.set(-phInfinity,-phInfinity,-phInfinity)	;
-	who						=NULL									;
-	whoID					= 0;
-	weaponID				= 0;
-
-	boneID					=BI_NONE								;
-	p_in_bone_space		.set(-phInfinity,-phInfinity,-phInfinity)	;
-
-	impulse					=-phInfinity;
-	hit_type				=ALife::eHitTypeMax						;
-
-	ap						= 0.0f;	
-	aim_bullet				= false									;
 }
 
 bool SHit::is_valide() const
 {
 	return hit_type!=ALife::eHitTypeMax;
 }
-
-void	SHit::GenHeader				(u16 PacketType, u16 ID)
-{
-	DestID = ID;
-	PACKET_TYPE = PacketType;
-	Time = Level().timeServer();
-};
-
-void SHit::Read_Packet				(NET_Packet	Packet)
-{
-	u16 type_dummy;	
-	Packet.r_begin			(type_dummy);
-	Packet.r_u32			(Time);
-	Packet.r_u16			(PACKET_TYPE);
-	Packet.r_u16			(DestID);
-	Read_Packet_Cont		(Packet);
-};
-
-void SHit::Read_Packet_Cont		(NET_Packet	Packet)
-{
-
-	Packet.r_u16			(whoID);
-	Packet.r_u16			(weaponID);
-	Packet.r_dir			(dir);
-	Packet.r_float			(power);
-	Packet.r_u16			(boneID);
-	Packet.r_vec3			(p_in_bone_space);
-	Packet.r_float			(impulse);
-	if (IsGameTypeSingle())
-		aim_bullet				= Packet.r_u16()!=0;
-	else
-		aim_bullet				= false;
-	hit_type				= (ALife::EHitType)Packet.r_u16();	//hit type
-
-	if (hit_type == ALife::eHitTypeFireWound)
-	{
-		Packet.r_float	(ap);
-	}
-}
-
-void SHit::Write_Packet_Cont		(NET_Packet	&Packet)
-{
-	Packet.w_u16		(whoID);
-	Packet.w_u16		(weaponID);
-	Packet.w_dir		(dir);
-	Packet.w_float		(power);
-	Packet.w_u16		(boneID);
-	Packet.w_vec3		(p_in_bone_space);
-	Packet.w_float		(impulse);
-	if (IsGameTypeSingle())
-		Packet.w_u16		(aim_bullet!=0);
-	Packet.w_u16		(u16(hit_type&0xffff));	
-	if (hit_type == ALife::eHitTypeFireWound)
-	{
-		Packet.w_float	(ap);
-	}
-}
-void SHit::Write_Packet			(NET_Packet	&Packet)
-{
-	Packet.w_begin	(M_EVENT);
-	Packet.w_u32		(Time);
-	Packet.w_u16		(u16(PACKET_TYPE&0xffff));
-	Packet.w_u16		(u16(DestID&0xffff));
-
-	Write_Packet_Cont (Packet);	
-};
 
 #ifdef DEBUG
 void SHit::_dump()
@@ -129,8 +71,8 @@ void SHit::_dump()
 	Log("power=",power);
 	Log("impulse=",impulse);
 	Log("dir=",dir);
-	Log("whoID=",whoID);
-	Log("weaponID=",weaponID);
+//	Log("whoID=",whoID);
+//	Log("weaponID=",weaponID);
 	Log("element=",boneID);
 	Log("p_in_bone_space=",p_in_bone_space);
 	Log("hit_type=",(int)hit_type);

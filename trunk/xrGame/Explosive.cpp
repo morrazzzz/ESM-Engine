@@ -646,26 +646,13 @@ void CExplosive::ExplodeWaveProcessObject(collide::rq_results& storage, CPhysics
 
 	if(l_impuls > .001f||l_hit> 0.001) 
 	{
-	
 		Fvector l_dir;l_dir.sub(l_goPos,m_vExplodePos);
 		
 		float rmag=_sqrt(m_fUpThrowFactor*m_fUpThrowFactor+1.f+2.f*m_fUpThrowFactor*l_dir.y);
 		l_dir.y += m_fUpThrowFactor;
 		//rmag -модуль l_dir после l_dir.y += m_fUpThrowFactor, модуль=_sqrt(l_dir^2+y^2+2.*(l_dir,y)),y=(0,m_fUpThrowFactor,0) (до этого модуль l_dir =1)
 		l_dir.mul(1.f/rmag);//перенормировка
- 		NET_Packet		P;
-		SHit	HS;
-		HS.GenHeader(GE_HIT, l_pGO->ID());			//		cast_game_object()->u_EventGen		(P,GE_HIT,l_pGO->ID());
-		HS.whoID  =Initiator();						//		P.w_u16			(Initiator());
-		HS.weaponID = cast_game_object()->ID();		//		P.w_u16			(cast_game_object()->ID());
-		HS.dir = l_dir;								//		P.w_dir			(l_dir);
-		HS.power = l_hit;							//		P.w_float		(l_hit);
-		HS.p_in_bone_space = l_goPos;				//		P.w_vec3		(l_goPos);
-		HS.impulse = l_impuls;						//		P.w_float		(l_impuls);
-		HS.hit_type = (m_eHitTypeBlast);			//		P.w_u16			(u16(m_eHitTypeBlast));
-		HS.boneID = 0;								//		P.w_s16			(0);
-		HS.Write_Packet(P);
-		cast_game_object()->u_EventSend		(P);
+		AddHitObject(l_hit, l_dir, l_pGO->ID(), Initiator(), cast_game_object()->ID(), 0, l_goPos, l_impuls, m_eHitTypeBlast, 0.0f);
 	}
 #ifdef DEBUG
 	if(ph_dbg_draw_mask.test(phDbgDrawExplosions))

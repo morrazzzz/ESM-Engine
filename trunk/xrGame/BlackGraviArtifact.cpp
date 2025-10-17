@@ -220,21 +220,9 @@ void CBlackGraviArtefact::GraviStrike()
 			{
 				s16 element = elements_list.front();
 				Fvector bone_pos = bone_position_list.front();
-				
-				NET_Packet		P;
-				SHit	HS;
-				HS.GenHeader(GE_HIT, pGameObject->ID());	//				u_EventGen		(P,GE_HIT, pGameObject->ID());				
-				HS.whoID  =ID();							//				P.w_u16			(ID());
-				HS.weaponID = ID();							//				P.w_u16			(ID());
-				HS.dir = strike_dir;						//				P.w_dir			(strike_dir);
-				HS.power = hit_power;						//				P.w_float		(hit_power);
-				HS.boneID = element;						//				P.w_s16			(element);
-				HS.p_in_bone_space = bone_pos;				//				P.w_vec3		(bone_pos);
-				HS.impulse = impulse;						//				P.w_float		(impulse);
-				HS.hit_type = (ALife::eHitTypeWound);		//				P.w_u16			(u16(ALife::eHitTypeWound));
-				HS.Write_Packet(P);
 
-				u_EventSend		(P);
+				AddHitObject(hit_power, strike_dir, pGameObject->ID(), ID(), ID(), element, bone_pos, impulse, ALife::eHitTypeWound, 0.0f);
+
 				elements_list.pop_front();
 				bone_position_list.pop_front();
 			}

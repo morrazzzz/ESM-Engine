@@ -2,41 +2,39 @@
 
 struct SHit
 {
-	SHit										(float Power, Fvector &dir, CObject *who, u16 element, Fvector p_in_object_space, float impulse,  ALife::EHitType hit_type, float ap = 0.0f, bool AimBullet=false);
-	SHit										();	
-	bool				is_valide				()		const	;	
-	void				invalidate				()				;
-IC	float				damage					()		const	{VERIFY(is_valide());return power;}
-IC	const Fvector		&direction				()		const	{VERIFY(is_valide());return dir;}
-IC	const CObject		*initiator				()		const	{VERIFY(is_valide());return who;}
-IC			u16			bone					()		const	{VERIFY(is_valide());return boneID;}
-IC	const Fvector		&bone_space_position	()		const	{VERIFY(is_valide());return p_in_bone_space;}
-IC			float		phys_impulse			()		const	{VERIFY(is_valide());return impulse;}
-IC	ALife::EHitType		type					()		const	{VERIFY(is_valide());return hit_type;}								
-	void				Read_Packet				(NET_Packet	P);
-	void				Read_Packet_Cont		(NET_Packet	P);
-	void				Write_Packet			(NET_Packet	&P);
-	void				Write_Packet_Cont		(NET_Packet	&P);
+	SHit() = default;
+	SHit(float powerHit, const Fvector& dirHit, CObject* newObjectHitted, CObject* newObjectWeapon, u16 newObjectWhoGetHit,
+		u16 boneIDHit, const Fvector& pInBonePaceHit, float impulseHit, ALife::EHitType typeHit, float apHit, bool aimBulletHit = false);
 
-	void				GenHeader				(u16 PacketType, u16 ID);
-//private:
-	//GE_HIT
-	u32					Time;
-	u16					PACKET_TYPE;
-	u16					DestID;
-	
-	float				power																																						;
-	Fvector				dir																																						;
-	CObject				*who																																					;
-	u16					whoID;
-	u16					weaponID;
-	u16					boneID																																					;
-	Fvector				p_in_bone_space																																			;
-	float				impulse																																					;
-	ALife::EHitType		hit_type																																				;
-	float				ap;
-	bool				aim_bullet;
+	bool				is_valide()		const;
+	void				invalidate();
+	IC	float				damage()		const { VERIFY(is_valide()); return power; }
+	IC	const Fvector& direction()		const { VERIFY(is_valide()); return dir; }
+	IC	CObject* initiator()		const { VERIFY(is_valide()); return objectHitted; }
+	IC			u16			bone()		const { VERIFY(is_valide()); return boneID; }
+	IC	const Fvector& bone_space_position()		const { VERIFY(is_valide()); return p_in_bone_space; }
+	IC			float		phys_impulse()		const { VERIFY(is_valide()); return impulse; }
+	IC	ALife::EHitType		type()		const { VERIFY(is_valide()); return hit_type; }
+
+	float power;
+	Fvector	dir;
+	CObject* objectHitted{};
+	CObject* objectWeapon{};
+	u16 objectWhoGetHit{};
+	//	u16 whoID;
+	// 	u16	weaponID;
+	u16	boneID;
+	Fvector p_in_bone_space;
+	float impulse;
+	ALife::EHitType	hit_type;
+	float ap;
+	bool aim_bullet;
 #ifdef DEBUG
-	void				_dump				();
+	void				_dump();
 #endif
 };
+
+extern xr_vector<SHit> vectorHits;
+extern void AddHitObject(float powerHit, const Fvector& dirHit, u16 newObjectWhoGetHit, u16 newObjectHitted, u16 newObjectWeapon,
+	u16 boneIDHit, const Fvector& pInBonePaceHit, float impulseHit, ALife::EHitType typeHit, float apHit, bool aimBulletHit = false);
+extern void __stdcall UpdateHitObjects();

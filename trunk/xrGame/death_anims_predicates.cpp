@@ -176,7 +176,7 @@ class	type_motion2: public type_motion
 		if( H.initiator() !=  Level().CurrentControlEntity())
 		return false;
 		
-		CObject* O = Level().Objects.net_Find( H.weaponID );
+		CObject* O = H.objectWeapon;
 		if(!O)
 			return false;
 		//static_cast<CGameObject*>(O)->cast_weapon()
@@ -216,12 +216,11 @@ class	type_motion3: public type_motion
 	}
 };
 
-bool is_snipper( u16 weaponID )
+bool is_snipper(CObject* object)
 {
-	CObject* O = Level().Objects.net_Find( weaponID );
-	if(!O)
+	if(!object)
 		return false;
-	CWeaponMagazined* WM = smart_cast<CWeaponMagazined*>( O );
+	CWeaponMagazined* WM = smart_cast<CWeaponMagazined*>(object );
 	if(!WM )
 		return false;
 	if( !WM->IsZoomed() )
@@ -248,7 +247,7 @@ class	type_motion4: public type_motion
 		if( !is_bone_head( *K, H.bone() ) )
 			return false;
 
-		if( is_snipper( H.weaponID ) )
+		if( is_snipper(H.objectWeapon) )
 		{
 			edirection dr = dir( ea, H, angle );
 			m = motion( dr );
@@ -271,7 +270,7 @@ class	type_motion5: public type_motion
 		IKinematics *K = ea.Visual()->dcast_PKinematics();
 		VERIFY( K );
 
-		if(is_snipper( H.weaponID ) && !is_bone_head( *K, H.bone() ))
+		if(is_snipper( H.objectWeapon ) && !is_bone_head( *K, H.bone() ))
 		{
 			edirection dr = dir( ea, H, angle );
 			m = motion( dr );
@@ -299,7 +298,7 @@ class	type_motion6: public type_motion
 			return true;
 		}
 
-		CObject* O = Level().Objects.net_Find( H.weaponID );
+		CObject* O = H.objectWeapon;
 		if(!O)
 		{
 			m = MotionID();
