@@ -102,10 +102,6 @@ public:
 public:
 	CInifile				*m_ini_file;
 
-	// Utilities
-	static void				u_EventGen			(NET_Packet& P, u32 type, u32 dest	);
-	static void				u_EventSend			(NET_Packet& P);
-	
 	// Methods
 	virtual void			Load				(LPCSTR section);
 	virtual BOOL			net_Spawn			(CSE_Abstract* DC);

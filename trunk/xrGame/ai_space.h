@@ -69,6 +69,7 @@ public:
 	IC		const CPatrolPathStorage	&patrol_paths			() const;
 	IC		CEF_Storage					&ef_storage				() const;
 	IC		CGraphEngine				&graph_engine			() const;
+	IC CALifeSimulator& alife();
 	IC		CALifeSimulator		&alife					() const;
 	IC	    CALifeSimulator		*get_alife				() const;
 	IC		const CCoverManager			&cover_manager			() const;

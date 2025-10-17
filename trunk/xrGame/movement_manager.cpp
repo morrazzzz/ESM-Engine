@@ -23,6 +23,8 @@
 #include "detail_path_builder.h"
 #include "profiler.h"
 #include "mt_config.h"
+#include "ai_space.h"
+#include "alife_simulator.h"
 //#include "custommonster.h"
 
 using namespace MovementManager;
@@ -267,17 +269,12 @@ bool CMovementManager::actual_all				() const
 #endif
 }
 
-void CMovementManager::teleport					(u32 game_vertex_id)
+void CMovementManager::teleport(u32 game_vertex_id)
 {
-	NET_Packet				net_packet;
-	GameGraph::_GRAPH_ID	_game_vertex_id = (GameGraph::_GRAPH_ID)game_vertex_id;
-	u32						_level_vertex_id = ai().game_graph().vertex(_game_vertex_id)->level_vertex_id();
-	Fvector					position = ai().game_graph().vertex(_game_vertex_id)->level_point();
-	object().u_EventGen		(net_packet,GE_TELEPORT_OBJECT,object().ID());
-	net_packet.w			(&_game_vertex_id,sizeof(_game_vertex_id));
-	net_packet.w			(&_level_vertex_id,sizeof(_level_vertex_id));
-	net_packet.w_vec3		(position);
-	Level().Send			(net_packet);
+	GameGraph::_GRAPH_ID _game_vertex_id = (GameGraph::_GRAPH_ID)game_vertex_id;
+	u32	_level_vertex_id = ai().game_graph().vertex(_game_vertex_id)->level_vertex_id();
+	Fvector position = ai().game_graph().vertex(_game_vertex_id)->level_point();
+	ai().alife().teleport_object(object().ID(), _game_vertex_id, _level_vertex_id, position);
 }
 
 void CMovementManager::clear_path				()

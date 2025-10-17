@@ -2,27 +2,11 @@
 
 enum {
 	M_SPAWN = 1, //Hack! In all.spawn M_SPAWN has ID = 1
-
-	M_EVENT,					// Game Event
 	
 	M_CHANGE_LEVEL,				// changing level
 	M_LOAD_GAME,
 	M_SAVE_GAME,
 	M_SAVE_PACKET,
-};
-
-enum {
-	GE_TELEPORT_OBJECT,
-
-	GE_ADD_RESTRICTION,
-	GE_REMOVE_RESTRICTION,
-	GE_REMOVE_ALL_RESTRICTIONS,
-
-	GE_CHANGE_POS,
-
-	GEG_PLAYER_ACTIVATEARTEFACT,
-
-	GEG_PLAYER_WEAPON_HIDE_STATE
 };
 
 enum

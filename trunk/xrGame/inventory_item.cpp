@@ -240,23 +240,6 @@ void CInventoryItem::UpdateCL()
 
 void CInventoryItem::OnEvent (NET_Packet& P, u16 type)
 {
-	switch (type)
-	{	
-	case GE_CHANGE_POS:
-		{
-			Fvector p; 
-			P.r_vec3(p);
-			CPHSynchronize* pSyncObj = NULL;
-			pSyncObj = object().PHGetSyncItem(0);
-			if (!pSyncObj) return;
-			SPHNetState state;
-			pSyncObj->get_State(state);
-			state.position = p;
-			state.previous_position = p;
-			pSyncObj->set_State(state);
-
-		}break;
-	}
 }
 
 //процесс отсоединения вещи заключается в спауне новой вещи 

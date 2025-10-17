@@ -14,9 +14,6 @@ void CLevel::ClientReceive()
 		P->r_begin	(m_type);
 		switch (m_type)
 		{
-		case M_EVENT:
-			game_events->insert		(*P);
-			break;
 		case M_LOAD_GAME:
 		case M_CHANGE_LEVEL:
 			{

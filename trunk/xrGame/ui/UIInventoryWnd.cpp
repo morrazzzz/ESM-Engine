@@ -302,14 +302,6 @@ void CUIInventoryWnd::Hide()
 		pActor->inventory().Activate(m_iCurrentActiveSlot);
 		m_iCurrentActiveSlot = NO_ACTIVE_SLOT;
 	}
-
-	if (!IsGameTypeSingle())
-	{
-		CActor *pActor		= smart_cast<CActor*>(Level().CurrentEntity());
-		if(!pActor)			return;
-
-		pActor->SetWeaponHideState(INV_STATE_INV_WND, false);
-	}
 }
 
 void CUIInventoryWnd::AttachAddon(PIItem item_to_upgrade)

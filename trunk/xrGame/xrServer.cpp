@@ -50,10 +50,6 @@ void xrServer::OnMessage	(NET_Packet& P)			// Non-Zero means broadcasting with "
 		{
 			Process_spawn(P);	
 		}break;
-	case M_EVENT:	
-		{
-			Process_event			(P);
-		}break;
 	case M_CHANGE_LEVEL:
 		{
 			if (game->change_level(P))

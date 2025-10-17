@@ -289,14 +289,28 @@ void CScriptGameObject::DropItem			(CScriptGameObject* pItem)
 	object().RejectItem(item->cast_game_object());
 }
 
-void CScriptGameObject::DropItemAndTeleport	(CScriptGameObject* pItem, Fvector position)
+void CScriptGameObject::DropItemAndTeleport	(CScriptGameObject* pItem, const Fvector& position)
 {
-	DropItem						(pItem);
+	CInventoryItem* item = pItem->object().cast_inventory_item();
 
-	NET_Packet						PP;
-	CGameObject::u_EventGen			(PP,GE_CHANGE_POS, pItem->object().ID());
-	PP.w_vec3						(position);
-	CGameObject::u_EventSend		(PP);
+	if (!item)
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CScriptGameObject::DropItemAndTeleport non-CInventoryOwner object !!!");
+		return;
+	}
+
+	item->DropItem();
+
+	CPHSynchronize* pSyncObj = nullptr;
+	pSyncObj = item->object().PHGetSyncItem(0);
+	if (!pSyncObj) 
+		return;
+
+	SPHNetState state;
+	pSyncObj->get_State(state);
+	state.position = position;
+	state.previous_position = position;
+	pSyncObj->set_State(state);
 }
 
 //передаче вещи из своего инвентаря в инвентарь партнера

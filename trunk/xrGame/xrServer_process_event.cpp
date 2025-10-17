@@ -17,34 +17,6 @@ void xrServer::Process_event	(NET_Packet& P)
 
 	switch		(type)
 	{
-	case GEG_PLAYER_ACTIVATEARTEFACT:
-		{
-		SendBroadcast			(P);
-		}break;
-	case GE_CHANGE_POS:
-		{			
-			SendTo(P);
-		}break;
-	case GEG_PLAYER_WEAPON_HIDE_STATE:
-		{
-			SendTo(P);
-		}break;
-	case GE_TELEPORT_OBJECT:
-		{
-			game->teleport_object	(P,destination);
-		}break;
-	case GE_ADD_RESTRICTION:
-		{
-			game->add_restriction	(P,destination);
-		}break;
-	case GE_REMOVE_RESTRICTION:
-		{
-			game->remove_restriction(P,destination);
-		}break;
-	case GE_REMOVE_ALL_RESTRICTIONS:
-		{
-			game->remove_all_restrictions(P,destination);
-		}break;
 	default:
 		R_ASSERT2	(0,"Game Event not implemented!!!");
 		break;

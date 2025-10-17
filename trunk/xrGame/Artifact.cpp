@@ -414,6 +414,8 @@ void CArtefact::OnAnimationEnd		(u32 state)
 		}break;
 	case eActivating:
 		{
+		R_ASSERT(false);
+		/*
 			if(Local()){
 				SwitchState		(eHiding);
 				NET_Packet		P;
@@ -421,6 +423,7 @@ void CArtefact::OnAnimationEnd		(u32 state)
 				P.w_u16			(ID());
 				u_EventSend		(P);	
 			}
+		*/
 		}break;
 	};
 }

@@ -17,11 +17,9 @@
 using namespace InventoryUtilities;
 
 // what to block
-u32	INV_STATE_LADDER		= (1<<RIFLE_SLOT);
-u32	INV_STATE_CAR			= INV_STATE_LADDER;
-u32	INV_STATE_BLOCK_ALL		= 0xffffffff;
-u32	INV_STATE_INV_WND		= INV_STATE_BLOCK_ALL;
-u32	INV_STATE_BUY_MENU		= INV_STATE_BLOCK_ALL;
+u16	INV_STATE_LADDER		= (1<<RIFLE_SLOT);
+u16	INV_STATE_CAR			= INV_STATE_LADDER;
+u16	INV_STATE_BLOCK_ALL		= static_cast<u16>(-1);
 
 CInventorySlot::CInventorySlot() 
 {

@@ -266,10 +266,6 @@ void CLevel::ProcessGameEvents		()
 
 		switch (ID)
 		{
-		case M_EVENT:
-		{
-			cl_Process_Event(dest, type, P);
-		}break;
 		default:
 		{
 			VERIFY(0);
@@ -328,8 +324,6 @@ void CLevel::OnFrame	()
 
 //	CTimer T;
 //	T.Start();
-
-	ProcessGameEvents();
 
 	Server->SpawnNewObjects();
 

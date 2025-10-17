@@ -17,19 +17,6 @@ public:
 	{
 		data.clear		();
 		P.r_begin		(ID			);	//VERIFY(M_EVENT==ID);
-		switch (ID)
-		{
-		case M_EVENT:
-			{
-				P.r_u32			(timestamp	);
-				P.r_u16			(type		);
-				P.r_u16			(destination);
-			}break;
-		default:
-			{
-				VERIFY(0);
-			}break;
-		}		
 
 		u32 size		= P.r_elapsed();
 		if (size)	

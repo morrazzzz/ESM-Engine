@@ -29,7 +29,6 @@ void CLevel::remove_objects	()
 		// we need it since we do updates for checking network messages
 		++(Device.dwFrame);
 		ClientReceive			();
-		ProcessGameEvents		();
 		Sleep					(100);
 	}
 
