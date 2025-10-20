@@ -3,7 +3,7 @@
 
 void	IPureServer::SendTo		(NET_Packet& P)
 {
-	SendTo_LL(P.B.data, P.B.count);
+	SendTo_LL(P.dataWriting, P.wPos);
 }
 
 void	IPureServer::SendBroadcast(NET_Packet& P)

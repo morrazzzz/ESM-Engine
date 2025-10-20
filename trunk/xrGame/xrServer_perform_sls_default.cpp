@@ -28,8 +28,8 @@ void xrServer::SLS_Default	()
 		NET_Packet			P;
 		u32					S_id;
 		for (IReader *S = SP->open_chunk_iterator(S_id); S; S = SP->open_chunk_iterator(S_id,S)) {
-			P.B.count		= S->length();
-			S->r			(P.B.data,P.B.count);
+			P.wPos		= S->length();
+			S->r			(P.dataWriting, P.wPos);
 			
 			u16				ID;
 			P.r_begin		(ID);

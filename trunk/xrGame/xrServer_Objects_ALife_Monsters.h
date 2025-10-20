@@ -337,8 +337,9 @@ SERVER_ENTITY_DECLARE_BEGIN3(CSE_ALifeCreatureActor,CSE_ALifeCreatureAbstract,CS
 #ifdef DEBUG
 	virtual bool					match_configuration		() const;
 #endif
-	virtual CSE_Abstract			*cast_abstract			() {return this;};
-	virtual CSE_ALifeTraderAbstract	*cast_trader_abstract	() {return this;};
+	CSE_PHSkeleton* cast_phskeleton() override { return this; }
+	CSE_Abstract* cast_abstract() override { return this; }
+	CSE_ALifeTraderAbstract* cast_trader_abstract() override { return this; }
 SERVER_ENTITY_DECLARE_END
 add_to_type_list(CSE_ALifeCreatureActor)
 #define script_type_list save_type_list(CSE_ALifeCreatureActor)
@@ -387,6 +388,7 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeMonsterBase,CSE_ALifeMonsterAbstract,CSE_P
 	virtual							~CSE_ALifeMonsterBase	();
 	virtual	void					load					(NET_Packet &tNetPacket);
 	virtual CSE_Abstract			*cast_abstract			() {return this;}
+	CSE_PHSkeleton* cast_phskeleton() override { return this; }
 	virtual void					spawn_supplies			(LPCSTR){}
 	virtual void					spawn_supplies			(){}
 #ifdef XRGAME_EXPORTS
@@ -458,7 +460,9 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeHumanStalker,CSE_ALifeHumanAbstract,CSE_PH
 									CSE_ALifeHumanStalker	(LPCSTR caSection);
 	virtual							~CSE_ALifeHumanStalker	();
 	virtual	void					load					(NET_Packet &tNetPacket);
-	virtual CSE_Abstract			*cast_abstract			() {return this;}
+	CSE_Abstract* cast_abstract() override { return this; }
+	CSE_PHSkeleton* cast_phskeleton() override { return this; }
+
 SERVER_ENTITY_DECLARE_END
 add_to_type_list(CSE_ALifeHumanStalker)
 #define script_type_list save_type_list(CSE_ALifeHumanStalker)

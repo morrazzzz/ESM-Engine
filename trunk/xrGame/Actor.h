@@ -540,14 +540,13 @@ protected:
 			void						ConvState			(u32 mstate_rl, string128 *buf);
 public:
 	virtual BOOL						net_Spawn			( CSE_Abstract* DC);
-	void SaveCSEObj(CSE_Abstract* data) override;
+	void SaveCSEObj(CSE_Abstract* data, bool needSaveAll = false) override;
 	virtual void						net_Destroy			();
 	virtual	void						net_Relcase			( CObject* O );					//
 	virtual void xr_stdcall				on_requested_spawn  (CObject *object);
 	//object serialization
 	virtual void						save				(NET_Packet &output_packet);
 	virtual void						load				(IReader &input_packet);
-	virtual void						net_Save			(NET_Packet& P)																	;
 	virtual	BOOL						net_SaveRelevant	()																				;
 protected:
 	xr_deque<net_update>	NET;

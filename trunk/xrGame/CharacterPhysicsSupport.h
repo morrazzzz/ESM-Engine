@@ -124,7 +124,6 @@ IC		CIKLimbsController				*ik_controller					()	{return	m_ik_controller;}
 		void 							in_Init							()																													;
 		void 							in_Load							(LPCSTR section)																									;
 		void 							in_Hit							( SHit &H, bool is_killing=false );
-		void							in_NetSave						(NET_Packet& P)																										;
 
 		void							in_ChangeVisual					();
 		void							in_Die							();
@@ -151,12 +150,12 @@ private:
 		void							CreateShell						( CObject* who, Fvector& dp, Fvector & velocity  )																	;
 		void							EndActivateFreeShell			( CObject* who, const Fvector& inital_entity_position, const Fvector& dp, const Fvector & velocity )				;
 		void							KillHit							( SHit &H )																											;
-static	void							DeathAnimCallback				(CBlend *B)																											;
-		void							CreateIKController				()																													;
-		void							DestroyIKController				()																													;
-		bool							CollisionCorrectObjPos			( const Fvector& start_from, bool character_create=false );
-		void							FlyTo							(const	Fvector &disp);
-IC		void							UpdateDeathAnims				();
-IC		bool							DoCharacterShellCollide			();
+		static void DeathAnimCallback(CBlend* B);
+		void CreateIKController();
+		void DestroyIKController();
+		bool CollisionCorrectObjPos(const Fvector& start_from, bool character_create = false);
+		void FlyTo(const	Fvector& disp);
+		IC void UpdateDeathAnims();
+		IC bool DoCharacterShellCollide();
 };
 #endif  //CHARACTER_PHYSICS_SUPPORT

@@ -105,13 +105,12 @@ public:
 	// Methods
 	virtual void			Load				(LPCSTR section);
 	virtual BOOL			net_Spawn			(CSE_Abstract* DC);
-	virtual void SaveCSEObj(CSE_Abstract* data) {}
+	virtual void SaveCSEObj(CSE_Abstract* data, bool needSaveAll = false);
 	virtual void			net_Destroy			();
 	virtual	void			net_Relcase			( CObject* O );	
 	virtual void			UpdateCL			( );
 	virtual void			OnChangeVisual		( );
 	//object serialization
-	virtual void			net_Save			(NET_Packet &net_packet);
 	virtual void			net_Load			(IReader	&ireader);
 	virtual BOOL			net_SaveRelevant	();
 	virtual void			save				(NET_Packet &output_packet);

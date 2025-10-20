@@ -249,9 +249,6 @@ void CSE_PHSkeleton::data_save(NET_Packet &tNetPacket)
 
 void CSE_PHSkeleton::load(NET_Packet &tNetPacket)
 {
-	_flags.assign				(tNetPacket.r_u8());
-	data_load					(tNetPacket);
-	source_id					=u16(-1);//.
 }
 void CSE_PHSkeleton::UPDATE_Write(NET_Packet &tNetPacket)
 {

@@ -22,7 +22,6 @@ protected:
 	LPCSTR			m_section;
 
 private:
-			void	prepare_objects_for_save();
 			void	load					(void *buffer, const u32 &buffer_size, LPCSTR file_name);
 
 public:

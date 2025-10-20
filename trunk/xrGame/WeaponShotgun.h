@@ -13,7 +13,7 @@ public:
 	virtual void	Load				(LPCSTR section);
 	
 	virtual void	net_Destroy			();
-	void SaveCSEObj(CSE_Abstract* data) override;
+	void SaveCSEObj(CSE_Abstract* data, bool needSaveAll = false) override;
 
 	virtual void	Reload				();
 	virtual void	switch2_Fire		();

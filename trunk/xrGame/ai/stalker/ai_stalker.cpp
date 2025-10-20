@@ -518,18 +518,12 @@ void CAI_Stalker::net_Destroy()
 	xr_delete						(m_boneHitProtection);
 }
 
-void CAI_Stalker::net_Save			(NET_Packet& P)
-{
-	inherited::net_Save(P);
-	m_pPhysics_support->in_NetSave(P);
-}
-
 BOOL CAI_Stalker::net_SaveRelevant	()
 {
 	return inherited::net_SaveRelevant() || PPhysicsShell();
 }
 
-void CAI_Stalker::SaveCSEObj(CSE_Abstract* data)
+void CAI_Stalker::SaveCSEObj(CSE_Abstract* data, bool needSaveAll)
 {
 	CSE_ALifeHumanStalker* this_object = smart_cast<CSE_ALifeHumanStalker*>(data);
 	this_object->fHealth = GetfHealth();
@@ -568,6 +562,12 @@ void CAI_Stalker::SaveCSEObj(CSE_Abstract* data)
 	this_object->m_fDistanceToPoint = Points;
 
 	this_object->m_start_dialog = m_sStartDialog;
+
+	if (!needSaveAll || !net_SaveRelevant())
+		return;
+
+	inherited::SaveCSEObj(data, needSaveAll);
+	m_pPhysics_support->SaveStateSkeleton(data);
 }
 
 void CAI_Stalker::update_object_handler()

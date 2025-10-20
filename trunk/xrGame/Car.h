@@ -168,7 +168,6 @@ public:
 				void 			Init									();//asumptions: bone_map is 1. ini parsed 2. filled in 3. bone_id is set 
 				void			Load									(LPCSTR section);
 				void 			RestoreNetState							(const CSE_ALifeCar::SWheelState& a_state)														;
-				void 			SaveNetState							(NET_Packet& P)																					;
 				void 			ApplyDriveAxisVel						(float vel)																						;
 				void 			ApplyDriveAxisTorque					(float torque)																					;
 				void 			ApplyDriveAxisVelTorque					(float vel,float torque)																		;
@@ -306,7 +305,6 @@ virtual void ApplyDamage(u16 level);
 		void ClosedToOpening();
 		void PlaceInUpdate();
 		void RemoveFromUpdate();
-		void SaveNetState(NET_Packet& P);
 		void RestoreNetState(const CSE_ALifeCar::SDoorState& a_state);
 		void SetDefaultNetState();
 		enum eState
@@ -591,11 +589,11 @@ public:
 		  void						VisualUpdate						(float fov=90.0f);
 protected:
 	virtual void					SpawnInitPhysics					(CSE_Abstract	*D)																;
-	virtual void					net_Save							(NET_Packet& P)																	;
+	void SaveCSEObj(CSE_Abstract* data, bool needSaveAll = false) override;
 	virtual	BOOL					net_SaveRelevant					()																				;
-			void					SaveNetState						(NET_Packet& P)																	;
-	virtual	void					RestoreNetState						(CSE_PHSkeleton* po)															;
-			void					SetDefaultNetState					(CSE_PHSkeleton* po)															;
+	void SaveStateCar(CSE_Abstract* data);
+	virtual	void RestoreNetState(CSE_PHSkeleton* po);
+	void SetDefaultNetState(CSE_PHSkeleton* po);
 
 	virtual bool					IsHudModeNow		(){return false;};
 	

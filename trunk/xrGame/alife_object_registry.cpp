@@ -33,14 +33,14 @@ void CALifeObjectRegistry::save				(IWriter &memory_stream, CSE_ALifeDynamicObje
 	NET_Packet					tNetPacket;
 	// Spawn
 	object->Spawn_Write			(tNetPacket,TRUE);
-	memory_stream.w_u16			(u16(tNetPacket.B.count));
-	memory_stream.w				(tNetPacket.B.data,tNetPacket.B.count);
+	memory_stream.w_u16			(u16(tNetPacket.wPos));
+	memory_stream.w				(tNetPacket.dataWriting,tNetPacket.wPos);
 
 	// Update
 	object->UPDATE_Write		(tNetPacket);
 
-	memory_stream.w_u16			(u16(tNetPacket.B.count));
-	memory_stream.w				(tNetPacket.B.data,tNetPacket.B.count);
+	memory_stream.w_u16			(u16(tNetPacket.wPos));
+	memory_stream.w				(tNetPacket.dataWriting,tNetPacket.wPos);
 
 	for (u32 i = 0; i < object->children.size(); i++) {
 		CSE_ALifeDynamicObject* child = object->children[i]->cast_alife_dynamic_object();
@@ -90,8 +90,8 @@ CSE_ALifeDynamicObject *CALifeObjectRegistry::get_object		(IReader &file_stream)
 	NET_Packet				tNetPacket;
 	u16						u_id;
 	// Spawn
-	tNetPacket.B.count		= file_stream.r_u16();
-	file_stream.r			(tNetPacket.B.data,tNetPacket.B.count);
+	tNetPacket.wPos = file_stream.r_u16();
+	file_stream.r			(tNetPacket.dataWriting,tNetPacket.wPos);
 	tNetPacket.r_begin		(u_id);
 	R_ASSERT2				(M_SPAWN==u_id,"Invalid packet ID (!= M_SPAWN)");
 
@@ -110,8 +110,8 @@ CSE_ALifeDynamicObject *CALifeObjectRegistry::get_object		(IReader &file_stream)
 	tpALifeDynamicObject->Spawn_Read(tNetPacket);
 
 	// Update
-	tNetPacket.B.count		= file_stream.r_u16();
-	file_stream.r			(tNetPacket.B.data,tNetPacket.B.count);
+	tNetPacket.wPos = file_stream.r_u16();
+	file_stream.r			(tNetPacket.dataWriting,tNetPacket.wPos);
 	tpALifeDynamicObject->UPDATE_Read(tNetPacket);
 
 	return					(tpALifeDynamicObject);

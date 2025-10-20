@@ -36,9 +36,9 @@ void CLevel::ClientReceive()
 				Engine.Event.Defer	("KERNEL:start",size_t(xr_strdup(*m_caServerOptions)));
 			}break;
 		case M_SAVE_GAME:
-			{
-				ClientSave			();
-			}break;
+		{
+			SaveAllCSEObj(true);
+		}break;
 		}
 
 		net_msg_Release();

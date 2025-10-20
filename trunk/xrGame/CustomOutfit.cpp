@@ -28,7 +28,7 @@ CCustomOutfit::~CCustomOutfit()
 	xr_delete(m_boneProtection);
 }
 
-void CCustomOutfit::SaveCSEObj(CSE_Abstract* data)
+void CCustomOutfit::SaveCSEObj(CSE_Abstract* data, bool needSaveAll)
 {
 	CSE_ALifeItemCustomOutfit* this_object = smart_cast<CSE_ALifeItemCustomOutfit*>(data);
 	this_object->m_fCondition = m_fCondition;

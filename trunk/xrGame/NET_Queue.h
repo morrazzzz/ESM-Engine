@@ -25,12 +25,6 @@ public:
 			P.r				(&*data.begin(),size);
 		}
 	}
-	void				implication	(NET_Packet& P) const
-	{
-		CopyMemory	(P.B.data,&*data.begin(),(u32)data.size());
-		P.B.count		= (u32)data.size();
-		P.r_pos			= 0;
-	}
 };
 
 IC bool operator < (const NET_Event& A, const NET_Event& B)	{ return A.timestamp<B.timestamp; }
@@ -60,12 +54,5 @@ public:
 
 	IC void				get			(u16& ID, u16& dest, u16& type, NET_Packet& P)
 	{
-		const NET_Event& E	= *queue.begin();
-		ID					= E.ID;
-		dest				= E.destination;
-		type				= E.type;
-		E.implication		(P);
-//		queue.erase			(queue.begin());
-		queue.pop_front();
 	}
 };

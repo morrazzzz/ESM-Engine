@@ -7,18 +7,13 @@
 #include "ai_space.h"
 #include "../../../CharacterPhysicsSupport.h"
 #include "xrServer_Objects_ALife_Monsters.h"
-void CBaseMonster::net_Save			(NET_Packet& P)
-{
-	inherited::net_Save(P);
-	m_pPhysics_support->in_NetSave(P);
-}
 
 BOOL CBaseMonster::net_SaveRelevant	()
 {
 	return (inherited::net_SaveRelevant() || BOOL(PPhysicsShell()!=NULL));
 }
 
-void CBaseMonster::SaveCSEObj(CSE_Abstract* data)
+void CBaseMonster::SaveCSEObj(CSE_Abstract* data, bool needSaveAll)
 {
 	CSE_ALifeMonsterAbstract* this_object = data->cast_monster_abstract();
 
@@ -48,4 +43,10 @@ void CBaseMonster::SaveCSEObj(CSE_Abstract* data)
 
 	this_object->m_fDistanceFromPoint = Points;
 	this_object->m_fDistanceToPoint = Points;
+
+	if (!needSaveAll || !net_SaveRelevant())
+		return;
+
+	inherited::SaveCSEObj(data, needSaveAll);
+	m_pPhysics_support->SaveStateSkeleton(data);
 }

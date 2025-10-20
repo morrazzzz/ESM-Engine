@@ -31,8 +31,8 @@ void CServerEntityWrapper::save				(IWriter &stream)
 	stream.open_chunk		(0);
 
 	m_object->Spawn_Write	(net_packet,TRUE);
-	stream.w_u16			(u16(net_packet.B.count));
-	stream.w				(net_packet.B.data,net_packet.B.count);
+	stream.w_u16			(u16(net_packet.wPos));
+	stream.w				(net_packet.dataWriting,net_packet.wPos);
 	
 	stream.close_chunk		();
 
@@ -41,8 +41,8 @@ void CServerEntityWrapper::save				(IWriter &stream)
 
 	net_packet.w_begin(0);
 	m_object->UPDATE_Write	(net_packet);
-	stream.w_u16			(u16(net_packet.B.count));
-	stream.w				(net_packet.B.data,net_packet.B.count);
+	stream.w_u16			(u16(net_packet.wPos));
+	stream.w				(net_packet.dataWriting,net_packet.wPos);
 
 //	u16						ID;
 //	net_packet.r_begin		(ID);
@@ -60,8 +60,8 @@ void CServerEntityWrapper::load				(IReader &stream)
 	
 	chunk					= stream.open_chunk(0);
 
-	net_packet.B.count		= chunk->r_u16();
-	chunk->r				(net_packet.B.data,net_packet.B.count);
+	net_packet.wPos = chunk->r_u16();
+	chunk->r				(net_packet.dataWriting,net_packet.wPos);
 
 	chunk->close			();
 
@@ -78,8 +78,8 @@ void CServerEntityWrapper::load				(IReader &stream)
 	
 	chunk					= stream.open_chunk(1);
 	
-	net_packet.B.count		= chunk->r_u16();
-	chunk->r				(net_packet.B.data,net_packet.B.count);
+	net_packet.wPos = chunk->r_u16();
+	chunk->r				(net_packet.dataWriting,net_packet.wPos);
 	
 	chunk->close			();
 

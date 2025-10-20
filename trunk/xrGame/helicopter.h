@@ -276,7 +276,7 @@ public:
 
 	virtual void					SpawnInitPhysics	(CSE_Abstract	*D);
 	virtual CPhysicsShellHolder*	PPhysicsShellHolder	()						{return PhysicsShellHolder();}
-	virtual void					net_Save			(NET_Packet& P);
+	void SaveCSEObj(CSE_Abstract* data, bool needSaveAll = false) override;
 	virtual	BOOL					net_SaveRelevant	()						{return (inherited::net_SaveRelevant() && BOOL(PPhysicsShell()!=NULL))||m_exploded;};					
 
 	virtual void					renderable_Render				()			{ inherited::renderable_Render();};

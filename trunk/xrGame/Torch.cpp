@@ -427,7 +427,7 @@ void CTorch::setup_physic_shell	()
 	CPhysicsShellHolder::setup_physic_shell();
 }
 
-void CTorch::SaveCSEObj(CSE_Abstract* data)
+void CTorch::SaveCSEObj(CSE_Abstract* data, bool needSaveAll)
 {
 	CSE_ALifeItemTorch* this_object = smart_cast<CSE_ALifeItemTorch*>(data);
 	this_object->m_active = m_switched_on;

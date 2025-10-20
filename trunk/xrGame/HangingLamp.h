@@ -54,7 +54,7 @@ public:
 	virtual void	SpawnInitPhysics	(CSE_Abstract	*D)																;
 	virtual CPhysicsShellHolder*	PPhysicsShellHolder	()	{return PhysicsShellHolder();}								;
 	virtual	void	CopySpawnInit		()																				;
-	virtual void	net_Save			(NET_Packet& P)																	;
+	void SaveCSEObj(CSE_Abstract* data, bool needSaveAll = false) override;
 	virtual	BOOL	net_SaveRelevant	()																				;
 
 	virtual BOOL	renderable_ShadowGenerate	( ) { return TRUE;	}

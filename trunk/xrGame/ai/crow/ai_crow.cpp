@@ -327,7 +327,7 @@ void CAI_Crow::shedule_Update		(u32 DT)
 }
 
 // Core events
-void CAI_Crow::SaveCSEObj(CSE_Abstract* data)
+void CAI_Crow::SaveCSEObj(CSE_Abstract* data, bool needSaveAll)
 {
 	float				yaw, pitch, bank;
 	XFORM().getHPB(yaw, pitch, bank);

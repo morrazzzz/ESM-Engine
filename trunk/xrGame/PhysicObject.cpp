@@ -95,11 +95,15 @@ void CPhysicObject::net_Destroy()
 	CPHSkeleton::RespawnInit();
 }
 
-void CPhysicObject::net_Save(NET_Packet& P)
+void CPhysicObject::SaveCSEObj(CSE_Abstract* data, bool needSaveAll)
 {
-	inherited::net_Save(P);
-	CPHSkeleton::SaveNetState(P);
+	if (!needSaveAll || !net_SaveRelevant())
+		return;
+
+	inherited::SaveCSEObj(data, needSaveAll);
+	CPHSkeleton::SaveStateSkeleton(data);
 }
+
 void CPhysicObject::CreatePhysicsShell(CSE_Abstract* e)
 {
 	CSE_ALifeObjectPhysic	*po	= smart_cast<CSE_ALifeObjectPhysic*>(e);

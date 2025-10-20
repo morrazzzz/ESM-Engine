@@ -92,66 +92,17 @@ void CLevel::net_Stop		()
 }
 
 
-void CLevel::SaveAllCSEObj()
+void CLevel::SaveAllCSEObj(bool needSaveAll)
 {
 	for (u32 i = 0; i < Objects.o_count(); i++)
 	{
 		CGameObject* object = static_cast<CGameObject*>(Objects.o_get_by_iterator(i));
-		VERIFY(object);
+		R_ASSERT(object);
 
-		CSE_Abstract* CSEObject = Server->ID_to_entity(object->ID());
-		VERIFY(CSEObject);
+		CSE_Abstract* CSEObject = object->GetCSEObject();
+		R_ASSERT(CSEObject);
 
-		object->SaveCSEObj(CSEObject);
-	}
-}
-
-u32	CLevel::Objects_net_Save	(NET_Packet* _Packet, u32 start, u32 max_object_size)
-{
-	NET_Packet& Packet	= *_Packet;
-	u32			position;
-	for (; start<Objects.o_count(); start++)	{
-		CObject		*_P = Objects.o_get_by_iterator(start);
-		CGameObject *P = smart_cast<CGameObject*>(_P);
-//		Msg			("save:iterating:%d:%s",P->ID(),*P->cName());
-		if (P && !P->getDestroy() && P->net_SaveRelevant())	{
-			Packet.w_u16			(u16(P->ID())	);
-			Packet.w_chunk_open16	(position);
-//			Msg						("save:saving:%d:%s",P->ID(),*P->cName());
-			P->net_Save				(Packet);
-#ifdef DEBUG
-			u32 size				= u32		(Packet.w_tell()-position)-sizeof(u16);
-//			Msg						("save:saved:%d bytes:%d:%s",size,P->ID(),*P->cName());
-			if				(size>=65536)			{
-				Debug.fatal	(DEBUG_INFO,"Object [%s][%d] exceed network-data limit\n size=%d, Pend=%d, Pstart=%d",
-					*P->cName(), P->ID(), size, Packet.w_tell(), position);
-			}
-#endif
-			Packet.w_chunk_close16	(position);
-//			if (0==(--count))		
-//				break;
-			if (max_object_size > (NET_PacketSizeLimit - Packet.w_tell()))
-				break;
-		}
-	}
-	return	++start;
-}
-
-void CLevel::ClientSave	()
-{
-	NET_Packet		P;
-	u32				start	= 0;
-
-	while(true)
-	{
-		P.w_begin	(M_SAVE_PACKET);
-		
-		start = Objects_net_Save(&P, start, max_objects_size_in_save);
-
-		if (P.B.count>2)
-			Send	(P);
-		else
-			break;
+		object->SaveCSEObj(CSEObject, needSaveAll);
 	}
 }
 

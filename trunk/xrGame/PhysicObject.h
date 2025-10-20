@@ -34,7 +34,7 @@ public:
 	virtual void						Load							(LPCSTR section)																;
 	virtual void						shedule_Update					(u32 dt)																		;	//
 	virtual void						UpdateCL						()																				;
-	virtual void						net_Save						(NET_Packet& P)																	;
+	void SaveCSEObj(CSE_Abstract* data, bool needSaveAll = false) override;
 	virtual	BOOL						net_SaveRelevant				()																				;
 	virtual BOOL						UsedAI_Locations				()																				;
 	virtual ICollisionHitCallback		*get_collision_hit_callback		()																				;

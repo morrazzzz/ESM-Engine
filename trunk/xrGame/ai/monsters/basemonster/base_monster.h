@@ -81,9 +81,8 @@ public:
 
 	virtual BOOL			net_Spawn						(CSE_Abstract* DC);
 	virtual void			net_Destroy						();
-	virtual void			net_Save						(NET_Packet& P);
 	virtual	BOOL			net_SaveRelevant				();
-	void SaveCSEObj(CSE_Abstract* data) override;
+	void SaveCSEObj(CSE_Abstract* data, bool needSaveAll = false) override;
 	virtual void			net_Relcase						(CObject *O);
 
 	//save/load server serialization

@@ -170,10 +170,14 @@ void	CHangingLamp::CopySpawnInit		()
 	if(!K->LL_GetBoneVisible(light_bone))
 		TurnOff();
 }
-void	CHangingLamp::net_Save			(NET_Packet& P)	
+
+void CHangingLamp::SaveCSEObj(CSE_Abstract* data, bool needSaveAll)	
 {
-	inherited::net_Save(P);
-	CPHSkeleton::SaveNetState(P);
+	if (!needSaveAll || !net_SaveRelevant())
+		return;
+
+	inherited::SaveCSEObj(data, needSaveAll);
+	CPHSkeleton::SaveStateSkeleton(data);
 }
 
 BOOL	CHangingLamp::net_SaveRelevant	()

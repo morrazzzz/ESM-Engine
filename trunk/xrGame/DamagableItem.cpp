@@ -12,11 +12,13 @@ CDamagableItem::CDamagableItem()
 
 u16 CDamagableItem::DamageLevel()
 {
-float health=Health();if(health<0.f)health=0.f;
-u16 dl=u16((1.f-Health()/m_max_health)*m_levels_num);
+	float health = GetHealthItem(); if (health < 0.f)health = 0.f;
+	u16 dl = u16((1.f - GetHealthItem() / m_max_health) * m_levels_num);
 
-if(dl<m_levels_num)return dl;
-else return m_levels_num;
+	if (dl < m_levels_num)
+		return dl;
+
+	return m_levels_num;
 }
 float	CDamagableItem::DamageLevelToHealth	(u16 dl)
 {

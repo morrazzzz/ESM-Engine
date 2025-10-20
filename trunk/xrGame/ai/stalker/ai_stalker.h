@@ -176,9 +176,8 @@ public:
 	virtual void						LoadSounds							(LPCSTR section );
 	
 	virtual BOOL						net_Spawn							(CSE_Abstract* DC);
-	void SaveCSEObj(CSE_Abstract* data) override;
+	void SaveCSEObj(CSE_Abstract* data, bool needSaveAll = false) override;
 	virtual void						net_Destroy							();
-	virtual void						net_Save							(NET_Packet& P);
 	virtual	BOOL						net_SaveRelevant					();
 	virtual void						net_Relcase							(CObject*	 O);
 

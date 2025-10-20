@@ -311,12 +311,6 @@ void CCharacterPhysicsSupport::in_NetDestroy( )
 	//xr_delete( m_collision_activating_delay );
 }
 
-void	CCharacterPhysicsSupport::in_NetSave( NET_Packet& P )
-{
-	
-	CPHSkeleton::SaveNetState( P );
-}
-
 void CCharacterPhysicsSupport::in_Init( )
 {
 	

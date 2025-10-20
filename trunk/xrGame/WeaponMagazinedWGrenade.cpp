@@ -696,12 +696,12 @@ void CWeaponMagazinedWGrenade::load(IReader &input_packet)
 		m_magazine2.push_back(l_cartridge);
 }
 
-void CWeaponMagazinedWGrenade::SaveCSEObj(CSE_Abstract* data)
+void CWeaponMagazinedWGrenade::SaveCSEObj(CSE_Abstract* data, bool needSaveAll)
 {
 	CSE_ALifeItemWeaponMagazinedWGL* this_object = smart_cast<CSE_ALifeItemWeaponMagazinedWGL*>(data);
 	this_object->m_bGrenadeMode = m_bGrenadeMode;
 
-	inherited::SaveCSEObj(data);
+	inherited::SaveCSEObj(data, false);
 }
 
 bool CWeaponMagazinedWGrenade::IsNecessaryItem	    (const shared_str& item_sect)

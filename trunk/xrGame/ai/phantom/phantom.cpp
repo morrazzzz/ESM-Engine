@@ -308,7 +308,7 @@ void CPhantom::load(IReader &input_packet)
 {
 	SwitchToState	(EState(input_packet.r_s32()));
 }
-void CPhantom::SaveCSEObj(CSE_Abstract* data)
+void CPhantom::SaveCSEObj(CSE_Abstract* data, bool needSaveAll)
 {
 	float yaw, pitch, bank;
 	XFORM().getHPB(yaw, pitch, bank);

@@ -504,7 +504,7 @@ BOOL CWeapon::IsUpdating()
 	return bIsActiveItem || bWorking || IsPending() || getVisible();
 }
 
-void CWeapon::SaveCSEObj(CSE_Abstract* data)
+void CWeapon::SaveCSEObj(CSE_Abstract* data, bool needSaveAll)
 {
 	CSE_ALifeItemWeapon* this_object = data->cast_item_weapon();
 

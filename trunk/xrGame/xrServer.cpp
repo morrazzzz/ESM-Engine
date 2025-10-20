@@ -66,10 +66,6 @@ void xrServer::OnMessage	(NET_Packet& P)			// Non-Zero means broadcasting with "
 			game->load_game			(P);
 			SendBroadcast			(P);
 		}break;
-	case M_SAVE_PACKET:
-		{
-			Process_save			(P);
-		}break;
 	}
 
 	csPlayers.Leave					();

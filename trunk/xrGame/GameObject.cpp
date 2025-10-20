@@ -262,33 +262,21 @@ BOOL CGameObject::net_Spawn		(CSE_Abstract*	DC)
     return CScriptBinder::net_Spawn(DC);
 }
 
-void CGameObject::net_Save		(NET_Packet &net_packet)
+void CGameObject::SaveCSEObj(CSE_Abstract* data, bool needSaveAll)
 {
-	u32							position;
-	net_packet.w_chunk_open16	(position);
-	save						(net_packet);
+	if (!needSaveAll || !net_SaveRelevant())
+		return;
 
-	// Script Binder Save ---------------------------------------
-#ifdef DEBUG	
-	if (psAI_Flags.test(aiSerialize))	{
-		Msg(">> **** Save script object [%s] *****", *cName());
-		Msg(">> Before save :: packet position = [%u]", net_packet.w_tell());
-	}
+	if (!data->client_data.empty())
+		data->client_data.clear();
 
-#endif
+	NET_Packet netPacket{};
+	save(netPacket);
 
-	CScriptBinder::save			(net_packet);
+	CScriptBinder::save(netPacket);
 
-#ifdef DEBUG	
-
-	if (psAI_Flags.test(aiSerialize))	{
-		Msg(">> After save :: packet position = [%u]", net_packet.w_tell());
-	}
-#endif
-
-	// ----------------------------------------------------------
-
-	net_packet.w_chunk_close16	(position);
+	for (u32 i = 0; i < netPacket.wPos; i++)
+		data->client_data.emplace_back(std::move(netPacket.dataWriting[i]));
 }
 
 void CGameObject::net_Load		(IReader &ireader)
@@ -670,7 +658,7 @@ void CGameObject::DestroyObject(bool TotalDestroy)
 				continue;
 			}
 
-			child_obj->SaveCSEObj(child);
+			child_obj->SaveCSEObj(child, false);
 			ai().get_alife()->release(child, TotalDestroy);
 		}
 
@@ -714,7 +702,7 @@ void CGameObject::DestroyObject(bool TotalDestroy)
 		return;
 	}
 
-	SaveCSEObj(DC_Entity);
+	SaveCSEObj(DC_Entity, false);
 	ai().get_alife()->release(DC_Entity, TotalDestroy);
 }
 

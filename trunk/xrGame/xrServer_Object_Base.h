@@ -31,6 +31,7 @@ class CSE_ALifeCreatureAbstract;
 class CSE_ALifeSmartZone;
 class CSE_ALifeOnlineOfflineGroup;
 class CSE_ALifeItemPDA;
+class CSE_PHSkeleton;
 
 #pragma warning(push)
 #pragma warning(disable:4005)
@@ -145,7 +146,7 @@ public:
 	virtual CSE_ALifeTraderAbstract		*cast_trader_abstract		() {return 0;}
 
 	virtual CSE_ALifeObject				*cast_alife_object			() {return 0;}
-	virtual CSE_ALifeDynamicObject		*cast_alife_dynamic_object	() {return 0;}
+	virtual CSE_ALifeDynamicObject* cast_alife_dynamic_object() { return 0; }
 	virtual CSE_ALifeItemAmmo			*cast_item_ammo				() {return 0;}
 	virtual CSE_ALifeItemWeapon			*cast_item_weapon			() {return 0;}
 	virtual CSE_ALifeItemDetector		*cast_item_detector			() {return 0;}
@@ -153,6 +154,8 @@ public:
 	virtual CSE_ALifeHumanAbstract		*cast_human_abstract		() {return 0;}
 	virtual CSE_ALifeAnomalousZone		*cast_anomalous_zone		() {return 0;}
 	virtual CSE_ALifeTrader				*cast_trader				() {return 0;}
+
+	virtual CSE_PHSkeleton* cast_phskeleton() {	return 0; }
 
 	virtual CSE_ALifeCreatureAbstract	*cast_creature_abstract		() {return 0;}
 	virtual CSE_ALifeSmartZone			*cast_smart_zone			() {return 0;}

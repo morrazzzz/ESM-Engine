@@ -48,5 +48,5 @@ public:
 	virtual u32						ef_equipment_type		() const;
 	const shared_str&				GetFullIconName			() const	{return m_full_icon_name;};
 
-	void SaveCSEObj(CSE_Abstract* data) override;
+	void SaveCSEObj(CSE_Abstract* data, bool needSaveAll = false) override;
 };

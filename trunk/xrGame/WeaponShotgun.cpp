@@ -236,9 +236,9 @@ u8 CWeaponShotgun::AddCartridge		(u8 cnt)
 	return cnt;
 }
 
-void CWeaponShotgun::SaveCSEObj(CSE_Abstract* data)
+void CWeaponShotgun::SaveCSEObj(CSE_Abstract* data, bool needSaveAll)
 {
-	inherited::SaveCSEObj(data);	
+	inherited::SaveCSEObj(data, false);	
 	CSE_ALifeItemWeaponShotGun* this_object = smart_cast<CSE_ALifeItemWeaponShotGun*>(data);
 
 	for (u32 i = 0; i < m_magazine.size(); i++)

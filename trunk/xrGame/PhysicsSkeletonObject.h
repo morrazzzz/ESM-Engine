@@ -22,7 +22,7 @@ public:
 	virtual void					Load				(LPCSTR section)																;
 	virtual void					UpdateCL			( )																				;// Called each frame, so no need for dt
 	virtual void					shedule_Update		(u32 dt)																		;	//
-	virtual void					net_Save			(NET_Packet& P)																	;
+	void SaveCSEObj(CSE_Abstract* data, bool needSaveAll) override;
 	virtual	BOOL					net_SaveRelevant	()																				;
 	virtual BOOL					UsedAI_Locations	()																				;
 protected:

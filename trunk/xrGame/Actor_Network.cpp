@@ -70,7 +70,7 @@ void	CActor::ConvState(u32 mstate_rl, string128 *buf)
 	if (m_bJumpKeyPressed)		strcat(*buf,"+Jumping ");
 };
 //--------------------------------------------------------------------
-void CActor::SaveCSEObj(CSE_Abstract* data)
+void CActor::SaveCSEObj(CSE_Abstract* data, bool needSaveAll)
 {
 	CSE_ALifeCreatureActor* this_object = smart_cast<CSE_ALifeCreatureActor*>(data);
 
@@ -91,6 +91,14 @@ void CActor::SaveCSEObj(CSE_Abstract* data)
 	this_object->velocity = character_physics_support()->movement()->GetVelocity();
 	this_object->fRadiation = g_Radiation();
 	this_object->weapon = u8(inventory().GetActiveSlot());
+
+	if (!needSaveAll || !net_SaveRelevant())
+		return;
+
+	inherited::SaveCSEObj(data, needSaveAll);
+
+	m_pPhysics_support->SaveStateSkeleton(data);
+	this_object->m_holderID = m_holderID;
 };
 
 static void w_vec_q8(NET_Packet& P,const Fvector& vec,const Fvector& min,const Fvector& max)
@@ -861,7 +869,7 @@ void	CActor::OnRender_Network()
 					SPHNetState state;
 					PHGetSyncItem(i)->get_State(state);
 
-					PX.B.count = 0;
+					PX.wPos = 0;
 					w_vec_q8(PX,state.position,min,max);
 					w_qt_q8(PX,state.quaternion);
 //					w_vec_q8(PX,state.linear_vel,min,max);
@@ -896,27 +904,6 @@ void	CActor::OnRender_Network()
 };
 
 #endif
-
-void CActor::net_Save(NET_Packet& P)
-{
-#ifdef DEBUG
-	u32					pos;
-	Msg					("Actor net_Save");
-	
-	pos					= P.w_tell();
-	inherited::net_Save	(P);
-	Msg					("inherited::net_Save() : %d",P.w_tell() - pos);
-
-	pos					= P.w_tell();
-	m_pPhysics_support->in_NetSave(P);
-	P.w_u16(m_holderID);
-	Msg					("m_pPhysics_support->in_NetSave() : %d",P.w_tell() - pos);
-#else
-	inherited::net_Save	(P);
-	m_pPhysics_support->in_NetSave(P);
-	P.w_u16(m_holderID);
-#endif
-}
 
 BOOL CActor::net_SaveRelevant()
 {

@@ -161,9 +161,7 @@ public:
 
 	// Game
 	void						ClientReceive			();
-	void						SaveAllCSEObj();
-	void						ClientSave				();
-			u32					Objects_net_Save		(NET_Packet* _Packet, u32 start, u32 count);
+	void SaveAllCSEObj(bool needSaveAll = false);
 	virtual	void				Send					(NET_Packet& P);
 	
 	virtual	NET_Packet* net_msg_Retreive();

@@ -212,7 +212,7 @@ void CCustomMonster::reload		(LPCSTR section)
 	m_panic_threshold			= pSettings->r_float(section,"panic_threshold");
 }
 
-void CCustomMonster::SaveCSEObj(CSE_Abstract* data)
+void CCustomMonster::SaveCSEObj(CSE_Abstract* data, bool needSaveAll)
 {
 	// export last known packet
 	R_ASSERT(!NET.empty());

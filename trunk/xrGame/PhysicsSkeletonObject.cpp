@@ -59,7 +59,7 @@ void CPhysicsSkeletonObject::Load(LPCSTR section)
 
 void CPhysicsSkeletonObject::CreatePhysicsShell(CSE_Abstract* e)
 {
-	CSE_PHSkeleton	*po=smart_cast<CSE_PHSkeleton*>(e);
+	CSE_PHSkeleton* po = e->cast_phskeleton();
 	if(m_pPhysicsShell) return;
 	if (!Visual()) return;
 	m_pPhysicsShell=P_build_Shell(this,!po->_flags.test(CSE_PHSkeleton::flActive));
@@ -74,13 +74,11 @@ void CPhysicsSkeletonObject::shedule_Update(u32 dt)
 	CPHSkeleton::Update(dt);
 }
 
-void CPhysicsSkeletonObject::net_Save(NET_Packet &P)
+void CPhysicsSkeletonObject::SaveCSEObj(CSE_Abstract* data, bool needSaveAll)
 {
-	inherited::net_Save(P);
-	CPHSkeleton::SaveNetState	   (P);
+	inherited::SaveCSEObj(data, needSaveAll);
+	CPHSkeleton::SaveStateSkeleton(data);
 }
-
-
 
 BOOL CPhysicsSkeletonObject::net_SaveRelevant()
 {

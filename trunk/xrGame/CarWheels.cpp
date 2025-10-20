@@ -186,13 +186,6 @@ void CCar::SWheel::ApplyDamage(u16 level)
 	
 }
 
-void CCar::SWheel::SaveNetState(NET_Packet& P)
-{
-	CSE_ALifeCar::SWheelState ws;
-	ws.health=Health();
-	ws.write(P);
-}
-
 void CCar::SWheel::RestoreNetState(const CSE_ALifeCar::SWheelState& a_state)
 {
 	SetHealth(a_state.health);

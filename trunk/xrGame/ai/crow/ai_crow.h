@@ -108,7 +108,7 @@ public:
 	virtual void	Load						( LPCSTR section );
 			void	init						();
 	virtual BOOL	net_Spawn					( CSE_Abstract* DC );
-	void SaveCSEObj(CSE_Abstract* data) override;
+	void SaveCSEObj(CSE_Abstract* data, bool needSaveAll = false) override;
 	virtual void	net_Destroy					();
 	virtual BOOL	renderable_ShadowGenerate	()			{ return FALSE;	}
 	virtual BOOL	renderable_ShadowReceive	()			{ return FALSE;	}

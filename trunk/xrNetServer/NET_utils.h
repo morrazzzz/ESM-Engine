@@ -4,51 +4,70 @@
 
 //for presentation
 const	u32			NET_PacketSizeLimit	= 8192; //16384;//8192;
-// const	u32			NET_PacketSizeLimit	= 16384; 
-
-struct	NET_Buffer
-{
-	BYTE	data	[NET_PacketSizeLimit];
-	u32		count;
-};
 
 class	NET_Packet
 {
 public:
+	void construct(const void* data, unsigned size)
+	{
+		memcpy(dataWriting, data, size);
+		wPos = size;
+	}
 
-    void            construct( const void* data, unsigned size )
-                    {
-                        memcpy( B.data, data, size );
-                        B.count = size;
-                    }
-                    
-	NET_Buffer		B;
-	u32				r_pos;
-	u32				timeReceive;
+	NET_Packet()
+	{
+		dataWriting = new u8[NET_PacketSizeLimit];
+		needFreeData = true;
+	}
+
+	NET_Packet(void* data)
+	{
+		dataWriting = static_cast<u8*>(data);
+	}
+
+	~NET_Packet()
+	{
+		if (needFreeData)
+			delete[] dataWriting;
+
+		dataWriting = nullptr;
+	}
+
+
+	u8* dataWriting{};
+	u32 wPos{};
+
+	u32	r_pos{};
+	u32	timeReceive{};
+	bool needFreeData{};
 public:
 	// writing - main
-	IC void write_start(){
-		B.count=0;
-	}
-	IC void	w_begin	( u16 type		)				// begin of packet 'type'
+	IC void write_start() 
 	{
-		B.count=0;
+		wPos = 0;
+	}
+
+	IC void	w_begin(u16 type)				// begin of packet 'type'
+	{
+		wPos = 0;
 		w_u16(type);
 	}
+
 	IC void	w		( const void* p, u32 count )
 	{
-		VERIFY		(p && count);
-		VERIFY		(B.count + count < NET_PacketSizeLimit);
-		CopyMemory(&B.data[B.count],p,count);
-		B.count		+= count;
-		VERIFY		(B.count<NET_PacketSizeLimit);
+		R_ASSERT(wPos + count < NET_PacketSizeLimit);
+		std::memcpy(dataWriting + wPos, p, count);
+		wPos += count;
+		R_ASSERT(wPos < NET_PacketSizeLimit);
 	}
-	IC void w_seek	(u32 pos, const void* p, u32 count)	// random write (only inside allocated region)
+
+	IC void w_seek(u32 pos, const void* p, u32 count)	// random write (only inside allocated region)
 	{
-		VERIFY		(p && count && (pos+count<=B.count));
-		CopyMemory(&B.data[pos],p,count);
+		R_ASSERT(pos + count < wPos);
+		std::memcpy(dataWriting + pos, p, count);
 	}
-	IC u32	w_tell	()	{ return B.count; }
+
+	IC u32	w_tell	()	{ return wPos; }
 
 	// writing - utilities
 	IC void	w_float		( float a       )	{ w(&a,4);					}			// float
@@ -155,7 +174,7 @@ public:
 
 	IC void r_seek	(u32 pos)
 	{
-		VERIFY		(pos < B.count);
+		VERIFY		(pos < wPos);
 		r_pos		= pos;
 	}
 	IC u32		r_tell			()	{ return r_pos; }
@@ -163,22 +182,24 @@ public:
 	IC void		r				( void* p, u32 count)
 	{
 		VERIFY		(p && count);
-		CopyMemory(p,&B.data[r_pos],count);
+		std::memcpy(p, dataWriting + r_pos, count);
 		r_pos		+= count;
-		VERIFY		(r_pos<=B.count);
+		R_ASSERT(r_pos <= wPos);
 	}
-	IC BOOL		r_eof			()
+	IC bool r_eof()
 	{
-		return r_pos>=B.count;
+		return r_pos >= wPos;
 	}
-	IC u32		r_elapsed			()
+
+	IC u32 r_elapsed()
 	{
-		return B.count-r_pos;
+		return wPos - r_pos;
 	}
-	IC void		r_advance		(u32 size)
+
+	IC void r_advance(u32 size)
 	{
-		r_pos		+= size;
-		VERIFY		(r_pos<=B.count);
+		r_pos += size;
+		R_ASSERT(r_pos <= wPos);
 	}
 
 	// reading - utilities
@@ -236,24 +257,24 @@ public:
 		A.mul			(s);
 	}
 
-	IC void		r_stringZ		( LPSTR S )
+	IC void		r_stringZ(LPSTR S)
 	{
-		LPCSTR	data	= LPCSTR(&B.data[r_pos]);
-		size_t	len		= xr_strlen(data);
-		r		(S,(u32)len+1);
+		LPCSTR	data = LPCSTR(dataWriting + r_pos);
+		size_t	len = xr_strlen(data);
+		r(S, (u32)len + 1);
 	}
     
 	IC void		r_stringZ		( xr_string& dest )
 	{
-		dest		= LPCSTR(&B.data[r_pos]);
+		dest		= LPCSTR(dataWriting + r_pos);
 		r_advance	(u32(dest.size()+1));
 	}
 
-	void 		r_stringZ		(shared_str& dest)
-    {
-        dest		= LPCSTR(&B.data[r_pos]);
-        r_advance	(dest.size()+1);
-    }
+	void 		r_stringZ(shared_str& dest)
+	{
+		dest = LPCSTR(dataWriting + r_pos);
+		r_advance(dest.size() + 1);
+	}
 
 	IC void		r_matrix		(Fmatrix& M)
 	{

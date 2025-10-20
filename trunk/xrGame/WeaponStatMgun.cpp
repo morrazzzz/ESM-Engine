@@ -127,7 +127,7 @@ void CWeaponStatMgun::net_Destroy()
 	processing_deactivate		();
 }
 
-void CWeaponStatMgun::SaveCSEObj(CSE_Abstract* data)
+void CWeaponStatMgun::SaveCSEObj(CSE_Abstract* data, bool needSaveAll)
 {
 	CSE_ALifeStationaryMgun* this_object = smart_cast<CSE_ALifeStationaryMgun*>(data);
 

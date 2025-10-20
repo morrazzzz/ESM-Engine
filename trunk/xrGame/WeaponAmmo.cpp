@@ -185,7 +185,7 @@ void CWeaponAmmo::UpdateCL()
 	VERIFY2								(_valid(renderable.xform),*cName());
 }
 
-void CWeaponAmmo::SaveCSEObj(CSE_Abstract* data)
+void CWeaponAmmo::SaveCSEObj(CSE_Abstract* data, bool needSaveAll)
 {
 	CSE_ALifeItemAmmo* this_object = data->cast_item_ammo();
 

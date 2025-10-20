@@ -275,10 +275,13 @@ void	CHelicopter::SpawnInitPhysics	(CSE_Abstract	*D)
 	}
 }
 
-void	CHelicopter::net_Save			(NET_Packet& P)	
+void CHelicopter::SaveCSEObj(CSE_Abstract* data, bool needSaveAll)
 {
-	inherited::net_Save					(P);
-	CPHSkeleton::SaveNetState			(P);
+	if (!needSaveAll || !net_SaveRelevant())
+		return;
+
+	inherited::SaveCSEObj(data, needSaveAll);
+	CPHSkeleton::SaveStateSkeleton(data);
 }
 
 float GetCurrAcc(float V0, float V1, float dist, float a0, float a1);

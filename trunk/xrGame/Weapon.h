@@ -37,7 +37,7 @@ public:
 
 	virtual BOOL			net_Spawn			(CSE_Abstract* DC);
 	virtual void			net_Destroy			();
-	void SaveCSEObj(CSE_Abstract* data) override;
+	void SaveCSEObj(CSE_Abstract* data, bool needSaveAll = false) override;
 	void net_Relcase(CObject*) override;
 
 	virtual CWeapon			*cast_weapon			()					{return this;}

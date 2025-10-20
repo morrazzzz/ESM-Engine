@@ -252,15 +252,14 @@ void	CCar::net_Destroy()
 	b_breaks=false;
 }
 
-void CCar::net_Save(NET_Packet& P)
+void CCar::SaveCSEObj(CSE_Abstract* data, bool needSaveAll)
 {
-	inherited::net_Save(P);
-	SaveNetState(P);
+	if (!needSaveAll || !net_SaveRelevant())
+		return;
 
-	
+	inherited::SaveCSEObj(data, needSaveAll);
+	SaveStateCar(data);
 }
-
-
 
 BOOL CCar::net_SaveRelevant()
 {
@@ -268,32 +267,25 @@ BOOL CCar::net_SaveRelevant()
 	//return !m_explosion_flags.test(CExplosive::flExploding)&&!CExplosive::IsExploded()&&!CPHDestroyable::Destroyed()&&!b_exploded;
 }
 
-void CCar::SaveNetState(NET_Packet& P)
+void CCar::SaveStateCar(CSE_Abstract* data)
 {
+	CSE_ALifeCar* co = static_cast<CSE_ALifeCar*>(GetCSEObject());
+	CPHSkeleton::SaveStateSkeleton(data);
 
-	CPHSkeleton::SaveNetState	   (P);
-	P.w_vec3(Position());
+	co->o_Position = Position();
 	Fvector Angle;
 	XFORM().getXYZ(Angle);
-	P.w_vec3(Angle);
-	{
-		xr_map<u16,SDoor>::iterator i,e;
-		i=m_doors.begin();
-		e=m_doors.end();
-		P.w_u16(u16(m_doors.size()));
-		for(;i!=e;++i)
-			i->second.SaveNetState(P);
-	}
 
-	{
-		xr_map<u16,SWheel>::iterator i,e;
-		i=m_wheels_map.begin();
-		e=m_wheels_map.end();
-		P.w_u16(u16(m_wheels_map.size()));
-		for(;i!=e;++i)
-			i->second.SaveNetState(P);
-	}
-	P.w_float(GetfHealth());
+	co->o_Angle = std::move(Angle);
+
+	for (const auto& it: m_doors)
+		co->door_states.emplace_back(it.second.GetHealthItem(), it.second.state);
+
+	for (const auto& it : m_wheels_map)
+		co->wheel_states.emplace_back(it.second.GetHealthItem());
+
+
+	co->health = GetfHealth();
 }
 
 

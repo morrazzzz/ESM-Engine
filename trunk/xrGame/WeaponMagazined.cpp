@@ -1158,9 +1158,9 @@ void CWeaponMagazined::load(IReader &input_packet)
 	load_data		(m_iCurFireMode, input_packet);
 }
 
-void CWeaponMagazined::SaveCSEObj(CSE_Abstract* data)
+void CWeaponMagazined::SaveCSEObj(CSE_Abstract* data, bool needSaveAll)
 {
-	inherited::SaveCSEObj(data);
+	inherited::SaveCSEObj(data, false);
 	CSE_ALifeItemWeaponMagazined* this_object = smart_cast<CSE_ALifeItemWeaponMagazined*>(data);
 
 	this_object->m_u8CurFireMode = static_cast<u8>(m_iCurFireMode & 0x00ff);

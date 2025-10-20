@@ -199,7 +199,7 @@ enum{
 	virtual bool					need_save				() const{return(!_flags.test(flNotSave));}
 	virtual	void					set_sorce_id			(u16 si){source_id=si;}
 	virtual u16						get_source_id			(){return source_id;}
-	virtual CSE_Abstract			*cast_abstract			() {return 0;}
+	virtual CSE_Abstract			*cast_abstract			() {return 0;} 
 protected:
 	virtual void					data_load				(NET_Packet &tNetPacket);
 	virtual void					data_save				(NET_Packet &tNetPacket);
