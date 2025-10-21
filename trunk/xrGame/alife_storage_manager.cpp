@@ -30,8 +30,11 @@ CALifeStorageManager::~CALifeStorageManager	()
 {
 }
 
-void CALifeStorageManager::save	(LPCSTR save_name, bool update_name)
+void CALifeStorageManager::save	(LPCSTR save_name, bool update_name, bool needSaveAllCSEObj)
 {
+	if (needSaveAllCSEObj)
+		Level().SaveAllCSEObj(true);
+
 	strcpy_s					(g_last_saved_game,sizeof(g_last_saved_game),save_name);
 
 	string_path					save;
@@ -165,13 +168,4 @@ bool CALifeStorageManager::load	(LPCSTR save_name)
 	Msg							("* Game %s is successfully loaded from file '%s' (%.3fs)",save_name, file_name,timer.GetElapsed_sec());
 
 	return						(true);
-}
-
-void CALifeStorageManager::save	(NET_Packet &net_packet)
-{
-	Level().SaveAllCSEObj(true);
-
-	shared_str					game_name;
-	net_packet.r_stringZ		(game_name);
-	save						(*game_name,!!net_packet.r_u8());
 }

@@ -96,18 +96,11 @@ void	game_sv_Single::Update			()
 
 bool game_sv_Single::change_level					(NET_Packet &net_packet)
 {
-	if (ai().get_alife())
-		return					(alife().change_level(net_packet));
-	else
-		return					(true);
+	return					(true);
 }
 
 void game_sv_Single::save_game						(NET_Packet &net_packet)
 {
-	if (!ai().get_alife())
-		return;
-	
-	alife().save				(net_packet);
 }
 
 bool game_sv_Single::load_game					(NET_Packet &net_packet)

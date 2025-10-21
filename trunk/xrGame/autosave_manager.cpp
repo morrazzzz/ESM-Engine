@@ -10,6 +10,7 @@
 #include "autosave_manager.h"
 #include "date_time.h"
 #include "ai_space.h"
+#include "alife_simulator.h"
 #include "level.h"
 #include "xrMessages.h"
 #include "hudmanager.h"
@@ -66,13 +67,10 @@ void CAutosaveManager::shedule_Update		(u32 dt)
 		
 	update_autosave_time		();
 
-	string_path					temp;
-	strconcat					(sizeof(temp),temp,Core.UserName,"_","autosave");
-	NET_Packet					net_packet;
-	net_packet.w_begin			(M_SAVE_GAME);
-	net_packet.w_stringZ		(temp);
-	net_packet.w_u8				(0);
-	Level().Send				(net_packet);
+	string_path	temp;
+	strconcat(sizeof(temp), temp, Core.UserName, "_", "autosave");
+
+	ai().alife().save(temp, false);
 
 	string_path					S1;
 	strcat_s					(temp,sizeof(temp),".dds");

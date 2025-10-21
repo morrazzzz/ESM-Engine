@@ -22,6 +22,7 @@
 #include "restriction_space.h"
 #include "profiler.h"
 #include "mt_config.h"
+#include "saved_game_wrapper.h"
 
 using namespace ALife;
 
@@ -148,7 +149,7 @@ void CALifeUpdateManager::init_ef_storage() const
 	ai().ef_storage().alife_evaluation(true);
 }
 
-bool CALifeUpdateManager::change_level	(NET_Packet &net_packet)
+bool CALifeUpdateManager::change_level(u32 newGraphID, u32 newNodeID, const Fvector& newPosition, const Fvector& newAngle)
 {
 	if (m_changing_level)
 		return						(false);
@@ -175,10 +176,10 @@ bool CALifeUpdateManager::change_level	(NET_Packet &net_packet)
 	Fvector							holder_safe_angles = Fvector().set(flt_max,flt_max,flt_max);
 	CSE_ALifeObject					*holder = 0;
 
-	net_packet.r					(&graph().actor()->m_tGraphID,sizeof(graph().actor()->m_tGraphID));
-	net_packet.r					(&graph().actor()->m_tNodeID,sizeof(graph().actor()->m_tNodeID));
-	net_packet.r_vec3				(graph().actor()->o_Position);
-	net_packet.r_vec3				(graph().actor()->o_Angle);
+	graph().actor()->m_tGraphID = newGraphID;
+	graph().actor()->m_tNodeID = newNodeID;
+	graph().actor()->o_Position = newPosition;
+	graph().actor()->o_Angle = newAngle;
 
 //	Level().ClientSave				();
 
@@ -207,7 +208,7 @@ bool CALifeUpdateManager::change_level	(NET_Packet &net_packet)
 	string256						temp;
 	*m_server_command_line			= strconcat(sizeof(temp),temp,autoave_name,temp0);
 	
-	save							(autoave_name);
+	save							(autoave_name, true, false);
 
 	graph().actor()->m_tGraphID		= safe_graph_vertex_id;
 	graph().actor()->m_tNodeID		= safe_level_vertex_id;
@@ -223,10 +224,14 @@ bool CALifeUpdateManager::change_level	(NET_Packet &net_packet)
 		holder->o_Angle				= holder_safe_angles;
 	}
 
+	Engine.Event.Defer("KERNEL:disconnect");
+	Engine.Event.Defer("KERNEL:start", size_t(xr_strdup(*Level().m_caServerOptions)));
+
 	return							(true);
 }
 
 #include "../xr_3da/igame_persistent.h"
+#include <saved_game_wrapper.h>
 void CALifeUpdateManager::new_game			(LPCSTR save_name)
 {
 //	g_pGamePersistent->LoadTitle		("st_creating_new_game");
@@ -290,15 +295,16 @@ void CALifeUpdateManager::reload		(LPCSTR section)
 	objects_per_update					(m_objects_per_update);
 }
 
-bool CALifeUpdateManager::load_game		(LPCSTR game_name, bool no_assert)
+bool CALifeUpdateManager::load_game	(LPCSTR game_name, bool no_assert)
 {
+	string_path saveFileName, updateFileName;
+	strconcat(sizeof(updateFileName), updateFileName, game_name, SAVE_EXTENSION);
 	{
-		string_path				temp,file_name;
-		strconcat				(sizeof(temp),temp,game_name,SAVE_EXTENSION);
-		FS.update_path			(file_name,"$game_saves$",temp);
-		if (!FS.exist(file_name)) {
-			R_ASSERT3			(no_assert,"There is no saved game ",file_name);
-			return				(false);
+		FS.update_path(saveFileName,"$game_saves$", updateFileName);
+		if (!FS.exist(saveFileName)) {
+			Msg("!!! There is no saved game: [%s]", updateFileName);
+			R_ASSERT(no_assert);
+			return false;
 		}
 	}
 	string512					S,S1;
@@ -307,6 +313,11 @@ bool CALifeUpdateManager::load_game		(LPCSTR game_name, bool no_assert)
 	R_ASSERT2					(temp,"Invalid server options!");
 	strconcat					(sizeof(S1),S1,game_name,temp);
 	*m_server_command_line		= S1;
+
+	CSavedGameWrapper wrapper(saveFileName, false);
+	if (wrapper.level_id() == ai().level_graph().level_id())
+		Engine.Event.Defer("Game:QuickLoad", size_t(xr_strdup(game_name)), 0);
+
 	return						(true);
 }
 
@@ -331,7 +342,7 @@ void CALifeUpdateManager::set_interactive		(ALife::_OBJECT_ID id, bool value)
 	object->interactive				(value);
 }
 
-void CALifeUpdateManager::jump_to_level			(LPCSTR level_name) const
+void CALifeUpdateManager::jump_to_level(LPCSTR level_name)
 {
 	const CGameGraph::SLevel			&level = ai().game_graph().header().level(level_name);
 	GameGraph::_GRAPH_ID				dest = GameGraph::_GRAPH_ID(-1);
@@ -357,17 +368,12 @@ void CALifeUpdateManager::jump_to_level			(LPCSTR level_name) const
 	}
 	else
 		dest							= (GameGraph::_GRAPH_ID)evaluator.selected_vertex_id();
-	NET_Packet							net_packet;
-	net_packet.w_begin					(M_CHANGE_LEVEL);
-	net_packet.w						(&dest,sizeof(dest));
-	
-	u32									vertex_id = ai().game_graph().vertex(dest)->level_vertex_id();
-	net_packet.w						(&vertex_id,sizeof(vertex_id));
-	
-	Fvector								level_point = ai().game_graph().vertex(dest)->level_point();
-	net_packet.w						(&level_point,sizeof(level_point));
-	net_packet.w_vec3					(Fvector().set(0.f,0.f,0.f));
-	Level().Send						(net_packet);
+
+	u32	vertex_id = ai().game_graph().vertex(dest)->level_vertex_id();
+	Fvector	level_point = ai().game_graph().vertex(dest)->level_point();
+
+	change_level(dest, vertex_id, level_point, Fvector().set(0.0f, 0.0f, 0.0f));
+
 }
 
 void CALifeUpdateManager::teleport_object	(ALife::_OBJECT_ID id, GameGraph::_GRAPH_ID game_vertex_id, u32 level_vertex_id, const Fvector &position)

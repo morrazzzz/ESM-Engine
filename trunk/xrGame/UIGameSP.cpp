@@ -10,6 +10,8 @@
 #include "object_broker.h"
 #include "GameTaskManager.h"
 #include "GameTask.h"
+#include "ai_space.h"
+#include "alife_simulator.h"
 
 #include "ui/UIInventoryWnd.h"
 #include "ui/UITradeWnd.h"
@@ -216,14 +218,7 @@ void CChangeLevelWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 void CChangeLevelWnd::OnOk()
 {
 	HideDialog();
-	NET_Packet								p;
-	p.w_begin								(M_CHANGE_LEVEL);
-	p.w										(&m_game_vertex_id,sizeof(m_game_vertex_id));
-	p.w										(&m_level_vertex_id,sizeof(m_level_vertex_id));
-	p.w_vec3								(m_position);
-	p.w_vec3								(m_angles);
-
-	Level().Send							(p);
+	ai().alife().change_level(m_game_vertex_id, m_level_vertex_id, m_position, m_angles);
 }
 
 void CChangeLevelWnd::OnCancel()

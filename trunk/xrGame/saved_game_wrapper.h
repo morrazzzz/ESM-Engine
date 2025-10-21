@@ -23,7 +23,7 @@ private:
 	float		m_actor_health;
 
 public:
-							CSavedGameWrapper	(LPCSTR saved_game_name);
+	CSavedGameWrapper(LPCSTR saved_game_name, bool checkExistFile = true);
 	static	LPCSTR			saved_game_full_name(LPCSTR saved_game_name, string_path& result);
 	static	bool			saved_game_exist	(LPCSTR saved_game_name);
 	static	bool			valid_saved_game	(IReader &stream);

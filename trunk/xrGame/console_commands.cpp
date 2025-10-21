@@ -394,25 +394,20 @@ public:
 		CTimer					timer;
 		timer.Start				();
 #endif
+		bool updateName = false;
 		if (!xr_strlen(params[0])) {
 			strconcat			(sizeof(params[0]), params[0], Core.UserName, "_", "quicksave");
-			NET_Packet			net_packet;
-			net_packet.w_begin	(M_SAVE_GAME);
-			net_packet.w_stringZ(params[0]);
-			net_packet.w_u8		(0);
-			Level().Send		(net_packet);
 		}else{
 			if(!valid_file_name(params[0])) {
 				Msg("invalid file name");
 				return;
 			}
 
-			NET_Packet			net_packet;
-			net_packet.w_begin	(M_SAVE_GAME);
-			net_packet.w_stringZ(params[0]);
-			net_packet.w_u8		(1);
-			Level().Send		(net_packet);
+			bool updateName = true;
 		}
+
+		ai().alife().save(params[0], updateName);
+
 #ifdef DEBUG
 		Msg						("Game save overhead  : %f milliseconds",timer.GetElapsed_sec()*1000.f);
 #endif
@@ -486,10 +481,7 @@ public:
 		if (Device.Paused())
 			Device.Pause			(FALSE, TRUE, TRUE, "CCC_ALifeLoadFrom");
 
-		NET_Packet					net_packet;
-		net_packet.w_begin			(M_LOAD_GAME);
-		net_packet.w_stringZ		(saved_game);
-		Level().Send				(net_packet);
+		ai().alife().load_game(saved_game, true);
 	}
 };
 

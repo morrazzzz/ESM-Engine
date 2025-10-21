@@ -57,13 +57,18 @@ bool CSavedGameWrapper::valid_saved_game		(LPCSTR saved_game_name)
 	return						(result);
 }
 
-CSavedGameWrapper::CSavedGameWrapper		(LPCSTR saved_game_name)
+CSavedGameWrapper::CSavedGameWrapper(LPCSTR saved_game_name, bool checkExistFile)
 {
-	string_path					file_name;
-	saved_game_full_name		(saved_game_name,file_name);
-	R_ASSERT3					(FS.exist(file_name),"There is no saved game ",file_name);
-	
-	IReader						*stream = FS.r_open(file_name);
+	const char* finalfileName = saved_game_name;
+	if (checkExistFile)
+	{
+		string_path	fullFiledName;
+		saved_game_full_name(saved_game_name, fullFiledName);
+		finalfileName = fullFiledName;
+		R_ASSERT3(FS.exist(finalfileName), "There is no saved game ", finalfileName);
+	}
+
+	IReader* stream = FS.r_open(finalfileName);
 	if (!valid_saved_game(*stream)) {
 		FS.r_close				(stream);
 		CALifeTimeManager		time_manager(alife_section);

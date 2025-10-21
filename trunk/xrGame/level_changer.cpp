@@ -14,6 +14,7 @@
 #include "level.h"
 #include "ai_object_location.h"
 #include "ai_space.h"
+#include "alife_simulator.h"
 #include "level_graph.h"
 #include "game_level_cross_table.h"
 
@@ -114,14 +115,9 @@ void CLevelChanger::feel_touch_new	(CObject *tpObject)
 	if (!l_tpActor->g_Alive())
 		return;
 
-	if (m_bSilentMode) {
-		NET_Packet	p;
-		p.w_begin	(M_CHANGE_LEVEL);
-		p.w			(&m_game_vertex_id,sizeof(m_game_vertex_id));
-		p.w			(&m_level_vertex_id,sizeof(m_level_vertex_id));
-		p.w_vec3	(m_position);
-		p.w_vec3	(m_angles);
-		Level().Send(p);
+	if (m_bSilentMode)
+	{
+		ai().alife().change_level(m_game_vertex_id, m_level_vertex_id, m_position, m_angles);
 		return;
 	}
 	Fvector			p,r;
