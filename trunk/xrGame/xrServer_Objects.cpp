@@ -7,7 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "../../xrNetServer/net_utils.h"
+#include "net_utils.h"
 #include "xrServer_Objects.h"
 #include "game_base_space.h"
 
@@ -66,43 +66,6 @@ void CSE_Shape::assign_shapes	(CShapeData::shape_def* _shapes, u32 _cnt)
 	shapes.resize	(_cnt);
 	for (u32 k=0; k<_cnt; k++)
 		shapes[k]	= _shapes[k];
-}
-
-////////////////////////////////////////////////////////////////////////////
-// CSE_Spectator
-////////////////////////////////////////////////////////////////////////////
-CSE_Spectator::CSE_Spectator				(LPCSTR caSection) : CSE_Abstract(caSection)
-{
-}
-
-CSE_Spectator::~CSE_Spectator				()
-{
-}
-
-u8	 CSE_Spectator::g_team					()
-{
-	return 0;
-}
-
-void CSE_Spectator::STATE_Read				(NET_Packet	&tNetPacket, u16 size)
-{
-}
-
-void CSE_Spectator::STATE_Write				(NET_Packet	&tNetPacket)
-{
-}
-
-void CSE_Spectator::UPDATE_Read				(NET_Packet	&tNetPacket)
-{
-}
-
-void CSE_Spectator::UPDATE_Write			(NET_Packet	&tNetPacket)
-{
-}
-
-void CSE_Spectator::FillProps				(LPCSTR pref, PropItemVec& items)
-{
-  	inherited::FillProps			(pref,items);
 }
 
 ////////////////////////////////////////////////////////////////////////////

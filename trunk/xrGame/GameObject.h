@@ -52,7 +52,6 @@ class CGameObject :
 {
 	typedef CObject inherited;
 	bool							m_spawned;
-	Flags32							m_server_flags;
 	CAI_ObjectLocation				*m_ai_location;
 	ALife::_STORY_ID				m_story_id;
 	animation_movement_controller	*m_anim_mov_ctrl;
@@ -85,6 +84,12 @@ public:
 	virtual CBaseMonster*				cast_base_monster			()						{return NULL;}
 
 	CSE_Abstract* GetCSEObject()
+	{
+		R_ASSERT(m_pCSEObject);
+		return m_pCSEObject;
+	}
+
+	CSE_Abstract* GetCSEObject() const
 	{
 		R_ASSERT(m_pCSEObject);
 		return m_pCSEObject;
@@ -123,7 +128,6 @@ public:
 	virtual bool			shedule_Needed		();
 
 	virtual void			renderable_Render	();
-	virtual void			OnEvent				(NET_Packet& P, u16 type);
 	virtual	void			Hit					(SHit* pHDS) {};
 
 	//игровое имя объекта
@@ -150,7 +154,7 @@ const animation_movement_controller*animation_movement		( ) const	{ return	m_ani
 	// Game-specific events
 
 	virtual BOOL			UsedAI_Locations				();
-			BOOL			TestServerFlag					(u32 Flag) const;
+	inline bool checkFlag(u32 Flag) const;
 	virtual	bool			can_validate_position_on_spawn	(){return true;}
 #ifdef DEBUG
 	virtual void			OnRender			();

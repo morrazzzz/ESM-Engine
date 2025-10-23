@@ -16,11 +16,6 @@
 #include "script_callback_ex.h"
 #include "game_object_space.h"
 
-void  CInventoryOwner::OnEvent (NET_Packet& P, u16 type)
-{
-}
-
-
 class CFindByIDPred
 {
 public:

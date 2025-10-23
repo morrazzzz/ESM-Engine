@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../../xrNetServer/net_server.h"
 #include "game_sv_base.h"
 #include "id_generator.h"
 
@@ -13,7 +12,7 @@ typedef xr_unordered_map<u32,CSE_Abstract*>	xrS_entities;
 
 // main
 
-class xrServer	: public IPureServer  
+class xrServer
 {
 	xrS_entities entities;
 	xr_vector<CSE_Abstract*> EntitiesToSpawn{};
@@ -49,8 +48,6 @@ public:
 	}
 
 	CSE_Abstract*			Process_spawn			(NET_Packet& P, CSE_Abstract* tpExistedEntity = 0);
-	void					Process_save			(NET_Packet& P);
-	void					Process_event			(NET_Packet& P);
 
 	// constr / destr
 	xrServer				();
@@ -58,7 +55,6 @@ public:
 
 	// extended functionality
 	void OnMessage(NET_Packet& P);	// Non-Zero means broadcasting with "flags" as returned
-	virtual void			SendTo_LL			(void* data, u32 size);
 
 	// utilities
 	CSE_Abstract*			entity_Create		(LPCSTR name);
@@ -70,9 +66,6 @@ public:
 	// main
 	void Connect(shared_str& options);
 	virtual void			Disconnect			();
-	virtual void			Update				();
-	void					SLS_Default			();
-	void					SLS_Save			(IWriter&	fs);
 			shared_str		level_name			(const shared_str &server_options) const;
 
 	void SpawnNewObjects();

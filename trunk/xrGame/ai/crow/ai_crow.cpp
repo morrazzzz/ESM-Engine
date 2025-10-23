@@ -334,7 +334,7 @@ void CAI_Crow::SaveCSEObj(CSE_Abstract* data, bool needSaveAll)
 
 	CSE_ALifeCreatureAbstract* this_object = data->cast_creature_abstract();
 	this_object->fHealth = GetfHealth();
-	this_object->timestamp = Level().timeServer();
+	this_object->timestamp = Device.dwTimeGlobal;
 	this_object->o_model = yaw;
 	this_object->o_torso.yaw = yaw;
 	this_object->o_torso.pitch = pitch;

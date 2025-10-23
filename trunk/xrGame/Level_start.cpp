@@ -9,6 +9,8 @@
 #include "../xr_3da/xr_ioconsole.h"
 #include "MainMenu.h"
 #include "UIGameCustom.h"
+#include "ai_space.h"
+#include "alife_simulator.h"
 
 BOOL CLevel::net_Start	( LPCSTR op_server )
 {
@@ -27,11 +29,11 @@ bool CLevel::net_start1				()
 {
 	if (m_caServerOptions.size())
 	{
-		Server = xr_new<xrServer>();
+		Server = new xrServer();
 		Server->Connect(m_caServerOptions);
 		m_name = Server->level_name(m_caServerOptions);
 
-		Server->SLS_Default();
+		ai().alife().switch_distance();
 	}
 	return true;
 }

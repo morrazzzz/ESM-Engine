@@ -25,8 +25,6 @@ public:
 	virtual void 			OnH_A_Independent					();
 	virtual void 			OnH_A_Chield						();
 	
-	virtual void 			OnEvent								(NET_Packet& P, u16 type);
-	
 	virtual void 			OnAnimationEnd						(u32 state);
 	virtual void 			UpdateCL							();
 
@@ -41,8 +39,6 @@ public:
 	virtual void			OnH_B_Chield						()				{inherited::OnH_B_Chield();}
 
 	virtual	void			Hit									(SHit* pHDS);
-
-	virtual ALife::_TIME_ID	TimePassedAfterIndependant			() const;
 
 			void			PutNextToSlot						();
 

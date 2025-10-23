@@ -74,7 +74,7 @@ void CGrenade::OnH_B_Independent(bool just_before_destroy)
 
 void CGrenade::OnH_A_Independent() 
 {
-	m_dwGrenadeIndependencyTime			= Level().timeServer();
+	m_dwGrenadeIndependencyTime			= Device.dwTimeGlobal;
 	inherited::OnH_A_Independent		();	
 }
 
@@ -154,14 +154,9 @@ void CGrenade::Destroy()
 bool CGrenade::Useful() const
 {
 
-	bool res = (/* !m_throw && */ m_dwDestroyTime == 0xffffffff && CExplosive::Useful() && TestServerFlag(CSE_ALifeObject::flCanSave));
+	bool res = (/* !m_throw && */ m_dwDestroyTime == 0xffffffff && CExplosive::Useful() && checkFlag(CSE_ALifeObject::flCanSave));
 
 	return res;
-}
-
-void CGrenade::OnEvent(NET_Packet& P, u16 type) 
-{
-	inherited::OnEvent			(P,type);
 }
 
 void CGrenade::PutNextToSlot()
@@ -234,14 +229,6 @@ bool CGrenade::Action(s32 cmd, u32 flags)
 		};
 	}
 	return false;
-}
-
-ALife::_TIME_ID	 CGrenade::TimePassedAfterIndependant()	const
-{
-	if(!H_Parent() && m_dwGrenadeIndependencyTime != 0)
-		return Level().timeServer() - m_dwGrenadeIndependencyTime;
-	else
-		return 0;
 }
 
 BOOL CGrenade::UsedAI_Locations		()

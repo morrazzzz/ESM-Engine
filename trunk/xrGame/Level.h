@@ -5,18 +5,17 @@
 #pragma once
 
 #include "../xr_3da/igame_level.h"
-#include "../../xrNetServer/net_client.h"
 #include "script_export_space.h"
 #include "../xr_3da/StatGraph.h"
 #include "xrMessages.h"
 #include "alife_space.h"
 #include "xrDebug.h"
 #include "xrServer.h"
+#include "NET_utils.h"
 
 class	CHUDManager;
 class	CParticlesObject;
 class	xrServer;
-class	NET_Queue_Event;
 class	CSE_Abstract;
 class	CSpaceRestrictionManager;
 class	CSeniorityHierarchyHolder;
@@ -54,7 +53,7 @@ public:
 };
 
 
-class CLevel					: public IGame_Level, public IPureClient
+class CLevel: public IGame_Level
 {
 protected:
 	typedef IGame_Level			inherited;
@@ -89,8 +88,6 @@ public:
 public:
 	////////////// network ////////////////////////
 	static void 				PhisStepsCallback		( u32 Time0, u32 Time1 );
-
-	virtual void				OnMessage				(void* data, u32 size);
 private:
 	CObject* pCurrentControlEntity;
 
@@ -103,7 +100,6 @@ public:
 	DEFINE_VECTOR				(CParticlesObject*,POVec,POIt);
 	POVec						m_StaticParticles;
 
-	NET_Queue_Event				*game_events;
 	xrServer*					Server;
 	GlobalFeelTouch				m_feel_deny;
 
@@ -135,7 +131,6 @@ public:
 	// Starting/Loading
 	virtual BOOL				net_Start				( LPCSTR op_server);
 	virtual void				net_Stop				( );
-	virtual void				net_Update				( );
 
 
 	virtual BOOL				Load_GameSpecific_Before( );
@@ -145,8 +140,6 @@ public:
 	// Events
 	virtual void				OnFrame					( void );
 	virtual void				OnRender				( );
-	void						cl_Process_Event		(u16 dest, u16 type, NET_Packet& P);
-	void						ProcessGameEvents		( );
 
 	// Input
 	void IR_OnKeyboardPress(int btn) override;
@@ -160,11 +153,8 @@ public:
 	virtual void				IR_OnActivate			(void);
 
 	// Game
-	void						ClientReceive			();
 	void SaveAllCSEObj(bool needSaveAll = false);
 	virtual	void				Send					(NET_Packet& P);
-	
-	virtual	NET_Packet* net_msg_Retreive();
 
 	void						g_sv_Spawn				(CObject*, CSE_Abstract*);					// server reply/command spawning
 	

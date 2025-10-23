@@ -12,19 +12,13 @@
 #include "../../inventory.h"
 #include "../../xrmessages.h"
 #include "../../shootingobject.h"
-#include "../../../xrNetServer/net_utils.h"
+#include "../../net_utils.h"
 #include "../../level.h"
 #include "../../ai_monster_space.h"
 
 using namespace MonsterSpace;
 
 #define SILENCE
-
-void CAI_Stalker::OnEvent		(NET_Packet& P, u16 type)
-{
-	inherited::OnEvent			(P,type);
-	CInventoryOwner::OnEvent	(P,type);
-}
 
 void CAI_Stalker::ObjectTakeItem(CGameObject* object)
 {

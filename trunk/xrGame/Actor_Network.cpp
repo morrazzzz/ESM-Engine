@@ -75,7 +75,7 @@ void CActor::SaveCSEObj(CSE_Abstract* data, bool needSaveAll)
 	CSE_ALifeCreatureActor* this_object = smart_cast<CSE_ALifeCreatureActor*>(data);
 
 	this_object->fHealth = GetfHealth();
-	this_object->timestamp = Level().timeServer();
+	this_object->timestamp = Device.dwTimeGlobal;
 	this_object->o_Position = Position();
 	this_object->o_model = angle_normalize(r_model_yaw);
 	this_object->o_torso.yaw = angle_normalize(unaffected_r_torso.yaw);

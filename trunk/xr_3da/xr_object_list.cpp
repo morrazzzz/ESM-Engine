@@ -58,7 +58,7 @@ void	CObjectList::o_sleep		( CObject*		O		)
 
 void	CObjectList::SingleUpdate	(CObject* O)
 {
-	if (O->processing_enabled() && (Device.dwFrame != O->dwFrame_UpdateCL))
+	if (O && O->processing_enabled() && (Device.dwFrame != O->dwFrame_UpdateCL))
 	{
 		if (O->H_Parent())
 		{

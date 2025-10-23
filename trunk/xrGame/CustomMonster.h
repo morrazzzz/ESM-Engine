@@ -162,7 +162,6 @@ public:
 	virtual	Feel::Sound*		dcast_FeelSound			()			{ return this;	}
 	virtual	void				Hit						(SHit* pHDS);
 
-	virtual void				OnEvent					( NET_Packet& P, u16 type		);
 	virtual void				net_Destroy				();
 	virtual BOOL				UsedAI_Locations		();
 	///////////////////////////////////////////////////////////////////////

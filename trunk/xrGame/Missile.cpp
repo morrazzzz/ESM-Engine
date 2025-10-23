@@ -219,7 +219,7 @@ void CMissile::shedule_Update(u32 dt)
 	inherited::shedule_Update(dt);
 	if(!H_Parent() && getVisible() && m_pPhysicsShell) 
 	{
-		if(m_dwDestroyTime <= Level().timeServer()) 
+		if(m_dwDestroyTime <= Device.dwTimeGlobal) 
 		{
 			m_dwDestroyTime = 0xffffffff;
 			GetCSEObject()->ID_Parent = static_cast<u16>(-1);
@@ -457,11 +457,6 @@ void CMissile::Throw()
 	m_fThrowForce						= m_fMinForce;
 
 	RejectItem(m_fake_missile);
-}
-
-void CMissile::OnEvent(NET_Packet& P, u16 type) 
-{
-	inherited::OnEvent		(P,type);
 }
 
 void CMissile::ObjectTakeItem(CGameObject* object)

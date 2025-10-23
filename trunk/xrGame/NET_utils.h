@@ -10,7 +10,7 @@ class	NET_Packet
 public:
 	void construct(const void* data, unsigned size)
 	{
-		memcpy(dataWriting, data, size);
+		std::memcpy(dataWriting, data, size);
 		wPos = size;
 	}
 

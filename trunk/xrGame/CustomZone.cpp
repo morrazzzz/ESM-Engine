@@ -1044,11 +1044,6 @@ void  CCustomZone::OnMove()
      }
 }
 
-void	CCustomZone::OnEvent (NET_Packet& P, u16 type)
-{	
-	inherited::OnEvent(P, type);
-};
-
 void CCustomZone::ObjectTakeItem(CGameObject* object)
 {
 	CArtefact* artefact = object->cast_artefact();

@@ -139,7 +139,7 @@ void CAI_Stalker::reinit			()
 	m_pick_distance					= 0.f;
 	m_pick_frame_id					= 0;
 
-	m_weapon_shot_random_seed		= s32(Level().timeServer_Async());
+	m_weapon_shot_random_seed		= s32(Device.dwTimeGlobal);
 
 	m_best_cover					= 0;
 	m_best_cover_actual				= false;
@@ -527,7 +527,7 @@ void CAI_Stalker::SaveCSEObj(CSE_Abstract* data, bool needSaveAll)
 {
 	CSE_ALifeHumanStalker* this_object = smart_cast<CSE_ALifeHumanStalker*>(data);
 	this_object->fHealth = GetfHealth();
-	this_object->timestamp = Level().timeServer();
+	this_object->timestamp = Device.dwTimeGlobal;
 #ifdef NO_INTERPOLATION
 	this_object->o_Position = Position();
 	this_object->o_model = movement().m_body.current.yaw;
@@ -698,7 +698,7 @@ void CAI_Stalker::shedule_Update		( u32 DT )
 	// Queue shrink
 	VERIFY				(_valid(Position()));
 #ifndef NO_INTERPOLATION
-	u32	dwTimeCL		= Level().timeServer()-NET_Latency;
+	u32	dwTimeCL		= Device.dwTimeGlobal -NET_Latency;
 	VERIFY				(!NET.empty());
 	while ((NET.size()>2) && (NET[1].dwTimeStamp<dwTimeCL)) NET.pop_front();
 #endif
@@ -774,7 +774,7 @@ void CAI_Stalker::shedule_Update		( u32 DT )
 #ifndef NO_INTERPOLATION
 	START_PROFILE("stalker/schedule_update/net_update")
 	net_update			uNext;
-	uNext.dwTimeStamp	= Level().timeServer();
+	uNext.dwTimeStamp	= Device.dwTimeGlobal;
 	uNext.o_model		= movement().m_body.current.yaw;
 	uNext.o_torso		= movement().m_head.current;
 	uNext.p_pos			= vNewPosition;

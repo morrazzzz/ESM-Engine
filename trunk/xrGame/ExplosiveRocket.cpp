@@ -81,12 +81,6 @@ void CExplosiveRocket::UpdateCL()
 		inherited::UpdateCL();
 }
 
-
-void  CExplosiveRocket::OnEvent (NET_Packet& P, u16 type) 
-{
-	inherited::OnEvent(P,type);
-}
-
 #ifdef DEBUG
 void CExplosiveRocket::OnRender				()
 {

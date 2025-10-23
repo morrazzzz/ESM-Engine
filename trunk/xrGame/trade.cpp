@@ -128,7 +128,7 @@ bool CTrade::SetPartner(CEntity *p)
 void CTrade::StartTrade()
 {
 	TradeState = true;
-	m_dwLastTradeTime =  Level().timeServer();
+	m_dwLastTradeTime =  Device.dwTimeGlobal;
 	m_bNeedToUpdateArtefactTasks = false;
 
 //	if (pThis.type == TT_TRADER) smart_cast<CAI_Trader*>(pThis.base)->OnStartTrade();

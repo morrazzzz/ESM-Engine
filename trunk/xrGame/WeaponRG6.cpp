@@ -164,11 +164,6 @@ u8 CWeaponRG6::AddCartridge(u8 cnt)
 	return k;
 }
 
-void CWeaponRG6::OnEvent(NET_Packet& P, u16 type) 
-{
-	inheritedSG::OnEvent(P,type);
-}
-
 void CWeaponRG6::ObjectTakeItem(CGameObject* object)
 {
 	inheritedRL::AttachRocket(object, this);

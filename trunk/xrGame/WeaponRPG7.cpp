@@ -179,11 +179,6 @@ void CWeaponRPG7::switch2_Fire	()
 	}
 }
 
-void CWeaponRPG7::OnEvent(NET_Packet& P, u16 type) 
-{
-	inherited::OnEvent(P,type);
-}
-
 void CWeaponRPG7::ObjectTakeItem(CGameObject* object)
 {
 	CRocketLauncher::AttachRocket(object, this);

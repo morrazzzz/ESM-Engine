@@ -30,7 +30,6 @@ public:
 	virtual bool		Action				(s32 cmd, u32 flags);
 	virtual void		SwitchState			(u32 S);
 	virtual void		OnStateSwitch		(u32 S);
-	virtual void		OnEvent				(NET_Packet& P, u16 type);
 	virtual void		OnH_A_Chield		();
 	virtual void		OnH_B_Chield		();
 	virtual void		OnH_B_Independent	(bool just_before_destroy);

@@ -56,7 +56,6 @@ public:
 
 	virtual BOOL				net_Start				( LPCSTR op_server)	                    = 0;
 	virtual void				net_Stop				( );
-	virtual void				net_Update				( )										= 0;
 
 	BOOL LoadLevel();
 	virtual BOOL				Load_GameSpecific_Before( )										{ return TRUE; };		// before object loading

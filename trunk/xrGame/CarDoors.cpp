@@ -7,7 +7,7 @@
 #include "hit.h"
 #include "PHDestroyable.h"
 #include "car.h"
-#include "../../xrNetServer/net_utils.h"
+#include "net_utils.h"
 #include "..\include\xrRender\Kinematics.h"
 #include "../xrPhysics/MathUtils.h"
 #include "game_object_space.h"

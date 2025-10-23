@@ -9,6 +9,7 @@
 #include "level.h"
 #include "ai_space.h"
 #include "../xr_3da/IGame_Persistent.h"
+#include "NET_utils.h"
 
 #include "../xr_3da/XR_IOConsole.h"
 #include "ui/UIInventoryUtilities.h"
@@ -31,18 +32,10 @@ CSE_Abstract*	xrServer::ID_to_entity		(u16 ID)
 	else						return 0;
 }
 
-void xrServer::Update	()
-{
-	// game update
-	game->Update	();
-}
-
 void xrServer::OnMessage	(NET_Packet& P)			// Non-Zero means broadcasting with "flags" as returned
 {
 	u16			type;
 	P.r_begin	(type);
-
-	csPlayers.Enter			();
 
 	switch (type)
 	{
@@ -51,14 +44,6 @@ void xrServer::OnMessage	(NET_Packet& P)			// Non-Zero means broadcasting with "
 			Process_spawn(P);	
 		}break;
 	}
-
-	csPlayers.Leave					();
-}
-
-void xrServer::SendTo_LL			(void* data, u32 size)
-{
-	// optimize local traffic
-	Level().OnMessage			(data,size);
 }
 
 //--------------------------------------------------------------------
@@ -77,7 +62,7 @@ void			xrServer::entity_Destroy	(CSE_Abstract *&P)
 	entities.erase				(P->ID);
 	m_tID_Generator.vfFreeID	(P->ID,Device.TimerAsync());
 
-	if (!ai().get_alife() || !P->m_bALifeControl)
+	if (!P->m_bALifeControl)
 	{
 		F_entity_Destroy		(P);
 	}

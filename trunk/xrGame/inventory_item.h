@@ -73,8 +73,6 @@ public:
 	shared_str					ItemDescription		() { return m_Description; }
 	virtual void				GetBriefInfo		(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count) {};
 	
-	virtual void				OnEvent				(NET_Packet& P, u16 type);
-	
 	virtual bool				Useful				() const;									// !!! Переопределить. (см. в Inventory.cpp)
 	virtual bool				Attach				(PIItem pIItem, bool b_send_event) {return false;}
 	virtual bool				Detach				(PIItem pIItem) {return false;}
@@ -168,8 +166,6 @@ protected:
 public:
 	virtual void				activate_physic_shell		();
 	virtual u16					bone_count_to_synchronize	() const;
-
-	virtual ALife::_TIME_ID		TimePassedAfterIndependant	() const;
 
 	virtual	bool				IsSprintAllowed				() const		{return !!m_flags.test(FAllowSprint);} ;
 

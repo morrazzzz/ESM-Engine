@@ -2,7 +2,7 @@
 #include "helicopter.h"
 #include "ExplosiveRocket.h"
 #include "xrMessages.h"
-#include "../../xrNetServer/net_utils.h"
+#include "net_utils.h"
 #include "..\include\xrRender\Kinematics.h"
 #include "Level.h"
 
@@ -20,12 +20,6 @@ CHelicopter::BoneMGunCallbackY(CBoneInstance *B)
 	CHelicopter	* P = static_cast<CHelicopter*>(B->callback_param());
 	Fmatrix rY;		rY.rotateY		(P->m_cur_rot.y);
 	B->mTransform.mulB_43			(rY);
-}
-
-
-void CHelicopter::OnEvent(	NET_Packet& P, u16 type) 
-{
-	inherited::OnEvent(P,type);
 }
 
 void CHelicopter::ObjectTakeItem(CGameObject* object)

@@ -1645,11 +1645,6 @@ void CCar::ResetKeys()
 
 #undef   _USE_MATH_DEFINES
 
-void CCar::OnEvent(NET_Packet& P, u16 type)
-{
-	inherited::OnEvent		(P,type);
-}
-
 void CCar::ObjectTakeItem(CGameObject* object)
 {
 	if (GetInventory()->CanTakeItem(object->cast_inventory_item()))

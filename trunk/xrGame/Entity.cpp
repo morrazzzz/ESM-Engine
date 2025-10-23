@@ -14,6 +14,8 @@
 #include "..\include\xrRender\Kinematics.h"
 #include "monster_community.h"
 #include "ai/monsters/basemonster/base_monster.h"
+#include "ai_space.h"
+#include "alife_simulator.h"
 
 #include "profiler.h"
 
@@ -82,24 +84,29 @@ void	CEntity::Hit		(SHit* pHDS)
 
 	// *** process hit calculations
 	// Calc impulse
-	Fvector					vLocalDir;
+
 	float					m = pHDS->dir.magnitude();
-	VERIFY					(m>EPS);
-	
-	// convert impulse into local coordinate system
-	Fmatrix					mInvXForm;
-	mInvXForm.invert		(XFORM());
-	mInvXForm.transform_dir	(vLocalDir,pHDS->dir);
-	vLocalDir.invert		();
 
-	// hit impulse
-	if(pHDS->impulse) HitImpulse				(pHDS->impulse,pHDS->dir,vLocalDir); // @@@: WT
-	
-	// Calc amount (correct only on local player)
-	float lost_health = CalcCondition(pHDS->damage());
+	if (m > EPS)
+	{
+		Fvector					vLocalDir;
 
-	// Signal hit
-	if(BI_NONE!=pHDS->bone())	HitSignal(lost_health,vLocalDir,pHDS->initiator(), pHDS->boneID);
+		// convert impulse into local coordinate system
+		Fmatrix					mInvXForm;
+		mInvXForm.invert(XFORM());
+		mInvXForm.transform_dir(vLocalDir, pHDS->dir);
+		vLocalDir.invert();
+
+		// hit impulse
+		if (pHDS->impulse) HitImpulse(pHDS->impulse, pHDS->dir, vLocalDir); // @@@: WT
+
+		// Calc amount (correct only on local player)
+		float lost_health = CalcCondition(pHDS->damage());
+
+		// Signal hit
+		if (BI_NONE != pHDS->bone())
+			HitSignal(lost_health, vLocalDir, pHDS->initiator(), pHDS->boneID);
+	}
 
 	// If Local() - perform some logic
 	if (Local() && !g_Alive() && !AlreadyDie() && (m_killer_id == ALife::_OBJECT_ID(-1))) {
@@ -241,10 +248,12 @@ void CEntity::KillEntity(u16 whoID)
 
 	set_death_time		();
 
-	CSE_Abstract* killed = Level().Server->game->get_entity_from_eid(ID());
-	CSE_Abstract* killer = Level().Server->game->get_entity_from_eid(whoID);
+	CSE_Abstract* killed = GetCSEObject();
 
-	Level().Server->game->on_death(killed, killer);
+	if (CSE_ALifeCreatureAbstract* abstractCSE = killed->cast_creature_abstract())
+		abstractCSE->m_killer_id = whoID;
+
+	ai().alife().on_death(killed);
 
 	CObject* killer_object = Level().Objects.net_Find(whoID);
 	

@@ -1302,15 +1302,6 @@ float CActor::Radius()const
 	return R;
 }
 
-ALife::_TIME_ID	 CActor::TimePassedAfterDeath()	const
-{
-	if(!g_Alive())
-		return Level().timeServer() - GetLevelDeathTime();
-	else
-		return 0;
-}
-
-
 void CActor::OnItemTake			(CInventoryItem *inventory_item)
 {
 	CInventoryOwner::OnItemTake(inventory_item);
@@ -1434,13 +1425,13 @@ float	CActor::HitArtefactsOnBelt		(float hit_power, ALife::EHitType hit_type)
 void	CActor::SetZoomRndSeed		(s32 Seed)
 {
 	if (0 != Seed) m_ZoomRndSeed = Seed;
-	else m_ZoomRndSeed = s32(Level().timeServer_Async());
+	else m_ZoomRndSeed = s32(Device.dwTimeGlobal);
 };
 
 void	CActor::SetShotRndSeed		(s32 Seed)
 {
 	if (0 != Seed) m_ShotRndSeed = Seed;
-	else m_ShotRndSeed = s32(Level().timeServer_Async());
+	else m_ShotRndSeed = s32(Device.dwTimeGlobal);
 };
 
 Fvector CActor::GetMissileOffset	() const

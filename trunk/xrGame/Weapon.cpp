@@ -543,11 +543,6 @@ void CWeapon::load(IReader &input_packet)
 			OnZoomOut();
 }
 
-
-void CWeapon::OnEvent(NET_Packet& P, u16 type) 
-{
-};
-
 void CWeapon::shedule_Update	(u32 dT)
 {;	
 	// Inherited
@@ -572,7 +567,7 @@ void CWeapon::OnH_B_Independent	(bool just_before_destroy)
 
 void CWeapon::OnH_A_Independent	()
 {
-	m_dwWeaponIndependencyTime = Level().timeServer();
+	m_dwWeaponIndependencyTime = Device.dwTimeGlobal;
 	inherited::OnH_A_Independent();
 	Light_Destroy				();
 };
@@ -1264,14 +1259,6 @@ void CWeapon::activate_physic_shell()
 void CWeapon::setup_physic_shell()
 {
 	CPhysicsShellHolder::setup_physic_shell();
-}
-
-ALife::_TIME_ID	 CWeapon::TimePassedAfterIndependant()	const
-{
-	if(!H_Parent() && m_dwWeaponIndependencyTime != 0)
-		return Level().timeServer() - m_dwWeaponIndependencyTime;
-	else
-		return 0;
 }
 
 bool CWeapon::can_kill	() const

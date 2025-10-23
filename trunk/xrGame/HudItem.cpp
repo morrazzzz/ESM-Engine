@@ -89,10 +89,6 @@ void CHudItem::SwitchState(u32 S)
 		OnStateSwitch(S);
 }
 
-void CHudItem::OnEvent		(NET_Packet& P, u16 type)
-{
-}
-
 void CHudItem::OnStateSwitch(u32 S)
 {
 	SetState			(S);

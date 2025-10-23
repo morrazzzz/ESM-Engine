@@ -139,12 +139,6 @@ BOOL CAI_Trader::net_Spawn			(CSE_Abstract* DC)
 	return					(TRUE);
 }
 
-void CAI_Trader::OnEvent		(NET_Packet& P, u16 type)
-{
-	inherited::OnEvent			(P,type);
-	CInventoryOwner::OnEvent	(P,type);
-}
-
 void CAI_Trader::ObjectTakeItem(CGameObject* object)
 {
 	if (inventory().CanTakeItem(object->cast_inventory_item())) {

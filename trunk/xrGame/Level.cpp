@@ -5,7 +5,6 @@
 #include "ParticlesObject.h"
 #include "Level.h"
 #include "xrServer.h"
-#include "net_queue.h"
 #include "hudmanager.h"
 #include "ai_space.h"
 #include "ai_debug.h"
@@ -14,7 +13,6 @@
 #include "script_process.h"
 #include "script_engine.h"
 #include "script_engine_space.h"
-#include "team_base_zone.h"
 #include "date_time.h"
 #include "space_restriction_manager.h"
 #include "seniority_hierarchy_holder.h"
@@ -56,14 +54,12 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
+CLevel::CLevel()
 #ifdef PROFILE_CRITICAL_SECTIONS
 	,DemoCS(MUTEX_PROFILE_ID(DemoCS))
 #endif // PROFILE_CRITICAL_SECTIONS
 {
 	Server						= NULL;
-
-	game_events					= xr_new<NET_Queue_Event>();
 
 	m_pBulletManager			= xr_new<CBulletManager>();
 
@@ -188,9 +184,6 @@ CLevel::~CLevel()
 	if (!g_dedicated_server)
 		ai().script_engine().remove_script_process(ScriptEngine::eScriptProcessorLevel);
 
-	xr_delete					(game_events);
-
-
 	//by Dandy
 	//destroy fog of war
 //	xr_delete					(m_pFogOfWar);
@@ -235,45 +228,6 @@ void CLevel::PrefetchSound		(LPCSTR name)
 		sound_registry[snd_name].create(snd_name.c_str(),st_Effect,sg_SourceType);
 }
 
-void CLevel::cl_Process_Event				(u16 dest, u16 type, NET_Packet& P)
-{
-	//			Msg				("--- event[%d] for [%d]",type,dest);
-	CObject*	 O	= Objects.net_Find	(dest);
-	if (0==O)		{
-#ifdef DEBUG
-		Msg("* WARNING: c_EVENT[%d] to [%d]: unknown dest",type,dest);
-#endif // DEBUG
-		return;
-	}
-	CGameObject* GO = smart_cast<CGameObject*>(O);
-	if (!GO)		{
-		Msg("! ERROR: c_EVENT[%d] : non-game-object",dest);
-		return;
-	}
-
-	GO->OnEvent		(P,type);
-};
-
-void CLevel::ProcessGameEvents		()
-{
-	// Game events
-	while (game_events->available())
-	{
-		NET_Packet P{};
-
-		u16 ID, dest, type;
-		game_events->get(ID, dest, type, P);
-
-		switch (ID)
-		{
-		default:
-		{
-			VERIFY(0);
-		}break;
-		}
-	}
-}
-
 #ifdef DEBUG_MEMORY_MANAGER
 	extern Flags32				psAI_Flags;
 	extern float				debug_on_frame_gather_stats_frequency;
@@ -314,13 +268,6 @@ void CLevel::OnFrame	()
 	else
 		BulletManager().CommitEvents();
 	Device.Statistic->BulletManager.End			();
-
-	// Client receive
-	Device.Statistic->netClient1.Begin();
-
-	ClientReceive();
-
-	Device.Statistic->netClient1.End();
 
 //	CTimer T;
 //	T.Start();

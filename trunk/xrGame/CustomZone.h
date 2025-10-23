@@ -65,7 +65,6 @@ public:
 	virtual		float	distance_to_center				(CObject* O	);			
 	virtual		void	Postprocess						(float val)					{}
 	virtual		void	net_Relcase						(CObject* O	);
-	virtual		void	OnEvent							(NET_Packet& P, u16 type);
 	void ObjectTakeItem(CGameObject* object) override;
 	void ObjectRejectItem(CGameObject* object, bool just_before_destroy = false) override;
 

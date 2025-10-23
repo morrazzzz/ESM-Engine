@@ -53,12 +53,6 @@ void CHudItemObject::OnMoveToRuck()
 	CHudItem::OnMoveToRuck	();
 }
 
-void CHudItemObject::OnEvent			(NET_Packet& P, u16 type)
-{
-	CInventoryItemObject::OnEvent(P,type);
-	CHudItem::OnEvent			(P,type);
-}
-
 void CHudItemObject::OnH_A_Chield		()
 {
 	CHudItem::OnH_A_Chield				();

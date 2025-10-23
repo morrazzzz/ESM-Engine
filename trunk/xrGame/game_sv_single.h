@@ -22,23 +22,10 @@ public:
 
 
 	virtual		void				OnCreate				(u16 id_who);
-	virtual		BOOL				OnTouch					(u16 eid_who, u16 eid_what);
 
 	// Main
-	virtual		void				Update					();
 
-	virtual		bool				change_level			(NET_Packet &net_packet);
-	virtual		void				save_game				(NET_Packet &net_packet);
-	virtual		bool				load_game				(NET_Packet &net_packet);
-	virtual		void				reload_game				(NET_Packet &net_packet);
-	virtual		void				teleport_object			(NET_Packet &packet, u16 id);
-	virtual		void				add_restriction			(NET_Packet &packet, u16 id);
-	virtual		void				remove_restriction		(NET_Packet &packet, u16 id);
-	virtual		void				remove_all_restrictions	(NET_Packet &packet, u16 id);
-	virtual		bool				custom_sls_default		() {return !!m_alife_simulator;};
-	virtual		void				sls_default				();
 	virtual		shared_str			level_name				(const shared_str &server_options) const;
-	virtual		void				on_death				(CSE_Abstract *e_dest, CSE_Abstract *e_src);
 				void				restart_simulator		(LPCSTR saved_game_name);
 
 	IC			xrServer			&server					() const

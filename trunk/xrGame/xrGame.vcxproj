@@ -419,6 +419,7 @@
     <ClInclude Include="damage_manager.h" />
     <ClInclude Include="damage_manager_inline.h" />
     <ClInclude Include="DamageSource.h" />
+    <ClInclude Include="NET_utils.h" />
     <ClInclude Include="PHCommander.h" />
     <ClInclude Include="PHDebug.h" />
     <ClInclude Include="PHReqComparer.h" />
@@ -1259,9 +1260,6 @@
     <ClInclude Include="debug_renderer_inline.h" />
     <ClInclude Include="xr_level_controller.h" />
     <ClInclude Include="level_debug.h" />
-    <ClInclude Include="actor_mp_server.h" />
-    <ClInclude Include="actor_mp_state.h" />
-    <ClInclude Include="actor_mp_state_inline.h" />
     <ClInclude Include="Actor.h" />
     <ClInclude Include="actor_anim_defs.h" />
     <ClInclude Include="actor_defs.h" />
@@ -1432,7 +1430,6 @@
     </CustomBuild>
     <ClInclude Include="ExplosiveItem.h" />
     <ClInclude Include="wallmark_manager.h" />
-    <ClInclude Include="MPPlayersBag.h" />
     <ClInclude Include="searchlight.h" />
     <ClInclude Include="trade.h" />
     <ClInclude Include="CustomZone.h" />
@@ -1443,7 +1440,6 @@
     <ClInclude Include="MosquitoBald.h" />
     <ClInclude Include="RadioactiveZone.h" />
     <ClInclude Include="script_zone.h" />
-    <ClInclude Include="team_base_zone.h" />
     <ClInclude Include="TorridZone.h" />
     <ClInclude Include="ZoneVisual.h" />
     <ClInclude Include="space_restrictor.h" />
@@ -1465,7 +1461,6 @@
     <ClInclude Include="InventoryBox.h" />
     <ClInclude Include="ParticlesObject.h" />
     <ClInclude Include="date_time.h" />
-    <ClInclude Include="NET_Queue.h" />
     <ClInclude Include="xrMessages.h" />
     <ClInclude Include="object_broker.h" />
     <ClInclude Include="object_cloner.h" />
@@ -4193,7 +4188,6 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="Level_network_messages.cpp" />
     <ClCompile Include="Level_network_spawn.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
@@ -4270,12 +4264,6 @@
     <ClCompile Include="debug_renderer.cpp" />
     <ClCompile Include="xr_level_controller.cpp" />
     <ClCompile Include="level_debug.cpp" />
-    <ClCompile Include="actor_mp_client_export.cpp" />
-    <ClCompile Include="actor_mp_client_import.cpp" />
-    <ClCompile Include="actor_mp_server.cpp" />
-    <ClCompile Include="actor_mp_server_export.cpp" />
-    <ClCompile Include="actor_mp_server_import.cpp" />
-    <ClCompile Include="actor_mp_state.cpp" />
     <ClCompile Include="Actor.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
@@ -4304,7 +4292,6 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="Actor_Events.cpp" />
     <ClCompile Include="Actor_Feel.cpp" />
     <ClCompile Include="actor_input_handler.cpp" />
     <ClCompile Include="Actor_Movement.cpp" />
@@ -5114,7 +5101,6 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
     <ClCompile Include="wallmark_manager.cpp" />
-    <ClCompile Include="MPPlayersBag.cpp" />
     <ClCompile Include="searchlight.cpp" />
     <ClCompile Include="trade.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
@@ -5207,7 +5193,6 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="team_base_zone.cpp" />
     <ClCompile Include="TorridZone.cpp" />
     <ClCompile Include="ZoneVisual.cpp" />
     <ClCompile Include="space_restrictor.cpp">
@@ -5666,11 +5651,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="xrServer_perform_sls_default.cpp" />
-    <ClCompile Include="xrServer_perform_sls_save.cpp" />
-    <ClCompile Include="xrServer_process_event.cpp" />
     <ClCompile Include="xrServer_process_spawn.cpp" />
-    <ClCompile Include="xrServer_process_update.cpp" />
     <ClCompile Include="physics_game.cpp" />
     <ClCompile Include="PhysicsGamePars.cpp" />
     <ClCompile Include="PHShellCreator.cpp" />
@@ -6233,9 +6214,6 @@
     </ProjectReference>
     <ProjectReference Include="..\xrCore\xrCore.vcxproj">
       <Project>{a0f7d1fb-59a7-4717-a7e4-96f37e91998e}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\xrNetServer\xrNetServer.vcxproj">
-      <Project>{435bac9a-b225-457d-ab40-c9bd0cc8838c}</Project>
     </ProjectReference>
     <ProjectReference Include="..\xrParticles\xrParticles.vcxproj">
       <Project>{94a1c366-3d19-48e6-8170-4adc2e70df97}</Project>

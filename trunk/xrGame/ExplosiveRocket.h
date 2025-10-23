@@ -41,8 +41,6 @@ public:
 
 	virtual void Contact(const Fvector &pos, const Fvector &normal);
 
-	virtual void OnEvent (NET_Packet& P, u16 type) ;
-
 	virtual	void Hit	(SHit* pHDS)
 						{ inherited::Hit(pHDS); };
 

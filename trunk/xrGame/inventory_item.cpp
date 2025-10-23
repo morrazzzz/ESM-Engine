@@ -206,7 +206,7 @@ void CInventoryItem::OnH_B_Independent(bool just_before_destroy)
 
 void CInventoryItem::OnH_A_Independent()
 {
-	m_dwItemIndependencyTime	= Level().timeServer();
+	m_dwItemIndependencyTime	= Device.dwTimeGlobal;
 	m_eItemPlace				= eItemPlaceUndefined;	
 	inherited::OnH_A_Independent();
 }
@@ -236,10 +236,6 @@ void CInventoryItem::UpdateCL()
 
 #endif
 
-}
-
-void CInventoryItem::OnEvent (NET_Packet& P, u16 type)
-{
 }
 
 //процесс отсоединения вещи заключается в спауне новой вещи 
@@ -500,14 +496,6 @@ void CInventoryItem::modify_holder_params	(float &range, float &fov) const
 {
 	range		*= m_holder_range_modifier;
 	fov			*= m_holder_fov_modifier;
-}
-
-ALife::_TIME_ID	 CInventoryItem::TimePassedAfterIndependant()	const
-{
-	if(!object().H_Parent() && m_dwItemIndependencyTime != 0)
-		return Level().timeServer() - m_dwItemIndependencyTime;
-	else
-		return 0;
 }
 
 bool	CInventoryItem::CanTrade() const 

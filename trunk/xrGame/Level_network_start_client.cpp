@@ -10,8 +10,6 @@
 #include "PHCommander.h"
 #include "physics_game.h"
 
-extern	pureFrame*				g_pNetProcessor;
-
 #include "xrServer.h"
 
 bool CLevel::net_start_client1()
@@ -37,13 +35,6 @@ bool CLevel::net_start_client1()
 
 	VERIFY(physics_world());
 	physics_world()->set_step_time_callback((PhysicsStepTimeCallback*)&PhisStepsCallback);
-
-	// Send network to single or multithreaded mode
-	// *note: release version always has "mt_*" enabled
-	Device.seqFrameMT.Remove			(g_pNetProcessor);
-	Device.seqFrame.Remove				(g_pNetProcessor);
-	if (psDeviceFlags.test(mtNetwork))	Device.seqFrameMT.Add	(g_pNetProcessor,REG_PRIORITY_HIGH	+ 2);
-	else								Device.seqFrame.Add		(g_pNetProcessor,REG_PRIORITY_LOW	- 2);
 	
 	return true;
 }

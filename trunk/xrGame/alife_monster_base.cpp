@@ -10,11 +10,11 @@
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "alife_simulator.h"
 #include "xrServer.h"
+#include "NET_utils.h"
 #include "alife_monster_brain.h"
 #include "ai_space.h"
 #include "alife_object_registry.h"
 #include "alife_graph_registry.h"
-#include "xrServer.h"
 #include "alife_schedule_registry.h"
 
 void CSE_ALifeMonsterBase::on_spawn				()

@@ -104,12 +104,6 @@ void CInventoryItemObject::UpdateCL			()
 	CInventoryItem::UpdateCL			();
 }
 
-void CInventoryItemObject::OnEvent			(NET_Packet& P, u16 type)
-{
-	CPhysicItem::OnEvent				(P, type);
-	CInventoryItem::OnEvent				(P, type);
-}
-
 BOOL CInventoryItemObject::net_Spawn		(CSE_Abstract* DC)
 {
 	BOOL								res = CPhysicItem::net_Spawn(DC);

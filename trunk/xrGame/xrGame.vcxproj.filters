@@ -1321,24 +1321,6 @@
     <Filter Include="Core\Client\Objects\actor">
       <UniqueIdentifier>{8ed8bba3-e22f-412b-a8a3-2f835f014efd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\Client\Objects\actor\mp">
-      <UniqueIdentifier>{e0e6a9a1-cbe5-4057-a527-3d703d548ee8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Client\Objects\actor\mp\client">
-      <UniqueIdentifier>{670644b3-4c67-4641-8c06-086d7d724de1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Client\Objects\actor\mp\server">
-      <UniqueIdentifier>{8f355bee-9f7b-41bf-b41f-aca265f1e9ed}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Client\Objects\actor\mp\state">
-      <UniqueIdentifier>{409c9909-19ee-404d-8979-f5235e410355}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Client\Objects\actor\base">
-      <UniqueIdentifier>{f6e166c5-7fb6-4cba-9e05-5b51209625da}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Client\Objects\actor\base\memory">
-      <UniqueIdentifier>{fa1b6f0a-d17d-4379-aba9-380f12250cba}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core\Client\Objects\base">
       <UniqueIdentifier>{03d8e311-89f5-4f6b-a979-2cde65673f77}</UniqueIdentifier>
     </Filter>
@@ -1654,9 +1636,6 @@
     <Filter Include="Core\Client\Objects\items &amp; weapons\Explosives">
       <UniqueIdentifier>{6b0a32ff-cdf8-4e24-a266-ecd8354bda0e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\Client\Objects\items &amp; weapons\MPPlayersBag">
-      <UniqueIdentifier>{b5f84abe-559e-4b58-ba58-15b2fb286c5f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core\Client\Objects\searchlight">
       <UniqueIdentifier>{abec7753-bf77-4339-ad4e-46cc477de9c5}</UniqueIdentifier>
     </Filter>
@@ -1692,9 +1671,6 @@
     </Filter>
     <Filter Include="Core\Client\Objects\zones\ScriptZone">
       <UniqueIdentifier>{f35c51b8-ab0a-4f85-9f8c-0273a128e5ee}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Client\Objects\zones\TeamBaseZone">
-      <UniqueIdentifier>{663f5428-9af8-449f-b1da-50db1f6da7d7}</UniqueIdentifier>
     </Filter>
     <Filter Include="Core\Client\Objects\zones\TorridZone">
       <UniqueIdentifier>{718814fc-0d55-4fde-9174-4f197f9887f8}</UniqueIdentifier>
@@ -1845,9 +1821,6 @@
     </Filter>
     <Filter Include="Core\Server\ServerEntities\script_value_container">
       <UniqueIdentifier>{24e245f3-d8a8-4bb7-8a9f-5b43b1957187}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Server\ServerPerform">
-      <UniqueIdentifier>{0670de15-dfed-4ce2-be02-d7c05e7f9947}</UniqueIdentifier>
     </Filter>
     <Filter Include="Core\Server\ServerProcess">
       <UniqueIdentifier>{488ffe8b-c20a-408d-afa4-becdb16c2ae7}</UniqueIdentifier>
@@ -2091,6 +2064,12 @@
     </Filter>
     <Filter Include="ImGui">
       <UniqueIdentifier>{1825e7aa-c99f-4c82-8b8d-64dacb078899}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Client\Objects\actor\memory">
+      <UniqueIdentifier>{fa1b6f0a-d17d-4379-aba9-380f12250cba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{6e6a994f-85e2-46c0-b40e-80638062239c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -4569,38 +4548,8 @@
     <ClInclude Include="level_debug.h">
       <Filter>Core\Client\Level Debug</Filter>
     </ClInclude>
-    <ClInclude Include="actor_mp_server.h">
-      <Filter>Core\Client\Objects\actor\mp\server</Filter>
-    </ClInclude>
-    <ClInclude Include="actor_mp_state.h">
-      <Filter>Core\Client\Objects\actor\mp\state</Filter>
-    </ClInclude>
-    <ClInclude Include="actor_mp_state_inline.h">
-      <Filter>Core\Client\Objects\actor\mp\state</Filter>
-    </ClInclude>
-    <ClInclude Include="Actor.h">
-      <Filter>Core\Client\Objects\actor\base</Filter>
-    </ClInclude>
-    <ClInclude Include="actor_anim_defs.h">
-      <Filter>Core\Client\Objects\actor\base</Filter>
-    </ClInclude>
-    <ClInclude Include="actor_defs.h">
-      <Filter>Core\Client\Objects\actor\base</Filter>
-    </ClInclude>
-    <ClInclude Include="Actor_Flags.h">
-      <Filter>Core\Client\Objects\actor\base</Filter>
-    </ClInclude>
-    <ClInclude Include="actor_input_handler.h">
-      <Filter>Core\Client\Objects\actor\base</Filter>
-    </ClInclude>
-    <ClInclude Include="ActorAnimation.h">
-      <Filter>Core\Client\Objects\actor\base</Filter>
-    </ClInclude>
-    <ClInclude Include="ActorCondition.h">
-      <Filter>Core\Client\Objects\actor\base</Filter>
-    </ClInclude>
     <ClInclude Include="actor_memory.h">
-      <Filter>Core\Client\Objects\actor\base\memory</Filter>
+      <Filter>Core\Client\Objects\actor\memory</Filter>
     </ClInclude>
     <ClInclude Include="Entity.h">
       <Filter>Core\Client\Objects\base\Entity</Filter>
@@ -5076,9 +5025,6 @@
     <ClInclude Include="wallmark_manager.h">
       <Filter>Core\Client\Objects\items &amp; weapons\Explosives</Filter>
     </ClInclude>
-    <ClInclude Include="MPPlayersBag.h">
-      <Filter>Core\Client\Objects\items &amp; weapons\MPPlayersBag</Filter>
-    </ClInclude>
     <ClInclude Include="searchlight.h">
       <Filter>Core\Client\Objects\searchlight</Filter>
     </ClInclude>
@@ -5108,9 +5054,6 @@
     </ClInclude>
     <ClInclude Include="script_zone.h">
       <Filter>Core\Client\Objects\zones\ScriptZone</Filter>
-    </ClInclude>
-    <ClInclude Include="team_base_zone.h">
-      <Filter>Core\Client\Objects\zones\TeamBaseZone</Filter>
     </ClInclude>
     <ClInclude Include="TorridZone.h">
       <Filter>Core\Client\Objects\zones\TorridZone</Filter>
@@ -5174,9 +5117,6 @@
     </ClInclude>
     <ClInclude Include="date_time.h">
       <Filter>Core\Common\DateTime</Filter>
-    </ClInclude>
-    <ClInclude Include="NET_Queue.h">
-      <Filter>Core\Common\NET Shared</Filter>
     </ClInclude>
     <ClInclude Include="xrMessages.h">
       <Filter>Core\Common\NET Shared</Filter>
@@ -5894,6 +5834,30 @@
     </ClInclude>
     <ClInclude Include="ImguiManager.h">
       <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Actor.h">
+      <Filter>Core\Client\Objects\actor</Filter>
+    </ClInclude>
+    <ClInclude Include="actor_anim_defs.h">
+      <Filter>Core\Client\Objects\actor</Filter>
+    </ClInclude>
+    <ClInclude Include="actor_defs.h">
+      <Filter>Core\Client\Objects\actor</Filter>
+    </ClInclude>
+    <ClInclude Include="Actor_Flags.h">
+      <Filter>Core\Client\Objects\actor</Filter>
+    </ClInclude>
+    <ClInclude Include="actor_input_handler.h">
+      <Filter>Core\Client\Objects\actor</Filter>
+    </ClInclude>
+    <ClInclude Include="ActorAnimation.h">
+      <Filter>Core\Client\Objects\actor</Filter>
+    </ClInclude>
+    <ClInclude Include="ActorCondition.h">
+      <Filter>Core\Client\Objects\actor</Filter>
+    </ClInclude>
+    <ClInclude Include="NET_utils.h">
+      <Filter>Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -7175,9 +7139,6 @@
     <ClCompile Include="Level_network.cpp">
       <Filter>Core\Client\Level</Filter>
     </ClCompile>
-    <ClCompile Include="Level_network_messages.cpp">
-      <Filter>Core\Client\Level</Filter>
-    </ClCompile>
     <ClCompile Include="Level_network_spawn.cpp">
       <Filter>Core\Client\Level</Filter>
     </ClCompile>
@@ -7232,71 +7193,8 @@
     <ClCompile Include="level_debug.cpp">
       <Filter>Core\Client\Level Debug</Filter>
     </ClCompile>
-    <ClCompile Include="actor_mp_client_export.cpp">
-      <Filter>Core\Client\Objects\actor\mp\client</Filter>
-    </ClCompile>
-    <ClCompile Include="actor_mp_client_import.cpp">
-      <Filter>Core\Client\Objects\actor\mp\client</Filter>
-    </ClCompile>
-    <ClCompile Include="actor_mp_server.cpp">
-      <Filter>Core\Client\Objects\actor\mp\server</Filter>
-    </ClCompile>
-    <ClCompile Include="actor_mp_server_export.cpp">
-      <Filter>Core\Client\Objects\actor\mp\server</Filter>
-    </ClCompile>
-    <ClCompile Include="actor_mp_server_import.cpp">
-      <Filter>Core\Client\Objects\actor\mp\server</Filter>
-    </ClCompile>
-    <ClCompile Include="actor_mp_state.cpp">
-      <Filter>Core\Client\Objects\actor\mp\state</Filter>
-    </ClCompile>
-    <ClCompile Include="Actor.cpp">
-      <Filter>Core\Client\Objects\actor\base</Filter>
-    </ClCompile>
-    <ClCompile Include="actor_communication.cpp">
-      <Filter>Core\Client\Objects\actor\base</Filter>
-    </ClCompile>
-    <ClCompile Include="Actor_Events.cpp">
-      <Filter>Core\Client\Objects\actor\base</Filter>
-    </ClCompile>
-    <ClCompile Include="Actor_Feel.cpp">
-      <Filter>Core\Client\Objects\actor\base</Filter>
-    </ClCompile>
-    <ClCompile Include="actor_input_handler.cpp">
-      <Filter>Core\Client\Objects\actor\base</Filter>
-    </ClCompile>
-    <ClCompile Include="Actor_Movement.cpp">
-      <Filter>Core\Client\Objects\actor\base</Filter>
-    </ClCompile>
-    <ClCompile Include="Actor_Network.cpp">
-      <Filter>Core\Client\Objects\actor\base</Filter>
-    </ClCompile>
-    <ClCompile Include="Actor_Sleep.cpp">
-      <Filter>Core\Client\Objects\actor\base</Filter>
-    </ClCompile>
-    <ClCompile Include="Actor_Weapon.cpp">
-      <Filter>Core\Client\Objects\actor\base</Filter>
-    </ClCompile>
-    <ClCompile Include="ActorAnimation.cpp">
-      <Filter>Core\Client\Objects\actor\base</Filter>
-    </ClCompile>
-    <ClCompile Include="ActorCameras.cpp">
-      <Filter>Core\Client\Objects\actor\base</Filter>
-    </ClCompile>
-    <ClCompile Include="ActorCondition.cpp">
-      <Filter>Core\Client\Objects\actor\base</Filter>
-    </ClCompile>
-    <ClCompile Include="ActorInput.cpp">
-      <Filter>Core\Client\Objects\actor\base</Filter>
-    </ClCompile>
-    <ClCompile Include="ActorMountedWeapon.cpp">
-      <Filter>Core\Client\Objects\actor\base</Filter>
-    </ClCompile>
-    <ClCompile Include="ActorVehicle.cpp">
-      <Filter>Core\Client\Objects\actor\base</Filter>
-    </ClCompile>
     <ClCompile Include="actor_memory.cpp">
-      <Filter>Core\Client\Objects\actor\base\memory</Filter>
+      <Filter>Core\Client\Objects\actor\memory</Filter>
     </ClCompile>
     <ClCompile Include="Entity.cpp">
       <Filter>Core\Client\Objects\base\Entity</Filter>
@@ -7736,9 +7634,6 @@
     <ClCompile Include="wallmark_manager.cpp">
       <Filter>Core\Client\Objects\items &amp; weapons\Explosives</Filter>
     </ClCompile>
-    <ClCompile Include="MPPlayersBag.cpp">
-      <Filter>Core\Client\Objects\items &amp; weapons\MPPlayersBag</Filter>
-    </ClCompile>
     <ClCompile Include="searchlight.cpp">
       <Filter>Core\Client\Objects\searchlight</Filter>
     </ClCompile>
@@ -7780,9 +7675,6 @@
     </ClCompile>
     <ClCompile Include="script_zone_script.cpp">
       <Filter>Core\Client\Objects\zones\ScriptZone</Filter>
-    </ClCompile>
-    <ClCompile Include="team_base_zone.cpp">
-      <Filter>Core\Client\Objects\zones\TeamBaseZone</Filter>
     </ClCompile>
     <ClCompile Include="TorridZone.cpp">
       <Filter>Core\Client\Objects\zones\TorridZone</Filter>
@@ -7997,19 +7889,7 @@
     <ClCompile Include="xrServer_Objects_ALife_Monsters_script4.cpp">
       <Filter>Core\Server\ServerEntities\objects_alife_monsters</Filter>
     </ClCompile>
-    <ClCompile Include="xrServer_perform_sls_default.cpp">
-      <Filter>Core\Server\ServerPerform</Filter>
-    </ClCompile>
-    <ClCompile Include="xrServer_perform_sls_save.cpp">
-      <Filter>Core\Server\ServerPerform</Filter>
-    </ClCompile>
-    <ClCompile Include="xrServer_process_event.cpp">
-      <Filter>Core\Server\ServerProcess</Filter>
-    </ClCompile>
     <ClCompile Include="xrServer_process_spawn.cpp">
-      <Filter>Core\Server\ServerProcess</Filter>
-    </ClCompile>
-    <ClCompile Include="xrServer_process_update.cpp">
       <Filter>Core\Server\ServerProcess</Filter>
     </ClCompile>
     <ClCompile Include="PHMovementControl.cpp">
@@ -8578,6 +8458,48 @@
     </ClCompile>
     <ClCompile Include="ImguiManagerHelper.cpp">
       <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Actor.cpp">
+      <Filter>Core\Client\Objects\actor</Filter>
+    </ClCompile>
+    <ClCompile Include="actor_communication.cpp">
+      <Filter>Core\Client\Objects\actor</Filter>
+    </ClCompile>
+    <ClCompile Include="Actor_Feel.cpp">
+      <Filter>Core\Client\Objects\actor</Filter>
+    </ClCompile>
+    <ClCompile Include="actor_input_handler.cpp">
+      <Filter>Core\Client\Objects\actor</Filter>
+    </ClCompile>
+    <ClCompile Include="Actor_Movement.cpp">
+      <Filter>Core\Client\Objects\actor</Filter>
+    </ClCompile>
+    <ClCompile Include="Actor_Network.cpp">
+      <Filter>Core\Client\Objects\actor</Filter>
+    </ClCompile>
+    <ClCompile Include="Actor_Sleep.cpp">
+      <Filter>Core\Client\Objects\actor</Filter>
+    </ClCompile>
+    <ClCompile Include="Actor_Weapon.cpp">
+      <Filter>Core\Client\Objects\actor</Filter>
+    </ClCompile>
+    <ClCompile Include="ActorAnimation.cpp">
+      <Filter>Core\Client\Objects\actor</Filter>
+    </ClCompile>
+    <ClCompile Include="ActorCameras.cpp">
+      <Filter>Core\Client\Objects\actor</Filter>
+    </ClCompile>
+    <ClCompile Include="ActorCondition.cpp">
+      <Filter>Core\Client\Objects\actor</Filter>
+    </ClCompile>
+    <ClCompile Include="ActorInput.cpp">
+      <Filter>Core\Client\Objects\actor</Filter>
+    </ClCompile>
+    <ClCompile Include="ActorMountedWeapon.cpp">
+      <Filter>Core\Client\Objects\actor</Filter>
+    </ClCompile>
+    <ClCompile Include="ActorVehicle.cpp">
+      <Filter>Core\Client\Objects\actor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

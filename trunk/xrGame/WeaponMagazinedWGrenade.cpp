@@ -233,11 +233,6 @@ void CWeaponMagazinedWGrenade::state_Fire(float dt)
 		inherited::state_Fire(dt);
 }
 
-void CWeaponMagazinedWGrenade::OnEvent(NET_Packet& P, u16 type)
-{
-	inherited::OnEvent(P, type);
-}
-
 void CWeaponMagazinedWGrenade::ObjectTakeItem(CGameObject* object)
 {
 	CRocketLauncher::AttachRocket(object, this);

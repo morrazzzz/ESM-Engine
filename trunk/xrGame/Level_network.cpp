@@ -4,7 +4,6 @@
 #include "xrserver.h"
 #include "xrmessages.h"
 #include "PHCommander.h"
-#include "net_queue.h"
 #include "MainMenu.h"
 #include "space_restriction_manager.h"
 #include "ai_space.h"
@@ -28,7 +27,6 @@ void CLevel::remove_objects	()
 		// ugly hack for checks that update is twice on frame
 		// we need it since we do updates for checking network messages
 		++(Device.dwFrame);
-		ClientReceive			();
 		Sleep					(100);
 	}
 
@@ -113,23 +111,3 @@ void CLevel::Send(NET_Packet& P)
 	// optimize the case when server located in our memory
 	Server->OnMessage(P);
 }
-
-void CLevel::net_Update	()
-{
-	// If server - perform server-update
-	if (Server)	{
-		Device.Statistic->netServer.Begin();
-		Server->Update					();
-		Device.Statistic->netServer.End	();
-	}
-}
-
-struct _NetworkProcessor	: public pureFrame
-{
-	virtual void OnFrame	( )
-	{
-		if (g_pGameLevel && !Device.Paused() )	g_pGameLevel->net_Update();
-	}
-}	NET_processor;
-
-pureFrame*	g_pNetProcessor	= &NET_processor;

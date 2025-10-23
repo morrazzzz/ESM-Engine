@@ -240,7 +240,7 @@ void CCustomMonster::shedule_Update(u32 DT)
 	VERIFY(!g_Alive() || processing_enabled());
 	// Queue shrink
 	VERIFY(_valid(Position()));
-	u32	dwTimeCL = Level().timeServer() - NET_Latency;
+	u32	dwTimeCL = Device.dwTimeGlobal - NET_Latency;
 	VERIFY(!NET.empty());
 	while ((NET.size() > 2) && (NET[1].dwTimeStamp < dwTimeCL)) NET.pop_front();
 
@@ -285,7 +285,7 @@ void CCustomMonster::shedule_Update(u32 DT)
 	// Look and action streams
 
 	net_update				uNext;
-	uNext.dwTimeStamp = Level().timeServer();
+	uNext.dwTimeStamp = Device.dwTimeGlobal;
 	uNext.o_model = movement().m_body.current.yaw;
 	uNext.o_torso = movement().m_body.current;
 	uNext.p_pos = Position();
@@ -346,7 +346,7 @@ void CCustomMonster::UpdateCL	()
 	m_dwCurrentTime		= Device.dwTimeGlobal;
 
 	// distinguish interpolation/extrapolation
-	u32	dwTime			= Level().timeServer()-NET_Latency;
+	u32	dwTime			= Device.dwTimeGlobal -NET_Latency;
 	net_update&	N		= NET.back();
 	if ((dwTime > N.dwTimeStamp) || (NET.size() < 2)) {
 		// BAD.	extrapolation
@@ -502,7 +502,7 @@ void CCustomMonster::eye_pp_s2				( )
 {
 	// Tracing
 	Device.Statistic->AI_Vis_RayTests.Begin	();
-	u32 dwTime			= Level().timeServer();
+	u32 dwTime			= Device.dwTimeGlobal;
 	u32 dwDT			= dwTime-eye_pp_timestamp;
 	eye_pp_timestamp	= dwTime;
 	feel_vision_update						(this,eye_matrix.c,float(dwDT)/1000.f,memory().visual().transparency_threshold());
@@ -607,7 +607,7 @@ BOOL CCustomMonster::net_Spawn	(CSE_Abstract* DC)
 	// weapons
 	if (Local()) {
 		net_update				N;
-		N.dwTimeStamp			= Level().timeServer()-NET_Latency;
+		N.dwTimeStamp			= Device.dwTimeGlobal - NET_Latency;
 		N.o_model				= -E->o_torso.yaw;
 		N.o_torso.yaw			= -E->o_torso.yaw;
 		N.o_torso.pitch			= 0;
@@ -633,11 +633,6 @@ void			CCustomMonster::Hit					(SHit* pHDS)
 {
 	if (!invulnerable())
 		inherited::Hit		(pHDS);
-}
-
-void CCustomMonster::OnEvent(NET_Packet& P, u16 type)
-{
-	inherited::OnEvent		(P,type);
 }
 
 void CCustomMonster::net_Destroy()

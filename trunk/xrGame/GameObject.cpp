@@ -16,7 +16,7 @@
 #include "ai_debug.h"
 #include "../xr_3da/igame_level.h"
 #include "level.h"
-#include "../../xrNetServer/net_utils.h"
+#include "net_utils.h"
 #include "script_callback_ex.h"
 #include "game_level_cross_table.h"
 #include "animation_movement_controller.h"
@@ -38,7 +38,6 @@ CGameObject::CGameObject		()
 	//-----------------------------------------
 	m_spawn_time				= 0;
 	m_ai_location				= !g_dedicated_server ? xr_new<CAI_ObjectLocation>() : 0;
-	m_server_flags.one			();
 
 	m_callbacks					= xr_new<CALLBACK_MAP>();
 	m_anim_mov_ctrl				= 0;
@@ -122,10 +121,6 @@ void CGameObject::net_Destroy	()
 	m_spawned								= false;
 }
 
-void CGameObject::OnEvent		(NET_Packet& P, u16 type)
-{
-}
-
 void VisualCallback(IKinematics *tpKinematics);
 
 BOOL CGameObject::net_Spawn		(CSE_Abstract*	DC)
@@ -180,9 +175,7 @@ BOOL CGameObject::net_Spawn		(CSE_Abstract*	DC)
 	if (!E->ObjectCustomSpawn)
 		g_pGameLevel->Objects.net_Register(this);
 
-	m_server_flags.one				();
 	if (O) {
-		m_server_flags					= O->m_flags;
 		if (O->m_flags.is(CSE_ALifeObject::flVisibleForAI))
 			spatial.type				|= STYPE_VISIBLEFORAI;
 		else
@@ -527,7 +520,6 @@ CObject::SavedPosition CGameObject::ps_Element(u32 ID) const
 {
 	VERIFY(ID<ps_Size());
 	inherited::SavedPosition	SP	=	PositionStack[ID];
-	SP.dwTime					+=	Level().timeServer_Delta();
 	return SP;
 }
 
@@ -566,12 +558,14 @@ void CGameObject::OnRender()
 
 BOOL CGameObject::UsedAI_Locations()
 {
-	return					(m_server_flags.test(CSE_ALifeObject::flUsedAI_Locations));
+	return checkFlag(CSE_ALifeObject::flUsedAI_Locations);
 }
 
-BOOL CGameObject::TestServerFlag(u32 Flag) const
+bool CGameObject::checkFlag(u32 Flag) const
 {
-	return					(m_server_flags.test(Flag));
+	CSE_ALifeObject* objectCSEALife = GetCSEObject()->cast_alife_object();
+	R_ASSERT(objectCSEALife);
+	return objectCSEALife->m_flags.test(Flag);
 }
 
 void CGameObject::add_visual_callback		(visual_callback *callback)

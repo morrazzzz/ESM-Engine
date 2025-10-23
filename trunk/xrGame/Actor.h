@@ -101,8 +101,6 @@ public:
 
 	virtual void						shedule_Update		( u32 T ); 
 	virtual void						UpdateCL			( );
-	
-	virtual void						OnEvent				( NET_Packet& P, u16 type		);
 
 	void ObjectTakeItem(CGameObject* object) override;
 	void ObjectRejectItem(CGameObject* object, bool just_before_destroy = false) override;
@@ -190,10 +188,6 @@ public:
 	virtual float						GetMass				() ;
 	virtual float						Radius				() const;
 	virtual void						g_PerformDrop		();
-
-	virtual ALife::_TIME_ID				TimePassedAfterDeath() const;
-
-
 public:
 	//сон
 //			void		UpdateSleep			();

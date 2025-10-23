@@ -13,7 +13,7 @@
 #include "..\Include\xrRender\RenderVisual.h"
 #include "..\include\xrRender\KinematicsAnimated.h"
 #include "ai/stalker/ai_stalker.h"
-#include "../../xrNetServer/net_utils.h"
+#include "net_utils.h"
 
 using namespace luabind;
 

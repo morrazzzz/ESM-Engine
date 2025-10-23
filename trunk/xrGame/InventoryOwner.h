@@ -45,7 +45,6 @@ public:
 	virtual void		Load					(LPCSTR section);
 	virtual void		reinit					();
 	virtual void		reload					(LPCSTR section);
-	virtual void		OnEvent					(NET_Packet& P, u16 type);
 
 	//serialization
 	virtual void	save						(NET_Packet &output_packet);

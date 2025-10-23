@@ -14,11 +14,6 @@ CInventoryBox::CInventoryBox()
 	InventoryBoxAllWeight = 0.0f;
 }
 
-void CInventoryBox::OnEvent(NET_Packet& P, u16 type)
-{
-	inherited::OnEvent	(P, type);
-}
-
 void CInventoryBox::ObjectTakeItem(CGameObject* object)
 {
 	R_ASSERT(object);

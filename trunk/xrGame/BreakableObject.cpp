@@ -4,7 +4,7 @@
 #include "../xrPhysics/IPHStaticGeomShell.h"
 #include "../xrPhysics/PhysicsShell.h"
 #include "../xr_3da/xr_collide_form.h"
-#include "../../xrNetServer/net_utils.h"
+#include "net_utils.h"
 #include "clsid_game.h"
 #include "../include/xrRender/Kinematics.h"
 

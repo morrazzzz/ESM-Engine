@@ -3,7 +3,7 @@
 
 #include "../../../ai_object_location.h"
 #include "../../../game_graph.h"
-#include "../../../../xrNetServer/net_utils.h"
+#include "../../../net_utils.h"
 #include "ai_space.h"
 #include "../../../CharacterPhysicsSupport.h"
 #include "xrServer_Objects_ALife_Monsters.h"
@@ -18,7 +18,7 @@ void CBaseMonster::SaveCSEObj(CSE_Abstract* data, bool needSaveAll)
 	CSE_ALifeMonsterAbstract* this_object = data->cast_monster_abstract();
 
 	this_object->fHealth = GetfHealth();
-	this_object->timestamp = Level().timeServer();
+	this_object->timestamp = Device.dwTimeGlobal;
 	R_ASSERT(!NET.empty());
 	net_update& N = NET.back();
 
