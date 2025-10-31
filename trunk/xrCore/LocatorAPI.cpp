@@ -858,8 +858,17 @@ int CLocatorAPI::file_list(FS_FileSet& dest, LPCSTR path, u32 flags, LPCSTR mask
 				if (!bOK)			continue;
 			}
 			xr_string fn			= entry_begin;
+
 			// insert file entry
-			if (flags&FS_ClampExt)fn= EFS.ChangeFileExt(fn,"");
+			if (flags & FS_ClampExt)
+			{
+				LPSTR src_ext = strext(fn.c_str());
+				if (src_ext) {
+					size_t ext_pos = src_ext - fn.c_str();
+					fn.assign(fn, 0, ext_pos);
+				}
+			}
+
 			u32 fl = (entry.vfs!=0xffffffff?FS_File::flVFS:0);
 			dest.insert(FS_File(fn,entry.size_real,entry.modif,fl));
 		} else {

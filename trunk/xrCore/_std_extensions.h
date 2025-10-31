@@ -29,37 +29,6 @@
 #undef max
 #endif
 
-#ifdef  _EDITOR
-IC void strcpy_s(char* strDestination,   size_t sizeInBytes,   const char *strSource)
-{
-	strcpy(strDestination, strSource);
-}
-
-IC void strcpy_s(char* strDestination,   const char *strSource)
-{
-	strcpy(strDestination, strSource);
-}
-
-IC void _strlwr_s(char* strDestination, size_t sizeInBytes)
-{
-    strlwr(strDestination);
-}
-
-IC void strcat_s(char* strDestination,   size_t sizeInBytes,   const char *strSource)
-{
-	strcat(strDestination, strSource);
-}
-
-IC int sprintf_s(char* dest, size_t sizeOfBuffer, const char* format, ...)
-{
-	va_list 	mark;
-	va_start	(mark, format );
-	int sz		= _vsnprintf(dest, sizeOfBuffer, format, mark );
-    dest		[sizeOfBuffer-1]=0;
-    va_end		(mark);
-}
-#endif
-
 // token type definition
 struct XRCORE_API xr_token
 {

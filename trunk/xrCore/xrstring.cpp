@@ -12,9 +12,6 @@ str_value*	str_container::dock		(str_c value)
 	if (0==value)				return 0;
 
 	cs.Enter					();
-#ifdef DEBUG_MEMORY_MANAGER
-	Memory.stat_strdock			++	;
-#endif // DEBUG_MEMORY_MANAGER
 
 	str_value*	result			= 0	;
 

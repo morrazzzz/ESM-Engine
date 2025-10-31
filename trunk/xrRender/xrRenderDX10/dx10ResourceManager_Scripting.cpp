@@ -34,12 +34,6 @@ void terminate ()
 
 using namespace				luabind;
 
-#ifdef	DEBUG
-#define MDB	Memory.dbg_check()
-#else
-#define MDB
-#endif
-
 class	adopt_dx10options
 {
 public:
@@ -143,7 +137,6 @@ public:
 
 void LuaLog(LPCSTR caMessage)
 {
-	MDB;	
 	Lua::LuaOut	(Lua::eLuaMessageTypeMessage,"%s",caMessage);
 }
 void LuaError(lua_State* L)
@@ -151,39 +144,20 @@ void LuaError(lua_State* L)
 	Debug.fatal(DEBUG_INFO,"LUA error: %s",lua_tostring(L,-1));
 }
 
-#ifndef PURE_ALLOC
-#	ifndef USE_MEMORY_MONITOR
-#		define USE_DL_ALLOCATOR
-#	endif // USE_MEMORY_MONITOR
-#endif // PURE_ALLOC
-
-#ifndef USE_DL_ALLOCATOR
-	static void *lua_alloc_xr	(void *ud, void *ptr, size_t osize, size_t nsize) {
+static void* lua_alloc_xr(void* ud, void* ptr, size_t osize, size_t nsize) {
 	(void)ud;
 	(void)osize;
 	if (nsize == 0) {
-		xr_free	(ptr);
+		xr_free(ptr);
 		return	NULL;
 	}
 	else
 #	ifdef DEBUG_MEMORY_NAME
-		return Memory.mem_realloc		(ptr, nsize, "LUA:Render");
+		return Memory.mem_realloc(ptr, nsize, "LUA:Render");
 #	else // DEBUG_MEMORY_MANAGER
-		return Memory.mem_realloc		(ptr, nsize);
+		return Memory.mem_realloc(ptr, nsize);
 #	endif // DEBUG_MEMORY_MANAGER
-	}
-#else // USE_DL_ALLOCATOR
-#include "doug_lea_memory_allocator.h"
-#include <Luabind/luabind/luabind_memory.h>
-#include <Luabind/luabind/luabind_delete.h>
-
-	static void *lua_alloc_dl	(void *ud, void *ptr, size_t osize, size_t nsize) {
-	(void)ud;
-	(void)osize;
-	if (nsize == 0)	{	dlfree			(ptr);	 return	NULL;  }
-	else				return dlrealloc	(ptr, nsize);
-	}
-#endif // USE_DL_ALLOCATOR
+}
 
 using namespace luabind;
 
@@ -219,11 +193,8 @@ void	CResourceManager::LS_Load			()
 	luabind::allocator = &luabind_allocator; //Àëëîêàòîð èíèòèòñÿ òîëüêî çäåñü è òîëüêî îäèí ðàç!
 	luabind::allocator_parameter = nullptr;
 
-#ifndef USE_DL_ALLOCATOR
 	LSVM			= lua_newstate(lua_alloc_xr, NULL);
-#else // USE_XR_ALLOCAOR
-	LSVM			= lua_newstate(lua_alloc_dl, NULL);
-#endif // USE_XR_ALLOCAOR
+
 	if (!LSVM)		{
 		Msg			("! ERROR : Cannot initialize LUA VM!");
 		return;

@@ -8,9 +8,6 @@ class xrMemory;
 
 class	MEMPOOL
 {
-#ifdef DEBUG_MEMORY_MANAGER
-	friend class xrMemory;
-#endif // DEBUG_MEMORY_MANAGER
 private:
 	xrCriticalSection	cs;
 	u32					s_sector;		// large-memory sector size

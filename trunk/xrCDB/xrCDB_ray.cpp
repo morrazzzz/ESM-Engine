@@ -186,7 +186,7 @@ public:
 		ray.fwd_dir.set	(D);
 		rRange			= R;
 		rRange2			= R*R;
-		if (~CPU::ID.feature & _CPU_FEATURE_SSE)	
+		if (!cpuID.SupportSSE())	
 		{
 			// for FPU - zero out inf
 			if (_abs(D.x)>flt_eps){}	else ray.inv_dir.x=0;
@@ -309,7 +309,7 @@ public:
 	void _stab(const AABBNoLeafNode* node, COLLIDER* collide, bool culling, bool first, bool nearest)
 	{
 		// Actual ray/aabb test
-		if (CPU::ID.feature & _CPU_FEATURE_SSE)			
+		if (cpuID.SupportSSE())			
 		{
 			// use SSE
 			float		d;

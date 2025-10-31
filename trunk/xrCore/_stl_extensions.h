@@ -1,61 +1,10 @@
-#ifndef _STL_EXT_internal
-#define _STL_EXT_internal
+#pragma once
 
 using std::swap;
 
 #include <type_traits>
 
-#ifdef	__BORLANDC__
-#define M_NOSTDCONTAINERS_EXT
-#endif
-#ifdef	_M_AMD64
-#define M_DONTDEFERCLEAR_EXT
-#endif
-
 #define	M_DONTDEFERCLEAR_EXT		//. for mem-debug only
-
-//--------	
-#ifdef	M_NOSTDCONTAINERS_EXT
-
-#define xr_list std::list
-#define xr_deque std::deque
-#define xr_stack std::stack
-#define xr_set std::set
-#define xr_multiset std::multiset
-#define xr_map std::map
-#define xr_hash_map std::hash_map
-#define xr_multimap std::multimap
-#define xr_string std::string
-
-template <class T>
-class xr_vector	: public std::vector<T> {
-public: 
-	typedef	size_t		size_type;
-	typedef T&			reference;
-	typedef const T&	const_reference;
-public: 
-			xr_vector			()								: std::vector<T>	()				{}
-			xr_vector			(size_t _count, const T& _value): std::vector<T>	(_count,_value)	{}
-	explicit xr_vector			(size_t _count)					: std::vector<T> 	(_count)		{}
-	void	clear				()								{ erase(begin(),end());				} 
-	void	clear_and_free		()								{ std::vector<T>::clear();			}
-	void	clear_not_free		()								{ erase(begin(),end());	}
-	ICF		const_reference	operator[]	(size_type _Pos) const	{ {VERIFY(_Pos<size());} return (*(begin() + _Pos)); }
-	ICF		reference		operator[]	(size_type _Pos)		{ {VERIFY(_Pos<size());} return (*(begin() + _Pos)); }
-};
-
-template	<>												
-class	xr_vector<bool>	: public std::vector<bool>{ 
-	typedef	bool		T;
-public: 
-			xr_vector<T>		()								: std::vector<T>	()				{}
-			xr_vector<T>		(size_t _count, const T& _value): std::vector<T>	(_count,_value)	{}
-	explicit xr_vector<T>		(size_t _count)					: std::vector<T>	(_count)		{}
-	u32		size() const										{ return (u32)std::vector<T>::size();	} 
-	void	clear()												{ erase(begin(),end());				} 
-};
-
-#else
 
 template <class T>
 class	xalloc	{
@@ -183,35 +132,67 @@ public:
 	typedef typename allocator_type::size_type				size_type;
 
 	//explicit			stack(const allocator_type& _Al = allocator_type()) : c(_Al) {}
-	allocator_type		get_allocator	() const							{return (c.get_allocator()); }
-	bool				empty			() const							{return (c.empty()); }
-	u32					size			() const							{return c.size(); } 
-	value_type&			top				()									{return (c.back()); }
-	const value_type&	top				() const							{return (c.back()); }
-	void				push			(const value_type& _X)				{c.push_back(_X); }
-	void				pop				()									{c.pop_back(); }
-	bool				operator==		(const xr_stack<_Ty, _C>& _X) const	{return (c == _X.c); }
-	bool				operator!=		(const xr_stack<_Ty, _C>& _X) const	{return (!(*this == _X)); }
-	bool				operator<		(const xr_stack<_Ty, _C>& _X) const	{return (c < _X.c); }
-	bool				operator>		(const xr_stack<_Ty, _C>& _X) const	{return (_X < *this); }
-	bool				operator<=		(const xr_stack<_Ty, _C>& _X) const	{return (!(_X < *this)); }
-	bool				operator>=		(const xr_stack<_Ty, _C>& _X) const	{return (!(*this < _X)); }
+	allocator_type		get_allocator() const { return (c.get_allocator()); }
+	bool				empty() const { return (c.empty()); }
+	u32					size() const { return c.size(); }
+	value_type& top() { return (c.back()); }
+	const value_type& top() const { return (c.back()); }
+	void				push(const value_type& _X) { c.push_back(_X); }
+	void				pop() { c.pop_back(); }
+	bool				operator==		(const xr_stack<_Ty, _C>& _X) const { return (c == _X.c); }
+	bool				operator!=		(const xr_stack<_Ty, _C>& _X) const { return (!(*this == _X)); }
+	bool				operator<		(const xr_stack<_Ty, _C>& _X) const { return (c < _X.c); }
+	bool				operator>		(const xr_stack<_Ty, _C>& _X) const { return (_X < *this); }
+	bool				operator<=		(const xr_stack<_Ty, _C>& _X) const { return (!(_X < *this)); }
+	bool				operator>=		(const xr_stack<_Ty, _C>& _X) const { return (!(*this < _X)); }
 
 protected:
 	_C c;
 };
 
-template	<typename T, typename allocator = xalloc<T> >									class	xr_list 		: public std::list<T,allocator>			{ public: u32 size() const {return (u32)__super::size(); } };
-template	<typename K, class P=std::less<K>, typename allocator = xalloc<K> >				class	xr_set			: public std::set<K,P,allocator>		{ public: u32 size() const {return (u32)__super::size(); } };
-template	<typename K, class P=std::less<K>, typename allocator = xalloc<K> >				class	xr_multiset		: public std::multiset<K,P,allocator>	{ public: u32 size() const {return (u32)__super::size(); } };
-template	<typename K, class V, class P=std::less<K>,  typename allocator = xalloc<std::pair<const K,V> > >	class	xr_map 			: public std::map<K,V,P,allocator>		{ public: u32 size() const {return (u32)__super::size(); } };
-template	<typename K, class V, class P=std::less<K>, typename allocator = xalloc<std::pair<const K,V> > >	class	xr_multimap		: public std::multimap<K,V,P,allocator>	{ public: u32 size() const {return (u32)__super::size(); } };
+template <typename T, typename Allocator = xalloc<T>>
+class xr_list: public std::list<T, Allocator>
+{
+public: 
+	u32 size() const { return (u32)__super::size(); }
+};
+
+template <typename K, class P = std::less<K>, typename Allocator = xalloc<K>>
+class xr_set: public std::set<K, P, Allocator>
+{ 
+public:
+	u32 size() const { return (u32)__super::size(); } 
+};
+
+template <typename K, class P = std::less<K>, typename Allocator = xalloc<K>>
+class xr_multiset: public std::multiset<K, P, Allocator>
+{
+public: 
+	u32 size() const { return (u32)__super::size(); } 
+};
+
+template <typename K, class V, class P = std::less<K>, typename Allocator = xalloc<std::pair<const K, V>>>
+class xr_map: public std::map<K, V, P, Allocator>
+{
+public:
+	u32 size() const { return (u32)__super::size(); }
+};
+
+template <typename K, class V, class P = std::less<K>, typename Allocator = xalloc<std::pair<const K, V>>>
+class xr_multimap: public std::multimap<K, V, P, Allocator>
+{
+public: 
+	u32 size() const { return (u32)__super::size(); }
+};
 
 template <typename K, class V, class Hasher = std::hash<K>, class Traits = std::equal_to<K>,
-          typename allocator = xalloc<std::pair<const K, V>>>
-using xr_unordered_map = std::unordered_map<K, V, Hasher, Traits, allocator>;
+          typename Allocator = xalloc<std::pair<const K, V>>>
+using xr_unordered_map = std::unordered_map<K, V, Hasher, Traits, Allocator>;
 
-#endif
+
+template <typename K, class Hasher = std::hash<K>, class Traits = std::equal_to<K>,
+	typename Allocator = xalloc<K>>
+using xr_unordered_set = std::unordered_set<K, Hasher, Traits, Allocator>;
 
 #define mk_pair std::make_pair
 
@@ -275,10 +256,3 @@ DEFINE_VECTOR(float,FloatVec,FloatIt);
 DEFINE_VECTOR(float*,LPFloatVec,LPFloatIt);
 DEFINE_VECTOR(int,IntVec,IntIt);
 DEFINE_VECTOR(int*,LPIntVec,LPIntIt);
-
-#ifdef __BORLANDC__
-DEFINE_VECTOR(AnsiString,AStringVec,AStringIt);
-DEFINE_VECTOR(AnsiString*,LPAStringVec,LPAStringIt);
-#endif
-
-#endif

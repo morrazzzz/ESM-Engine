@@ -105,16 +105,10 @@
     <ClCompile Include="xr_trims.cpp">
       <Filter>Math\Extensions</Filter>
     </ClCompile>
-    <ClCompile Include="FileSystem.cpp">
-      <Filter>FS</Filter>
-    </ClCompile>
     <ClCompile Include="FS.cpp">
       <Filter>FS</Filter>
     </ClCompile>
     <ClCompile Include="LocatorAPI.cpp">
-      <Filter>FS</Filter>
-    </ClCompile>
-    <ClCompile Include="LocatorAPI_auth.cpp">
       <Filter>FS</Filter>
     </ClCompile>
     <ClCompile Include="LocatorAPI_defs.cpp">
@@ -132,9 +126,6 @@
     <ClCompile Include="file_stream_reader.cpp">
       <Filter>FS\file_stream_reader</Filter>
     </ClCompile>
-    <ClCompile Include="memory_allocation_stats.cpp">
-      <Filter>Memory manager</Filter>
-    </ClCompile>
     <ClCompile Include="memory_usage.cpp">
       <Filter>Memory manager</Filter>
     </ClCompile>
@@ -144,9 +135,6 @@
     <ClCompile Include="xrMemory_align.cpp">
       <Filter>Memory manager</Filter>
     </ClCompile>
-    <ClCompile Include="xrMemory_debug.cpp">
-      <Filter>Memory manager</Filter>
-    </ClCompile>
     <ClCompile Include="xrMemory_POOL.cpp">
       <Filter>Memory manager</Filter>
     </ClCompile>
@@ -154,9 +142,6 @@
       <Filter>Memory manager</Filter>
     </ClCompile>
     <ClCompile Include="xrMemory_pso_Fill.cpp">
-      <Filter>Memory manager</Filter>
-    </ClCompile>
-    <ClCompile Include="xrMemory_pso_Fill32.cpp">
       <Filter>Memory manager</Filter>
     </ClCompile>
     <ClCompile Include="xrMemory_subst_msvc.cpp">
@@ -182,12 +167,6 @@
     </ClCompile>
     <ClCompile Include="memory_monitor.cpp">
       <Filter>memory_monitor</Filter>
-    </ClCompile>
-    <ClCompile Include="ppmd_compressor.cpp">
-      <Filter>Compression\ppmd</Filter>
-    </ClCompile>
-    <ClCompile Include="Model.cpp">
-      <Filter>Compression\ppmd\core</Filter>
     </ClCompile>
     <ClCompile Include="rt_compressor.cpp">
       <Filter>Compression\rt</Filter>
@@ -380,9 +359,6 @@
     <ClInclude Include="xrMemory_pso.h">
       <Filter>Memory manager</Filter>
     </ClInclude>
-    <ClInclude Include="xrMemory_pure.h">
-      <Filter>Memory manager</Filter>
-    </ClInclude>
     <ClInclude Include="xrMemory_subst_msvc.h">
       <Filter>Memory manager</Filter>
     </ClInclude>
@@ -413,26 +389,11 @@
     <ClInclude Include="memory_monitor.h">
       <Filter>memory_monitor</Filter>
     </ClInclude>
-    <ClInclude Include="ppmd_compressor.h">
-      <Filter>Compression\ppmd</Filter>
-    </ClInclude>
-    <ClInclude Include="PPMd.h">
-      <Filter>Compression\ppmd\common</Filter>
-    </ClInclude>
-    <ClInclude Include="PPMdType.h">
-      <Filter>Compression\ppmd\common</Filter>
-    </ClInclude>
     <ClInclude Include="Coder.hpp">
       <Filter>Compression\ppmd\core</Filter>
     </ClInclude>
     <ClInclude Include="SubAlloc.hpp">
       <Filter>Compression\ppmd\core\allocator</Filter>
-    </ClInclude>
-    <ClInclude Include="compression_ppmd_stream.h">
-      <Filter>Compression\ppmd\stream</Filter>
-    </ClInclude>
-    <ClInclude Include="compression_ppmd_stream_inline.h">
-      <Filter>Compression\ppmd\stream</Filter>
     </ClInclude>
     <ClInclude Include="rt_compressor.h">
       <Filter>Compression\rt</Filter>
@@ -499,10 +460,5 @@
     <ResourceCompile Include="xrCore.rc">
       <Filter>Kernel</Filter>
     </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="FileSystem.h">
-      <Filter>FS</Filter>
-    </CustomBuild>
   </ItemGroup>
 </Project>

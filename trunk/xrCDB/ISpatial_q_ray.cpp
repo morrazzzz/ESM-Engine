@@ -202,7 +202,7 @@ public:
 		ray.pos.set(_start);
 		ray.inv_dir.set(1.f, 1.f, 1.f).div(_dir);
 		ray.fwd_dir.set(_dir);
-		if (~CPU::ID.feature & _CPU_FEATURE_SSE) {
+		if (!cpuID.SupportSSE()) {
 			// for FPU - zero out inf
 			if (_abs(_dir.x) > flt_eps) {}
 			else ray.inv_dir.x = 0;
@@ -240,7 +240,7 @@ public:
 	void walk(xr_vector<ISpatial*>& result_spatial, ISpatial_NODE* N, Fvector& n_C, float n_R, bool first, bool nearest)
 	{
 		// Actual ray/aabb test
-		if (CPU::ID.feature & _CPU_FEATURE_SSE) {
+		if (cpuID.SupportSSE()) {
 			// use SSE
 			float		d;
 			if (!_box_sse(n_C, n_R, d))				

@@ -10,12 +10,6 @@
 #	define DEBUG_MEMORY_NAME
 #endif // USE_MEMORY_MONITOR
 
-#ifndef M_BORLAND
-#	if 0//def DEBUG
-#		define DEBUG_MEMORY_MANAGER
-#	endif // DEBUG
-#endif // M_BORLAND
-
 #ifdef DEBUG_MEMORY_MANAGER
 	XRCORE_API	extern BOOL	g_bMEMO;
 #	ifndef DEBUG_MEMORY_NAME
@@ -56,10 +50,6 @@ public:
 	u32					stat_calls;
 	s32					stat_counter;
 public:
-	void				dbg_register	(void* _p,	size_t _size, const char* _name);
-	void				dbg_unregister	(void* _p);
-	void				dbg_check		();
-
 	u32					mem_usage		(u32* pBlocksUsed=NULL, u32* pBlocksFree=NULL);
 	void				mem_compact		();
 	void				mem_counter_set	(u32 _val)	{ stat_counter = _val;	}
@@ -77,17 +67,9 @@ public:
 
 	pso_MemCopy*		mem_copy;
 	pso_MemFill*		mem_fill;
-	pso_MemFill32*		mem_fill32;
 };
 
 extern XRCORE_API	xrMemory	Memory;
-
-#undef	ZeroMemory
-#undef	CopyMemory
-#undef	FillMemory
-#define ZeroMemory(a,b)		Memory.mem_fill(a,0,b)
-#define CopyMemory(a,b,c)	memcpy(a,b,c)			//. CopyMemory(a,b,c)
-#define FillMemory(a,b,c)	Memory.mem_fill(a,c,b)
 
 // delete
 #ifdef __BORLANDC__

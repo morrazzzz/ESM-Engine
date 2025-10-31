@@ -169,6 +169,7 @@
 #include <set>
 #include <map>
 #include <unordered_map>
+#include <unordered_set>
 #include <string>
 #pragma warning (pop)
 #pragma warning (disable : 4100 )		// unreferenced formal parameter
@@ -217,6 +218,7 @@
 #include "xrMemory.h"
 
 #include "_stl_extensions.h"
+#include "_math.h"
 #include "xrsharedmem.h"
 #include "xrstring.h"
 #include "xr_resource.h"
@@ -264,12 +266,7 @@ DEFINE_VECTOR	(xr_rtoken,RTokenVec,RTokenVecIt);
 #include "log.h"
 #include "xr_trims.h"
 #include "xr_ini.h"
-#ifdef NO_FS_SCAN
-#	include "ELocatorAPI.h"
-#else
-#	include "LocatorAPI.h"
-#endif
-#include "FileSystem.h"
+#include "LocatorAPI.h"
 #include "FTimer.h"
 #include "fastdelegate.h"
 #include "intrusive_ptr.h"
@@ -307,7 +304,6 @@ public:
 public:
 	void		_initialize	(LPCSTR ApplicationName, LogCallback cb=0, BOOL init_fs=TRUE, LPCSTR fs_fname=0);
 	void		_destroy	();
-	const char* GetEngineVersion();
 };
 
 XRCORE_API xr_string ANSIToUTF8(const xr_string& string);

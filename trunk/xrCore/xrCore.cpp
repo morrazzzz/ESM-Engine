@@ -72,8 +72,6 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
 		rtc_initialize		();
 
 		xr_FS				= xr_new<CLocatorAPI>	();
-
-		xr_EFS				= xr_new<EFS_Utils>		();
 	}
 	if (init_fs)
 	{
@@ -94,9 +92,6 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
 			flags |= CLocatorAPI::flDumpFileActivity;
 
 		FS._initialize		(flags,0,fs_fname);
-		     Msg("'%s' build %d, %s\n","xrCore",build_id, build_date);
-			 Msg("Engine Discord: https://discord.gg/D4CK5Vu6t3");
-		EFS._initialize		();
 
 #ifdef DEBUG
 		Msg					("CRT heap 0x%08x",_get_heap_handle());
@@ -108,34 +103,16 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
 	init_counter++;
 }
 
-#include "compression_ppmd_stream.h"
-extern compression::ppmd::stream	*trained_model;
 void xrCore::_destroy		()
 {
 	--init_counter;
 	if (!init_counter){
 		FS._destroy			();
-		EFS._destroy		();
 		xr_delete			(xr_FS);
-		xr_delete			(xr_EFS);
-
-#ifndef	_EDITOR
-		if (trained_model) {
-			void			*buffer = trained_model->buffer();
-			xr_free			(buffer);
-			xr_delete		(trained_model);
-		}
-#endif
 
 		Memory._destroy		();
 		CoUninitialize();
 	}
-}
-
-const char* xrCore::GetEngineVersion() {
-		static string256 buff;
-		std::snprintf(buff, sizeof(buff), "xrCore build %d, %s", build_id, build_date);
-		return buff;
 }
 
 xr_string ANSIToUTF8(const xr_string& string)
