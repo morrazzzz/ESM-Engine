@@ -22,6 +22,9 @@
 #include "../xrServer.h"
 #include "../xrServer_Objects_ALife_Monsters.h"
 
+const u32 deadIconColor = color_argb(255, 255, 160, 160);
+const u32 normalIconColor = color_argb(255, 255, 255, 255);
+
 using namespace InventoryUtilities;
 
 CSE_ALifeTraderAbstract* ch_info_get_from_id (u16 id)
@@ -276,8 +279,21 @@ void CUICharacterInfo::Update()
 
 		if(m_icons[eUIIcon]){
 			CSE_ALifeCreatureAbstract*		pCreature = smart_cast<CSE_ALifeCreatureAbstract*>(T);
-			if(pCreature && !pCreature->g_Alive())
-				m_icons[eUIIcon]->SetColor	(color_argb(255,255,160,160));
+			CUIStatic* staticIcon = m_icons[eUIIcon];
+
+			if (!pCreature)
+				return;
+
+			if (!pCreature->g_Alive())
+			{
+				if (staticIcon->GetColor() != deadIconColor)
+					staticIcon->SetColor(deadIconColor);
+
+				return;
+			}
+
+			if (staticIcon->GetColor() == deadIconColor)
+				staticIcon->SetColor(normalIconColor);
 		}
 	}
 }
