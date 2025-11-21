@@ -14,6 +14,10 @@ class CUIStalkersRankingWnd: public CUIWindow
 {
 	typedef CUIWindow inherited;
 public:
+
+	CUIStalkersRankingWnd() = default;
+	~CUIStalkersRankingWnd();
+
 			void			Init				();
 	virtual void			Show				(bool status);
 			void			ShowHumanDetails	();
