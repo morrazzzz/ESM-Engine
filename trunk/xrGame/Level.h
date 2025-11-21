@@ -80,12 +80,13 @@ protected:
 	// level name
 	shared_str					m_name;
 public:
+	bool destroyAllObjects{ false };
+
 #ifdef DEBUG
 	// level debugger
 	CLevelDebug					*m_level_debug;
 #endif
 
-public:
 	////////////// network ////////////////////////
 	static void 				PhisStepsCallback		( u32 Time0, u32 Time1 );
 private:
@@ -94,7 +95,7 @@ private:
 public:
 	CObject*					CurrentControlEntity	( void ) const		{ return pCurrentControlEntity; }
 	void						SetControlEntity		( CObject* O  )		{ pCurrentControlEntity=O; }
-public:
+
 	//////////////////////////////////////////////	
 	// static particles
 	DEFINE_VECTOR				(CParticlesObject*,POVec,POIt);
@@ -194,9 +195,7 @@ public:
 	u32					GetGameDayTimeMS		();
 	float				GetGameDayTimeSec		();
 
-protected:
 //	CFogOfWarMngr*		m_pFogOfWarMngr;
-protected:	
 	CMapManager *			m_map_manager;
 public:
 	CMapManager&			MapManager					()	{return *m_map_manager;}
@@ -209,7 +208,7 @@ public:
 	IC CBulletManager&	BulletManager() {return	*m_pBulletManager;}
 
 	CSE_Abstract	*spawn_item					(LPCSTR section, const Fvector &position, u32 level_vertex_id, u16 parent_id, bool return_item = false);
-public:
+
 	void			remove_objects				();
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION

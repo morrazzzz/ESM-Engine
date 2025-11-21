@@ -33,12 +33,9 @@ CUIGameCustom::CUIGameCustom()
 	ShowCrosshair(true);
 }
 
-bool g_b_ClearGameCaptions = false;
-
 CUIGameCustom::~CUIGameCustom()
 {
 	delete_data				(m_custom_statics);
-	g_b_ClearGameCaptions = false;
 }
 
 void CUIGameCustom::OnFrame() 
@@ -57,11 +54,8 @@ void CUIGameCustom::OnFrame()
 		m_custom_statics.end()
 	);
 	
-	if(g_b_ClearGameCaptions)
-	{
-		delete_data				(m_custom_statics);
-		g_b_ClearGameCaptions	= false;
-	}
+	if (Level().destroyAllObjects)
+		delete_data(m_custom_statics);
 
 	//update windows
 	if( GameIndicatorsShown() && psHUD_Flags.is(HUD_DRAW|HUD_DRAW_RT) )
