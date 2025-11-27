@@ -38,9 +38,9 @@
 #include "../string_table.h"
 #include "../clsid_game.h"
 #include "UIArtefactPanel.h"
+#include "../../xr_3da/xr_input.h"
 
 #ifdef DEBUG
-#	include "../../xr_3da/xr_input.h"
 #include "../../Include/xrRender/Kinematics.h"
 #endif
 

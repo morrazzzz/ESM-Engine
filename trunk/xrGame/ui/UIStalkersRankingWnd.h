@@ -16,7 +16,7 @@ class CUIStalkersRankingWnd: public CUIWindow
 public:
 
 	CUIStalkersRankingWnd() = default;
-	~CUIStalkersRankingWnd();
+	~CUIStalkersRankingWnd() = default;
 
 			void			Init				();
 	virtual void			Show				(bool status);
