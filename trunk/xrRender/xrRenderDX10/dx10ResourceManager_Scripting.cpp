@@ -18,20 +18,6 @@
 
 lua_State* LSVM = nullptr;
 
-#ifdef NDEBUG
-
-namespace std
-{
-
-void terminate ()
-{
-	abort();
-}
-
-} // namespace std
-
-#endif // #ifdef NDEBUG
-
 using namespace				luabind;
 
 class	adopt_dx10options
