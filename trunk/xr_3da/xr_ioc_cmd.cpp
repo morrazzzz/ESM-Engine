@@ -447,7 +447,7 @@ class CCC_r2 : public CCC_Token
 {
 	typedef CCC_Token inherited;
 public:
-	CCC_r2(LPCSTR N) : inherited(N, &renderer_value, NULL){ renderer_value = 3;};
+	CCC_r2(LPCSTR N) : inherited(N, &renderer_value, NULL) { renderer_value = 3; }
 
 	virtual void	Execute	(LPCSTR args)
 	{
@@ -455,20 +455,35 @@ public:
 
 		inherited::Execute(args);
 
-		psDeviceFlags.set		(rsR2, ((renderer_value>0) && renderer_value<4) );
-		psDeviceFlags.set		(rsR3, (renderer_value==4) );
-		psDeviceFlags.set		(rsR4, (renderer_value>=5) );
+		u32 valuesOtherRenderer = 1;
+		u32 valuesForStaticSun = valuesOtherRenderer;
+		u32 valuesForAdvancedPP = valuesOtherRenderer;
 
-		r2_sun_static =		(renderer_value<2);
+		if (psDeviceFlags.is(rsSupportR2))
+		{
+			psDeviceFlags.set(rsR2, renderer_value > valuesOtherRenderer && renderer_value < 4);
+			valuesForStaticSun = 2;
+			valuesForAdvancedPP = 3;
+			valuesOtherRenderer = 4;
+		}
 
-		r2_advanced_pp = (renderer_value >= 3);
+		if (psDeviceFlags.is(rsSupportR3))
+		{
+			psDeviceFlags.set(rsR3, renderer_value == valuesOtherRenderer);
+			valuesOtherRenderer++;
+		}
+
+		if (psDeviceFlags.is(rsSupportR4))
+			psDeviceFlags.set(rsR4, renderer_value >= valuesOtherRenderer);
+
+		r2_sun_static =  renderer_value < valuesForStaticSun;
+
+		r2_advanced_pp = renderer_value >= valuesForAdvancedPP;
 	}
 
-	virtual void	Save	(IWriter *F)	{
-		if( !strstr(Core.Params, "-r2") )
-		{
+	void Save(IWriter* F) override {
+		if (!strstr(Core.Params, "-r2") || !strstr(Core.Params, "-r3") || !strstr(Core.Params, "-r4"))
 			inherited::Save(F);
-		}
 	}
 
 	virtual xr_token* GetToken()

@@ -40,7 +40,11 @@ enum {
 	rsR3							= (1ul<<20ul),
 	rsR4							= (1ul<<21ul),
 
-	rsDrawMemory = (1ul << 22ul),
+	rsSupportR2 = 1 << 22,
+	rsSupportR3 = 1 << 23,
+	rsSupportR4 = 1 << 24,
+
+	rsDrawMemory = 1ul << 25ul,
 };
 
 

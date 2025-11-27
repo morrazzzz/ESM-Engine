@@ -234,9 +234,13 @@ void CEngineAPI::CreateRendererList()
 			if (!bSupports_r2)
 				break;
 
+			psDeviceFlags.set(rsSupportR2, true);
 			val = "renderer_r2a";
 			break;
 		case 2:
+			if (!bSupports_r2)
+				break;
+
 			val = "renderer_r2";
 			break;
 		case 3:
@@ -249,12 +253,14 @@ void CEngineAPI::CreateRendererList()
 			if (!bSupports_r3)
 				break;
 
+			psDeviceFlags.set(rsSupportR3, true);
 			val = "renderer_r3";
 			break;
 		case 5:
 			if (!bSupports_r4)
 				break;
 
+			psDeviceFlags.set(rsSupportR4, true);
 			val = "renderer_r4";
 		    break;
 		default:
