@@ -783,8 +783,18 @@ linterpmatrix(Matrix R,Matrix A,Matrix B,float t)
     matmult(R,T,A);
     vecinterp(R[3],A[3],B[3],t);
 }
-         
-void qtomatrix(Matrix m,Quaternion q)
+
+
+#define ATAN2(a,b) ((a==0.0)&&(b==0.0) ? 0.0 : atan2(a,b))
+
+#define EPSILON 0.001f
+#define W q[0]    
+#define X q[1]    
+#define Y q[2]    
+#define Z q[3]    
+
+void
+qtomatrix(Matrix m,Quaternion q)
 /*
  * Convert quaterion to rotation sub-matrix of 'm'.
  * The left column of 'm' gets zeroed, and m[3][3]=1.0, but the 
@@ -793,22 +803,22 @@ void qtomatrix(Matrix m,Quaternion q)
  * m = q
  */
 {
-    float    x2 = q[1] * q[1];
-    float    y2 = q[2] * q[2];
-    float    z2 = q[3] * q[3];
+    float    x2 = X * X;
+    float    y2 = Y * Y;
+    float    z2 = Z * Z;
     
     m[0][0] = 1 - 2 * (y2 +  z2);
-    m[0][1] = 2 * (q[1] * q[2] + q[0] * q[3]);
-    m[0][2] = 2 * (q[1] * q[3] - q[0] * q[2]);
+    m[0][1] = 2 * (X * Y + W * Z);
+    m[0][2] = 2 * (X * Z - W * Y);
     m[0][3] = 0.0;
     
-    m[1][0] = 2 * (q[1] * q[2] - q[0] * q[3]);
+    m[1][0] = 2 * (X * Y - W * Z);
     m[1][1] = 1 - 2 * (x2 + z2);
-    m[1][2] = 2 * (q[2] * q[3] + q[0] * q[1]);
+    m[1][2] = 2 * (Y * Z + W * X);
     m[1][3] = 0.0;
     
-    m[2][0] = 2 * (q[1] * q[3] + q[0] * q[2]);
-    m[2][1] = 2 * (q[2] * q[3] - q[0] * q[1]);
+    m[2][0] = 2 * (X * Z + W * Y);
+    m[2][1] = 2 * (Y * Z - W * X);
     m[2][2] = 1 - 2 * (x2 + y2);
     m[2][3] = 0.0;
 
@@ -826,27 +836,27 @@ matrixtoq(Quaternion q,Matrix m)
     float    f;
 
     f = (1.0f + m[0][0] + m[1][1] + m[2][2]) / 4.0f;
-    if (f > 0.001f) {
-        q[0] = _sqrt(f);
-        q[1] = (m[1][2] - m[2][1]) / (4 * q[0]);
-        q[2] = (m[2][0] - m[0][2]) / (4 * q[0]);
-        q[3] = (m[0][1] - m[1][0]) / (4 * q[0]);
+    if (f > EPSILON) {
+        W = _sqrt(f);
+        X = (m[1][2] - m[2][1]) / (4 * W);
+        Y = (m[2][0] - m[0][2]) / (4 * W);
+        Z = (m[0][1] - m[1][0]) / (4 * W);
     } else {
-        q[0] = 0.0;
+        W = 0.0;
         f = - (m[1][1] + m[2][2]) / 2.0f;
-        if (f > 0.001f) {
-            q[1] = _sqrt(f);
-            q[2] = m[0][1] / (2 * q[1]);
-            q[3] = m[0][2] / (2 * q[1]);
+        if (f > EPSILON) {
+            X = _sqrt(f);
+            Y = m[0][1] / (2 * X);
+            Z = m[0][2] / (2 * X);
         } else {
-            q[1] = 0.0;
+            X = 0.0;
             f = (1 - m[2][2]) / 2.0f;
-            if (f > 0.001f) {
-                q[2] = _sqrt(f);
-                q[3] = m[1][2] / (2 * q[2]);
+            if (f > EPSILON) {
+                Y = _sqrt(f);
+                Z = m[1][2] / (2 * Y);
             } else {
-                q[2] = 0.0;
-                q[3] = 1.0;
+                Y = 0.0;
+                Z = 1.0;
             }
         }
     }
@@ -928,6 +938,13 @@ void get_translation(const Matrix M, float p[3])
     p[0] = M[3][0];
     p[1] = M[3][1];
     p[2] = M[3][2];
+}
+
+float get_translation( const Matrix M)
+{
+	float p[3];
+	get_translation( M, p );
+	return norm( p );
 }
 
 void set_translation(Matrix  M, const float p[3])

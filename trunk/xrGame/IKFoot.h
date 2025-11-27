@@ -1,5 +1,8 @@
 #pragma once
 
+#include "ik_calculate_data.h"
+#include "ik_foot_collider.h"
+
 struct local_vector
 {
 	Fvector v;
@@ -37,7 +40,15 @@ IC	Fvector&			get_local_vector			( u16 bone, Fvector &v, const local_vector &lv 
 	Fmatrix				&foot_to_ref_bone_transform	( Fmatrix& m ) const;
 	Fmatrix				&foot_to_ref_bone			( Fmatrix &ref_bone, const Fmatrix &foot ) const;
 	Fmatrix				&foot_to_ref_bone			( Fmatrix &foot ) const;
+public:
+	bool				GetFootStepMatrix			( ik_goal_matrix	&m, const SCalculateData& cd, const  SIKCollideData &cld, bool collide, bool rotate )const;
+	bool				GetFootStepMatrix			( ik_goal_matrix &m, const Fmatrix &gl_nim, const  SIKCollideData &cld, bool collide, bool rotate, bool make_shift = true )const;
+	void				SetFootGeom					( ik_foot_geom &fg, const Fmatrix &ref_bone, const Fmatrix& object_matrix ) const;
+	void				Collide						( SIKCollideData &cld,  ik_foot_collider	&collider, const Fmatrix &ref_bone, const Fmatrix& object_matrix, CGameObject *O, bool foot_step ) const;
 private:
+
+ik_goal_matrix::e_collide_state		CollideFoot		( float angle, float &out_angle, const Fvector &global_toe, const Fvector	&foot_normal,  const Fvector	&global_bone_pos, const Fplane &p, const Fvector &ax )const;
+ik_goal_matrix::e_collide_state		rotate			( Fmatrix &xm, const Fplane& p, const Fvector &normal, const Fvector &global_point, bool collide )const;
 
 IC	bool				make_shift					( Fmatrix &xm, const Fvector &cl_point, bool collide, const Fplane &p, const Fvector &pick_dir  )const;
 

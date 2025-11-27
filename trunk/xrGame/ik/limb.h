@@ -133,9 +133,9 @@ public:
 	{
 		solver.SetSMatrix(SS);
 	}
-    int SetGoalPos(const float g[3], const Matrix E, int limits_on);
-    int SetGoal(const Matrix G, int limits_on);
-
+    int		SetGoalPos( const float g[3], const Matrix E, int limits_on );
+    int		SetGoal( const Matrix G, int limits_on );
+	float	Length( ) const { return solver.Length(); } 
 
     int SetAimGoal(const float goal[3], const float axis[3], float flex_angle)
     {

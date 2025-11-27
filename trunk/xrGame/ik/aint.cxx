@@ -33,6 +33,19 @@
 //#include <math.h>
 #include "aint.h"
 
+
+inline float min(float x, float y)
+{
+    return x < y ? x : y;
+}
+
+inline float max(float x, float y)
+{
+    return x > y ? x : y;
+}
+
+
+
 //
 // Sets the low bound for the interval
 // 
@@ -297,10 +310,10 @@ void swell(const AngleInt &a,
 	if (l < h)
 	{
 	    if (l2 < h2)
-		l = _min(l,l2);
+		l = min(l,l2);
 	    else
 		l = l2;
-	    h = _max(h,h2);
+	    h = max(h,h2);
 	}
 	else 
 	{
@@ -315,8 +328,8 @@ void swell(const AngleInt &a,
 	    }
 	    else
 	    {
-		l = _min(l,l2);
-		h = _max(h,h2);
+		l = min(l,l2);
+		h = max(h,h2);
 	    }
 	}
 	c.Set(l, h);
@@ -524,10 +537,10 @@ static void aint_intersect_aux(const AngleInt &a, const AngleInt &b, AngleIntLis
 	return; 
 
     if (in1)
-	c.Add(b.Low(), _min(b.High(), a.High()));
+	c.Add(b.Low(), min(b.High(), a.High()));
 
     else if (in2)
-	c.Add(a.Low(), _min(b.High(), a.High()));		    
+	c.Add(a.Low(), min(b.High(), a.High()));		    
 }
 
 static void aint_intersect(const AngleInt &a, const AngleInt &b, AngleIntList &c)
@@ -598,10 +611,10 @@ static void aint_union_aux(const AngleInt &a, const AngleInt &b, AngleIntList &c
 	c.Add(b.Low(),b.High());	
     }
     else if (in1)
-	c.Add(a.Low(), _max(b.High(), a.High()));
+	c.Add(a.Low(), max(b.High(), a.High()));
 
     else 
-	c.Add(b.Low(), _max(b.High(), a.High()));
+	c.Add(b.Low(), max(b.High(), a.High()));
 
 }
 

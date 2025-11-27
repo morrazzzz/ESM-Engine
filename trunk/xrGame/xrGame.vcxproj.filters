@@ -5859,6 +5859,33 @@
     <ClInclude Include="NET_utils.h">
       <Filter>Utils</Filter>
     </ClInclude>
+    <ClInclude Include="ik_object_shift.h">
+      <Filter>Physics\IK</Filter>
+    </ClInclude>
+    <ClInclude Include="ik_limb_state_predict.h">
+      <Filter>Physics\IK</Filter>
+    </ClInclude>
+    <ClInclude Include="ik_limb_state.h">
+      <Filter>Physics\IK</Filter>
+    </ClInclude>
+    <ClInclude Include="ik_foot_collider.h">
+      <Filter>Physics\IK</Filter>
+    </ClInclude>
+    <ClInclude Include="ik_dbg_matrix.h">
+      <Filter>Physics\IK</Filter>
+    </ClInclude>
+    <ClInclude Include="ik_collide_data.h">
+      <Filter>Physics\IK</Filter>
+    </ClInclude>
+    <ClInclude Include="ik_calculate_state.h">
+      <Filter>Physics\IK</Filter>
+    </ClInclude>
+    <ClInclude Include="ik_calculate_data.h">
+      <Filter>Physics\IK</Filter>
+    </ClInclude>
+    <ClInclude Include="pose_extrapolation.h">
+      <Filter>Physics\IK</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -8500,6 +8527,24 @@
     </ClCompile>
     <ClCompile Include="ActorVehicle.cpp">
       <Filter>Core\Client\Objects\actor</Filter>
+    </ClCompile>
+    <ClCompile Include="ik_object_shift.cpp">
+      <Filter>Physics\IK</Filter>
+    </ClCompile>
+    <ClCompile Include="ik_limb_state.cpp">
+      <Filter>Physics\IK</Filter>
+    </ClCompile>
+    <ClCompile Include="ik_foot_collider.cpp">
+      <Filter>Physics\IK</Filter>
+    </ClCompile>
+    <ClCompile Include="ik_dbg_matrix.cpp">
+      <Filter>Physics\IK</Filter>
+    </ClCompile>
+    <ClCompile Include="ik_calculate_data.cpp">
+      <Filter>Physics\IK</Filter>
+    </ClCompile>
+    <ClCompile Include="pose_extrapolation.cpp">
+      <Filter>Physics\IK</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

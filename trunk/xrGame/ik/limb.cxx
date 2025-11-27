@@ -135,6 +135,11 @@ void select_best_family(const AngleInt jt_limits[],
     }
 }
 
+inline float min(float x, float y)
+{
+    return x < y ? x : y;
+}
+
 //
 // If possible put v (0 < v < 2*M_PI) in the range low < v < high
 //
@@ -146,14 +151,14 @@ inline float put_angle_in_range(float low, float high, float v)
     if (low <= v && v <= high)
 		return v;
     else
-		d1 = _min(_abs(v-low),_abs(v-high));
+		d1 = min(_abs(v-low),_abs(v-high));
 
     v2 = v - 2*PI;
 
     if (low <= v2 && v2 <= high)
 		return v2;
     else
-		d2 = _min(_abs(v2-low),_abs(v2-high));
+		d2 = min(_abs(v2-low),_abs(v2-high));
     
     return (_abs(d1) < _abs(d2)) ? v : v2;
 }
@@ -797,7 +802,7 @@ extern XRPHYSICS_API	const float	phInfinity;
 int Limb::Solve(float x[], float *new_swivel, float *new_pos)
 {
     int success; 
-    float swivel_angle=-phInfinity;
+    float swivel_angle=-phInfinity; 
 
     x[3] = x3;
 

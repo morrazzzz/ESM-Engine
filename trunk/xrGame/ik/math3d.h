@@ -65,6 +65,7 @@ void qtoaxis(float *angle, float axis[], Quaternion q);
 void vecinterp(float x[], float u[], float v[], float t);
 float unitize4(float u[4]);
 void get_translation(const Matrix M, float p[3]);
+float get_translation( const Matrix M);
 void set_translation(Matrix M, const float p[3]);
 void get_translation(const Matrix M, float &x, float &y, float &z);
 void set_translation(Matrix M, float x, float y, float z);

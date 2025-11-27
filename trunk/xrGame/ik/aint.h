@@ -31,7 +31,6 @@
  */
 #ifndef _AINTH
 #define _AINTH
-#pragma once
 
 //#ifdef _WINDOWS
 //#define M_PI            3.14159265358979323846

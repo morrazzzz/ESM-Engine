@@ -125,6 +125,10 @@ void DBG_DrawTri(CDB::TRI* T,const Fvector* V_verts,u32 c)
 	DBG_DrawPHAbstruct(xr_new<SPHDBGDrawTri>(T,V_verts,c));
 }
 
+void DBG_DrawTri(const Fvector& v0, const Fvector& v1, const Fvector& v2, u32 ac, bool solid)
+{
+	DBG_DrawPHAbstruct(xr_new<SPHDBGDrawTri>(v0, v1, v2, ac, solid));
+}
 
 struct SPHDBGDrawLine : public SPHDBGDrawAbsract
 {

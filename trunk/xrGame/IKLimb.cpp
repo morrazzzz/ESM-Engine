@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "IKLimb.h"
 
+#include <boost/noncopyable.hpp>
+
 #include "../../include/xrrender/Kinematics.h"
 
 #include "gameobject.h"
@@ -307,14 +309,14 @@ if( ph_dbg_draw_mask.test( phDbgDrawIKGoal ) )
 IC void set_limits( float &min, float &max, SJointLimit& l)
 {
 	min=-l.limit.y  ;max=-l.limit.x  ;
-	min += PI; max += PI;
-	clamp( min, 0.f, 2 * PI ); clamp( max, 0.f, 2 * PI );
+	min += M_PI; max += M_PI;
+	clamp( min, 0.f, 2 * M_PI ); clamp( max, 0.f, 2 * M_PI );
 
 }
 
 IC void free_limits( float &min, float &max)
 {
-	min = 0  ;max = 2 * PI  ;
+	min = 0  ;max = 2 * M_PI  ;
 }
 
 u16 get_ik_bone( IKinematics* K, LPCSTR	S, u16 i )
@@ -381,7 +383,7 @@ void CIKLimb::Create( u16 id, IKinematicsAnimated* K, bool collide_ )
 	//lmin[0] = M_PI * 3.f/4.f; 
 	lmin[1]+=1.0f; lmax[1]-=0.f;
 	lmin[2]+=1.0f; lmax[2]-=0.f;
-	lmax[0] = 2* PI - PI * 2.f/3.f;
+	lmax[0] = 2* M_PI - M_PI * 2.f/3.f;
 
 //  lmin[2]=-1.f;lmax[2]=1.f;
 
@@ -759,7 +761,7 @@ IC void new_foot_matrix( const ik_goal_matrix &m, SCalculateData &cd )
 	reset_blend_speed( cd );
 }
 static const float unstuck_tolerance_linear		=	0.3f;
-static const float unstuck_tolerance_angular	=	PI/4.f;
+static const float unstuck_tolerance_angular	=	M_PI/4.f;
 
 void	CIKLimb::SetNewStepGoal	( const SIKCollideData &cld, SCalculateData& cd )
 {
@@ -1009,7 +1011,8 @@ float	CIKLimb::get_time_to_step_begin	( const CBlend& B )	const
 		return phInfinity;
 }
 
-struct ssaved_callback
+struct ssaved_callback :
+	private boost::noncopyable
 {
 	ssaved_callback( CBoneInstance &bi ):
 		_bi					( bi						)		,

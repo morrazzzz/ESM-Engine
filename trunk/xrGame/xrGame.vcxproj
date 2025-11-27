@@ -412,6 +412,14 @@
     <ClInclude Include="death_anims.h" />
     <ClInclude Include="IKFoot.h" />
     <ClInclude Include="IKFoot_inl.h" />
+    <ClInclude Include="ik_calculate_data.h" />
+    <ClInclude Include="ik_calculate_state.h" />
+    <ClInclude Include="ik_collide_data.h" />
+    <ClInclude Include="ik_dbg_matrix.h" />
+    <ClInclude Include="ik_foot_collider.h" />
+    <ClInclude Include="ik_limb_state.h" />
+    <ClInclude Include="ik_limb_state_predict.h" />
+    <ClInclude Include="ik_object_shift.h" />
     <ClInclude Include="ImguiManager.h" />
     <ClInclude Include="imotion_position.h" />
     <ClInclude Include="imotion_velocity.h" />
@@ -432,6 +440,7 @@
     <ClInclude Include="physics_shell_scripted.h" />
     <ClInclude Include="physics_world_scripted.h" />
     <ClInclude Include="player_hud.h" />
+    <ClInclude Include="pose_extrapolation.h" />
     <ClInclude Include="script_crandom.h" />
     <ClInclude Include="script_enum_types.h" />
     <ClInclude Include="ui\UIWeaponScope.h" />
@@ -1696,6 +1705,11 @@
     <ClCompile Include="death_anims.cpp" />
     <ClCompile Include="death_anims_predicates.cpp" />
     <ClCompile Include="IKFoot.cpp" />
+    <ClCompile Include="ik_calculate_data.cpp" />
+    <ClCompile Include="ik_dbg_matrix.cpp" />
+    <ClCompile Include="ik_foot_collider.cpp" />
+    <ClCompile Include="ik_limb_state.cpp" />
+    <ClCompile Include="ik_object_shift.cpp" />
     <ClCompile Include="ImguiManager.cpp" />
     <ClCompile Include="ImguiManagerDebug.cpp" />
     <ClCompile Include="ImguiManagerHelper.cpp" />
@@ -1806,6 +1820,7 @@
     </ClCompile>
     <ClCompile Include="player_hud.cpp" />
     <ClCompile Include="player_hud_tune.cpp" />
+    <ClCompile Include="pose_extrapolation.cpp" />
     <ClCompile Include="script_action_wrapper.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>
