@@ -268,7 +268,7 @@ void CPHJoint::CreateSlider()
 	CalcAxis(0,axis,lo,hi,first_matrix,second_matrix,rotate);
 	//if(body1)axis.invert();//SwapLimits(lo,hi);!!!
 
- 	dJointSetSliderAxis(m_joint, -axis.x, -axis.y, -axis.z);
+ 	dJointSetSliderAxis(m_joint, axis.x, axis.y, axis.z);
 	
 	dJointSetSliderParam( m_joint, dParamLoStop, axes[0].low );
 	dJointSetSliderParam( m_joint, dParamHiStop, axes[0].high );
