@@ -9,39 +9,38 @@
 #include "XR_IOConsole.h"
 
 #include "line_editor.h"
+#include "edit_actions.h"
 #include "xr_ioc_cmd.h"
 
 
 void CConsole::Register_callbacks()
 {
-
-	/*
-	ec().assign_callback( DIK_PRIOR, text_editor::ks_free,  Callback( this, &CConsole::Prev_log      ) );
-	ec().assign_callback( DIK_NEXT,  text_editor::ks_free,  Callback( this, &CConsole::Next_log      ) );
-	ec().assign_callback( DIK_PRIOR, text_editor::ks_Ctrl,  Callback( this, &CConsole::Begin_log     ) );
-	ec().assign_callback( DIK_NEXT,  text_editor::ks_Ctrl,  Callback( this, &CConsole::End_log       ) );
-
-	ec().assign_callback( DIK_TAB,   text_editor::ks_free,  Callback( this, &CConsole::Find_cmd      ) );
-	ec().assign_callback( DIK_TAB,   text_editor::ks_Shift, Callback( this, &CConsole::Find_cmd_back ) );
-	ec().assign_callback( DIK_TAB,   text_editor::ks_Alt,   Callback( this, &CConsole::GamePause     ) );
-
-	ec().assign_callback( DIK_UP,    text_editor::ks_free,  Callback( this, &CConsole::Prev_tip      ) );
-	ec().assign_callback( DIK_DOWN,  text_editor::ks_free,  Callback( this, &CConsole::Next_tip      ) );
-	ec().assign_callback( DIK_UP,    text_editor::ks_Ctrl,  Callback( this, &CConsole::Prev_cmd      ) );
-	ec().assign_callback( DIK_DOWN,  text_editor::ks_Ctrl,  Callback( this, &CConsole::Next_cmd      ) );
-
-	ec().assign_callback( DIK_HOME,  text_editor::ks_Alt,   Callback( this, &CConsole::Begin_tips    ) );
-	ec().assign_callback( DIK_END,   text_editor::ks_Alt,   Callback( this, &CConsole::End_tips      ) );
-	ec().assign_callback( DIK_PRIOR, text_editor::ks_Alt,   Callback( this, &CConsole::PageUp_tips   ) );
-	ec().assign_callback( DIK_NEXT,  text_editor::ks_Alt,   Callback( this, &CConsole::PageDown_tips ) );
-	*/
-	
 	ec().assign_callback(SDL_SCANCODE_RETURN, Callback(this, &CConsole::Execute_cmd));
 	ec().assign_callback(SDL_SCANCODE_KP_ENTER, Callback(this, &CConsole::Execute_cmd));
 	
 	ec().assign_callback(SDL_SCANCODE_ESCAPE, Callback(this, &CConsole::Hide_cmd_esc));
 	ec().assign_callback(SDL_SCANCODE_GRAVE, Callback(this, &CConsole::Hide_cmd));
-	
+
+	ec().assign_callback(SDL_SCANCODE_HOME, Callback(this, &CConsole::Begin_tips), SDL_KMOD_ALT);
+	ec().assign_callback(SDL_SCANCODE_END, Callback(this, &CConsole::End_tips), SDL_KMOD_ALT);
+
+	ec().assign_callback(SDL_SCANCODE_UP, Callback(this, &CConsole::Prev_tip));
+	ec().assign_callback(SDL_SCANCODE_UP, Callback(this, &CConsole::Prev_cmd), SDL_KMOD_CTRL);
+
+	ec().assign_callback(SDL_SCANCODE_DOWN, Callback(this, &CConsole::Next_tip));
+	ec().assign_callback(SDL_SCANCODE_DOWN, Callback(this, &CConsole::Next_cmd), SDL_KMOD_CTRL);
+
+	ec().assign_callback(SDL_SCANCODE_PRIOR, Callback(this, &CConsole::Prev_log));
+	ec().assign_callback(SDL_SCANCODE_PRIOR, Callback(this, &CConsole::Begin_log), SDL_KMOD_CTRL);
+	ec().assign_callback(SDL_SCANCODE_PRIOR, Callback(this, &CConsole::PageUp_tips), SDL_KMOD_ALT);
+
+	ec().assign_callback(SDL_SCANCODE_PAGEDOWN, Callback(this, &CConsole::Next_log));
+	ec().assign_callback(SDL_SCANCODE_PAGEDOWN, Callback(this, &CConsole::End_log), SDL_KMOD_CTRL);
+	ec().assign_callback(SDL_SCANCODE_PAGEDOWN, Callback(this, &CConsole::PageDown_tips), SDL_KMOD_ALT);
+
+	ec().assign_callback(SDL_SCANCODE_TAB, Callback(this, &CConsole::Find_cmd));
+	ec().assign_callback(SDL_SCANCODE_TAB, Callback(this, &CConsole::Find_cmd_back), SDL_KMOD_SHIFT);
+	ec().assign_callback(SDL_SCANCODE_TAB, Callback(this, &CConsole::GamePause), SDL_KMOD_ALT);
 }
 
 void CConsole::Prev_log() // DIK_PRIOR=PAGE_UP

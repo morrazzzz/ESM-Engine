@@ -10,7 +10,6 @@ namespace text_editor
 void remove_spaces( PSTR str ); // in & out
 void split_cmd( PSTR first, PSTR second, LPCSTR str );
 
-class base;
 class callback_base;
 
 enum init_mode
@@ -26,10 +25,7 @@ enum init_mode
 
 class ENGINE_API line_edit_control
 {
-private:
-	typedef  text_editor::base						Base;
 	typedef  fastdelegate::FastDelegate0<void>	Callback;
-
 public:
 					line_edit_control	( u32 str_buffer_size );
 			void	init				( u32 str_buffer_size, init_mode mode = im_standart );
@@ -42,7 +38,10 @@ public:
 			void	on_frame			();
 
 	void assign_callback(const SDL_Scancode& key, Callback const& callback, const SDL_Keymod& state = SDL_KMOD_NONE);
-	void assign_callback(const SDL_Scancode& key, text_editor::callback_base* first, text_editor::callback_base* second = nullptr);
+//	void assign_callback(const SDL_Scancode& key, text_editor::callback_base* const main_callback, 
+//		std::initializer_list<const text_editor::callback_base*> callbacks);
+
+	inline text_editor::callback_base* createCallbackBase(Callback const& callback, const SDL_Keymod& state = SDL_KMOD_NONE);
 
 			void	insert_character	( char c );
 
@@ -91,13 +90,13 @@ private:
 			void	clear_inserted		();
 			bool	empty_inserted		();
 
-			void	add_inserted_text	();
+//			void	add_inserted_text	();
 
 			void	delete_selected		( bool back );
 			void	compute_positions	();
 			void	clamp_cur_pos		();
 private:
-	xr_unordered_map<SDL_Scancode, Base*> m_actions;
+	xr_unordered_map<SDL_Scancode, const text_editor::callback_base*> m_actions;
 
 	char*			m_edit_str;
 	char*			m_undo_buf;
@@ -107,7 +106,6 @@ private:
 	char*			m_buf2;
 	char*			m_buf3;
 
-	enum			{ MIN_BUF_SIZE = 8, MAX_BUF_SIZE = 4096 };
 	int				m_buffer_size;
 
 	int				m_cur_pos;

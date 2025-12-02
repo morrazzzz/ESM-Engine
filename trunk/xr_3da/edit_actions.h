@@ -6,36 +6,24 @@ enum SDL_Scancode;
 
 namespace text_editor
 {
+	class callback_base
+	{
+	private:
+		typedef		fastdelegate::FastDelegate0<void>		Callback;
 
-class	line_edit_control;
+	public:
+		callback_base() = default;
+		callback_base(Callback const& callback, const SDL_Keymod& mod);
+		~callback_base();
+		bool on_key_press() const;
+		void AddAdditionalCallback(const callback_base* const prev_action);
 
-class base
-{
-public:
-					base			();
-	virtual			~base			();
-	virtual void on_key_press(line_edit_control* const control) {}
-}; // class base
+		SDL_Keymod keyModCurrentCallback{};
+		SDL_Keymod allKeyModsAdditionalCallback{};
+	protected:
+		Callback m_callback;
+		xr_vector<const callback_base*> additionalCallbacks;
 
-// -------------------------------------------------------------------------------------------------
+	}; // class callback_base
 
-class callback_base : public base
-{
-private:
-	typedef		fastdelegate::FastDelegate0<void>		Callback;
-
-public:
-	callback_base() = default;
-	callback_base(Callback const& callback, const SDL_Keymod& mod);
-	virtual ~callback_base() = default;
-	virtual	void	on_key_press	( line_edit_control* const control );
-	void SetPrevCallback(callback_base* prev_action);
-
-protected:
-    SDL_Keymod KeyMod;
-	Callback	m_callback;
-	callback_base* m_previous_action;
-
-}; // class callback_base
-
-} // namespace text_editor
+}// namespace text_editor

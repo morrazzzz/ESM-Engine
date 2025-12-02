@@ -109,7 +109,7 @@ void line_edit_control::clear_states()
 void line_edit_control::init( u32 str_buffer_size, init_mode mode )
 {
 	m_buffer_size = str_buffer_size;
-	clamp( m_buffer_size, (int)MIN_BUF_SIZE, (int)MAX_BUF_SIZE );
+	clamp(m_buffer_size, 8, 4096);
 
 	xr_free( m_edit_str );	m_edit_str = (LPSTR)xr_malloc( m_buffer_size * sizeof(char) );
 	xr_free( m_inserted );	m_inserted = (LPSTR)xr_malloc( m_buffer_size * sizeof(char) );
@@ -128,68 +128,71 @@ void line_edit_control::init( u32 str_buffer_size, init_mode mode )
 		//m_actions[i] = NULL;
 	}
 
-	if ( mode == im_read_only )
+	assign_callback(SDL_SCANCODE_A, Callback(this, &line_edit_control::select_all_buf), SDL_KMOD_CTRL);
+	assign_callback(SDL_SCANCODE_C, Callback(this, &line_edit_control::copy_to_clipboard), SDL_KMOD_CTRL);
+	assign_callback(SDL_SCANCODE_INSERT, Callback(this, &line_edit_control::copy_to_clipboard), SDL_KMOD_CTRL);
+
+	assign_callback(SDL_SCANCODE_HOME, Callback(this, &line_edit_control::move_pos_home));
+	assign_callback(SDL_SCANCODE_END, Callback(this, &line_edit_control::move_pos_end));
+	assign_callback(SDL_SCANCODE_LEFT, Callback(this, &line_edit_control::move_pos_left));
+	assign_callback(SDL_SCANCODE_RIGHT, Callback(this, &line_edit_control::move_pos_right));
+	assign_callback(SDL_SCANCODE_LEFT, Callback(this, &line_edit_control::move_pos_left_word), SDL_KMOD_CTRL);
+	assign_callback(SDL_SCANCODE_RIGHT, Callback(this, &line_edit_control::move_pos_right_word), SDL_KMOD_CTRL);
+
+	if (mode != im_read_only)
 	{
-		/*
-		assign_callback( DIK_A     , ks_Ctrl, Callback( this, &line_edit_control::select_all_buf       ) );
-		assign_callback( DIK_C     , ks_Ctrl, Callback( this, &line_edit_control::copy_to_clipboard    ) );
-		assign_callback( DIK_INSERT, ks_Ctrl, Callback( this, &line_edit_control::copy_to_clipboard    ) );
+		assign_callback(SDL_SCANCODE_INSERT, Callback(this, &line_edit_control::flip_insert_mode));
+		assign_callback(SDL_SCANCODE_Z, Callback(this, &line_edit_control::undo_buf), SDL_KMOD_CTRL);
+		assign_callback(SDL_SCANCODE_V, Callback(this, &line_edit_control::paste_from_clipboard), SDL_KMOD_CTRL);
+		assign_callback(SDL_SCANCODE_X, Callback(this, &line_edit_control::cut_to_clipboard), SDL_KMOD_CTRL);
 
-		assign_callback( DIK_HOME  , ks_free, Callback( this, &line_edit_control::move_pos_home        ) );
-		assign_callback( DIK_END   , ks_free, Callback( this, &line_edit_control::move_pos_end         ) );
-		assign_callback( DIK_LEFT  , ks_free, Callback( this, &line_edit_control::move_pos_left        ) );
-		assign_callback( DIK_RIGHT , ks_free, Callback( this, &line_edit_control::move_pos_right       ) );
-		assign_callback( DIK_LEFT  , ks_Ctrl, Callback( this, &line_edit_control::move_pos_left_word   ) );
-		assign_callback( DIK_RIGHT , ks_Ctrl, Callback( this, &line_edit_control::move_pos_right_word  ) );
-		*/
-	}
-	else
-	{
-		//assign_callback( DIK_INSERT, ks_free, Callback( this, &line_edit_control::flip_insert_mode     ) );
-		//assign_callback( DIK_A     , ks_Ctrl, Callback( this, &line_edit_control::select_all_buf       ) );
-		//assign_callback( DIK_Z     , ks_Ctrl, Callback( this, &line_edit_control::undo_buf             ) );
+		assign_callback(SDL_SCANCODE_INSERT, Callback(this, &line_edit_control::paste_from_clipboard), SDL_KMOD_SHIFT);
 
-		/*
-		assign_callback( DIK_C     , ks_Ctrl, Callback( this, &line_edit_control::copy_to_clipboard    ) );
-		assign_callback( DIK_V     , ks_Ctrl, Callback( this, &line_edit_control::paste_from_clipboard ) );
-		assign_callback( DIK_X     , ks_Ctrl, Callback( this, &line_edit_control::cut_to_clipboard     ) );
-
-		assign_callback( DIK_INSERT, ks_Ctrl, Callback( this, &line_edit_control::copy_to_clipboard    ) );
-		assign_callback( DIK_INSERT, ks_Shift,Callback( this, &line_edit_control::paste_from_clipboard ) );
-		assign_callback( DIK_DELETE, ks_Shift,Callback( this, &line_edit_control::cut_to_clipboard     ) );
-
-		assign_callback( DIK_HOME  , ks_free, Callback( this, &line_edit_control::move_pos_home        ) );
-		assign_callback( DIK_END   , ks_free, Callback( this, &line_edit_control::move_pos_end         ) );
-		assign_callback( DIK_LEFT  , ks_free, Callback( this, &line_edit_control::move_pos_left        ) );
-		assign_callback( DIK_RIGHT , ks_free, Callback( this, &line_edit_control::move_pos_right       ) );
-		assign_callback( DIK_LEFT  , ks_Ctrl, Callback( this, &line_edit_control::move_pos_left_word   ) );
-		assign_callback( DIK_RIGHT , ks_Ctrl, Callback( this, &line_edit_control::move_pos_right_word  ) );
-		*/
-
-		auto action_prev = new callback_base(Callback(this, &line_edit_control::delete_selected_back), SDL_KMOD_NONE);
-		auto action = new callback_base(Callback(this, &line_edit_control::delete_word_back), SDL_KMOD_CTRL);
+		assign_callback(SDL_SCANCODE_BACKSPACE, Callback(this, &line_edit_control::delete_selected_back));
+		assign_callback(SDL_SCANCODE_BACKSPACE, Callback(this, &line_edit_control::delete_word_back), SDL_KMOD_CTRL);
 		
-		assign_callback(SDL_SCANCODE_BACKSPACE, action, action_prev);
+		assign_callback(SDL_SCANCODE_DELETE, Callback(this, &line_edit_control::delete_selected_forward));
+		assign_callback(SDL_SCANCODE_DELETE, Callback(this, &line_edit_control::delete_word_forward), SDL_KMOD_CTRL);
+		assign_callback(SDL_SCANCODE_DELETE, Callback(this, &line_edit_control::cut_to_clipboard), SDL_KMOD_SHIFT);
 
-		//assign_callback( DIK_DELETE, ks_free, Callback( this, &line_edit_control::delete_selected_forward ) );
-
-		//assign_callback( DIK_DELETE, ks_Ctrl, Callback( this, &line_edit_control::delete_word_forward  ) );
-
-//		assign_callback( DIK_LSHIFT, ks_Ctrl, Callback( this, &line_edit_control::SwitchKL ) );
-//		assign_callback( DIK_LSHIFT, ks_Alt, Callback( this, &line_edit_control::SwitchKL  ) );
-
-	} // if mode
+#pragma todo("morrazzzz: Why LSHIFT + CTRL this switch keyboard language? delete?")
+		assign_callback(SDL_SCANCODE_LSHIFT, Callback(this, &line_edit_control::SwitchKL), SDL_KMOD_CTRL);
+		assign_callback(SDL_SCANCODE_LSHIFT, Callback(this, &line_edit_control::SwitchKL), SDL_KMOD_ALT);
+	}
 }
 
 void line_edit_control::assign_callback(const SDL_Scancode& key, Callback const& callback, const SDL_Keymod& state)
 {
-	m_actions[key] = new text_editor::callback_base(callback, state);
+	auto callbackKey = createCallbackBase(callback, state);
+	auto it = m_actions.find(key);
+	
+	if (it != m_actions.end())
+	{
+		auto nonConstCallback = const_cast<text_editor::callback_base*>(it->second);
+
+		nonConstCallback->allKeyModsAdditionalCallback |= state;
+		nonConstCallback->AddAdditionalCallback(callbackKey);
+
+		return;
+	}
+
+	m_actions.emplace(key, callbackKey);
 }
 
-void line_edit_control::assign_callback(const SDL_Scancode& key, text_editor::callback_base* first, text_editor::callback_base* second)
+/*
+void line_edit_control::assign_callback(const SDL_Scancode& key, text_editor::callback_base* const main_callback, 
+	std::initializer_list<const text_editor::callback_base*> callbacks)
 {
-	first->SetPrevCallback(second);
-	m_actions[key] = first;
+	for (auto& const main : callbacks)
+		main_callback->AddAdditionalCallback(main);
+
+	m_actions.emplace(key, const_cast<const text_editor::callback_base*>(main_callback));
+}
+*/
+
+text_editor::callback_base* line_edit_control::createCallbackBase(Callback const& callback, const SDL_Keymod& state)
+{
+	return new text_editor::callback_base(callback, state);
 }
 
 void line_edit_control::insert_character( char c )
@@ -222,6 +225,9 @@ void line_edit_control::set_edit( LPCSTR str )
 
 void line_edit_control::InputConsoleText(const char* text)
 {
+	clamp_cur_pos();
+	compute_positions();
+
 	u32 text_size = xr_strlen(text) + xr_strlen(m_edit_str);
 	
 	if (text_size == (m_buffer_size - 1))
@@ -247,14 +253,12 @@ void line_edit_control::on_key_press( int dik )
 	}
 	m_mark = true;
 
-	clamp_cur_pos();
 	clear_inserted();
-	compute_positions();
 
 	auto it = m_actions.find((SDL_Scancode)dik);
 
 	if (it != m_actions.end())
-		it->second->on_key_press(this);
+		it->second->on_key_press();
 
 	// ===========
 	if ( dik == DIK_LCONTROL || dik == DIK_RCONTROL )
@@ -265,7 +269,6 @@ void line_edit_control::on_key_press( int dik )
 	m_edit_str[m_buffer_size-1] = 0;
 	clamp_cur_pos();
 
-	add_inserted_text();
 	if ( m_mark && (!pInput->GetModState(SDL_KMOD_SHIFT) || !empty_inserted()))
 	{
 		m_select_start = m_cur_pos;
@@ -369,52 +372,6 @@ void line_edit_control::update_bufs()
 //	if ( m_cursor_view )	{
 //		Msg( " m_p1=%d  m_p2=%d  cur=%d  sstart=%d", m_p1, m_p2, m_cur_pos, m_select_start );	}
 }
-
-void line_edit_control::add_inserted_text()
-{
-	if ( empty_inserted() )
-	{
-		return;
-	}
-	
-	int old_edit_size = (int)xr_strlen( m_edit_str );
-	for ( int i = 0; i < old_edit_size; ++i )
-	{
-		if ( ( m_edit_str[i] == '\n' ) || ( m_edit_str[i] == '\t' ) )
-		{
-			m_edit_str[i]=' ';
-		}
-	}
-
-	PSTR buf = (PSTR)_alloca( (m_buffer_size + 1) * sizeof(char) );
-
-	strncpy_s( buf,        m_buffer_size, m_edit_str,        m_p1        ); // part 1
-	strncpy_s( m_undo_buf, m_buffer_size, m_edit_str + m_p1, m_p2 - m_p1 );
-
-	int new_size = (int)xr_strlen( m_inserted );
-	if ( m_buffer_size - 1 < m_p1 + new_size )
-	{
-		m_inserted[m_buffer_size - 1 - m_p1] = 0;
-		new_size = xr_strlen( m_inserted );
-	}
-	strncpy_s( buf + m_p1, m_buffer_size - m_p1, m_inserted, _min(new_size, m_buffer_size - m_p1) ); // part 2
-
-	u8 ds = (m_insert_mode && m_p2 < old_edit_size)? 1 : 0;
-	strncpy_s( buf + m_p1 + new_size, m_buffer_size - m_p1 - new_size, m_edit_str + m_p2 + ds,
-		_min(old_edit_size - m_p2 - ds, m_buffer_size - m_p1 - new_size) ); // part 3
-	buf[m_buffer_size] = 0;
-
-	int szn = m_p1 + new_size + old_edit_size - m_p2 - ds;
-	if ( szn < m_buffer_size )
-	{
-		strncpy_s( m_edit_str, m_buffer_size, buf, szn ); // part 1+2+3
-		m_edit_str[m_buffer_size-1] = 0;
-		m_cur_pos = m_p1 + new_size;
-	}
-	clamp_cur_pos();
-}
-
-//------------------------------------------------
 
 void line_edit_control::copy_to_clipboard()
 {
