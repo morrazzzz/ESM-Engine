@@ -27,7 +27,7 @@ static u32 const good_fps_console_color = color_rgba(29, 255, 0, 255);
 static u32 const prompt_font_color  = color_rgba( 228, 228, 255, 255 );
 static u32 const tips_font_color    = color_rgba( 230, 250, 230, 255 );
 static u32 const cmd_font_color     = color_rgba( 138, 138, 245, 255 );
-static u32 const cursor_font_color  = color_rgba( 255, 255, 255, 255 );
+static u32 const cursor_font_color  = color_rgba( 255, 0, 0, 255 );
 static u32 const total_font_color   = color_rgba( 250, 250,  15, 180 );
 static u32 const default_font_color = color_rgba( 250, 250, 250, 250 );
 
@@ -45,7 +45,7 @@ extern char const * const	ioc_prompt;
        char const * const	ioc_prompt	=	">>> ";
 
 extern char const * const	ch_cursor;
-       char const * const	ch_cursor	=	"_";
+       char const * const	ch_cursor	=	"|";
 
 text_editor::line_edit_control& CConsole::ec()
 {
@@ -94,7 +94,7 @@ bool CConsole::is_mark( Console_mark type )
 CConsole::CConsole()
 :m_hShader_back(NULL)
 {
-	m_editor          = xr_new<text_editor::line_editor>( (u32)CONSOLE_BUF_SIZE );
+	m_editor = new text_editor::line_editor((u32)CONSOLE_BUF_SIZE);
 	m_cmd_history_max = cmd_history_max;
 	m_disable_tips    = false;
 	Register_callbacks();
@@ -108,8 +108,6 @@ void CConsole::Initialize()
 	pFont			= NULL;
 	pFont2			= NULL;
 
-	m_mouse_pos.x	= 0;
-	m_mouse_pos.y	= 0;
 	m_last_cmd		= NULL;
 	
 	m_cmd_history.reserve( m_cmd_history_max + 2 );
@@ -166,8 +164,15 @@ void CConsole::OnFrame()
 {
 	m_editor->on_frame();
 	
-	if ( Device.dwFrame % 10 == 0 )
+	//INFO: Not update for empty line. Otherwise update_tips clearing m_tips vector and return in update_tips
+	if (updateTipsInput && ec().lineEditString.empty())
+		return; 
+
+	if (Device.dwFrame % 10 == 0)
 	{
+		if (updateTipsInput && !ec().lineEditString.empty())
+			updateTipsInput = false;
+
 		update_tips();
 	}
 }
@@ -241,74 +246,77 @@ void CConsole::OnRender()
 		pFont2->SetHeightI( 0.025f );
 	}
 	
-	DrawBackgrounds();
-
 	float fMaxY = 0.0f;
-
-	float ypos  = fMaxY - LDIST * 1.1f;
-
+	float ypos = fMaxY - LDIST * 1.1f;
 	float dwHalfWidth = static_cast<float>(Device.dwWidth * 0.5f);
 
-	float scr_x = 1.0f / dwHalfWidth;
+	float scr_width = 1.9f * dwHalfWidth;
+	float ioc_d = pFont->SizeOf_(ioc_prompt);
+	float d1 = pFont->SizeOf_("_");
 
-	//---------------------------------------------------------------------------------
-	float scr_width  = 1.9f * dwHalfWidth;
-	float ioc_d      = pFont->SizeOf_(ioc_prompt);
-	float d1         = pFont->SizeOf_( "_" );
+	std::string_view stringView = std::string_view(ec().lineEditString);
+	xr_string stringBeforeCurPos(stringView.substr(0, ec().m_cur_pos));
+	float sizeOf = !stringView.empty() ? pFont->SizeOf_(stringBeforeCurPos.c_str()) : 0.0f;
 
-	LPCSTR s_cursor = ec().str_before_cursor();
-	LPCSTR s_b_mark = ec().str_before_mark();
-	LPCSTR s_mark   = ec().str_mark();
-	LPCSTR s_mark_a = ec().str_after_mark();
-
-	//	strncpy_s( buf1, cur_pos, editor, MAX_LEN );
-	float str_length = ioc_d + pFont->SizeOf_( s_cursor );
-	float out_pos    = 0.0f;
-	if( str_length > scr_width )
+	float str_length = ioc_d + sizeOf;
+	float out_pos = 0.0f;
+	if (str_length > scr_width)
 	{
 		out_pos -= (str_length - scr_width);
 		str_length = scr_width;
 	}
 
+	float scr_x = 1.0f / dwHalfWidth;
+	float tipsX = -1.0f + (str_length + pFont->SizeOf_(ch_cursor)) * scr_x;
+
+	DrawBackgrounds(-6.0f + str_length + pFont->SizeOf_(ch_cursor));
+
+	//---------------------------------------------------------------------------------
+
 	pFont->SetColor( prompt_font_color );
 	pFont->OutI( -1.0f + out_pos * scr_x, ypos, "%s", ioc_prompt );
-	out_pos += ioc_d;
+	out_pos += ioc_d + 2.5f;
 
-	if ( !m_disable_tips && m_tips.size() )
+	if (!m_disable_tips && m_tips.size())
 	{
-		pFont->SetColor( tips_font_color );
+		pFont->SetColor(tips_font_color);
 
+		/*
 		float shift_x = 0.0f;
-		switch ( m_tips_mode )
+		switch (m_tips_mode)
 		{
 		case 0: shift_x = scr_x * 1.0f;			break;
 		case 1: shift_x = scr_x * out_pos;		break;
-		case 2: shift_x = scr_x * ( ioc_d + pFont->SizeOf_(m_cur_cmd.c_str()) + d1 );	break;
+		case 2: shift_x = scr_x * (ioc_d + pFont->SizeOf_(m_cur_cmd.c_str()) + d1);	break;
 		case 3: shift_x = scr_x * str_length;	break;
 		}
+		*/
 
 		vecTipsEx::iterator itb = m_tips.begin() + m_start_tip;
 		vecTipsEx::iterator ite = m_tips.end();
-		for ( u32 i = 0; itb != ite ; ++itb, ++i ) // tips
+		for (u32 i = 0; itb != ite; ++itb, ++i) // tips
 		{
-			pFont->OutI( -1.0f + shift_x, fMaxY + i*LDIST, "%s", (*itb).text.c_str() );
-			if ( i >= VIEW_TIPS_COUNT-1 )
-			{
-				break; //for
-			}
-		}	
+			pFont->OutI(tipsX, fMaxY + i * LDIST, "%s", (*itb).text.c_str());
+			if (i >= VIEW_TIPS_COUNT - 1)
+				break;
+		}
 	}
 
 	// ===== ==============================================
 	pFont->SetColor ( cmd_font_color );
 	pFont2->SetColor( cmd_font_color );
 
-	pFont->OutI(  -1.0f + out_pos * scr_x, ypos, "%s", s_b_mark );		out_pos += pFont->SizeOf_(s_b_mark);
-	pFont2->OutI( -1.0f + out_pos * scr_x, ypos, "%s", s_mark );		out_pos += pFont2->SizeOf_(s_mark);
-	pFont->OutI(  -1.0f + out_pos * scr_x, ypos, "%s", s_mark_a );
+	if (!ec().lineEditString.empty())
+	{
+		pFont->OutI(-1.0f + out_pos * scr_x, ypos, "%s", stringBeforeCurPos.c_str());
+		if (ec().m_cur_pos != ec().lineEditString.size())
+		{
+			out_pos += sizeOf;// + 5.0f;//2.0f;
+			xr_string stringAfterCursor(stringView.substr(ec().m_cur_pos));
+			pFont->OutI(-1.0f + out_pos * scr_x, ypos, "%s", stringAfterCursor.c_str());
+		}
+	}
 
-	//pFont2->OutI( -1.0f + ioc_d * scr_x, ypos, "%s", editor=all );
-	
 	if( ec().cursor_view() )
 	{
 		pFont->SetColor( cursor_font_color );
@@ -367,18 +375,18 @@ void CConsole::OnRender()
 	pFont2->OnRender();
 }
 
-void CConsole::DrawBackgrounds()
+void CConsole::DrawBackgrounds(float tipsX)
 {
 	Frect r;
-	r.set( 0.0f, 0.0f, float(Device.dwWidth), 0.5f * float(Device.dwHeight) );
+	r.set(0.0f, 0.0f, float(Device.dwWidth), 0.5f * float(Device.dwHeight));
 
-	UIRender->SetShader( **m_hShader_back );
+	UIRender->SetShader(**m_hShader_back);
 	// 6 = back, 12 = tips, (VIEW_TIPS_COUNT+1)*6 = highlight_words, 12 = scroll
-	UIRender->StartPrimitive( 6 + 12 + (VIEW_TIPS_COUNT+1)*6 + 12, IUIRender::ptTriList, IUIRender::pttTL );
+	UIRender->StartPrimitive(6 + 12 + (VIEW_TIPS_COUNT + 1) * 6 + 12, IUIRender::ptTriList, IUIRender::pttTL);
 
-	DrawRect( r, back_color );
+	DrawRect(r, back_color);
 
-	if ( m_tips.size() == 0 || m_disable_tips )
+	if (m_tips.size() == 0 || m_disable_tips)
 	{
 		UIRender->FlushPrimitive();
 		return;
@@ -395,9 +403,10 @@ void CConsole::DrawBackgrounds()
 		}
 	}
 
-	float w1        = pFont->SizeOf_( "_" );
-	float ioc_w     = pFont->SizeOf_( ioc_prompt ) - w1;
-	float cur_cmd_w = pFont->SizeOf_( m_cur_cmd.c_str() );
+	float w1        = pFont->SizeOf_(ch_cursor);
+	float cur_cmd_w = 0.0f;
+	if (m_cur_cmd._get())
+		cur_cmd_w = pFont->SizeOf_(m_cur_cmd.c_str());
 	cur_cmd_w		+= (cur_cmd_w > 0.01f) ? w1 : 0.0f;
 
 	float list_w    = pFont->SizeOf_( max_str ) + 2.0f * w1;
@@ -407,7 +416,7 @@ void CConsole::DrawBackgrounds()
 	tips_h			+= ( m_tips.size() > 0 )? 5.0f : 0.0f;
 
 	Frect pr, sr;
-	pr.x1 = ioc_w + cur_cmd_w;
+	pr.x1 = tipsX /* + cur_cmd_w*/;
 	pr.x2 = pr.x1 + list_w;
 
 	pr.y1 = UI_BASE_HEIGHT * 0.5f;
@@ -456,16 +465,23 @@ void CConsole::DrawBackgrounds()
 				continue;
 			}
 
-			rFrect.null();
-			LPSTR  tmp      = (PSTR)_alloca( (str_size + 1) * sizeof(char) );
+			if (ts.HL_start == 0 && ts.HL_finish == 0)
+				continue;
 
-			strncpy_s( tmp, str_size+1, ts.text.c_str(), ts.HL_start );
-			rFrect.x1 = pr.x1 + w1 + pFont->SizeOf_( tmp );
+			rFrect.null();
+
+			std::string_view viewEdit = std::string_view(ts.text.c_str());
+			xr_string stringStartHL(viewEdit.substr(0, ts.HL_start));
+
+			constexpr float IndentLeftToRight = 6.f;
+
+			rFrect.x1 = pr.x1 + IndentLeftToRight + pFont->SizeOf_(stringStartHL.c_str());
 			rFrect.y1 = pr.y1 + i * font_h;
 
-			strncpy_s( tmp, str_size+1, ts.text.c_str(), ts.HL_finish );
-			rFrect.x2 = pr.x1 + w1 + pFont->SizeOf_( tmp );
+			xr_string stringFinishHL(viewEdit.substr(0, ts.HL_finish));
+			rFrect.x2 = pr.x1 + IndentLeftToRight + pFont->SizeOf_(stringFinishHL.c_str());
 			rFrect.y2 = rFrect.y1 + font_h;
+//			VERIFY(rFrect.x1 < rFrect.x2);
 
 			DrawRect( rFrect, tips_word_color );
 
@@ -612,8 +628,6 @@ void CConsole::Show()
 		return;
 	}
 	bVisible = true;
-	
-	GetCursorPos( &m_mouse_pos );
 
 	ec().clear_states();
 	scroll_delta	= 0;
@@ -621,9 +635,8 @@ void CConsole::Show()
 	reset_selected_tip();
 	update_tips();
 
-	m_editor->IR_Capture();
-
-	pInput->TextInputStart(m_editor);
+	IR_Capture();
+	pInput->TextInputStart(this);
 
 	Device.seqRender.Add( this, 1 );
 	Device.seqFrame.Add( this );
@@ -650,7 +663,48 @@ void CConsole::Hide()
 
 	Device.seqFrame.Remove( this );
 	Device.seqRender.Remove( this );
-	m_editor->IR_Release();
+	IR_Release();
+}
+
+void CConsole::IR_OnKeyboardPress(int dik)
+{
+	if (dik == SDL_SCANCODE_SPACE && pInput->GetModState(SDL_KMOD_CTRL))
+	{
+		updateTipsInput = true;
+		update_tips();
+		return;
+	}
+
+	m_editor->lineEditorKeyPress(dik);
+}	
+
+void CConsole::IR_OnKeyboardHold(int dik)
+{
+	m_editor->lineEditorKeyHold(dik);
+}
+
+void CConsole::IR_OnKeyboardRelease(int dik)
+{
+	m_editor->lineEditorKeyRelease(dik);
+}
+
+void CConsole::IR_OnTextInput(const char* text)
+{
+	if (pInput->GetModState(SDL_KMOD_CTRL))
+	{
+//		updateTipsInput = false;
+		return;
+	}
+
+	m_editor->lineEditorTextInput(text);
+}
+
+void CConsole::IR_OnMouseWheel(int direction)
+{
+	if (direction > 0)
+		Prev_log();
+	else
+		Next_log();
 }
 
 void CConsole::FindConsole(std::string_view data_string_to_find)
@@ -720,12 +774,8 @@ void CConsole::ExecuteScript( LPCSTR str )
 
 IConsole_Command* CConsole::find_next_cmd( LPCSTR in_str, shared_str& out_str )
 {
-	LPCSTR radmin_cmd_name = "ra ";
-	bool b_ra  = (in_str == strstr( in_str, radmin_cmd_name ) );
-	u32 offset = (b_ra)? xr_strlen( radmin_cmd_name ) : 0;
-
 	LPSTR t2;
-	STRCONCAT( t2, in_str + offset, " " );
+	STRCONCAT( t2, in_str, " " );
 
 	vecCMD_IT it = Commands.lower_bound( t2 );
 	if ( it != Commands.end() )
@@ -733,10 +783,9 @@ IConsole_Command* CConsole::find_next_cmd( LPCSTR in_str, shared_str& out_str )
 		IConsole_Command* cc = it->second;
 		LPCSTR name_cmd      = cc->Name();
 		u32    name_cmd_size = xr_strlen( name_cmd );
-		PSTR   new_str       = (PSTR)_alloca( (offset + name_cmd_size + 2) * sizeof(char) );
+		PSTR   new_str       = (PSTR)_alloca( (name_cmd_size + 2) * sizeof(char) );
 
-		xr_strcpy( new_str, offset + name_cmd_size + 2, (b_ra)? radmin_cmd_name : "" );
-		xr_strcat( new_str, offset + name_cmd_size + 2, name_cmd );
+		xr_strcat( new_str, name_cmd_size + 2, name_cmd );
 
 		out_str._set( (LPCSTR)new_str );
 		return cc;
@@ -744,142 +793,58 @@ IConsole_Command* CConsole::find_next_cmd( LPCSTR in_str, shared_str& out_str )
 	return NULL;
 }
 
-bool CConsole::add_next_cmds( LPCSTR in_str, vecTipsEx& out_v )
+void CConsole::add_internal_cmds( std::string_view in_str, vecTipsEx& out_v )
 {
 	u32 cur_count = out_v.size();
 	if ( cur_count >= MAX_TIPS_COUNT )
+		return;
+
+	if (in_str.empty())
 	{
-		return false;
+		for (auto& it : Commands)
+			out_v.emplace_back(it.first, 0, 0);
+
+		return;
 	}
 
-	LPSTR t2;
-	STRCONCAT( t2, in_str, " " );
-
-	shared_str temp;
-	IConsole_Command* cc = find_next_cmd( t2, temp );
-	if ( !cc || temp.size() == 0 )
-	{
-		return false;
-	}
-
-	bool res = false;
-	for ( u32 i = cur_count; i < MAX_TIPS_COUNT*2; ++i ) //fake=protect
-	{
-		temp._set( cc->Name() );
-		bool dup = ( std::find( out_v.begin(), out_v.end(), temp ) != out_v.end() );
-		if ( !dup )
-		{
-			TipString ts( temp );
-			out_v.push_back( ts );
-			res = true;
-		}
-		if ( out_v.size() >= MAX_TIPS_COUNT )
-		{
-			break; // for
-		}
-		LPSTR t3;
-		STRCONCAT( t3, out_v.back().text.c_str(), " " );
-		cc = find_next_cmd( t3, temp );
-		if ( !cc )
-		{
-			break; // for
-		}
-	} // for
-	return res;
-}
-
-bool CConsole::add_internal_cmds( LPCSTR in_str, vecTipsEx& out_v )
-{
-	u32 cur_count = out_v.size();
-	if ( cur_count >= MAX_TIPS_COUNT )
-	{
-		return false;
-	}
-	u32   in_sz = xr_strlen(in_str);
-	
-	bool res = false;
-	// word in begin
-	vecCMD_IT itb = Commands.begin();
-	vecCMD_IT ite = Commands.end();
-	for ( ; itb != ite; ++itb )
-	{
-		LPCSTR name = itb->first;
-		u32 name_sz = xr_strlen(name);
-		PSTR  name2 = (PSTR)_alloca( (name_sz+1) * sizeof(char) );
-		
-		if ( name_sz >= in_sz )
-		{
-			strncpy_s( name2, name_sz+1, name, in_sz );
-			name2[in_sz] = 0;
-
-			if ( !stricmp( name2, in_str ) )
-			{
-				shared_str temp;
-				temp._set( name );
-				bool dup = ( std::find( out_v.begin(), out_v.end(), temp ) != out_v.end() );
-				if ( !dup )
-				{
-					out_v.push_back( TipString( temp, 0, in_sz ) );
-					res = true;
-				}
-			}
-		}
-
-		if ( out_v.size() >= MAX_TIPS_COUNT )
-		{
-			return res;
-		}
-	} // for
+	size_t in_sz = in_str.size();
 
 	// word in internal
-	itb = Commands.begin();
-	ite = Commands.end();
-	for ( ; itb != ite; ++itb )
+	for (auto& it: Commands)
 	{
-		LPCSTR name = itb->first;
-		LPCSTR fd_str = strstr( name, in_str );
-		if ( fd_str )
+		std::string_view name = it.first;
+		auto position = name.find(in_str);
+
+		if (position != std::string_view::npos)
 		{
-			shared_str temp;
-			temp._set( name );
-			bool dup = ( std::find( out_v.begin(), out_v.end(), temp ) != out_v.end() );
-			if ( !dup )
-			{
-				u32 name_sz = xr_strlen( name );
-				int   fd_sz = name_sz - xr_strlen( fd_str );
-				out_v.push_back( TipString( temp, fd_sz, fd_sz + in_sz ) );
-				res = true;
-			}
-		}
-		if ( out_v.size() >= MAX_TIPS_COUNT )
-		{
-			return res;
+			if (std::find(out_v.begin(), out_v.end(), name.data()) == out_v.end())
+				out_v.emplace_back(name.data(), position, position + in_sz);
 		}
 	} // for
 
-	return res;
+	std::sort(out_v.begin(), out_v.end(), [](const TipString& a, const TipString& b) -> bool {
+		return a.HL_start < b.HL_start;
+		});
 }
 
-void CConsole::update_tips()
+void CConsole::	update_tips()
 {
 	m_temp_tips.clear_not_free();
 	m_tips.clear_not_free();
 
-	m_cur_cmd  = NULL;
-	if ( !bVisible )
-	{
+	if (!bVisible)
 		return;
-	}
 
-	LPCSTR cur = ec().str_edit();
-	u32    cur_length = xr_strlen( cur );
+	u32 cur_length = ec().lineEditString.size();
 
-	if ( cur_length == 0 )
+	if (!updateTipsInput && cur_length == 0)
 	{
 		m_prev_length_str = 0;
 		return;
 	}
-	
+
+	LPCSTR cur = ec().lineEditString.c_str();
+
 	if ( m_prev_length_str != cur_length )
 	{
 		reset_selected_tip();
@@ -947,7 +912,6 @@ void CConsole::update_tips()
 	{
 		reset_selected_tip();
 	}
-
 }
 
 void CConsole::select_for_filter( LPCSTR filter_str, vecTips& in_v, vecTipsEx& out_v )

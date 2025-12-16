@@ -43,16 +43,9 @@ public:
 
 	inline text_editor::callback_base* createCallbackBase(Callback const& callback, const SDL_Keymod& state = SDL_KMOD_NONE);
 
-			void	insert_character	( char c );
-
 	IC	bool		cursor_view			()	const	{ return m_cursor_view; }
-	IC	bool		need_update			()	const	{ return m_need_update; }
 
 	IC	LPCSTR		str_edit			()	const	{ return m_edit_str; }
-	IC	LPCSTR		str_before_cursor	()	const	{ return m_buf0; }
-	IC	LPCSTR		str_before_mark		()	const	{ return m_buf1; }
-	IC	LPCSTR		str_mark			()	const	{ return m_buf2; }
-	IC	LPCSTR		str_after_mark		()	const	{ return m_buf3; }
 
 		void		set_edit			( LPCSTR str );
 		void		set_selected_mode	( bool status )		{ m_unselected_mode = !status; }
@@ -60,11 +53,12 @@ public:
 
 
 	void InputConsoleText(const char* text);
-private:
-					line_edit_control	( line_edit_control const& );
-	line_edit_control const& operator=	( line_edit_control const& );
 
-			void	update_bufs			();
+	int	m_cur_pos;
+	xr_string lineEditString{};
+	bool needUpdateCurPos{};
+private:
+	line_edit_control(line_edit_control const&);
 
 	void xr_stdcall	undo_buf			();
 	void xr_stdcall	select_all_buf		();
@@ -87,28 +81,18 @@ private:
 	void xr_stdcall	delete_word_forward	();
 	void xr_stdcall SwitchKL			();
 
-			void	clear_inserted		();
-			bool	empty_inserted		();
-
 //			void	add_inserted_text	();
 
 			void	delete_selected		( bool back );
 			void	compute_positions	();
-			void	clamp_cur_pos		();
 private:
 	xr_unordered_map<SDL_Scancode, const text_editor::callback_base*> m_actions;
 
 	char*			m_edit_str;
 	char*			m_undo_buf;
 	char*			m_inserted;
-	char*			m_buf0;
-	char*			m_buf1;
-	char*			m_buf2;
-	char*			m_buf3;
-
 	int				m_buffer_size;
 
-	int				m_cur_pos;
 	int				m_select_start;
 	int				m_p1;
 	int				m_p2;
@@ -118,7 +102,6 @@ private:
 	float			m_rep_time;
 	float			m_last_key_time;
 	u32				m_last_frame_time;
-	u32				m_last_changed_frame;
 
 	bool			m_hold_mode;
 	bool			m_insert_mode;

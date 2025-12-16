@@ -20,25 +20,26 @@ ENGINE_API float g_console_sensitive = 0.15f;
 namespace text_editor
 {
 
-static bool terminate_char( char c, bool check_space = false )
+static bool terminate_char(char c, bool check_space = false)
 {
-	switch ( c )
+	switch (c)
 	{
-		case ' ':
-			return check_space;
-		case '(':	case ')':
-		case '{':	case '}':
-		case '[':	case ']':
-		case '<':	case '>':
-		case '\'':	case '\"':
-		case '=':	case '+':	case '-':	case '*':	case '\\':
-		case '/':	case '&':	case '|':
-		case '!':	case '@':	case '#':	case '~':	case '`':
-		case '$':	case '%':	case '^':
-		case ':':	case ';':
-		case '?':	case ',':	case '.':
-		case '_':
-			return true;
+	case ' ':
+		return check_space;
+	case '(':
+	case ')':
+	case '{':	case '}':
+	case '[':	case ']':
+	case '<':	case '>':
+	case '\'':	case '\"':
+	case '=':	case '+':	case '-':	case '*':	case '\\':
+	case '/':	case '&':	case '|':
+	case '!':	case '@':	case '#':	case '~':	case '`':
+	case '$':	case '%':	case '^':
+	case ':':	case ';':
+	case '?':	case ',':	case '.':
+	case '_':
+		return true;
 	}
 	return false;
 }
@@ -50,10 +51,6 @@ line_edit_control::line_edit_control( u32 str_buffer_size )
 	m_edit_str	= NULL;
 	m_inserted	= NULL;
 	m_undo_buf	= NULL;
-	m_buf0		= NULL;
-	m_buf1		= NULL;
-	m_buf2		= NULL;
-	m_buf3		= NULL;
 
 	init( str_buffer_size );
 }
@@ -63,10 +60,6 @@ line_edit_control::~line_edit_control()
 	xr_free( m_edit_str );
 	xr_free( m_inserted );
 	xr_free( m_undo_buf );
-	xr_free( m_buf0 );
-	xr_free( m_buf1 );
-	xr_free( m_buf2 );
-	xr_free( m_buf3 );
 
 	for (const auto& action : m_actions)
 		delete action.second;
@@ -77,13 +70,9 @@ line_edit_control::~line_edit_control()
 void line_edit_control::clear_states()
 {
 	m_edit_str[0]	= 0;
-	clear_inserted();
 	m_undo_buf[0]	= 0;
 
-	m_buf0[0]		= 0;
-	m_buf1[0]		= 0;
-	m_buf2[0]		= 0;
-	m_buf3[0]		= 0;
+	lineEditString.clear();
 
 	m_cur_pos		= 0;
 	m_select_start	= 0;
@@ -95,14 +84,12 @@ void line_edit_control::clear_states()
 	m_rep_time			= 0.0f;
 	m_last_frame_time	= 0;
 	m_last_key_time		= 0.0f;
-	m_last_changed_frame  = 0;
 
 	m_hold_mode			= false;
 	m_insert_mode		= false;
 	m_repeat_mode		= false;
 	m_mark				= false;
 	m_cursor_view		= false;
-	m_need_update		= false;
 	m_unselected_mode	= false;
 }
 
@@ -114,19 +101,10 @@ void line_edit_control::init( u32 str_buffer_size, init_mode mode )
 	xr_free( m_edit_str );	m_edit_str = (LPSTR)xr_malloc( m_buffer_size * sizeof(char) );
 	xr_free( m_inserted );	m_inserted = (LPSTR)xr_malloc( m_buffer_size * sizeof(char) );
 	xr_free( m_undo_buf );	m_undo_buf = (LPSTR)xr_malloc( m_buffer_size * sizeof(char) );
-	
-	xr_free( m_buf0 );		m_buf0 = (LPSTR)xr_malloc( m_buffer_size * sizeof(char) );
-	xr_free( m_buf1 );		m_buf1 = (LPSTR)xr_malloc( m_buffer_size * sizeof(char) );
-	xr_free( m_buf2 );		m_buf2 = (LPSTR)xr_malloc( m_buffer_size * sizeof(char) );
-	xr_free( m_buf3 );		m_buf3 = (LPSTR)xr_malloc( m_buffer_size * sizeof(char) );
+
+	lineEditString.reserve(m_buffer_size);
 
 	clear_states();
-
-	//for ( u32 i = 0; i < DIK_COUNT; ++i )
-	{
-		//xr_delete( m_actions[i] );
-		//m_actions[i] = NULL;
-	}
 
 	assign_callback(SDL_SCANCODE_A, Callback(this, &line_edit_control::select_all_buf), SDL_KMOD_CTRL);
 	assign_callback(SDL_SCANCODE_C, Callback(this, &line_edit_control::copy_to_clipboard), SDL_KMOD_CTRL);
@@ -195,51 +173,41 @@ text_editor::callback_base* line_edit_control::createCallbackBase(Callback const
 	return new text_editor::callback_base(callback, state);
 }
 
-void line_edit_control::insert_character( char c )
-{
-	m_inserted[0] = c;
-}
-
-void line_edit_control::clear_inserted()
-{
-	m_inserted[0] = m_inserted[1] = 0;
-}
-
-bool line_edit_control::empty_inserted()
-{
-	return (m_inserted[0] == 0);
-}
-
 void line_edit_control::set_edit( LPCSTR str )
 {
-	u32 str_size = xr_strlen( str );
-	clamp( str_size, (u32)0, (u32)(m_buffer_size-1) );
-	strncpy_s( m_edit_str, m_buffer_size, str, str_size );
-	m_edit_str[str_size] = 0;
+	lineEditString = str;
 
-	m_cur_pos      = str_size;
+	m_cur_pos = lineEditString.size();
 	m_select_start = m_cur_pos;
 	m_accel        = 1.0f;
-	update_bufs();
 }
 
 void line_edit_control::InputConsoleText(const char* text)
 {
-	clamp_cur_pos();
-	compute_positions();
+//	clamp_cur_pos();
+//	compute_positions();
 
-	u32 text_size = xr_strlen(text) + xr_strlen(m_edit_str);
-	
+	u32 text_size = xr_strlen(text) + lineEditString.size();
+
 	if (text_size == (m_buffer_size - 1))
 		return;
+
+	bool needUpdateCurPos = m_cur_pos == lineEditString.size();
+
+	if (!m_insert_mode)
+		lineEditString.insert(m_cur_pos, text);
+	else
+		lineEditString.replace(m_cur_pos, 1, text);
 
 	strncat_s(m_edit_str, m_buffer_size,  text, text_size);
 	m_edit_str[text_size] = 0;
 
-	m_cur_pos = text_size;
-	m_select_start = m_cur_pos;
+	if (needUpdateCurPos)
+		m_cur_pos = text_size;
+	else
+		move_pos_right();
+
 	m_accel = 1.0f;
-	update_bufs();
 }
 
 // ========================================================
@@ -253,8 +221,6 @@ void line_edit_control::on_key_press( int dik )
 	}
 	m_mark = true;
 
-	clear_inserted();
-
 	auto it = m_actions.find((SDL_Scancode)dik);
 
 	if (it != m_actions.end())
@@ -267,9 +233,8 @@ void line_edit_control::on_key_press( int dik )
 	}
 	
 	m_edit_str[m_buffer_size-1] = 0;
-	clamp_cur_pos();
 
-	if ( m_mark && (!pInput->GetModState(SDL_KMOD_SHIFT) || !empty_inserted()))
+	if ( m_mark && (!pInput->GetModState(SDL_KMOD_SHIFT)))
 	{
 		m_select_start = m_cur_pos;
 	}
@@ -277,15 +242,12 @@ void line_edit_control::on_key_press( int dik )
 
 	m_repeat_mode = false;
 	m_rep_time    = 0.0f;
-	
-	update_bufs();
 }
 
 // -------------------------------------------------------------------------------------------------
 
 void line_edit_control::on_key_hold( int dik )
 {
-	update_bufs();
 	switch ( dik )
 	{
 	case DIK_TAB:
@@ -313,8 +275,6 @@ void line_edit_control::on_key_release( int dik )
 	m_accel         = 1.0f;
 	m_rep_time      = 0.0f;
 	m_last_key_time = 0.0f;
-
-	update_bufs		( );
 }
 
 void line_edit_control::on_frame()
@@ -340,37 +300,11 @@ void line_edit_control::on_frame()
 		m_accel       += 0.2f;
 	}
 	m_last_key_time += dt;
-
-	if ( m_last_changed_frame + 1 < Device.dwFrame )
-	{
-		m_need_update = false;
-	}
 	
 	/*if ( Device.dwFrame % 100 == 0 )
 	{
 	Msg( " cur_time=%.2f  re=%d  acc=%.2f   rep_time=%.2f", cur_time, bRepeat, fAccel, rep_time );
 	}*/
-}
-
-void line_edit_control::update_bufs()
-{
-	//separate_buffer
-	m_buf0[0] = 0;
-	m_buf1[0] = 0;
-	m_buf2[0] = 0;
-	m_buf3[0] = 0;
-
-	int edit_size = (int)xr_strlen( m_edit_str );
-	int ds = (m_cursor_view && m_insert_mode && m_p2 < edit_size)? 1 : 0;
-	strncpy_s( m_buf0, m_buffer_size, m_edit_str,             m_cur_pos             );
-	strncpy_s( m_buf1, m_buffer_size, m_edit_str,             m_p1                  );
-	strncpy_s( m_buf2, m_buffer_size, m_edit_str + m_p1,      m_p2 - m_p1 + ds      );
-	strncpy_s( m_buf3, m_buffer_size, m_edit_str + m_p2 + ds, edit_size - m_p2 - ds );
-	
-	m_need_update = true;
-	m_last_changed_frame = Device.dwFrame;
-//	if ( m_cursor_view )	{
-//		Msg( " m_p1=%d  m_p2=%d  cur=%d  sstart=%d", m_p1, m_p2, m_cur_pos, m_select_start );	}
 }
 
 void line_edit_control::copy_to_clipboard()
@@ -431,27 +365,11 @@ void line_edit_control::delete_selected_forward()
 
 void line_edit_control::delete_selected( bool back )
 {
-	clamp_cur_pos();
-	int edit_len = (int)xr_strlen( m_edit_str );
-	if ( edit_len > 0 )
-	{
-		if ( back )
-		{
-			u8 dp = ( (m_p1 == m_p2) && m_p1 > 0 )? 1 : 0;
-			strncpy_s( m_undo_buf,             m_buffer_size, m_edit_str + m_p1 - dp, m_p2 - m_p1 + dp );
-			strncpy_s( m_edit_str + m_p1 - dp, m_buffer_size, m_edit_str + m_p2,      edit_len - m_p2  );
-			m_cur_pos = m_p1 - dp;
-		}
-		else
-		{
-			u8 dn = ( (m_p1 == m_p2) && m_p2 < edit_len )? 1 : 0;
-			strncpy_s( m_undo_buf,        m_buffer_size, m_edit_str + m_p1,      m_p2 - m_p1 + dn     );
-			strncpy_s( m_edit_str + m_p1, m_buffer_size, m_edit_str + m_p2 + dn, edit_len - m_p2 - dn );
-			m_cur_pos = m_p1;
-		}
-		clamp_cur_pos();
-	}
-	m_select_start = m_cur_pos;
+	if (m_cur_pos <= 0)
+		return;
+
+	lineEditString.erase(lineEditString.begin() + m_cur_pos - 1);
+	move_pos_left();
 }
 
 void line_edit_control::delete_word_back()
@@ -480,24 +398,43 @@ void line_edit_control::move_pos_end()
 
 void line_edit_control::move_pos_left()
 {
+	if (m_cur_pos - 1 < 0)
+		return;
+
 	--m_cur_pos;
 }
 
 void line_edit_control::move_pos_right()
 {
+	if (m_cur_pos + 1 > lineEditString.size())
+		return;
+
 	++m_cur_pos;
 }
 
 void line_edit_control::move_pos_left_word()
 {
-	int i = m_cur_pos - 1;
-	while ( i >= 0 && m_edit_str[i] == ' ' ) { --i; }
-	if ( !terminate_char( m_edit_str[i] ) )
+	int i = m_cur_pos;
+
+	xr_string subString(std::string_view(lineEditString).substr(0, m_cur_pos));
+	for (auto it = subString.rbegin(); it != subString.rend(); ++it)
 	{
-		while ( i >= 0 && !terminate_char( m_edit_str[i], true )  ) { --i; }
-		++i;
+		if (*it == ' ')
+		{
+			--i;
+			continue;
+		}
+
+		if (!terminate_char(*it, true))
+		{
+			--i;
+			continue;
+		}
+
+		break;
 	}
-	m_cur_pos = i;
+
+	m_cur_pos = i - 1;
 }
 
 void line_edit_control::move_pos_right_word()
@@ -527,11 +464,6 @@ void line_edit_control::compute_positions()
 	{
 		m_p2 = m_select_start;
 	}
-}
-
-void line_edit_control::clamp_cur_pos()
-{
-	clamp( m_cur_pos, 0, (int)xr_strlen( m_edit_str ) );
 }
 
 void line_edit_control::SwitchKL()

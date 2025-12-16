@@ -287,25 +287,28 @@ float CGameFont::SizeOf_( const char cChar )
 	return ( ( GetCharTC( ( u16 ) ( u8 ) cChar ).z * vInterval.x ) );
 }
 
-float CGameFont::SizeOf_( LPCSTR s )
+float CGameFont::SizeOf_(std::string_view s )
 {
-	if ( ! ( s && s[ 0 ] ) )
+	if (s.empty())
 		return 0;
 
 	if ( IsMultibyte() ) {
 		wide_char wsStr[ MAX_MB_CHARS ];
 
-		mbhMulti2Wide( wsStr , NULL , MAX_MB_CHARS , s );
+		mbhMulti2Wide(wsStr, NULL, MAX_MB_CHARS, s.data());
 
 		return SizeOf_( wsStr );
 	}
 
-	int		len			= xr_strlen(s);
-	float	X			= 0;
+	int len = s.size();
+	float X = 0.0f;
 	if (len)
-		for (int j=0; j<len; j++)
-			X			+= GetCharTC( ( u16 ) ( u8 ) s[ j ] ).z;
-	return				(X*vInterval.x/**vTS.x*/);
+	{
+		for (int j = 0; j < len; j++)
+			X += GetCharTC((u16)(u8)s[j]).z;
+	}
+
+	return X * vInterval.x/**vTS.x*/;
 }
 
 float CGameFont::SizeOf_( const wide_char *wsStr )

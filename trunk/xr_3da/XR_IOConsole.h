@@ -1,15 +1,14 @@
-// XR_IOConsole.h: interface for the CConsole class.
-//
-//////////////////////////////////////////////////////////////////////
-#ifndef XR_IOCONSOLE_H_INCLUDED
-#define XR_IOCONSOLE_H_INCLUDED
+#pragma once
 
 #include "../Include/xrRender/FactoryPtr.h"
 #include "../Include/xrRender/UIShader.h"
+#include "IInputReceiver.h"
 
 //refs
 class ENGINE_API CGameFont;
 class ENGINE_API IConsole_Command;
+
+constexpr int CONSOLE_BUF_SIZE = 1024;
 
 namespace text_editor
 {
@@ -56,7 +55,8 @@ struct TipString
 class ENGINE_API CConsole :
 	public pureRender,
 	public pureFrame,
-	public pureScreenResolutionChanged
+	public pureScreenResolutionChanged,
+	public IInputReceiver
 {
 public:
 	struct str_pred
@@ -74,7 +74,6 @@ public:
 	typedef  xr_vector<shared_str>						vecTips;
 	typedef  xr_vector<TipString>						vecTipsEx;
 
-	enum			{ CONSOLE_BUF_SIZE = 1024 };
 	enum			{ VIEW_TIPS_COUNT = 14, MAX_TIPS_COUNT = 220 };
 
 protected:
@@ -85,8 +84,8 @@ protected:
 	
 	FactoryPtr<IUIShader>*		m_hShader_back;
 
-	POINT			m_mouse_pos;
 	bool			m_disable_tips;
+	bool updateTipsInput{};
 
 private:
 	vecHistory		m_cmd_history;
@@ -110,9 +109,16 @@ public:
 	virtual	void	Initialize			();
 	virtual void	Destroy				();
 
-	virtual void		OnRender			();
-	virtual void _BCL	OnFrame				();
-	virtual void	OnScreenResolutionChanged();
+	void OnRender() override;
+	void OnFrame() override;
+	void OnScreenResolutionChanged() override;
+
+	void IR_OnKeyboardPress(int dik) override;
+	void IR_OnKeyboardHold(int dik) override;
+	void IR_OnKeyboardRelease(int dik) override;
+	void IR_OnTextInput(const char* text) override;
+	void IR_OnMouseWheel(int direction) override;
+	
 	string64		ConfigFile;
 	bool			bVisible;
 	vecCMD			Commands;
@@ -164,7 +170,7 @@ protected:
 	bool	is_mark				( Console_mark type );
 	u32		get_mark_color		( Console_mark type );
 
-	void	DrawBackgrounds		();
+	void	DrawBackgrounds		(float tipsX);
 	void	DrawRect			( Frect const& r, u32 color );
 	void	OutFont				( LPCSTR text, float& pos_y );
 	void	Register_callbacks	();
@@ -207,8 +213,7 @@ protected:
 	void	reset_selected_tip	();
 
 	IConsole_Command* find_next_cmd( LPCSTR in_str, shared_str& out_str );
-	bool	add_next_cmds		( LPCSTR in_str, vecTipsEx& out_v );
-	bool	add_internal_cmds	( LPCSTR in_str, vecTipsEx& out_v );
+	void add_internal_cmds(std::string_view in_str, vecTipsEx& out_v);
 	
 	void	update_tips			();
 	void	select_for_filter	( LPCSTR filter_str, vecTips& in_v, vecTipsEx& out_v );
@@ -216,5 +221,3 @@ protected:
 }; // class CConsole
 
 ENGINE_API extern CConsole* Console;
-
-#endif // XR_IOCONSOLE_H_INCLUDED

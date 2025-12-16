@@ -11,7 +11,7 @@
 #include "line_editor.h"
 #include "edit_actions.h"
 #include "xr_ioc_cmd.h"
-
+#include "xr_input.h"
 
 void CConsole::Register_callbacks()
 {
@@ -40,7 +40,7 @@ void CConsole::Register_callbacks()
 
 	ec().assign_callback(SDL_SCANCODE_TAB, Callback(this, &CConsole::Find_cmd));
 	ec().assign_callback(SDL_SCANCODE_TAB, Callback(this, &CConsole::Find_cmd_back), SDL_KMOD_SHIFT);
-	ec().assign_callback(SDL_SCANCODE_TAB, Callback(this, &CConsole::GamePause), SDL_KMOD_ALT);
+	ec().assign_callback(SDL_SCANCODE_TAB, Callback(this, &CConsole::GamePause), SDL_KMOD_ALT); //Need me??
 }
 
 void CConsole::Prev_log() // DIK_PRIOR=PAGE_UP
@@ -75,7 +75,7 @@ void CConsole::Find_cmd() // DIK_TAB
 {
 	shared_str out_str;
 		
-	IConsole_Command* cc = find_next_cmd( ec().str_edit(), out_str );
+	IConsole_Command* cc = find_next_cmd(ec().lineEditString.c_str(), out_str );
 	if ( cc && out_str.size() )
 	{
 		ec().set_edit( out_str.c_str() );
@@ -84,23 +84,14 @@ void CConsole::Find_cmd() // DIK_TAB
 
 void CConsole::Find_cmd_back() // DIK_TAB+shift
 {
-	LPCSTR edt      = ec().str_edit();
-	LPCSTR radmin_cmd_name = "ra ";
-	bool b_ra  = (edt == strstr( edt, radmin_cmd_name ) );
-	u32 offset = (b_ra)? xr_strlen( radmin_cmd_name ) : 0;
+	LPCSTR edt = ec().lineEditString.c_str();
 
-	vecCMD_IT it = Commands.lower_bound( edt + offset );
+	vecCMD_IT it = Commands.lower_bound(edt);
 	if ( it != Commands.begin() )
 	{
 		--it;
 		IConsole_Command& cc = *(it->second);
-		LPCSTR name_cmd      = cc.Name();
-		u32    name_cmd_size = xr_strlen( name_cmd );
-		PSTR   new_str  = (PSTR)_alloca( (offset + name_cmd_size + 2) * sizeof(char) );
-
-		xr_strcpy( new_str, offset + name_cmd_size + 2, (b_ra)? radmin_cmd_name : "" );
-		xr_strcat( new_str, offset + name_cmd_size + 2, name_cmd );
-		ec().set_edit( new_str );
+		ec().set_edit(cc.Name());
 	}
 }
 
@@ -118,7 +109,7 @@ void CConsole::Next_cmd() // DIK_DOWN + Ctrl
 
 void CConsole::Prev_tip() // DIK_UP
 {
-	if ( xr_strlen( ec().str_edit() ) == 0 )
+	if (!updateTipsInput && ec().lineEditString.empty())
 	{
 		prev_cmd_history_idx();
 		SelectCommand();
@@ -127,9 +118,9 @@ void CConsole::Prev_tip() // DIK_UP
 	prev_selected_tip();
 }
 
-void CConsole::Next_tip() // DIK_DOWN + Ctrl
+void CConsole::Next_tip() // DIK_DOWN
 {
-	if ( xr_strlen( ec().str_edit() ) == 0 )
+	if (!updateTipsInput && ec().lineEditString.empty())
 	{
 		next_cmd_history_idx();
 		SelectCommand();
@@ -165,26 +156,31 @@ void CConsole::PageDown_tips()
 
 void CConsole::Execute_cmd() // DIK_RETURN, DIK_NUMPADENTER
 {
-	if ( 0 <= m_select_tip && m_select_tip < (int)m_tips.size() )
+	if (0 <= m_select_tip && m_select_tip < (int)m_tips.size())
 	{
+		xr_string tempString{};
 		shared_str const& str = m_tips[m_select_tip].text;
 		if ( m_tips_mode == 1 )
 		{
-			LPSTR buf;
-			STRCONCAT( buf, str.c_str(), " " );
-			ec().set_edit( buf );
+			tempString = str.c_str();
+			tempString += " ";
 		}
 		else if ( m_tips_mode == 2 )
 		{
-			LPSTR buf;
-			STRCONCAT( buf, m_cur_cmd.c_str(), " ", str.c_str() );
-			ec().set_edit( buf );
+			tempString = m_cur_cmd.c_str();
+			tempString += " ";
+			tempString += str.c_str();
 		}
+
+		ec().set_edit(tempString.c_str());
 		reset_selected_tip();
+
+		m_tips.clear();
+		m_temp_tips.clear();
 	}
 	else
 	{
-		ExecuteCommand( ec().str_edit() );
+		ExecuteCommand( ec().lineEditString.c_str(), !pInput->GetPressedKey(SDL_SCANCODE_F1));
 	}
 	m_disable_tips = false;
 }
