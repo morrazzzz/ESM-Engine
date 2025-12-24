@@ -42,10 +42,10 @@
 
 #include "../xr_3da/device.h"
 
-#ifdef PRIQUEL
-#	define USE_SMART_HITS
+//#ifdef PRIQUEL
+//#	define USE_SMART_HITS
 #	define USE_IK
-#endif // PRIQUEL
+//#endif // PRIQUEL
 
 //void  NodynamicsCollide( bool& do_colide, bool bo1, dContact& c, SGameMtl * /*material_1*/, SGameMtl * /*material_2*/ )
 //{
