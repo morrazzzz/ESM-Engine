@@ -11,6 +11,7 @@
 
 #include "misc\zones.ltx"
 #include "misc\postprocess.ltx"
+#include "misc\vehicles.ltx" ;delete this
 
 #include "misc\artefacts.ltx"
 #include "misc\devices.ltx"
@@ -23,26 +24,12 @@
 
 #include "creatures\game_relations.ltx"
 
-#include "mp\mp_actor.ltx"
-#include "mp\team_logo.ltx"
-#include "mp\weapons_mp\ammo_mp.ltx"
-#include "mp\weapons_mp\weapons_mp.ltx"
-#include "mp\weapons_mp\outfit_mp.ltx"
-#include "mp\weapons_mp\items_mp.ltx"
-
-;Game types
-#include "mp\SoundMessages\mp_snd_messages.ltx"
-#include "mp\SoundMessages\ahunt_snd_messages.ltx"
-#include "mp\SoundMessages\dm_snd_messages.ltx"
-#include "mp\SoundMessages\tdm_snd_messages.ltx"
-#include "mp\deathmatch_game.ltx"
-#include "mp\teamdeathmatch_game.ltx"
-#include "mp\artefacthunt_game.ltx"
-
 #include "evaluation.ltx"
 #include "fonts.ltx"
 
 #include "alife.ltx"
+
+#include "mp\mp_ranks.ltx" ;Delete me!!!
 
 ; Smart Terrain
 #include "misc\smart_terrain.ltx"
@@ -60,8 +47,8 @@
 #include "esm_engine_settings\weapon_options.ltx"
 
 [tips_zone]
-enable_tips_zone = true ;‚кл/выкл рубрики
-count_tips_zone = 100 ;Љол-во советов, автоматически менЯетсЯ в заголовке
+enable_tips_zone = true ;пїЅпїЅпїЅ/пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+count_tips_zone = 70 ;пїЅпїЅпїЅ-пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
 [zone_pick_dof]
 near    = -1500.0
@@ -83,10 +70,10 @@ ang_speed2	= 7.0
 ang_speed3	= 2.0
 
 [texture_desc]
-files = ui_mp_icon_rank, ui_icons_map, ui_common, ui_old_textures, ui_ingame, ui_map_description, ui_models_multiplayer, ui_team_logo, ui_team_logo_small, ui_mainmenu, ui_mp_main, ui_statistics, ui_hud, ui_numpad, ui_inventory, ui_inventory2, ui_iconstotal, ui_pda, ui_icons_npc, ui_npc_monster, ui_npc_unique, ui_buy_menu, ui_asus_intro
+files = ui_mp_icon_rank, ui_icons_map, ui_common, ui_old_textures, ui_ingame, ui_ingame_scope,  ui_map_description, ui_models_multiplayer, ui_team_logo, ui_team_logo_small, ui_mainmenu, ui_mp_main, ui_statistics, ui_hud, ui_numpad, ui_inventory, ui_inventory2, ui_iconstotal, ui_pda, ui_icons_npc, ui_npc_monster, ui_npc_unique, ui_buy_menu, ui_asus_intro
 
 [info_portions]
-;список xml файлов, содержащих info_portions
+;пїЅпїЅпїЅпїЅпїЅпїЅ xml пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ info_portions
 files = info_portions, info_portions_light, info_portions_test, info_lchanger_ico, info_level_tips, info_known_objects, info_l01escape, info_l02garbage, info_l03agroprom, info_l04agroprom_u, info_l05dark_valley, info_l06dark_valley_u, info_l07rostok, info_l08yantar, info_l08deadcity, info_l08rostok_bar, info_l09marshes, info_l09rostok_dolg, info_l10military, info_l11pripyat, info_l11yantar, info_l12yantar_u, info_l13deadcity, info_l14swamp, info_l10radar, info_l16radar_antena, info_l17monolith_control, info_l19stanciya, info_l12u_sarcofag, info_l21generators, info_l22warlab, info_stories
 
 [encyclopedia]
@@ -96,14 +83,14 @@ files = encyclopedia_infos, storyline_info_to_diary, encyclopedia_weapons, encyc
 files = dialogs_test, dialogs, dialogs_escape, dialogs_garbage, dialogs_agroprom, dialogs_deadcity, dialogs_darkvalley, dialogs_pripyat, dialogs_bar, dialogs_yantar, dialogs_military, dialogs_labx18, dialogs_radar, dialogs_aes
 
 [profiles]
-;список xml файлов, содержащих профили сталкеров и торговцев
+;пїЅпїЅпїЅпїЅпїЅпїЅ xml пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 files =  npc_profile
-;список xml файлов, содержащих описания конкретных сталкеров и торговцев
+;пїЅпїЅпїЅпїЅпїЅпїЅ xml пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 specific_characters_files = character_desc_general, character_desc_simulation,character_desc_escape, character_desc_garbage, character_desc_agroprom, character_desc_darkvalley, character_desc_deadcity, character_desc_bar, character_desc_yantar, character_desc_military, character_desc_radar, character_desc_pripyat, character_desc_aes, character_desc_kishka, character_desc_sarcofag
 
 [artefacts_tasks]
-;имя скриптовой функции, которая вызывается для создания
-;списка артефактов
+;пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+;пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 script_func = ;trader_job.artefacts_task_list_text
 
 [game_tasks]
@@ -166,37 +153,37 @@ max_count			= 5
 
 [bloody_marks]
 wallmarks			= wm\wm_blood_1,wm\wm_blood_2,wm\wm_blood_3
-dist				= 2.0	;2.4	;(м) max расстояние отлета крови
-max_size			= 0.4	;0.3	;(м)радиус пятна при хите силой nominal hit по большому объекту (по маленькому *0.5)
-min_size			= 0.06			;(м)минимальный радиус пятна
-nominal_hit			= 0.5			;величина номинального хита, при котором разлетается максимум крови (max_size)
+dist				= 2.0	;2.4	;(пїЅ) max пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+max_size			= 0.4	;0.3	;(пїЅ)пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ nominal hit пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ *0.5)
+min_size			= 0.06			;(пїЅ)пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+nominal_hit			= 0.5			;пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ (max_size)
 
-;капли крови
+;пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 
 blood_drops			= wm\wm_blood_drop_1,wm\wm_blood_drop_2,wm\wm_blood_drop_3,wm\wm_blood_drop_4
-start_blood_size	= 0.4			;размер раны чтоб начала капать кровь
-stop_blood_size		= 0.025			;размер раны чтоб кровь остановилась (должно быть меньше start_blood_size)
+start_blood_size	= 0.4			;пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+stop_blood_size		= 0.025			;пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ start_blood_size)
 
 blood_drop_time     = 0.1			;OBSOLETE
 blood_drop_time_min = 0.3			;
 blood_drop_time_max = 2.0			;
-blood_drop_size		= 0.1			;размер капли (м) крови, которая упала
+blood_drop_size		= 0.1			;пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ (пїЅ) пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 
 
 [entity_fire_particles]
 fire_particles = damage_fx\burn_creatures
-start_burn_size	= 0.0003		;размер ожега после которого начать играть партиклы огня
-stop_burn_size	= 0.0001		;размер ожега после которого остановить партиклы
-min_burn_time	= 10000		;минимальное время отыгрыша партиклов (даже если рана уже зажила)
+start_burn_size	= 0.0003		;пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
+stop_burn_size	= 0.0001		;пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+min_burn_time	= 10000		;пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ)
 
 [hud_cursor]
-;все размеры в процентах от длины экрана
-cross_length		= 0.015					;длина "палочки" прицела
-min_radius			= 0.0					;минимальный радиус прицела (при нулевой дисперсии)
-max_radius			= 1.0					;максимальный радиус
-radius_lerp_speed	= 0.08					;скорость интерполяции положений прицела
-cross_color			= 0.7,0.7,0.7,1.0		;цвет прицела
-disp_scale			= 0.08					;масштаб прицела (относительно радиан)
+;пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+cross_length		= 0.015					;пїЅпїЅпїЅпїЅпїЅ "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ" пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+min_radius			= 0.0					;пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
+max_radius			= 1.0					;пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+radius_lerp_speed	= 0.08					;пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+cross_color			= 0.7,0.7,0.7,1.0		;пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+disp_scale			= 0.08					;пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ)
 
 [hud_hitmark]
 hit_mark_texture = ui\ui_hud_hit_mark
@@ -354,12 +341,12 @@ $spawn               = "ai\graph point"
 ; Trade
 ;-----------------------------------------------------------------
 [trade]
-;коэффициенты изменения цены при торговле в зависимости от отношения к персонажу
-;линейно апроксимируются между значения
-buy_price_factor_hostile	= 1		;коэффициент покупки при goodwill = -100
-buy_price_factor_friendly	= 1		;коэффициент покупки при goodwill = 100
-sell_price_factor_hostile	= 1		;коэффициент покупки при goodwill = -100
-sell_price_factor_friendly	= 1		;коэффициент покупки при goodwill = 100
+;пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+;пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+buy_price_factor_hostile	= 1		;пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ goodwill = -100
+buy_price_factor_friendly	= 1		;пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ goodwill = 100
+sell_price_factor_hostile	= 1		;пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ goodwill = -100
+sell_price_factor_friendly	= 1		;пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ goodwill = 100
 
 
 
@@ -392,7 +379,7 @@ script_binding	= xr_zones.bind
 object_damage_factor		= 1.2f
 
 ;*****************************************
-; ГЕНЕРАТОРЫ ИМЕН
+; пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 ;*****************************************
 [stalker_names_stalker]
 name_cnt		= 102
@@ -433,7 +420,7 @@ Human		     			= off											; option for ALife Simulator
 cform                       = skeleton										; collision class
 class                       = SCRPTOBJ										; AI class
 
-;параметры показывания входящих сообщений PDA в главном меню
+;пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ PDA пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 [maingame_ui]
 pda_msgs_max_show_time = 20000
 info_msgs_max_show_time = 10000
@@ -491,7 +478,7 @@ inv_grid_width			= 2
 inv_grid_height			= 1
 inv_grid_x				= 16
 inv_grid_y				= 12
-attach_angle_offset		= -1.5708,0.1919,3.1416    ;устанавливается в радианах Angle*PI/180
+attach_angle_offset		= -1.5708,0.1919,3.1416    ;пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ Angle*PI/180
 attach_position_offset	= 0.075, 0.066, 0.023
 attach_bone_name		= bip01_l_hand
 auto_attach				= false
@@ -603,7 +590,7 @@ swing_fast_speed	= 0.5;1
 
 [ph_capture_visuals]
 
-//Список объектов которые можно таскать.
+//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
 
 //bandit
 actors\bandit\stalker_bandit_1
