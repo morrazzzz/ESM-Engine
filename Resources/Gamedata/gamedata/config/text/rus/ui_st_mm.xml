@@ -1,112 +1,46 @@
 <?xml version="1.0" encoding="windows-1251" ?>
 <string_table>
-	<string id="Clear">
-		<text>ясная</text>
-	</string>
-	<string id="Cloudy">
-		<text>облачная</text>
-	</string>
 	<string id="Default">
-		<text>средние</text>
+		<text>Средние</text>
 	</string>
 	<string id="Extreme">
-		<text>максимальные</text>
+		<text>Максимальные</text>
 	</string>
 	<string id="gd_master">
-		<text>мастер</text>
+		<text>Мастер</text>
 	</string>
 	<string id="gd_novice">
-		<text>новичок</text>
+		<text>Новичок</text>
 	</string>
 	<string id="gd_stalker">
-		<text>опытный</text>
+		<text>Опытный</text>
 	</string>
 	<string id="gd_veteran">
-		<text>ветеран</text>
+		<text>Ветеран</text>
 	</string>
 	<string id="High">
-		<text>высокие</text>
+		<text>Высокие</text>
 	</string>
 	<string id="Low">
-		<text>низкие</text>
+		<text>Низкие</text>
 	</string>
 	<string id="Minimum">
-		<text>минимальные</text>
-	</string>
-	<string id="mm_mp_check_cdkey">
-		<text>проверять CD-Key</text>
-	</string>
-	<string id="Nigth">
-		<text>ночь</text>
-	</string>
-	<string id="Rain">
-		<text>дождь</text>
+		<text>Минимальные</text>
 	</string>
 	<string id="renderer_r1">
-		<text>Статичное освещение</text>
+		<text>Статичное освещение (DX8)</text>
 	</string>
 	<string id="renderer_r2">
-		<text>Полное динамическое освещение</text>
+		<text>Полное динамическое освещение (DX9)</text>
 	</string>
 	<string id="renderer_r2.5">
-		<text>Улучшенное полное освещение</text>
+		<text>Улучшенное полное освещение (DX9)</text>
 	</string>
 	<string id="renderer_r2a">
-		<text>Динамическое освещение объектов</text>
+		<text>Динамическое освещение объектов (DX9)</text>
 	</string>
-	<string id="st_artefacthunt">
-		<text>Охота за артефактом</text>
-	</string>
-	<string id="st_deathmatch">
-		<text>Все против всех</text>
-	</string>
-	<string id="st_rank_experienced">
-		<text>опытный</text>
-	</string>
-	<string id="st_rank_legend">
-		<text>легендарный сталкер</text>
-	</string>
-	<string id="st_rank_novice">
-		<text>новичок</text>
-	</string>
-	<string id="st_rank_professional">
-		<text>профессионал</text>
-	</string>
-	<string id="st_rank_veteran">
-		<text>ветеран</text>
-	</string>
-	<string id="st_team_deathmatch">
-		<text>Команда против команды</text>
-	</string>
-	<string id="testers_mp_agroprom">
-		<text>Завод "Агропром"</text>
-	</string>
-	<string id="testers_mp_atp">
-		<text>АТП</text>
-	</string>
-	<string id="testers_mp_darkvalley">
-		<text>Темная долина</text>
-	</string>
-	<string id="testers_mp_factory">
-		<text>Завод "Янтарь"</text>
-	</string>
-	<string id="testers_mp_lost_village">
-		<text>Покинутая деревня</text>
-	</string>
-	<string id="testers_mp_military_1">
-		<text>Военные склады</text>
-	</string>
-	<string id="testers_mp_pool">
-		<text>Бассейн</text>
-	</string>
-	<string id="testers_mp_railroad">
-		<text>Ж/Д станция</text>
-	</string>
-	<string id="testers_mp_rostok">
-		<text>Завод "Росток"</text>
-	</string>
-	<string id="testers_mp_workshop">
-		<text>Брошенная фабрика</text>
+	<string id="renderer_r4">
+		<text>Полное динамическое освещение (DX11)</text>
 	</string>
 	<string id="ui_mm_60_hz">
 		<text>Частота 60Гц</text>
@@ -125,9 +59,6 @@
 	</string>
 	<string id="ui_mm_back">
 		<text>Назад</text>
-	</string>
-	<string id="ui_mm_blood">
-		<text>Кровь</text>
 	</string>
 	<string id="ui_mm_brightness">
 		<text>Яркость</text>
@@ -152,12 +83,6 @@
 	</string>
 	<string id="ui_mm_difficulty">
 		<text>Сложность</text>
-	</string>
-	<string id="ui_mm_disconnect">
-		<text>Отсоединиться</text>
-	</string>
-	<string id="ui_mm_disconnect_message">
-		<text>Действительно ли вы желаете отсоединиться?</text>
 	</string>
 	<string id="ui_mm_dyn_crosshair">
 		<text>Динамический прицел</text>
@@ -207,12 +132,6 @@
 	<string id="ui_mm_mouse_sense">
 		<text>Чувствительность мыши</text>
 	</string>
-	<string id="ui_mm_multiplayer">
-		<text>СЕТЕВАЯ ИГРА</text>
-	</string>
-	<string id="ui_mm_multiplayer_n">
-		<text>Сетевая игра</text>
-	</string>
 	<string id="ui_mm_music_volume">
 		<text>Громкость музыки</text>
 	</string>
@@ -233,9 +152,6 @@
 	</string>
 	<string id="ui_mm_options_n">
 		<text>Опции</text>
-	</string>
-	<string id="ui_mm_particles_distance">
-		<text>Дальность партиклов</text>
 	</string>
 	<string id="ui_mm_quality_presets">
 		<text>Установки качества</text>
@@ -291,9 +207,6 @@
 	<string id="ui_mm_supersample">
 		<text>Сглаживание</text>
 	</string>
-	<string id="ui_mm_switch_torch">
-		<text>Использование фонариков AI</text>
-	</string>
 	<string id="ui_mm_texture_quality">
 		<text>Качество текстур</text>
 	</string>
@@ -311,21 +224,6 @@
 	</string>
 	<string id="ui_mm_vsync">
 		<text>Верт. синхронизация</text>
-	</string>
-	<string id="ui_st_last_set">
-		<text>Посл. набор</text>
-	</string>
-	<string id="ui_st_preset1">
-		<text>Набор 1</text>
-	</string>
-	<string id="ui_st_preset2">
-		<text>Набор 2</text>
-	</string>
-	<string id="ui_st_preset3">
-		<text>Набор 3</text>
-	</string>
-	<string id="ui_st_reset">
-		<text>Сбросить</text>
 	</string>
 	<string id="ui_st_sell_all">
 		<text>Продать все</text>
