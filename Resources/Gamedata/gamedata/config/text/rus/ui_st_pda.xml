@@ -84,6 +84,9 @@
 	<string id="pda_btn_own">
 		<text>Свои</text>
 	</string>
+	<string id="pda_btn_statistics">
+		<text>Данные</text>
+	</string>
 	<string id="pda_btn_quests">
 		<text>Задачи</text>
 	</string>
@@ -105,26 +108,14 @@
 	<string id="pda_show_descr_btn_hint">
 		<text>Перейти</text>
 	</string>
-	<string id="pda_show_location_btn_hint">
-		<text>Показывать отметки на карте</text>
-	</string>
-	<string id="pda_show_pointer_btn_hint">
-		<text>Сделать отметку активной</text>
-	</string>
 	<string id="pda_switch_description_btn_hint">
 		<text>Переключить карта/текст</text>
 	</string>
 	<string id="Rank">
 		<text>Ранг</text>
 	</string>
-	<string id="remove_spot_btn_hint">
-		<text>Удалить отметку</text>
-	</string>
 	<string id="st_detail_list_for_artefacts">
 		<text>Добытые артефакты</text>
-	</string>
-	<string id="st_detail_list_for_community_relations">
-		<text>Отношения с группировками</text>
 	</string>
 	<string id="st_detail_list_for_monsterkills">
 		<text>Убийство мутантов</text>
@@ -137,9 +128,6 @@
 	</string>
 	<string id="st_map_actor">
 		<text>Меченый</text>
-	</string>
-	<string id="st_news">
-		<text>Новость</text>
 	</string>
 	<string id="st_pda_artefacts">
 		<text>Артефакты</text>
@@ -159,9 +147,6 @@
 	<string id="st_pda_stalker_kills">
 		<text>Убийство сталкеров</text>
 	</string>
-	<string id="st_pda_statistic_reputation">
-		<text>Репутация:</text>
-	</string>
 	<string id="st_pda_statistic_score">
 		<text>Статистика</text>
 	</string>
@@ -176,9 +161,6 @@
 	</string>
 	<string id="st_tip">
 		<text>Сообщение</text>
-	</string>
-	<string id="svoboda_outfit_description_m1">
-		<text>В комбинезон интегрирована металлическая сетка, защищающая от электрических и магнитных полей. В комплект также включен прибор ночного видения.</text>
 	</string>
 	<string id="Tasks">
 		<text>Задания</text>

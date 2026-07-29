@@ -10,7 +10,7 @@
 		<text>Свобода</text>
 	</string>
 	<string id="arena_enemy">
-		<text>Наемник</text>
+		<text>Наёмник</text>
 	</string>
 	<string id="bad">
 		<text>Плохо</text>
@@ -29,9 +29,6 @@
 	</string>
 	<string id="excellent">
 		<text>Отлично</text>
-	</string>
-	<string id="exo_outfit_name_m1">
-		<text>Экзоскелет ПНБ-4УЗ</text>
 	</string>
 	<string id="experienced">
 		<text>Опытный</text>
@@ -52,7 +49,7 @@
 		<text>Нейтрал</text>
 	</string>
 	<string id="killer">
-		<text>Наемник</text>
+		<text>Наёмник</text>
 	</string>
 	<string id="l01_escape">
 		<text>Кордон</text>
@@ -88,7 +85,7 @@
 		<text>ЧАЭС</text>
 	</string>
 	<string id="l12_stancia_2">
-		<text>ЧАЭС</text>
+		<text>ЧАЭС-2</text>
 	</string>
 	<string id="master">
 		<text>Мастер</text>
@@ -200,15 +197,6 @@
 	</string>
 	<string id="ui_inv_bleeding">
 		<text>Кровотечение</text>
-	</string>
-	<string id="st_mp_say_to_all">
-		<text>Всем</text>
-	</string>
-	<string id="st_mp_say_to_team">
-		<text>Команде</text>
-	</string>
-	<string id="st_knife">
-		<text>Нож</text>
 	</string>
 	<string id="l03u_agr_underground">
 		<text>Подземелье НИИ Агропром</text>
