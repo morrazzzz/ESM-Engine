@@ -329,6 +329,7 @@ CPhrase* CPhraseDialog::AddPhrase_script(LPCSTR text, LPCSTR phrase_id, LPCSTR p
 
 	phrase->SetText(text);
 	phrase->m_iGoodwillLevel = goodwill_level;
+	return phrase;
 }
 
 void CPhraseDialog::RandomTextsForPhrase()
