@@ -6,7 +6,7 @@
 //	Description : Script game object class script export
 ////////////////////////////////////////////////////////////////////////////
 
-#include "pch_script.h"
+#include "stdafx.h"
 #include "script_game_object.h"
 #include "script_game_object_impl.h"
 #include "ai_space.h"

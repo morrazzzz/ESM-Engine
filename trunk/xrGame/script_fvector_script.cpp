@@ -6,7 +6,7 @@
 //	Description : Script float vector script export
 ////////////////////////////////////////////////////////////////////////////
 
-#include "pch_script.h"
+#include "stdafx.h"
 #include "script_fvector.h"
 
 using namespace luabind;

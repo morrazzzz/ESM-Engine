@@ -1,4 +1,4 @@
-#include "pch_script.h"
+#include "stdafx.h"
 #include "console_registrator.h"
 #include "../xr_3da/xr_ioconsole.h"
 

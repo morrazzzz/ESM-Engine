@@ -38,12 +38,12 @@
 #define ECORE_API
 
 // Our headers
-#include "engine.h"
-#include "defines.h"
+#include "../xr_3da/Engine.h"
+#include "../xr_3da/defines.h"
 #ifndef NO_XRLOG
 #include "../xrCore/log.h"
 #endif
-#include "device.h"
+#include "../xr_3da/device.h"
 #include "../xrCore/fs.h"
 
 #include "../xrCDB/xrXRC.h"

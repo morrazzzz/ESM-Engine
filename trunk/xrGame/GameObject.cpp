@@ -1,4 +1,4 @@
-#include "pch_script.h"
+#include "stdafx.h"
 #include "GameObject.h"
 #include "..\Include\xrRender\RenderVisual.h"
 #include "../xrPhysics/PhysicsShell.h"

@@ -112,7 +112,7 @@ struct dummy {
     int ref;
 };
 
-//#include "pch_script.h"
+//#include "stdafx.h"
 
 void CALifeSpawnRegistry::load				(IReader &file_stream, xrGUID *save_guid)
 {
