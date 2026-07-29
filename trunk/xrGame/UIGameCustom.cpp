@@ -1,4 +1,4 @@
-#include "pch_script.h"
+#include "stdafx.h"
 #include "UIGameCustom.h"
 #include "hudmanager.h"
 #include "ui/UIMultiTextStatic.h"

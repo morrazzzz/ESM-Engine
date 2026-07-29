@@ -1,4 +1,4 @@
-#include "pch_script.h"
+#include "stdafx.h"
 #include "UIWpnParams.h"
 #include "UIXmlInit.h"
 #include "../level.h"

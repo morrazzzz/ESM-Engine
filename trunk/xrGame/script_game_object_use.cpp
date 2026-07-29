@@ -1,4 +1,4 @@
-#include "pch_script.h"
+#include "stdafx.h"
 #include "script_game_object.h"
 #include "script_game_object_impl.h"
 #include "UsableScriptObject.h"

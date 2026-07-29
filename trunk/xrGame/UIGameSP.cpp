@@ -1,4 +1,4 @@
-#include "pch_script.h"
+#include "stdafx.h"
 #include "uigamesp.h"
 #include "actor.h"
 #include "../xr_3da/xr_input.h"

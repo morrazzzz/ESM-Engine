@@ -1,4 +1,5 @@
-#include "pch_script.h"
+#include "stdafx.h"
+#include "Actor.h"
 #include "Actor_Flags.h"
 #include "hudmanager.h"
 #ifdef DEBUG
@@ -26,7 +27,6 @@
 #include "../xr_3da/xr_input.h"
 
 //
-#include "Actor.h"
 #include "actor_anim_defs.h"
 #include "HudItem.h"
 #include "ai_sounds.h"

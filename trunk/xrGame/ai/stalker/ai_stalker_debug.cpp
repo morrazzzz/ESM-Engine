@@ -6,7 +6,7 @@
 //	Description : Debug functions for monster "Stalker"
 ////////////////////////////////////////////////////////////////////////////
 
-#include "pch_script.h"
+#include "stdafx.h"
 
 #include "include/xrRender/RenderVisual.h"
 

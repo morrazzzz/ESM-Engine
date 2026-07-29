@@ -27,6 +27,26 @@ IC	void		throw_and_log(const xr_string &s) {Msg("! %s",s.c_str()); throw *shared
 #include "../xr_3da/igame_level.h"
 #include "../xrphysics/xrphysics.h"
 
+extern "C" {
+#include <lua.h>
+#include <lualib.h>
+#include <lauxlib.h>
+#include <luajit.h>
+};
+
+#pragma warning(push)
+#pragma warning(disable:4995)
+#include <luabind/luabind.hpp>
+#pragma warning(pop)
+
+#include <luabind/object.hpp>
+#include <luabind/functor.hpp>
+#include <luabind/operator.hpp>
+#include <luabind/adopt_policy.hpp>
+#include <luabind/return_reference_to_policy.hpp>
+#include <luabind/out_value_policy.hpp>
+#include <luabind/iterator_policy.hpp>
+
 #define REGISTRY_VALUE_GSCDKEY	"InstallCDKEY"
 #define REGISTRY_VALUE_VERSION	"InstallVers"
 #define REGISTRY_VALUE_USERNAME	"InstallUserName"
