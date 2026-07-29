@@ -63,7 +63,12 @@ function actor_binder:net_destroy()
 --		actor_stats.remove_from_ranking(self.object:id())
 --	end
 --	game_stats.shutdown ()
-	db.del_actor(self.object)
+
+	--morrazzzz: INFO: Begin. For ESM Engine! 
+	db.storage[self.object:id()] = nil
+	db.actor_proxy:net_destroy()
+	db.actor = nil
+	--morrazzzz: INFO: End.
 
     sr_light.clean_up ()
 
