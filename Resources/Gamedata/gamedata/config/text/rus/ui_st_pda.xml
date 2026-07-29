@@ -87,6 +87,9 @@
 	<string id="pda_btn_statistics">
 		<text>Данные</text>
 	</string>
+	<string id="pda_btn_statistics_hint">
+		<text>Показать статистику по прохождению</text>
+	</string>
 	<string id="pda_btn_quests">
 		<text>Задачи</text>
 	</string>
