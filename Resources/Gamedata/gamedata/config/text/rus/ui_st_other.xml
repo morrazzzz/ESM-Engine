@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="windows-1251" ?>
 <string_table>
-	<string id="st_drink">
-		<text>Выпить</text>
-	</string>
 	<string id="ui_mm_default">
 		<text>По умолчанию</text>
 	</string>
