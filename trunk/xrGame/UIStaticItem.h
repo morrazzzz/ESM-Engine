@@ -1,65 +1,59 @@
 #pragma once
+#include "ui_defs.h"
 
-#include "ui/uiabstract.h"
-#include "uicustomitem.h"
-#include "../Include/xrRender/FactoryPtr.h"
 
-void		CreateUIGeom		();
-void		DestroyUIGeom		();
-
-class IUIShader;
-
-class CUIStaticItem: public IUISimpleTextureControl, public CUICustomItem
+class CUIStaticItem
 {
-	ui_shader 		hShader;
-	Fvector2		iPos;
-	u32				dwColor;
-	int				iTileX;
-	int				iTileY;
-	float			iRemX;
-	float			iRemY;
-	int				alpha_ref;
 protected:
-	typedef CUICustomItem inherited;
 public:
-	using CUICustomItem::SetOriginalRect;
+	enum {
+		flValidSize				=(1<<0),
+		flValidTextureRect		=(1<<1),
+		flValidHeadingPivot		=(1<<2),
+		flFixedLTWhileHeading	=(1<<3),
+	};
 
+	Frect			TextureRect;
+	Fvector2		vHeadingPivot;
+	Fvector2		vHeadingOffset;
+	Flags8			uFlags;
+
+	ui_shader		hShader;
+	Fvector2		vPos;
+	Fvector2		vSize;
+	u32				dwColor;
 #ifdef DEBUG
-	shared_str	dbg_tex_name;
+	shared_str		dbg_tex_name;
 #endif
-					CUIStaticItem	();
-	virtual			~CUIStaticItem	();
 
-			void	SetAlphaRef		(int val)											{alpha_ref=val;};
-	virtual void	CreateShader	(const char* tex, const char* sh = "hud\\default");
-	virtual void	SetShader		(const ui_shader& sh);
-	virtual void	SetTextureColor	(u32 color)											{SetColor(color);}
-	virtual u32		GetTextureColor	()											const	{return GetColor();}
-	virtual	void	SetOriginalRect	(const Frect& r)									{iOriginalRect = r; uFlags|=flValidOriginalRect;}
-	virtual void	SetOriginalRectEx(const Frect& r)									{iOriginalRect = r; uFlags|=flValidOriginalRect; SetRect(0,0,r.width(),r.height());}
+			void	CreateShader			(LPCSTR tex, LPCSTR sh = "hud\\default");
+			void	SetShader				(const ui_shader& sh)								{hShader = sh;};
+	void			Init					(LPCSTR tex, LPCSTR sh, float left, float top);
+	void			Render					();
+	void			Render					(float angle);
 
+	IC void			SetPos					(float left, float top)			{vPos.set(left,top);}
+	IC float		GetPosX					()								{return vPos.x;}
+	IC float		GetPosY					()								{return vPos.y;}
 
-	void			Init			(LPCSTR tex, LPCSTR sh, float left, float top, u32 align);
+	IC void			SetTextureColor			(u32 clr)					{dwColor= clr;}
+	IC u32			GetTextureColor			() const					{return dwColor;}
+	ui_shader&		GetShader				()							{return hShader;}
+
+public:
+					CUIStaticItem			();
+	IC void			SetSize					(const Fvector2& sz)								{vSize.set(sz); uFlags.set(flValidSize, TRUE); }
+	void			SetTextureRect			(const Frect& r)									{TextureRect = r; uFlags.set(flValidTextureRect,TRUE);}
+	const Frect&	GetTextureRect			() const											{return TextureRect;};
+
+	IC Fvector2		GetSize					() {return vSize;}
 	
-	
-	
-	void			Render			();
-	void			Render			(float angle);
+	   void			SetHeadingPivot			(const Fvector2& p, const Fvector2& offset, bool fixedLT);
+	   void			ResetHeadingPivot		();
+	   IC bool		GetFixedLTWhileHeading	() const								{return !!uFlags.test(flFixedLTWhileHeading);}
+	   Fvector2		GetHeadingPivot			()										{return vHeadingPivot;}
 
-	IC void			SetTile			(int tile_x, int tile_y, float rem_x, float rem_y){iTileX=tile_x;iTileY=tile_y;iRemX=rem_x;iRemY=rem_y;}
-	IC void			SetPos			(float left, float top)			{iPos.set(left,top);}
-	IC void			SetPosX			(float left)					{iPos.x = left;}
-	IC void			SetPosY			(float top)						{iPos.y = top;}
-
-	IC float		GetPosX			()							{return iPos.x;}
-	IC float		GetPosY			()							{return iPos.y;}
-
-	IC void			SetColor		(u32 clr)					{dwColor= clr;}
-	IC void			SetColor		(Fcolor clr)				{dwColor= clr.get();}
-	IC u32			GetColor		() const					{return dwColor;}
-	IC u32&			GetColorRef		()							{return dwColor;}
-	IC ui_shader&	GetShader		()							{return hShader;}
+private:
+	   void			RenderInternal			(const Fvector2& pos);
+	   void			RenderInternal			(float angle);
 };
-
-extern ENGINE_API BOOL g_bRendering; 
-

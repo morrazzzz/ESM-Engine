@@ -16,7 +16,6 @@ struct SHitMark{
 					SHitMark		(const ui_shader& sh, const Fvector& dir);
 					~SHitMark		();
 	bool			IsActive		();
-	void			UpdateAnim		();
 	void			Draw			(float dir);
 };
 

@@ -1,11 +1,5 @@
 #pragma once
-
 #include "uiwindow.h"
-
-#include "../uiframerect.h"
-
-class CUIStatic;
-
 
 class CUIFrameWindow: public CUIWindow,
 					  public CUIMultiTextureOwner
@@ -16,33 +10,37 @@ public:
 	using CUIWindow::Draw;
 					CUIFrameWindow				();
 
-	virtual void	Init						(LPCSTR base_name, float x, float y, float width, float height);
-	virtual void	Init						(float x, float y, float width, float height);
-	virtual void	Init						(LPCSTR base_name, Frect* pRect);
+	virtual void	SetTextureRect				(const Frect& r)	{};
+	virtual const Frect& GetTextureRect			()										const	{return m_tex_rect[fmBK];}
+	virtual void	SetWndSize					(const Fvector2& size);
 
-	virtual void	InitTexture					(const char* texture);
-			void	SetTextureColor				(u32 color)										{m_UIWndFrame.SetTextureColor(color);}
+	virtual void	SetTextureColor				(u32 color)										{m_texture_color = color;}
+	virtual u32		GetTextureColor				()										const	{return m_texture_color;}
 
-	virtual void	SetWidth					(float width);
-	virtual void	SetHeight					(float height);
-	
-			void	SetColor					(u32 cl);
+	virtual void	InitTexture					(LPCSTR texture);
+	virtual void	InitTextureEx				(LPCSTR texture, LPCSTR  shader);
+
+	virtual void	SetStretchTexture			(bool stretch)	{}
+	virtual bool	GetStretchTexture			()				{return false;};	
 
 	virtual void	Draw						();
-	virtual void	Update						();
 	
-	//текст заголовка
-	CUIStatic*		UITitleText;
-	CUIStatic*		GetTitleStatic				()										{return UITitleText;};
-	void			SetVisiblePart				(CUIFrameRect::EFramePart p, BOOL b)	{m_UIWndFrame.SetVisiblePart(p,b);};
-
+	//UI Title for FrameWindow need!!!
+//	CUIStatic* UITitleText;
+//	CUIStatic* GetTitleStatic() { return UITitleText; };
 protected:
+	bool			m_bTextureVisible;
 
-	CUIFrameRect	m_UIWndFrame;
+	enum EFramePart{
+		fmBK=0, fmL, fmR, fmT, fmB, fmLT, fmRB, fmRT, fmLB, fmMax
+	};
 
-	void			FrameClip					(const Frect parentAbsR);
-	
-private:
-	inline void		ClampMax_Zero				(Frect &r);
-
+	ui_shader			m_shader;
+	shared_str			dbg_tex_name;
+	Frect				m_tex_rect			[fmMax];
+	u32					m_texture_color;
+	void				DrawElements		();
+	bool				get_points			(Frect const& r, int i, Fvector2& LTp, Fvector2& RBp, Fvector2& LTt, Fvector2& RBt);
+	void				draw_tile_line		(Frect rect, int i, bool b_horz, Fvector2 const& ts);
+	void				draw_tile_rect		(Frect rect, int i, Fvector2 const& ts);
 };

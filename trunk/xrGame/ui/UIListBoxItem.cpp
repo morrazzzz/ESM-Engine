@@ -2,6 +2,7 @@
 #include "UIListBoxItem.h"
 #include "UIScrollView.h"
 #include "../object_broker.h"
+#include "UIStatic.h"
 
 //. u32 CUIListBoxItem::uid_counter = 0;
 
@@ -11,7 +12,6 @@ CUIListBoxItem::CUIListBoxItem()
 	txt_color_s			= 0xffffffff;
 //.	uid					= uid_counter++;
 	tag					= u32(-1);
-	m_bTextureAvailable = false;
 }
 
 CUIListBoxItem::~CUIListBoxItem()
@@ -31,8 +31,6 @@ u32 CUIListBoxItem::GetTAG()
 
 void CUIListBoxItem::Draw()
 {
-	m_bTextureAvailable = m_bSelected;
-
 	u32 CurColor = GetTextColor();
 	u32 ResColor = (IsEnabled() ? 0xff000000 : 0x80000000) | (CurColor & 0x00ffffff);
 	SetTextColor(ResColor);

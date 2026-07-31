@@ -3,6 +3,7 @@
 #include "UIDialogWnd.h"
 #include "UIEditBox.h"
 #include "../inventory_space.h"
+#include "UIFrameWindow.h"
 
 class CUIDragDropListEx;
 class CUIItemInfo;
@@ -12,6 +13,7 @@ class CUI3tButton;
 class CUICellItem;
 class CInventoryBox;
 class CInventoryOwner;
+class CUIStatic;
 
 class CUICarBodyWnd: public CUIDialogWnd
 {

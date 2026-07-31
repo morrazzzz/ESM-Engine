@@ -131,7 +131,6 @@ void CUIMainIngameWnd::Init()
 	AttachChild					(&UIPickUpItemIcon);
 	xml_init.InitStatic			(uiXml, "pick_up_item", 0, &UIPickUpItemIcon);
 	UIPickUpItemIcon.SetShader	(GetEquipmentIconsShader());
-	UIPickUpItemIcon.ClipperOn	();
 
 	m_iPickUpItemIconWidth		= UIPickUpItemIcon.GetWidth();
 	m_iPickUpItemIconHeight		= UIPickUpItemIcon.GetHeight();
@@ -255,9 +254,9 @@ void CUIMainIngameWnd::Init()
 
 	AttachChild								(&UIStaticDiskIO);
 	UIStaticDiskIO.SetWndRect				(1000,750,16,16);
-	UIStaticDiskIO.GetUIStaticItem().SetRect(0,0,16,16);
+	UIStaticDiskIO.GetUIStaticItem().SetPos(0.0f, 0.0f);
+	UIStaticDiskIO.GetUIStaticItem().SetSize(Fvector2().set(16,16));
 	UIStaticDiskIO.InitTexture				("ui\\ui_disk_io");
-	UIStaticDiskIO.SetOriginalRect			(0,0,32,32);
 	UIStaticDiskIO.SetStretchTexture		(TRUE);
 
 
@@ -323,10 +322,10 @@ void CUIMainIngameWnd::SetAmmoIcon (const shared_str& sect_name)
 	float iXPos				= pSettings->r_float(sect_name, "inv_grid_x");
 	float iYPos				= pSettings->r_float(sect_name, "inv_grid_y");
 
-	UIWeaponIcon.GetUIStaticItem().SetOriginalRect(	(iXPos		 * INV_GRID_WIDTH),
-													(iYPos		 * INV_GRID_HEIGHT),
-													(iGridWidth	 * INV_GRID_WIDTH),
-													(iGridHeight * INV_GRID_HEIGHT));
+	Frect rect{ (iXPos * INV_GRID_WIDTH), (iYPos * INV_GRID_HEIGHT),
+				(iGridWidth * INV_GRID_WIDTH), (iGridHeight * INV_GRID_HEIGHT) };
+
+	UIWeaponIcon.GetUIStaticItem().SetTextureRect(rect);
 	UIWeaponIcon.SetStretchTexture(true);
 
 	// now perform only width scale for ammo, which (W)size >2
@@ -701,11 +700,11 @@ void CUIMainIngameWnd::UpdatePickUpItem	()
 
 	float scale = scale_x<scale_y?scale_x:scale_y;
 
-	UIPickUpItemIcon.GetUIStaticItem().SetOriginalRect(
-		float(m_iXPos * INV_GRID_WIDTH),
-		float(m_iYPos * INV_GRID_HEIGHT),
-		float(m_iGridWidth * INV_GRID_WIDTH),
-		float(m_iGridHeight * INV_GRID_HEIGHT));
+	Frect rect{ float(m_iXPos * INV_GRID_WIDTH), float(m_iYPos * INV_GRID_HEIGHT),
+		float(m_iGridWidth * INV_GRID_WIDTH), float(m_iGridHeight * INV_GRID_HEIGHT)
+	};
+
+	UIPickUpItemIcon.GetUIStaticItem().SetTextureRect(rect);
 
 	UIPickUpItemIcon.SetStretchTexture(true);
 

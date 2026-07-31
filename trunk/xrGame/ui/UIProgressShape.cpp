@@ -72,7 +72,7 @@ void CUIProgressShape::Draw()
 	Fvector2						center_pos;
 	pos_rect.getcenter				(center_pos);
 
-	Frect tex_rect					= m_pTexture->GetUIStaticItem().GetOriginalRect();
+	Frect tex_rect					= m_pTexture->GetUIStaticItem().GetTextureRect();
 	
 	tex_rect.lt.x					/= tsize.x;
 	tex_rect.lt.y					/= tsize.y;

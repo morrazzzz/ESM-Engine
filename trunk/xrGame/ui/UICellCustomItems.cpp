@@ -20,7 +20,7 @@ CUIInventoryCellItem::CUIInventoryCellItem(CInventoryItem* itm)
 	rect.rb.set										(	rect.lt.x+INV_GRID_WIDTHF*m_grid_size.x, 
 														rect.lt.y+INV_GRID_HEIGHTF*m_grid_size.y);
 
-	inherited::SetOriginalRect						(rect);
+	inherited::SetTextureRect						(rect);
 	inherited::SetStretchTexture					(true);
 }
 
@@ -220,7 +220,7 @@ void CUIWeaponCellItem::InitAddon(CUIStatic* s, LPCSTR section, Fvector2 addon_o
 
 		s->SetWndSize			(cell_size);
 		s->SetWndPos			(addon_offset);
-		s->SetOriginalRect		(tex_rect);
+		s->SetTextureRect		(tex_rect);
 		s->SetStretchTexture	(true);
 }
 

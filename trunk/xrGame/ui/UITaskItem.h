@@ -51,6 +51,7 @@ public:
 	virtual void	SetGameTask				(CGameTask* gt, u16 obj_idx);
 	void __stdcall	OnSwitchDescriptionClicked(CUIWindow*, void*);
 
+	void Draw() override;
 	virtual void	MarkSelected			(bool b);
 	virtual bool	OnDbClick				();
 };

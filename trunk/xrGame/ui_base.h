@@ -1,13 +1,11 @@
 #pragma once
 
-struct CFontManager;
 class CUICursor;
 class CUIGameCustom;
 
-#include "../Include/xrRender/UIRender.h"
-#include "../Include/xrRender/FactoryPtr.h"
-
 #include "ui_defs.h"
+
+
 
 class CDeviceResetNotifier :public pureDeviceReset
 {
@@ -48,10 +46,14 @@ struct CFontManager :public pureDeviceReset			{
 	virtual void			OnDeviceReset			();
 };
 
+
 class ui_core: public CDeviceResetNotifier
 {
 	C2DFrustum		m_2DFrustum;
 	C2DFrustum		m_2DFrustumPP;
+	C2DFrustum		m_FrustumLIT;
+
+	bool			m_bPostprocess;
 
 	CFontManager*	m_pFontManager;
 	CUICursor*		m_pUICursor;
@@ -60,8 +62,6 @@ class ui_core: public CDeviceResetNotifier
 	Fvector2		m_scale_;
 	Fvector2*		m_current_scale;
 
-	IC float		ClientToScreenScaledX			(float left)				{return left * m_current_scale->x;};
-	IC float		ClientToScreenScaledY			(float top)					{return top * m_current_scale->y;};
 public:
 	xr_stack<Frect> m_Scissors;
 	
@@ -70,13 +70,16 @@ public:
 	CFontManager&	Font							()								{return *m_pFontManager;}
 	CUICursor&		GetUICursor						()								{return *m_pUICursor;}
 
-	void			ClientToScreenScaled			(Fvector2& dest, float left, float top);
-	void			ClientToScreenScaled			(Fvector2& src_and_dest);
-	void			ClientToScreenScaledWidth		(float& src_and_dest);
-	void			ClientToScreenScaledHeight		(float& src_and_dest);
+	IC float		ClientToScreenScaledX			(float left)	const			{return left * m_current_scale->x;};
+	IC float		ClientToScreenScaledY			(float top)		const			{return top * m_current_scale->y;};
+	void			ClientToScreenScaled			(Fvector2& dest, float left, float top)	const;
+	void			ClientToScreenScaled			(Fvector2& src_and_dest)const;
+	void			ClientToScreenScaledWidth		(float& src_and_dest)	const;
+	void			ClientToScreenScaledHeight		(float& src_and_dest)	const;
+	void			AlignPixel						(float& src_and_dest)	const;
 
-	Frect			ScreenRect						();
-	const C2DFrustum& ScreenFrustum					(){return (m_bPostprocess)?m_2DFrustumPP:m_2DFrustum;}
+	const C2DFrustum& ScreenFrustum					()	const						{return (m_bPostprocess)?m_2DFrustumPP:m_2DFrustum;}
+	C2DFrustum&		ScreenFrustumLIT				()								{return m_FrustumLIT;}
 	void			PushScissor						(const Frect& r, bool overlapped=false);
 	void			PopScissor						();
 
@@ -88,9 +91,10 @@ public:
 	static	bool	is_widescreen					();
 	static	float	get_current_kx					();
 	shared_str		get_xml_name					(LPCSTR fn);
-private:
-	bool m_bPostprocess;
+	
+	IUIRender::ePointType		m_currentPointType;
 };
+
 
 extern CUICursor&		GetUICursor				();
 extern ui_core&			UI						();

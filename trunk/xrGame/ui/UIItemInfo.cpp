@@ -114,10 +114,9 @@ void CUIItemInfo::Init(LPCSTR xml_name){
 		AttachChild					(UIItemImage);	
 		UIItemImage->SetAutoDelete	(true);
 		xml_init.InitStatic			(uiXml, "image_static", 0, UIItemImage);
-		UIItemImage->TextureAvailable(true);
+		UIItemImage->TextureOn		();
 
 		UIItemImage->TextureOff			();
-		UIItemImage->ClipperOn			();
 		UIItemImageSize.set				(UIItemImage->GetWidth(),UIItemImage->GetHeight());
 	}
 
@@ -184,26 +183,41 @@ void CUIItemInfo::InitItem(CInventoryItem* pInvItem)
 		// Загружаем картинку
 		UIItemImage->SetShader				(InventoryUtilities::GetEquipmentIconsShader());
 
-		int iGridWidth						= pInvItem->GetGridWidth();
-		int iGridHeight						= pInvItem->GetGridHeight();
-		int iXPos							= pInvItem->GetXPos();
-		int iYPos							= pInvItem->GetYPos();
+#pragma todo("morrazzzz: CoPMerge: Merge me!!!")
 
-		UIItemImage->GetUIStaticItem().SetOriginalRect(	float(iXPos*INV_GRID_WIDTH), float(iYPos*INV_GRID_HEIGHT),
-														float(iGridWidth*INV_GRID_WIDTH),	float(iGridHeight*INV_GRID_HEIGHT));
-		UIItemImage->TextureOn				();
-		UIItemImage->ClipperOn				();
-		UIItemImage->SetStretchTexture		(true);
-		Frect v_r							= {	0.0f, 
-												0.0f, 
-												float(iGridWidth*INV_GRID_WIDTH),	
-												float(iGridHeight*INV_GRID_HEIGHT)};
+		//Irect item_grid_rect = pInvItem->GetInvGridRect();
+		//Frect texture_rect;
+		//texture_rect.lt.set(item_grid_rect.x1 * INV_GRID_WIDTH, item_grid_rect.y1 * INV_GRID_HEIGHT);
+		//texture_rect.rb.set(item_grid_rect.x2 * INV_GRID_WIDTH, item_grid_rect.y2 * INV_GRID_HEIGHT);
+
+		int iGridWidth = pInvItem->GetGridWidth();
+		int iGridHeight = pInvItem->GetGridHeight();
+		int iXPos = pInvItem->GetXPos();
+		int iYPos = pInvItem->GetYPos();
+
+		Frect texture_rect{ float(iXPos * INV_GRID_WIDTH), float(iYPos * INV_GRID_HEIGHT),
+			float(iGridWidth * INV_GRID_WIDTH), float(iGridHeight * INV_GRID_HEIGHT) };
+		texture_rect.rb.add(texture_rect.lt);
+
+		UIItemImage->GetUIStaticItem().SetTextureRect(texture_rect);
+		UIItemImage->TextureOn();
+		UIItemImage->SetStretchTexture(true);
+
+		//Merge INV_GRID_HEIGHT2?
+		Fvector2 v_r = { float(iGridWidth * INV_GRID_WIDTH), float(iGridHeight * INV_GRID_HEIGHT) };
+
+		//v_r.x								*= UI().get_current_kx();
+
 		if (UI().is_widescreen())
-			v_r.x2 /= 1.328f;
+			v_r.x /= 1.328f;
 
-		UIItemImage->GetUIStaticItem().SetRect	(v_r);
-		UIItemImage->SetWidth					(_min(v_r.width(),	UIItemImageSize.x));
-		UIItemImage->SetHeight					(_min(v_r.height(),	UIItemImageSize.y));
+		UIItemImage->GetUIStaticItem().SetSize(v_r);
+
+		//UIItemImage->SetWidth(v_r.x);
+		//UIItemImage->SetHeight(v_r.y);
+
+		UIItemImage->SetWidth(_min(v_r.x, UIItemImageSize.x));
+		UIItemImage->SetHeight(_min(v_r.y, UIItemImageSize.y));
 	}
 }
 

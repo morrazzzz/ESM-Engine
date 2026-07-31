@@ -46,26 +46,21 @@ public:
 	virtual ui_shader& GetShader					();
 	virtual void		SetTextureColor				(u32 color);
 	virtual u32			GetTextureColor				() const;
-	virtual void		SetOriginalRect				(const Frect& r)			{m_UIStaticItem.SetOriginalRect(r);}
-	virtual void		SetOriginalRectEx			(const Frect& r)			{m_UIStaticItem.SetOriginalRectEx(r);}
+	virtual void		SetTextureRect				(const Frect& r)			{m_UIStaticItem.SetTextureRect(r);}
 	//
 			void		SetVTextAlignment(EVTextAlignment al);
-	virtual void		SetColor					(u32 color)					{ m_UIStaticItem.SetColor(color);		}
-	u32					GetColor					() const					{ return m_UIStaticItem.GetColor();		}
-	u32&				GetColorRef					()							{ return m_UIStaticItem.GetColorRef();	}
+	virtual void		SetColor					(u32 color)					{ m_UIStaticItem.SetTextureColor(color);		}
+	u32					GetColor					() const					{ return m_UIStaticItem.GetTextureColor();		}
 	virtual void		InitTexture					(LPCSTR tex_name);
 	virtual void		InitTextureEx				(LPCSTR tex_name, LPCSTR sh_name="hud\\default");
 	CUIStaticItem*		GetStaticItem				()							{return &m_UIStaticItem;}
-			void		SetOriginalRect				(float x, float y, float width, float height)	{m_UIStaticItem.SetOriginalRect(x,y,width,height);}
-			void		SetHeadingPivot				(const Fvector2& p)			{m_UIStaticItem.SetHeadingPivot(p);}
+
+			void			SetHeadingPivot			(const Fvector2& p, const Fvector2& offset, bool fixedLT){m_UIStaticItem.SetHeadingPivot(p,offset,fixedLT);}
 			void		SetMask						(CUIFrameWindow *pMask);
 	virtual void		SetTextureOffset			(float x, float y)			{ m_TextureOffset.set(x, y); }
 			Fvector2	GetTextureOffeset			() const					{ return m_TextureOffset; }
 			void		TextureOn					()							{ m_bTextureEnable = true; }
 			void		TextureOff					()							{ m_bTextureEnable = false; }
-			void		TextureAvailable			(bool value)				{ m_bAvailableTexture = value; }
-			bool		TextureAvailable			()							{ return m_bAvailableTexture;}
-
 
 	// own
 	virtual void		SetHighlightColor			(const u32 uColor)	{ m_HighlightColor = uColor; }
@@ -110,14 +105,6 @@ public:
 			void AdjustWidthToText			();
 			void HighlightText(bool bHighlight) {m_bEnableTextHighlighting = bHighlight;}
 	virtual bool IsHighlightText();
-
-	virtual void ClipperOn					();
-	virtual void ClipperOff					();
-	virtual void ClipperOff					(CUIStaticItem& UIStaticItem);
-	virtual bool GetClipperState			()								{return m_bClipper;}
-	void TextureClipper						(float offset_x = 0, float offset_y = 0,Frect* pClipRect = NULL);
-	void TextureClipper						(float offset_x, float offset_y, Frect* pClipRect, CUIStaticItem& UIStaticItem);
-
 	
 	void			SetShader				(const ui_shader& sh);
 	CUIStaticItem&	GetUIStaticItem			()						{return m_UIStaticItem;}
@@ -130,10 +117,6 @@ public:
 
 	void		SetStretchTexture			(bool stretch_texture)	{m_bStretchTexture = stretch_texture;}
 	bool		GetStretchTexture			()						{return m_bStretchTexture;}
-
-	void		SetClipRect					(Frect r);
-	Frect		GetSelfClipRect				();
-	Frect		GetClipperRect				();	
 
 	// Анализируем текст на помещаемость его по длинне в заданную ширину, и если нет, то всталяем 
 	// "\n" реализуем таким образом wordwrap
@@ -176,9 +159,7 @@ protected:
 	bool m_bUseTextColor[4]; // note: 0 index will be ignored
 
 	bool m_bEnableTextHighlighting;
-	bool m_bClipper;
 	bool m_bStretchTexture;
-	bool m_bAvailableTexture;
 	bool m_bTextureEnable;
 	CUIStaticItem m_UIStaticItem;
 

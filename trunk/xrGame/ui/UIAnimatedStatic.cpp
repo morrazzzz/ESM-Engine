@@ -25,7 +25,6 @@ CUIAnimatedStatic::CUIAnimatedStatic()
 		m_prevTime				(0)
 {
 	m_pos.set(0,0);
-	ClipperOn();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -76,7 +75,10 @@ void CUIAnimatedStatic::SetFrame(const u32 frameNum)
 	//static u32 currRow = 0xffffffff, currCol = 0xffffffff;
 	int currRow = frameNum / m_uAnimCols;
 	int currCol = frameNum % m_uAnimCols;
-	GetUIStaticItem().SetOriginalRect(m_pos.x + float(currCol*m_uFrameWidth), m_pos.y + float(currRow*m_uFrameHeight), float(m_uFrameWidth), float(m_uFrameHeight));
+	
+	Frect rect{ m_pos.x + float(currCol * m_uFrameWidth), m_pos.y + float(currRow * m_uFrameHeight), float(m_uFrameWidth), float(m_uFrameHeight) };
+
+	GetUIStaticItem().SetTextureRect(rect);
 }
 
 void CUIAnimatedStatic::SetAnimPos(float pos){

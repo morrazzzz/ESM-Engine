@@ -13,7 +13,9 @@ protected:
 	Flags16			m_flags;
 	enum EFlags{	eLocked	=(1<<0),};
 	float			m_pointer_dist;
+	Frect			m_workingArea;
 public:
+	Frect&			WorkingArea						() {return m_workingArea;}
 	Frect			m_prevRect;
 					CUICustomMap					();
 	virtual			~CUICustomMap					();
@@ -35,6 +37,7 @@ public:
 	shared_str		MapName							() {return m_name;}
 	virtual CUIGlobalMapSpot*	GlobalMapSpot		() {return NULL;}
 
+	virtual void	Draw							();
 	virtual void	Update							();
 	virtual void	SendMessage						(CUIWindow* pWnd, s16 msg, void* pData);
 			bool	IsRectVisible					(Frect r);

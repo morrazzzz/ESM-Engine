@@ -19,6 +19,6 @@ public:
 	virtual						~CUIWndCallback		();
 	virtual void				OnEvent				(CUIWindow* pWnd, s16 msg, void* pData = NULL);
 			void				Register			(CUIWindow* pChild);
-			void				AddCallback			(LPCSTR control_id, s16 event, const void_function &f);
-			void				AddCallback			(const shared_str& control_id, s16 event, const void_function &f);
+			void				AddCallback			(CUIWindow* pWnd, s16 evt, const void_function &f);
+			void				AddCallback		(const shared_str& control_id, s16 evt, const void_function &f);
 };

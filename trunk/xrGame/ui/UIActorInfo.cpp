@@ -84,7 +84,8 @@ void CUIActorInfoWnd::Show(bool status)
 	if (!status) return;
 	
 	UICharacterInfo->InitCharacter			(Actor()->ID());
-	UICharIconHeader->UITitleText.SetText	(Actor()->Name());
+#pragma todo("morrazzzz: TODO: CoPMerge: Return UITitleText???")
+//	UICharIconHeader->UITitleText.SetText	(Actor()->Name());
 	FillPointsInfo							();
 }
 
@@ -193,13 +194,14 @@ void CUIActorInfoWnd::FillPointsDetail(const shared_str& id)
 
 	if(id=="reputation")//reputation
 	{
-		UIInfoHeader->GetTitleStatic()->SetTextST	("st_detail_list_for_community_relations");
+#pragma todo("morrazzzz: TODO: CoPMerge: Return UITitleText???")
+//		UIInfoHeader->GetTitleStatic()->SetTextST	("st_detail_list_for_community_relations");
 		FillReputationDetails						(&uiXml, path);
 		return;
 	}
 	string256									str;
 	sprintf_s									(str,"st_detail_list_for_%s", id.c_str());
-	UIInfoHeader->GetTitleStatic()->SetTextST	(str);
+//	UIInfoHeader->GetTitleStatic()->SetTextST	(str);
 
 	SStatSectionData&	section				= Actor()->	StatisticMgr().GetSection(id);
 	vStatDetailData::const_iterator it		= section.data.begin();

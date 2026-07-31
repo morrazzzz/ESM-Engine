@@ -9,9 +9,9 @@
 
 #pragma once
 
-class IUISimpleTextureControl;
+#include "../ui_defs.h"
 
-#include "..\ui_defs.h"
+class CUIStaticItem;
 
 struct TEX_INFO{
 	shared_str	file;
@@ -20,37 +20,37 @@ struct TEX_INFO{
 	Frect		get_rect		()	{return rect;}
 };
 
+struct sh_pair{
+	shared_str	texture_name;
+	shared_str	shader_name;
+	bool operator < (const sh_pair& other) const
+	{
+		if (texture_name < other.texture_name)
+			return true;
+		else
+			return shader_name < other.shader_name;
+	}
+};
+
 class CUITextureMaster{
 public:
 
 	static void ParseShTexInfo			(LPCSTR xml_file);
+	static void FreeTexInfo				();
+	static void FreeCachedShaders		();
 
-	static void		InitTexture			(LPCSTR texture_name,		IUISimpleTextureControl* tc);
-	static void		InitTexture			(LPCSTR texture_name, const char* shader_name, IUISimpleTextureControl* tc);
-	static float	GetTextureHeight	(LPCSTR texture_name);
-	static float	GetTextureWidth		(LPCSTR texture_name);
-	static Frect	GetTextureRect		(LPCSTR texture_name);
-	static LPCSTR	GetTextureFileName	(LPCSTR texture_name);
-	static void		GetTextureShader	(LPCSTR texture_name, ui_shader& sh);
-	static TEX_INFO	FindItem			(LPCSTR texture_name, LPCSTR def_texture_name);
-	static void WriteLog();
-
+	static void		InitTexture			(const shared_str& texture_name, CUIStaticItem* tc, const shared_str& shader_name ="hud\\default");
+	static void		InitTexture			(const shared_str& texture_name, const shared_str& shader_name, ui_shader& out_shader, Frect& out_rect);
+	static float	GetTextureHeight	(const shared_str&  texture_name);
+	static float	GetTextureWidth		(const shared_str&  texture_name);
+	static Frect	GetTextureRect		(const shared_str&  texture_name);
+	static void		GetTextureShader	(const shared_str&  texture_name, ui_shader& sh);
+	static LPCSTR	GetTextureFileName(const shared_str& texture_name);
+	static TEX_INFO	FindItem(const shared_str& texture_name, const shared_str& def_texture_name);
 protected:
-	IC	static bool IsSh					(const char* texture_name);
+	IC	static bool IsSh				(const shared_str& texture_name);
 
+	static xr_map<shared_str, TEX_INFO>	m_textures;
 
-
-//	typedef xr_string region_name;
-//	typedef xr_string shader_name;
-//	typedef xr_map<region_name, Frect>				regions;
-//	typedef xr_map<region_name, Frect>::iterator	regions_it;
-//	typedef xr_map<shader_name, regions>			shared_textures;
-//	typedef xr_map<shader_name, regions>::iterator	shared_textures_it;
-
-	static xr_map<shared_str, TEX_INFO>					m_textures;
-
-//	static	shared_textures		m_shTex;
-#ifdef DEBUG
-	static u32		m_time;
-#endif 
+	static xr_map<sh_pair, ui_shader>	m_shaders;
 };

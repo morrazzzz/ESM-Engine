@@ -62,8 +62,12 @@ void CUIArtefactPanel::Draw(){
 		iHeight = m_fScale*(r.bottom - r.top);
 		iWidth  = _s*m_fScale*(r.right - r.left);
 
-		m_si.SetOriginalRect(r.left, r.top, r.width(), r.height());
-		m_si.SetRect(0, 0, iWidth, iHeight);
+		Frect rect{ r.left, r.top, r.width(), r.height() };
+
+		m_si.SetTextureRect(rect);
+
+		Fvector2 size{ iWidth, iHeight };
+		m_si.SetSize(size);
 
 		m_si.SetPos(x, y);
 		x = x + iIndent + iWidth;

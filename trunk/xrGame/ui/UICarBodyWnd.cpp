@@ -28,6 +28,7 @@
 #include "../BottleItem.h"
 #include "../string_table.h"
 #include <dinput.h>
+#include "UIStatic.h"
 
 #define				CAR_BODY_XML		"carbody_new.xml"
 #define				CARBODY_ITEM_XML	"carbody_item.xml"

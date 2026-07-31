@@ -75,7 +75,21 @@ CUIDragItem* CUICellItem::CreateDragItem()
 	tmp = xr_new<CUIDragItem>(this);
 	Frect r;
 	GetAbsoluteRect(r);
-	tmp->Init(GetShader(),r,GetUIStaticItem().GetOriginalRect());
+
+	if( m_UIStaticItem.GetFixedLTWhileHeading() )
+	{
+		float t1,t2;
+		t1				= r.width();
+		t2				= r.height()*UI().get_current_kx();
+
+		Fvector2 cp = GetUICursor().GetCursorPosition();
+
+		r.x1			= (cp.x-t2/2.0f);
+		r.y1			= (cp.y-t1/2.0f);
+		r.x2			= r.x1 + t2;
+		r.y2			= r.y1 + t1;
+	}
+	tmp->Init(GetShader(), r, GetUIStaticItem().GetTextureRect());
 	return tmp;
 }
 
@@ -155,12 +169,11 @@ void CUIDragItem::Init(const ui_shader& sh, const Frect& rect, const Frect& text
 {
 	SetWndRect						(rect);
 	m_static.SetShader				(sh);
-	m_static.SetOriginalRect		(text_rect);
-	m_static.SetWndPos				(0.0f,0.0f);
+	m_static.SetTextureRect			(text_rect);
+	m_static.SetWndPos				(Fvector2().set(0.0f,0.0f));
 	m_static.SetWndSize				(GetWndSize());
-	m_static.TextureAvailable		(true);
 	m_static.TextureOn				();
-	m_static.SetColor				(color_rgba(255,255,255,170));
+	m_static.SetTextureColor		(color_rgba(255,255,255,170));
 	m_static.SetStretchTexture		(true);
 	m_pos_offset.sub				(rect.lt, GetUICursor().GetCursorPosition());
 }
@@ -192,11 +205,7 @@ void CUIDragItem::Draw()
 	tmp.sub					(m_pos_offset);
 	tmp.mul					(-1.0f);
 	MoveWndDelta			(tmp);
-	UI().PushScissor		(UI().ScreenRect(),true);
-
 	inherited::Draw();
-
-	UI().PopScissor();
 }
 
 void CUIDragItem::SetBackList(CUIDragDropListEx*l)

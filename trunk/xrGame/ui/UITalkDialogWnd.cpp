@@ -49,11 +49,12 @@ void CUITalkDialogWnd::Init(float x, float y, float width, float height)
 	//основной фрейм диалога
 	AttachChild					(&UIDialogFrame);
 	CUIXmlInit::InitFrameLine	(*m_uiXml, "frame_line_window", 0, &UIDialogFrame);
-	UIDialogFrame.UITitleText.SetElipsis(CUIStatic::eepEnd, 10);
+#pragma todo("morrazzzz: TODO: CoPMerge: Return UITitleText???")
+//	UIDialogFrame.UITitleText.SetElipsis(CUIStatic::eepEnd, 10);
 	// Фрейм с нащими фразами
 	AttachChild					(&UIOurPhrasesFrame);
 	CUIXmlInit::InitFrameLine	(*m_uiXml, "frame_line_window", 1, &UIOurPhrasesFrame);
-	UIOurPhrasesFrame.UITitleText.SetElipsis(CUIStatic::eepEnd, 10);
+//	UIOurPhrasesFrame.UITitleText.SetElipsis(CUIStatic::eepEnd, 10);
 
 	//Ответы
 	UIAnswersList				= xr_new<CUIScrollView>();
@@ -171,7 +172,7 @@ void CUITalkDialogWnd::AddAnswer(LPCSTR SpeakerName, LPCSTR str, bool bActor)
 	CUICharacterInfo& ci			= bActor?UICharacterInfoLeft:UICharacterInfoRight; 
 	
 	news_data.texture_name			= ci.IconName();
-	news_data.tex_rect				= ci.UIIcon().GetUIStaticItem().GetOriginalRect();
+	news_data.tex_rect				= ci.UIIcon().GetUIStaticItem().GetTextureRect();
 	news_data.tex_rect.x2			= news_data.tex_rect.width();
 	news_data.tex_rect.y2			= news_data.tex_rect.height();
 	news_data.receive_time			= Level().GetGameTime();
@@ -291,8 +292,8 @@ void CUIAnswerItemIconed::Init		(LPCSTR text, LPCSTR texture_name, Frect texture
 {
 	inherited::Init					(text,"");
 	m_icon->CreateShader			(texture_name,"hud\\default");
-	m_icon->GetUIStaticItem().SetOriginalRect(texture_rect.x1,texture_rect.y1,texture_rect.x2,texture_rect.y2);
-	m_icon->TextureAvailable		(true);
+	m_icon->GetUIStaticItem().SetTextureRect(texture_rect);
+
 	m_icon->TextureOn				();
 	m_icon->SetStretchTexture		(true);
 

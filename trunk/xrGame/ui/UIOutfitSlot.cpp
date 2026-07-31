@@ -84,7 +84,6 @@ void CUIOutfitDragDropList::SetOutfit(CUICellItem* itm)
 		*/
 	}
 
-	m_background->TextureAvailable		(true);
 	m_background->TextureOn				();
 //	m_background->RescaleRelative2Rect	(r);
 }

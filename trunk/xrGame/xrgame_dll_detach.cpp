@@ -7,6 +7,7 @@
 #include "entity_alive.h"
 #include "ui/UIInventoryUtilities.h"
 #include "UI/UIXmlInit.h"
+#include "UI/UITextureMaster.h"
 
 #include "InfoPortion.h"
 #include "PhraseDialog.h"
@@ -132,4 +133,5 @@ void clean_game_globals()
 	xr_delete										(g_uiSpotXml);
 	dump_list_xmls									();
 	DestroyUIGeom									();
+	CUITextureMaster::FreeTexInfo();
 }

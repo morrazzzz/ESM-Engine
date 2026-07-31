@@ -73,8 +73,14 @@ CUIInteractiveBackground<T>::~CUIInteractiveBackground(){
 }
 
 template <class T>
-void CUIInteractiveBackground<T>::Init(float x, float y, float width, float height){
-	CUIWindow::Init(x, y, width, height);
+void CUIInteractiveBackground<T>::Init(float x, float y, float width, float height)
+{
+	//morrazzzz: CoPMerge: Delete me!!!
+	Fvector2 pos{ x, y };
+	Fvector2 size{ width,height };
+	
+	CUIWindow::SetWndPos(pos);
+	CUIWindow::SetWndSize(size);
 }
 
 template <class T>
@@ -266,5 +272,4 @@ void CUIInteractiveBackground<T>::SetHeight(float heigth){
 		m_stateTouched->SetHeight(heigth);
 }
 
-typedef CUIInteractiveBackground<CUIFrameWindow> CUI_IB_FrameWindow;
 typedef CUIInteractiveBackground<CUIFrameLineWnd> CUI_IB_FrameLineWnd;

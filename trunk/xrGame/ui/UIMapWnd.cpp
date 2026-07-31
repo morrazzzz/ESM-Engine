@@ -246,12 +246,12 @@ void CUIMapWnd::Show(bool status)
 	if (status)
 	{
 		m_GlobalMap->Show			(true);
-		m_GlobalMap->SetClipRect	(ActiveMapRect());
+		m_GlobalMap->WorkingArea().set(ActiveMapRect());
 		GameMaps::iterator	it		= m_GameMaps.begin();
 		for(;it!=m_GameMaps.end();++it){
 			m_GlobalMap->AttachChild(it->second);
-			it->second->Show		(true);
-			it->second->SetClipRect	(ActiveMapRect());
+			it->second->Show(true);
+			it->second->WorkingArea().set(ActiveMapRect());
 		}
 
 		if(	m_flags.test(lmFirst)){
@@ -271,22 +271,6 @@ void CUIMapWnd::Show(bool status)
 	}
 
 	m_hint->SetOwner		(NULL);
-}
-
-
-void CUIMapWnd::AddMapToRender			(CUICustomMap* m)
-{
-	Register							( m );
-	m_UILevelFrame->AttachChild			( m );
-	m->Show								( true );
-	m_UILevelFrame->BringToTop			( m );
-	m->SetClipRect						( ActiveMapRect() );
-}
-
-void CUIMapWnd::RemoveMapToRender		(CUICustomMap* m)
-{
-	if( m!=GlobalMap() )
-		m_UILevelFrame->DetachChild			(smart_cast<CUIWindow*>(m));
 }
 
 void CUIMapWnd::SetTargetMap			(const shared_str& name, const Fvector2& pos, bool bZoomIn)
@@ -533,7 +517,9 @@ void CUIMapWnd::OnScrollH(CUIWindow*, void*)
 
 void CUIMapWnd::Update()
 {
-	if(m_GlobalMap)m_GlobalMap->SetClipRect(ActiveMapRect());
+	if(m_GlobalMap)
+		m_GlobalMap->WorkingArea().set(ActiveMapRect());
+
 	inherited::Update			();
 	m_ActionPlanner->update		();
 }

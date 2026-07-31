@@ -28,9 +28,7 @@ void lanim_cont::set_defaults()
 
 CUIStatic:: CUIStatic()
 {
-	m_bAvailableTexture		= false;
 	m_bTextureEnable		= true;
-	m_bClipper				= false;
 	m_bStretchTexture		= false;
 
 	m_TextureOffset.set		(0.0f,0.0f);
@@ -115,46 +113,28 @@ ui_shader& CUIStatic::GetShader(){
 
 
 void CUIStatic::SetTextureColor(u32 color){
-	m_UIStaticItem.SetColor(color);
+	m_UIStaticItem.SetTextureColor(color);
 }
 
 u32 CUIStatic::GetTextureColor() const{
-	return m_UIStaticItem.GetColor();
+	return m_UIStaticItem.GetTextureColor();
 }
 
 void CUIStatic::InitTextureEx(LPCSTR tex_name, LPCSTR sh_name)
 {
 
 	LPCSTR res_shname = UIRender->UpdateShaderName(tex_name, sh_name);
-	CUITextureMaster::InitTexture(tex_name, res_shname, &m_UIStaticItem);
+	CUITextureMaster::InitTexture	(tex_name, &m_UIStaticItem, res_shname);
 
 	Fvector2 p						= GetWndPos();
 	m_UIStaticItem.SetPos			(p.x, p.y);
-	m_bAvailableTexture				= true;
 }
 
 void  CUIStatic::Draw()
 {
-	if(m_bClipper){
-		Frect clip_rect;
-		if (-1 == m_ClipRect.left && -1 == m_ClipRect.right && -1 == m_ClipRect.top && -1 == m_ClipRect.left){
-			Frect			our_rect;
-			GetAbsoluteRect	(our_rect);
-			clip_rect		= our_rect;
-			Frect			_r;
-			GetParent()->GetAbsoluteRect(_r);
-			if(GetParent())	clip_rect.intersection(our_rect,_r);			
-		}else				
-			clip_rect		= m_ClipRect;
-
-		UI().PushScissor	(clip_rect);
-	}
-
 	DrawTexture				();	
 	inherited::Draw			();
 	DrawText				();
-
-	if(m_bClipper)	UI().PopScissor();
 }
 
 
@@ -174,46 +154,52 @@ void CUIStatic::DrawText(){
 	}
 }
 
-void CUIStatic::DrawTexture(){
+#include "../../Include/xrRender/UIShader.h"
 
-	if(m_bAvailableTexture && m_bTextureEnable){
+void CUIStatic::DrawTexture()
+{
+	if(m_bTextureEnable && GetShader() && GetShader()->inited())
+	{
 		Frect			rect;
 		GetAbsoluteRect	(rect);
 		m_UIStaticItem.SetPos	(rect.left + m_TextureOffset.x, rect.top + m_TextureOffset.y);
 
-		if (m_bStretchTexture)
+		if(m_bStretchTexture)
 		{
-			if (Heading())
+			if(Heading())
 			{
-					float t1, t2;
-					t1 = rect.width();
-					t2 = rect.height();
-					rect.y2 = rect.y1 + t1;
-					rect.x2 = rect.x1 + t2;
+				if( m_UIStaticItem.GetFixedLTWhileHeading() )
+				{
+					float t1,t2;
+					t1			= rect.width();
+					t2			= rect.height();
+					rect.y2		= rect.y1 + t1;
+					rect.x2		= rect.x1 + t2;
+				}
 			}
-			m_UIStaticItem.SetRect(0, 0, rect.width(), rect.height());
-		}
-		else
+			m_UIStaticItem.SetSize(Fvector2().set(rect.width(), rect.height()));
+		}else
 		{
 			Frect r={0.0f,0.0f,
-				m_UIStaticItem.GetOriginalRect().width(),
-				m_UIStaticItem.GetOriginalRect().height()};
+				m_UIStaticItem.GetTextureRect().width(),
+				m_UIStaticItem.GetTextureRect().height()};
 
-			{
-				if (Heading())
+			{	
+				if(Heading())
 				{
-					float t1, t2;
-					t1 = rect.width();
-					t2 = rect.height();
-					rect.y2 = rect.y1 + t1;
-					rect.x2 = rect.x1 + t2;
+					float t1,t2;
+					t1			= rect.width();
+					t2			= rect.height();
+					rect.y2		= rect.y1 + t1;
+					rect.x2		= rect.x1 + t2;
 				}
 
-				m_UIStaticItem.SetRect(r);
+				m_UIStaticItem.SetSize(Fvector2().set(r.width(),r.height()));
 			}
 		}
 
-		if( Heading() ){
+		if( Heading() )
+		{
 			m_UIStaticItem.Render( GetHeading() );
 		}else
 			m_UIStaticItem.Render();
@@ -323,108 +309,9 @@ CGameFont* CUIStatic::GetFont(){
 	return m_pLines->GetFont();
 }
 
-void CUIStatic::TextureClipper(float offset_x, float offset_y, Frect* pClipRect)
-{
-	TextureClipper(offset_x, offset_y, pClipRect, m_UIStaticItem);
-}
-
-void CUIStatic::TextureClipper(float offset_x, float offset_y, Frect* pClipRect,
-							   CUIStaticItem& UIStaticItem)
-{
-	Frect parent_rect;
-	
-	if(pClipRect == NULL)
-		if(GetParent())
-			GetParent()->GetAbsoluteRect(parent_rect);
-		else
-			GetAbsoluteRect(parent_rect);
-	else
-		parent_rect = *pClipRect;
-		
-	Frect			rect;
-	GetAbsoluteRect	(rect);
-	Frect			out_rect;
-
-
-	//проверить попадает ли изображение в окно
-	if(rect.left>parent_rect.right || rect.right<parent_rect.left ||
-		rect.top>parent_rect.bottom ||  rect.bottom<parent_rect.top)
-	{
-		Frect r;
-		r.set(0.0f,0.0f,0.0f,0.0f);
-		UIStaticItem.SetRect(r);
-		return;
-	}
-
-	
-	float out_x, out_y;
-	out_x = rect.left;
-	out_y = rect.top;
-
-	// out_rect - прямоугольная область в которую будет выводиться
-	// изображение, вычисляется с учетом положения относительно родительского
-	// окна, а также размеров прямоугольника на текстуре с изображением.
-
-	out_rect.intersection(parent_rect,rect);
-	out_rect.left	-= out_x;
-	out_rect.top	-= out_y;
-	out_rect.right	-= out_x;
-	out_rect.bottom -= out_y;
-
-	if( m_bStretchTexture )
-		UIStaticItem.SetRect(out_rect);
-	else{
-		Frect r;
-		r.x1 = out_rect.left;
-		r.x2 = out_rect.right<UIStaticItem.GetOriginalRect().width()?
-			out_rect.right:UIStaticItem.GetOriginalRect().width();
-
-		r.y1 = out_rect.top;
-		r.y2 = out_rect.bottom<UIStaticItem.GetOriginalRect().height()?
-			out_rect.bottom:UIStaticItem.GetOriginalRect().height();
-
-		UIStaticItem.SetRect(r);
-	}
-}
-
-void CUIStatic::ClipperOn() 
-{
-	m_bClipper = true;
-
-	TextureClipper(0, 0);
-}
-
-void CUIStatic::ClipperOff(CUIStaticItem& UIStaticItem)
-{
-	m_bClipper = false;
-
-	Frect out_rect;
-
-	out_rect.top =   0;
-	out_rect.bottom = GetHeight();
-	out_rect.left =  0;
-	out_rect.right = GetWidth();
-	
-	Frect r;
-	r.x1 = out_rect.left;
-	r.x2 = out_rect.right<UIStaticItem.GetOriginalRect().width()?
-		   out_rect.right:UIStaticItem.GetOriginalRect().width();
-
-	r.y1 = out_rect.top;
-	r.y2 = out_rect.bottom<UIStaticItem.GetOriginalRect().height()?
-		   out_rect.bottom:UIStaticItem.GetOriginalRect().height();
-	UIStaticItem.SetRect(r);
-}
-
-void CUIStatic::ClipperOff() 
-{
-	ClipperOff(m_UIStaticItem);
-}
-
 void  CUIStatic::SetShader(const ui_shader& sh)
 {
 	m_UIStaticItem.SetShader(sh);
-	m_bAvailableTexture = true;
 }
 
 LPCSTR CUIStatic::GetText(){
@@ -460,28 +347,6 @@ void CUIStatic::SetText(LPCSTR str)
 void CUIStatic::SetTextColor(u32 color, E4States state){
 	m_dwTextColor[state] = color;
 	m_bUseTextColor[state] = true;
-}
-
-Frect CUIStatic::GetClipperRect()
-{
-	if (m_bClipper)
-		return m_ClipRect;
-	else
-		return GetSelfClipRect();
-}
-
-Frect CUIStatic::GetSelfClipRect()
-{
-	Frect	r;
-	if (m_bClipper)
-	{
-		r.set(GetUIStaticItem().GetRect());
-		r.add(GetUIStaticItem().GetPosX(), GetUIStaticItem().GetPosY());
-	}
-	else
-		r.set(0.0f, 0.0f, UI_BASE_WIDTH, UI_BASE_HEIGHT);
-
-	return r;
 }
 
 void CUIStatic::SetMask(CUIFrameWindow *pMask)
@@ -550,11 +415,6 @@ void CUIStatic::SetElipsis(EElipsisPosition pos, int indent)
 #pragma todo("Satan->Satan : need adaptation")
 	m_ElipsisPos		= pos;
 	m_iElipsisIndent	= indent;
-}
-
-void CUIStatic::SetClipRect(Frect r)
-{
-	m_ClipRect = r;
 }
 
 void CUIStatic::OnFocusReceive()

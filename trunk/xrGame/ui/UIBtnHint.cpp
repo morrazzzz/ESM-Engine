@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "UIBtnHint.h"
 #include "UIFrameLineWnd.h"
+#include "UIStatic.h"
 #include "UIXmlInit.h"
 
 CUIButtonHint*		g_btnHint = NULL; 
@@ -40,7 +41,7 @@ void CUIButtonHint::OnRender	()
 	if(m_enabledOnFrame){
 		m_text->Update		();
 		m_border->Update	();
-		m_border->SetColor	(color_rgba(255,255,255,color_get_A(m_text->GetTextColor())));
+		m_border->SetTextureColor(color_rgba(255,255,255,color_get_A(m_text->GetTextColor())));
 		Draw				();
 		m_enabledOnFrame	= false;
 	}

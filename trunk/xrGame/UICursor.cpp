@@ -28,7 +28,7 @@ void CUICursor::InitInternal()
 	m_static->InitTextureEx		("ui\\ui_ani_cursor", "hud\\cursor");
 	Frect						rect;
 	rect.set					(0.0f,0.0f,40.0f,40.0f);
-	m_static->SetOriginalRect	(rect);
+	m_static->SetTextureRect	(rect);
 	Fvector2					sz;
 	sz.set						(rect.rb);
 	sz.x *= UI().get_current_kx();

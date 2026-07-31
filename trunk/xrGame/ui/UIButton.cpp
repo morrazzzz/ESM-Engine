@@ -18,7 +18,6 @@ CUIButton:: CUIButton()
 	m_eButtonState				= BUTTON_NORMAL;
 	m_ePressMode				= NORMAL_PRESS;
 	m_bButtonClicked			= false;
-	m_bAvailableTexture			= false;
 	m_bIsSwitch					= false;
 
 	m_PushOffset.set			(PUSH_OFFSET_RIGHT, PUSH_OFFSET_DOWN);
@@ -146,7 +145,7 @@ void CUIButton::DrawTexture()
 	Frect rect; 
 	GetAbsoluteRect		(rect);
 
-	if(m_bAvailableTexture && m_bTextureEnable)
+	if(m_bTextureEnable && GetShader() && GetShader()->inited())
 	{
 		if(m_eButtonState == BUTTON_UP || m_eButtonState == BUTTON_NORMAL)
 			m_UIStaticItem.SetPos(rect.left + m_TextureOffset.x, rect.top + m_TextureOffset.y);
@@ -154,14 +153,9 @@ void CUIButton::DrawTexture()
 			m_UIStaticItem.SetPos(rect.left + m_PushOffset.x + m_TextureOffset.x, rect.top + m_PushOffset.y + m_TextureOffset.y);
 
 		if(m_bStretchTexture)
-			m_UIStaticItem.SetRect(0, 0, rect.width(), rect.height());
+			m_UIStaticItem.SetSize(Fvector2().set(rect.width(), rect.height()));
 		else
-		{
-			Frect r = { 0,0,
-				m_UIStaticItem.GetOriginalRectScaled().width(),
-				m_UIStaticItem.GetOriginalRectScaled ().height() };
-			m_UIStaticItem.SetRect(r);
-		}
+			m_UIStaticItem.SetSize(Fvector2().set(m_UIStaticItem.GetTextureRect().width(), m_UIStaticItem.GetTextureRect().height()));
 
 		if( Heading() )
 			m_UIStaticItem.Render( GetHeading() );

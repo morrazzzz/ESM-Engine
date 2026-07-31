@@ -71,7 +71,8 @@ void CUIEncyclopediaWnd::Init()
 	UIEncyclopediaInfoHeader	= xr_new<CUIFrameLineWnd>();UIEncyclopediaInfoHeader->SetAutoDelete(true);
 	UIEncyclopediaInfoBkg->AttachChild(UIEncyclopediaInfoHeader);
 
-	UIEncyclopediaInfoHeader->UITitleText.SetElipsis(CUIStatic::eepBegin, 20);
+#pragma todo("morrazzzz: TODO: CoPMerge: Return UITitleText???")
+	//UIEncyclopediaInfoHeader->UITitleText.SetElipsis(CUIStatic::eepBegin, 20);
 	xml_init.InitFrameLine(uiXml, "left_frame_line", 0, UIEncyclopediaInfoHeader);
 
 	UIArticleHeader				= xr_new<CUIStatic>(); UIArticleHeader->SetAutoDelete(true);
@@ -108,7 +109,7 @@ void CUIEncyclopediaWnd::SendMessage(CUIWindow *pWnd, s16 msg, void* pData)
 			caption					+= "/";
 			caption					+= CStringTable().translate(A->data()->group).c_str();
 
-			UIEncyclopediaInfoHeader->UITitleText.SetText(caption.c_str());
+//			UIEncyclopediaInfoHeader->UITitleText.SetText(caption.c_str());
 			UIArticleHeader->SetTextST(*(A->data()->group));
 			SetCurrentArtice		(NULL);
 		}else
@@ -120,7 +121,7 @@ void CUIEncyclopediaWnd::SendMessage(CUIWindow *pWnd, s16 msg, void* pData)
 			caption					+= "/";
 			caption					+= CStringTable().translate(A->data()->name).c_str();
 
-			UIEncyclopediaInfoHeader->UITitleText.SetText(caption.c_str());
+//			UIEncyclopediaInfoHeader->UITitleText.SetText(caption.c_str());
 			SetCurrentArtice		(pTVItem);
 			UIArticleHeader->SetTextST(*(A->data()->name));
 		}

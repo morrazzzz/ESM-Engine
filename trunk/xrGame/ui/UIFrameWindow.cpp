@@ -4,288 +4,245 @@
 #include "UITextureMaster.h"
 #include "UIXmlInit.h"
 #include "UIStatic.h"
-#include "../Include/xrRender/UIRender.h"
+
+void draw_rect(Fvector2 LTp, Fvector2 RBp, Fvector2 LTt, Fvector2 RBt, u32 clr, Fvector2 const& ts);
 
 CUIFrameWindow::CUIFrameWindow()
+:m_bTextureVisible(false)
 {
-	UITitleText					= xr_new<CUIStatic>();
-	UITitleText->SetAutoDelete	(true);
-	AttachChild					(UITitleText);
+	m_texture_color	= color_argb(255,255,255,255);
 }
 
-void CUIFrameWindow::Init(LPCSTR base_name, float x, float y, float width, float height)
+void CUIFrameWindow::SetWndSize(const Fvector2& sz)
 {
-	Init				(x,y,width,height);
-	InitTexture			(base_name);	
+	Fvector2 size			= sz;
+	Fvector2 size_test		= sz;
+	UI().ClientToScreenScaled(size_test);
+
+	if(m_bTextureVisible)
+	{// fit to min size
+		Fvector2 min_size;
+		min_size.x			= m_tex_rect[fmLT].width() + m_tex_rect[fmRT].width();
+		min_size.y			= m_tex_rect[fmLT].height() + m_tex_rect[fmLB].height();
+
+		if(size_test.x<min_size.x)
+		{
+			UI().ClientToScreenScaledWidth(min_size.x);
+			size.x			= min_size.x;
+		}
+		if(size_test.y<min_size.y)
+		{
+			UI().ClientToScreenScaledHeight(min_size.y);
+			size.y			= min_size.y;
+		}
+	}
+
+	inherited::SetWndSize	(size);
 }
 
-void CUIFrameWindow::Init(float x, float y, float width, float height)
+void  CUIFrameWindow::InitTextureEx(LPCSTR texture, LPCSTR  sh_name)
 {
-	CUIWindow::Init		(x,y,width,height);
-	m_UIWndFrame.Init	(x,y,width,height);
-	UITitleText->Init	(0,0, width, 50);
-}
-
-void CUIFrameWindow::Init(LPCSTR base_name, Frect* pRect)
-{
-	Init(base_name, pRect->left, pRect->top, 
-				pRect->right - pRect->left, 
-				pRect->bottom - pRect->top);
-}
-
-void CUIFrameWindow::InitTexture(const char* texture){
-	m_UIWndFrame.InitTexture	(texture);
+	dbg_tex_name				= texture;
 	m_bTextureVisible			= true;
+	string256		buf;
+	CUITextureMaster::InitTexture(strconcat(sizeof(buf), buf, texture,"_back"),	sh_name, m_shader, m_tex_rect[fmBK]);
+	CUITextureMaster::InitTexture(strconcat(sizeof(buf), buf, texture,"_l"),	sh_name, m_shader, m_tex_rect[fmL]);
+	CUITextureMaster::InitTexture(strconcat(sizeof(buf), buf, texture,"_r"),	sh_name, m_shader, m_tex_rect[fmR]);
+	CUITextureMaster::InitTexture(strconcat(sizeof(buf), buf, texture,"_t"),	sh_name, m_shader, m_tex_rect[fmT]);
+	CUITextureMaster::InitTexture(strconcat(sizeof(buf), buf, texture,"_b"),	sh_name, m_shader, m_tex_rect[fmB]);
+	CUITextureMaster::InitTexture(strconcat(sizeof(buf), buf, texture,"_lt"),	sh_name, m_shader, m_tex_rect[fmLT]);
+	CUITextureMaster::InitTexture(strconcat(sizeof(buf), buf, texture,"_rb"),	sh_name, m_shader, m_tex_rect[fmRB]);
+	CUITextureMaster::InitTexture(strconcat(sizeof(buf), buf, texture,"_rt"),	sh_name, m_shader, m_tex_rect[fmRT]);
+	CUITextureMaster::InitTexture(strconcat(sizeof(buf), buf, texture,"_lb"),	sh_name, m_shader, m_tex_rect[fmLB]);
+
+	R_ASSERT2(fsimilar(m_tex_rect[fmLT].height(), m_tex_rect[fmT].height()),texture );
+	R_ASSERT2(fsimilar(m_tex_rect[fmLT].height(), m_tex_rect[fmRT].height()),texture );
+//	R_ASSERT2(fsimilar(m_tex_rect[fmL].height(), m_tex_rect[fmBK].height()),texture );
+	R_ASSERT2(fsimilar(m_tex_rect[fmL].height(), m_tex_rect[fmR].height()),texture );
+	R_ASSERT2(fsimilar(m_tex_rect[fmLB].height(), m_tex_rect[fmB].height()),texture );
+	R_ASSERT2(fsimilar(m_tex_rect[fmLB].height(), m_tex_rect[fmRB].height()),texture );
+
+	R_ASSERT2(fsimilar(m_tex_rect[fmLT].width(), m_tex_rect[fmL].width()),texture );
+	R_ASSERT2(fsimilar(m_tex_rect[fmLT].width(), m_tex_rect[fmLB].width()),texture );
+
+//	R_ASSERT2(fsimilar(m_tex_rect[fmT].width(), m_tex_rect[fmBK].width()),texture );
+	R_ASSERT2(fsimilar(m_tex_rect[fmT].width(), m_tex_rect[fmB].width()),texture );
+
+	R_ASSERT2(fsimilar(m_tex_rect[fmRT].width(), m_tex_rect[fmR].width()),texture );
+	R_ASSERT2(fsimilar(m_tex_rect[fmRT].width(), m_tex_rect[fmRB].width()),texture );
+}
+
+void CUIFrameWindow::InitTexture(LPCSTR texture)
+{
+	InitTextureEx(texture, "hud\\default");
 }
 
 void CUIFrameWindow::Draw()
 {
 	if (m_bTextureVisible)
-	{
-		Frect			rect;
-		GetAbsoluteRect	(rect);
-		Fvector2 v		= rect.lt;
-		m_UIWndFrame.SetWndPos(v);
-		m_UIWndFrame.Draw();
-	}
+		DrawElements	();
+
 	inherited::Draw();
 }
 
-void CUIFrameWindow::Update(){
-	CUIWindow::Update();
-	m_UIWndFrame.Update();
-}
-
-void CUIFrameWindow::SetWidth(float width)
+void CUIFrameWindow::DrawElements()
 {
-	inherited::SetWidth(width);
-	m_UIWndFrame.SetWidth(width);
-}
+	UIRender->SetShader			(*m_shader);
 
-void CUIFrameWindow::SetHeight(float height)
-{
-	inherited::SetHeight(height);
-	m_UIWndFrame.SetHeight(height);
-}
+	Fvector2					ts;
+	UIRender->GetActiveTextureResolution(ts);
 
-void CUIFrameWindow::SetColor(u32 cl)
-{
-	m_UIWndFrame.SetTextureColor(cl);
-}
+	Frect						rect;
+	GetAbsoluteRect				(rect);
+	UI().ClientToScreenScaled	(rect.lt);
+	UI().ClientToScreenScaled	(rect.rb);
+	
+	Fvector2 back_len			= {0.0f, 0.0f};
+	u32 rect_count				= 4; //lt+rt+lb+rb
+	back_len.x					= rect.width()-m_tex_rect[fmLT].width()-m_tex_rect[fmRT].width();
+	back_len.y					= rect.height()-m_tex_rect[fmLT].height()-m_tex_rect[fmRB].height();
+//	R_ASSERT					(back_len.x+EPS_L>=0.0f && back_len.y+EPS_L>=0.0f);
+	
+	u32 cnt =0;
+	if(back_len.x>0.0f)//top+bottom
+		cnt						= 2* iCeil(back_len.x/m_tex_rect[fmT].width());
+	rect_count					+= cnt;
 
-void CUIFrameWindow::FrameClip(const Frect parentAbsR)
-{
-	using std::min;
-	using std::max;
-	VERIFY(g_bRendering);
+	if(back_len.y>0.0f)//left+right
+		cnt						= 2* iCeil(back_len.y/m_tex_rect[fmL].height());
+	rect_count					+= cnt;
+	
+	if(back_len.x>0.0f && back_len.y>0.0f) //back
+		cnt						= iCeil(back_len.x/m_tex_rect[fmBK].width()) * iCeil(back_len.y/m_tex_rect[fmBK].height()) ;
 
-	// Если нет границ клиппанья, то скипаем
-	if (!GetParent()) return;
+	rect_count					+= cnt;
 
-	Frect		ourAbsR;
-	GetAbsoluteRect(ourAbsR);
-	Fvector2	ts;
-	int			tile_x, tile_y;
-	float		rem_x, rem_y;
-	float			size_x, size_y;
-	Frect		r, null;
-	null.set(0.0f, 0.0f, 0.0f, 0.0f);
+	rect_count					*= 6;
+	
+	UIRender->StartPrimitive	(rect_count, IUIRender::ptTriList, UI().m_currentPointType);
 
-	m_UIWndFrame.UpdateSize();
+	Fvector2 LTt, RBt;
+	Fvector2 LTp, RBp;
 
-	// Проверяем на видимость фрейма
-	if (   max(ourAbsR.right, parentAbsR.left) == parentAbsR.left
-		|| min(ourAbsR.left, parentAbsR.right) == parentAbsR.right
-		|| min(ourAbsR.top, parentAbsR.bottom) == parentAbsR.bottom
-		|| max(ourAbsR.bottom, parentAbsR.top) == parentAbsR.top)
+	Frect tmp					= rect;
+	get_points					(tmp, fmLT, LTp, RBp, LTt, RBt);
+	draw_rect					(LTp, RBp, LTt, RBt, m_texture_color, ts);
+
+	tmp.lt.x					= rect.lt.x;
+	tmp.lt.y					= rect.rb.y - m_tex_rect[fmLB].height();
+	get_points					(tmp, fmLB, LTp, RBp, LTt, RBt);
+	draw_rect					(LTp, RBp, LTt, RBt, m_texture_color, ts);
+
+	tmp.lt.x					= rect.rb.x - m_tex_rect[fmRT].width();
+	tmp.lt.y					= rect.lt.y;;
+	get_points					(tmp, fmRT, LTp, RBp, LTt, RBt);
+	draw_rect					(LTp, RBp, LTt, RBt, m_texture_color, ts);
+
+	tmp.lt.x					= rect.rb.x - m_tex_rect[fmRB].width();
+	tmp.lt.y					= rect.rb.y - m_tex_rect[fmRB].height();
+	get_points					(tmp, fmRB, LTp, RBp, LTt, RBt);
+	draw_rect					(LTp, RBp, LTt, RBt, m_texture_color, ts);
+
+	if(back_len.x>0.0f)
 	{
-		m_UIWndFrame.frame[CUIFrameRect::fmRT].SetTile		(0, 0, 0, 0);
-		m_UIWndFrame.frame[CUIFrameRect::fmR].SetTile		(0, 0, 0, 0);
-		m_UIWndFrame.frame[CUIFrameRect::fmRB].SetTile		(0, 0, 0, 0);
-		m_UIWndFrame.frame[CUIFrameRect::fmB].SetTile		(0, 0, 0, 0);
-		m_UIWndFrame.frame[CUIFrameRect::fmLB].SetTile		(0, 0, 0, 0);
-		m_UIWndFrame.frame[CUIFrameRect::fmL].SetTile		(0, 0, 0, 0);
-		m_UIWndFrame.frame[CUIFrameRect::fmLT].SetTile		(0, 0, 0, 0);
-		m_UIWndFrame.frame[CUIFrameRect::fmT].SetTile		(0, 0, 0, 0);
-		m_UIWndFrame.frame[CUIFrameRect::fmBK].SetTile		(0, 0, 0, 0);
-		return;
+		tmp.lt					= rect.lt;
+		tmp.lt.x				+= m_tex_rect[fmLT].width();
+		tmp.rb.x				= rect.rb.x-m_tex_rect[fmRT].width();
+		tmp.rb.y				= rect.lt.y+m_tex_rect[fmT].height();
+		draw_tile_line			(tmp, fmT, true, ts);
+
+		tmp.lt.x				= rect.lt.x+m_tex_rect[fmLT].width();
+		tmp.lt.y				= rect.rb.y-m_tex_rect[fmB].height();
+		tmp.rb.x				= rect.rb.x-m_tex_rect[fmRT].width();
+		tmp.rb.y				= rect.rb.y;
+		draw_tile_line			(tmp, fmB, true, ts);
 	}
 
-	// fmRT
-	r.x1 = max(m_UIWndFrame.frame[CUIFrameRect::fmRT].GetPosX(), parentAbsR.left) - m_UIWndFrame.frame[CUIFrameRect::fmRT].GetPosX();
-	r.y1 = max(m_UIWndFrame.frame[CUIFrameRect::fmRT].GetPosY(), parentAbsR.top) - m_UIWndFrame.frame[CUIFrameRect::fmRT].GetPosY() ;
-	r.x2 = min(ourAbsR.right, parentAbsR.right) -
-		   max(m_UIWndFrame.frame[CUIFrameRect::fmRT].GetPosX(), parentAbsR.left) + r.x1;
-	r.y2 = min(m_UIWndFrame.frame[CUIFrameRect::fmR].GetPosY(), parentAbsR.bottom) -
-		   max(m_UIWndFrame.frame[CUIFrameRect::fmRT].GetPosY(), parentAbsR.top) + r.y1;
-
-	ClampMax_Zero(r);
-	m_UIWndFrame.frame[CUIFrameRect::fmRT].SetRect(r);
-	m_UIWndFrame.frame[CUIFrameRect::fmRT].SetTile(1, 1, 0, 0);
-
-	// fmR
-	UIRender->SetShader(*m_UIWndFrame.frame[CUIFrameRect::fmR].GetShader());
-	UIRender->GetActiveTextureResolution(ts);
-
-	size_y		= min(m_UIWndFrame.frame[CUIFrameRect::fmRB].GetPosY(), parentAbsR.bottom) -
-				  max(m_UIWndFrame.frame[CUIFrameRect::fmR].GetPosY(), parentAbsR.top);
-	size_x		= min(ourAbsR.right, parentAbsR.right) -
-				  max(m_UIWndFrame.frame[CUIFrameRect::fmR].GetPosX(), parentAbsR.left);
-	rem_y		= fmod(size_y, ts.y);
-	rem_x		= fmod(size_x, ts.x);
-	tile_y		= iFloor(size_y / ts.y);
-	tile_x		= iFloor(size_x / ts.x);
-
-	if (tile_y < 0) tile_y = 0;
-	if (tile_x < 0) tile_x = 0;
-	set_positive(rem_x);
-	set_positive(rem_y);
-
-	m_UIWndFrame.frame[CUIFrameRect::fmR].SetTile(tile_x, tile_y, rem_x, rem_y);
-
-	m_UIWndFrame.frame[CUIFrameRect::fmR].SetPos(max(m_UIWndFrame.frame[CUIFrameRect::fmR].GetPosX(), parentAbsR.left),
-			max(m_UIWndFrame.frame[CUIFrameRect::fmR].GetPosY(), parentAbsR.top));
-
-	// fmRB
-	r.x1 = max(m_UIWndFrame.frame[CUIFrameRect::fmRB].GetPosX(), parentAbsR.left) - m_UIWndFrame.frame[CUIFrameRect::fmRB].GetPosX();
-	r.y1 = max(m_UIWndFrame.frame[CUIFrameRect::fmRB].GetPosY(), parentAbsR.top) - m_UIWndFrame.frame[CUIFrameRect::fmRB].GetPosY();
-	r.x2 = min(ourAbsR.right, parentAbsR.right) -
-		   max(m_UIWndFrame.frame[CUIFrameRect::fmRB].GetPosX(), parentAbsR.left) + r.x1;
-	r.y2 = min(ourAbsR.bottom, parentAbsR.bottom) -
-		   max(m_UIWndFrame.frame[CUIFrameRect::fmRB].GetPosY(), parentAbsR.top) + r.y1;
-
-	ClampMax_Zero(r);
-	m_UIWndFrame.frame[CUIFrameRect::fmRB].SetRect(r);
-	m_UIWndFrame.frame[CUIFrameRect::fmRB].SetTile(1, 1, 0, 0);
-
-	// fmB
-	UIRender->SetShader(*m_UIWndFrame.frame[CUIFrameRect::fmB].GetShader());
-	UIRender->GetActiveTextureResolution(ts);
-
-	size_x		= min(m_UIWndFrame.frame[CUIFrameRect::fmRB].GetPosX(), parentAbsR.right) -
-				  max(m_UIWndFrame.frame[CUIFrameRect::fmB].GetPosX(), parentAbsR.left);
-	size_y		= min(ourAbsR.bottom, parentAbsR.bottom) -
-				  max(m_UIWndFrame.frame[CUIFrameRect::fmRB].GetPosY(), parentAbsR.top);
-	rem_x		= fmod(size_x, ts.x);
-	rem_y		= fmod(size_y, ts.y);
-	tile_x		= iFloor(float(size_x) / ts.x);
-	tile_y		= iFloor(float(size_y) / ts.y);
-
-	ClampMax_Zero(r);
-	if (tile_x < 0) tile_x = 0;
-	if (tile_y < 0) tile_y = 0;
-	set_positive(rem_x);
-	set_positive(rem_y);
-
-	m_UIWndFrame.frame[CUIFrameRect::fmB].SetTile	(tile_x, tile_y, rem_x, rem_y);
-
-	m_UIWndFrame.frame[CUIFrameRect::fmB].SetPos(max(m_UIWndFrame.frame[CUIFrameRect::fmB].GetPosX(), parentAbsR.left),
-		max(m_UIWndFrame.frame[CUIFrameRect::fmB].GetPosY(), parentAbsR.top));
-
-	// fmLB
-	r.x1 = max(m_UIWndFrame.frame[CUIFrameRect::fmLB].GetPosX(), parentAbsR.left) - m_UIWndFrame.frame[CUIFrameRect::fmLB].GetPosX();
-	r.y1 = max(m_UIWndFrame.frame[CUIFrameRect::fmLB].GetPosY(), parentAbsR.top) - m_UIWndFrame.frame[CUIFrameRect::fmLB].GetPosY();
-	r.x2 = min(m_UIWndFrame.frame[CUIFrameRect::fmB].GetPosX(), parentAbsR.right) -
-		   max(m_UIWndFrame.frame[CUIFrameRect::fmLB].GetPosX(), parentAbsR.left) + r.x1;
-	r.y2 = min(ourAbsR.bottom, parentAbsR.bottom) -
-		   max(m_UIWndFrame.frame[CUIFrameRect::fmRB].GetPosY(), parentAbsR.top) + r.y1;
-
-	ClampMax_Zero(r);
-	m_UIWndFrame.frame[CUIFrameRect::fmLB].SetRect(r);
-	m_UIWndFrame.frame[CUIFrameRect::fmLB].SetTile(1, 1, 0, 0);
-
-	// fmL
-	UIRender->SetShader(*m_UIWndFrame.frame[CUIFrameRect::fmL].GetShader());
-	UIRender->GetActiveTextureResolution(ts);
-
-	size_y		= min(m_UIWndFrame.frame[CUIFrameRect::fmLB].GetPosY(), parentAbsR.bottom) -
-				  max(m_UIWndFrame.frame[CUIFrameRect::fmL].GetPosY(), parentAbsR.top);
-	size_x		= min(m_UIWndFrame.frame[CUIFrameRect::fmB].GetPosX(), parentAbsR.right) -
-				  max(m_UIWndFrame.frame[CUIFrameRect::fmL].GetPosX(), parentAbsR.left);
-	rem_x		= fmod(size_x, ts.x);
-	rem_y		= fmod(size_y, ts.y);
-	tile_y		= iFloor(float(size_y) / ts.y);
-	tile_x		= iFloor(float(size_x) / ts.y);
-
-	if (tile_y < 0) tile_y = 0;
-	if (tile_x < 0) tile_x = 0;
-	set_positive(rem_x);
-	set_positive(rem_y);
-
-	m_UIWndFrame.frame[CUIFrameRect::fmL].SetTile	(tile_x, tile_y, rem_x, rem_y);
-
-	m_UIWndFrame.frame[CUIFrameRect::fmL].SetPos(max(m_UIWndFrame.frame[CUIFrameRect::fmL].GetPosX(), parentAbsR.left),
-		max(m_UIWndFrame.frame[CUIFrameRect::fmL].GetPosY(), parentAbsR.top));
-
-	// fmLT
-	r.x1 = max(m_UIWndFrame.frame[CUIFrameRect::fmLT].GetPosX(), parentAbsR.left) - m_UIWndFrame.frame[CUIFrameRect::fmLT].GetPosX();
-	r.y1 = max(m_UIWndFrame.frame[CUIFrameRect::fmLT].GetPosY(), parentAbsR.top) - m_UIWndFrame.frame[CUIFrameRect::fmLT].GetPosY();
-	r.x2 = min(m_UIWndFrame.frame[CUIFrameRect::fmBK].GetPosX(), parentAbsR.right) -
-		   max(ourAbsR.left, parentAbsR.left) + r.x1;
-	r.y2 = min(m_UIWndFrame.frame[CUIFrameRect::fmL].GetPosY(), parentAbsR.bottom) -
-		   max(m_UIWndFrame.frame[CUIFrameRect::fmLT].GetPosY(), parentAbsR.top) + r.y1;
-
-	ClampMax_Zero(r);
-	m_UIWndFrame.frame[CUIFrameRect::fmLT].SetRect(r);
-	m_UIWndFrame.frame[CUIFrameRect::fmLT].SetTile(1, 1, 0, 0);
-
-	// fmT
-	UIRender->SetShader(*m_UIWndFrame.frame[CUIFrameRect::fmT].GetShader());
-	UIRender->GetActiveTextureResolution(ts);
-
-	size_x		= min(m_UIWndFrame.frame[CUIFrameRect::fmRT].GetPosX(), parentAbsR.right) -
-				  max(m_UIWndFrame.frame[CUIFrameRect::fmT].GetPosX(), parentAbsR.left);
-	size_y		= min(m_UIWndFrame.frame[CUIFrameRect::fmBK].GetPosY(), parentAbsR.bottom) -
-				  max(m_UIWndFrame.frame[CUIFrameRect::fmT].GetPosY(), parentAbsR.top);
-	rem_x		= fmod(size_x, ts.x);
-	rem_y		= fmod(size_y, ts.y);
-	tile_x		= iFloor(float(size_x) / ts.x);
-	tile_y		= iFloor(float(size_y) / ts.y);
-
-	if (tile_x < 0 || tile_y < 0)
+	if(back_len.y>0.0f)
 	{
-		rem_x = rem_y = 0.0f;
-		tile_x = tile_y = 0;
+		tmp.lt					= rect.lt;
+		tmp.lt.y				+= m_tex_rect[fmLT].height();
+		tmp.rb.x				= rect.lt.x+m_tex_rect[fmL].width();
+		tmp.rb.y				= rect.rb.y-m_tex_rect[fmLB].height();
+		draw_tile_line			(tmp, fmL, false, ts);
+
+		tmp.lt.x				= rect.rb.x-m_tex_rect[fmR].width();
+		tmp.lt.y				= rect.lt.y+m_tex_rect[fmRT].height();;
+		tmp.rb.x				= rect.rb.x;
+		tmp.rb.y				= rect.rb.y-m_tex_rect[fmRB].height();
+		draw_tile_line			(tmp, fmR, false, ts);
 	}
 
-	m_UIWndFrame.frame[CUIFrameRect::fmT].SetTile	(tile_x, tile_y, rem_x, rem_y);
-
-	m_UIWndFrame.frame[CUIFrameRect::fmT].SetPos(max(m_UIWndFrame.frame[CUIFrameRect::fmT].GetPosX(), parentAbsR.left),
-		max(m_UIWndFrame.frame[CUIFrameRect::fmT].GetPosY(), parentAbsR.top));
-
-	// back
-	UIRender->SetShader(*m_UIWndFrame.frame[CUIFrameRect::fmBK].GetShader());
-	UIRender->GetActiveTextureResolution(ts);
-
-	size_x		= min(m_UIWndFrame.frame[CUIFrameRect::fmR].GetPosX(), parentAbsR.right) -
-				  max(m_UIWndFrame.frame[CUIFrameRect::fmBK].GetPosX(), parentAbsR.left);
-	size_y		= min(m_UIWndFrame.frame[CUIFrameRect::fmB].GetPosY(), parentAbsR.bottom) -
-				  max(m_UIWndFrame.frame[CUIFrameRect::fmBK].GetPosY(), parentAbsR.top);
-	rem_x		= fmod(size_x, ts.x);
-	rem_y		= fmod(size_y, ts.y);
-	tile_x		= iFloor(float(size_x) / ts.x);
-	tile_y		= iFloor(float(size_y) / ts.y);
-
-	if (tile_y < 0 || tile_x < 0)
+	if(back_len.x>0.0f && back_len.y>0.0f)
 	{
-		m_UIWndFrame.frame[CUIFrameRect::fmBK].SetRect(null);
-		m_UIWndFrame.frame[CUIFrameRect::fmBK].SetTile(0, 0, 0, 0);
-		m_UIWndFrame.frame[CUIFrameRect::fmBK].SetPos(0, 0);
+		tmp.lt.x				= rect.lt.x+m_tex_rect[fmLT].width();
+		tmp.lt.y				= rect.lt.y+m_tex_rect[fmLT].height();
+		tmp.rb.x				= rect.rb.x-m_tex_rect[fmRB].width();
+		tmp.rb.y				= rect.rb.y-m_tex_rect[fmRB].height();
+		draw_tile_rect			(tmp, fmBK, ts);
 	}
-	else
-	{
-		m_UIWndFrame.frame[CUIFrameRect::fmBK].SetRect(0, 0, ts.x, ts.y);
-		m_UIWndFrame.frame[CUIFrameRect::fmBK].SetTile(tile_x,tile_y,rem_x,rem_y);
 
-		m_UIWndFrame.frame[CUIFrameRect::fmBK].SetPos(max(m_UIWndFrame.frame[CUIFrameRect::fmBK].GetPosX(), parentAbsR.left),
-			max(m_UIWndFrame.frame[CUIFrameRect::fmBK].GetPosY(), parentAbsR.top));
+	UIRender->FlushPrimitive	();
+}
+
+bool CUIFrameWindow::get_points(Frect const& r, int i, Fvector2& LTp, Fvector2& RBp, Fvector2& LTt, Fvector2& RBt)
+{
+	LTt				= m_tex_rect[i].lt;
+	RBt				= m_tex_rect[i].rb;
+
+	LTp				= r.lt; 
+	RBp				= r.lt; 
+	RBp.x			+= m_tex_rect[i].width();
+	RBp.y			+= m_tex_rect[i].height();
+
+	float rem_x		= r.width()-m_tex_rect[i].width();
+	float rem_y		= r.height()-m_tex_rect[i].height();
+	if(rem_x<0.0f)
+	{
+		RBt.x		+= rem_x;
+		RBp.x		+= rem_x;
+	}
+	if(rem_y<0.0f)
+	{
+		RBt.y		+= rem_y;
+		RBp.y		+= rem_y;
+	}
+
+	return true;
+}
+
+void CUIFrameWindow::draw_tile_line(Frect rect, int i, bool b_horz, Fvector2 const& ts)
+{
+	Fvector2 LTt, RBt;
+	Fvector2 LTp, RBp;
+
+	if(b_horz)
+	{
+		while(rect.lt.x+EPS_L<rect.rb.x)
+		{
+			get_points			(rect, i, LTp, RBp, LTt, RBt);
+			rect.lt.x			= RBp.x;
+			draw_rect			(LTp, RBp, LTt, RBt, m_texture_color, ts);
+		}
+	}else
+	{
+		while(rect.lt.y+EPS_L<rect.rb.y)
+		{
+			get_points			(rect, i, LTp, RBp, LTt, RBt);
+			rect.lt.y			= RBp.y;
+			draw_rect			(LTp, RBp, LTt, RBt, m_texture_color, ts);
+		}
 	}
 }
 
-inline void CUIFrameWindow::ClampMax_Zero(Frect &r)
+void CUIFrameWindow::draw_tile_rect(Frect rect, int i, Fvector2 const& ts)
 {
-	clamp(r.x1, 0.0f, abs(r.x1));
-	clamp(r.x2, 0.0f, abs(r.x2));
-	clamp(r.y1, 0.0f, abs(r.y1));
-	clamp(r.y2, 0.0f, abs(r.y2));
+	Frect tmp = rect;
+	while(rect.lt.x+EPS_L<rect.rb.x)
+	{
+		draw_tile_line		(rect, i, false, ts);
+		rect.lt.x			+= m_tex_rect[i].width();
+		rect.lt.x			= _min(rect.lt.x, tmp.rb.x);
+	}
 }
+

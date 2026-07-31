@@ -68,10 +68,6 @@ void CUIEditKeyBind::Init(float x, float y, float width, float height)
 	InitTexture				("ui_options_string");
 }
 
-void CUIEditKeyBind::InitTexture(LPCSTR texture, bool bHorizontal)
-{
-	CUILabel::InitTexture(texture,bHorizontal);
-}
 
 void CUIEditKeyBind::OnFocusLost()
 {
@@ -134,7 +130,7 @@ void CUIEditKeyBind::Update()
 {
 	CUILabel::Update();
 
-	m_bTextureAvailable = m_bCursorOverWindow;
+//	m_bTextureAvailable = m_bCursorOverWindow;
 	if (m_bEditMode)
 	{
 		m_pAnimation->Update();

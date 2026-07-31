@@ -106,8 +106,6 @@ public:
 //.	void						Select					(CMapLocation* ml);
 
 	Frect						ActiveMapRect			()		{Frect r; m_UILevelFrame->GetAbsoluteRect(r); return r;};
-	void						AddMapToRender			(CUICustomMap*);
-	void						RemoveMapToRender		(CUICustomMap*);
 	CUIGlobalMap*				GlobalMap				()		{return m_GlobalMap;};
 	const GameMaps&				GameMaps				()		{return m_GameMaps;};	
 	CUICustomMap*				GetMapByIdx				(u16 idx);

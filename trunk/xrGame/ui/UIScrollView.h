@@ -1,9 +1,10 @@
 #pragma once
-
+#include "UIScrollBar.h"
 #include "UIWindow.h"
 #include "UIWndCallback.h"
 
 class CUIScrollBar;
+class CUIFixedScrollBar;
 
 class CUIScrollView :public CUIWindow, public CUIWndCallback
 {
@@ -23,6 +24,7 @@ enum {eVertFlip=(1<<0),eNeedRecalc=(1<<1),eFixedScrollBar=(1<<2),eItemsSelectabe
 	
 	Flags16			m_flags;
 	shared_str		m_scrollbar_profile;
+	Ivector2		m_visible_rgn;
 
 virtual void		RecalcSize			();
 		void		UpdateScroll		();	
@@ -36,6 +38,7 @@ public:
 	using CUIWindow::Init;
 			
 					CUIScrollView		();
+					CUIScrollView		(CUIFixedScrollBar* scroll_bar);
 	virtual			~CUIScrollView		();
 			void	Init				();// need parent to be initialized
 	virtual void	SendMessage			(CUIWindow* pWnd, s16 msg, void* pData = NULL);
@@ -48,12 +51,15 @@ public:
 			void	ScrollToBegin		();
 			void	ScrollToEnd			();
 			bool	GetVertFlip			()									{return !!m_flags.test(eVertFlip);}
+			bool	Empty				()									{return m_pad->GetChildWndList().empty();}
 			u32		GetSize				();
+	WINDOW_LIST&	Items				()									{return m_pad->GetChildWndList();}
 	CUIWindow*		GetItem				(u32 idx);
 			void	SetFixedScrollBar	(bool b);
 			float	GetDesiredChildWidth();
 	virtual	void	SetSelected			(CUIWindow*);
 	CUIWindow*		GetSelected			();
+			Fvector2 GetPadSize			();
 			void	ForceUpdate			();
 			int		GetMinScrollPos		();
 			int		GetMaxScrollPos		();

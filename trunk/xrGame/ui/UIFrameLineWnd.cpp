@@ -1,103 +1,199 @@
 #include "stdafx.h"
 #include "UIFrameLineWnd.h"
+#include "UITextureMaster.h"
 
 CUIFrameLineWnd::CUIFrameLineWnd()
-	:	bHorizontal(true),
-		m_bTextureAvailable(false)
+:bHorizontal(true),
+m_bTextureVisible(false)
 {
-	AttachChild(&UITitleText);
+	m_texture_color				= color_argb(255,255,255,255);
 }
 
-//////////////////////////////////////////////////////////////////////////
-
-void CUIFrameLineWnd::Init(float x, float y, float width, float height){
-	inherited::Init(x,y, width, height);
-	UITitleText.Init(0,0, width, 50);
-	inherited::Init(x,y, width, height);
-}
-
-//////////////////////////////////////////////////////////////////////////
-
+//void CUIFrameLineWnd::InitFrameLineWnd(LPCSTR base_name, Fvector2 pos, Fvector2 size, bool horizontal)
 void CUIFrameLineWnd::Init(LPCSTR base_name, float x, float y, float width, float height, bool horizontal)
 {
-	Init(x,y,width,height);
-	InitTexture(base_name, horizontal);
-	if (horizontal)
-		UITitleText.Init(0,0, width, 50);
-	else
-		UITitleText.Init(0,0, 50, height);	
+//	InitFrameLineWnd(pos,size,horizontal);
+	Init(x, y, width, height, horizontal);
+	InitTexture		(base_name,"hud\\default");
 }
 
-//////////////////////////////////////////////////////////////////////////
+//void CUIFrameLineWnd::InitFrameLineWnd(Fvector2 pos, Fvector2 size, bool horizontal)
+void CUIFrameLineWnd::Init(float x, float y, float width, float height, bool horizontal)
+{
+	Fvector2 pos{ x, y };
+	Fvector2 size{ width, height };
 
-void CUIFrameLineWnd::InitTexture(LPCSTR tex_name, bool horizontal){
-
-	Frect			rect;
-	GetAbsoluteRect	(rect);
-
-	bHorizontal = horizontal;
-
-	if (horizontal)
-	{
-		UIFrameLine.Init(tex_name, rect.left, rect.top, rect.right - rect.left, horizontal, alNone);
-		UITitleText.Init(0,0, rect.right - rect.left, 50);
-	}
-	else
-	{
-		UIFrameLine.Init(tex_name, rect.left, rect.top, rect.bottom - rect.top, horizontal, alNone);
-		UITitleText.Init(0,0, 50, rect.bottom - rect.top);
-	}
-
-	m_bTextureAvailable = true;
+	inherited::SetWndPos		(pos);
+	inherited::SetWndSize		(size);
+	
+	bHorizontal					= horizontal;
 }
 
-//////////////////////////////////////////////////////////////////////////
+void CUIFrameLineWnd::InitTexture(LPCSTR texture, LPCSTR sh_name)
+{
+	m_bTextureVisible			= true;
+	dbg_tex_name				= texture;
+	string256					buf;
+	CUITextureMaster::InitTexture(strconcat(sizeof(buf), buf, texture,"_back"),	sh_name, m_shader, m_tex_rect[flBack]);
+	CUITextureMaster::InitTexture(strconcat(sizeof(buf), buf, texture,"_b"),	sh_name, m_shader, m_tex_rect[flFirst]);
+	CUITextureMaster::InitTexture(strconcat(sizeof(buf), buf, texture,"_e"),	sh_name, m_shader, m_tex_rect[flSecond]);
+	if(bHorizontal)
+	{
+		R_ASSERT2(fsimilar(m_tex_rect[flFirst].height(), m_tex_rect[flSecond].height()), texture );
+		R_ASSERT2(fsimilar(m_tex_rect[flFirst].height(), m_tex_rect[flBack].height()),texture );
+	}else
+	{
+		R_ASSERT2(fsimilar(m_tex_rect[flFirst].width(), m_tex_rect[flSecond].width()), texture );
+		R_ASSERT2(fsimilar(m_tex_rect[flFirst].width(), m_tex_rect[flBack].width()),texture );
+	}
+}
 
 void CUIFrameLineWnd::Draw()
 {
-	if (m_bTextureAvailable)
+	if(m_bTextureVisible)
+		DrawElements		();
+
+	inherited::Draw			();
+}
+
+static Fvector2 pt_offset		= {-0.5f, -0.5f};
+
+void draw_rect(Fvector2 LTp, Fvector2 RBp, Fvector2 LTt, Fvector2 RBt, u32 clr, Fvector2 const& ts)
+{
+	UI().AlignPixel			(LTp.x);
+	UI().AlignPixel			(LTp.y);
+	LTp.add					(pt_offset);
+	UI().AlignPixel			(RBp.x);
+	UI().AlignPixel			(RBp.y);
+	RBp.add					(pt_offset);
+	LTt.div					(ts);
+	RBt.div					(ts);
+
+	UIRender->PushPoint(LTp.x, LTp.y,	0, clr, LTt.x, LTt.y);
+	UIRender->PushPoint(RBp.x, RBp.y,	0, clr, RBt.x, RBt.y);
+	UIRender->PushPoint(LTp.x, RBp.y,	0, clr, LTt.x, RBt.y);
+
+	UIRender->PushPoint(LTp.x, LTp.y,	0, clr, LTt.x, LTt.y);
+	UIRender->PushPoint(RBp.x, LTp.y,	0, clr, RBt.x, LTt.y);
+	UIRender->PushPoint(RBp.x, RBp.y,	0, clr, RBt.x, RBt.y);
+}
+
+void CUIFrameLineWnd::DrawElements()
+{
+	UIRender->SetShader			(*m_shader);
+
+	Fvector2					ts;
+	UIRender->GetActiveTextureResolution(ts);
+
+	Frect						rect;
+	GetAbsoluteRect				(rect);
+	UI().ClientToScreenScaled	(rect.lt);
+	UI().ClientToScreenScaled	(rect.rb);
+	
+	float back_len				= 0.0f;
+	u32 prim_count				= 6*2; //first&second 
+	if(bHorizontal)
 	{
-		Fvector2 p;
-		GetAbsolutePos		(p);
-		UIFrameLine.SetPos	(p.x, p.y);
-		UIFrameLine.Render	();
+		back_len				= rect.width()-m_tex_rect[flFirst].width()-m_tex_rect[flSecond].width();
+		if(back_len<0.0f)
+			rect.x2				-= back_len;
 
-		inherited::Draw();
-	}	
+		if(back_len>0.0f)
+			prim_count				+= 6* iCeil(back_len / m_tex_rect[flBack].width());
+	}else
+	{
+		back_len				= rect.height()-m_tex_rect[flFirst].height()-m_tex_rect[flSecond].height();
+		if(back_len<0)
+			rect.y2				-= back_len;
+
+		if(back_len>0.0f)
+			prim_count				+= 6* iCeil(back_len / m_tex_rect[flBack].height());
+	}
+
+	R_ASSERT(UI().m_currentPointType <= IUIRender::pttLIT);
+	UIRender->StartPrimitive	(prim_count, IUIRender::ptTriList, UI().m_currentPointType);
+
+
+	for(int i=0; i<flMax; ++i)
+	{
+		Fvector2 LTt, RBt;
+		Fvector2 LTp, RBp;
+		int counter				= 0;
+
+		while(inc_pos(rect, counter, i, LTp, RBp, LTt, RBt))
+		{
+			draw_rect				(LTp, RBp, LTt, RBt, m_texture_color, ts);
+			++counter;
+		};
+	}
+	UIRender->FlushPrimitive		();
 }
 
-//////////////////////////////////////////////////////////////////////////
 
-void CUIFrameLineWnd::SetWidth(float width)
+bool  CUIFrameLineWnd::inc_pos(Frect& rect, int counter, int i, Fvector2& LTp, Fvector2& RBp, Fvector2& LTt, Fvector2& RBt)
 {
-	inherited::SetWidth(width);
-	if (bHorizontal)
-		UIFrameLine.SetSize(width);
-}
+	if(i==flFirst || i==flSecond)
+	{
+		if(counter!=0)	return false;
 
-//////////////////////////////////////////////////////////////////////////
+		LTt				= m_tex_rect[i].lt;
+		RBt				= m_tex_rect[i].rb;
 
-void CUIFrameLineWnd::SetHeight(float height)
-{
-	inherited::SetHeight(height);
-	if (!bHorizontal)
-		UIFrameLine.SetSize(height);
-}
+		LTp				= rect.lt; 
 
-float CUIFrameLineWnd::GetTextureHeight(){
-	return UIFrameLine.elements[0].GetRect().height();
-}
+		RBp				= rect.lt; 
+		RBp.x			+= m_tex_rect[i].width();
+		RBp.y			+= m_tex_rect[i].height();
+	}else //i==flBack
+	{
+		if(	(bHorizontal && rect.lt.x + m_tex_rect[flSecond].width()+EPS_L >= rect.rb.x)|| 
+			(!bHorizontal && rect.lt.y + m_tex_rect[flSecond].height()+EPS_L >= rect.rb.y) )
+			return false;
 
-//////////////////////////////////////////////////////////////////////////
+		LTt				= m_tex_rect[i].lt;
+		LTp				= rect.lt; 
 
-void CUIFrameLineWnd::SetOrientation(bool horizontal)
-{
-	UIFrameLine.SetOrientation(horizontal);
-}
+		bool b_draw_reminder = (bHorizontal) ?	(rect.lt.x+m_tex_rect[flBack].width() > rect.rb.x-m_tex_rect[flSecond].width()) :
+												(rect.lt.y+m_tex_rect[flBack].height() > rect.rb.y-m_tex_rect[flSecond].height());
+		if(b_draw_reminder)
+		{ //draw reminder
+			float rem_len	= (bHorizontal) ?	rect.rb.x-m_tex_rect[flSecond].width()-rect.lt.x : 
+												rect.rb.y-m_tex_rect[flSecond].height()-rect.lt.y;
 
-//////////////////////////////////////////////////////////////////////////
+			if(bHorizontal)
+			{
+				RBt.y			= m_tex_rect[i].rb.y;
+				RBt.x			= m_tex_rect[i].lt.x + rem_len;
 
-void CUIFrameLineWnd::SetColor(u32 cl)
-{
-	UIFrameLine.SetColor(cl);
+				RBp				= rect.lt; 
+				RBp.x			+= rem_len;
+				RBp.y			+= m_tex_rect[i].height();
+			}else
+			{
+				RBt.y			= m_tex_rect[i].lt.y + rem_len;
+				RBt.x			= m_tex_rect[i].rb.x;
+
+				RBp				= rect.lt; 
+				RBp.x			+= m_tex_rect[i].width();
+				RBp.y			+= rem_len;
+			}
+		}else
+		{ //draw full element
+			RBt				= m_tex_rect[i].rb;
+
+			RBp				= rect.lt; 
+			RBp.x			+= m_tex_rect[i].width();
+			RBp.y			+= m_tex_rect[i].height();
+		}
+	}
+
+	//stretch always
+	if(bHorizontal)
+		RBp.y			= rect.rb.y;
+	else
+		RBp.x			= rect.rb.x;
+
+	if(bHorizontal) rect.lt.x = RBp.x;
+	else			rect.lt.y = RBp.y;
+	return			true;
 }

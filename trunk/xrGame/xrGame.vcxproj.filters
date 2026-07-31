@@ -1963,9 +1963,6 @@
     <Filter Include="UI\UIWindows\TrackBar">
       <UniqueIdentifier>{e22eab3a-d8cb-4f06-84b2-ae5f7729c941}</UniqueIdentifier>
     </Filter>
-    <Filter Include="UI\UIWindows\Frames">
-      <UniqueIdentifier>{dfb3c173-d31e-4d25-a54a-cd0247b5425b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="UI\UIWindows\ScrollView">
       <UniqueIdentifier>{ada2c0d4-f75b-4c54-9d50-1b875d96c21e}</UniqueIdentifier>
     </Filter>
@@ -5634,12 +5631,6 @@
     <ClInclude Include="ui\UITrackButton.h">
       <Filter>UI\UIWindows\TrackBar</Filter>
     </ClInclude>
-    <ClInclude Include="ui\UIFrameLine.h">
-      <Filter>UI\UIWindows\Frames</Filter>
-    </ClInclude>
-    <ClInclude Include="UIFrameRect.h">
-      <Filter>UI\UIWindows\Frames</Filter>
-    </ClInclude>
     <ClInclude Include="ui\UIScrollView.h">
       <Filter>UI\UIWindows\ScrollView</Filter>
     </ClInclude>
@@ -5882,6 +5873,9 @@
     </ClInclude>
     <ClInclude Include="pose_extrapolation.h">
       <Filter>Physics\IK</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\UIFixedScrollBar.h">
+      <Filter>UI\UIWindows\ScrollBar</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -8267,12 +8261,6 @@
     <ClCompile Include="ui\UITrackButton.cpp">
       <Filter>UI\UIWindows\TrackBar</Filter>
     </ClCompile>
-    <ClCompile Include="ui\UIFrameLine.cpp">
-      <Filter>UI\UIWindows\Frames</Filter>
-    </ClCompile>
-    <ClCompile Include="UIFrameRect.cpp">
-      <Filter>UI\UIWindows\Frames</Filter>
-    </ClCompile>
     <ClCompile Include="ui\UIScrollView.cpp">
       <Filter>UI\UIWindows\ScrollView</Filter>
     </ClCompile>
@@ -8539,6 +8527,9 @@
     </ClCompile>
     <ClCompile Include="pose_extrapolation.cpp">
       <Filter>Physics\IK</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\UIFixedScrollBar.cpp">
+      <Filter>UI\UIWindows\ScrollBar</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

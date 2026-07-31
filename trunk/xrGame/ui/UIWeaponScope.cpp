@@ -15,7 +15,7 @@ void CUIWeaponScope::InitScope(CUIXml* WpnScopeXml, const char* tex_name, bool T
 	{
 		ScopeTexture = new CUIStaticItem();
 
-		ScopeTexture->Init(tex_name, "hud\\default", 0, 0, alNone);
+		ScopeTexture->Init(tex_name, "hud\\default", 0, 0);
         return;
 	}
 
@@ -29,7 +29,7 @@ void CUIWeaponScope::DrawScope()
 	if (ScopeTexture)
 	{
 		ScopeTexture->SetPos(0, 0);
-		ScopeTexture->SetRect(0, 0, UI_BASE_WIDTH, UI_BASE_HEIGHT);
+		ScopeTexture->SetSize(Fvector2().set(UI_BASE_WIDTH, UI_BASE_HEIGHT));
 		ScopeTexture->Render();
 		return;
 	}

@@ -68,31 +68,25 @@ SHitMark::SHitMark		(const ui_shader& sh, const Fvector& dir)
 	m_HitDirection						= dir.getH();
 	m_UIStaticItem						= xr_new<CUIStaticItem>();
 	m_UIStaticItem->SetShader			(sh);
-	m_UIStaticItem->SetPos				(256.0f, 128.0f);
-	m_UIStaticItem->SetRect				(.0f, .0f, 512.0f, 512.0f);
+	m_UIStaticItem->SetPos(256.0f, 128.0f);
+	m_UIStaticItem->SetSize(Fvector2().set(512.0f, 512.0f));
 }
 
-void SHitMark::UpdateAnim	()
+bool SHitMark::IsActive()
+{
+	return ((Device.fTimeGlobal - m_StartTime) < m_lanim->Length_sec());
+}
+
+void SHitMark::Draw( float cam_dir )
 {
 	int frame;
-	u32 clr			= m_lanim->CalculateRGB(Device.fTimeGlobal-m_StartTime,frame);
-	m_UIStaticItem->SetColor		(subst_alpha(m_UIStaticItem->GetColor(), color_get_A(clr)));
+	u32 clr	= m_lanim->CalculateRGB( Device.fTimeGlobal - m_StartTime,frame );
+	m_UIStaticItem->SetTextureColor( subst_alpha( m_UIStaticItem->GetTextureColor(), color_get_A(clr) ) );
+
+	m_UIStaticItem->Render( cam_dir + m_HitDirection );
 }
 
 SHitMark::~SHitMark		()
 {
 	xr_delete(m_UIStaticItem);
-}
-
-bool	SHitMark::IsActive()
-{
-	return ((Device.fTimeGlobal-m_StartTime) < m_lanim->Length_sec());
-}
-
-void	SHitMark::Draw(float cam_dir)
-{
-	UpdateAnim						();
-
-	float res_h						= cam_dir + m_HitDirection;
-	m_UIStaticItem->Render			(res_h);
 }

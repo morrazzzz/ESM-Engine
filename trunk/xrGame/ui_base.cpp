@@ -2,14 +2,13 @@
 #include "ui_base.h"
 #include "GamePersistent.h"
 #include "UICursor.h"
-#include "HUDManager.h"
 
 CUICursor&	GetUICursor		()	{return UI().GetUICursor();};
 ui_core&	UI				()	{return *GamePersistent().m_pUI_core;};
 
 extern ENGINE_API Fvector2		g_current_font_scale;
 
-void S2DVert::rotate_pt(const Fvector2& pivot, float cosA, float sinA, float kx)
+void S2DVert::rotate_pt(const Fvector2& pivot, const float cosA, const float sinA, const float kx)
 {
 	Fvector2 t		= pt;
 	t.sub			(pivot);
@@ -108,38 +107,44 @@ void ui_core::OnDeviceReset()
 		static_cast<float>(Device.dwHeight)));
 }
 
-void ui_core::ClientToScreenScaled(Fvector2& dest, float left, float top)
+void ui_core::ClientToScreenScaled(Fvector2& dest, float left, float top)	const
 {
-	dest.set(ClientToScreenScaledX(left),	ClientToScreenScaledY(top));
+	if(m_currentPointType!=IUIRender::pttLIT)
+		dest.set(ClientToScreenScaledX(left),	ClientToScreenScaledY(top));
+	else
+		dest.set(left,top);
 }
 
-void ui_core::ClientToScreenScaled(Fvector2& src_and_dest)
+void ui_core::ClientToScreenScaled(Fvector2& src_and_dest)	const
 {
-	src_and_dest.set(ClientToScreenScaledX(src_and_dest.x),	ClientToScreenScaledY(src_and_dest.y));
+	if(m_currentPointType!=IUIRender::pttLIT)
+		src_and_dest.set(ClientToScreenScaledX(src_and_dest.x),	ClientToScreenScaledY(src_and_dest.y));
 }
 
-void ui_core::ClientToScreenScaledWidth(float& src_and_dest)
+void ui_core::ClientToScreenScaledWidth(float& src_and_dest)	const
 {
-//.	src_and_dest		= ClientToScreenScaledX(src_and_dest);
-	src_and_dest		/= m_current_scale->x;
+	if(m_currentPointType!=IUIRender::pttLIT)
+		src_and_dest		/= m_current_scale->x;
 }
 
-void ui_core::ClientToScreenScaledHeight(float& src_and_dest)
+void ui_core::ClientToScreenScaledHeight(float& src_and_dest)	const
 {
-//.	src_and_dest		= ClientToScreenScaledY(src_and_dest);
-	src_and_dest		/= m_current_scale->y;
+	if(m_currentPointType!=IUIRender::pttLIT)
+		src_and_dest		/= m_current_scale->y;
 }
 
-Frect ui_core::ScreenRect()
+void ui_core::AlignPixel(float& src_and_dest)	const
 {
-	static Frect R={0.0f, 0.0f, UI_BASE_WIDTH, UI_BASE_HEIGHT};
-	return R;
+	if(m_currentPointType!=IUIRender::pttLIT)
+		src_and_dest		= (float)iFloor(src_and_dest);
 }
 
 void ui_core::PushScissor(const Frect& r_tgt, bool overlapped)
 {
-//.	return;
-	Frect r_top			= ScreenRect();
+	if(UI().m_currentPointType==IUIRender::pttLIT)
+		return;
+
+	Frect r_top			= {0.0f, 0.0f, UI_BASE_WIDTH, UI_BASE_HEIGHT};
 	Frect result		= r_tgt;
 	if (!m_Scissors.empty()&&!overlapped){
 		r_top			= m_Scissors.top();
@@ -170,7 +175,9 @@ void ui_core::PushScissor(const Frect& r_tgt, bool overlapped)
 
 void ui_core::PopScissor()
 {
-//.	return;
+	if(UI().m_currentPointType==IUIRender::pttLIT)
+		return;
+
 	VERIFY(!m_Scissors.empty());
 	m_Scissors.pop		();
 	
@@ -204,8 +211,8 @@ ui_core::ui_core()
 	OnDeviceReset				();
 
 	m_current_scale				= &m_scale_;
-//.	g_current_font_scale		= m_scale_;
 	g_current_font_scale.set	(1.0f,1.0f);
+	m_currentPointType			= IUIRender::pttTL;
 }
 
 ui_core::~ui_core()

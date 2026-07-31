@@ -1,4 +1,5 @@
 #pragma once
+#include "UIStatic.h"
 #include "UILabel.h"
 
 class CUIListBoxItem : public CUILabel, public CUISelectable{

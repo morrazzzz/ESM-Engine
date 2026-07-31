@@ -48,7 +48,7 @@ bool CUITabControl::AddItem(const char *pItemName, const char *pTexName, float x
 	pNewButton->Init			(pTexName, x, y, width, height);
 	pNewButton->SetText			(pItemName);
 	pNewButton->SetTextColor	(m_cGlobalTextColor);
-	pNewButton->GetUIStaticItem	().SetColor(m_cGlobalButtonColor);
+	pNewButton->GetUIStaticItem	().SetTextureColor(m_cGlobalButtonColor);
 
 	return AddItem				(pNewButton);
 }

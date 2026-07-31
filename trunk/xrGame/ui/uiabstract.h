@@ -40,27 +40,23 @@ public:
 	virtual void		SetShader(const ui_shader& sh)									= 0;
 	virtual void		SetTextureColor(u32 color)										= 0;
 	virtual u32			GetTextureColor()										const	= 0;
-	virtual void		SetOriginalRect(const Frect& r)									= 0;
-	virtual void		SetOriginalRectEx(const Frect& r)								= 0;
+	virtual void		SetTextureRect(const Frect& r)									= 0;
 };
 
 class IUIMultiTextureOwner{
 public:
 	virtual ~IUIMultiTextureOwner() {}	
 	virtual void		InitTexture(const char* texture)								= 0;
-	virtual bool		GetTextureAvailability()										= 0;
 	virtual void		SetTextureVisible(bool vis)										= 0;
 	virtual bool		GetTextureVisible()												= 0;
 };
 
 class CUIMultiTextureOwner : public IUIMultiTextureOwner{
 public:
-	CUIMultiTextureOwner(){m_bTextureAvailable = false; m_bTextureVisible = false;}
-	virtual bool		GetTextureAvailability()	{return m_bTextureAvailable;}
+	CUIMultiTextureOwner(){m_bTextureVisible = false;}
 	virtual void		SetTextureVisible(bool vis)	{m_bTextureVisible = true;}
 	virtual bool		GetTextureVisible()			{return m_bTextureVisible;}
 protected:
-	bool m_bTextureAvailable;
 	bool m_bTextureVisible;
 };
 

@@ -33,7 +33,6 @@ public:
 
 protected:
 	void			BindAction2Key			();
-	virtual void	InitTexture				(LPCSTR texture, bool horizontal = true);
 
 	bool		m_bEditMode;
 	bool		m_bChanged;

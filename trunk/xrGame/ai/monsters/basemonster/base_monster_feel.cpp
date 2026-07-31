@@ -99,12 +99,15 @@ void CBaseMonster::HitEntity(const CEntity *pEntity, float fDamage, float impuls
 			
 			float h1,p1;
 			Device.vCameraDirection.getHP	(h1,p1);
-
-			Fvector hd = hit_dir;
-			hd.mul(-1);
-			float d = -h1 + hd.getH();
+			Fvector hd				= hit_dir;
+			hd.mul					(-1);
+			float d = -h1 + hd.getH	();
 			s->wnd()->SetHeading	(d);
-			s->wnd()->SetHeadingPivot(Fvector2().set(256,512));
+			Fvector2 wnd_pos = s->wnd()->GetWndPos();
+			wnd_pos.y	+= 400.0f*_cos(d);
+			wnd_pos.x	+= 500.0f*_sin(d);
+			s->wnd()->SetWndPos(wnd_pos);
+
 			STOP_PROFILE;
 
 			//SetAttackEffector			();

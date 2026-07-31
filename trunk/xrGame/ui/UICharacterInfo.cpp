@@ -58,7 +58,6 @@ void CUICharacterInfo::Init(float x, float y, float width, float height, CUIXml*
 	{
 		pItem = m_icons[eUIIcon] = xr_new<CUIStatic>();
 		xml_init.InitStatic	(*xml_doc, "icon_static", 0, pItem);
-		pItem->ClipperOn	();
 		pItem->Show			(true);
 		pItem->Enable		(true);
 		AttachChild			(pItem);
@@ -305,9 +304,11 @@ void CUICharacterInfo::ClearInfo()
 	m_ownerID = static_cast<u16>(-1);
 
 	if (m_icons[eUIIcon]) {
-		m_icons[eUIIcon]->GetUIStaticItem().SetOriginalRect(	8*ICON_GRID_WIDTH,0,
-			float(CHAR_ICON_WIDTH*ICON_GRID_WIDTH),
-			float(CHAR_ICON_HEIGHT*ICON_GRID_HEIGHT));
+		Frect rect{ 8 * ICON_GRID_WIDTH,0,
+			float(CHAR_ICON_WIDTH * ICON_GRID_WIDTH),
+			float(CHAR_ICON_HEIGHT * ICON_GRID_HEIGHT)};
+
+		m_icons[eUIIcon]->GetUIStaticItem().SetTextureRect(rect);
 	}
 
 	for(int i = eUIName; i<eMaxCaption; ++i)

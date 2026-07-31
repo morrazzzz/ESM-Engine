@@ -90,6 +90,10 @@ void CUITaskRootItem::Init			()
 	xml_init.Init3tButton		(uiXml,"task_root_item:switch_description_btn",0,m_switchDescriptionBtn);
 }
 
+void CUITaskRootItem::Draw()
+{
+	inherited::Draw();
+}
 
 void CUITaskRootItem::SetGameTask(CGameTask* gt, u16 obj_idx)				
 {
@@ -101,8 +105,9 @@ void CUITaskRootItem::SetGameTask(CGameTask* gt, u16 obj_idx)
 	m_taskImage->InitTexture		(*obj->icon_texture_name);
 
 	Frect r							= obj->icon_rect;
-	m_taskImage->SetOriginalRect	(r.x1, r.y1, r.x2, r.y2);
-	m_taskImage->ClipperOn			();
+	r.rb.add(r.lt);
+	m_taskImage->SetTextureRect(r);
+
 	m_taskImage->SetStretchTexture	(true);
 
 	m_captionStatic->SetText		(*stbl.translate(m_GameTask->m_Title));
