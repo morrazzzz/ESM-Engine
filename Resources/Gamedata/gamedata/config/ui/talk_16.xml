@@ -37,9 +37,9 @@
 		</title>
 	</frame_line_window>
 
-	<questions_list x="25" y="100" width="557" height="125" right_ident="5" always_show_scroll="0"/>
+	<questions_list x="25" y="75" width="557" height="125" right_ident="5" always_show_scroll="0"/>
 
-	<answers_list x="30" y="46" width="557" height="377" right_ident="0" always_show_scroll="0"/>
+	<answers_list x="30" y="40" width="557" height="377" right_ident="0" always_show_scroll="0"/>
 
 	<question_item x="0" y="0" width="557" height="20" min_height="13">
 		<content_text x="0" y="0" width="550" height="20">
