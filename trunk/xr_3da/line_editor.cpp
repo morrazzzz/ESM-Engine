@@ -26,22 +26,22 @@ void line_editor::on_frame()
 	m_control.on_frame();
 }
 
-void line_editor::lineEditorKeyPress( int dik )
+void line_editor::IR_OnKeyboardPress( int dik )
 {
 	m_control.on_key_press( dik );
 }
 
-void line_editor::lineEditorKeyHold( int dik )
+void line_editor::IR_OnKeyboardHold( int dik )
 {
 	m_control.on_key_hold( dik );
 }
 
-void line_editor::lineEditorKeyRelease( int dik )
+void line_editor::IR_OnKeyboardRelease( int dik )
 {
 	m_control.on_key_release( dik );
 }
 
-void line_editor::lineEditorTextInput(const char* text)
+void line_editor::IR_OnTextInput(const char* text)
 {
 	m_control.InputConsoleText(text);
 }

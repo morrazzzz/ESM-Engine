@@ -492,7 +492,7 @@ public:
 		return inherited::GetToken();
 	}
 };
-
+#ifndef DEDICATED_SERVER
 class CCC_soundDevice : public CCC_Token
 {
 	typedef CCC_Token inherited;
@@ -528,6 +528,7 @@ public:
 		inherited::Save(F);
 	}
 };
+#endif
 
 class CCC_FindInConsole: public IConsole_Command
 {
@@ -651,11 +652,14 @@ void CCC_Register()
 	CMD3(CCC_Mask,		"rs_cam_pos",			&psDeviceFlags,		rsCameraPos				);
 	CMD3(CCC_Mask,		"rs_occ_draw",			&psDeviceFlags,		rsOcclusionDraw			);
 	CMD3(CCC_Mask,		"rs_occ_stats",			&psDeviceFlags,		rsOcclusionStats		);
+//	CMD4(CCC_Integer,	"rs_skeleton_update",	&psSkeletonUpdate,	2,		128	);
 #endif // DEBUG
 
 	CMD2(CCC_Gamma,		"rs_c_gamma"			,&ps_gamma			);
 	CMD2(CCC_Gamma,		"rs_c_brightness"		,&ps_brightness		);
 	CMD2(CCC_Gamma,		"rs_c_contrast"			,&ps_contrast		);
+//	CMD4(CCC_Integer,	"rs_vb_size",			&rsDVB_Size,		32,		4096);
+//	CMD4(CCC_Integer,	"rs_ib_size",			&rsDIB_Size,		32,		4096);
 
 	// Texture manager	
 	CMD4(CCC_Integer,	"texture_lod",			&psTextureLOD,				0,	4	);
@@ -700,21 +704,21 @@ void CCC_Register()
 
 	CMD1(CCC_r2,		"renderer"					);
 
+#ifndef DEDICATED_SERVER
 	CMD1(CCC_soundDevice, "snd_device");
+#endif
 
 	//psSoundRolloff	= pSettings->r_float	("sound","rolloff");		clamp(psSoundRolloff,			EPS_S,	2.f);
 	psSoundOcclusionScale	= pSettings->r_float	("sound","occlusion_scale");clamp(psSoundOcclusionScale,	0.1f,	.5f);
 
-#pragma todo("Need me???")
-	if (strstr(Core.Params, "designer"))
-	{
-		CMD1(CCC_DR_TakePoint, "demo_record_take_point");
-		CMD1(CCC_DR_ClearPoint, "demo_record_clear_points");
-		CMD4(CCC_DR_UsePoints, "demo_record_use_points", &g_bDR_LM_UsePointsBBox, 0, 1);
-		CMD4(CCC_DR_UsePoints, "demo_record_4step", &g_bDR_LM_4Steps, 0, 1);
-		CMD4(CCC_DR_UsePoints, "demo_record_step", &g_iDR_LM_Step, 0, 3);
-	}
-
+if(strstr(Core.Params,"designer"))	
+{
+	CMD1(CCC_DR_TakePoint,		"demo_record_take_point");
+	CMD1(CCC_DR_ClearPoint,		"demo_record_clear_points");
+	CMD4(CCC_DR_UsePoints,		"demo_record_use_points",	&g_bDR_LM_UsePointsBBox, 0, 1);
+	CMD4(CCC_DR_UsePoints,		"demo_record_4step",		&g_bDR_LM_4Steps, 0, 1);
+	CMD4(CCC_DR_UsePoints,		"demo_record_step",			&g_iDR_LM_Step, 0, 3);
+}
 	CMD1(CCC_DumpOpenFiles,		"dump_open_files");
 //#endif
 
@@ -726,5 +730,7 @@ void CCC_Register()
 #ifdef OPTICK_ENABLE
 	CMD1(CCC_CaptureOptick, "optick_capture")
 #endif
+	extern int g_svTextConsoleUpdateRate;
+	CMD4(CCC_Integer, "sv_console_update_rate", &g_svTextConsoleUpdateRate, 1, 100);
 };
  

@@ -87,7 +87,7 @@ public:
 	IC void					SetInterval		(const Fvector2& v) {vInterval.set(v);};
 	IC void					SetAligment		(EAligment aligment){ eCurrentAlignment=aligment; }
 
-	float					SizeOf_			(std::string_view s );
+	float					SizeOf_			( LPCSTR s );
 	float					SizeOf_			( const wide_char *wsStr );
 
 	float					SizeOf_			( const char cChar );
