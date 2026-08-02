@@ -2,17 +2,15 @@
 
 #include "UIEditBoxEx.h"
 #include "UIFrameWindow.h"
-
+#include "UILines.h"
 
 
 CUIEditBoxEx::CUIEditBoxEx()
 {
 	m_pFrameWindow = xr_new<CUIFrameWindow>();
 	AttachChild(m_pFrameWindow);
-	m_lines.SetTextComplexMode(true);
-	m_lines.SetCutWordsMode(true);
-	m_lines.SetUseNewLineMode(false);
-	m_lines.SetVTextAlignment(valTop);		
+
+	TextItemControl()->SetTextComplexMode( true );
 }
 
 CUIEditBoxEx::~CUIEditBoxEx()
@@ -20,8 +18,12 @@ CUIEditBoxEx::~CUIEditBoxEx()
 	xr_delete(m_pFrameWindow);
 }	
 
-void CUIEditBoxEx::Init(float x, float y, float width, float height){
-	m_pFrameWindow->Init(0,0,width,height);
+void CUIEditBoxEx::Init(float x, float y, float width, float height)
+{
+	Fvector2 size{ width, height };
+
+	m_pFrameWindow->SetWndSize(size);
+	m_pFrameWindow->SetWndPos(Fvector2().set(0, 0));
 	CUICustomEdit::Init(x,y,width,height);
 }
 

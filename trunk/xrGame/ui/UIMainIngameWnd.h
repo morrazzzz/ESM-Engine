@@ -85,7 +85,6 @@ public:
 	// Енумы соответсвующие предупреждающим иконкам 
 	enum EWarningIcons
 	{
-		ewiAll				= 0,
 		ewiWeaponJammed,
 		ewiRadiation,
 		ewiWound,
@@ -93,10 +92,7 @@ public:
 		ewiPsyHealth,
 		ewiInvincible,
 //		ewiSleep,
-		ewiArtefact,
 	};
-
-	void				SetMPChatLog					(CUIWindow* pChat, CUIWindow* pLog);
 
 	// Задаем цвет соответствующей иконке
 	void				SetWarningIconColor				(EWarningIcons icon, const u32 cl);
@@ -122,7 +118,8 @@ public:
 	void				ReceiveNews						(GAME_NEWS_DATA* news);
 	
 protected:
-	void				SetWarningIconColor				(CUIStatic* s, const u32 cl);
+//	void				UpdateQuickSlots				();
+	void				SetWarningIconColorUI			(CUIStatic* s, const u32 cl);
 	void				InitFlashingIcons				(CUIXml* node);
 	void				DestroyFlashingIcons			();
 	void				UpdateFlashingIcons				();

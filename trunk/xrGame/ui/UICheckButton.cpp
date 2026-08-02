@@ -49,15 +49,15 @@ void CUICheckButton::Init(Fvector2 pos, Fvector2 size, LPCSTR texture_name)
 {
 	InitButton(pos, size);
 	InitTexture(texture_name);
-	m_pLines->SetWndPos(pos);
-	m_pLines->SetWndSize(Fvector2().set(size.x, m_background.GetE()->GetStaticItem()->GetSize().y));
+	TextItemControl()->m_wndPos.set(pos);
+	TextItemControl()->m_wndSize.set(Fvector2().set(size.x, m_background.GetE()->GetStaticItem()->GetSize().y)/*m_background->Get(S_Enabled)->GetStaticItem()->GetSize().y)*/);
 }
 
 void CUICheckButton::InitTexture(LPCSTR texture_name)
 {
 	CUI3tButton::InitTexture(texture_name);
-	Frect r = m_background.GetE()->GetStaticItem()->GetTextureRect();
-	CUI3tButton::SetTextX(GetTextX() + r.width());
+	Frect r = m_background.GetE()->GetStaticItem()->GetTextureRect();//m_background->Get(S_Enabled)->GetStaticItem()->GetTextureRect();
+	TextItemControl()->m_TextOffset.x = TextItemControl()->m_TextOffset.x + r.width();
 }
 
 void CUICheckButton::SeveBackUpValue()

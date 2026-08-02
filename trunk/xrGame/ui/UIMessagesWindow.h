@@ -5,13 +5,14 @@
 #include "../InfoPortionDefs.h"
 
 class CUIGameLog;
+struct GAME_NEWS_DATA;
 
 class CUIMessagesWindow : public CUIWindow {
 public:
 						CUIMessagesWindow				();
 	virtual				~CUIMessagesWindow				();
 
-	void				AddIconedPdaMessage				(LPCSTR textureName, Frect originalRect, LPCSTR message, int iDelay);
+	void				AddIconedPdaMessage				(GAME_NEWS_DATA* news);
 
 	virtual void		Update();
 

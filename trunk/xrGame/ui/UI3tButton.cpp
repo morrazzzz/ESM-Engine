@@ -244,6 +244,6 @@ void CUI3tButton::Update()
 		hintColor = m_hint.m_dwTextColor[E];
 	}
 
-	CUIStatic::SetTextColor		(textColor);
+	TextItemControl()->SetTextColor(textColor);
 	m_hint.SetTextColor			(hintColor);
 }

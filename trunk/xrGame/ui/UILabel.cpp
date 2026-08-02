@@ -12,8 +12,13 @@ CUILabel::CUILabel()
 }
 
 void CUILabel::Init(float x, float y, float width, float height){
-	CUIFrameLineWnd::Init(x,y,width,height);
-	m_lines.Init(0,0,width, height);
+	Fvector2 pos{ x, y };
+	Fvector2 size{ width, height };
+
+	CUIFrameLineWnd::SetWndPos(pos);
+	CUIFrameLineWnd::SetWndSize(size);
+	m_lines.m_wndPos = pos;
+	m_lines.m_wndSize = size;
 }
 
 void CUILabel::SetFont(CGameFont* pFont){
@@ -28,12 +33,12 @@ void CUILabel::Draw(){
 }
 
 void CUILabel::SetWidth(float width){
-	m_lines.SetWidth(width);
+	m_lines.m_wndSize.x = width;
 	CUIFrameLineWnd::SetWidth(width);
 }
 
 void CUILabel::SetHeight(float height){
-	m_lines.SetHeight(height);
+	m_lines.m_wndSize.y = height;
 	CUIFrameLineWnd::SetHeight(height);
 }
 

@@ -173,8 +173,7 @@ void CUITalkDialogWnd::AddAnswer(LPCSTR SpeakerName, LPCSTR str, bool bActor)
 	
 	news_data.texture_name			= ci.IconName();
 	news_data.tex_rect				= ci.UIIcon().GetUIStaticItem().GetTextureRect();
-	news_data.tex_rect.x2			= news_data.tex_rect.width();
-	news_data.tex_rect.y2			= news_data.tex_rect.height();
+	news_data.tex_rect.rb.add(news_data.tex_rect.lt);
 	news_data.receive_time			= Level().GetGameTime();
 
 	Actor()->game_news_registry->registry().objects().push_back(news_data);

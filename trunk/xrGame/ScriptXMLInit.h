@@ -44,7 +44,6 @@ public:
 	CUIListWnd*			InitList(LPCSTR path, CUIWindow* parent);
 	CUIFrameWindow*		InitFrame(LPCSTR path, CUIWindow* parent);
 	CUIFrameLineWnd*	InitFrameLine(LPCSTR path, CUIWindow* parent);
-	CUILabel*			InitLabel(LPCSTR path, CUIWindow* parent);
 	CUIEditBox*			InitEditBox(LPCSTR path, CUIWindow* parent);
 	CUIStatic*			InitStatic(LPCSTR path, CUIWindow* parent);
 	CUIStatic*			InitAnimStatic(LPCSTR path, CUIWindow* parent);

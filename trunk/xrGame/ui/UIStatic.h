@@ -4,6 +4,7 @@
 #include "uiwindow.h"
 #include "../uistaticitem.h"
 #include "../script_export_space.h"
+#include "uilines.h"
 
 class CUIFrameWindow;
 class CLAItem;
@@ -109,12 +110,6 @@ public:
 	void			SetShader				(const ui_shader& sh);
 	CUIStaticItem&	GetUIStaticItem			()						{return m_UIStaticItem;}
 
-	virtual	void SetTextX					(float text_x)			{m_TextOffset.x = text_x;}
-	virtual	void SetTextY					(float text_y)			{m_TextOffset.y = text_y;}
-	virtual	void SetTextPos					(float x, float y)		{SetTextX(x); SetTextY(y);}
-			float GetTextX					()						{return m_TextOffset.x;}
-			float GetTextY					()						{return m_TextOffset.y;}
-
 	void		SetStretchTexture			(bool stretch_texture)	{m_bStretchTexture = stretch_texture;}
 	bool		GetStretchTexture			()						{return m_bStretchTexture;}
 
@@ -146,9 +141,8 @@ public:
 	} E4States;
 
 	void SetTextColor(u32 color, E4States state);
-
-	CUILines*				m_pLines;
 protected:
+	CUILines* m_pTextControl;
 	CUIFrameWindow* m_pMask;
 	// Цвет подсветки
 	u32				m_HighlightColor;
@@ -162,9 +156,6 @@ protected:
 	bool m_bStretchTexture;
 	bool m_bTextureEnable;
 	CUIStaticItem m_UIStaticItem;
-
-	
-	Fvector2		m_TextOffset;
 
 	float			m_fHeading;
 	bool			m_bHeading;
@@ -181,6 +172,7 @@ private:
 	Frect	m_xxxRect; // need by RescaleRelative2Rect(Frect& r). it is initializes only once in Init(x,y,width,height)
 
 public:
+	CUILines* TextItemControl();
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 

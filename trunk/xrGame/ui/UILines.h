@@ -4,7 +4,6 @@
 #include "uiabstract.h"
 
 class CUILines : public IUITextControl,
-				 public CUISimpleWindow,
 				 public CDeviceResetNotifier {
 	 friend class CUICustomEdit;
 public:
@@ -24,26 +23,15 @@ public:
 			void			SetVTextAlignment(EVTextAlignment al)		{m_eVTextAlign = al;}
 			EVTextAlignment GetVTextAlignment()							{return m_eVTextAlign;}
 
-	// additional
-			void			SetCursorColor								(u32 color)			{m_dwCursorColor = color;}
-			void			AddCharAtCursor								(const char ch);
-			void			DelChar										();
-			void			DelLeftChar									();
-			void			MoveCursorToEnd								();
-
 			void			SetTextComplexMode							(bool mode = true);
-			bool			GetTextComplexMode							() const;
 			void			SetPasswordMode								(bool mode = true);
+			bool			IsPasswordMode								() {return !!uFlags.test(flPasswordMode);};
+
 			void			SetColoringMode								(bool mode);
 			void			SetCutWordsMode								(bool mode);
 			void			SetUseNewLineMode							(bool mode);
 
-    // IUISimpleWindow methods
-	virtual void			Init										(float x, float y, float width, float height);
-	virtual void			Draw										();
-	virtual void			Draw										(float x, float y);
-	virtual void			Update										();
-IC			void			SetWndSize_inline							(const Fvector2& wnd_size);
+			void			Draw										(float x, float y);
 
 
     // CDeviceResetNotifier methods
@@ -51,16 +39,13 @@ IC			void			SetWndSize_inline							(const Fvector2& wnd_size);
 
 	// own methods
 			void			Reset										();
-			void			ParseText									();
+			void			ParseText									(bool force=false);
 			float			GetVisibleHeight							();
 
-	// cursor control
-			int				m_iCursorPos;
-			void			IncCursorPos								();
-			void			DecCursorPos								();
+		Fvector2			m_TextOffset;
+		Fvector2			m_wndSize;
+		Fvector2			m_wndPos;
 protected:
-			Ivector2		m_cursor_pos;
-			void			UpdateCursor								();
 				// %c[255,255,255,255]
 		u32					GetColorFromText							(const xr_string& str)							const;
 		float				GetIndentByAlign							()												const;
@@ -73,14 +58,12 @@ protected:
 	typedef xr_vector<CUILine>				LinesVector;
 	typedef LinesVector::iterator			LinesVector_it;
 	LinesVector				m_lines;	// parsed text
-	float					m_interval; // interval
 
 	Text					m_text;
 
 	ETextAlignment			m_eTextAlign;
 	EVTextAlignment			m_eVTextAlign;
 	u32						m_dwTextColor;
-	u32						m_dwCursorColor;
 
 	CGameFont*				m_pFont;
 
@@ -94,7 +77,6 @@ protected:
 	};	
 private:
 	Flags8					uFlags;
-	float					m_oldWidth;
 };
 
 class CUILinesOwner : public IUITextControl {

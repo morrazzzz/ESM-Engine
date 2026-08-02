@@ -181,13 +181,12 @@ void CUIButton::DrawHighlightedText(){
 
 	Frect					rect;
 	GetAbsoluteRect			(rect);
-	u32 def_col = m_pLines->GetTextColor();
-	m_pLines->SetTextColor(m_HighlightColor);
+	u32 def_col = m_pTextControl->GetTextColor();
+	m_pTextControl->SetTextColor(m_HighlightColor);
 
-	m_pLines->Draw(	rect.left + right_offset + 0 +m_TextOffset.x + m_ShadowOffset.x, 
-					rect.top + down_offset   - 0 +m_TextOffset.y + m_ShadowOffset.y);
+	m_pTextControl->Draw(rect.left + right_offset + m_ShadowOffset.x, rect.top + down_offset - m_ShadowOffset.y);
 
-	m_pLines->SetTextColor(def_col);
+	m_pTextControl->SetTextColor(def_col);
 
 }
 

@@ -12,7 +12,6 @@
 #include "../Include/xrRender/UIRender.h"
 
 const char * const	clDefault	= "default";
-#define CREATE_LINES if (!m_pLines) {m_pLines = xr_new<CUILines>(); m_pLines->SetTextAlignment(CGameFont::alLeft);}
 #define LA_CYCLIC			(1<<0)
 #define LA_ONLYALPHA		(1<<1)
 #define LA_TEXTCOLOR		(1<<2)
@@ -32,8 +31,6 @@ CUIStatic:: CUIStatic()
 	m_bStretchTexture		= false;
 
 	m_TextureOffset.set		(0.0f,0.0f);
-	m_TextOffset.set		(0.0f,0.0f);
-
 	m_pMask					= NULL;
 	m_ElipsisPos			= eepNone;
 	m_iElipsisIndent		= 0;
@@ -46,13 +43,13 @@ CUIStatic:: CUIStatic()
 	m_lanim_clr.set_defaults	();
 	m_lanim_xform.set_defaults	();
 
-	m_pLines				= NULL;
+	m_pTextControl = nullptr;
 	m_bEnableTextHighlighting = false;
 }
 
-CUIStatic::~ CUIStatic()
+CUIStatic::~CUIStatic()
 {
-	xr_delete(m_pLines);
+	xr_delete(m_pTextControl);
 }
 
 void CUIStatic::SetXformLightAnim(LPCSTR lanim, bool bCyclic)
@@ -139,16 +136,20 @@ void  CUIStatic::Draw()
 
 
 void CUIStatic::DrawText(){
-	if (m_pLines)
+	if (m_pTextControl)
 	{
-		m_pLines->SetWndSize(m_wndSize);
+		if (!fsimilar(m_pTextControl->m_wndSize.x, m_wndSize.x) || !fsimilar(m_pTextControl->m_wndSize.y, m_wndSize.y))
+		{
+			m_pTextControl->m_wndSize = m_wndSize;
+			m_pTextControl->ParseText(true);
+		}
 
-		if(IsHighlightText() && xr_strlen(m_pLines->GetText())>0 && m_bEnableTextHighlighting)
+		if(IsHighlightText() && xr_strlen(m_pTextControl->GetText())>0 && m_bEnableTextHighlighting)
 			DrawHighlightedText();		
 		else{
 			Fvector2			p;
 			GetAbsolutePos		(p);
-			m_pLines->Draw		(p.x + m_TextOffset.x, p.y + m_TextOffset.y);
+			m_pTextControl->Draw(p.x, p.y);
 		}
 
 	}
@@ -295,18 +296,15 @@ bool CUIStatic::IsClrAnimStoped(){
 
 void CUIStatic::SetFont(CGameFont* pFont){
 	CUIWindow::SetFont(pFont);
-	CREATE_LINES;
-	m_pLines->SetFont(pFont);
+	TextItemControl()->SetFont(pFont);
 }
 
 void CUIStatic::SetTextComplexMode(bool md){
-	CREATE_LINES;
-	m_pLines->SetTextComplexMode(md);
+	TextItemControl()->SetTextComplexMode(md);
 }
 
 CGameFont* CUIStatic::GetFont(){
-	CREATE_LINES;
-	return m_pLines->GetFont();
+	return TextItemControl()->GetFont();
 }
 
 void  CUIStatic::SetShader(const ui_shader& sh)
@@ -314,34 +312,59 @@ void  CUIStatic::SetShader(const ui_shader& sh)
 	m_UIStaticItem.SetShader(sh);
 }
 
+CUILines* CUIStatic::TextItemControl()
+{
+	if (!m_pTextControl)
+	{
+		m_pTextControl = xr_new<CUILines>();
+		m_pTextControl->SetTextAlignment(CGameFont::alLeft);
+	}
+	return m_pTextControl;
+}
+
 LPCSTR CUIStatic::GetText(){
 	static const char empty = 0;
-	if (m_pLines)
-		return m_pLines->GetText();
+	if (m_pTextControl)
+		return m_pTextControl->GetText();
 	else
 		return &empty;
 }
 
 void CUIStatic::SetTextColor(u32 color){
-	CREATE_LINES;
-	m_pLines->SetTextColor(color);
+	TextItemControl()->SetTextColor(color);
 }
 
 u32 CUIStatic::GetTextColor(){
-	CREATE_LINES;
-	return m_pLines->GetTextColor();
+	return TextItemControl()->GetTextColor();
 }
 
 u32& CUIStatic::GetTextColorRef(){
-	return m_pLines->GetTextColorRef();
+	return m_pTextControl->GetTextColorRef();
 }
 
 void CUIStatic::SetText(LPCSTR str)
 {
 	if (!str ) 
 		return;
-	CREATE_LINES;
-	m_pLines->SetText(str);
+	TextItemControl()->SetText(str);
+}
+
+void CUIStatic::AdjustHeightToText()
+{
+	if (!fsimilar(TextItemControl()->m_wndSize.x, GetWidth()))
+	{
+		TextItemControl()->m_wndSize.x = GetWidth();
+		TextItemControl()->ParseText(true);
+	}
+	SetHeight(TextItemControl()->GetVisibleHeight());
+}
+
+void CUIStatic::AdjustWidthToText()
+{
+	if (!m_pTextControl)	return;
+	float _len = m_pTextControl->GetFont()->SizeOf_(m_pTextControl->GetText());
+	UI().ClientToScreenScaledWidth(_len);
+	SetWidth(_len);
 }
 
 void CUIStatic::SetTextColor(u32 color, E4States state){
@@ -366,7 +389,7 @@ void CUIStatic::SetMask(CUIFrameWindow *pMask)
 //}
 
 CGameFont::EAligment CUIStatic::GetTextAlignment(){
-	return m_pLines->GetTextAlignment();
+	return m_pTextControl->GetTextAlignment();
 }
 
 //void CUIStatic::SetTextAlign(CGameFont::EAligment align){
@@ -375,25 +398,23 @@ CGameFont::EAligment CUIStatic::GetTextAlignment(){
 //}
 
 void CUIStatic::SetTextAlignment(CGameFont::EAligment align){
-	CREATE_LINES;
-	m_pLines->SetTextAlignment(align);
-	m_pLines->GetFont()->SetAligment((CGameFont::EAligment)align);
+	TextItemControl()->SetTextAlignment(align);
+	TextItemControl()->GetFont()->SetAligment((CGameFont::EAligment)align);
 }
 
 void CUIStatic::SetVTextAlignment(EVTextAlignment al){
-	CREATE_LINES;
-	m_pLines->SetVTextAlignment(al);
+	TextItemControl()->SetVTextAlignment(al);
 }
 
 void CUIStatic::SetTextAlign_script(u32 align)
 {
-	m_pLines->SetTextAlignment((CGameFont::EAligment)align);
-	m_pLines->GetFont()->SetAligment((CGameFont::EAligment)align);
+	m_pTextControl->SetTextAlignment((CGameFont::EAligment)align);
+	m_pTextControl->GetFont()->SetAligment((CGameFont::EAligment)align);
 }
 
 u32 CUIStatic::GetTextAlign_script()
 {
-	return static_cast<u32>(m_pLines->GetTextAlignment());
+	return static_cast<u32>(m_pTextControl->GetTextAlignment());
 }
 
 
@@ -431,47 +452,6 @@ void CUIStatic::OnFocusLost(){
 		GetMessageTarget()->SendMessage(this, STATIC_FOCUS_LOST, NULL);
 }
 
-void CUIStatic::AdjustHeightToText(){
-	m_pLines->SetWidth		(GetWidth());
-	m_pLines->ParseText();
-	SetHeight				(m_pLines->GetVisibleHeight());
-}
-
-void CUIStatic::AdjustWidthToText()
-{
-	float _len		= m_pLines->GetFont()->SizeOf_(m_pLines->GetText());
-	UI().ClientToScreenScaledWidth(_len);
-	SetWidth		(_len);
-}
-
-void CUIStatic::RescaleRelative2Rect(const Frect& r){
-	SetStretchTexture(true);
-	Frect my_r = m_xxxRect;
-	float h_rel = my_r.width()/r.width();
-	float v_rel = my_r.height()/r.height();
-
-	if (ui_core::is_widescreen())
-		h_rel *= 3.0f / 4.0f;
-	
-	float w;
-	float h;
-	if (h_rel < v_rel){
-		w = r.width()*h_rel;
-		h = r.height()*h_rel;
-	}
-	else{
-		w = r.width()*v_rel;
-		h = r.height()*v_rel;
-	}
-
-
-	my_r.x1 += (m_xxxRect.width() - w)/2;
-	my_r.y1 += (m_xxxRect.height() - h)/2;
-	my_r.x2 = my_r.x1 + w;
-	my_r.y2 = my_r.y1 + h;
-	SetWndRect(my_r);
-}
-
 void CUIStatic::SetTextST				(LPCSTR str_id)
 {
 	SetText					(*CStringTable().translate(str_id));
@@ -480,10 +460,10 @@ void CUIStatic::SetTextST				(LPCSTR str_id)
 void CUIStatic::DrawHighlightedText(){
 	Frect				rect;
 	GetAbsoluteRect		(rect);
-	u32 def_col			= m_pLines->GetTextColor();
-	m_pLines->SetTextColor(m_HighlightColor);
-	m_pLines->Draw(	rect.left + 0 + m_TextOffset.x, rect.top - 0 + m_TextOffset.y);
-	m_pLines->SetTextColor(def_col);
+	u32 def_col = m_pTextControl->GetTextColor();
+	m_pTextControl->SetTextColor(m_HighlightColor);
+	m_pTextControl->Draw(rect.left, rect.top);
+	m_pTextControl->SetTextColor(def_col);
 }
 
 bool CUIStatic::IsHighlightText()

@@ -104,7 +104,7 @@ void CUITaskRootItem::SetGameTask(CGameTask* gt, u16 obj_idx)
 
 	m_taskImage->InitTexture		(*obj->icon_texture_name);
 
-	Frect r							= obj->icon_rect;
+	Frect r	= obj->icon_rect;
 	r.rb.add(r.lt);
 	m_taskImage->SetTextureRect(r);
 

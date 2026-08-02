@@ -217,7 +217,7 @@ void CUIMainIngameWnd::Init()
 	while (j < ewiInvincible)
 	{
 		// Читаем данные порогов для каждого индикатора
-		shared_str cfgRecord = pSettings->r_string("main_ingame_indicators_thresholds", *warningStrings[static_cast<int>(j) - 1]);
+		shared_str cfgRecord = pSettings->r_string("main_ingame_indicators_thresholds", *warningStrings[static_cast<int>(j)]);
 		u32 count = _GetItemCount(*cfgRecord);
 
 		char	singleThreshold[8];
@@ -281,16 +281,6 @@ void CUIMainIngameWnd::Draw()
 	}
 	FS.dwOpenCounter = 0;
 
-	if(!IsGameTypeSingle())
-	{
-		float		luminocity = smart_cast<CGameObject*>(Level().CurrentEntity())->ROS()->get_luminocity();
-		float		power = log(luminocity > .001f ? luminocity : .001f)*(1.f/*luminocity_factor*/);
-		luminocity	= exp(power);
-
-		static float cur_lum = luminocity;
-		cur_lum = luminocity*0.01f + cur_lum*0.99f;
-		UIMotionIcon.SetLuminosity((s16)iFloor(cur_lum*100.0f));
-	}
 	if(!m_pActor) return;
 
 	UIMotionIcon.SetNoise		((s16)(0xffff&iFloor(m_pActor->m_snd_noise*100.0f)));
@@ -298,12 +288,6 @@ void CUIMainIngameWnd::Draw()
 	UIZoneMap->Render			();			
 
 	RenderQuickInfos			();		
-}
-
-
-void CUIMainIngameWnd::SetMPChatLog(CUIWindow* pChat, CUIWindow* pLog){
-	m_pMPChatWnd = pChat;
-	m_pMPLogWnd  = pLog;
 }
 
 void CUIMainIngameWnd::SetAmmoIcon (const shared_str& sect_name)
@@ -324,6 +308,7 @@ void CUIMainIngameWnd::SetAmmoIcon (const shared_str& sect_name)
 
 	Frect rect{ (iXPos * INV_GRID_WIDTH), (iYPos * INV_GRID_HEIGHT),
 				(iGridWidth * INV_GRID_WIDTH), (iGridHeight * INV_GRID_HEIGHT) };
+	rect.rb.add(rect.lt);
 
 	UIWeaponIcon.GetUIStaticItem().SetTextureRect(rect);
 	UIWeaponIcon.SetStretchTexture(true);
@@ -391,14 +376,6 @@ void CUIMainIngameWnd::Update()
 				SetWarningIconColor	(ewiInvincible,0xffffffff);
 			else
 				SetWarningIconColor	(ewiInvincible,0x00ffffff);
-		}
-		// ewiArtefact
-		if( (GameID() == GAME_ARTEFACTHUNT) && !(Device.dwFrame%30) ){
-			bool b_Artefact = (NULL != m_pActor->inventory().ItemFromSlot(ARTEFACT_SLOT));
-			if(b_Artefact)
-				SetWarningIconColor	(ewiArtefact,0xffffffff);
-			else
-				SetWarningIconColor	(ewiArtefact,0x00ffffff);
 		}
 
 		// Armor indicator stuff
@@ -534,16 +511,19 @@ void CUIMainIngameWnd::ReceiveNews(GAME_NEWS_DATA* news)
 {
 	VERIFY(news->texture_name.size());
 
-	CurrentGameUI()->m_pMessagesWnd->AddIconedPdaMessage(*(news->texture_name), news->tex_rect, news->SingleLineText(), news->show_time);
+	CurrentGameUI()->m_pMessagesWnd->AddIconedPdaMessage(news);
+//	CurrentGameUI()->UpdatePda();
 }
 
-void CUIMainIngameWnd::SetWarningIconColor(CUIStatic* s, const u32 cl)
+void CUIMainIngameWnd::SetWarningIconColorUI(CUIStatic* s, const u32 cl)
 {
 	int bOn = (cl>>24);
 	bool bIsShown = s->IsShown();
 
-	if(bOn)
-		s->SetColor	(cl);
+	if ( bOn )
+	{
+		s->SetTextureColor( cl );
+	}
 
 	if(bOn&&!bIsShown){
 		m_UIIcons->AddWindow	(s, false);
@@ -558,38 +538,30 @@ void CUIMainIngameWnd::SetWarningIconColor(CUIStatic* s, const u32 cl)
 
 void CUIMainIngameWnd::SetWarningIconColor(EWarningIcons icon, const u32 cl)
 {
-	bool bMagicFlag = true;
-
 	// Задаем цвет требуемой иконки
 	switch(icon)
 	{
-	case ewiAll:
-		bMagicFlag = false;
 	case ewiWeaponJammed:
-		SetWarningIconColor		(&UIWeaponJammedIcon, cl);
-		if (bMagicFlag) break;
+		SetWarningIconColorUI(&UIWeaponJammedIcon, cl);
+		break;
 	case ewiRadiation:
-		SetWarningIconColor		(&UIRadiaitionIcon, cl);
-		if (bMagicFlag) break;
+		SetWarningIconColorUI(&UIRadiaitionIcon, cl);
+		break;
 	case ewiWound:
-		SetWarningIconColor		(&UIWoundIcon, cl);
-		if (bMagicFlag) break;
+		SetWarningIconColorUI(&UIWoundIcon, cl);
+		break;
 	case ewiStarvation:
-		SetWarningIconColor		(&UIStarvationIcon, cl);
-		if (bMagicFlag) break;	
+		SetWarningIconColorUI(&UIStarvationIcon, cl);
+		break;	
 	case ewiPsyHealth:
-		SetWarningIconColor		(&UIPsyHealthIcon, cl);
-		if (bMagicFlag) break;
+		SetWarningIconColorUI(&UIPsyHealthIcon, cl);
+		break;
 	case ewiInvincible:
-		SetWarningIconColor		(&UIInvincibleIcon, cl);
-		if (bMagicFlag) break;
+		SetWarningIconColorUI(&UIInvincibleIcon, cl);
 		break;
-	case ewiArtefact:
-		SetWarningIconColor		(&UIArtefactIcon, cl);
-		break;
-
 	default:
 		R_ASSERT(!"Unknown warning icon type");
+		break;
 	}
 }
 
@@ -700,11 +672,12 @@ void CUIMainIngameWnd::UpdatePickUpItem	()
 
 	float scale = scale_x<scale_y?scale_x:scale_y;
 
-	Frect rect{ float(m_iXPos * INV_GRID_WIDTH), float(m_iYPos * INV_GRID_HEIGHT),
-		float(m_iGridWidth * INV_GRID_WIDTH), float(m_iGridHeight * INV_GRID_HEIGHT)
-	};
+	Frect texture_rect;
+	texture_rect.lt.set(m_iXPos*INV_GRID_WIDTH, m_iYPos*INV_GRID_HEIGHT);
+	texture_rect.rb.set(m_iGridWidth*INV_GRID_WIDTH, m_iGridHeight*INV_GRID_HEIGHT);
+	texture_rect.rb.add(texture_rect.lt);
 
-	UIPickUpItemIcon.GetUIStaticItem().SetTextureRect(rect);
+	UIPickUpItemIcon.GetUIStaticItem().SetTextureRect(texture_rect);
 
 	UIPickUpItemIcon.SetStretchTexture(true);
 

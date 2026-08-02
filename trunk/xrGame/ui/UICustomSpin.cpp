@@ -12,8 +12,8 @@
 #include "UILines.h"
 #include "UICustomSpin.h"
 
-#define SPIN_HEIGHT 22
-#define BTN_SIZE 11
+#define SPIN_HEIGHT 22.0f
+#define BTN_SIZE 11.0f
 
 CUICustomSpin::CUICustomSpin()
 {
@@ -56,7 +56,8 @@ void CUICustomSpin::Init(float x, float y, float width, float height){
 	m_pBtnDown->Init			(width - BTN_SIZE - 1, BTN_SIZE + 1, BTN_SIZE, BTN_SIZE);
 	m_pBtnDown->InitTexture		("ui_spiner_button_b");
 
-	m_pLines->Init				(0,0,width - BTN_SIZE - 10, SPIN_HEIGHT);
+	m_pLines->m_wndPos.set		(Fvector2().set(0,0));
+	m_pLines->m_wndSize.set		(Fvector2().set(width-BTN_SIZE-10.0f, SPIN_HEIGHT));
 }
 
 void CUICustomSpin::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)

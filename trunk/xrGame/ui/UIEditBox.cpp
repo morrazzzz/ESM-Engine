@@ -12,7 +12,6 @@
 CUIEditBox::CUIEditBox()
 {
 	AttachChild(&m_frameLine);
-	m_lines.SetTextComplexMode(false);
 }
 
 CUIEditBox::~CUIEditBox(void)

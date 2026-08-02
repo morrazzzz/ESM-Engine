@@ -5,6 +5,7 @@
 #include"stdafx.h"
 
 #include "UIlistitem.h"
+#include "UILines.h"
 
 CUIListItem::CUIListItem(void)
 {
@@ -36,7 +37,7 @@ void CUIListItem::Init(float x, float y, float width, float height)
 
 void CUIListItem::InitTexture(LPCSTR tex_name){
 	CUIButton::InitTexture(tex_name);
-	SetTextX(m_UIStaticItem.GetTextureRect().width());
+	TextItemControl()->m_TextOffset.x = m_UIStaticItem.GetTextureRect().width();
 }
 
 

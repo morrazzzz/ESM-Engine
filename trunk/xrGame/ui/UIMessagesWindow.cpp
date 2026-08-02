@@ -2,6 +2,7 @@
 #include "UIMessagesWindow.h"
 #include "UIGameLog.h"
 #include "UIXmlInit.h"
+#include "../game_news.h"
 #include "UIPdaMsgListItem.h"
 
 CUIMessagesWindow::CUIMessagesWindow(){
@@ -27,12 +28,12 @@ void CUIMessagesWindow::Init(float x, float y, float width, float height){
 	CUIXmlInit::InitScrollView(xml, "sp_log_list", 0, m_pGameLog);
 }
 
-void CUIMessagesWindow::AddIconedPdaMessage(LPCSTR textureName, Frect originalRect, LPCSTR message, int iDelay){
-	
-	CUIPdaMsgListItem *pItem			= m_pGameLog->AddPdaMessage(message, float(iDelay));
+void CUIMessagesWindow::AddIconedPdaMessage(GAME_NEWS_DATA* news)
+{
+	CUIPdaMsgListItem *pItem			= m_pGameLog->AddPdaMessage(news->SingleLineText(), float(news->show_time));
 	pItem->SetTextComplexMode			(true);
-	pItem->UIIcon.InitTexture			(textureName);
-	pItem->UIIcon.SetTextureRect(originalRect);
+	pItem->UIIcon.InitTexture(news->texture_name.c_str());
+	pItem->UIIcon.SetTextureRect(news->tex_rect);
 	pItem->UIMsgText.SetWndPos			(pItem->UIIcon.GetWidth(), pItem->UIMsgText.GetWndPos().y);
 	pItem->UIMsgText.AdjustHeightToText	();
 

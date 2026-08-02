@@ -9,11 +9,11 @@ CUIEditKeyBind::CUIEditKeyBind(bool bPrim)
 {
 	m_bPrimary					= bPrim;
     m_bEditMode					= false;
+	TextItemControl()->SetTextComplexMode(false);
 
 	m_pAnimation				= xr_new<CUIColorAnimatorWrapper>("ui_map_area_anim");
 	m_pAnimation->Cyclic		(true);
 	m_bChanged					= false;
-	m_lines.SetTextComplexMode	(false);
 	m_keyboard					= NULL;
 	m_action					= NULL;
 }
@@ -52,28 +52,35 @@ u32 cut_string_by_length(CGameFont* pFont, LPCSTR src, LPSTR dst, u32 dst_size, 
 void CUIEditKeyBind::SetText(const char* text)
 {
 	if (!text || 0 == xr_strlen(text))
-		CUILabel::SetText("---");
+		TextItemControl()->SetText("---");
 	else{
 		string256 buff;
 
-		cut_string_by_length(CUILinesOwner::GetFont(), text, buff, sizeof(buff), GetWidth());
+		cut_string_by_length(TextItemControl()->GetFont(), text, buff, sizeof(buff), GetWidth());
 
-		CUILabel::SetText	(buff);
+		TextItemControl()->SetText	(buff);
 	}
 }
 
 void CUIEditKeyBind::Init(float x, float y, float width, float height)
 {
-	CUILabel::Init			(x,y,width,height);
-	InitTexture				("ui_options_string");
+	Fvector2 pos{ x, y };
+	Fvector2 size{ width, height };
+	CUIStatic::SetWndPos(pos);
+	CUIStatic::SetWndSize(size);
+	InitTexture("ui_options_string");
+	TextItemControl()->SetFont(UI().Font().pFontLetterica16Russian);
+	SetStretchTexture(true);
+//	SetEditMode(false);
+	m_bEditMode = false;
 }
 
 
 void CUIEditKeyBind::OnFocusLost()
 {
-	CUILabel::OnFocusLost		();
+	CUIStatic::OnFocusLost		();
 	m_bEditMode					= false;
-	m_lines.SetTextColor		(subst_alpha(m_lines.GetTextColor(), color_get_A(0xffffffff)));
+	TextItemControl()->SetTextColor	((subst_alpha(TextItemControl()->GetTextColor(), color_get_A(0xffffffff))));
 }
 
 bool CUIEditKeyBind::OnMouseDown(int mouse_btn)
@@ -99,13 +106,14 @@ bool CUIEditKeyBind::OnMouseDown(int mouse_btn)
 	if (mouse_btn == MOUSE_LEFT_BUTTON_IDX)
 		m_bEditMode = m_bCursorOverWindow;
 
-	return CUILabel::OnMouseDown(mouse_btn);
+	return CUIStatic::OnMouseDown(mouse_btn);
 }
 
 bool CUIEditKeyBind::OnKeyboardAction(int dik, EUIMessages keyboard_action){
 	if (dik >= MOUSE_LEFT_BUTTON_IDX)
 		return false;
-	if (CUILabel::OnKeyboardAction(dik, keyboard_action))
+
+	if (CUIStatic::OnKeyboardAction(dik, keyboard_action))
 		return true;
 
 	string64 message;
@@ -128,13 +136,13 @@ bool CUIEditKeyBind::OnKeyboardAction(int dik, EUIMessages keyboard_action){
 
 void CUIEditKeyBind::Update()
 {
-	CUILabel::Update();
+	CUIStatic::Update();
 
 //	m_bTextureAvailable = m_bCursorOverWindow;
 	if (m_bEditMode)
 	{
 		m_pAnimation->Update();
-		m_lines.SetTextColor((subst_alpha(m_lines.GetTextColor(), color_get_A(m_pAnimation->GetColor()))));
+		TextItemControl()->SetTextColor((subst_alpha(TextItemControl()->GetTextColor(), color_get_A(m_pAnimation->GetColor()))));
 	}
 	
 }

@@ -60,7 +60,6 @@ void CUINewsItemWnd::Setup			(GAME_NEWS_DATA& news_data)
 	float h2						= m_UITextDate->GetWndPos().y + m_UITextDate->GetHeight();
 
 	m_UIImage->InitTexture			(*news_data.texture_name);
-	m_UIImage->SetTextureRect(news_data.tex_rect);
 	float h3						= m_UIImage->GetWndPos().y + m_UIImage->GetHeight();
 	h1								= _max(h1,h2);
 	h1								= _max(h1,h3);

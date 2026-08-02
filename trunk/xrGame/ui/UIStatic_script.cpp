@@ -14,11 +14,6 @@ void CUIStatic::script_register(lua_State *L)
 		.def("SetText",				(void (CUIStatic::*)(LPCSTR)) (&CUIStatic::SetText) )
 		.def("SetTextST",			(void (CUIStatic::*)(LPCSTR)) (&CUIStatic::SetTextST) )
 		.def("GetText",				&CUIStatic::GetText)
-
-		.def("SetTextX",				&CUIStatic::SetTextX)
-		.def("SetTextY",				&CUIStatic::SetTextY)
-		.def("GetTextX",				&CUIStatic::GetTextX)
-		.def("GetTextY",				&CUIStatic::GetTextY)
 		
 		.def("SetColor",			&CUIStatic::SetColor)
 		.def("GetColor",			&CUIStatic::GetColor)

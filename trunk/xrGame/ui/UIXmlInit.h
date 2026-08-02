@@ -33,6 +33,7 @@ class CUIDragDropListEx;
 class CUIComboBox;
 class CUITabButtonMP;
 class CUITrackBar;
+class CUILines;
 
 class CUIXmlInit
 {
@@ -43,7 +44,6 @@ public:
 	static bool InitWindow				(CUIXml& xml_doc, const char* path,	int index, CUIWindow* pWnd);
 	static bool InitFrameWindow			(CUIXml& xml_doc, const char* path,	int index, CUIFrameWindow* pWnd);
 	static bool InitFrameLine			(CUIXml& xml_doc, const char* path, int index, CUIFrameLineWnd* pWnd);
-	static bool InitLabel				(CUIXml& xml_doc, const char* path, int index, CUILabel* pWnd);
 	static bool InitCustomEdit			(CUIXml& xml_doc, const char* paht, int index, CUICustomEdit* pWnd);
 	static bool InitEditBox				(CUIXml& xml_doc, const char* paht, int index, CUIEditBox* pWnd);
 	static bool InitEditBoxEx			(CUIXml& xml_doc, const char* paht, int index, CUIEditBoxEx* pWnd);
@@ -51,7 +51,7 @@ public:
 	static bool	InitCheck				(CUIXml& xml_doc, const char* path, int index, CUICheckButton* pWnd);
 	static bool InitSpin				(CUIXml& xml_doc, const char* path, int index, CUICustomSpin* pWnd);
 	static bool InitText				(CUIXml& xml_doc, const char* path, int index, CUIStatic* pWnd);
-	static bool InitText				(CUIXml& xml_doc, const char* path, int index, IUITextControl* pWnd);
+	static bool InitText				(CUIXml& xml_doc, const char* path, int index, CUILines* pLines);
 	static bool InitButton				(CUIXml& xml_doc, const char* path, int index, CUIButton* pWnd);
 	static bool Init3tButton			(CUIXml& xml_doc, const char* path, int index, CUI3tButton* pWnd);
 	static bool InitDragDropListEx		(CUIXml& xml_doc, const char* path, int index, CUIDragDropListEx* pWnd);
