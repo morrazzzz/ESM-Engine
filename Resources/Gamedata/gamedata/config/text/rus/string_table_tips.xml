@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="car_use">
+		<text>Открыть дверь ($$ACTION_USE$$)</text>
+	</string>
+	<string id="character_use">
+		<text>Говорить ($$ACTION_USE$$)</text>
+	</string>
+	<string id="dead_character_use">
+		<text>Обыскать труп ($$ACTION_USE$$)</text>
+	</string>
+	<string id="inventory_item_use">
+		<text>Поднять предмет ($$ACTION_USE$$)</text>
+	</string>
+	<string id="physic_shell_use">
+		<text>Двигать объект ($$ACTION_USE$$)</text>
+	</string>
+	<string id="car_character_use">
+		<text>Открыть дверь ($$ACTION_USE$$)</text>
+	</string>
+	<string id="dead_character_use_or_drag">
+		<text>Обыскать труп ($$ACTION_USE$$) \n Тащить труп (SHIFT+$$ACTION_USE$$)</text>
+	</string>
+	<string id="st_search_treasure">
+		<text>Обыскать тайник ($$ACTION_USE$$)</text>
+	</string>
+	<string id="st_codelock">
+		<text>Кодовый замок ($$ACTION_USE$$)</text>
+	</string>
+	<string id="character_use">
+		<text>Говорить ($$ACTION_USE$$)</text>
+	</string>
+</string_table>

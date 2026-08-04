@@ -28,7 +28,7 @@
 		<text>Минимальные</text>
 	</string>
 	<string id="renderer_r1">
-		<text>Статичное освещение (DX8)</text>
+		<text>Статичное освещение (DX9)</text>
 	</string>
 	<string id="renderer_r2">
 		<text>Полное динамическое освещение (DX9)</text>
