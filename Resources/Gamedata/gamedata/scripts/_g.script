@@ -1216,17 +1216,6 @@ function set_actor_rank(rank)
 	end
 end
 
-function get_texture_info(id_name, id_default)
-	if id_default == nil then id_default = id_name end
-
-	local task_info = GetTextureInfo(id_name, id_default)
-	local r = task_info:get_rect()
-
-	r.x2 = r.x2 - r.x1
-	r.y2 = r.y2 - r.y1
-	return task_info:get_file_name(), r
-end
-
 function start_game_callback()
 	printf	("start_game_callback called")
 	task_manager.clear_task_manager()
