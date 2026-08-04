@@ -84,9 +84,6 @@
 	<string id="pda_btn_own">
 		<text>Свои</text>
 	</string>
-	<string id="pda_btn_statistics">
-		<text>Данные</text>
-	</string>
 	<string id="pda_btn_statistics_hint">
 		<text>Показать статистику по прохождению</text>
 	</string>
