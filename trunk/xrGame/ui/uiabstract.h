@@ -33,46 +33,19 @@ public:
 
 
 // Texture controls
-class IUISimpleTextureControl{
-public:
-	virtual ~IUISimpleTextureControl() {}
-	virtual void		CreateShader(const char* tex, const char* sh = "hud\\default")	= 0;
-	virtual void		SetShader(const ui_shader& sh)									= 0;
-	virtual void		SetTextureColor(u32 color)										= 0;
-	virtual u32			GetTextureColor()										const	= 0;
-	virtual void		SetTextureRect(const Frect& r)									= 0;
-};
 
-class IUIMultiTextureOwner{
+class ITextureOwner
+{
 public:
-	virtual ~IUIMultiTextureOwner() {}	
-	virtual void		InitTexture(const char* texture)								= 0;
-	virtual void		SetTextureVisible(bool vis)										= 0;
-	virtual bool		GetTextureVisible()												= 0;
-};
-
-class CUIMultiTextureOwner : public IUIMultiTextureOwner{
-public:
-	CUIMultiTextureOwner(){m_bTextureVisible = false;}
-	virtual void		SetTextureVisible(bool vis)	{m_bTextureVisible = true;}
-	virtual bool		GetTextureVisible()			{return m_bTextureVisible;}
-protected:
-	bool m_bTextureVisible;
-};
-
-class IUISingleTextureOwner : public CUIMultiTextureOwner, public IUISimpleTextureControl{
-public:	
-	virtual void		InitTextureEx(const char* texture, const char* shader)			= 0;
-	virtual void		SetStretchTexture(bool stretch)									= 0;
-	virtual bool		GetStretchTexture()												= 0;	
-};
-
-class CUISingleTextureOwner : public IUISingleTextureOwner{
-public:
-	virtual void		SetStretchTexture(bool stretch)	{m_bStretchTexture = stretch;}
-	virtual bool		GetStretchTexture()				{return m_bStretchTexture;}
-protected:
-	bool m_bStretchTexture;
+	virtual				~ITextureOwner() {}
+	virtual void		InitTexture(LPCSTR texture) = 0;
+	virtual void		InitTextureEx(LPCSTR texture, LPCSTR shader) = 0;
+	virtual void		SetTextureRect(const Frect& r) = 0;
+	virtual const Frect& GetTextureRect()										const = 0;
+	virtual void		SetTextureColor(u32 color) = 0;
+	virtual u32			GetTextureColor()										const = 0;
+	virtual void		SetStretchTexture(bool stretch) = 0;
+	virtual bool		GetStretchTexture() = 0;
 };
 
 // Window
@@ -150,12 +123,14 @@ public:
 				void			MoveWndDelta		(const Fvector2& d)					{ MoveWndDelta(d.x, d.y);	};
 
 protected:
+	bool					m_bShowMe;
 	Fvector2				m_wndPos;
 	Fvector2				m_wndSize;
 	EWindowAlignment		m_alignment;
-	bool					m_bShowMe;
 };
-class CUISelectable{
+
+class CUISelectable
+{
 protected:
 	bool m_bSelected;
 public:

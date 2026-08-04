@@ -2,8 +2,6 @@
 #include "uistatic.h"
 #include "UIXmlInit.h"
 #include "UITextureMaster.h"
-#include "uiframewindow.h"
-#include "../HUDManager.h"
 #include "../../xr_3da/LightAnimLibrary.h"
 #include "uilines.h"
 #include "../string_table.h"
@@ -11,18 +9,17 @@
 
 #include "../Include/xrRender/UIRender.h"
 
-const char * const	clDefault	= "default";
-#define LA_CYCLIC			(1<<0)
-#define LA_ONLYALPHA		(1<<1)
-#define LA_TEXTCOLOR		(1<<2)
-#define LA_TEXTURECOLOR		(1<<3)
-//(1<<4) registered !!!
 void lanim_cont::set_defaults()
 {
 	m_lanim					= NULL;	
 	m_lanim_start_time		= -1.0f;
 	m_lanim_delay_time		= 0.0f;
 	m_lanimFlags.zero		();
+}
+void lanim_cont_xf::set_defaults()
+{
+	lanim_cont::set_defaults();
+	m_origSize.set			(0,0);
 }
 
 CUIStatic:: CUIStatic()
@@ -31,7 +28,6 @@ CUIStatic:: CUIStatic()
 	m_bStretchTexture		= false;
 
 	m_TextureOffset.set		(0.0f,0.0f);
-	m_pMask					= NULL;
 	m_ElipsisPos			= eepNone;
 	m_iElipsisIndent		= 0;
 
@@ -40,11 +36,9 @@ CUIStatic:: CUIStatic()
 	m_bCursorOverWindow		= false;
 	m_bHeading				= false;
 	m_fHeading				= 0.0f;
-	m_lanim_clr.set_defaults	();
 	m_lanim_xform.set_defaults	();
 
 	m_pTextControl = nullptr;
-	m_bEnableTextHighlighting = false;
 }
 
 CUIStatic::~CUIStatic()
@@ -62,21 +56,7 @@ void CUIStatic::SetXformLightAnim(LPCSTR lanim, bool bCyclic)
 	m_lanim_xform.m_lanimFlags.zero		();
 
 	m_lanim_xform.m_lanimFlags.set		(LA_CYCLIC,			bCyclic);
-}
-
-void CUIStatic::SetClrLightAnim(LPCSTR lanim, bool bCyclic, bool bOnlyAlpha, bool bTextColor, bool bTextureColor)
-{
-	if(lanim && lanim[0]!=0)
-		m_lanim_clr.m_lanim	= LALib.FindItem(lanim);
-	else
-		m_lanim_clr.m_lanim	= NULL;
-	
-	m_lanim_clr.m_lanimFlags.zero		();
-
-	m_lanim_clr.m_lanimFlags.set		(LA_CYCLIC,			bCyclic);
-	m_lanim_clr.m_lanimFlags.set		(LA_ONLYALPHA,		bOnlyAlpha);
-	m_lanim_clr.m_lanimFlags.set		(LA_TEXTCOLOR,		bTextColor);
-	m_lanim_clr.m_lanimFlags.set		(LA_TEXTURECOLOR,	bTextureColor);
+	m_lanim_xform.m_origSize			= GetWndSize();
 }
 
 void CUIStatic::Init(LPCSTR tex_name, float x, float y, float width, float height)
@@ -119,7 +99,6 @@ u32 CUIStatic::GetTextureColor() const{
 
 void CUIStatic::InitTextureEx(LPCSTR tex_name, LPCSTR sh_name)
 {
-
 	LPCSTR res_shname = UIRender->UpdateShaderName(tex_name, sh_name);
 	CUITextureMaster::InitTexture	(tex_name, &m_UIStaticItem, res_shname);
 
@@ -135,23 +114,19 @@ void  CUIStatic::Draw()
 }
 
 
-void CUIStatic::DrawText(){
+void CUIStatic::DrawText()
+{
 	if (m_pTextControl)
 	{
-		if (!fsimilar(m_pTextControl->m_wndSize.x, m_wndSize.x) || !fsimilar(m_pTextControl->m_wndSize.y, m_wndSize.y))
+		if( !fsimilar(m_pTextControl->m_wndSize.x, m_wndSize.x) || !fsimilar(m_pTextControl->m_wndSize.y, m_wndSize.y))
 		{
-			m_pTextControl->m_wndSize = m_wndSize;
-			m_pTextControl->ParseText(true);
+			m_pTextControl->m_wndSize		= m_wndSize;
+			m_pTextControl->ParseText		(true);
 		}
 
-		if(IsHighlightText() && xr_strlen(m_pTextControl->GetText())>0 && m_bEnableTextHighlighting)
-			DrawHighlightedText();		
-		else{
-			Fvector2			p;
-			GetAbsolutePos		(p);
-			m_pTextControl->Draw(p.x, p.y);
-		}
-
+		Fvector2			p;
+		GetAbsolutePos		(p);
+		m_pTextControl->Draw(p.x, p.y);
 	}
 }
 
@@ -211,40 +186,14 @@ void CUIStatic::Update()
 {
 	inherited::Update();
 	//update light animation if defined
-	if (m_lanim_clr.m_lanim)
-	{
-		if(m_lanim_clr.m_lanim_start_time<0.0f)		ResetClrAnimation	();
-		float t = Device.dwTimeContinual/1000.0f;
+	UpdateColorAnimation();
 
-		if (t < m_lanim_clr.m_lanim_start_time)	// consider animation delay
-			return;
-
-		if(m_lanim_clr.m_lanimFlags.test(LA_CYCLIC) || t-m_lanim_clr.m_lanim_start_time < m_lanim_clr.m_lanim->Length_sec()){
-
-			int frame;
-			u32 clr					= m_lanim_clr.m_lanim->CalculateRGB(t-m_lanim_clr.m_lanim_start_time,frame);
-
-			if(m_lanim_clr.m_lanimFlags.test(LA_TEXTURECOLOR))
-				if(m_lanim_clr.m_lanimFlags.test(LA_ONLYALPHA))
-					SetColor				(subst_alpha(GetColor(), color_get_A(clr)));
-				else
-					SetColor				(clr);
-
-			if(m_lanim_clr.m_lanimFlags.test(LA_TEXTCOLOR))
-				if(m_lanim_clr.m_lanimFlags.test(LA_ONLYALPHA))
-					SetTextColor				(subst_alpha(GetTextColor(), color_get_A(clr)));
-				else
-					SetTextColor				(clr);
-			
-		}
-	}
-	
 	if(m_lanim_xform.m_lanim)
 	{
-		if(m_lanim_xform.m_lanim_start_time<0.0f){
+		if(m_lanim_xform.m_lanim_start_time<0.0f)
 			ResetXformAnimation();
-		}
-		float t = Device.dwTimeContinual/1000.0f;
+
+		float t = Device.dwTimeGlobal/1000.0f;
 
 		if(	m_lanim_xform.m_lanimFlags.test(LA_CYCLIC) || 
 			t - m_lanim_xform.m_lanim_start_time < m_lanim_xform.m_lanim->Length_sec() )
@@ -260,38 +209,14 @@ void CUIStatic::Update()
 			
 			float f_scale		= _value / 64.0f;
 			Fvector2 _sz;
-			_sz.set				(m_xxxRect.width()*f_scale, m_xxxRect.height()*f_scale );
+			_sz.set				(m_lanim_xform.m_origSize.x*f_scale, m_lanim_xform.m_origSize.y*f_scale );
 			SetWndSize			(_sz);
-		}else{
-			EnableHeading_int	( !!m_lanim_xform.m_lanimFlags.test(1<<4) );
-			SetWndSize			(Fvector2().set(m_xxxRect.width(),m_xxxRect.height()));
+		}else
+		{
+			EnableHeading_int	( m_bHeading );
+			SetWndSize			(m_lanim_xform.m_origSize);
 		}
 	}
-}
-
-void CUIStatic::ResetXformAnimation()
-{
-	m_lanim_xform.m_lanim_start_time = Device.dwTimeContinual/1000.0f;
-}
-
-void CUIStatic::ResetClrAnimation()
-{
-	m_lanim_clr.m_lanim_start_time = Device.dwTimeContinual/1000.0f + m_lanim_clr.m_lanim_delay_time/1000.0f;
-}
-
-void CUIStatic::SetClrAnimDelay(float delay){
-	m_lanim_clr.m_lanim_delay_time = delay;
-}
-
-bool CUIStatic::IsClrAnimStoped(){
-	if (m_lanim_clr.m_lanimFlags.test(LA_CYCLIC) || m_lanim_clr.m_lanim_start_time<0.0f)
-		return false;
-	
-	float t = Device.dwTimeContinual/1000.0f;
-	if(t-m_lanim_clr.m_lanim_start_time < m_lanim_clr.m_lanim->Length_sec())
-		return false;
-	else 
-		return true;
 }
 
 void CUIStatic::SetFont(CGameFont* pFont){
@@ -305,6 +230,11 @@ void CUIStatic::SetTextComplexMode(bool md){
 
 CGameFont* CUIStatic::GetFont(){
 	return TextItemControl()->GetFont();
+}
+
+void CUIStatic::ResetXformAnimation()
+{
+	m_lanim_xform.m_lanim_start_time = Device.dwTimeGlobal/1000.0f;
 }
 
 void  CUIStatic::SetShader(const ui_shader& sh)
@@ -367,21 +297,19 @@ void CUIStatic::AdjustWidthToText()
 	SetWidth(_len);
 }
 
+void CUIStatic::ColorAnimationSetTextureColor(u32 color, bool only_alpha)
+{
+	SetTextureColor((only_alpha) ? subst_alpha(GetTextureColor(), color) : color);
+}
+
+void CUIStatic::ColorAnimationSetTextColor(u32 color, bool only_alpha)
+{
+	TextItemControl()->SetTextColor((only_alpha) ? subst_alpha(TextItemControl()->GetTextColor(), color) : color);
+}
+
 void CUIStatic::SetTextColor(u32 color, E4States state){
 	m_dwTextColor[state] = color;
 	m_bUseTextColor[state] = true;
-}
-
-void CUIStatic::SetMask(CUIFrameWindow *pMask)
-{
-	DetachChild(m_pMask);
-	m_pMask = pMask;
-	if (m_pMask){
-		AttachChild			(m_pMask);
-		Frect r				= GetWndRect();
-		m_pMask->SetWidth	(r.right - r.left);
-		m_pMask->SetHeight	(r.bottom - r.top);
-	}
 }
 
 //CGameFont::EAligment CUIStatic::GetTextAlign(){
@@ -457,16 +385,3 @@ void CUIStatic::SetTextST				(LPCSTR str_id)
 	SetText					(*CStringTable().translate(str_id));
 }
 
-void CUIStatic::DrawHighlightedText(){
-	Frect				rect;
-	GetAbsoluteRect		(rect);
-	u32 def_col = m_pTextControl->GetTextColor();
-	m_pTextControl->SetTextColor(m_HighlightColor);
-	m_pTextControl->Draw(rect.left, rect.top);
-	m_pTextControl->SetTextColor(def_col);
-}
-
-bool CUIStatic::IsHighlightText()
-{
-	return m_bCursorOverWindow;
-}

@@ -1,13 +1,12 @@
 #pragma once
 #include "uiwindow.h"
 
+
 class CUIFrameWindow: public CUIWindow,
-					  public CUIMultiTextureOwner
+					  public ITextureOwner
 {
-private:
 	typedef CUIWindow inherited;
 public:
-	using CUIWindow::Draw;
 					CUIFrameWindow				();
 
 	virtual void	SetTextureRect				(const Frect& r)	{};

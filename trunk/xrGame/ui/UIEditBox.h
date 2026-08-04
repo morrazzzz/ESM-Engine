@@ -15,7 +15,7 @@ class game_cl_GameState;
 
 //////////////////////////////////////////////////////////////////////////
 
-class CUIEditBox : public CUIMultiTextureOwner, public CUIOptionsItem, public CUICustomEdit{
+class CUIEditBox: public CUIOptionsItem, public CUICustomEdit{
 public:
 					CUIEditBox		();
 	virtual			~CUIEditBox		();

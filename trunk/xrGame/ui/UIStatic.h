@@ -1,7 +1,6 @@
 #pragma once
 
-
-#include "uiwindow.h"
+#include "UILanimController.h"
 #include "../uistaticitem.h"
 #include "../script_export_space.h"
 #include "uilines.h"
@@ -9,25 +8,27 @@
 class CUIFrameWindow;
 class CLAItem;
 class CUIXml;
-class CUILines;
 
 struct lanim_cont{
 	CLAItem*				m_lanim;
 	float					m_lanim_start_time;
 	float					m_lanim_delay_time;
 	Flags8					m_lanimFlags;
-
 	void					set_defaults		();
 };
 
-class CUIStatic : public CUIWindow, public CUISingleTextureOwner, public IUITextControl  
+struct lanim_cont_xf :public lanim_cont{
+	Fvector2				m_origSize;
+	void					set_defaults		();
+};
+
+class CUIStatic : public CUIWindow, public ITextureOwner, public CUILightAnimColorConrollerImpl, public IUITextControl
 {
 	friend class CUIXmlInit;
 	friend class CUI3tButton;
 private:
 	typedef CUIWindow inherited;
-	lanim_cont				m_lanim_clr;
-	lanim_cont				m_lanim_xform;
+	lanim_cont_xf			m_lanim_xform;
 	void					EnableHeading_int		(bool b)				{m_bHeading = b;}
 public:
 	using CUISimpleWindow::SetWndRect;
@@ -35,49 +36,47 @@ public:
 					CUIStatic				();
 	virtual			~CUIStatic				();
 
-	// IUISimpleWindow--------------------------------------------------------------------------------------
 	virtual void	Init					(float x, float y, float width, float height);
 	virtual void	Draw					();
-	virtual void	Update					();
-	//
-			void	RescaleRelative2Rect(const Frect& r);	//need to save proportions of texture			
+	virtual void	Update					();	
 
-	// IUISingleTextureOwner--------------------------------------------------------------------------------
 	virtual void		CreateShader				(const char* tex, const char* sh = "hud\\default");
 	virtual ui_shader& GetShader					();
+
 	virtual void		SetTextureColor				(u32 color);
 	virtual u32			GetTextureColor				() const;
 	virtual void		SetTextureRect				(const Frect& r)			{m_UIStaticItem.SetTextureRect(r);}
-	//
+	virtual const Frect& GetTextureRect() const { return m_UIStaticItem.GetTextureRect(); }
+
+	virtual void		InitTexture(LPCSTR tex_name);
+	virtual void		InitTextureEx(LPCSTR tex_name, LPCSTR sh_name = "hud\\default");
+	CUIStaticItem*		GetStaticItem				()							{return &m_UIStaticItem;}
+	//void			SetTextureRect_script(Frect* pr) { m_UIStaticItem.SetTextureRect(*pr); }
+	//const	Frect* GetTextureRect_script()
+
+	void			SetHeadingPivot(const Fvector2& p, const Fvector2& offset, bool fixedLT) { m_UIStaticItem.SetHeadingPivot(p, offset, fixedLT); }
+	//void			ResetHeadingPivot() { m_UIStaticItem.ResetHeadingPivot(); }
+	virtual void		SetTextureOffset(float x, float y) { m_TextureOffset.set(x, y); }
+	Fvector2	GetTextureOffeset() const { return m_TextureOffset; }
+	void		TextureOn() { m_bTextureEnable = true; }
+	void		TextureOff() { m_bTextureEnable = false; }
+
 			void		SetVTextAlignment(EVTextAlignment al);
 	virtual void		SetColor					(u32 color)					{ m_UIStaticItem.SetTextureColor(color);		}
 	u32					GetColor					() const					{ return m_UIStaticItem.GetTextureColor();		}
-	virtual void		InitTexture					(LPCSTR tex_name);
-	virtual void		InitTextureEx				(LPCSTR tex_name, LPCSTR sh_name="hud\\default");
-	CUIStaticItem*		GetStaticItem				()							{return &m_UIStaticItem;}
-
-			void			SetHeadingPivot			(const Fvector2& p, const Fvector2& offset, bool fixedLT){m_UIStaticItem.SetHeadingPivot(p,offset,fixedLT);}
-			void		SetMask						(CUIFrameWindow *pMask);
-	virtual void		SetTextureOffset			(float x, float y)			{ m_TextureOffset.set(x, y); }
-			Fvector2	GetTextureOffeset			() const					{ return m_TextureOffset; }
-			void		TextureOn					()							{ m_bTextureEnable = true; }
-			void		TextureOff					()							{ m_bTextureEnable = false; }
 
 	// own
-	virtual void		SetHighlightColor			(const u32 uColor)	{ m_HighlightColor = uColor; }
-			void		EnableTextHighlighting		(bool value)		{ m_bEnableTextHighlighting = value; }
-			void		SetClrLightAnim				(LPCSTR lanim, bool bCyclic, bool bOnlyAlpha, bool bTextColor, bool bTextureColor);
-			void		SetXformLightAnim			(LPCSTR lanim, bool bCyclic);
-			void		ResetClrAnimation			();
-			void		ResetXformAnimation			();
-			bool		IsClrAnimStoped				();
-			void		SetClrAnimDelay				(float delay);
+			void			SetXformLightAnim(LPCSTR lanim, bool bCyclic);
+			void			ResetXformAnimation();
+
+			virtual void		DrawTexture();
+			virtual void		DrawText();
+
+			void AdjustHeightToText();
+			void AdjustWidthToText();
+
 	virtual void		Init						(LPCSTR tex_name, float x, float y, float width, float height);	
 			void		InitEx						(LPCSTR tex_name, LPCSTR sh_name, float x, float y, float width, float height);
-
-	virtual void		DrawTexture					();
-	virtual void		DrawText					();
-	virtual void		DrawHighlightedText			();
 
 	virtual void		OnFocusReceive				();
 	virtual void		OnFocusLost					();
@@ -102,16 +101,20 @@ public:
 //#pragma todo("Satan->Satan : delete next two functions")
 //	virtual void			SetTextAlign		(CGameFont::EAligment align);
 //	CGameFont::EAligment	GetTextAlign		();
-			void AdjustHeightToText			();
-			void AdjustWidthToText			();
-			void HighlightText(bool bHighlight) {m_bEnableTextHighlighting = bHighlight;}
-	virtual bool IsHighlightText();
 	
 	void			SetShader				(const ui_shader& sh);
 	CUIStaticItem&	GetUIStaticItem			()						{return m_UIStaticItem;}
 
 	void		SetStretchTexture			(bool stretch_texture)	{m_bStretchTexture = stretch_texture;}
 	bool		GetStretchTexture			()						{return m_bStretchTexture;}
+
+	void			SetHeading(float f) { m_fHeading = f; };
+	float			GetHeading() { return m_fHeading; }
+	bool			Heading() { return m_bHeading; }
+	void			EnableHeading(bool b) { m_bHeading = b; }
+
+	virtual void			ColorAnimationSetTextureColor(u32 color, bool only_alpha);
+	virtual void			ColorAnimationSetTextColor(u32 color, bool only_alpha);
 
 	// јнализируем текст на помещаемость его по длинне в заданную ширину, и если нет, то встал€ем 
 	// "\n" реализуем таким образом wordwrap
@@ -125,11 +128,6 @@ public:
 	};
 
 	void SetElipsis							(EElipsisPosition pos, int indent);
-	
-	void	SetHeading						(float f)				{m_fHeading = f;};
-	float	GetHeading						()						{return m_fHeading;}
-	bool	Heading							()						{return m_bHeading;}
-	void	EnableHeading					(bool b)				{m_bHeading = b;m_lanim_xform.m_lanimFlags.set((1<<4),b);}
 
 	// will be need by CUI3tButton
 	// Don't change order!!!!!
@@ -143,16 +141,12 @@ public:
 	void SetTextColor(u32 color, E4States state);
 protected:
 	CUILines* m_pTextControl;
-	CUIFrameWindow* m_pMask;
-	// ÷вет подсветки
-	u32				m_HighlightColor;
 
 	// this array of color will be useful in CUI3tButton class
 	// but we really need to declare it directly there because it must be initialized in CUIXmlInit::InitStatic
 	u32  m_dwTextColor[4];
 	bool m_bUseTextColor[4]; // note: 0 index will be ignored
 
-	bool m_bEnableTextHighlighting;
 	bool m_bStretchTexture;
 	bool m_bTextureEnable;
 	CUIStaticItem m_UIStaticItem;

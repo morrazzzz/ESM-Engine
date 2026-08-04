@@ -2,7 +2,7 @@
 
 #include "UIEditBoxEx.h"
 #include "UIFrameWindow.h"
-#include "UILines.h"
+
 
 
 CUIEditBoxEx::CUIEditBoxEx()

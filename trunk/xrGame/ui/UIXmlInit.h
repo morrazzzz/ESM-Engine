@@ -2,8 +2,7 @@
 
 #include "xrUIXmlParser.h"
 
-class IUIMultiTextureOwner;
-class IUISingleTextureOwner;
+class ITextureOwner;
 class IUITextControl;
 class CUIWindow;
 class CUIFrameWindow;
@@ -46,39 +45,43 @@ public:
 	static bool InitFrameLine			(CUIXml& xml_doc, const char* path, int index, CUIFrameLineWnd* pWnd);
 	static bool InitCustomEdit			(CUIXml& xml_doc, const char* paht, int index, CUICustomEdit* pWnd);
 	static bool InitEditBox				(CUIXml& xml_doc, const char* paht, int index, CUIEditBox* pWnd);
-	static bool InitEditBoxEx			(CUIXml& xml_doc, const char* paht, int index, CUIEditBoxEx* pWnd);
 	static bool InitStatic				(CUIXml& xml_doc, const char* path, int index, CUIStatic* pWnd);
+	static bool InitEditBoxEx			(CUIXml& xml_doc, const char* paht, int index, CUIEditBoxEx* pWnd);
 	static bool	InitCheck				(CUIXml& xml_doc, const char* path, int index, CUICheckButton* pWnd);
 	static bool InitSpin				(CUIXml& xml_doc, const char* path, int index, CUICustomSpin* pWnd);
 	static bool InitText				(CUIXml& xml_doc, const char* path, int index, CUIStatic* pWnd);
 	static bool InitText				(CUIXml& xml_doc, const char* path, int index, CUILines* pLines);
-	static bool InitButton				(CUIXml& xml_doc, const char* path, int index, CUIButton* pWnd);
 	static bool Init3tButton			(CUIXml& xml_doc, const char* path, int index, CUI3tButton* pWnd);
 	static bool InitDragDropListEx		(CUIXml& xml_doc, const char* path, int index, CUIDragDropListEx* pWnd);
-	static bool InitListWnd				(CUIXml& xml_doc, const char* path, int index, CUIListWnd* pWnd);
 	static bool InitProgressBar			(CUIXml& xml_doc, const char* path, int index, CUIProgressBar* pWnd);
-//	static bool InitProgressBar2		(CUIXml& xml_doc, const char* path, int index, CUIProgressBar* pWnd);
 	static bool InitProgressShape		(CUIXml& xml_doc, const char* path, int index, CUIProgressShape* pWnd);
 	static bool InitFont				(CUIXml& xml_doc, const char* path, int index, u32 &color, CGameFont *&pFnt);
-//	static bool InitColor				(CUIXml& xml_doc, XML_NODE* node, u32 &color);
+//	static bool InitTabButtonMP			(CUIXml& xml_doc, LPCSTR path, int index, CUITabButtonMP* pWnd);
 	static bool InitTabControl			(CUIXml& xml_doc, const char* path,	int index, CUITabControl *pWnd);
-	static bool InitTextBanner			(CUIXml& xml_doc, const char* path,	int index, CUITextBanner *pBnr);
-	static bool InitMultiTextStatic		(CUIXml& xml_doc, const char* path,	int index, CUIMultiTextStatic *pWnd);
-	static bool InitAnimatedStatic		(CUIXml& xml_doc, const char* path,	int index, CUIAnimatedStatic *pWnd);
+	static bool InitAnimatedStatic		(CUIXml& xml_doc, const char* path, int index, CUIAnimatedStatic* pWnd);
+//	static bool InitSleepStatic			(CUIXml& xml_doc, LPCSTR path, int index, CUISleepStatic* pWnd);
 	static bool InitTextureOffset		(CUIXml& xml_doc, const char* path, int index, CUIStatic* pWnd);
 	static bool InitSound				(CUIXml& xml_doc, const char* path, int index, CUI3tButton* pWnd);
 	static bool InitMultiTexture		(CUIXml& xml_doc, const char* path, int index, CUI3tButton* pWnd);
-	static bool InitMultiText			(CUIXml& xml_doc, const char* path, int index, CUIStatic* pWnd);
-	static bool InitTexture				(CUIXml& xml_doc, const char* path, int index, IUIMultiTextureOwner* pWnd);
-	static bool InitTexture				(CUIXml& xml_doc, const char* path, int index, IUISingleTextureOwner* pWnd);
+	static bool InitTexture				(CUIXml& xml_doc, LPCSTR path, int index, ITextureOwner* pWnd);
 	static bool InitOptionsItem			(CUIXml& xml_doc, const char* paht, int index, CUIOptionsItem* pWnd);
-//	static u32	GetARGB					(CUIXml& xml_doc, const char* path, int index);
 	static bool InitScrollView			(CUIXml& xml_doc, const char* path, int index, CUIScrollView* pWnd);
 	static bool InitListBox				(CUIXml& xml_doc, const char* path, int index, CUIListBox* pWnd);
 	static bool	InitComboBox			(CUIXml& xml_doc, const char* path, int index, CUIComboBox* pWnd);
 	static bool	InitTrackBar			(CUIXml& xml_doc, const char* path, int index, CUITrackBar* pWnd);
+//	static bool 	InitHintWindow		(CUIXml& xml_doc, LPCSTR path, int index, UIHintWindow* pWnd);
 	static Frect GetFRect				(CUIXml& xml_doc, const char* path, int index);
 	static u32	GetColor				(CUIXml& xml_doc, const char* path, int index, u32 def_clr);
+
+	static bool InitTextBanner(CUIXml& xml_doc, const char* path, int index, CUITextBanner* pBnr);
+	static bool InitButton(CUIXml& xml_doc, const char* path, int index, CUIButton* pWnd);
+	static bool InitListWnd(CUIXml& xml_doc, const char* path, int index, CUIListWnd* pWnd);
+	static bool InitMultiTextStatic		(CUIXml& xml_doc, const char* path,	int index, CUIMultiTextStatic *pWnd);
+	static bool InitMultiText			(CUIXml& xml_doc, const char* path, int index, CUIStatic* pWnd);
+//	static u32	GetARGB					(CUIXml& xml_doc, const char* path, int index);
+
+//	static bool InitTexture(CUIXml& xml_doc, const char* path, int index, IUIMultiTextureOwner* pWnd);
+//	static bool InitTexture(CUIXml& xml_doc, const char* path, int index, IUISingleTextureOwner* pWnd);
 public:
 
 	// Функция чтения алайна из xml файла и применения его к координатам.
@@ -105,7 +108,6 @@ public:
 	static void						ApplyAlign(float &x, float &y, u32 align);
 
 	// Initialize and store predefined colors
-//	typedef std::pair<shared_str, u32> ColorMap;
 	DEF_MAP			(ColorDefs, shared_str, u32);
 
 	static const ColorDefs		*GetColorDefs()		{ R_ASSERT(m_pColorDefs); return m_pColorDefs; }

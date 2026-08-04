@@ -37,7 +37,7 @@ CUITreeViewItem::CUITreeViewItem()
 	UIBkg.InitTexture(treeItemBackgroundTexture);
 	UIBkg.TextureOff();
 	UIBkg.SetTextureOffset(-20, 0);
-	EnableTextHighlighting(false);
+//	EnableTextHighlighting(false);
 
 	m_bManualSetColor = false;
 }

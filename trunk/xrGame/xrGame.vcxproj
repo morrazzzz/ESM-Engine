@@ -444,6 +444,7 @@
     <ClInclude Include="script_crandom.h" />
     <ClInclude Include="script_enum_types.h" />
     <ClInclude Include="ui\UIFixedScrollBar.h" />
+    <ClInclude Include="ui\UILanimController.h" />
     <ClInclude Include="ui\UIWeaponScope.h" />
     <ClInclude Include="ui_defs.h" />
     <ClInclude Include="wrapper_abstract.h" />
@@ -2047,6 +2048,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
     </ClCompile>
     <ClCompile Include="ui\UIFixedScrollBar.cpp" />
+    <ClCompile Include="ui\UILanimController.cpp" />
     <ClCompile Include="ui\UIWeaponScope.cpp" />
     <ClCompile Include="visual_memory_manager.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>

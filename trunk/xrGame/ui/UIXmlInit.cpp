@@ -169,11 +169,13 @@ bool CUIXmlInit::InitStatic(CUIXml& xml_doc, LPCSTR path,
 	int flag_texture			= xml_doc.ReadAttribInt(path, index, "la_texture",	1);
 	int flag_alpha				= xml_doc.ReadAttribInt(path, index, "la_alpha",	0);
 		
-	pWnd->SetClrLightAnim(str_flag,	(flag_cyclic)?true:false, 
-									(flag_alpha)?true:false,
-									(flag_text)?true:false,
-									(flag_texture)?true:false
-									);
+	u8 flags					= 0;
+	if(flag_cyclic)				flags |= LA_CYCLIC;
+	if(flag_alpha)				flags |= LA_ONLYALPHA;
+	if(flag_text)				flags |= LA_TEXTCOLOR;
+	if(flag_texture)			flags |= LA_TEXTURECOLOR;
+
+	pWnd->SetColorAnimation		(str_flag, flags);
 
 
 	str_flag					= xml_doc.ReadAttrib(path, index, "xform_anim",				"");
@@ -181,21 +183,9 @@ bool CUIXmlInit::InitStatic(CUIXml& xml_doc, LPCSTR path,
 		
 	pWnd->SetXformLightAnim		(str_flag, (flag_cyclic)?true:false );
 
-	int flag_highlight_txt		= xml_doc.ReadAttribInt(path, index, "highlight_text", 0);
-	if(flag_highlight_txt){
-		pWnd->HighlightText(true);
-
-		u32 hA = static_cast<u32>(xml_doc.ReadAttribInt(path, index, "hA", 255));
-		u32 hR = static_cast<u32>(xml_doc.ReadAttribInt(path, index, "hR", 255));
-		u32 hG = static_cast<u32>(xml_doc.ReadAttribInt(path, index, "hG", 255));
-		u32 hB = static_cast<u32>(xml_doc.ReadAttribInt(path, index, "hB", 255));
-		pWnd->SetHighlightColor(color_argb(hA, hR, hG, hB));
-
-	}
-
 	bool bComplexMode = xml_doc.ReadAttribInt(path, index, "complex_mode",0)?true:false;
 	if(bComplexMode)
-		pWnd->SetTextComplexMode(bComplexMode);
+		pWnd->TextItemControl()->SetTextComplexMode(bComplexMode);
 	
 	return true;
 }
@@ -895,34 +885,30 @@ bool CUIXmlInit::InitAnimatedStatic(CUIXml &xml_doc, const char *path, int index
 	return true;
 }
 
-bool CUIXmlInit::InitTexture(CUIXml& xml_doc, const char* path, int index, IUIMultiTextureOwner* pWnd){
-	string256 buf;	
-	shared_str texture;
-
-	strconcat(sizeof(buf),buf, path, ":texture");
-	if (xml_doc.NavigateToNode(buf))
-		texture = xml_doc.Read(buf, index, NULL);
-
-	if (!!texture)
-	{
-        pWnd->InitTexture(*texture);
-		return true;
-	}
-
-	return false;
-}
-
-bool CUIXmlInit::InitTexture(CUIXml& xml_doc, const char* path, int index, IUISingleTextureOwner* pWnd){
+bool CUIXmlInit::InitTexture(CUIXml& xml_doc, LPCSTR path, int index, ITextureOwner* pWnd)
+{
 	string256 buf;
-	InitTexture(xml_doc, path, index, (IUIMultiTextureOwner*)pWnd);
-	strconcat(sizeof(buf),buf, path, ":texture");
-
-	Frect rect;
-
-	rect.x1			= xml_doc.ReadAttribFlt(buf, index, "x", 0);
-	rect.y1			= xml_doc.ReadAttribFlt(buf, index, "y", 0);
-	rect.x2			= rect.x1 + xml_doc.ReadAttribFlt(buf, index, "width", 0);	
-	rect.y2			= rect.y1 + xml_doc.ReadAttribFlt(buf, index, "height", 0);
+	LPCSTR texture = NULL;
+	LPCSTR shader = NULL;
+	strconcat(sizeof(buf), buf, path, ":texture");
+	if (xml_doc.NavigateToNode(buf))
+	{
+		texture = xml_doc.Read(buf, index, NULL);
+		shader = xml_doc.ReadAttrib(buf, index, "shader", NULL);
+	}
+	if (texture)
+	{
+		if (shader)
+			pWnd->InitTextureEx(texture, shader);
+		else
+			pWnd->InitTexture(texture);
+	}
+	//--------------------
+	Frect			rect;
+	rect.x1 = xml_doc.ReadAttribFlt(buf, index, "x", 0);
+	rect.y1 = xml_doc.ReadAttribFlt(buf, index, "y", 0);
+	rect.x2 = rect.x1 + xml_doc.ReadAttribFlt(buf, index, "width", 0);
+	rect.y2 = rect.y1 + xml_doc.ReadAttribFlt(buf, index, "height", 0);
 
 	bool stretch_flag = xml_doc.ReadAttribInt(path, index, "stretch") ? true : false;
 	pWnd->SetStretchTexture(stretch_flag);

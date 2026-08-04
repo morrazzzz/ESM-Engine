@@ -25,7 +25,6 @@ CUI3tButton::CUI3tButton(){
 	AttachChild			(&m_background);
 	AttachChild			(&m_hint);
 
-	m_bEnableTextHighlighting = false;
 	m_bCheckMode		= false;
 	SetPushOffset		(Fvector2().set(0.0f,0.0f) );
 }

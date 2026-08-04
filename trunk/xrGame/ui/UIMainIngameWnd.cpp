@@ -502,7 +502,7 @@ void CUIMainIngameWnd::RenderQuickInfos()
 	if (pObject!=m_pActor->ObjectWeLookingAt())
 	{
 		UIStaticQuickHelp.SetTextST				(actor_action);
-		UIStaticQuickHelp.ResetClrAnimation		();
+		UIStaticQuickHelp.ResetColorAnimation();
 		pObject	= m_pActor->ObjectWeLookingAt	();
 	}
 }
@@ -631,7 +631,7 @@ void CUIMainIngameWnd::UpdateFlashingIcons()
 
 void CUIMainIngameWnd::AnimateContacts(bool b_snd)
 {
-	UIPdaOnline.ResetClrAnimation	();
+	UIPdaOnline.ResetColorAnimation();
 
 	if(b_snd)
 		HUD_SOUND_ITEM::PlaySound	(m_contactSnd, Fvector().set(0,0,0), 0, true );

@@ -27,7 +27,6 @@ public:
 
 	virtual void	MarkSelected				(bool b){};
 	// переопределяем критерий подсвечивания текста
-	virtual bool IsHighlightText();
 	virtual void SetHighlightText(bool Highlight)		{ m_bHighlightText = Highlight; }
 
 protected:

@@ -5877,6 +5877,9 @@
     <ClInclude Include="ui\UIFixedScrollBar.h">
       <Filter>UI\UIWindows\ScrollBar</Filter>
     </ClInclude>
+    <ClInclude Include="ui\UILanimController.h">
+      <Filter>UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -8530,6 +8533,9 @@
     </ClCompile>
     <ClCompile Include="ui\UIFixedScrollBar.cpp">
       <Filter>UI\UIWindows\ScrollBar</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\UILanimController.cpp">
+      <Filter>UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

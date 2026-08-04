@@ -4,7 +4,8 @@
 
 class CUIFrameWindow;
 
-class CUIEditBoxEx : public CUIMultiTextureOwner, public CUICustomEdit {
+class CUIEditBoxEx : /*public CUIMultiTextureOwner, */public CUICustomEdit 
+{
 public:
 	CUIEditBoxEx();
 	virtual ~CUIEditBoxEx();

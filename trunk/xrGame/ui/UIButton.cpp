@@ -22,17 +22,14 @@ CUIButton:: CUIButton()
 
 	m_PushOffset.set			(PUSH_OFFSET_RIGHT, PUSH_OFFSET_DOWN);
 
-	m_HighlightColor			= 0xFFFFFFFF;
 	m_uAccelerator[0]				= 0;
 	m_uAccelerator[1]				= 0;
 
-	m_bEnableTextHighlighting	= true;
-
 	m_ShadowOffset.set			(0.0f,0.0f);
 
-	SetTextComplexMode			(false);
-	SetTextAlignment			(CGameFont::alCenter); // this will create class instance for m_pLines
-	SetVTextAlignment			(valCenter);
+	TextItemControl()->SetTextComplexMode(false);
+	TextItemControl()->SetTextAlignment(CGameFont::alCenter); // this will create class instance for m_pLines
+	TextItemControl()->SetVTextAlignment(valCenter);
 	m_bClickable				= true;
 }
 
@@ -162,32 +159,6 @@ void CUIButton::DrawTexture()
 		else
 			m_UIStaticItem.Render();		
 	}
-}
-
-void CUIButton::DrawHighlightedText(){
-	float right_offset;
-	float down_offset;
-
-	if(m_eButtonState == BUTTON_UP || m_eButtonState == BUTTON_NORMAL)
-	{
-		right_offset = 0.0f;
-		down_offset = 0.0f;
-	}
-	else
-	{
-		right_offset	= m_PushOffset.x;
-		down_offset		= m_PushOffset.y;
-	}
-
-	Frect					rect;
-	GetAbsoluteRect			(rect);
-	u32 def_col = m_pTextControl->GetTextColor();
-	m_pTextControl->SetTextColor(m_HighlightColor);
-
-	m_pTextControl->Draw(rect.left + right_offset + m_ShadowOffset.x, rect.top + down_offset - m_ShadowOffset.y);
-
-	m_pTextControl->SetTextColor(def_col);
-
 }
 
 void CUIButton::DrawText()

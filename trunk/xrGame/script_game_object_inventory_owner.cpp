@@ -92,7 +92,7 @@ bool _give_news	(LPCSTR text, LPCSTR texture_name, const Frect& tex_rect, int de
 
 	news_data.texture_name			= texture_name;
 	news_data.tex_rect				= tex_rect;
-
+	news_data.tex_rect.rb.add(news_data.tex_rect.lt);
 
 	if(delay==0)
 		Actor()->AddGameNews(news_data);

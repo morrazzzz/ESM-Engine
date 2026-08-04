@@ -18,8 +18,6 @@ void CUIButton::script_register(lua_State *L)
 		.def(							constructor<>())
 		.def("Init",					(void(CUIButton::*)(float,float,float,float))&CUIButton::Init )
 		.def("Init",					(void(CUIButton::*)(LPCSTR,float,float,float,float))&CUIButton::Init )
-		.def("SetHighlightColor",		&CUIButton::SetHighlightColor)
-		.def("EnableTextHighlighting",	&CUIButton::EnableTextHighlighting)
 /*
 		.def("SetPushOffsetX",			&CUIButton::SetPushOffsetX)
 		.def("SetPushOffsetY",			&CUIButton::SetPushOffsetY)

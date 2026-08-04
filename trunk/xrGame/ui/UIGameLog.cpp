@@ -26,8 +26,7 @@ CUIPdaMsgListItem* CUIGameLog::AddPdaMessage(LPCSTR msg, float delay){
 	CUIPdaMsgListItem* pItem				= xr_new<CUIPdaMsgListItem>();
 	pItem->Init								(0,0, GetDesiredChildWidth(), 10);	//fake height
 	pItem->UIMsgText.SetTextST				(msg);
-	pItem->SetClrAnimDelay					(delay);
-    pItem->SetClrLightAnim					(CHAT_LOG_ITEMS_ANIMATION, false, true, true, true);
+	pItem->SetColorAnimation(CHAT_LOG_ITEMS_ANIMATION, LA_ONLYALPHA | LA_TEXTCOLOR | LA_TEXTURECOLOR, delay);
 	AddWindow								(pItem, true);
 
 	return pItem;
@@ -58,8 +57,8 @@ void CUIGameLog::Update()
 		VERIFY(pItem);
 		pItem->Update();
 
-		if (pItem->IsClrAnimStoped())
-			toDelList.push_back(pItem);
+		if(!pItem->IsColorAnimationPresent())
+			toDelList.push_back(*it);
 	}
 
 	// Delete elements

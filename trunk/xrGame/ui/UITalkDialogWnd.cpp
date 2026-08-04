@@ -172,8 +172,8 @@ void CUITalkDialogWnd::AddAnswer(LPCSTR SpeakerName, LPCSTR str, bool bActor)
 	CUICharacterInfo& ci			= bActor?UICharacterInfoLeft:UICharacterInfoRight; 
 	
 	news_data.texture_name			= ci.IconName();
-	news_data.tex_rect				= ci.UIIcon().GetUIStaticItem().GetTextureRect();
-	news_data.tex_rect.rb.add(news_data.tex_rect.lt);
+//	news_data.tex_rect				= ci.UIIcon().GetUIStaticItem().GetTextureRect();
+//	news_data.tex_rect.rb.add(news_data.tex_rect.lt);
 	news_data.receive_time			= Level().GetGameTime();
 
 	Actor()->game_news_registry->registry().objects().push_back(news_data);
@@ -290,9 +290,7 @@ CUIAnswerItemIconed::CUIAnswerItemIconed		(CUIXml* xml_doc, LPCSTR path)
 void CUIAnswerItemIconed::Init		(LPCSTR text, LPCSTR texture_name, Frect texture_rect)
 {
 	inherited::Init					(text,"");
-	m_icon->CreateShader			(texture_name,"hud\\default");
-	m_icon->GetUIStaticItem().SetTextureRect(texture_rect);
-
+	m_icon->InitTexture(texture_name);
 	m_icon->TextureOn				();
 	m_icon->SetStretchTexture		(true);
 

@@ -46,9 +46,3 @@ void CUIListItem::Init(const char* str, float x, float y, float width, float hei
 	Init(x,y,width, height);
 	SetTextST(str);	
 }
-
-
-bool CUIListItem::IsHighlightText()
-{
-	return CUIButton::IsHighlightText();
-}
