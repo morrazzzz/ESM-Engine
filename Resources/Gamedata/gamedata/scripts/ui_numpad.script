@@ -167,35 +167,35 @@ function numpad:OnKeyboard(dik, keyboard_action)  --virtual function
 	CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
 	
 	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
-		if dik == DIK_keys.DIK_ESCAPE then
+		if dik == Keys.Key_Escape then
 			self:GetHolder():start_stop_menu(self,true)
 		end
 		
-		if dik == DIK_keys.DIK_0 or dik == DIK_keys.DIK_NUMPAD0 then
+		if dik == Keys.Key_0 or dik == Keys.Key_KP_0 then
 			self:AddNumber(0)
-		elseif dik == DIK_keys.DIK_1 or dik == DIK_keys.DIK_NUMPAD1 then
+		elseif dik == Keys.Key_1 or dik == Keys.Key_KP_1 then
 			self:AddNumber(1)
-		elseif dik == DIK_keys.DIK_2 or dik == DIK_keys.DIK_NUMPAD2 then
+		elseif dik == Keys.Key_2 or dik == Keys.Key_KP_2 then
 			self:AddNumber(2)
-		elseif dik == DIK_keys.DIK_3 or dik == DIK_keys.DIK_NUMPAD3 then
+		elseif dik == Keys.Key_3 or dik == Keys.Key_KP_3 then
 			self:AddNumber(3)
-		elseif dik == DIK_keys.DIK_4 or dik == DIK_keys.DIK_NUMPAD4 then
+		elseif dik == Keys.Key_4 or dik == Keys.Key_KP_4 then
 			self:AddNumber(4)
-		elseif dik == DIK_keys.DIK_5 or dik == DIK_keys.DIK_NUMPAD5 then
+		elseif dik == Keys.Key_5 or dik == Keys.Key_KP_5 then
 			self:AddNumber(5)
-		elseif dik == DIK_keys.DIK_6 or dik == DIK_keys.DIK_NUMPAD6 then
+		elseif dik == Keys.Key_6 or dik == Keys.Key_KP_6 then
 			self:AddNumber(6)
-		elseif dik == DIK_keys.DIK_7 or dik == DIK_keys.DIK_NUMPAD7 then
+		elseif dik == Keys.Key_7 or dik == Keys.Key_KP_7 then
 			self:AddNumber(7)
-		elseif dik == DIK_keys.DIK_8 or dik == DIK_keys.DIK_NUMPAD8 then
+		elseif dik == Keys.Key_8 or dik == Keys.Key_KP_8 then
 			self:AddNumber(8)
-		elseif dik == DIK_keys.DIK_9 or dik == DIK_keys.DIK_NUMPAD9 then
+		elseif dik == Keys.Key_9 or dik == Keys.Key_KP_9 then
 			self:AddNumber(9)
-		elseif dik == DIK_keys.DIK_BACK then
+		elseif dik == Keys.Key_Backspace then
 			self:OnButton_backspace_clicked()
-		elseif dik == DIK_keys.DIK_RETURN or dik == DIK_keys.DIK_NUMPADENTER then
+		elseif dik == Keys.Key_Return or dik == Keys.Key_KP_Enter then
 			self:OnButton_OK_clicked()
-		elseif dik == DIK_keys.DIK_DELETE or dik == DIK_keys.DIK_NUMPADCOMMA then
+		elseif dik == Keys.Key_Delete or dik == Keys.Key_KP_Comma then
 			self:OnButton_c_clicked()
 		end
 	end
