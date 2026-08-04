@@ -33,9 +33,6 @@ void CUIMessagesWindow::AddIconedPdaMessage(GAME_NEWS_DATA* news)
 	CUIPdaMsgListItem *pItem			= m_pGameLog->AddPdaMessage(news->SingleLineText(), float(news->show_time));
 	pItem->SetTextComplexMode			(true);
 	pItem->UIIcon.InitTexture(news->texture_name.c_str());
-
-//	news->tex_rect.rb.add(news->tex_rect.lt);
-	pItem->UIIcon.SetTextureRect(news->tex_rect);
 	pItem->UIMsgText.SetWndPos			(pItem->UIIcon.GetWidth(), pItem->UIMsgText.GetWndPos().y);
 	pItem->UIMsgText.AdjustHeightToText	();
 

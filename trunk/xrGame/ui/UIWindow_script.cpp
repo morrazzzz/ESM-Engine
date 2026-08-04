@@ -56,14 +56,19 @@ Frect	get_texture_rect(LPCSTR icon_name)
 	return CUITextureMaster::GetTextureRect(icon_name);
 }
 
-LPCSTR	get_texture_name(LPCSTR icon_name)
+//LPCSTR	get_texture_name(LPCSTR icon_name)
+//{
+//	return CUITextureMaster::GetTextureFileName(icon_name);
+//}
+
+TEX_INFO	get_texture_info(LPCSTR name)
 {
-	return CUITextureMaster::GetTextureFileName(icon_name);
+	return CUITextureMaster::FindItem(name);
 }
 
-TEX_INFO	get_texture_info(LPCSTR name, LPCSTR def_name)
+bool CheckExistTextureUI(LPCSTR nameTexture)
 {
-	return CUITextureMaster::FindItem(name, def_name);
+	return CUITextureMaster::GetCheckExistTexture(nameTexture);
 }
 
 using namespace luabind;
@@ -91,7 +96,8 @@ void CUIWindow::script_register(lua_State *L)
 		.def("get_file_name",	 			&TEX_INFO::get_file_name)
 		.def("get_rect",					&TEX_INFO::get_rect),
 
-		def("GetTextureName",			&get_texture_name),
+		//def("GetTextureName",			&get_texture_name),
+		def("CheckExistTextureUI", &CheckExistTextureUI),
 		def("GetTextureRect",			&get_texture_rect),
 		def("GetTextureInfo",			&get_texture_info),
 

@@ -51,17 +51,18 @@ bool CScriptGameObject::DisableInfoPortion(LPCSTR info_id)
 	return true;
 }
 
-void _AddIconedTalkMessage(LPCSTR text, LPCSTR texture_name, const Frect& tex_rect, LPCSTR templ_name);
 
-void  CScriptGameObject::AddIconedTalkMessage		(LPCSTR text, LPCSTR texture_name, Frect tex_rect, LPCSTR templ_name)
+
+void _AddIconedTalkMessage(LPCSTR text, LPCSTR texture_name, LPCSTR templ_name);
+
+void  CScriptGameObject::AddIconedTalkMessage		(LPCSTR text, LPCSTR texture_name, LPCSTR templ_name)
 {
 	return _AddIconedTalkMessage	(text,
 									texture_name, 
-									tex_rect, 
 									templ_name); 
 }
 
-void _AddIconedTalkMessage(LPCSTR text, LPCSTR texture_name, const Frect& tex_rect, LPCSTR templ_name)
+void _AddIconedTalkMessage(LPCSTR text, LPCSTR texture_name, LPCSTR templ_name)
 {
 	if (!CurrentGameUI())
 		return;
@@ -69,19 +70,18 @@ void _AddIconedTalkMessage(LPCSTR text, LPCSTR texture_name, const Frect& tex_re
 	CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
 
 	if(pGameSP->TalkMenu->IsShown())
-		pGameSP->TalkMenu->AddIconedMessage(text, texture_name, tex_rect, templ_name?templ_name:"iconed_answer_item" );
+		pGameSP->TalkMenu->AddIconedMessage(text, texture_name, templ_name?templ_name:"iconed_answer_item" );
 }
-bool _give_news	(LPCSTR news, LPCSTR texture_name, const Frect& tex_rect, int delay, int show_time);
+bool _give_news	(LPCSTR news, LPCSTR texture_name, int delay, int show_time);
 
-bool  CScriptGameObject::GiveGameNews		(LPCSTR news, LPCSTR texture_name, Frect tex_rect, int delay, int show_time)
+bool  CScriptGameObject::GiveGameNews		(LPCSTR news, LPCSTR texture_name, int delay, int show_time)
 {
 	return _give_news				(news,
-									texture_name, 
-									tex_rect, 
+									texture_name,  
 									delay, 
 									show_time);
 }
-bool _give_news	(LPCSTR text, LPCSTR texture_name, const Frect& tex_rect, int delay, int show_time)
+bool _give_news	(LPCSTR text, LPCSTR texture_name, int delay, int show_time)
 {
 	GAME_NEWS_DATA				news_data;
 	news_data.news_text			= text;
@@ -91,8 +91,6 @@ bool _give_news	(LPCSTR text, LPCSTR texture_name, const Frect& tex_rect, int de
 	VERIFY(xr_strlen(texture_name)>0);
 
 	news_data.texture_name			= texture_name;
-	news_data.tex_rect				= tex_rect;
-	news_data.tex_rect.rb.add(news_data.tex_rect.lt);
 
 	if(delay==0)
 		Actor()->AddGameNews(news_data);

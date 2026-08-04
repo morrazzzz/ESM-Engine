@@ -179,10 +179,10 @@ void CUITalkDialogWnd::AddAnswer(LPCSTR SpeakerName, LPCSTR str, bool bActor)
 	Actor()->game_news_registry->registry().objects().push_back(news_data);
 }
 
-void CUITalkDialogWnd::AddIconedAnswer(LPCSTR text, LPCSTR texture_name, Frect texture_rect, LPCSTR templ_name)
+void CUITalkDialogWnd::AddIconedAnswer(LPCSTR text, LPCSTR texture_name, LPCSTR templ_name)
 {
 	CUIAnswerItemIconed* itm				= xr_new<CUIAnswerItemIconed>(m_uiXml,templ_name);
-	itm->Init								(text, texture_name, texture_rect);
+	itm->Init								(text, texture_name);
 	UIAnswersList->AddWindow				(itm, true);
 	UIAnswersList->ScrollToEnd				();
 
@@ -287,7 +287,7 @@ CUIAnswerItemIconed::CUIAnswerItemIconed		(CUIXml* xml_doc, LPCSTR path)
 	xml_init.InitStatic				(*xml_doc, str, 0, m_icon);
 }
 
-void CUIAnswerItemIconed::Init		(LPCSTR text, LPCSTR texture_name, Frect texture_rect)
+void CUIAnswerItemIconed::Init		(LPCSTR text, LPCSTR texture_name)
 {
 	inherited::Init					(text,"");
 	m_icon->InitTexture(texture_name);

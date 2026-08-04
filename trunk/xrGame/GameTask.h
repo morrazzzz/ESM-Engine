@@ -82,7 +82,7 @@ public:
 	void					SetObjectID_script		(u16 id);
 	void					SetArticleKey_script	(LPCSTR _str);
 
-	void					SetIconName_script		(LPCSTR _str);
+//	void					SetIconName_script		(LPCSTR _str);
 
 	void					AddCompleteInfo_script	(LPCSTR _str);
 	void					AddFailInfo_script		(LPCSTR _str);

@@ -404,9 +404,9 @@ void CUITalkWnd::StopSnd()
 		m_sound.stop	();
 }
 
-void CUITalkWnd::AddIconedMessage(LPCSTR text, LPCSTR texture_name, Frect texture_rect, LPCSTR templ_name)
+void CUITalkWnd::AddIconedMessage(LPCSTR text, LPCSTR texture_name, LPCSTR templ_name)
 {
-	UITalkDialogWnd->AddIconedAnswer(text, texture_name, texture_rect, templ_name);
+	UITalkDialogWnd->AddIconedAnswer(text, texture_name, templ_name);
 }
 
 void CUITalkWnd::Stop()

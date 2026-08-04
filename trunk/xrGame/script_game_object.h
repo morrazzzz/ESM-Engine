@@ -248,9 +248,9 @@ public:
 	//передача порции информации InventoryOwner
 			bool				GiveInfoPortion		(LPCSTR info_id);
 			bool				DisableInfoPortion	(LPCSTR info_id);
-			bool				GiveGameNews		(LPCSTR news, LPCSTR texture_name, Frect tex_rect, int delay, int show_time);
+			bool				GiveGameNews		(LPCSTR news, LPCSTR texture_name, int delay, int show_time);
 
-			void				AddIconedTalkMessage(LPCSTR text, LPCSTR texture_name, Frect tex_rect, LPCSTR templ_name);
+			void				AddIconedTalkMessage(LPCSTR text, LPCSTR texture_name, LPCSTR templ_name);
 	//предикаты наличия/отсутствия порции информации у персонажа
 			bool				HasInfo				(LPCSTR info_id);
 			bool				DontHasInfo			(LPCSTR info_id);

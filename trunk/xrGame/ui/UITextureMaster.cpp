@@ -112,22 +112,22 @@ void CUITextureMaster::InitTexture(const shared_str& texture_name, CUIStaticItem
 }
 
 Frect CUITextureMaster::GetTextureRect(const shared_str&  texture_name){
-	TEX_INFO info = FindItem(texture_name, texture_name);
+	TEX_INFO info = FindItem(texture_name);
 	return info.rect;
 }
 
 float CUITextureMaster::GetTextureHeight(const shared_str&  texture_name){
-	TEX_INFO info = FindItem(texture_name, texture_name);
+	TEX_INFO info = FindItem(texture_name);
 	return info.rect.height();
 }
 
 float CUITextureMaster::GetTextureWidth(const shared_str&  texture_name)
 {
-	TEX_INFO info = FindItem(texture_name, texture_name);
+	TEX_INFO info = FindItem(texture_name);
 	return info.rect.width();
 }
 
-TEX_INFO CUITextureMaster::FindItem(const shared_str& texture_name, const shared_str& def_texture_name)
+TEX_INFO CUITextureMaster::FindItem(const shared_str&  texture_name)
 {
 	xr_map<shared_str, TEX_INFO>::iterator	it;
 	it = m_textures.find(texture_name);
@@ -135,8 +135,7 @@ TEX_INFO CUITextureMaster::FindItem(const shared_str& texture_name, const shared
 	if (it != m_textures.end())
 		return (it->second);
 	else{
-		R_ASSERT2(m_textures.find(def_texture_name)!=m_textures.end(),texture_name.c_str());
-		return FindItem	(def_texture_name,NULL);
+		return TEX_INFO();
 	}
 }
 
@@ -149,7 +148,9 @@ void CUITextureMaster::GetTextureShader(const shared_str&  texture_name, ui_shad
 	sh->create("hud\\default", *((*it).second.file));	
 }
 
-LPCSTR CUITextureMaster::GetTextureFileName(const shared_str& texture_name) {
-	TEX_INFO info = FindItem(texture_name, texture_name);
+LPCSTR CUITextureMaster::GetTextureFileName(const shared_str& texture_name) 
+{
+	R_ASSERT(m_textures.find(texture_name) != m_textures.end());
+	TEX_INFO info = FindItem(texture_name);
 	return info.get_file_name();
 }

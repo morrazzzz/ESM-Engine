@@ -396,13 +396,13 @@ void SGameTaskObjective::SetObjectID_script(u16 id)
 	object_id = id;
 }
 
-void SGameTaskObjective::SetIconName_script(LPCSTR _str)
-{
-	icon_texture_name	= _str;
-	icon_rect			= CUITextureMaster::GetTextureRect(icon_texture_name.c_str());
-	icon_rect.rb.sub	(icon_rect.rb, icon_rect.lt);
-	icon_texture_name	= CUITextureMaster::GetTextureFileName(icon_texture_name.c_str());
-}
+//void SGameTaskObjective::SetIconName_script(LPCSTR _str)
+//{
+//	icon_texture_name	= _str;
+//	icon_rect			= CUITextureMaster::GetTextureRect(icon_texture_name.c_str());
+//	icon_rect.rb.sub	(icon_rect.rb, icon_rect.lt);
+//	icon_texture_name	= CUITextureMaster::GetTextureFileName(icon_texture_name.c_str());
+//}
 
 void SGameTaskObjective::SetArticleKey_script(LPCSTR _str)
 {
