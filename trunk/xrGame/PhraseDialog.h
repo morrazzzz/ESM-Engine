@@ -134,10 +134,9 @@ protected:
 public:
 	CPhrase* AddPhrase(const shared_str& phrase_id, const shared_str& prev_phrase_id);
 	CPhrase* AddPhrase_script(LPCSTR text, LPCSTR phrase_id, LPCSTR prev_phrase_id, int goodwil_level);
-
 	void					SetCaption	(LPCSTR str);
 	void					SetPriority	(int val);
-
+	CPhrase* GetPhrase(const shared_str& phrase_id);
 	void RandomTextsForPhrase();
 
 protected:

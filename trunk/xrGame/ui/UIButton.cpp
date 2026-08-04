@@ -22,8 +22,10 @@ CUIButton:: CUIButton()
 
 	m_PushOffset.set			(PUSH_OFFSET_RIGHT, PUSH_OFFSET_DOWN);
 
-	m_uAccelerator[0]				= 0;
-	m_uAccelerator[1]				= 0;
+	m_uAccelerator[0]			= 0;
+	m_uAccelerator[1]			= 0;
+	m_uAccelerator[2]			= -1;
+	m_uAccelerator[3]			= -1;
 
 	m_ShadowOffset.set			(0.0f,0.0f);
 
@@ -235,4 +237,27 @@ bool CUIButton::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 		}
 	}
 	return inherited::OnKeyboardAction(dik, keyboard_action);
+}
+
+void CUIButton::SetAccelerator(int iAccel, int idx)	
+{
+	VERIFY(idx>=0 && idx<4); 
+	m_uAccelerator[idx] = s16(iAccel);
+}
+
+const int CUIButton::GetAccelerator(int idx) const			
+{
+	VERIFY(idx>=0 && idx<4); 
+	return m_uAccelerator[idx]; 
+}
+
+bool CUIButton::IsAccelerator(int iAccel) const		
+{
+	bool res = GetAccelerator(0)==iAccel || GetAccelerator(1)==iAccel;
+	if(!res)
+	{
+		res =	((m_uAccelerator[2]!=-1) ? is_binded((EGameActions)GetAccelerator(2), iAccel) : false) || 
+				((m_uAccelerator[3]!=-1) ? is_binded((EGameActions)GetAccelerator(3), iAccel) : false);
+	}
+	return res;
 }
