@@ -51,8 +51,6 @@ function main_menu:InitCallBacks()
 	self:AddCallback("btn_load",        ui_events.BUTTON_CLICKED,				self.OnButton_load_clicked,			self)
 	-- save																												
 	self:AddCallback("btn_save",		ui_events.BUTTON_CLICKED,				self.OnButton_save_clicked,			self)
-	-- multiplayer																										
-	self:AddCallback("btn_multiplayer", ui_events.BUTTON_CLICKED,				self.OnButton_multiplayer_clicked,	self)
 	-- quit																												
 	self:AddCallback("btn_quit",		ui_events.BUTTON_CLICKED,				self.OnButton_quit_clicked,			self)
 	self:AddCallback("btn_quit_to_mm",	ui_events.BUTTON_CLICKED,				self.OnButton_disconnect_clicked,	self)
@@ -223,28 +221,7 @@ function main_menu:OnButton_load_clicked()
 	self:Show(false)
 end
 
-function main_menu:OnButton_multiplayer_clicked()
-	if self.mp_dlg ==nil then
-		self.mp_dlg = ui_mp_main.mp_main()
-		self.mp_dlg.owner = self
-	end
-	self.mp_dlg:UpdateControls()
-	self:GetHolder():start_stop_menu(self.mp_dlg, true)
-	self:GetHolder():start_stop_menu(self, true) --new
-	self:Show(false)
-	
---	self.mp_dlg:OnBtn_Refresh()
-	
-	local console			= get_console()
-	console:execute			("check_for_updates 0")
-	
-	self.mp_dlg:OnRadio_NetChanged()
-end
-
 function main_menu:Dispatch(cmd, param)  --virtual function
-	if cmd == 2 then
-		self:OnButton_multiplayer_clicked()
-	end
 	return true
 end
 
