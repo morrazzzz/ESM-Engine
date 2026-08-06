@@ -58,8 +58,8 @@
 
 	<pick_up_item x="437" y="400" width="150" height="100"/>
 	
-	<disk_io x="1000" y="750" width="16" height="16">
-		<texture>ui\disk_io</texture>
+	<disk_io x="1008" y="750" width="16" height="16" stretch="1">
+		<texture>disk_io</texture>
 	</disk_io>	
 
 	<new_contact_snd>detectors\contact_1</new_contact_snd>	
