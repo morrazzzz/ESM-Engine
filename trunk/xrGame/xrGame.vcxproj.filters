@@ -5880,6 +5880,12 @@
     <ClInclude Include="ui\UILanimController.h">
       <Filter>UI</Filter>
     </ClInclude>
+    <ClInclude Include="ui\UIHudStatesWnd.h">
+      <Filter>UI\Common\MainIngame</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\UIHelper.h">
+      <Filter>UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -8535,6 +8541,12 @@
       <Filter>UI\UIWindows\ScrollBar</Filter>
     </ClCompile>
     <ClCompile Include="ui\UILanimController.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\UIHudStatesWnd.cpp">
+      <Filter>UI\Common\MainIngame</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\UIHelper.cpp">
       <Filter>UI</Filter>
     </ClCompile>
   </ItemGroup>

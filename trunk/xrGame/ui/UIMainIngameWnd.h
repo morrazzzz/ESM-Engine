@@ -1,7 +1,3 @@
-// UIMainIngameWnd.h:  окошки-информация в игре
-// 
-//////////////////////////////////////////////////////////////////////
-
 #pragma once
 
 #include "UIProgressBar.h"
@@ -9,7 +5,6 @@
 
 #include "../alife_space.h"
 
-#include "UICarPanel.h"
 #include "UIMotionIcon.h"
 #include "../hudsound.h"
 class					CUIPdaMsgListItem;
@@ -18,10 +13,10 @@ class					CUIZoneMap;
 class					CUIArtefactPanel;
 class					CUIScrollView;
 struct					GAME_NEWS_DATA;
-class					CActor;
-class					CWeapon;
+class CActor;
 class					CMissile;
 class					CInventoryItem;
+class					CUIHudStatesWnd;
 
 class CUIMainIngameWnd: public CUIWindow  
 {
@@ -36,28 +31,18 @@ public:
 	bool KeyboardIngameWnd(int dik);
 protected:
 	
-	CUIStatic			UIStaticDiskIO;
-	CUIStatic			UIStaticHealth;
-	CUIStatic			UIStaticArmor;
-	CUIStatic			UIStaticQuickHelp;
-	CUIProgressBar		UIHealthBar;
-	CUIProgressBar		UIArmorBar;
-	CUICarPanel			UICarPanel;
-	CUIMotionIcon		UIMotionIcon;	
+	CUIStatic*			UIStaticDiskIO;
+	CUITextWnd*			UIStaticQuickHelp;
+	CUIMotionIcon*		UIMotionIcon;
 	CUIZoneMap*			UIZoneMap;
+
+	CUIHudStatesWnd*	m_ui_hud_states;
 
 	//иконка, показывающая количество активных PDA
 	CUIStatic			UIPdaOnline;
-	
-	//изображение оружия
-	CUIStatic			UIWeaponBack;
-	CUIStatic			UIWeaponSignAmmo;
-	CUIStatic			UIWeaponIcon;
-	Frect				UIWeaponIcon_rect;
 public:
-	CUIStatic*			GetPDAOnline					() { return &UIPdaOnline; };
+	CUIHudStatesWnd*	get_hud_states() { return m_ui_hud_states; } //temp
 protected:
-
 
 	// 5 статиков для отображения иконок:
 	// - сломанного оружия
@@ -65,21 +50,14 @@ protected:
 	// - ранения
 	// - голода
 	// - усталости
-	CUIStatic			UIWeaponJammedIcon;
-	CUIStatic			UIRadiaitionIcon;
-	CUIStatic			UIWoundIcon;
-	CUIStatic			UIStarvationIcon;
-	CUIStatic			UIPsyHealthIcon;
-	CUIStatic			UIInvincibleIcon;
-//	CUIStatic			UISleepIcon;
-	CUIStatic			UIArtefactIcon;
+	CUIStatic*			UIWeaponJammedIcon;
+	CUIStatic*			UIRadiaitionIcon;
+	CUIStatic*			UIWoundIcon;
+	CUIStatic*			UIStarvationIcon;
+	CUIStatic*			UIPsyHealthIcon;
+	CUIStatic*			UIInvincibleIcon;
 
 	CUIScrollView*		m_UIIcons;
-	CUIWindow*			m_pMPChatWnd;
-	CUIWindow*			m_pMPLogWnd;
-public:	
-	CUIArtefactPanel*    m_artefactPanel;
-	
 public:
 	
 	// Енумы соответсвующие предупреждающим иконкам 
@@ -116,38 +94,34 @@ public:
 	HUD_SOUND_ITEM		m_contactSnd;
 
 	void				ReceiveNews						(GAME_NEWS_DATA* news);
-	
+	void				UpdateMainIndicators			(const CActor* actor);
 protected:
 //	void				UpdateQuickSlots				();
 	void				SetWarningIconColorUI			(CUIStatic* s, const u32 cl);
 	void				InitFlashingIcons				(CUIXml* node);
 	void				DestroyFlashingIcons			();
 	void				UpdateFlashingIcons				();
-	void				UpdateActiveItemInfo			();
+//	void				UpdateActiveItemInfo			();
 
-	void				SetAmmoIcon						(const shared_str& seсt_name);
+//	void				SetAmmoIcon						(const shared_str& seсt_name);
 
 	// first - иконка, second - анимация
 	DEF_MAP				(FlashingIcons, EFlashingIcons, CUIStatic*);
 	FlashingIcons		m_FlashingIcons;
 
-	//для текущего активного актера и оружия
-	CActor*				m_pActor;	
-	CWeapon*			m_pWeapon;
-	CMissile*			m_pGrenade;
-	CInventoryItem*		m_pItem;
+//	CMissile*			m_pGrenade;
+//	CInventoryItem*		m_pItem;
 
 	// Отображение подсказок при наведении прицела на объект
-	void				RenderQuickInfos();
+	void				RenderQuickInfos(CActor* actor);
 
 public:
-	CUICarPanel&		CarPanel							(){return UICarPanel;};
-	CUIMotionIcon&		MotionIcon							(){return UIMotionIcon;}
+	CUIMotionIcon*		MotionIcon							(){return UIMotionIcon;}
 	void				OnConnected							();
 	void				reset_ui							();
 protected:
 	CInventoryItem*		m_pPickUpItem;
-	CUIStatic			UIPickUpItemIcon;
+	CUIStatic*			UIPickUpItemIcon;
 
 	float				m_iPickUpItemIconX;
 	float				m_iPickUpItemIconY;

@@ -56,6 +56,10 @@ void CUILines::SetCutWordsMode(bool mode){
 	uFlags.set(flCutWordsMode, mode);
 }
 
+void CUILines::SetEllipsis(bool mode){
+	uFlags.set(flEllipsis, mode);	
+}
+
 void CUILines::SetUseNewLineMode(bool mode){
 	uFlags.set(flRecognizeNewLine, mode);	
 }
@@ -78,12 +82,19 @@ void CUILines::SetText(const char* text){
 		Reset();
 	}
 }
+void CUILines::SetTextST(const char* str_id)
+{
+	SetText	(*CStringTable().translate(str_id));
+}
 
-const char* CUILines::GetText(){
+
+const char* CUILines::GetText()
+{
 	return m_text.c_str();
 }
 
-void CUILines::Reset(){
+void CUILines::Reset()
+{
 	m_lines.clear();
 }
 
@@ -292,6 +303,41 @@ void CUILines::SetFont(CGameFont* pFont)
 	m_pFont = pFont;
 }
 
+LPCSTR GetElipsisText(CGameFont* pFont, float width, LPCSTR source_text, LPSTR buff, int buff_len)
+{
+	float text_len					= pFont->SizeOf_(source_text);
+	UI().ClientToScreenScaledWidth	(text_len);
+
+	if(text_len<width)
+	{
+		return source_text;
+	}else
+	{
+		buff[0]							= 0;
+		float el_len					= pFont->SizeOf_("..");
+		UI().ClientToScreenScaledWidth	(el_len);
+		float total						= 0.0f;
+		u16		pos						= 0;
+		
+		while(total+el_len < width)
+		{
+			const char c					= *(source_text+pos);
+			float ch_len					= pFont->SizeOf_(c);
+			UI().ClientToScreenScaledWidth	(ch_len);
+		
+			if(total+ch_len+el_len < width)
+				buff[pos]				= c;
+
+			total						+= ch_len;
+			++pos;
+			buff[pos]					= 0;
+		}
+
+		xr_strcat						(buff,buff_len,"..");
+		return							buff;
+	}
+}
+
 void CUILines::Draw(float x, float y)
 {
 	x		+= m_TextOffset.x;
@@ -327,7 +373,16 @@ void CUILines::Draw(float x, float y)
 		}
 		else{
 			m_pFont->SetAligment((CGameFont::EAligment)m_eTextAlign);
-			m_pFont->Out(text_pos.x, text_pos.y, "%s", m_text.c_str());
+			if(uFlags.test(flEllipsis) )
+			{
+				u32 buff_len	= sizeof(char)*xr_strlen(m_text.c_str()) + 1;
+
+				char* p			= static_cast<char*>(_alloca(buff_len));
+				LPCSTR			str = GetElipsisText(m_pFont, m_wndSize.x, m_text.c_str(), p, buff_len);
+
+				m_pFont->Out	(text_pos.x, text_pos.y, "%s", str);
+			}else
+				m_pFont->Out(text_pos.x, text_pos.y, "%s", m_text.c_str());
 		}
 	}
 	else
@@ -420,7 +475,6 @@ u32 CUILines::GetColorFromText(const xr_string& str)const
 		return m_dwTextColor;
 
 	// Try predefined in XML colors
-//	CUIXmlInit xml;
 	for (CUIXmlInit::ColorDefs::const_iterator it = CUIXmlInit::GetColorDefs()->begin(); it != CUIXmlInit::GetColorDefs()->end(); ++it)
 	{
 		int cmp = str.compare(begin+3, end-begin-3, *it->first);			

@@ -65,8 +65,9 @@ void CUIMessageBox::Init	(LPCSTR box_template)
 
 	strconcat								(sizeof(str),str,box_template,":message_text");
 	if (uiXml.NavigateToNode(str,0)){
-        m_UIStaticText							= xr_new<CUIStatic>();AttachChild(m_UIStaticText);
-        xml_init.InitStatic						(uiXml, str, 0, m_UIStaticText);
+        m_UIStaticText						= xr_new<CUITextWnd>();
+		AttachChild							(m_UIStaticText);
+        xml_init.InitTextWnd				(uiXml, str, 0, m_UIStaticText);
 	}
 
 	strcpy		(str,box_template);
@@ -116,19 +117,19 @@ void CUIMessageBox::Init	(LPCSTR box_template)
 
 		case MESSAGEBOX_DIRECT_IP:
 			strconcat							(sizeof(str),str,box_template,":cap_host");
-			m_UIStaticHost						= xr_new<CUIStatic>();
+			m_UIStaticHost						= xr_new<CUITextWnd>();
 			AttachChild							(m_UIStaticHost);
-			xml_init.InitStatic					(uiXml, str, 0, m_UIStaticHost);
+			xml_init.InitTextWnd				(uiXml, str, 0, m_UIStaticHost);
 
 			strconcat							(sizeof(str),str,box_template,":edit_host");
 			m_UIEditHost						= xr_new<CUIEditBox>();
 			AttachChild							(m_UIEditHost);
-			xml_init.InitEditBox				(uiXml, str, 0, m_UIEditHost);
-			
+			xml_init.InitEditBox				(uiXml, str, 0, m_UIEditHost);			
+
 			strconcat							(sizeof(str),str,box_template,":cap_password");
-			m_UIStaticPass						= xr_new<CUIStatic>();
+			m_UIStaticPass						= xr_new<CUITextWnd>();
 			AttachChild							(m_UIStaticPass);
-			xml_init.InitStatic					(uiXml, str, 0, m_UIStaticPass);
+			xml_init.InitTextWnd				(uiXml, str, 0, m_UIStaticPass);
 
 			strconcat							(sizeof(str),str,box_template,":edit_password");
 			m_UIEditPass						= xr_new<CUIEditBox>();
@@ -148,14 +149,14 @@ void CUIMessageBox::Init	(LPCSTR box_template)
 			break;
 		case MESSAGEBOX_PASSWORD:
 			strconcat							(sizeof(str),str,box_template,":cap_user_password");
-			m_UIStaticUserPass						= xr_new<CUIStatic>();
+			m_UIStaticUserPass						= xr_new<CUITextWnd>();
 			AttachChild							(m_UIStaticUserPass);
-			xml_init.InitStatic					(uiXml, str, 0, m_UIStaticUserPass);
+			xml_init.InitTextWnd				(uiXml, str, 0, m_UIStaticUserPass);
 
 			strconcat							(sizeof(str),str,box_template,":cap_password");
-			m_UIStaticPass						= xr_new<CUIStatic>();
+			m_UIStaticPass						= xr_new<CUITextWnd>();
 			AttachChild							(m_UIStaticPass);
-			xml_init.InitStatic					(uiXml, str, 0, m_UIStaticPass);
+			xml_init.InitTextWnd				(uiXml, str, 0, m_UIStaticPass);
 
 			strconcat							(sizeof(str),str,box_template,":edit_user_password");
 			m_UIEditUserPass					= xr_new<CUIEditBox>();
@@ -252,7 +253,7 @@ void CUIMessageBox::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 
 void CUIMessageBox::SetText(LPCSTR str)
 {
-	m_UIStaticText->SetText(*(CStringTable().translate(str)));
+	m_UIStaticText->SetTextST(str);
 }
 
 LPCSTR CUIMessageBox::GetText()
@@ -260,8 +261,10 @@ LPCSTR CUIMessageBox::GetText()
 	return m_UIStaticText->GetText();
 }
 
-LPCSTR CUIMessageBox::GetHost(){
-	if (m_UIEditHost){
+LPCSTR CUIMessageBox::GetHost()
+{
+	if (m_UIEditHost)
+	{
 		m_ret_val.clear();
 		xr_string tmp= m_UIEditHost->GetText();
 		xr_string::size_type pos = tmp.find(":");
@@ -281,14 +284,16 @@ LPCSTR CUIMessageBox::GetHost(){
 		return NULL;
 }
 
-LPCSTR CUIMessageBox::GetPassword(){
+LPCSTR CUIMessageBox::GetPassword()
+{
 	if (m_UIEditPass)
 		return m_UIEditPass->GetText();
 	else 
 		return NULL;
 }
 
-LPCSTR CUIMessageBox::GetUserPassword(){
+LPCSTR CUIMessageBox::GetUserPassword()
+{
 	if (m_UIEditUserPass)
 		return m_UIEditUserPass->GetText();
 	else 

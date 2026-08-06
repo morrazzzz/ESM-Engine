@@ -28,6 +28,8 @@
 #include "CharacterPhysicsSupport.h"
 #include "car_memory.h"
 #include "../xrPhysics/IPHWorld.h"
+#include "ui/UIHudStatesWnd.h"
+#include "ui/UICarPanel.h"
 
 BONE_P_MAP CCar::bone_map=BONE_P_MAP();
 
@@ -460,10 +462,10 @@ void CCar::UpdateCL				( )
 */
 		if(CurrentGameUI())//
 		{
-			CurrentGameUI()->UIMainIngameWnd->CarPanel().Show(true);
-			CurrentGameUI()->UIMainIngameWnd->CarPanel().SetCarHealth(GetfHealth()/* /100.f*/);
-			CurrentGameUI()->UIMainIngameWnd->CarPanel().SetSpeed(lin_vel.magnitude()/1000.f*3600.f/100.f);
-			CurrentGameUI()->UIMainIngameWnd->CarPanel().SetRPM(m_current_rpm/m_max_rpm/2.f);
+			CurrentGameUI()->UIMainIngameWnd->get_hud_states()->UICarPaner().Show(true);
+			CurrentGameUI()->UIMainIngameWnd->get_hud_states()->UICarPaner().SetCarHealth(GetfHealth()/* /100.f*/);
+			CurrentGameUI()->UIMainIngameWnd->get_hud_states()->UICarPaner().SetSpeed(lin_vel.magnitude()/1000.f*3600.f/100.f);
+			CurrentGameUI()->UIMainIngameWnd->get_hud_states()->UICarPaner().SetRPM(m_current_rpm/m_max_rpm/2.f);
 		}
 	}
 
@@ -517,7 +519,7 @@ void	CCar::Hit							(SHit* pHDS)
 	}
 	CDamagableItem::HitEffect();
 	if(Owner()&&Owner()->ID()==Level().CurrentEntity()->ID())
-		CurrentGameUI()->UIMainIngameWnd->CarPanel().SetCarHealth(GetfHealth()/* /100.f */);
+		CurrentGameUI()->UIMainIngameWnd->get_hud_states()->UICarPaner().SetCarHealth(GetfHealth()/* /100.f */);
 }
 
 void CCar::ChangeCondition	(float fDeltaCondition)	
@@ -528,7 +530,7 @@ void CCar::ChangeCondition	(float fDeltaCondition)
 	if (Local() && !g_Alive() && !AlreadyDie())
 		KillEntity	(Initiator());
 	if(Owner()&&Owner()->ID()==Level().CurrentEntity()->ID())
-		CurrentGameUI()->UIMainIngameWnd->CarPanel().SetCarHealth(GetfHealth()/* /100.f */);
+		CurrentGameUI()->UIMainIngameWnd->get_hud_states()->UICarPaner().SetCarHealth(GetfHealth()/* /100.f */);
 }
 
 void CCar::PHHit(SHit &H)
@@ -584,7 +586,7 @@ void CCar::detach_Actor()
 	Unclutch();
 	ResetKeys();
 	m_current_rpm=m_min_rpm;
-	CurrentGameUI()->UIMainIngameWnd->CarPanel().Show(false);
+	CurrentGameUI()->UIMainIngameWnd->get_hud_states()->UICarPaner().Show(false);
 	///Break();
 	//H_SetParent(NULL);
 	HandBreak();
@@ -615,8 +617,8 @@ bool CCar::attach_Actor(CGameObject* actor)
 	PPhysicsShell()->add_ObjectContactCallback(ActorObstacleCallback);
 //	VisualUpdate();
 	ReleaseHandBreak();
-//	HUD().GetUI()->UIMainIngameWnd->CarPanel().Show(true);
-//	HUD().GetUI()->UIMainIngameWnd->CarPanel().SetCarHealth(fEntityHealth/100.f);
+//	HUD().GetUI()->UIMainIngameWnd->get_hud_states()->UICarPaner().Show(true);
+//	HUD().GetUI()->UIMainIngameWnd->get_hud_states()->UICarPaner().SetCarHealth(fEntityHealth/100.f);
 	//HUD().GetUI()->UIMainIngameWnd.ShowBattery(true);
 	//CBoneData&	bone_data=K->LL_GetData(id);
 	//Fmatrix driver_pos_tranform;

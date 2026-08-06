@@ -48,10 +48,10 @@ protected:
 	CUI3tButton* m_UIButtonCancel;
 
 	CUIStatic*	m_UIStaticPicture;
-	CUIStatic*	m_UIStaticText;
-	CUIStatic*	m_UIStaticHost;
-	CUIStatic*	m_UIStaticPass;
-	CUIStatic*	m_UIStaticUserPass;
+	CUITextWnd*	m_UIStaticText;
+	CUITextWnd*	m_UIStaticHost;
+	CUITextWnd*	m_UIStaticPass;
+	CUITextWnd*	m_UIStaticUserPass;
 	CUIEditBox* m_UIEditHost;
 	CUIEditBox* m_UIEditPass;
 	CUIEditBox* m_UIEditUserPass;

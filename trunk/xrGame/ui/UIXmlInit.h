@@ -33,6 +33,7 @@ class CUIComboBox;
 class CUITabButtonMP;
 class CUITrackBar;
 class CUILines;
+class CUITextWnd;
 
 class CUIXmlInit
 {
@@ -46,7 +47,7 @@ public:
 	static bool InitCustomEdit			(CUIXml& xml_doc, const char* paht, int index, CUICustomEdit* pWnd);
 	static bool InitEditBox				(CUIXml& xml_doc, const char* paht, int index, CUIEditBox* pWnd);
 	static bool InitStatic				(CUIXml& xml_doc, const char* path, int index, CUIStatic* pWnd);
-	static bool InitEditBoxEx			(CUIXml& xml_doc, const char* paht, int index, CUIEditBoxEx* pWnd);
+	static bool InitTextWnd				(CUIXml& xml_doc, const char* path, int index, CUITextWnd* pWnd);
 	static bool	InitCheck				(CUIXml& xml_doc, const char* path, int index, CUICheckButton* pWnd);
 	static bool InitSpin				(CUIXml& xml_doc, const char* path, int index, CUICustomSpin* pWnd);
 	static bool InitText				(CUIXml& xml_doc, const char* path, int index, CUIStatic* pWnd);
@@ -79,9 +80,6 @@ public:
 	static bool InitMultiTextStatic		(CUIXml& xml_doc, const char* path,	int index, CUIMultiTextStatic *pWnd);
 	static bool InitMultiText			(CUIXml& xml_doc, const char* path, int index, CUIStatic* pWnd);
 //	static u32	GetARGB					(CUIXml& xml_doc, const char* path, int index);
-
-//	static bool InitTexture(CUIXml& xml_doc, const char* path, int index, IUIMultiTextureOwner* pWnd);
-//	static bool InitTexture(CUIXml& xml_doc, const char* path, int index, IUISingleTextureOwner* pWnd);
 public:
 
 	// Функция чтения алайна из xml файла и применения его к координатам.

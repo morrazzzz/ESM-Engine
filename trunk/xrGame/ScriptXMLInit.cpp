@@ -88,6 +88,14 @@ CUIStatic* CScriptXmlInit::InitStatic(LPCSTR path, CUIWindow* parent){
 	return pWnd;
 }
 
+CUITextWnd* CScriptXmlInit::InitTextWnd(LPCSTR path, CUIWindow* parent)
+{
+	CUITextWnd* pWnd = xr_new<CUITextWnd>();
+	CUIXmlInit::InitTextWnd(m_xml, path, 0, pWnd);
+	_attach_child(pWnd, parent);
+	return pWnd;
+}
+
 void CScriptXmlInit::InitAutoStaticGroup(LPCSTR path, CUIWindow* pWnd)
 {
 	CUIXmlInit::InitAutoStaticGroup(m_xml, path, 0, pWnd);
@@ -247,6 +255,7 @@ void CScriptXmlInit::script_register(lua_State *L){
 		.def("InitFrameLine",			&CScriptXmlInit::InitFrameLine)
 		.def("InitEditBox",				&CScriptXmlInit::InitEditBox)		
 		.def("InitStatic",				&CScriptXmlInit::InitStatic)
+		.def("InitTextWnd",				&CScriptXmlInit::InitTextWnd)
 		.def("InitAnimStatic",			&CScriptXmlInit::InitAnimStatic)		
 		.def("InitCheck",				&CScriptXmlInit::InitCheck)
 		.def("InitSpinNum",				&CScriptXmlInit::InitSpinNum)

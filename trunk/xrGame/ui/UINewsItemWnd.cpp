@@ -4,6 +4,7 @@
 #include "UIStatic.h"
 #include "../game_news.h"
 #include "../date_time.h"
+#include "UIHelper.h"
 
 CUINewsItemWnd::CUINewsItemWnd()
 {}
@@ -24,20 +25,9 @@ void CUINewsItemWnd::Init				(LPCSTR xml_name, LPCSTR start_from)
 	strcpy(str,start_from);
 	xml_init.InitWindow			(uiXml,str,0,this);
 
-	strconcat(sizeof(str),str,start_from,":image");
-	m_UIImage					= xr_new<CUIStatic>();	m_UIImage->SetAutoDelete(true);
-	xml_init.InitStatic			(uiXml,str,0,m_UIImage);
-	AttachChild					(m_UIImage);
-
-	strconcat(sizeof(str),str,start_from,":text_cont");
-	m_UIText					= xr_new<CUIStatic>();	m_UIText->SetAutoDelete(true);
-	xml_init.InitStatic			(uiXml,str,0,m_UIText);
-	AttachChild					(m_UIText);
-
-	strconcat(sizeof(str),str,start_from,":date_text_cont");
-	m_UITextDate				= xr_new<CUIStatic>();	m_UITextDate->SetAutoDelete(true);
-	xml_init.InitStatic			(uiXml,str,0,m_UITextDate);
-	AttachChild					(m_UITextDate);
+	m_UIImage = UIHelper::CreateStatic(uiXml, ":image", this);
+	m_UIText = UIHelper::CreateTextWnd(uiXml, ":text_cont", this);
+	m_UITextDate = UIHelper::CreateTextWnd(uiXml, ":date_text_cont", this);
 
 	strconcat(sizeof(str),str,start_from,":auto");
 	xml_init.InitAutoStaticGroup(uiXml, str, 0, this);

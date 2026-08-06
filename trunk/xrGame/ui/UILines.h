@@ -12,10 +12,11 @@ public:
 
 	// IUITextControl methods
 	virtual void			SetText(const char* text);
+			void			SetTextST(const char* text);
 	virtual const char*		GetText();
+
 	virtual void			SetTextColor(u32 color);
 	virtual u32				GetTextColor()								{return m_dwTextColor;}
-			u32&			GetTextColorRef()							{return m_dwTextColor;}
 	virtual void			SetFont(CGameFont* pFont);
 	virtual CGameFont*		GetFont()									{return m_pFont;}
 	virtual void			SetTextAlignment(ETextAlignment al)			{m_eTextAlign = al;}
@@ -30,6 +31,7 @@ public:
 			void			SetColoringMode								(bool mode);
 			void			SetCutWordsMode								(bool mode);
 			void			SetUseNewLineMode							(bool mode);
+			void			SetEllipsis									(bool mode);
 
 			void			Draw										(float x, float y);
 
@@ -73,7 +75,8 @@ protected:
 		flPasswordMode		= (1<<2),
 		flColoringMode		= (1<<3),
 		flCutWordsMode		= (1<<4),
-		flRecognizeNewLine	= (1<<5)
+		flRecognizeNewLine	= (1<<5),
+		flEllipsis			= (1<<6)
 	};	
 private:
 	Flags8					uFlags;

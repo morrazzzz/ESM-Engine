@@ -186,8 +186,6 @@ void CUITalkDialogWnd::AddAnswer(LPCSTR SpeakerName, LPCSTR str, bool bActor)
 	CUICharacterInfo& ci			= bActor?UICharacterInfoLeft:UICharacterInfoRight; 
 	
 	news_data.texture_name			= ci.IconName();
-//	news_data.tex_rect				= ci.UIIcon().GetUIStaticItem().GetTextureRect();
-//	news_data.tex_rect.rb.add(news_data.tex_rect.lt);
 	news_data.receive_time			= Level().GetGameTime();
 
 	Actor()->game_news_registry->registry().objects().push_back(news_data);
@@ -238,13 +236,11 @@ CUIQuestionItem::CUIQuestionItem			(CUIXml* xml_doc, LPCSTR path)
 	m_text->SetWindowName			("text_button");
 	AddCallback						("text_button",BUTTON_CLICKED,CUIWndCallback::void_function(this, &CUIQuestionItem::OnTextClicked));
 
-	//m_num_text						= xr_new<CUITextWnd>();
-	m_num_text = new CUIStatic();
+	m_num_text						= xr_new<CUITextWnd>();
 	m_num_text->SetAutoDelete		(true);
 	AttachChild						(m_num_text);
 	strconcat						(sizeof(str),str,path,":num_text");
-	//xml_init.InitTextWnd			(*xml_doc, str, 0, m_num_text);
-	xml_init.InitStatic(*xml_doc, str, 0, m_num_text);
+	xml_init.InitTextWnd			(*xml_doc, str, 0, m_num_text);
 }
 
 void CUIQuestionItem::Init			(LPCSTR val, LPCSTR text)
@@ -264,8 +260,8 @@ void	CUIQuestionItem::OnTextClicked(CUIWindow* w, void*)
 
 CUIAnswerItem::CUIAnswerItem			(CUIXml* xml_doc, LPCSTR path)
 {
-	m_text							= xr_new<CUIStatic>();m_text->SetAutoDelete(true);
-	m_name							= xr_new<CUIStatic>();m_name->SetAutoDelete(true);
+	m_text							= xr_new<CUITextWnd>();m_text->SetAutoDelete(true);
+	m_name							= xr_new<CUITextWnd>();m_name->SetAutoDelete(true);
 	AttachChild						(m_text);
 	AttachChild						(m_name);
 
@@ -278,10 +274,10 @@ CUIAnswerItem::CUIAnswerItem			(CUIXml* xml_doc, LPCSTR path)
 	m_min_height					= xml_doc->ReadAttribFlt(path,0,"min_height",15.0f);
 	m_bottom_footer					= xml_doc->ReadAttribFlt(path,0,"bottom_footer",0.0f);
 	strconcat						(sizeof(str),str,path,":content_text");
-	xml_init.InitStatic				(*xml_doc, str, 0, m_text);
+	xml_init.InitTextWnd			(*xml_doc, str, 0, m_text);
 
 	strconcat						(sizeof(str),str,path,":name_caption");
-	xml_init.InitStatic				(*xml_doc, str, 0, m_name);
+	xml_init.InitTextWnd				(*xml_doc, str, 0, m_name);
 	SetAutoDelete					(true);
 }
 

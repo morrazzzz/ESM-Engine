@@ -31,8 +31,6 @@ CUIStatic:: CUIStatic()
 	m_ElipsisPos			= eepNone;
 	m_iElipsisIndent		= 0;
 
-	m_ClipRect.set			(-1,-1,-1,-1);
-
 	m_bCursorOverWindow		= false;
 	m_bHeading				= false;
 	m_fHeading				= 0.0f;
@@ -73,7 +71,6 @@ void CUIStatic::InitEx(LPCSTR tex_name, LPCSTR sh_name, float x, float y, float 
 
 void CUIStatic::Init(float x, float y, float width, float height){
 	CUIWindow::Init(x,y,width,height);
-	m_xxxRect.set(x,y,x+width,y+height);
 }
 
 void CUIStatic::InitTexture(LPCSTR texture){
@@ -268,10 +265,6 @@ u32 CUIStatic::GetTextColor(){
 	return TextItemControl()->GetTextColor();
 }
 
-u32& CUIStatic::GetTextColorRef(){
-	return m_pTextControl->GetTextColorRef();
-}
-
 void CUIStatic::SetText(LPCSTR str)
 {
 	if (!str ) 
@@ -383,5 +376,51 @@ void CUIStatic::OnFocusLost(){
 void CUIStatic::SetTextST				(LPCSTR str_id)
 {
 	SetText					(*CStringTable().translate(str_id));
+}
+
+CUITextWnd::CUITextWnd()
+{}
+
+void CUITextWnd::AdjustHeightToText()
+{
+	if (!fsimilar(TextItemControl().m_wndSize.x, GetWidth()))
+	{
+		TextItemControl().m_wndSize.x = GetWidth();
+		TextItemControl().ParseText(true);
+	}
+	SetHeight(TextItemControl().GetVisibleHeight());
+}
+
+void CUITextWnd::AdjustWidthToText()
+{
+	float _len = TextItemControl().GetFont()->SizeOf_(TextItemControl().GetText());
+	UI().ClientToScreenScaledWidth(_len);
+	SetWidth(_len);
+}
+
+
+void CUITextWnd::Draw()
+{
+	if (!fsimilar(TextItemControl().m_wndSize.x, m_wndSize.x) || !fsimilar(TextItemControl().m_wndSize.y, m_wndSize.y))
+	{
+		TextItemControl().m_wndSize = m_wndSize;
+		TextItemControl().ParseText(true);
+	}
+
+	Fvector2			p;
+	GetAbsolutePos(p);
+	TextItemControl().Draw(p.x, p.y);
+}
+
+void CUITextWnd::Update()
+{
+	R_ASSERT(GetChildWndList().size() == 0);
+	UpdateColorAnimation();
+	inherited::Update();
+}
+
+void CUITextWnd::ColorAnimationSetTextColor(u32 color, bool only_alpha)
+{
+	SetTextColor((only_alpha) ? subst_alpha(GetTextColor(), color) : color);
 }
 

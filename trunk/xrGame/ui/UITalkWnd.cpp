@@ -66,7 +66,7 @@ void CUITalkWnd::Init()
 
 void CUITalkWnd::InitTalkDialog()
 {
-	m_pActor = smart_cast<CActor *>(Level().CurrentEntity());
+	m_pActor = Actor();
 	if (m_pActor && !m_pActor->IsTalking()) return;
 
 	m_pOurInvOwner = smart_cast<CInventoryOwner*>(m_pActor);
@@ -265,21 +265,15 @@ void CUITalkWnd::Hide()
 	m_pActor = NULL;
 }
 
-//////////////////////////////////////////////////////////////////////////
-
 bool  CUITalkWnd::TopicMode			() 
 {
 	return NULL == m_pCurrentDialog.get();
 }
 
-//////////////////////////////////////////////////////////////////////////
-
 void  CUITalkWnd::ToTopicMode		() 
 {
 	m_pCurrentDialog = DIALOG_SHARED_PTR((CPhraseDialog*)NULL);
 }
-
-//////////////////////////////////////////////////////////////////////////
 
 void CUITalkWnd::AskQuestion()
 {
@@ -312,18 +306,11 @@ void CUITalkWnd::AskQuestion()
 	NeedUpdateQuestions		();
 }
 
-//////////////////////////////////////////////////////////////////////////
-
 void CUITalkWnd::SayPhrase(const shared_str& phrase_id)
 {
 
 	AddAnswer(m_pCurrentDialog->GetPhraseText(phrase_id), m_pOurInvOwner->Name());
 	m_pOurDialogManager->SayPhrase(m_pCurrentDialog, phrase_id);
-/*
-	//добавить ответ собеседника в список, если он что-то сказал
-	if(m_pCurrentDialog->GetLastPhraseID() !=  phrase_id)
-		AddAnswer(m_pCurrentDialog->GetLastPhraseText(), m_pOthersInvOwner->Name());
-*/
 	//если диалог завершился, перейти в режим выбора темы
 	if(m_pCurrentDialog->IsFinished()) ToTopicMode();
 }

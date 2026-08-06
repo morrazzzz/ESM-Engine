@@ -52,6 +52,7 @@
 #include "InventoryBox.h"
 #include "location_manager.h"
 #include "player_hud.h"
+#include "ui/UIHudStatesWnd.h"
 
 #include "../Include/xrRender/UIRender.h"
 
@@ -1365,7 +1366,7 @@ void CActor::MoveArtefactBelt(const CArtefact* artefact, bool on_belt)
 		m_ArtefactsOnBelt.erase(it);
 	}	
 	if (Level().CurrentViewEntity() && Level().CurrentViewEntity() == this)
-		CurrentGameUI()->UIMainIngameWnd->m_artefactPanel->InitIcons(m_ArtefactsOnBelt);
+		CurrentGameUI()->UIMainIngameWnd->get_hud_states()->UIArtefactPanel().InitIcons(m_ArtefactsOnBelt);
 }
 
 #define ARTEFACTS_UPDATE_TIME 0.100f
@@ -1459,20 +1460,20 @@ void CActor::AnimTorsoPlayCallBack(CBlend* B)
 
 void CActor::SetActorVisibility(u16 who, float value)
 {
-	CUIMotionIcon		&motion_icon	= CurrentGameUI()->UIMainIngameWnd->MotionIcon();
-	motion_icon.SetActorVisibility		(who, value);
+	CUIMotionIcon& motion_icon = *CurrentGameUI()->UIMainIngameWnd->MotionIcon();
+	motion_icon.SetActorVisibility(who, value);
 }
 
 void CActor::UpdateMotionIcon(u32 mstate_rl)
 {
-	CUIMotionIcon		&motion_icon=CurrentGameUI()->UIMainIngameWnd->MotionIcon();
+	CUIMotionIcon& motion_icon = *CurrentGameUI()->UIMainIngameWnd->MotionIcon();
 	if(mstate_rl&mcClimb)
 	{
 		motion_icon.ShowState(CUIMotionIcon::stClimb);
 	}
 	else
 	{
-		if(mstate_rl&mcCrouch)
+		if (mstate_rl & mcCrouch)
 		{
 			if (!isActorAccelerated(mstate_rl, IsZoomAimingMode()))
 				motion_icon.ShowState(CUIMotionIcon::stCreep);
@@ -1480,13 +1481,13 @@ void CActor::UpdateMotionIcon(u32 mstate_rl)
 				motion_icon.ShowState(CUIMotionIcon::stCrouch);
 		}
 		else
-		if(mstate_rl&mcSprint)
+			if (mstate_rl & mcSprint)
 				motion_icon.ShowState(CUIMotionIcon::stSprint);
-		else
-		if(mstate_rl&mcAnyMove && isActorAccelerated(mstate_rl, IsZoomAimingMode()))
-			motion_icon.ShowState(CUIMotionIcon::stRun);
-		else
-			motion_icon.ShowState(CUIMotionIcon::stNormal);
+			else
+				if (mstate_rl & mcAnyMove && isActorAccelerated(mstate_rl, IsZoomAimingMode()))
+					motion_icon.ShowState(CUIMotionIcon::stRun);
+				else
+					motion_icon.ShowState(CUIMotionIcon::stNormal);
 	}
 
 /*

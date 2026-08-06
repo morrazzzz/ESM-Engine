@@ -97,7 +97,6 @@ public:
 			void	SetTextAlign_script			(u32 align);
 			u32		GetTextAlign_script			();
 			void	SetTextColor_script			(int a, int r, int g, int b){SetTextColor(color_argb(a,r,g,b));}
-			u32&	GetTextColorRef				();
 //#pragma todo("Satan->Satan : delete next two functions")
 //	virtual void			SetTextAlign		(CGameFont::EAligment align);
 //	CGameFont::EAligment	GetTextAlign		();
@@ -115,19 +114,6 @@ public:
 
 	virtual void			ColorAnimationSetTextureColor(u32 color, bool only_alpha);
 	virtual void			ColorAnimationSetTextColor(u32 color, bool only_alpha);
-
-	// Анализируем текст на помещаемость его по длинне в заданную ширину, и если нет, то всталяем 
-	// "\n" реализуем таким образом wordwrap
-//	static void PreprocessText				(STRING &str, float width, CGameFont *pFont);
-	enum EElipsisPosition
-	{
-		eepNone,
-		eepBegin,
-		eepEnd,
-		eepCenter
-	};
-
-	void SetElipsis							(EElipsisPosition pos, int indent);
 
 	// will be need by CUI3tButton
 	// Don't change order!!!!!
@@ -156,15 +142,6 @@ protected:
 
     // Для вывода текстуры с обрезанием по маске используем CUIFrameWindow
 	Fvector2		m_TextureOffset;
-
-	// Обрезка надписи
-	Frect	m_ClipRect;
-	EElipsisPosition	m_ElipsisPos;
-	void Elipsis(const Frect &rect, EElipsisPosition elipsisPos);
-	int	m_iElipsisIndent;
-private:
-	Frect	m_xxxRect; // need by RescaleRelative2Rect(Frect& r). it is initializes only once in Init(x,y,width,height)
-
 public:
 	CUILines* TextItemControl();
 	DECLARE_SCRIPT_REGISTER_FUNCTION
@@ -173,3 +150,35 @@ public:
 add_to_type_list(CUIStatic)
 #undef script_type_list
 #define script_type_list save_type_list(CUIStatic)
+
+class CUITextWnd :public CUIWindow, public CUILightAnimColorConrollerImpl
+{
+	typedef CUIWindow	inherited;
+	CUILines			m_lines;
+public:
+						CUITextWnd				();
+	virtual				~CUITextWnd				(){};
+	virtual void		Draw					();
+	virtual void		Update					();
+
+			void 		AdjustHeightToText		();
+			void 		AdjustWidthToText		();
+
+			void		SetText					(LPCSTR txt)				{TextItemControl().SetText(txt);}
+			void		SetTextST				(LPCSTR txt)				{TextItemControl().SetTextST(txt);}
+			LPCSTR		GetText					()							{return TextItemControl().GetText();}
+			void		SetFont					(CGameFont* F)				{TextItemControl().SetFont(F);}
+			CGameFont*	GetFont					()							{return TextItemControl().GetFont();}
+			void		SetTextColor			(u32 color)					{TextItemControl().SetTextColor(color);}
+			u32			GetTextColor			()							{return TextItemControl().GetTextColor();}
+			void		SetTextComplexMode		(bool mode = true)			{TextItemControl().SetTextComplexMode(mode);}
+			void		SetTextAlignment		(ETextAlignment al)			{TextItemControl().SetTextAlignment(al);}
+			void		SetVTextAlignment		(EVTextAlignment al)		{TextItemControl().SetVTextAlignment(al);}
+			void		SetEllipsis				(bool mode)					{TextItemControl().SetEllipsis(mode);}
+			void		SetCutWordsMode			(bool mode)					{TextItemControl().SetCutWordsMode(mode);}
+			void		SetTextOffset			(float x, float y)			{TextItemControl().m_TextOffset.x = x; TextItemControl().m_TextOffset.y = y;}
+
+	virtual void		ColorAnimationSetTextColor(u32 color, bool only_alpha);
+
+	CUILines&			TextItemControl			()							{return m_lines;}
+};

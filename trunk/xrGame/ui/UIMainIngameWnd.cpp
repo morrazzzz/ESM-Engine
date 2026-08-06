@@ -27,7 +27,7 @@
 #include "../../xr_3da/LightAnimLibrary.h"
 
 #include "UIInventoryUtilities.h"
-
+#include "UIHelper.h"
 #include <functional>
 
 #include "UIXmlInit.h"
@@ -37,24 +37,17 @@
 
 #include "../string_table.h"
 #include "../clsid_game.h"
-#include "UIArtefactPanel.h"
 #include "../../xr_3da/xr_input.h"
-
-#ifdef DEBUG
-#include "../../Include/xrRender/Kinematics.h"
-#endif
 
 #include "UIScrollView.h"
 #include "map_hint.h"
 #include "UIColorAnimatorWrapper.h"
 #include "../game_news.h"
+#include "UIHudStatesWnd.h"
 
 #ifdef DEBUG
-#	include "../debug_renderer.h"
-
-void test_draw	();
-void test_key	(int dik);
-void test_update();
+#include "../../Include/xrRender/Kinematics.h"
+#include "../debug_renderer.h"
 #endif
 
 
@@ -76,15 +69,8 @@ const u32	g_clWhite					= 0xffffffff;
 
 CUIMainIngameWnd::CUIMainIngameWnd()
 {
-	m_pActor					= NULL;
-	m_pWeapon					= NULL;
-	m_pGrenade					= NULL;
-	m_pItem						= NULL;
 	UIZoneMap					= xr_new<CUIZoneMap>();
 	m_pPickUpItem				= NULL;
-	m_artefactPanel				= xr_new<CUIArtefactPanel>();
-	m_pMPChatWnd				= NULL;
-	m_pMPLogWnd					= NULL;	
 }
 
 #include "UIProgressShape.h"
@@ -94,9 +80,15 @@ CUIMainIngameWnd::~CUIMainIngameWnd()
 {
 	DestroyFlashingIcons		();
 	xr_delete					(UIZoneMap);
-	xr_delete					(m_artefactPanel);
 	HUD_SOUND_ITEM::DestroySound(m_contactSnd);
 	xr_delete					(g_MissileForceShape);
+
+	xr_delete(UIInvincibleIcon);
+	xr_delete(UIWoundIcon);
+	xr_delete(UIRadiaitionIcon);
+	xr_delete(UIWeaponJammedIcon);
+	xr_delete(UIPsyHealthIcon);
+	xr_delete(UIStarvationIcon);
 }
 
 void CUIMainIngameWnd::Init()
@@ -109,64 +101,23 @@ void CUIMainIngameWnd::Init()
 
 	Enable(false);
 
+	UIPickUpItemIcon = UIHelper::CreateStatic(uiXml, "pick_up_item", this);
+	UIPickUpItemIcon->SetShader(GetEquipmentIconsShader());
 
-	AttachChild					(&UIStaticHealth);
-	xml_init.InitStatic			(uiXml, "static_health", 0, &UIStaticHealth);
-
-	AttachChild					(&UIStaticArmor);
-	xml_init.InitStatic			(uiXml, "static_armor", 0, &UIStaticArmor);
-
-	AttachChild					(&UIWeaponBack);
-	xml_init.InitStatic			(uiXml, "static_weapon", 0, &UIWeaponBack);
-
-	UIWeaponBack.AttachChild	(&UIWeaponSignAmmo);
-	xml_init.InitStatic			(uiXml, "static_ammo", 0, &UIWeaponSignAmmo);
-	UIWeaponSignAmmo.SetElipsis	(CUIStatic::eepEnd, 2);
-
-	UIWeaponBack.AttachChild	(&UIWeaponIcon);
-	xml_init.InitStatic			(uiXml, "static_wpn_icon", 0, &UIWeaponIcon);
-	UIWeaponIcon.SetShader		(GetEquipmentIconsShader());
-	UIWeaponIcon_rect			= UIWeaponIcon.GetWndRect();
-	//---------------------------------------------------------
-	AttachChild					(&UIPickUpItemIcon);
-	xml_init.InitStatic			(uiXml, "pick_up_item", 0, &UIPickUpItemIcon);
-	UIPickUpItemIcon.SetShader	(GetEquipmentIconsShader());
-
-	m_iPickUpItemIconWidth		= UIPickUpItemIcon.GetWidth();
-	m_iPickUpItemIconHeight		= UIPickUpItemIcon.GetHeight();
-	m_iPickUpItemIconX			= UIPickUpItemIcon.GetWndRect().left;
-	m_iPickUpItemIconY			= UIPickUpItemIcon.GetWndRect().top;
-	//---------------------------------------------------------
-
-
-	UIWeaponIcon.Enable			(false);
+	m_iPickUpItemIconWidth = UIPickUpItemIcon->GetWidth();
+	m_iPickUpItemIconHeight = UIPickUpItemIcon->GetHeight();
+	m_iPickUpItemIconX = UIPickUpItemIcon->GetWndRect().left;
+	m_iPickUpItemIconY = UIPickUpItemIcon->GetWndRect().top;
 
 	//индикаторы 
 	UIZoneMap->Init				();
 	UIZoneMap->SetScale			(DEFAULT_MAP_SCALE);
 
-	if(IsGameTypeSingle())
-	{
-		xml_init.InitStatic					(uiXml, "static_pda_online", 0, &UIPdaOnline);
-		UIZoneMap->Background().AttachChild	(&UIPdaOnline);
-	}
-
-
-	//Полоса прогресса здоровья
-	UIStaticHealth.AttachChild	(&UIHealthBar);
-//.	xml_init.InitAutoStaticGroup(uiXml,"static_health", &UIStaticHealth);
-	xml_init.InitProgressBar	(uiXml, "progress_bar_health", 0, &UIHealthBar);
-
-	//Полоса прогресса армора
-	UIStaticArmor.AttachChild	(&UIArmorBar);
-//.	xml_init.InitAutoStaticGroup(uiXml,"static_armor", &UIStaticArmor);
-	xml_init.InitProgressBar	(uiXml, "progress_bar_armor", 0, &UIArmorBar);
-
-	
+	xml_init.InitStatic					(uiXml, "static_pda_online", 0, &UIPdaOnline);
+	UIZoneMap->Background().AttachChild	(&UIPdaOnline);
 
 	// Подсказки, которые возникают при наведении прицела на объект
-	AttachChild					(&UIStaticQuickHelp);
-	xml_init.InitStatic			(uiXml, "quick_info", 0, &UIStaticQuickHelp);
+	UIStaticQuickHelp			= UIHelper::CreateTextWnd(uiXml, "quick_info", this);
 
 	uiXml.SetLocalRoot			(uiXml.GetRoot());
 
@@ -175,32 +126,23 @@ void CUIMainIngameWnd::Init()
 	AttachChild					(m_UIIcons);
 
 	// Загружаем иконки 
-	if(IsGameTypeSingle())
-	{
-		xml_init.InitStatic		(uiXml, "starvation_static", 0, &UIStarvationIcon);
-		UIStarvationIcon.Show	(false);
+	UIStarvationIcon = UIHelper::CreateStatic(uiXml, "starvation_static", nullptr);
+	UIStarvationIcon->Show(false);
 
-		xml_init.InitStatic		(uiXml, "psy_health_static", 0, &UIPsyHealthIcon);
-		UIPsyHealthIcon.Show	(false);
-	}
+	UIPsyHealthIcon = UIHelper::CreateStatic(uiXml, "psy_health_static", nullptr);
+	UIPsyHealthIcon->Show(false);
 
-	xml_init.InitStatic			(uiXml, "weapon_jammed_static", 0, &UIWeaponJammedIcon);
-	UIWeaponJammedIcon.Show		(false);
+	UIWeaponJammedIcon = UIHelper::CreateStatic(uiXml, "weapon_jammed_static", nullptr);
+	UIWeaponJammedIcon->Show(false);
 
-	xml_init.InitStatic			(uiXml, "radiation_static", 0, &UIRadiaitionIcon);
-	UIRadiaitionIcon.Show		(false);
+	UIRadiaitionIcon = UIHelper::CreateStatic(uiXml, "radiation_static", nullptr);
+	UIRadiaitionIcon->Show(false);
 
-	xml_init.InitStatic			(uiXml, "wound_static", 0, &UIWoundIcon);
-	UIWoundIcon.Show			(false);
+	UIWoundIcon = UIHelper::CreateStatic(uiXml, "wound_static", nullptr);
+	UIWoundIcon->Show(false);
 
-	xml_init.InitStatic			(uiXml, "invincible_static", 0, &UIInvincibleIcon);
-	UIInvincibleIcon.Show		(false);
-
-
-	if(GameID()==GAME_ARTEFACTHUNT){
-		xml_init.InitStatic		(uiXml, "artefact_static", 0, &UIArtefactIcon);
-		UIArtefactIcon.Show		(false);
-	}
+	UIInvincibleIcon = UIHelper::CreateStatic(uiXml, "invincible_static", nullptr);
+	UIInvincibleIcon->Show(false);
 	
 	shared_str warningStrings[6] = 
 	{	
@@ -239,226 +181,95 @@ void CUIMainIngameWnd::Init()
 	InitFlashingIcons						(&uiXml);
 
 	uiXml.SetLocalRoot						(uiXml.GetRoot());
-	
-	AttachChild								(&UICarPanel);
-	xml_init.InitWindow						(uiXml, "car_panel", 0, &UICarPanel);
 
-	AttachChild								(&UIMotionIcon);
-	UIMotionIcon.Init						();
+	UIMotionIcon = xr_new<CUIMotionIcon>(); UIMotionIcon->SetAutoDelete(true);
+	AttachChild(UIMotionIcon);
+	UIMotionIcon->Init();
 
-	if(IsGameTypeSingle())
-	{
-		m_artefactPanel->InitFromXML		(uiXml, "artefact_panel", 0);
-		this->AttachChild					(m_artefactPanel);	
-	}
+	UIStaticDiskIO = UIHelper::CreateStatic(uiXml, "disk_io", this);
 
-	AttachChild								(&UIStaticDiskIO);
-	UIStaticDiskIO.SetWndRect				(1000,750,16,16);
-	UIStaticDiskIO.GetUIStaticItem().SetPos(0.0f, 0.0f);
-	UIStaticDiskIO.GetUIStaticItem().SetSize(Fvector2().set(16,16));
-	UIStaticDiskIO.InitTexture				("ui\\ui_disk_io");
-	UIStaticDiskIO.SetStretchTexture		(TRUE);
+	m_ui_hud_states = xr_new<CUIHudStatesWnd>();
+	m_ui_hud_states->SetAutoDelete(true);
+	AttachChild(m_ui_hud_states);
+	m_ui_hud_states->InitFromXml(uiXml, "hud_states");
 
-
-	HUD_SOUND_ITEM::LoadSound					("maingame_ui", "snd_new_contact"		, m_contactSnd		, SOUND_TYPE_IDLE);
+	HUD_SOUND_ITEM::LoadSound("maingame_ui", "snd_new_contact", m_contactSnd, SOUND_TYPE_IDLE);
 }
 
 float UIStaticDiskIO_start_time = 0.0f;
 void CUIMainIngameWnd::Draw()
 {
-#ifdef DEBUG
-	test_draw				();
-#endif
 	// show IO icon
 	bool IOActive	= (FS.dwOpenCounter>0);
 	if	(IOActive)	UIStaticDiskIO_start_time = Device.fTimeGlobal;
 
-	if ((UIStaticDiskIO_start_time+1.0f) < Device.fTimeGlobal)	UIStaticDiskIO.Show(false); 
+	if ((UIStaticDiskIO_start_time+1.0f) < Device.fTimeGlobal)	UIStaticDiskIO->Show(false); 
 	else {
 		u32		alpha			= clampr(iFloor(255.f*(1.f-(Device.fTimeGlobal-UIStaticDiskIO_start_time)/1.f)),0,255);
-		UIStaticDiskIO.Show		( true  ); 
-		UIStaticDiskIO.SetColor	(color_rgba(255,255,255,alpha));
+		UIStaticDiskIO->Show		( true  ); 
+		UIStaticDiskIO->SetTextureColor(color_rgba(255,255,255,alpha));
 	}
 	FS.dwOpenCounter = 0;
 
-	if(!m_pActor) return;
+	if (!Level().CurrentViewEntity())
+		return;
 
-	UIMotionIcon.SetNoise		((s16)(0xffff&iFloor(m_pActor->m_snd_noise*100.0f)));
+	CActor* pActor = static_cast<CGameObject*>(Level().CurrentViewEntity())->cast_actor();
+	if (!pActor || !pActor->g_Alive()) return;
+
+	UIMotionIcon->SetNoise((s16)(0xffff&iFloor(pActor->m_snd_noise*100)));
 	CUIWindow::Draw				();
 	UIZoneMap->Render			();			
 
-	RenderQuickInfos			();		
+	RenderQuickInfos			(pActor);		
 }
-
-void CUIMainIngameWnd::SetAmmoIcon (const shared_str& sect_name)
-{
-	if ( !sect_name.size() )
-	{
-		UIWeaponIcon.Show			(false);
-		return;
-	};
-
-	UIWeaponIcon.Show			(true);
-	//properties used by inventory menu
-	float iGridWidth			= pSettings->r_float(sect_name, "inv_grid_width");
-	float iGridHeight			= pSettings->r_float(sect_name, "inv_grid_height");
-
-	float iXPos				= pSettings->r_float(sect_name, "inv_grid_x");
-	float iYPos				= pSettings->r_float(sect_name, "inv_grid_y");
-
-	Frect rect{ (iXPos * INV_GRID_WIDTH), (iYPos * INV_GRID_HEIGHT),
-				(iGridWidth * INV_GRID_WIDTH), (iGridHeight * INV_GRID_HEIGHT) };
-	rect.rb.add(rect.lt);
-
-	UIWeaponIcon.GetUIStaticItem().SetTextureRect(rect);
-	UIWeaponIcon.SetStretchTexture(true);
-
-	// now perform only width scale for ammo, which (W)size >2
-	// all others ammo (1x1, 1x2) will be not scaled (original picture)
-	float w = ((iGridWidth>2)?1.6f:iGridWidth)*INV_GRID_WIDTH*0.9f;
-	float h = INV_GRID_HEIGHT*0.9f;//1 cell
-
-	float x = UIWeaponIcon_rect.x1;
-	if	(iGridWidth<2)
-		x	+= ( UIWeaponIcon_rect.width() - w) / 2.0f;
-
-	UIWeaponIcon.SetWndPos	(x, UIWeaponIcon_rect.y1);
-	
-	UIWeaponIcon.SetWidth	(w*UI().get_current_kx() );
-	UIWeaponIcon.SetHeight	(h);
-};
 
 void CUIMainIngameWnd::Update()
 {
-#ifdef DEBUG
-	test_update();
-#endif
-	if (m_pMPChatWnd)
-		m_pMPChatWnd->Update();
-	if (m_pMPLogWnd)
-		m_pMPLogWnd->Update();
+	CUIWindow::Update();
 
-
-
-	m_pActor = smart_cast<CActor*>(Level().CurrentViewEntity());
-	if (!m_pActor) 
-	{
-		m_pItem					= NULL;
-		m_pWeapon				= NULL;
-		m_pGrenade				= NULL;
-		CUIWindow::Update		();
+	if (!Level().CurrentViewEntity())
 		return;
-	}
 
-	if( !(Device.dwFrame%30) && IsGameTypeSingle() )
+	CActor* pActor = static_cast<CGameObject*>(Level().CurrentViewEntity())->cast_actor();
+	if (!pActor)
+		return;
+
+	UIMotionIcon->SetPower(pActor->conditions().GetPower() * 100.0f);
+
+	UIZoneMap->UpdateRadar(Device.vCameraPosition);
+	float h, p;
+	Device.vCameraDirection.getHP(h, p);
+	UIZoneMap->SetHeading(-h);
+
+	UpdatePickUpItem();
+
+	if (!(Device.dwFrame % 30))
 	{
-			string256				text_str;
-			CPda* _pda	= m_pActor->GetPDA();
-			u32 _cn		= 0;
-			if(_pda && 0!= (_cn=_pda->ActiveContactsNum()) )
-			{
-				sprintf_s(text_str, "%d", _cn);
-				UIPdaOnline.SetText(text_str);
-			}
-			else
-			{
-				UIPdaOnline.SetText("");
-			}
-	};
-
-	if( !(Device.dwFrame%5) )
-	{
-
-		if(!(Device.dwFrame%30))
+		string256				text_str;
+		CPda* _pda = pActor->GetPDA();
+		u32 _cn = 0;
+		if (_pda && 0 != (_cn = _pda->ActiveContactsNum()))
 		{
-			bool b_God = GodMode();
-			if(b_God)
-				SetWarningIconColor	(ewiInvincible,0xffffffff);
-			else
-				SetWarningIconColor	(ewiInvincible,0x00ffffff);
-		}
-
-		// Armor indicator stuff
-		PIItem	pItem = m_pActor->inventory().ItemFromSlot(OUTFIT_SLOT);
-		if (pItem)
-		{
-			UIArmorBar.Show					(true);
-			UIStaticArmor.Show				(true);
-			UIArmorBar.SetProgressPos		(pItem->GetCondition()*100);
+			sprintf_s(text_str, "%d", _cn);
+			UIPdaOnline.SetText(text_str);
 		}
 		else
 		{
-			UIArmorBar.Show					(false);
-			UIStaticArmor.Show				(false);
-		}
-
-		UpdateActiveItemInfo				();
-
-
-		EWarningIcons i					= ewiWeaponJammed;
-
-		while (i < ewiInvincible)
-		{
-			float value = 0;
-			switch (i)
-			{
-				//radiation
-			case ewiRadiation:
-				value = m_pActor->conditions().GetRadiation();
-				break;
-			case ewiWound:
-				value = m_pActor->conditions().BleedingSpeed();
-				break;
-			case ewiWeaponJammed:
-				if (m_pWeapon)
-					value = 1 - m_pWeapon->GetConditionToShow();
-				break;
-			case ewiStarvation:
-				value = 1 - m_pActor->conditions().GetSatiety();
-				break;		
-			case ewiPsyHealth:
-				value = 1 - m_pActor->conditions().GetPsyHealth();
-				break;
-			default:
-				R_ASSERT(!"Unknown type of warning icon");
-			}
-
-			xr_vector<float>::reverse_iterator	rit;
-
-			// Сначала проверяем на точное соответсвие
-			rit  = std::find(m_Thresholds[i].rbegin(), m_Thresholds[i].rend(), value);
-
-			// Если его нет, то берем последнее меньшее значение ()
-			if (rit == m_Thresholds[i].rend())
-				rit = std::find_if(m_Thresholds[i].rbegin(), m_Thresholds[i].rend(), std::bind(std::less<float>(), std::placeholders::_1, value));
-
-			// Минимальное и максимальное значения границы
-			float min = m_Thresholds[i].front();
-			float max = m_Thresholds[i].back();
-
-			if (rit != m_Thresholds[i].rend()){
-				float v = *rit;
-				SetWarningIconColor(i, color_argb(0xFF, clampr<u32>(static_cast<u32>(255 * ((v - min) / (max - min) * 2)), 0, 255), 
-					clampr<u32>(static_cast<u32>(255 * (2.0f - (v - min) / (max - min) * 2)), 0, 255),
-					0));
-			}else
-				TurnOffWarningIcon(i);
-
-			i = (EWarningIcons)(i + 1);
+			UIPdaOnline.SetText("");
 		}
 	}
 
-	// health&armor
-	UIHealthBar.SetProgressPos		(m_pActor->GetfHealth()*100.0f);
-	UIMotionIcon.SetPower			(m_pActor->conditions().GetPower()*100.0f);
+	if (Device.dwFrame % 10)
+		return;
 
-	UIZoneMap->UpdateRadar			(Device.vCameraPosition);
-	float h,p;
-	Device.vCameraDirection.getHP	(h,p);
-	UIZoneMap->SetHeading			(-h);
+	bool b_God = GodMode();
+	if(b_God)
+		SetWarningIconColor	(ewiInvincible,0xffffffff);
+	else
+		SetWarningIconColor	(ewiInvincible,0x00ffffff);
 
-	UpdatePickUpItem				();
-	CUIWindow::Update				();
+	UpdateMainIndicators(pActor);
 }
 
 bool CUIMainIngameWnd::KeyboardIngameWnd(int dik)
@@ -485,25 +296,26 @@ bool CUIMainIngameWnd::KeyboardIngameWnd(int dik)
 }
 
 
-void CUIMainIngameWnd::RenderQuickInfos()
+void CUIMainIngameWnd::RenderQuickInfos(CActor* actor)
 {
-	if (!m_pActor)
+	if (!actor)
 		return;
 
 	static CGameObject *pObject			= NULL;
-	LPCSTR actor_action					= m_pActor->GetDefaultActionForObject();
-	UIStaticQuickHelp.Show				(NULL!=actor_action);
+	LPCSTR actor_action					= actor->GetDefaultActionForObject();
+	UIStaticQuickHelp->Show				(NULL!=actor_action);
 
-	if(NULL!=actor_action){
-		if(stricmp(actor_action,UIStaticQuickHelp.GetText()))
-			UIStaticQuickHelp.SetTextST				(actor_action);
+	if(NULL!=actor_action)
+	{
+		if(stricmp(actor_action,UIStaticQuickHelp->GetText()))
+			UIStaticQuickHelp->SetTextST				(actor_action);
 	}
 
-	if (pObject!=m_pActor->ObjectWeLookingAt())
+	if(pObject!=actor->ObjectWeLookingAt())
 	{
-		UIStaticQuickHelp.SetTextST				(actor_action);
-		UIStaticQuickHelp.ResetColorAnimation();
-		pObject	= m_pActor->ObjectWeLookingAt	();
+		UIStaticQuickHelp->SetTextST				(actor_action?actor_action:" ");
+		UIStaticQuickHelp->ResetColorAnimation	();
+		pObject	= actor->ObjectWeLookingAt	();
 	}
 }
 
@@ -542,22 +354,22 @@ void CUIMainIngameWnd::SetWarningIconColor(EWarningIcons icon, const u32 cl)
 	switch(icon)
 	{
 	case ewiWeaponJammed:
-		SetWarningIconColorUI(&UIWeaponJammedIcon, cl);
+		SetWarningIconColorUI(UIWeaponJammedIcon, cl);
 		break;
 	case ewiRadiation:
-		SetWarningIconColorUI(&UIRadiaitionIcon, cl);
+		SetWarningIconColorUI(UIRadiaitionIcon, cl);
 		break;
 	case ewiWound:
-		SetWarningIconColorUI(&UIWoundIcon, cl);
+		SetWarningIconColorUI(UIWoundIcon, cl);
 		break;
 	case ewiStarvation:
-		SetWarningIconColorUI(&UIStarvationIcon, cl);
+		SetWarningIconColorUI(UIStarvationIcon, cl);
 		break;	
 	case ewiPsyHealth:
-		SetWarningIconColorUI(&UIPsyHealthIcon, cl);
+		SetWarningIconColorUI(UIPsyHealthIcon, cl);
 		break;
 	case ewiInvincible:
-		SetWarningIconColorUI(&UIInvincibleIcon, cl);
+		SetWarningIconColorUI(UIInvincibleIcon, cl);
 		break;
 	default:
 		R_ASSERT(!"Unknown warning icon type");
@@ -647,7 +459,7 @@ void CUIMainIngameWnd::UpdatePickUpItem	()
 {
 	if (!m_pPickUpItem || !Level().CurrentViewEntity() || Level().CurrentViewEntity()->CLS_ID != CLSID_OBJECT_ACTOR) 
 	{
-		UIPickUpItemIcon.Show(false);
+		UIPickUpItemIcon->Show(false);
 		return;
 	};
 
@@ -676,48 +488,19 @@ void CUIMainIngameWnd::UpdatePickUpItem	()
 	texture_rect.lt.set(m_iXPos*INV_GRID_WIDTH, m_iYPos*INV_GRID_HEIGHT);
 	texture_rect.rb.set(m_iGridWidth*INV_GRID_WIDTH, m_iGridHeight*INV_GRID_HEIGHT);
 	texture_rect.rb.add(texture_rect.lt);
+	UIPickUpItemIcon->GetStaticItem()->SetTextureRect(texture_rect);
+	UIPickUpItemIcon->SetStretchTexture(true);
 
-	UIPickUpItemIcon.GetUIStaticItem().SetTextureRect(texture_rect);
 
-	UIPickUpItemIcon.SetStretchTexture(true);
+	UIPickUpItemIcon->SetWidth(m_iGridWidth*INV_GRID_WIDTH*scale*UI().get_current_kx());
+	UIPickUpItemIcon->SetHeight(m_iGridHeight*INV_GRID_HEIGHT*scale);
 
-	UIPickUpItemIcon.SetWidth(m_iGridWidth*INV_GRID_WIDTH*scale * UI().get_current_kx());
-	UIPickUpItemIcon.SetHeight(m_iGridHeight*INV_GRID_HEIGHT*scale);
+	UIPickUpItemIcon->SetWndPos(Fvector2().set(	m_iPickUpItemIconX+(m_iPickUpItemIconWidth-UIPickUpItemIcon->GetWidth())/2.0f,
+												m_iPickUpItemIconY+(m_iPickUpItemIconHeight-UIPickUpItemIcon->GetHeight())/2.0f) );
 
-	UIPickUpItemIcon.SetWndPos(m_iPickUpItemIconX + 
-		(m_iPickUpItemIconWidth - UIPickUpItemIcon.GetWidth())/2,
-		m_iPickUpItemIconY + 
-		(m_iPickUpItemIconHeight - UIPickUpItemIcon.GetHeight())/2);
-
-	UIPickUpItemIcon.SetColor(color_rgba(255,255,255,192));
-	UIPickUpItemIcon.Show(true);
+	UIPickUpItemIcon->SetTextureColor(color_rgba(255,255,255,192));
+	UIPickUpItemIcon->Show(true);
 };
-
-void CUIMainIngameWnd::UpdateActiveItemInfo()
-{
-	PIItem item		=  m_pActor->inventory().ActiveItem();
-	if(item) 
-	{
-		xr_string					str_name;
-		xr_string					icon_sect_name;
-		xr_string					str_count;
-		item->GetBriefInfo			(str_name, icon_sect_name, str_count);
-
-		UIWeaponSignAmmo.Show		(true						);
-		UIWeaponBack.SetText		(str_name.c_str			()	);
-		UIWeaponSignAmmo.SetText	(str_count.c_str		()	);
-		SetAmmoIcon					(icon_sect_name.c_str	()	);
-
-		//-------------------
-		m_pWeapon = smart_cast<CWeapon*> (item);		
-	}else
-	{
-		UIWeaponIcon.Show			(false);
-		UIWeaponSignAmmo.Show		(false);
-		UIWeaponBack.SetText		("");
-		m_pWeapon					= NULL;
-	}
-}
 
 void CUIMainIngameWnd::OnConnected()
 {
@@ -726,44 +509,71 @@ void CUIMainIngameWnd::OnConnected()
 
 void CUIMainIngameWnd::reset_ui()
 {
-	m_pActor						= NULL;
-	m_pWeapon						= NULL;
-	m_pGrenade						= NULL;
-	m_pItem							= NULL;
 	m_pPickUpItem					= NULL;
-	UIMotionIcon.ResetVisibility	();
+	UIMotionIcon->ResetVisibility	();
 }
 
-#ifdef DEBUG
-#include "UIFrameWindow.h"
-CUIFrameWindow*		pUIFrame = NULL;
-
-void test_update()
+void CUIMainIngameWnd::UpdateMainIndicators(const CActor* actor)
 {
-	if(pUIFrame)
-		pUIFrame->Update();
-}
+	if (!actor)
+		return;
 
-void test_key	(int dik)
-{
+	EWarningIcons i = ewiWeaponJammed;
 
-	if(dik==DIK_K)
+	while (i < ewiInvincible)
 	{
-		if(!pUIFrame)
+		float value = 0;
+		switch (i)
 		{
-			CUIXml uiXML;
-			uiXML.Init(CONFIG_PATH, UI_PATH, "talk.xml");
+			//radiation
+		case ewiRadiation:
+			value = actor->conditions().GetRadiation();
+			break;
+		case ewiWound:
+			value = actor->conditions().BleedingSpeed();
+			break;
+		case ewiWeaponJammed:
+		{
+			if (!actor->inventory().ActiveItem())
+				break;
+				
+			CWeapon* item = actor->inventory().ActiveItem()->cast_weapon();
+			if (item)
+				value = 1 - item->GetConditionToShow();
+		}
+			break;
+		case ewiStarvation:
+			value = 1 - actor->conditions().GetSatiety();
+			break;
+		case ewiPsyHealth:
+			value = 1 - actor->conditions().GetPsyHealth();
+			break;
+		default:
+			R_ASSERT(!"Unknown type of warning icon");
+		}
 
-			pUIFrame					= xr_new<CUIFrameWindow>();
-			CUIXmlInit::InitFrameWindow	(uiXML, "frame_window", 0, pUIFrame);
-		}else
-			xr_delete(pUIFrame);
+		xr_vector<float>::reverse_iterator	rit;
+
+		// Сначала проверяем на точное соответсвие
+		rit = std::find(m_Thresholds[i].rbegin(), m_Thresholds[i].rend(), value);
+
+		// Если его нет, то берем последнее меньшее значение ()
+		if (rit == m_Thresholds[i].rend())
+			rit = std::find_if(m_Thresholds[i].rbegin(), m_Thresholds[i].rend(), std::bind(std::less<float>(), std::placeholders::_1, value));
+
+		// Минимальное и максимальное значения границы
+		float min = m_Thresholds[i].front();
+		float max = m_Thresholds[i].back();
+
+		if (rit != m_Thresholds[i].rend()) {
+			float v = *rit;
+			SetWarningIconColor(i, color_argb(0xFF, clampr<u32>(static_cast<u32>(255 * ((v - min) / (max - min) * 2)), 0, 255),
+				clampr<u32>(static_cast<u32>(255 * (2.0f - (v - min) / (max - min) * 2)), 0, 255),
+				0));
+		}
+		else
+			TurnOffWarningIcon(i);
+
+		i = (EWarningIcons)(i + 1);
 	}
 }
-
-void test_draw	()
-{
-	if(pUIFrame)
-		pUIFrame->Draw();
-}
-#endif

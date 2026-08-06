@@ -24,6 +24,7 @@
 #include "UIGameCustom.h"
 #include "ui/UIArtefactPanel.h"
 #include "ui/UIMainIngameWnd.h"
+#include "ui/UIHudStatesWnd.h"
 #include "gamepersistent.h"
 #include "game_object_space.h"
 #include "GameTaskManager.h"
@@ -391,7 +392,7 @@ void CActor::net_Destroy	()
 	
 	m_ArtefactsOnBelt.clear();
 	if (Level().CurrentViewEntity() == this)
-		CurrentGameUI()->UIMainIngameWnd->m_artefactPanel->InitIcons(m_ArtefactsOnBelt);
+		CurrentGameUI()->UIMainIngameWnd->get_hud_states()->UIArtefactPanel().InitIcons(m_ArtefactsOnBelt);
 
 	SetDefaultVisualOutfit(NULL);
 	

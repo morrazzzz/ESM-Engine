@@ -84,13 +84,25 @@ bool CUIXmlInit::InitWindow(CUIXml& xml_doc, LPCSTR path,
 							int index, CUIWindow* pWnd)
 {
 	R_ASSERT4(xml_doc.NavigateToNode(path,index), "XML node not found", path, xml_doc.m_xml_file_name);
-
+	
 	float x = xml_doc.ReadAttribFlt(path, index, "x");
 	float y = xml_doc.ReadAttribFlt(path, index, "y");
 	InitAlignment(xml_doc, path, index, x, y, pWnd);
 	float width = xml_doc.ReadAttribFlt(path, index, "width");
 	float height = xml_doc.ReadAttribFlt(path, index, "height");
 	pWnd->Init(x, y, width, height);
+
+#pragma todo("morrazzzz: CoPMerge: Port ne!!!")
+	/*
+	Fvector2 pos, size;
+	pos.x = xml_doc.ReadAttribFlt(path, index, "x");
+	pos.y = xml_doc.ReadAttribFlt(path, index, "y");
+	InitAlignment(xml_doc, path, index, pos.x, pos.y, pWnd);
+	size.x = xml_doc.ReadAttribFlt(path, index, "width");
+	size.y = xml_doc.ReadAttribFlt(path, index, "height");
+	pWnd->SetWndPos(pos);
+	pWnd->SetWndSize(size);
+	*/
 
    	string512 buf;
 	CGameFont *LocalFont = NULL;
@@ -187,6 +199,36 @@ bool CUIXmlInit::InitStatic(CUIXml& xml_doc, LPCSTR path,
 	if(bComplexMode)
 		pWnd->TextItemControl()->SetTextComplexMode(bComplexMode);
 	
+	return true;
+}
+
+bool CUIXmlInit::InitTextWnd(CUIXml& xml_doc, const char* path, int index, CUITextWnd* pWnd)
+{
+	R_ASSERT4(xml_doc.NavigateToNode(path,index), "XML node not found", path, xml_doc.m_xml_file_name);
+
+	InitWindow			(xml_doc, path, index, pWnd);
+
+	string256			buf;
+	InitText			(xml_doc, strconcat(sizeof(buf),buf,path,":text"), index, &pWnd->TextItemControl());
+
+	LPCSTR str_flag			= xml_doc.ReadAttrib(path, index, "light_anim",		"");
+	int flag_cyclic			= xml_doc.ReadAttribInt(path, index, "la_cyclic",	1);
+	int flag_alpha			= xml_doc.ReadAttribInt(path, index, "la_alpha",	0);
+	
+	u8 flags				= LA_TEXTCOLOR ;
+	if(flag_cyclic)			flags |= LA_CYCLIC;
+	if(flag_alpha)			flags |= LA_ONLYALPHA;
+	pWnd->SetColorAnimation	(str_flag, flags);	
+
+
+	bool bComplexMode = xml_doc.ReadAttribInt(path, index, "complex_mode",0)?true:false;
+	if(bComplexMode)
+		pWnd->SetTextComplexMode(bComplexMode);
+
+	strconcat(sizeof(buf),buf,path,":texture");
+	R_ASSERT3( NULL==xml_doc.NavigateToNode(buf,index), xml_doc.m_xml_file_name, buf );
+
+	R_ASSERT(pWnd->GetChildWndList().size()==0);
 	return true;
 }
 
