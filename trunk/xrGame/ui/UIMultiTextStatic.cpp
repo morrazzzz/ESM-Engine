@@ -81,8 +81,7 @@ CUIMultiTextStatic::SinglePhrase * CUIMultiTextStatic::GetPhraseByIndex(u32 idx)
 //////////////////////////////////////////////////////////////////////////
 
 CUIMultiTextStatic::SPh::SPh()
-	:	elipsisPos			(CUIStatic::eepEnd),
-		maxWidth			(-1.0f)
+	: maxWidth			(-1.0f)
 {
 	effect.SetStyleParams(CUITextBanner::tbsNone);
 	effect.StopAnimation();

@@ -28,8 +28,6 @@ CUIStatic:: CUIStatic()
 	m_bStretchTexture		= false;
 
 	m_TextureOffset.set		(0.0f,0.0f);
-	m_ElipsisPos			= eepNone;
-	m_iElipsisIndent		= 0;
 
 	m_bCursorOverWindow		= false;
 	m_bHeading				= false;
@@ -336,27 +334,6 @@ void CUIStatic::SetTextAlign_script(u32 align)
 u32 CUIStatic::GetTextAlign_script()
 {
 	return static_cast<u32>(m_pTextControl->GetTextAlignment());
-}
-
-
-void CUIStatic::Elipsis(const Frect &rect, EElipsisPosition elipsisPos)
-{
-#pragma todo("Satan->Satan : need adaptation")
-	//if (eepNone == elipsisPos) return;
-
-	//CUIStatic::Elipsis(m_sEdit, rect, elipsisPos, GetFont());
-
-	//// Now paste elipsis
-	//m_str = &m_sEdit.front();
-	//str_len = m_sEdit.size();
-	//buf_str.resize(str_len + 1);
-}
-
-void CUIStatic::SetElipsis(EElipsisPosition pos, int indent)
-{
-#pragma todo("Satan->Satan : need adaptation")
-	m_ElipsisPos		= pos;
-	m_iElipsisIndent	= indent;
 }
 
 void CUIStatic::OnFocusReceive()
