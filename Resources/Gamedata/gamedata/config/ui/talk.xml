@@ -37,7 +37,7 @@
 		</title>
 	</frame_line_window>
 
-	<questions_list x="30" y="75" width="547" height="120" right_ident="13" always_show_scroll="0"/>
+	<questions_list x="30" y="100" width="547" height="120" right_ident="13" always_show_scroll="0"/>
 
 	<answers_list x="33" y="46" width="544" height="377" right_ident="0" always_show_scroll="0"/>
 
