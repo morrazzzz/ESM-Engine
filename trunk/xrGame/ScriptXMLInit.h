@@ -37,7 +37,6 @@ public:
 	CScriptXmlInit& operator= (const CScriptXmlInit& other);
 
 	void ParseFile		(LPCSTR xml_file);
-	void ParseShTexInfo	(LPCSTR xml_file);
 	void InitWindow		(LPCSTR path, int index, CUIWindow* pWnd);
 	//void InitList		(LPCSTR path, int index, CUIListWnd* pWnd);
 

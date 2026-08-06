@@ -48,21 +48,20 @@ CMainMenu::~CMainMenu	()
 
 void CMainMenu::ReadTextureInfo()
 {
-	if (pSettings->section_exist("texture_desc"))
+	FS_FileSet fset;
+	FS.file_list(fset, "$game_config$", FS_ListFiles,"ui\\textures_descr\\*.xml");
+	FS_FileSetIt fit	= fset.begin();
+	FS_FileSetIt fit_e	= fset.end();
+
+	for( ;fit!=fit_e; ++fit)
 	{
-		xr_string itemsList; 
-		string256 single_item;
+    	string_path	fn1, fn2,fn3;
+        _splitpath	((*fit).name.c_str(),fn1,fn2,fn3,0);
+		xr_strcat(fn3,".xml");
 
-		itemsList = pSettings->r_string("texture_desc", "files");
-		int itemsCount	= _GetItemCount(itemsList.c_str());
-
-		for (int i = 0; i < itemsCount; i++)
-		{
-			_GetItem(itemsList.c_str(), i, single_item);
-			strcat(single_item,".xml");
-			CUITextureMaster::ParseShTexInfo(single_item);
-		}		
+		CUITextureMaster::ParseShTexInfo(fn3);
 	}
+
 }
 
 extern ENGINE_API BOOL	bShowPauseString;
