@@ -75,10 +75,13 @@ void CUIAnimatedStatic::SetFrame(const u32 frameNum)
 	//static u32 currRow = 0xffffffff, currCol = 0xffffffff;
 	int currRow = frameNum / m_uAnimCols;
 	int currCol = frameNum % m_uAnimCols;
-	
-	Frect rect{ m_pos.x + float(currCol * m_uFrameWidth), m_pos.y + float(currRow * m_uFrameHeight), float(m_uFrameWidth), float(m_uFrameHeight) };
 
-	GetUIStaticItem().SetTextureRect(rect);
+	float x = m_pos.x + float(currCol * m_uFrameWidth);
+	float y = m_pos.y + float(currRow * m_uFrameHeight);
+	float width = x + m_uFrameWidth;
+	float height = y + m_uFrameHeight;
+
+	GetUIStaticItem().SetTextureRect(Frect().set(x, y, width, height));
 }
 
 void CUIAnimatedStatic::SetAnimPos(float pos){
