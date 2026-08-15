@@ -1,0 +1,6 @@
+<w>
+    <file name="ui\ui_dialog_window">
+        <texture id="ui_dialog_static" x="0" y="0" width="1110" height="685"/>
+        <texture id="ui_our_phases_static" x="0" y="714" width="1116" height="292"/>
+    </file>
+</w>
