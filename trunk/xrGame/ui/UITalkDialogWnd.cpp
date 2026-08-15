@@ -47,26 +47,26 @@ void CUITalkDialogWnd::Init(float x, float y, float width, float height)
 	UICharacterInfoRight.Init	(0.0f, 0.0f, UIOthersIcon.GetWidth(), UIOthersIcon.GetHeight(), TRADE_CHARACTER_XML);
 
 	//основной фрейм диалога
-	AttachChild					(&UIDialogFrame);
-	CUIXmlInit::InitFrameLine	(*m_uiXml, "frame_line_window", 0, &UIDialogFrame);
+	AttachChild					(&UIDialogStatic);
+	CUIXmlInit::InitStatic(*m_uiXml, "dialog_static", 0, &UIDialogStatic);
 #pragma todo("morrazzzz: TODO: CoPMerge: Return UITitleText???")
 //	UIDialogFrame.UITitleText.SetElipsis(CUIStatic::eepEnd, 10);
 	// Фрейм с нащими фразами
-	AttachChild					(&UIOurPhrasesFrame);
-	CUIXmlInit::InitFrameLine	(*m_uiXml, "frame_line_window", 1, &UIOurPhrasesFrame);
+	AttachChild					(&UIOurPhrasesStatic);
+	CUIXmlInit::InitStatic	(*m_uiXml, "our_phases_static", 0, &UIOurPhrasesStatic);
 //	UIOurPhrasesFrame.UITitleText.SetElipsis(CUIStatic::eepEnd, 10);
 
 	//Ответы
 	UIAnswersList				= xr_new<CUIScrollView>();
 	UIAnswersList->SetAutoDelete(true);
-	UIDialogFrame.AttachChild	(UIAnswersList);
+	UIDialogStatic.AttachChild	(UIAnswersList);
 	CUIXmlInit::InitScrollView	(*m_uiXml, "answers_list", 0, UIAnswersList);
 	UIAnswersList->SetWindowName("---UIAnswersList");
 
 	//Вопросы
 	UIQuestionsList				= xr_new<CUIScrollView>();
 	UIQuestionsList->SetAutoDelete(true);
-	UIOurPhrasesFrame.AttachChild(UIQuestionsList);
+	UIOurPhrasesStatic.AttachChild(UIQuestionsList);
 	CUIXmlInit::InitScrollView	(*m_uiXml, "questions_list", 0, UIQuestionsList);
 	UIQuestionsList->SetWindowName("---UIQuestionsList");
 
@@ -205,7 +205,7 @@ void CUITalkDialogWnd::SetOsoznanieMode(bool b)
 	UIOthersIcon.Show	(!b);
 
 	UIAnswersList->Show	(!b);
-	UIDialogFrame.Show (!b);
+	UIDialogStatic.Show (!b);
 
 	UIToTradeButton.Show(!b);
 }
