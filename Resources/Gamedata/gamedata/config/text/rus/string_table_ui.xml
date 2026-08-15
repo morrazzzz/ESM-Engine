@@ -28,7 +28,7 @@
 		<text>Локальная карта</text>
 	</string>
 	<string id="st_game_saved">
-		<text>игра сохранена</text>
+		<text>Игра сохранена</text>
 	</string>
 	<string id="tip_car_locked">
 		<text>Заблокировано</text>
@@ -46,7 +46,7 @@
 		<text>Нажмите ($$ACTION_USE$$), чтобы декодировать дверь</text>
 	</string>
 	<string id="tip_door_decoding">
-		<text>Идет процесс декодирования</text>
+		<text>Идёт процесс декодирования</text>
 	</string>
 	<string id="tip_door_locked">
 		<text>Дверь заперта</text>

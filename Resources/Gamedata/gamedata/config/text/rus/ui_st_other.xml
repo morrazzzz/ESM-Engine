@@ -84,9 +84,6 @@
 	<string id="st_game_paused">
 		<text>Пауза</text>
 	</string>
-	<string id="st_bolt">
-		<text>Болт</text>
-	</string>
 	<string id="st_items">
 		<text>Предметы</text>
 	</string>

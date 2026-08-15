@@ -1,0 +1,18 @@
+	<string id="mil_actor_blockpost">
+		<text>Сталкер, ты подходишь к Барьеру, не вздумай баловать, но мы рады принять любую помощь.</text>
+	</string>
+	<string id="mil_after_sniper_dead">
+		<text>Меченый, подходи к нам за расчётом и дальнейшими указаниями.</text>
+	</string>
+	<string id="mil_mission_complete">
+		<text>Наша задача выполнена. Возвращаемся на хутор и там рассчитаемся.</text>
+	</string>
+	<string id="mil_scull_attack_signal">
+		<text>Вперёд, ребята! Путь свободен.</text>
+	</string>
+	<string id="mil_scull_info">
+		<text>Меченый, займись снайперами!!!</text>
+	</string>
+	<string id="mil_sniper_to_player_warning">
+		<text>Меченый, будь осторожен, а то ещё по башке пулей схлопочешь...</text>
+	</string>

@@ -1,0 +1,57 @@
+	<string id="bar_freedom_spam_3">
+		<text>Профессор, ты же умный человек! Отдай информацию и иди на все четыре стороны!</text>
+	</string>
+	<string id="rostok_kruglov_spam_1">
+		<text>Сталкер, помоги! На нас напали наёмники, половина наших людей погибла! Помоги нам, мы в долгу не останемся.</text>
+	</string>
+	<string id="rostok_kruglov_spam_2">
+		<text>Помоги нам пробиться через засаду возле завода. Я тебе скинул координаты. Э-э, будь осторожней: Волкодав с головорезами возле вертолёта.</text>
+	</string>
+	<string id="bar_freedom_spam_1">
+		<text>Короче, ты, учёный болван! Или отдаёшь мне результаты, или уедешь отсюда в пластиковом мешке!</text>
+	</string>
+	<string id="bar_ecolog_crush_start_heli">
+		<text>Ну всё, Волкодав, ты допрыгался! Сюда летит военный вертолет! Сейчас они вас как щенков!</text>
+	</string>
+	<string id="bar_freedom_attack">
+		<text>Так, всё, разговоры окончены. К бою.</text>
+	</string>
+	<string id="bar_ecolog_crush_heli_down">
+		<text>Хе-хе, вот и всё! Нету вашего вертолета! Сейчас вы и получите, крысы правительственные!</text>
+	</string>
+	<string id="bar_ecolog_attack">
+		<text>Как вам будет угодно!</text>
+	</string>
+	<string id="bar_ecolog_escape">
+		<text>Профессор сбежал! Срочно всем в погоню за Кругловым! Он не мог далеко уйти.</text>
+	</string>
+	<string id="bar_ecolog_spam_2">
+		<text>Если вы нападёте, я уничтожу информацию. Фиг вам, а не мои труды!</text>
+	</string>
+	<string id="bar_ecolog_spam_3">
+		<text>Если вы не хотите, чтобы я уничтожил результаты исследований, - держитесь подальше.</text>
+	</string>
+	<string id="bar_freedom_chase">
+		<text>Они идут за нами?! Меченый, останови их!</text>
+	</string>
+	<string id="bar_territory_dolg_1_hit">
+		<text>Меченый, ты что спятил? Немедленно прекрати стрельбу! Это приказ!</text>
+	</string>
+	<string id="bar_territory_dolg_2_hit">
+		<text>Меченый, немедленно прекрати стрельбу! Если ты ослушаешься приказа ты труп!</text>
+	</string>
+	<string id="bar_territory_dolg_3_hit">
+		<text>Меченый. За нарушение кодекса Долга ты изгнан из группировки. Отныне ты наш враг.</text>
+	</string>
+	<string id="bar_territory_dolg_kill">
+		<text>Меченый, ты ослушался приказа! Теперь ты труп! Долг такого не прощает!</text>
+	</string>
+	<string id="bar_territory_nodolg_1_hit">
+		<text>Прекратить стрельбу! На территории Долга стрельба запрещена! Ослушавшиеся будут наказаны!</text>
+	</string>
+	<string id="bar_territory_nodolg_2_hit">
+		<text>Внимание! За нарушение закона о применении оружия на территории Долга, Меченый объявлен преступником.</text>
+	</string>
+	<string id="bar_territory_nodolg_kill">
+		<text>Внимание! Обнаружен убийца! Приказ всем находящимся на территории Долга! Срочно уничтожить убийцу!</text>
+	</string>

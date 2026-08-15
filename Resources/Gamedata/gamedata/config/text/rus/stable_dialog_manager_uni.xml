@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="dm_general_cool_info">
+		<text>Что можешь интересного рассказать?</text>
+	</string>
+	<string id="dm_general_cool_info_no_more">
+		<text>Больше ничего не знаю</text>
+	</string>
+	<string id="dm_general_help_medkit">
+		<text>Держи аптечку.</text>
+	</string>
+</string_table>

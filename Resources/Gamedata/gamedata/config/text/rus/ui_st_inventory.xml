@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="windows-1251" ?>
 <string_table>
+	<string id="ui_st_description">
+		<text>Описание</text>
+	</string>
 	<string id="st_drink">
 		<text>Выпить</text>
 	</string>
@@ -78,9 +81,6 @@
 	<string id="ui_inv_cancel">
 		<text>Отмена</text>
 	</string>
-	<string id="ui_inv_clear">
-		<text>Очистить</text>
-	</string>
 	<string id="ui_inv_damage">
 		<text>Повреждение</text>
 	</string>
@@ -89,9 +89,6 @@
 	</string>
 	<string id="ui_inv_drop">
 		<text>Выложить</text>
-	</string>
-	<string id="ui_inv_equipment">
-		<text>Оборудование</text>
 	</string>
 	<string id="ui_inv_exit">
 		<text>Выход</text>
@@ -138,41 +135,14 @@
 	<string id="ui_inv_outfit_wound_protection">
 		<text>Разрыв</text>
 	</string>
-	<string id="ui_inv_outfits">
-		<text>Костюмы</text>
-	</string>
 	<string id="ui_inv_personal">
 		<text>Костюм</text>
-	</string>
-	<string id="ui_inv_pistols">
-		<text>Пистолеты</text>
-	</string>
-	<string id="ui_inv_primary_weapons">
-		<text>Основное</text>
 	</string>
 	<string id="ui_inv_rate_of_fire">
 		<text>Скорострельность</text>
 	</string>
-	<string id="ui_inv_rest">
-		<text>Отдохнуть</text>
-	</string>
-	<string id="ui_inv_rifles">
-		<text>Автоматы</text>
-	</string>
-	<string id="ui_inv_shop">
-		<text>Магазин</text>
-	</string>
-	<string id="ui_inv_shotguns">
-		<text>Ружья</text>
-	</string>
-	<string id="ui_inv_sniper_rifles">
-		<text>Снайперское</text>
-	</string>
 	<string id="ui_inv_time">
 		<text>Время</text>
-	</string>
-	<string id="ui_inv_total_money">
-		<text>Всего денег</text>
 	</string>
 	<string id="ui_inv_weight">
 		<text>Вес</text>
@@ -183,25 +153,7 @@
 	<string id="ui_inv_dead_weight">
 	    <text>Вес в трупе</text>
 	</string>
-	<string id="ui_inv_granades">
-		<text>Гранаты</text>
-	</string>
-	<string id="ui_inv_sell_items(X)">
-		<text>Продать все вещи из рюкзака (X)</text>
-	</string>
 	<string id="ui_inv_not_enought_money">
 		<text>Недостаточно денег</text>
-	</string>
-	<string id="ui_inv_count_restr">
-		<text>Ограничение по количеству</text>
-	</string>
-	<string id="ui_inv_has">
-		<text>сейчас</text>
-	</string>
-	<string id="ui_inv_need">
-		<text>необходимо</text>
-	</string>
-	<string id="ui_inv_you_already_have">
-		<text>Уже есть</text>
 	</string>
 </string_table>

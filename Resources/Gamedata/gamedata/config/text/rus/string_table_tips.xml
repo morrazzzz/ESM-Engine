@@ -27,7 +27,4 @@
 	<string id="st_codelock">
 		<text>Кодовый замок ($$ACTION_USE$$)</text>
 	</string>
-	<string id="character_use">
-		<text>Говорить ($$ACTION_USE$$)</text>
-	</string>
 </string_table>
