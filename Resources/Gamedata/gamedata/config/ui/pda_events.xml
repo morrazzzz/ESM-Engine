@@ -25,19 +25,19 @@
 			</primary_or_all>
 			
 			<filter_tab x="15" y="450" width = "293" height="18">
-				<button x="5" y="0" width="70" height="18" hint="pda_btn_active_hint">
+				<button x="5" y="0" width="70" height="18" hint="pda_btn_active_hint" id="button_pda_active">
 					<text align="l"  x="0" y="0" font="letterica18" r="255" g="255" b="255" complex_mode="0">pda_btn_active</text>
 					<text_color>
 						<t r="231" g="168" b="12"/> <d r="181" g="170" b="148"/> <e r="127" g="127" b="127"/> <h r="255" g="255" b="255"/>
 					</text_color>			
 				</button>								
-				<button x="80" y="0" width="100" height="18" hint="pda_btn_accomplished_hint">
+				<button x="80" y="0" width="100" height="18" hint="pda_btn_accomplished_hint" id="button_pda_accomplished">
 					<text align="l"  x="0" y="0" font="letterica18" r="255" g="255" b="255" complex_mode="0">pda_btn_accomplished</text>
 					<text_color>
 						<t r="231" g="168" b="12"/> <d r="181" g="170" b="148"/> <e r="127" g="127" b="127"/> <h r="255" g="255" b="255"/>
 					</text_color>			
 				</button>								
-				<button x="185" y="0" width="60" height="18" hint="pda_btn_failed_hint">
+				<button x="185" y="0" width="60" height="18" hint="pda_btn_failed_hint" id="button_pda_failed">
 					<text align="l"  x="0" y="0" font="letterica18" r="255" g="255" b="255" complex_mode="0">pda_btn_failed</text>
 					<text_color>
 						<t r="231" g="168" b="12"/> <d r="181" g="170" b="148"/> <e r="127" g="127" b="127"/> <h r="255" g="255" b="255"/>

@@ -208,14 +208,14 @@ function options_dialog:OnTabChange()
 	self.dlg_controls:Show	(false)
 	self.dlg_video_adv:Show	(false)
 	
-	local i = self.tab:GetActiveIndex()
-	if i == 0 then
+	local id = self.tab:GetActiveId()
+	if id == "button_video_options" then
 		self.dlg_video:Show(true)		
-	elseif i == 1 then
+	elseif id == "button_sound_options" then
 		self.dlg_sound:Show(true)
-	elseif i == 2 then
+	elseif id == "button_gameplay_options" then
 		self.dlg_gameplay:Show(true)
-	elseif i == 3 then
+	elseif id == "button_controls_options" then
 		self.dlg_controls:Show(true)
 	end
 end

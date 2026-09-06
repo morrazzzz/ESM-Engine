@@ -38,7 +38,7 @@
 			</text_color>
 		</btn_cancel>
 		<tab x="55" y="48" width="461" height="26">
-			<button x="0" y="0" width="116" height="26">
+			<button x="0" y="0" width="116" height="26" id="button_video_options">
 				<texture_offset x="0" y="-7"/>
 				<texture>ui_button_tablist</texture>
 				<text font="graffiti19" align="c">ui_mm_video</text>				
@@ -46,7 +46,7 @@
 					<e r="106" g="95" b="91"/> <t r="227" g="199" b="178"/> <h r="180" g="153" b="155"/>
 				</text_color>
 			</button>
-			<button x="116" y="0" width="116" height="26">
+			<button x="116" y="0" width="116" height="26" id="button_sound_options">
 				<texture_offset x="0" y="-7"/>
 				<texture>ui_button_tablist</texture>
 				<text font="graffiti19" align="c">ui_mm_sound</text>
@@ -54,7 +54,7 @@
 					<e r="106" g="95" b="91"/> <t r="227" g="199" b="178"/> <h r="180" g="153" b="155"/>
 				</text_color>
 			</button>
-			<button x="232" y="0" width="116" height="26">
+			<button x="232" y="0" width="116" height="26" id="button_gameplay_options">
 				<texture_offset x="0" y="-7"/>
 				<texture>ui_button_tablist</texture>
 				<text font="graffiti19" align="c">ui_mm_gameplay</text>
@@ -62,7 +62,7 @@
 					<e r="106" g="95" b="91"/> <t r="227" g="199" b="178"/> <h r="180" g="153" b="155"/>
 				</text_color>
 			</button>
-			<button x="348" y="0" width="116" height="26">
+			<button x="348" y="0" width="116" height="26" id="button_controls_options">
 				<texture_offset x="0" y="-7"/>
 				<texture>ui_button_tablist</texture>
 				<text font="graffiti19" align="c">ui_mm_controls</text>

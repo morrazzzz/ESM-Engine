@@ -22,14 +22,14 @@
 				</anim_static>
 								
 				<filter_tab x="0" y="6" width = "252" height="12">
-					<button x="10" y="0" width="70" height="12"  hint="pda_btn_journal_hint">
+					<button x="10" y="0" width="70" height="12"  hint="pda_btn_journal_hint" id="button_pda_journal">
 						<text  align="l" x="0" y="0" font="letterica18" r="255" g="255" b="255" complex_mode="0">pda_btn_journal</text>
 						<text_color>
 							<t r="231" g="168" b="12"/> <d r="181" g="170" b="148"/> <e r="127" g="127" b="127"/> <h r="255" g="255" b="255"/>
 						</text_color>			
 					</button>								
 
-					<button x="90" y="0" width="120" height="12" hint="pda_btn_news_hint">
+					<button x="90" y="0" width="120" height="12" hint="pda_btn_news_hint" id="button_pda_news">
 						<text  align="l" x="0" y="0" font="letterica18" r="255" g="255" b="255" complex_mode="0">pda_btn_news</text>
 						<text_color>
 							<t r="231" g="168" b="12"/> <d r="181" g="170" b="148"/> <e r="127" g="127" b="127"/> <h r="255" g="255" b="255"/>
