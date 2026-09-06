@@ -25,9 +25,14 @@ void CUINewsItemWnd::Init				(LPCSTR xml_name, LPCSTR start_from)
 	strcpy(str,start_from);
 	xml_init.InitWindow			(uiXml,str,0,this);
 
-	m_UIImage = UIHelper::CreateStatic(uiXml, ":image", this);
-	m_UIText = UIHelper::CreateTextWnd(uiXml, ":text_cont", this);
-	m_UITextDate = UIHelper::CreateTextWnd(uiXml, ":date_text_cont", this);
+	strconcat(sizeof(str), str, start_from, ":image");
+	m_UIImage = UIHelper::CreateStatic(uiXml, str, this);
+
+	strconcat(sizeof(str), str, start_from, ":text_cont");
+	m_UIText = UIHelper::CreateTextWnd(uiXml, str, this);
+
+	strconcat(sizeof(str), str, start_from, ":date_text_cont");
+	m_UITextDate = UIHelper::CreateTextWnd(uiXml, str, this);
 
 	strconcat(sizeof(str),str,start_from,":auto");
 	xml_init.InitAutoStaticGroup(uiXml, str, 0, this);
