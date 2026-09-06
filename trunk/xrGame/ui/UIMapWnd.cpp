@@ -561,7 +561,7 @@ void CUIMapWnd::OnToolZoomInClicked	(CUIWindow* w, void*)
 	m_flags.zero					();
 
 	CUI3tButton* btn				= smart_cast<CUI3tButton*>(w);
-	bool bPushed					= btn->GetCheck		();
+	bool bPushed = btn->GetButtonState() == CUIButton::BUTTON_PUSHED;
 	m_flags.set						(lmZoomIn,bPushed);
 	ValidateToolBar					();
 }
@@ -573,7 +573,7 @@ void CUIMapWnd::OnToolZoomOutClicked(CUIWindow* w, void*)
 	m_flags.zero					();
 
 	CUI3tButton* btn				= smart_cast<CUI3tButton*>(w);
-	bool bPushed					= btn->GetCheck		();
+	bool bPushed					= btn->GetButtonState() == CUIButton::BUTTON_PUSHED;
 	m_flags.set						(lmZoomOut,bPushed);
 	ValidateToolBar					();
 }
@@ -637,12 +637,14 @@ void CUIMapWnd::ValidateToolBar			()
 {
 	CUI3tButton* btn	= NULL;
 	btn					= m_ToolBar[eZoomIn];
+
 	if(btn)
-		btn->SetCheck	(!!m_flags.test(lmZoomIn));
+		btn->SetButtonState(m_flags.is(lmZoomIn) ? CUIButton::BUTTON_PUSHED : CUIButton::BUTTON_NORMAL);
 
 	btn					= m_ToolBar[eZoomOut];
 	if(btn)
-		btn->SetCheck	(!!m_flags.test(lmZoomOut));
+		btn->SetButtonState(m_flags.is(lmZoomOut) ? CUIButton::BUTTON_PUSHED : CUIButton::BUTTON_NORMAL);
+
 /*
 	btn					= m_ToolBar[eAddSpot];
 	if(btn)

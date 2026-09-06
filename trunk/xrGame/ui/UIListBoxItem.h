@@ -1,39 +1,42 @@
 #pragma once
-#include "UIStatic.h"
-#include "UILabel.h"
+#include "UIFrameLineWnd.h"
 
-class CUIListBoxItem : public CUILabel, public CUISelectable{
+class CUITextWnd;
+class CUIStatic;
+
+class CUIListBoxItem : public CUIFrameLineWnd, public CUISelectable
+{
+	typedef				CUIFrameLineWnd inherited;
 public:
-	using CUILabel::SetTextColor;
+						CUIListBoxItem			(float height);
 
-						CUIListBoxItem();
-	virtual				~CUIListBoxItem();
+	virtual void		Draw					();
+	virtual bool		OnMouseDown				(int mouse_btn);
+	virtual void		OnFocusReceive			();
+			void		InitDefault				();
+			void		SetTAG					(u32 value);
+			u32			GetTAG					();
 
-    virtual void		SetSelected(bool b);
-//	virtual void	Update();
-	virtual void		Draw();
-	virtual bool		OnMouseDown(int mouse_btn);
-	virtual bool		OnDbClick();
-	virtual void		OnFocusReceive();
-	virtual CGameFont*	GetFont();
-			void		SetTextColor(u32 color, u32 color_s);
-			void		InitDefault();
-			void		SetTAG(u32 value);
-			u32			GetTAG();
+			void		SetData					(void* data);
+			void*		GetData					();
 
-			void		SetData(void* data);
-			void*		GetData();
+		CUITextWnd*		AddTextField			(LPCSTR txt, float width);
+		CUIStatic*		AddIconField			(float width);
 
-		CUIStatic*		AddField(LPCSTR txt, float len, LPCSTR key = "");
-		LPCSTR			GetField(LPCSTR key);
+		CUITextWnd*		GetTextItem				(){return m_text;}
+
+		//TextControl
+		void			SetText					(LPCSTR txt);
+		LPCSTR			GetText					();
+		void			SetTextColor			(u32 color);
+		u32				GetTextColor			();
+		void			SetFont					(CGameFont* F);
+		CGameFont*		GetFont					();
 
 protected:
-			float		FieldsLength();
-		xr_vector<CUIStatic*>	fields;
-		u32				txt_color;
-		u32				txt_color_s;
+		CUITextWnd*		m_text;
 		u32				tag;
 		void*			pData;
-//.static	u32	uid_counter;
+		float			FieldsLength			() const;
 };
 

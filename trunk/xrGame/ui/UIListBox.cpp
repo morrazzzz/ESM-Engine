@@ -2,16 +2,14 @@
 #include "UIListBox.h"
 #include "UIListBoxItem.h"
 #include "UIScrollBar.h"
+#include "UIStatic.h"
 
 CUIListBox::CUIListBox()
 {
 	m_flags.set				(eItemsSelectabe, TRUE);
 
 	m_def_item_height		 = 20;
-	m_last_selection		= -1;
 	m_text_color			= 0xff000000;
-	m_text_color_s			= 0xff000000;
-	m_text_al				= CGameFont::alLeft;
 
 	m_bImmediateSelection	= false;
 
@@ -41,26 +39,36 @@ bool CUIListBox::OnMouseAction(float x, float y, EUIMessages mouse_action)
 }
 
 #include "../string_table.h"
-CUIListBoxItem* CUIListBox::AddItem(LPCSTR text)
+CUIListBoxItem* CUIListBox::AddTextItem(LPCSTR text)
 {
-	if (!text)			
-		return					NULL;
+	CUIListBoxItem* pItem			= AddItem();
 
-	CUIListBoxItem* pItem		= xr_new<CUIListBoxItem>();
-	pItem->Init					(0,0,this->GetDesiredChildWidth() - 5, m_def_item_height);
-	if (!m_selection_texture)
-        pItem->InitDefault		();
-	else
-		pItem->InitTexture		(*m_selection_texture);
-
-	pItem->SetSelected			(false);
-	pItem->SetText				(*CStringTable().translate(text));
-	pItem->SetTextColor			(m_text_color, m_text_color_s);
-	pItem->SetMessageTarget		(this);
-	AddWindow					(pItem, true);
-	return						pItem;
+	pItem->SetWndSize				(Fvector2().set(GetDesiredChildWidth(), m_def_item_height));
+	pItem->SetTextColor				(m_text_color);
+	pItem->SetText					(CStringTable().translate(text).c_str());
+	pItem->GetTextItem()->SetWidth	(GetDesiredChildWidth());
+	return							pItem;
 }
 
+CUIListBoxItem*  CUIListBox::AddItem()
+{
+	CUIListBoxItem* item		= xr_new<CUIListBoxItem>(m_def_item_height);
+	//item->InitFrameLineWnd		(Fvector2().set(0,0), Fvector2().set(GetDesiredChildWidth()-5, m_def_item_height));
+	item->Init(0.0f, 0.0f, GetDesiredChildWidth() - 5.0f, m_def_item_height);
+	item->GetTextItem()->SetWidth	(GetDesiredChildWidth());
+	item->SetWidth					(GetDesiredChildWidth());
+
+	if(m_selection_texture.size())
+		item->InitTexture		(m_selection_texture.c_str(), "hud\\default");
+	else
+        item->InitDefault		();
+
+	item->SetFont				(GetFont());
+	item->SetSelected			(false);
+	item->SetMessageTarget		(this);
+	AddWindow					(item, true);
+	return						item;
+}
 void CUIListBox::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
 	if (m_pad->IsChild(pWnd))
@@ -98,8 +106,10 @@ LPCSTR CUIListBox::GetSelectedText()
 	CUIWindow* w	=	GetSelected();
 
 	if(w)
-		return smart_cast<IUITextControl*>(w)->GetText();
-	else
+	{
+		CUIListBoxItem* item = smart_cast<CUIListBoxItem*>(w);
+		return item->GetText();
+	}else
 		return NULL;
 }
 
@@ -125,7 +135,9 @@ u32 CUIListBox::GetSelectedIDX()
 LPCSTR CUIListBox::GetText(u32 idx)
 {
 	R_ASSERT				(idx<GetSize());
-	return smart_cast<IUITextControl*>(GetItem(idx))->GetText();
+
+	CUIListBoxItem* item = smart_cast<CUIListBoxItem*>(GetItem(idx));
+	return item->GetText();
 }
 
 void CUIListBox::MoveSelectedUp()
@@ -192,6 +204,25 @@ void CUIListBox::SetSelectedText(LPCSTR txt)
 	SetSelected(GetItemByText(txt));
 }
 
+int CUIListBox::GetIdxByTAG(u32 tag_val)
+{
+	int result = -1;
+
+	for(WINDOW_LIST_it it = m_pad->GetChildWndList().begin(); m_pad->GetChildWndList().end()!=it; ++it)
+	{
+		CUIListBoxItem* item = smart_cast<CUIListBoxItem*>(*it);
+		if (item)
+		{
+			if(result==-1)	result=0;
+			else			++result;
+
+			if (item->GetTAG() == tag_val)
+				break;
+		}
+	}
+	return result;
+}
+
 CUIListBoxItem* CUIListBox::GetItemByTAG(u32 tag_val)
 {
 	for(WINDOW_LIST_it it = m_pad->GetChildWndList().begin(); m_pad->GetChildWndList().end()!=it; ++it)
@@ -254,11 +285,6 @@ void CUIListBox::SetTextColor(u32 color)
 	m_text_color = color;
 }
 
-void CUIListBox::SetTextColorS(u32 color)
-{
-	m_text_color_s = color;
-}
-
 u32 CUIListBox::GetTextColor()
 {
 	return m_text_color;
@@ -266,23 +292,14 @@ u32 CUIListBox::GetTextColor()
 
 void CUIListBox::SetFont(CGameFont* pFont)
 {
-	CUIWindow::SetFont(pFont);
+	m_pFont = pFont;
 }
 
 CGameFont* CUIListBox::GetFont()
 {
-	return CUIWindow::GetFont();
+	return m_pFont;
 }
 
-void CUIListBox::SetTextAlignment(ETextAlignment alignment)
-{
-	m_text_al = alignment;
-}
-
-ETextAlignment CUIListBox::GetTextAlignment()
-{
-	return m_text_al;
-}
 
 float CUIListBox::GetLongestLength()
 {

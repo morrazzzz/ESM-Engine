@@ -12,15 +12,21 @@ class CUIEditKeyBind : public CUIStatic, public CUIOptionsItem
 	bool			m_bPrimary;
 	_action*		m_action;
 	_keyboard*		m_keyboard;
+	_keyboard*		m_opt_backup_value;
 public:
 					CUIEditKeyBind			(bool bPrim);
 	virtual			~CUIEditKeyBind			();
 	// options item
-	virtual void	Register				(const char* entry, const char* group);
-	virtual void	SetCurrentValue			();
-	virtual void	SaveValue				();
-	virtual	void	OnMessage				(const char* message);
-	virtual bool	IsChanged				();
+	virtual void	AssignProps				(const shared_str& entry, const shared_str& group);
+
+	virtual void	SetCurrentOptValue		();	// opt->current
+	virtual void	SaveBackUpOptValue		();	// current->backup
+	virtual void	SaveOptValue			();	// current->opt
+	virtual void	UndoOptValue			();	// backup->current
+	virtual bool	IsChangedOptValue		() const;	// backup!=current
+	
+			void	SetValue				();
+	virtual	void	OnMessage				(LPCSTR message);
 
 	// CUIWindow methods
 	virtual void	Init					(float x, float y, float width, float height);	

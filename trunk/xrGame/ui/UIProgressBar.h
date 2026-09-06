@@ -39,8 +39,8 @@ public:
 	virtual void		Init						(float x, float y, float width, float height, bool bIsHorizontal);
 
 	void				SetRange					(float _Min, float _Max)	{ m_MinPos = _Min;  m_MaxPos = _Max; UpdateProgressBar();}
-	float				GetRange_min				() 							{ return  m_MinPos;}
-	float				GetRange_max				() 							{ return  m_MaxPos;}
+	float				GetRange_min				() 							{ return  m_MinPos; }
+	float				GetRange_max				() 							{ return  m_MaxPos; }
 
 	void				SetProgressPos				(float _Pos);
 	float				GetProgressPos				()							{ return m_ProgressPos.y; }

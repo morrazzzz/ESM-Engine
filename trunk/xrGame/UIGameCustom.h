@@ -64,7 +64,7 @@ public:
 	IC CUIInventoryWnd&	InventoryMenu			() const { return *m_InventoryMenu; }
 	IC CUIPdaWnd&		PdaMenu					() const { return *m_PdaMenu;   }
 	void ShowHideInventoryMenu() const;
-	void ShowHidePdaMenu(const EPdaTabs tab) const;
+	void ShowHidePdaMenu(const shared_str& section) const;
 	  
     void				ShowGameIndicators		(bool b)			{ m_bShowGameIndicators = b;};
 	bool				GameIndicatorsShown		()					{return m_bShowGameIndicators;};

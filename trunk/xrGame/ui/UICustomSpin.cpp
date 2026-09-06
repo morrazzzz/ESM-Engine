@@ -109,11 +109,11 @@ void CUICustomSpin::Update()
 {
 	CUIWindow::Update();
 	if(!m_pBtnUp->CursorOverWindow())
-		m_pBtnUp->SetButtonMode(CUIButton::BUTTON_NORMAL);
+		m_pBtnUp->SetButtonState(CUIButton::BUTTON_NORMAL);
 	if(!m_pBtnDown->CursorOverWindow())
-		m_pBtnDown->SetButtonMode(CUIButton::BUTTON_NORMAL);
+		m_pBtnDown->SetButtonState(CUIButton::BUTTON_NORMAL);
     
-	if (CUIButton::BUTTON_PUSHED == m_pBtnUp->GetButtonsState() && m_pBtnUp->CursorOverWindow())
+	if (CUIButton::BUTTON_PUSHED == m_pBtnUp->GetButtonState() && m_pBtnUp->CursorOverWindow())
 	{		
 		if (m_time_begin < Device.dwTimeContinual - m_p_delay)
 		{
@@ -132,7 +132,7 @@ void CUICustomSpin::Update()
 				m_p_delay -= 50;
 		}
 	}else
-	if (CUIButton::BUTTON_PUSHED == m_pBtnDown->GetButtonsState() && m_pBtnDown->CursorOverWindow())
+	if (CUIButton::BUTTON_PUSHED == m_pBtnDown->GetButtonState() && m_pBtnDown->CursorOverWindow())
 	{
 		if (m_time_begin < Device.dwTimeContinual - m_p_delay)
 		{

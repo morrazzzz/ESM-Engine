@@ -56,7 +56,7 @@ void CUIPropertiesBox::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 
 bool CUIPropertiesBox::AddItem(const char*  str, void* pData, u32 tag_value)
 {
-	CUIListBoxItem* itm		= m_UIListWnd.AddItem(str);
+	CUIListBoxItem* itm		= m_UIListWnd.AddTextItem(str);
 	itm->SetTAG				(tag_value);
 	itm->SetData			(pData);
 

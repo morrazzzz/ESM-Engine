@@ -19,7 +19,7 @@ CUIItemInfo::CUIItemInfo()
 {
 	UIItemImageSize.set			(0.0f,0.0f);
 	UICondProgresBar			= NULL;
-	UICondition					= NULL;
+	//UICondition					= NULL;
 	UICost						= NULL;
 	UIWeight					= NULL;
 	UIItemImage					= NULL;
@@ -59,34 +59,34 @@ void CUIItemInfo::Init(LPCSTR xml_name){
 
 	if(uiXml.NavigateToNode("static_name",0))
 	{
-		UIName						= xr_new<CUIStatic>();	 
+		UIName						= xr_new<CUITextWnd>();	 
 		AttachChild					(UIName);		
 		UIName->SetAutoDelete		(true);
-		xml_init.InitStatic			(uiXml, "static_name", 0,	UIName);
+		xml_init.InitTextWnd		(uiXml, "static_name", 0,	UIName);
 	}
 	if(uiXml.NavigateToNode("static_weight",0))
 	{
-		UIWeight				= xr_new<CUIStatic>();	 
+		UIWeight				= xr_new<CUITextWnd>();	 
 		AttachChild				(UIWeight);		
 		UIWeight->SetAutoDelete(true);
-		xml_init.InitStatic		(uiXml, "static_weight", 0,			UIWeight);
+		xml_init.InitTextWnd		(uiXml, "static_weight", 0,			UIWeight);
 	}
 
 	if(uiXml.NavigateToNode("static_cost",0))
 	{
-		UICost					= xr_new<CUIStatic>();	 
+		UICost					= xr_new<CUITextWnd>();	 
 		AttachChild				(UICost);
 		UICost->SetAutoDelete	(true);
-		xml_init.InitStatic		(uiXml, "static_cost", 0,			UICost);
+		xml_init.InitTextWnd		(uiXml, "static_cost", 0,			UICost);
 	}
 
-	if(uiXml.NavigateToNode("static_condition",0))
-	{
-		UICondition					= xr_new<CUIStatic>();	 
-		AttachChild					(UICondition);
-		UICondition->SetAutoDelete	(true);
-		xml_init.InitStatic			(uiXml, "static_condition", 0,		UICondition);
-	}
+	//if(uiXml.NavigateToNode("static_condition",0))
+	//{
+	//	UICondition					= xr_new<CUIStatic>();	 
+	//	AttachChild					(UICondition);
+	//	UICondition->SetAutoDelete	(true);
+	//	xml_init.InitStatic			(uiXml, "static_condition", 0,		UICondition);
+	//}
 
 	if(uiXml.NavigateToNode("condition_progress",0))
 	{
@@ -167,7 +167,7 @@ void CUIItemInfo::InitItem(CInventoryItem* pInvItem)
 		TryAddArtefactInfo					(pInvItem->object().cNameSect());
 		if(m_desc_info.bShowDescrText)
 		{
-			CUIStatic* pItem					= xr_new<CUIStatic>();
+			CUITextWnd* pItem					= xr_new<CUITextWnd>();
 			pItem->SetTextColor					(m_desc_info.uDescClr);
 			pItem->SetFont						(m_desc_info.pDescFont);
 			pItem->SetWidth						(UIDesc->GetDesiredChildWidth());

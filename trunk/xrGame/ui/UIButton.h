@@ -46,8 +46,8 @@ public:
 	} E_BUTTON_STATE;
 
 	// Установка состояния кнопки: утоплена, не утоплена
-	void				SetButtonMode			(E_BUTTON_STATE eBtnState)	{ m_eButtonState = eBtnState; }
-	E_BUTTON_STATE		GetButtonsState			()							{ return m_eButtonState;}
+	void				SetButtonState			(E_BUTTON_STATE eBtnState)	{ m_eButtonState = eBtnState; }
+	E_BUTTON_STATE		GetButtonState			() const					{ return m_eButtonState;}
 
 	// Поведение кнопки как переключателя реализовано пока только в режиме NORMAL_PRESS
 	void				SetButtonAsSwitch		(bool bAsSwitch)			{ m_bIsSwitch = bAsSwitch; }

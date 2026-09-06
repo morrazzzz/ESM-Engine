@@ -9,15 +9,11 @@ void CUIOptionsManagerScript::SetCurrentValues(const char* group){
 }
 
 void CUIOptionsManagerScript::SaveBackupValues(const char* group){
-	CUIOptionsItem::GetOptionsManager()->SeveBackupValues(group);
+	CUIOptionsItem::GetOptionsManager()->SaveBackupValues(group);
 }
 
 void CUIOptionsManagerScript::SaveValues(const char* group){
 	CUIOptionsItem::GetOptionsManager()->SaveValues(group);
-}
-
-bool CUIOptionsManagerScript::IsGroupChanged(const char* group){
-	return CUIOptionsItem::GetOptionsManager()->IsGroupChanged(group);
 }
 
 void CUIOptionsManagerScript::UndoGroup(const char* group){
@@ -32,6 +28,15 @@ void CUIOptionsManagerScript::SendMessage2Group(const char* group, const char* m
 	CUIOptionsItem::GetOptionsManager()->SendMessage2Group(group, message);
 }
 
+bool CUIOptionsManagerScript::NeedSystemRestart()
+{
+	return CUIOptionsItem::GetOptionsManager()->NeedSystemRestart();
+}
+bool CUIOptionsManagerScript::NeedVidRestart()
+{
+	return CUIOptionsItem::GetOptionsManager()->NeedVidRestart();
+}
+
 #pragma optimize("s",on)
 void CUIOptionsManagerScript::script_register(lua_State *L)
 {
@@ -42,10 +47,10 @@ void CUIOptionsManagerScript::script_register(lua_State *L)
 			.def("SaveBackupValues",	&CUIOptionsManagerScript::SaveBackupValues )
 			.def("SetCurrentValues",	&CUIOptionsManagerScript::SetCurrentValues )
 			.def("SaveValues",			&CUIOptionsManagerScript::SaveValues )
-			.def("IsGroupChanged",		&CUIOptionsManagerScript::IsGroupChanged )
 			.def("UndoGroup",			&CUIOptionsManagerScript::UndoGroup )
 			.def("OptionsPostAccept",	&CUIOptionsManagerScript::OptionsPostAccept )
 			.def("SendMessage2Group",	&CUIOptionsManagerScript::SendMessage2Group )
-			
+			.def("NeedSystemRestart",	&CUIOptionsManagerScript::NeedSystemRestart )
+			.def("NeedVidRestart",		&CUIOptionsManagerScript::NeedVidRestart )
 		];
 }

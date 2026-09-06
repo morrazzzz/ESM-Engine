@@ -125,15 +125,6 @@ void CUIPdaWnd::Init()
 	UIMainPdaFrame->AttachChild	(UITabControl);
 	xml_init.InitTabControl		(uiXml, "tab", 0, UITabControl);
 	UITabControl->SetMessageTarget(this);
-
-	if(GameID()!=GAME_SINGLE){
-		UITabControl->GetButtonsVector()->at(0)->Enable(false);
-		UITabControl->GetButtonsVector()->at(2)->Enable(false);
-		UITabControl->GetButtonsVector()->at(3)->Enable(false);
-		UITabControl->GetButtonsVector()->at(4)->Enable(false);
-		UITabControl->GetButtonsVector()->at(5)->Enable(false);
-		UITabControl->GetButtonsVector()->at(6)->Enable(false);
-	}
 	
 	m_updatedSectionImage			= xr_new<CUIStatic>();
 	xml_init.InitStatic				(uiXml, "updated_section_static", 0, m_updatedSectionImage);
@@ -141,7 +132,7 @@ void CUIPdaWnd::Init()
 	m_oldSectionImage				= xr_new<CUIStatic>();
 	xml_init.InitStatic				(uiXml, "old_section_static", 0, m_oldSectionImage);
 
-	m_pActiveSection				= eptNoActiveTab;
+	m_pActiveSection = "button_pda_map";
 
 	RearrangeTabButtons			(UITabControl, m_sign_places_main);
 }
@@ -150,7 +141,7 @@ void CUIPdaWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
 	if(pWnd == UITabControl){
 		if (TAB_CHANGED == msg){
-			SetActiveSubdialog	((EPdaTabs)UITabControl->GetActiveIndex());
+			SetActiveSubdialog	(UITabControl->GetActiveId());
 		}
 	}else 
 	{
@@ -195,58 +186,62 @@ void CUIPdaWnd::Update()
 	UpdateDateTime			();
 }
 
-void CUIPdaWnd::SetActiveSubdialog(EPdaTabs section)
+void CUIPdaWnd::SetActiveSubdialog(const shared_str& section)
 {
-	if(	m_pActiveSection == section) return;
+	if (m_pActiveSection == section) 
+		return;
 
-	if (m_pActiveDialog){
+	if (m_pActiveDialog) {
 		UIMainPdaFrame->DetachChild(m_pActiveDialog);
 		m_pActiveDialog->Show(false);
 	}
 
-	switch (section) 
+	if (section == "button_pda_diary")
 	{
-	case eptDiary:
-		m_pActiveDialog			= smart_cast<CUIWindow*>(UIDiaryWnd);
+		m_pActiveDialog = smart_cast<CUIWindow*>(UIDiaryWnd);
 		InventoryUtilities::SendInfoToActor("ui_pda_events");
-		g_pda_info_state		&= ~pda_section::diary;
-		break;
-	case eptContacts:
-		m_pActiveDialog			= smart_cast<CUIWindow*>(UIPdaContactsWnd);
-		InventoryUtilities::SendInfoToActor("ui_pda_contacts");
-		g_pda_info_state		&= ~pda_section::contacts;
-		break;
-	case eptMap:
-		m_pActiveDialog			= smart_cast<CUIWindow*>(UIMapWnd);
-		g_pda_info_state		&= ~pda_section::map;
-		break;
-	case eptEncyclopedia:
-		m_pActiveDialog			= smart_cast<CUIWindow*>(UIEncyclopediaWnd);
-		InventoryUtilities::SendInfoToActor("ui_pda_encyclopedia");
-		g_pda_info_state		&= ~pda_section::encyclopedia;
-		break;
-	case eptActorStatistic:
-		m_pActiveDialog			= smart_cast<CUIWindow*>(UIActorInfo);
-		InventoryUtilities::SendInfoToActor("ui_pda_actor_info");
-		g_pda_info_state		&= ~pda_section::statistics;
-		break;
-	case eptRanking:
-		m_pActiveDialog			= smart_cast<CUIWindow*>(UIStalkersRanking);
-		g_pda_info_state		&= ~pda_section::ranking;
-		InventoryUtilities::SendInfoToActor("ui_pda_ranking");
-		break;
-	case eptQuests:
-		m_pActiveDialog			= smart_cast<CUIWindow*>(UIEventsWnd);
-		g_pda_info_state		&= ~pda_section::quests;
-		break;
-	default:
-		Msg("not registered button identifier [%d]",UITabControl->GetActiveIndex());
+		g_pda_info_state &= ~pda_section::diary;
 	}
+	else if (section == "button_pda_contacts")
+	{
+		m_pActiveDialog = smart_cast<CUIWindow*>(UIPdaContactsWnd);
+		InventoryUtilities::SendInfoToActor("ui_pda_contacts");
+		g_pda_info_state &= ~pda_section::contacts;
+	}
+	else if (section == "button_pda_map")
+	{
+		m_pActiveDialog = smart_cast<CUIWindow*>(UIMapWnd);
+		g_pda_info_state &= ~pda_section::map;
+	}
+	else if (section == "button_pda_encyclopedia")
+	{
+		m_pActiveDialog = smart_cast<CUIWindow*>(UIEncyclopediaWnd);
+		InventoryUtilities::SendInfoToActor("ui_pda_encyclopedia");
+		g_pda_info_state &= ~pda_section::encyclopedia;
+	}
+	else if (section == "button_pda_statistics")
+	{
+		m_pActiveDialog = smart_cast<CUIWindow*>(UIActorInfo);
+		InventoryUtilities::SendInfoToActor("ui_pda_actor_info");
+		g_pda_info_state &= ~pda_section::statistics;
+	}
+	else if (section == "button_pda_ranking")
+	{
+		m_pActiveDialog = smart_cast<CUIWindow*>(UIStalkersRanking);
+		g_pda_info_state &= ~pda_section::ranking;
+		InventoryUtilities::SendInfoToActor("ui_pda_ranking");
+	}
+	else if (section == "button_pda_quests")
+	{
+		m_pActiveDialog = smart_cast<CUIWindow*>(UIEventsWnd);
+		g_pda_info_state &= ~pda_section::quests;
+	}
+
 	UIMainPdaFrame->AttachChild		(m_pActiveDialog);
 	m_pActiveDialog->Show			(true);
 
-	if(UITabControl->GetActiveIndex()!=section)
-		UITabControl->SetNewActiveTab	(section);
+	if (UITabControl->GetActiveId() != section)
+		UITabControl->SetActiveTab(section);
 
 	m_pActiveSection = section;
 }

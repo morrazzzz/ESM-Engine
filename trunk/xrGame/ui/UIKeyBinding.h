@@ -1,8 +1,8 @@
 #pragma once
 #include "UIWindow.h"
-#include "UILabel.h"
-#include "UIListWnd.h"
+//#include "UIListWnd.h"
 #include "UIFrameWindow.h"
+#include "UIFrameLineWnd.h"
 #include "UIEditBox.h"
 
 class CUIXml;

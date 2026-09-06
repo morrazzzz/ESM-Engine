@@ -161,7 +161,7 @@ void CUITaskRootItem::Update		()
 			m_switchDescriptionBtn->InitTexture	("ui_icons_newPDA_showmap");
 	}
 
-	m_switchDescriptionBtn->SetButtonMode(m_EventsWnd->GetDescriptionMode() ? CUIButton::BUTTON_NORMAL : CUIButton::BUTTON_PUSHED);
+	m_switchDescriptionBtn->SetButtonState(m_EventsWnd->GetDescriptionMode() ? CUIButton::BUTTON_NORMAL : CUIButton::BUTTON_PUSHED);
 
 	if(m_remTimeStatic->IsShown())
 	{
@@ -180,7 +180,7 @@ bool CUITaskRootItem::OnDbClick	()
 
 void CUITaskRootItem::OnSwitchDescriptionClicked	(CUIWindow*, void*)
 {
-	m_switchDescriptionBtn->SetButtonMode(m_EventsWnd->GetDescriptionMode() ? CUIButton::BUTTON_PUSHED : CUIButton::BUTTON_NORMAL);
+	m_switchDescriptionBtn->SetButtonState(m_EventsWnd->GetDescriptionMode() ? CUIButton::BUTTON_PUSHED : CUIButton::BUTTON_NORMAL);
 
 	m_EventsWnd->SetDescriptionMode						(!m_EventsWnd->GetDescriptionMode());
 	OnItemClicked										(this, NULL);
@@ -293,5 +293,5 @@ void CUITaskSubItem::OnShowDescriptionClicked (CUIWindow*, void*)
 
 void CUITaskSubItem::MarkSelected (bool b)
 {
-	m_showDescriptionBtn->SetButtonMode		(b ? CUIButton::BUTTON_PUSHED : CUIButton::BUTTON_NORMAL);
+	m_showDescriptionBtn->SetButtonState(b ? CUIButton::BUTTON_PUSHED : CUIButton::BUTTON_NORMAL);
 }

@@ -47,7 +47,7 @@ void CUIKeyBinding::FillUpList(CUIXml& xml_doc_ui, LPCSTR path_ui)
 
 		CUIStatic* pItem					= xr_new<CUIStatic>();
 		CUIXmlInit::InitStatic				(xml_doc_ui, strconcat(sizeof(buf),buf,path_ui,":scroll_view:item_group"),	0, pItem);
-		pItem->SetTextST					(grp_name.c_str());
+		pItem->TextItemControl()->SetTextST		(grp_name.c_str());
 		m_scroll_wnd->AddWindow				(pItem, true);
 
 		// add group items
@@ -62,7 +62,7 @@ void CUIKeyBinding::FillUpList(CUIXml& xml_doc_ui, LPCSTR path_ui)
 
 			pItem							= xr_new<CUIStatic>();
 			CUIXmlInit::InitStatic			(xml_doc_ui, strconcat(sizeof(buf),buf,path_ui,":scroll_view:item_key"),	0, pItem);
-			pItem->SetTextST				(command_id.c_str());
+			pItem->TextItemControl()->SetTextST				(command_id.c_str());
 			m_scroll_wnd->AddWindow			(pItem, true);
 
 			shared_str exe					= xml_doc.ReadAttrib("command",j,"exe");
@@ -79,14 +79,14 @@ void CUIKeyBinding::FillUpList(CUIXml& xml_doc_ui, LPCSTR path_ui)
 			float item_pos					= m_header[1].GetWndPos().x;
 			CUIEditKeyBind* pEditKB			= xr_new<CUIEditKeyBind>(true);pEditKB->SetAutoDelete(true);
 			pEditKB->Init					(item_pos, 0, item_width, pItem->GetWndSize().y);
-			pEditKB->Register				(*exe,"key_binding");
+			pEditKB->AssignProps			(exe,"key_binding");
 			pItem->AttachChild				(pEditKB);
 
 			item_width						= m_header[2].GetWidth()-3.0f;
 			item_pos						= m_header[2].GetWndPos().x;
 			pEditKB							= xr_new<CUIEditKeyBind>(false);pEditKB->SetAutoDelete(true);
 			pEditKB->Init					(item_pos, 0, item_width, pItem->GetWndSize().y);
-			pEditKB->Register				(*exe,"key_binding");
+			pEditKB->AssignProps			(exe,"key_binding");
 			pItem->AttachChild				(pEditKB);
 		}
 		xml_doc.SetLocalRoot				(xml_doc.GetRoot());
@@ -100,7 +100,7 @@ void CUIKeyBinding::FillUpList(CUIXml& xml_doc_ui, LPCSTR path_ui)
 void CUIKeyBinding::CheckStructure(CUIXml& xml_doc)
 {
 	bool first = true;
-	CUIStatic*	pItem = nullptr;
+	CUITextWnd*	pItem = nullptr;
 	
 	for (int i=0; true; i++)
 	{
@@ -111,21 +111,24 @@ void CUIKeyBinding::CheckStructure(CUIXml& xml_doc)
 				continue;
 			else
 			{
+
 				if (first)
 				{
-					pItem					= xr_new<CUIStatic>();
+					pItem					= xr_new<CUITextWnd>();
 					pItem->SetWndPos		(Fvector2().set(0,0));
 					pItem->SetWndSize		(Fvector2().set(m_scroll_wnd->GetWndSize().x,20.0f));
 					pItem->SetText			("NEXT ITEMS NOT DESCRIBED IN COMMAND DESC LIST");
-					m_scroll_wnd->AttachChild(pItem);
 					first					= false;
+					pItem->SetAutoDelete	(true);
+					m_scroll_wnd->AddWindow	(pItem, true);
 				}
-
-				pItem						= xr_new<CUIStatic>();
+				
+				pItem						= xr_new<CUITextWnd>();
 				pItem->SetWndPos			(Fvector2().set(0,0));
 				pItem->SetWndSize			(Fvector2().set(m_scroll_wnd->GetWndSize().x,20.0f));
 				pItem->SetText				(action_name);
-				m_scroll_wnd->AttachChild	(pItem);
+				pItem->SetAutoDelete		(true);
+				m_scroll_wnd->AddWindow		(pItem, true);
 			}
 		}
 		else

@@ -3,21 +3,28 @@
 
 class CUIOptionsItem
 {
-	friend class CUIOptionsManager;
 public:
-	virtual					~CUIOptionsItem		();
-	virtual void			Register			(const char* entry, const char* group);
-	static CUIOptionsManager* GetOptionsManager	() {return &m_optionsManager;}
-protected:
-	virtual void			SetCurrentValue		()	=0;	
-	virtual void			SaveValue			();
+	enum ESystemDepends		{sdNothing, sdVidRestart, sdSndRestart, sdSystemRestart, sdApplyOnChange};
 
-	virtual bool			IsChanged			()			=0;
-	virtual void			SeveBackUpValue		()	{};
-	virtual void			Undo				()				{SetCurrentValue();};
+public:
+							CUIOptionsItem		();
+	virtual					~CUIOptionsItem		();
+	virtual void			AssignProps			(const shared_str& entry, const shared_str& group);
+	void					SetSystemDepends	(ESystemDepends val) {m_dep = val;}
+
+	static CUIOptionsManager* GetOptionsManager	() {return &m_optionsManager;}
+
+	virtual	void			OnMessage			(LPCSTR message);
+
+	virtual void			SetCurrentOptValue	()			= 0 {};	// opt->current
+	virtual void			SaveBackUpOptValue	()			= 0 {};	// current->backup
+	virtual void			SaveOptValue		()			= 0;	// current->opt
+	virtual void			UndoOptValue		()			= 0;	// backup->current
+	virtual bool			IsChangedOptValue	() const 	= 0 {};	// backup!=current
+			void			OnChangedOptValue	();
 			
-			void			SendMessage2Group	(const char* group, const char* message);
-	virtual	void			OnMessage			(const char* message);
+protected:
+			void			SendMessage2Group	(LPCSTR group, LPCSTR message);
 
 
 			// string
@@ -33,11 +40,11 @@ protected:
 			bool			GetOptBoolValue		();
 			void			SaveOptBoolValue	(bool val);
 			// token
-			char*			GetOptTokenValue	();
+			LPCSTR			GetOptTokenValue	();
 			xr_token*		GetOptToken			();
-			void			SaveOptTokenValue	(const char* val);
 
-	xr_string		m_entry;
+	shared_str				m_entry;
+	ESystemDepends			m_dep;
 
 	static CUIOptionsManager m_optionsManager;
 };

@@ -42,7 +42,7 @@ protected:
 
 	// Текущий активный диалог
 	CUIWindow*				m_pActiveDialog;
-	EPdaTabs				m_pActiveSection;
+	shared_str				m_pActiveSection;
 	xr_vector<Fvector2>		m_sign_places_main;
 
 public:
@@ -69,7 +69,7 @@ public:
 	virtual void 			Hide				();
 	virtual bool			OnMouseAction				(float x, float y, EUIMessages mouse_action) {CUIDialogWnd::OnMouseAction(x,y,mouse_action);return true;} //always true because StopAnyMove() == false
 	
-	void					SetActiveSubdialog	(EPdaTabs section);
+	void					SetActiveSubdialog	(const shared_str& section);
 	virtual bool			StopAnyMove			(){return false;}
 
 			void			PdaContentsChanged	(pda_section::part type);

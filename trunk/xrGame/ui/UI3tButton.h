@@ -1,35 +1,23 @@
-// File:        UI3tButton.cpp
-// Description: Button with 3 texutres (for <enabled>, <disabled> and <touched> states)
-// Created:     07.12.2004
-// Author:      Serhiy 0. Vynnychenk0
-// Mail:        narrator@gsc-game.kiev.ua
-//
-// copyright 2004 GSC Game World
-//
-
 #pragma once
 #include "UIButton.h"
 #include "UI_IB_Static.h"
 
 class CUI3tButton : public CUIButton 
 {
+	typedef CUIButton	inherited;
 	friend class CUIXmlInit;
-	using CUIButton::SetTextColor;
+//.	using CUIButton::SetTextColor;
 public:
 					CUI3tButton					();
 	virtual			~CUI3tButton				();
 	// appearance
 	using CUIButton::Init;
 
-	virtual void 	Init						(float x, float y, float width, float height);
 	virtual	void 	InitButton					(Fvector2 pos, Fvector2 size);
 	virtual void 	InitTexture					(LPCSTR tex_name);
 	virtual void 	InitTexture					(LPCSTR tex_enabled, LPCSTR tex_disabled, LPCSTR tex_touched, LPCSTR tex_highlighted);	
 
-			void 	SetTextColor				(u32 color);
-			void 	SetTextColorH				(u32 color);
-			void 	SetTextColorD				(u32 color);
-			void 	SetTextColorT				(u32 color);
+//.			void 	SetTextColor				(u32 color);
 	virtual void 	SetTextureOffset			(float x, float y);	
 	virtual void 	SetWidth					(float width);
 	virtual void 	SetHeight					(float height);
@@ -40,24 +28,21 @@ public:
 	virtual void 	OnFocusReceive				();
 	virtual void	OnFocusLost					();
 
-	// check button
-	bool			GetCheck					() {return m_eButtonState == BUTTON_PUSHED;}
-	void			SetCheck					(bool ch) {m_eButtonState = ch ? BUTTON_PUSHED : BUTTON_NORMAL;}
-	
-	// behavior
 	virtual void	DrawTexture					();
 	virtual void	Update						();
+	virtual void 	Draw						();
 	
-	//virtual void Enable(bool bEnable);	
-	virtual bool 	OnMouseAction						(float x, float y, EUIMessages mouse_action);
 	virtual bool 	OnMouseDown					(int mouse_btn);
-			void 	SetCheckMode				(bool mode) {m_bCheckMode = mode;}
+
+	void			SetStateTextColor				(u32 color, IBState state){m_dwTextColor[state] = color; m_bUseTextColor[state] = true;}
+	u32				m_dwTextColor[4];
+	bool			m_bUseTextColor[4]; // note: 0 index will be ignored
 
 
-	CUIStatic			m_hint;
-	CUI_IB_Static		m_background;
-protected:
-	bool				m_bCheckMode;
+	bool					m_frameline_mode;
+	bool					vertical;
+	CUI_IB_Static*			m_background;
+	CUI_IB_FrameLineWnd*	m_back_frameline;
 private:	
 			void		PlaySoundH					();
 			void		PlaySoundT					();

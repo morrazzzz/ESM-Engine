@@ -147,13 +147,21 @@ void CUIEditKeyBind::Update()
 	
 }
 
-void CUIEditKeyBind::Register(const char* entry, const char* group)
+void CUIEditKeyBind::AssignProps(const shared_str& entry, const shared_str& group)
 {
-	CUIOptionsItem::Register				(entry, group);
-	m_action		= action_name_to_ptr	(entry);
+	CUIOptionsItem::AssignProps				(entry, group);
+	m_action		= action_name_to_ptr	(entry.c_str());
 }
 
-void CUIEditKeyBind::SetCurrentValue()
+void CUIEditKeyBind::SetValue()
+{
+	if(m_keyboard)
+		SetText				(m_keyboard->key_local_name);
+	else
+		SetText				(NULL);
+}
+
+void CUIEditKeyBind::SetCurrentOptValue()
 {
 	string64				buff;
 	ZeroMemory				(buff,sizeof(buff));
@@ -164,18 +172,30 @@ void CUIEditKeyBind::SetCurrentValue()
 	int idx					= (m_bPrimary)?0:1;
 	m_keyboard				= pbinding->m_keyboard[idx];
 
-	if(m_keyboard)
-		SetText				(m_keyboard->key_local_name);
-	else
-		SetText				(NULL);
+	SetValue				();
 }
 
-void CUIEditKeyBind::SaveValue()
+void CUIEditKeyBind::SaveOptValue()
 {
-	CUIOptionsItem::SaveValue();
-
+	CUIOptionsItem::SaveOptValue();
     BindAction2Key		();
-	m_bChanged			= false;
+}
+
+void CUIEditKeyBind::SaveBackUpOptValue()
+{
+	CUIOptionsItem::SaveBackUpOptValue();
+	m_opt_backup_value	= m_keyboard;
+}
+
+void CUIEditKeyBind::UndoOptValue()
+{
+	m_keyboard = m_opt_backup_value;
+	CUIOptionsItem::UndoOptValue();
+}
+
+bool CUIEditKeyBind::IsChangedOptValue() const
+{
+	return m_keyboard != m_opt_backup_value;
 }
 
 #include "../../xr_3da/xr_ioconsole.h"
@@ -193,10 +213,6 @@ void CUIEditKeyBind::BindAction2Key()
 		comm_bind			+= m_keyboard->key_name;
 		Console->Execute	(comm_bind.c_str());
 	}	
-}
-
-bool CUIEditKeyBind::IsChanged(){
-	return m_bChanged;
 }
 
 void CUIEditKeyBind::OnMessage(const char* message){

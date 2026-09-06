@@ -1,18 +1,15 @@
-// file:		UISpinNum.h
-// description:	Spin Button with text data (unlike numerical data)
-// created:		15.06.2005
-// author:		Serge Vynnychenko
-//
-
 #include "UICustomSpin.h"
 
-class CUISpinText : public CUICustomSpin{
+class CUISpinText : public CUICustomSpin
+{
 public:
 	CUISpinText();
 	// CUIOptionsItem
-	virtual void	SetCurrentValue();
-	virtual void	SaveValue();
-	virtual bool	IsChanged();	
+	virtual void	SetCurrentOptValue	();	// opt->current
+	virtual void	SaveBackUpOptValue	();	// current->backup
+	virtual void	SaveOptValue		();	// current->opt
+	virtual void	UndoOptValue		();	// backup->current
+	virtual bool	IsChangedOptValue	() const;	// backup!=current
 
 	// own
 	virtual void	OnBtnUpClick();
@@ -25,7 +22,7 @@ protected:
 	virtual bool	CanPressDown	();
 	virtual void	IncVal			(){};
 	virtual void	DecVal			(){};
-			void	SetItem();
+			void	SetItem			(int v);
 			struct SInfo{
 				shared_str	_orig;
 				shared_str	_transl;
@@ -36,4 +33,5 @@ protected:
 
     Items	m_list;
 	int		m_curItem;
+	int		m_opt_backup_value;
 };

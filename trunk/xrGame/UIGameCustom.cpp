@@ -163,11 +163,11 @@ void CUIGameCustom::ShowHideInventoryMenu() const
 		m_InventoryMenu->HideDialog();
 }
 
-void CUIGameCustom::ShowHidePdaMenu(const EPdaTabs tab) const
+void CUIGameCustom::ShowHidePdaMenu(const shared_str& section) const
 {
 	if (!m_PdaMenu->IsShown())
 	{
-		m_PdaMenu->SetActiveSubdialog(tab);
+		m_PdaMenu->SetActiveSubdialog(section);
 		m_PdaMenu->ShowDialog(true);
 	}
 	else

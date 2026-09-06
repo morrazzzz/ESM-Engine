@@ -11,15 +11,14 @@
 void CUIRadioButton::Init(float x, float y, float width, float height)
 {
 	TextItemControl();
-    CUI3tButton::InitTexture("ui_radio");
+	CUI3tButton::InitTexture("ui_radio");
+	Fvector2 sz = m_background->Get(S_Enabled)->GetStaticItem()->GetSize();
+	TextItemControl()->m_TextOffset.x = sz.x;
 
-	Frect r = m_background.GetE()->GetStaticItem()->GetTextureRect(); 
-	TextItemControl()->m_TextOffset.x = r.width();
-
-    CUI3tButton::Init(x,y, width, r.height() - 5);
+    CUI3tButton::Init(x,y, width, sz.y - 5.0f);
 
 	TextItemControl()->m_wndPos.set(x, y);
-	TextItemControl()->m_wndSize.set(Fvector2().set(width, m_background.GetE()->GetStaticItem()->GetTextureRect().height())/*m_background->Get(S_Enabled)->GetStaticItem()->GetSize().y)*/);
+	TextItemControl()->m_wndSize.set(Fvector2().set(width, m_background->Get(S_Enabled)->GetStaticItem()->GetSize().y));
 }
 
 void CUIRadioButton::InitTexture(LPCSTR tex_name){

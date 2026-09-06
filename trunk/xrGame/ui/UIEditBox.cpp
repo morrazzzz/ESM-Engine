@@ -5,39 +5,73 @@
 #include "stdafx.h"
 #include <dinput.h>
 #include "uieditbox.h"
-#include "../HUDManager.h"
-#include "UIColorAnimatorWrapper.h"
+#include "UIFrameLineWnd.h"
 
 
 CUIEditBox::CUIEditBox()
+:m_frameLine(NULL)
 {
-	AttachChild(&m_frameLine);
 }
 
 CUIEditBox::~CUIEditBox(void)
 {
 }	
 
-void CUIEditBox::Init(float x, float y, float width, float height){
-	m_frameLine.Init(0,0,width,height);
-	CUICustomEdit::Init(x,y,width,height);
+void CUIEditBox::Init(float x, float y, float width, float height) 
+{
+	if (m_frameLine)
+	{
+		m_frameLine->SetWndPos(Fvector2().set(0, 0));
+		m_frameLine->SetWndSize(Fvector2().set(width, height));
+	}
+	CUICustomEdit::Init(x, y, width, height);
 }
 
-void CUIEditBox::InitTexture(const char* texture){
-	m_frameLine.InitTexture(texture);
+void CUIEditBox::InitTextureEx(LPCSTR texture, LPCSTR  shader)
+{
+	if(!m_frameLine)
+	{
+		m_frameLine = xr_new<CUIFrameLineWnd>();
+		AttachChild(m_frameLine);
+		m_frameLine->SetAutoDelete(true);
+	}
+	m_frameLine->InitTexture(texture, shader);
+	m_frameLine->SetWndPos			(Fvector2().set(0,0));
+	m_frameLine->SetWndSize			(GetWndSize());
 }
 
-void CUIEditBox::SetCurrentValue(){
-	SetText(GetOptStringValue());
+void CUIEditBox::InitTexture(LPCSTR texture)
+{
+	InitTextureEx(texture, "hud\\default");
 }
 
-void CUIEditBox::SaveValue(){
-	CUIOptionsItem::SaveValue();
-	SaveOptStringValue(GetText());
+void CUIEditBox::SetCurrentOptValue()
+{
+	CUIOptionsItem::SetCurrentOptValue	();
+	SetText								(GetOptStringValue());
 }
 
-bool CUIEditBox::IsChanged(){
-	return 0 != xr_strcmp(GetOptStringValue(),GetText());
+void CUIEditBox::SaveOptValue()
+{
+	CUIOptionsItem::SaveOptValue		();
+	SaveOptStringValue					(GetText());
+}
+
+void CUIEditBox::SaveBackUpOptValue()
+{
+	CUIOptionsItem::SaveBackUpOptValue	();
+	m_opt_backup_value					= GetText();
+}
+
+void CUIEditBox::UndoOptValue()
+{
+	SetText								(m_opt_backup_value.c_str());
+	CUIOptionsItem::UndoOptValue		();
+}
+
+bool CUIEditBox::IsChangedOptValue() const
+{
+	return 0 != xr_strcmp(m_opt_backup_value.c_str(), GetText());
 }
 
 

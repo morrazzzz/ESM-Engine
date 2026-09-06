@@ -19,9 +19,12 @@
 
 extern u32			g_pda_info_state;
 
+constexpr const char* JournalDiaryName = "button_pda_journal";
+constexpr const char* NewsDiaryName = "button_pda_news";
+
 CUIDiaryWnd::CUIDiaryWnd()
 {
-	m_currFilter	= eNone;
+	m_currFilter = JournalDiaryName;
 }
 
 CUIDiaryWnd::~CUIDiaryWnd()
@@ -38,7 +41,7 @@ void CUIDiaryWnd::Show(bool status)
 {
 	inherited::Show		(status);
 	if(status)
-		Reload( (EDiaryFilter)m_FilterTab->GetActiveIndex() );
+		Reload(m_FilterTab->GetActiveId());
 }
 
 void RearrangeTabButtons(CUITabControl* pTab, xr_vector<Fvector2>& vec_sign_places);
@@ -121,38 +124,29 @@ void	CUIDiaryWnd::SendMessage			(CUIWindow* pWnd, s16 msg, void* pData)
 
 void CUIDiaryWnd::OnFilterChanged			(CUIWindow* w, void*)
 {
-	Reload( (EDiaryFilter)m_FilterTab->GetActiveIndex() );
+	Reload(m_FilterTab->GetActiveId());
 }
 
-void CUIDiaryWnd::Reload	(EDiaryFilter new_filter)
+void CUIDiaryWnd::Reload	(const shared_str& fitler)
 {
-//.	if(m_currFilter==new_filter) return;
+//	if (m_currFilter == fitler)
+//		return;
 
-	switch (m_currFilter){
-		case eJournal:
-			UnloadJournalTab	();
-			break;
-//		case eInfo:
-//			UnloadInfoTab	();
-//			break;
-		case eNews:
-			UnloadNewsTab	();
-			break;
-	};
+	if (m_currFilter == JournalDiaryName)
+		UnloadJournalTab();
+	else if (m_currFilter == NewsDiaryName)
+		UnloadNewsTab();
 
-	m_currFilter = new_filter;
+	m_currFilter = fitler;
 
-	switch (m_currFilter){
-		case eJournal:
-			LoadJournalTab	(ARTICLE_DATA::eJournalArticle);
-			break;
-//		case eInfo:
-//			LoadInfoTab		();
-//			break;
-		case eNews:
-			LoadNewsTab	();
-			break;
-	};
+	if (m_currFilter == JournalDiaryName)
+	{
+		LoadJournalTab(ARTICLE_DATA::eJournalArticle);
+		return;
+	}
+
+	if (m_currFilter == NewsDiaryName)
+		LoadNewsTab();
 }
 
 void CUIDiaryWnd::AddNews	()

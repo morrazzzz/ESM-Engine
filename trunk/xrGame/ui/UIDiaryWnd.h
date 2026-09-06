@@ -25,7 +25,7 @@ class CUIDiaryWnd: public CUIWindow, public CUIWndCallback
 			eNone
 	};
 protected:
-	EDiaryFilter		m_currFilter;
+	shared_str		m_currFilter;
 
 	CUINewsWnd*			m_UINewsWnd;
 
@@ -60,7 +60,7 @@ protected:
 			void		LoadInfoTab				();
 			void		UnloadNewsTab			();
 			void		LoadNewsTab				();
-			void		Reload					(EDiaryFilter new_filter);
+			void		Reload					(const shared_str& fitler);
 public:
 						CUIDiaryWnd				();
 	virtual				~CUIDiaryWnd			();

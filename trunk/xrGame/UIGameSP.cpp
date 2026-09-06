@@ -103,7 +103,7 @@ bool CUIGameSP::IR_UIOnKeyboardPress(int dik)
 		break;
 	case kACTIVE_JOBS:
 		if (!TopInputReceiver() || TopInputReceiver() == m_PdaMenu) {
-			ShowHidePdaMenu(eptQuests);
+			ShowHidePdaMenu("button_pda_quests");
 			return true;
 		}
 		break;
@@ -111,14 +111,14 @@ bool CUIGameSP::IR_UIOnKeyboardPress(int dik)
 	case kMAP:
 		if (!TopInputReceiver() || TopInputReceiver() == m_PdaMenu)
 		{
-			ShowHidePdaMenu(eptMap);
+			ShowHidePdaMenu("button_pda_map");
 			return true;
 		}
 		break;
 
 	case kCONTACTS:
 		if (!TopInputReceiver() || TopInputReceiver() == m_PdaMenu) {
-			ShowHidePdaMenu(eptContacts);
+			ShowHidePdaMenu("button_pda_contacts");
 			return true;
 		}
 		break;

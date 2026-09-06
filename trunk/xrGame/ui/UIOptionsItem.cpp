@@ -5,12 +5,16 @@
 
 CUIOptionsManager CUIOptionsItem::m_optionsManager;
 
+CUIOptionsItem::CUIOptionsItem()
+:m_dep(sdNothing)
+{}
+
 CUIOptionsItem::~CUIOptionsItem()
 {
 	m_optionsManager.UnRegisterItem(this);
 }
 
-void CUIOptionsItem::Register(const char* entry, const char* group)
+void CUIOptionsItem::AssignProps(const shared_str& entry, const shared_str& group)
 {
 	m_optionsManager.RegisterItem	(this, group);
 	m_entry							= entry;	
@@ -33,7 +37,7 @@ LPCSTR CUIOptionsItem::GetOptStringValue()
 
 void CUIOptionsItem::SaveOptStringValue(const char* val)
 {
-	xr_string command	= m_entry;
+	xr_string command	= m_entry.c_str();
 	command				+= " ";
 	command				+= val;
 	Console->Execute	(command.c_str());
@@ -47,7 +51,7 @@ void CUIOptionsItem::GetOptIntegerValue(int& val, int& min, int& max)
 void CUIOptionsItem::SaveOptIntegerValue(int val)
 {
 	string512			command;
-	sprintf_s				(command, "%s %d", m_entry.c_str(), val);
+	xr_sprintf			(command, "%s %d", m_entry.c_str(), val);
 	Console->Execute	(command);
 }
 
@@ -59,27 +63,25 @@ void CUIOptionsItem::GetOptFloatValue(float& val, float& min, float& max)
 void CUIOptionsItem::SaveOptFloatValue(float val)
 {
 	string512			command;
-	sprintf_s				(command, "%s %f", m_entry.c_str(), val);
+	xr_sprintf			(command, "%s %f", m_entry.c_str(), val);
 	Console->Execute	(command);
 }
 
 bool CUIOptionsItem::GetOptBoolValue()
 {
-	BOOL val;
-	val = Console->GetBool(m_entry.c_str());
-	return val ? true : false;
+	return Console->GetBool( m_entry.c_str() );
 }
 
 void CUIOptionsItem::SaveOptBoolValue(bool val)
 {
-	string512			command;
-	sprintf_s				(command, "%s %s", m_entry.c_str(), (val)?"on":"off");
-	Console->Execute	(command);
+	string512		command;
+	xr_sprintf		(command, "%s %s", m_entry.c_str(), (val)?"1":"0");
+	Console->Execute(command);
 }
 
-char* CUIOptionsItem::GetOptTokenValue()
+LPCSTR CUIOptionsItem::GetOptTokenValue()
 {
-	return (char*)Console->GetToken(m_entry.c_str());
+	return Console->GetToken(m_entry.c_str());
 }
 
 xr_token* CUIOptionsItem::GetOptToken()
@@ -87,21 +89,29 @@ xr_token* CUIOptionsItem::GetOptToken()
 	return Console->GetXRToken(m_entry.c_str());
 }
 
-void CUIOptionsItem::SaveOptTokenValue(const char* val){
-	SaveOptStringValue(val);
+void CUIOptionsItem::SaveOptValue()
+{
+	if(!IsChangedOptValue())
+		return;
+
+	if(m_dep==sdVidRestart)
+		m_optionsManager.DoVidRestart();
+	else
+	if(m_dep==sdSndRestart)
+		m_optionsManager.DoSndRestart();
+	else
+	if(m_dep==sdSystemRestart)
+		m_optionsManager.DoSystemRestart();
 }
 
-void CUIOptionsItem::SaveValue(){
-	if (	m_entry == "vid_mode"		|| 
-			m_entry == "_preset"		|| 
-			m_entry == "rs_fullscreen" 	||	
-			m_entry == "rs_fullscreen"	||
-			m_entry == "r__supersample"	|| 
-			m_entry == "rs_refresh_60hz"||
-			m_entry == "rs_no_v_sync"	||
-			m_entry == "texture_lod")
-	m_optionsManager.DoVidRestart();
+void CUIOptionsItem::OnChangedOptValue()
+{
+	if(m_dep==sdApplyOnChange)
+		SaveOptValue();
+}
 
-	if (/*m_entry == "snd_freq" ||*/ m_entry == "snd_efx")
-		m_optionsManager.DoSndRestart();
+void CUIOptionsItem::UndoOptValue()
+{
+	if(m_dep==sdApplyOnChange)
+		SaveOptValue();
 }

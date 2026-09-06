@@ -50,7 +50,8 @@ void draw_rect(Frect& r, u32 color)
 
 	DRender->SetDebugShader(IDebugRender::dbgShaderWindow);
 
-	UIRender->StartPrimitive(5, IUIRender::ptLineStrip, IUIRender::ePointType::pttTL);
+//.	UIRender->StartLineStrip	(5);
+	UIRender->StartPrimitive	(5, IUIRender::ptLineStrip, UI().m_currentPointType);
 
 	UIRender->PushPoint(r.lt.x, r.lt.y, 0, color, 0, 0);
 	UIRender->PushPoint(r.rb.x, r.lt.y, 0, color, 0, 0);
@@ -419,12 +420,18 @@ void CUIWindow::OnFocusReceive()
 {
 	m_dwFocusReceiveTime	= Device.dwTimeGlobal;
 	m_bCursorOverWindow		= true;	
+
+//	if (GetMessageTarget())
+//        GetMessageTarget()->SendMessage(this, WINDOW_FOCUS_RECEIVED, NULL);
 }
 
 void CUIWindow::OnFocusLost()
 {
 	m_dwFocusReceiveTime	= 0;
 	m_bCursorOverWindow		= false;	
+
+//	if (GetMessageTarget())
+//        GetMessageTarget()->SendMessage(this, WINDOW_FOCUS_LOST, NULL);
 }
 
 

@@ -13,12 +13,11 @@ void CUITabControl::script_register(lua_State *L)
 		.def(					constructor<>())
 		.def("AddItem",			(bool (CUITabControl::*)(CUITabButton*))(&CUITabControl::AddItem), adopt<2>())
 		.def("AddItem",			(bool (CUITabControl::*)(const char*, const char*,float,float, float,float))	&CUITabControl::AddItem)
-		.def("RemoveItem",				&CUITabControl::RemoveItem)
 		.def("RemoveAll",				&CUITabControl::RemoveAll)
-		.def("GetActiveIndex",			&CUITabControl::GetActiveIndex)
+		.def("GetActiveId",				&CUITabControl::GetActiveId_script)
 		.def("GetTabsCount",			&CUITabControl::GetTabsCount)
-		.def("SetNewActiveTab",			&CUITabControl::SetNewActiveTab)
-		.def("GetButtonByIndex",		&CUITabControl::GetButtonByIndex),
+		.def("SetActiveTab",			&CUITabControl::SetActiveTab_script)
+		.def("GetButtonById",			&CUITabControl::GetButtonById_script),
 
 		class_<CUITabButton, CUIButton>("CUITabButton")
 		.def(							constructor<>())		

@@ -3,8 +3,9 @@
 #include "UILines.h"
 #include "../string_table.h"
 
-CUISpinText::CUISpinText(){
-    m_curItem = -1;
+CUISpinText::CUISpinText()
+:m_curItem(-1)
+{    
 }
 
 void CUISpinText::AddItem_(const char* item, int id)
@@ -18,14 +19,14 @@ void CUISpinText::AddItem_(const char* item, int id)
 	if (-1 == m_curItem)
 	{
 		m_curItem		= 0;
-		SetItem			();
+		SetItem			(m_curItem);
 	}
 }
 
-void CUISpinText::SetItem()
+void CUISpinText::SetItem(int v)
 {
-	R_ASSERT			(m_curItem != -1);
-	m_pLines->SetText	(m_list[m_curItem]._transl.c_str());
+	R_ASSERT			(v != -1);
+	m_pLines->SetText	(m_list[v]._transl.c_str());
 }
 
 LPCSTR CUISpinText::GetTokenText()
@@ -34,10 +35,14 @@ LPCSTR CUISpinText::GetTokenText()
 	return				m_list[m_curItem]._orig.c_str();
 }
 
-void CUISpinText::SetCurrentValue(){
+void CUISpinText::SetCurrentOptValue()
+{
+	CUIOptionsItem::SetCurrentOptValue();
+
 	xr_token* tok = GetOptToken();
 
-	while (tok->name){
+	while (tok->name)
+	{
 		AddItem_(tok->name, tok->id);
 		tok++;
 	}
@@ -50,18 +55,31 @@ void CUISpinText::SetCurrentValue(){
 			break;
 		}
 
-	SetItem();
+	SetItem		(m_curItem);
 }
 
-void CUISpinText::SaveValue()
+void CUISpinText::SaveBackUpOptValue()
 {
-	CUIOptionsItem::SaveValue		();
-	SaveOptTokenValue				(m_list[m_curItem]._orig.c_str());
+	CUIOptionsItem::SaveBackUpOptValue	();
+	m_opt_backup_value	= m_curItem;
 }
 
-bool CUISpinText::IsChanged()
+void CUISpinText::UndoOptValue()
 {
-	return 0 != xr_strcmp(GetOptTokenValue(), m_list[m_curItem]._orig.c_str());
+	m_curItem		= m_opt_backup_value;
+	SetItem			(m_curItem);
+	CUIOptionsItem::UndoOptValue	();
+}
+
+void CUISpinText::SaveOptValue()
+{
+	CUIOptionsItem::SaveOptValue	();
+	SaveOptStringValue				(m_list[m_curItem]._orig.c_str());
+}
+
+bool CUISpinText::IsChangedOptValue() const
+{
+	return m_opt_backup_value!=m_curItem;
 }
 
 void CUISpinText::OnBtnUpClick()
@@ -69,7 +87,7 @@ void CUISpinText::OnBtnUpClick()
 	if (CanPressUp())
 	{
 		m_curItem		++;
-		SetItem			();
+		SetItem			(m_curItem);
 	}
 
 	CUICustomSpin::OnBtnUpClick();
@@ -80,7 +98,7 @@ void CUISpinText::OnBtnDownClick()
 	if (CanPressDown())
 	{
 		m_curItem--;
-		SetItem		();
+		SetItem		(m_curItem);
 	}
 
 	CUICustomSpin::OnBtnDownClick();

@@ -20,6 +20,10 @@
 #include "../alife_registry_wrappers.h"
 #include "../encyclopedia_article.h"
 
+constexpr const char* ActiveTaskName = "button_pda_active";
+constexpr const char* FailedTaskName = "button_pda_failed";
+constexpr const char* AccomplishedTaskName = "button_pda_accomplished";
+
 CUIEventsWnd::CUIEventsWnd			()
 {
 	m_flags.zero			();
@@ -78,7 +82,7 @@ void CUIEventsWnd::Init				()
 	Register						(m_TaskFilter);
     AddCallback						("filter_tab",TAB_CHANGED,CUIWndCallback::void_function(this,&CUIEventsWnd::OnFilterChanged));
 
-   m_currFilter						= eActiveTask;
+   m_currFilter						= ActiveTaskName;
    SetDescriptionMode				(true);
 
    m_ui_task_item_xml.Init			(CONFIG_PATH, UI_PATH, "job_item.xml");
@@ -105,7 +109,7 @@ void	CUIEventsWnd::SendMessage			(CUIWindow* pWnd, s16 msg, void* pData)
 
 void CUIEventsWnd::OnFilterChanged			(CUIWindow* w, void*)
 {
-	m_currFilter			=(ETaskFilters)m_TaskFilter->GetActiveIndex();
+	m_currFilter = m_TaskFilter->GetActiveId();
 	ReloadList				(false);
 	if(!GetDescriptionMode())
 		SetDescriptionMode		(true);
@@ -173,13 +177,13 @@ bool CUIEventsWnd::Filter(CGameTask* t)
 	ETaskState task_state		= t->m_Objectives[0].TaskState();
 //	bool bprimary_only			= m_primary_or_all_filter_btn->GetCheck();
 
-	return (false/*m_currFilter==eOwnTask && task_state==eTaskUserDefined*/ )		||
-			( 
-			  ( true/*!bprimary_only || (bprimary_only && t->m_is_task_general)*/ )	&&
-				(
-					(m_currFilter==eAccomplishedTask	&& task_state==eTaskStateCompleted )||
-					(m_currFilter==eFailedTask			&& task_state==eTaskStateFail )||
-					(m_currFilter==eActiveTask			&& task_state==eTaskStateInProgress )
+	return (false/*m_currFilter==eOwnTask && task_state==eTaskUserDefined*/) ||
+		(
+			(true/*!bprimary_only || (bprimary_only && t->m_is_task_general)*/) &&
+			(
+				(m_currFilter == AccomplishedTaskName && task_state == eTaskStateCompleted) ||
+				(m_currFilter == FailedTaskName && task_state == eTaskStateFail) ||
+				(m_currFilter == ActiveTaskName && task_state == eTaskStateInProgress)
 				)
 			);
 }
