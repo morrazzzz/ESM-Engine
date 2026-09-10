@@ -21,6 +21,7 @@ CUILines::CUILines()
 	m_eVTextAlign = valTop;
 	m_dwTextColor = 0xffffffff;
 	m_TextOffset.set				(0.0f,0.0f);
+	m_text							="";
 	uFlags.zero();
 	uFlags.set(flNeedReparse,		FALSE);
 	uFlags.set(flComplexMode,		FALSE);
@@ -28,7 +29,6 @@ CUILines::CUILines()
 	uFlags.set(flColoringMode,		TRUE);
 	uFlags.set(flCutWordsMode,		FALSE);
 	uFlags.set(flRecognizeNewLine,	TRUE);
-	m_pFont = UI().Font().pFontLetterica16Russian;
 }
 
 CUILines::~CUILines(){
@@ -113,39 +113,39 @@ void CUILines::ParseText(bool force)
 	if(NULL == m_pFont)
 		return;
 
-	Reset();
-	if (!m_text.empty() && NULL == m_pFont)
-		R_ASSERT2(false, "can't parse text without font");
-		
+	Reset		();
 
 	CUILine* line = NULL;
 	if (uFlags.test(flColoringMode))
 		line = ParseTextToColoredLine(m_text.c_str());
 	else
 	{
-		line = xr_new<CUILine>();
-		CUISubLine subline;
-		subline.m_text = m_text;
-		subline.m_color = GetTextColor();
-		line->AddSubLine(&subline);
+		line				= xr_new<CUILine>();
+		CUISubLine			subline;
+		subline.m_text		= m_text.c_str();
+		subline.m_color		= GetTextColor();
+		line->AddSubLine	(&subline);
 	}
 
 	BOOL bNewLines = FALSE;
 
 	if (uFlags.test(flRecognizeNewLine))
-		if ( m_pFont->IsMultibyte() ) {
+		if ( m_pFont->IsMultibyte() ) 
+		{
 			CUILine *ptmp_line = xr_new<CUILine>();
 			int vsz = line->m_subLines.size();
 			VERIFY( vsz );
-			for ( int i = 0 ; i < vsz ; i++ ) {
+			for ( int i = 0 ; i < vsz ; i++ ) 
+			{
 				char *pszTemp = NULL;
 				const u32 tcolor = line->m_subLines[i].m_color;
 				char szTempLine[ MAX_MB_CHARS ] , *pszSearch = NULL;
 				size_t llen = xr_strlen( line->m_subLines[i].m_text.c_str() );
 				VERIFY( llen < MAX_MB_CHARS );
-				strcpy( szTempLine , line->m_subLines[i].m_text.c_str() );
+				xr_strcpy( szTempLine , line->m_subLines[i].m_text.c_str() );
 				pszSearch = szTempLine;
-				while ( ( pszTemp = strstr( pszSearch , "\\n" ) ) != NULL ) {
+				while ( ( pszTemp = strstr( pszSearch , "\\n" ) ) != NULL ) 
+				{
 					bNewLines = TRUE;
 					*pszTemp = '\0';
 					ptmp_line->AddSubLine( pszSearch , tcolor );
@@ -189,7 +189,7 @@ void CUILines::ParseText(bool force)
 				for ( u16 j = 0 ; j < nMarkers ; j ++ ) {
 					uPartLen = aMarkers[ j ] - uFrom;
 					VERIFY( ( uPartLen > 0 ) && ( uPartLen < MAX_MB_CHARS ) );
-					strncpy( szTempLine , pszText + uFrom , uPartLen );
+					strncpy_s( szTempLine , pszText + uFrom , uPartLen );
 					szTempLine[ uPartLen ] = '\0';
 					tmp_line.AddSubLine( szTempLine , tcolor );
 					m_lines.push_back( tmp_line );
@@ -199,7 +199,7 @@ void CUILines::ParseText(bool force)
 					uFrom += uPartLen;
 					#pragma warning( default : 4244 )
 				}
-				strncpy( szTempLine , pszText + uFrom , MAX_MB_CHARS );
+				strncpy_s( szTempLine , pszText + uFrom , MAX_MB_CHARS );
 				tmp_line.AddSubLine( szTempLine , tcolor );
 				m_lines.push_back( tmp_line );
 				tmp_line.Clear();
@@ -345,7 +345,7 @@ void CUILines::Draw(float x, float y)
 
 	static string256 passText;
 
-	if (m_text.empty())
+	if (m_text.size()==0)
 		return;
 
 	R_ASSERT(m_pFont);

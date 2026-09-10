@@ -39,7 +39,7 @@ public:
 
 	void					SetParent			(CUIWindow* pNewParent);
 	CUIWindow*				GetParent			()	const							{return m_pParentWnd;}
-	
+
 	//получить окно самого верхнего уровня
 	CUIWindow*				GetTop				()								{if(m_pParentWnd == NULL) return  this; 
 																				else return  m_pParentWnd->GetTop();}
@@ -122,14 +122,6 @@ public:
 			void			ResetAll			();
 
 
-	//временно!!!! (а может уже и нет)
-	virtual void			SetFont				(CGameFont* pFont)			{ m_pFont = pFont;}
-	CGameFont*				GetFont				()							{if(m_pFont) return m_pFont;
-																				if(m_pParentWnd== NULL)	
-																					return  m_pFont;
-																				else
-																					return  m_pParentWnd->GetFont();}
-
 	DEF_UILIST				(WINDOW_LIST, CUIWindow*);
 	WINDOW_LIST&			GetChildWndList		()							{return m_ChildWndList; }
 
@@ -168,9 +160,6 @@ protected:
 
 	//кому шлем сообщения
 	CUIWindow*				m_pMessageTarget;
-
-
-	CGameFont*				m_pFont;
 
 	// Последняя позиция мышки
 	Fvector2 cursor_pos;

@@ -14,7 +14,6 @@
 #include "UIProgressShape.h"
 #include "UIListWnd.h"
 #include "UITabControl.h"
-#include "UILabel.h"
 #include "UIEditBox.h"
 #include "UIEditBoxEx.h"
 #include "UITextBanner.h"
@@ -105,13 +104,6 @@ bool CUIXmlInit::InitWindow(CUIXml& xml_doc, LPCSTR path,
 	*/
 
    	string512 buf;
-	CGameFont *LocalFont = NULL;
-	u32 cl;
-
-	strconcat(sizeof(buf),buf,path,":font");
-	InitFont(xml_doc, buf, index, cl, LocalFont);
-	if (LocalFont)
-		pWnd->SetFont(LocalFont);
 
 	strconcat(sizeof(buf),buf,path,":window_name");
 	if(xml_doc.NavigateToNode(buf,index))
@@ -261,7 +253,8 @@ bool CUIXmlInit::InitTextWnd(CUIXml& xml_doc, const char* path, int index, CUITe
 	return true;
 }
 
-bool CUIXmlInit::InitCheck(CUIXml& xml_doc, LPCSTR path, int index, CUICheckButton* pWnd){
+bool CUIXmlInit::InitCheck(CUIXml& xml_doc, LPCSTR path, int index, CUICheckButton* pWnd)
+{
 	InitStatic(xml_doc, path, index, pWnd);
 
 	string256 buf;
@@ -277,7 +270,7 @@ bool CUIXmlInit::InitCheck(CUIXml& xml_doc, LPCSTR path, int index, CUICheckButt
 bool CUIXmlInit::InitSpin(CUIXml& xml_doc, const char* path, int index, CUICustomSpin* pWnd){
 	InitWindow(xml_doc, path, index, pWnd);
 	InitOptionsItem(xml_doc, path, index, pWnd);
-//	pWnd->InitSpin(pWnd->GetWndPos(), pWnd->GetWndSize());
+	pWnd->InitSpin(pWnd->GetWndPos(), pWnd->GetWndSize());
 
 	string256				foo;
 	u32						color;
@@ -343,10 +336,8 @@ bool CUIXmlInit::InitText(CUIXml& xml_doc, LPCSTR path, int index, CUILines* pLi
 	pLines->m_TextOffset.set(text_x, text_y);
 
 	shared_str text = xml_doc.Read(path, index, NULL);
-	CStringTable st;
-	if (!!text){
-		pLines->SetText(*st.translate(*text));
-	}
+	if (text.size())
+		pLines->SetText(CStringTable().translate(text).c_str());
 
 	return true;
 }
@@ -536,8 +527,9 @@ bool CUIXmlInit::InitListWnd(CUIXml& xml_doc, LPCSTR path,
 	InitFont							(xml_doc, *text_path, index, cl, LocalFont);
 	if (LocalFont)
 	{
-		pWnd->SetFont(LocalFont);
-		pWnd->SetTextColor(cl);
+//		R_ASSERT2(false, "Need me???");
+	//	pWnd-> SetFont(LocalFont);
+	//	pWnd->SetTextColor(cl);
 	}
 
 	pWnd->SetScrollBarProfile			(xml_doc.ReadAttrib(path, index, "scroll_profile", "default"));
@@ -1120,28 +1112,28 @@ bool CUIXmlInit::InitMultiText(CUIXml& xml_doc, LPCSTR path, int index, CUIStati
 	strconcat(sizeof(buf),buf,path,":text_color:e");
 	if (xml_doc.NavigateToNode(buf,index)){
 		color			= GetColor(xml_doc, buf, index, 0x00);
-		pWnd->SetTextColor(color, CUIStatic::E);
+		/*pWnd->SetTextColor(color, CUIStatic::E);*/
 		ASSERT = true;
 	}
 
 	strconcat(sizeof(buf),buf,path,":text_color:d");
 	if (xml_doc.NavigateToNode(buf,index)){
 		color			= GetColor(xml_doc, buf, index, 0x00);
-		pWnd->SetTextColor(color,CUIStatic::D);
+		//pWnd->SetTextColor(color,CUIStatic::D);
 		ASSERT = true;
 	}
 
 	strconcat(sizeof(buf),buf,path,":text_color:t");
 	if (xml_doc.NavigateToNode(buf, index)){
 		color			= GetColor(xml_doc, buf, index, 0x00);
-		pWnd->SetTextColor(color,CUIStatic::T);
+		//pWnd->SetTextColor(color,CUIStatic::T);
 		ASSERT = true;
 	}
 
 	strconcat(sizeof(buf),buf,path,":text_color:h");
 	if (xml_doc.NavigateToNode(buf,index)){
 		color			= GetColor(xml_doc, buf, index, 0x00);
-		pWnd->SetTextColor(color,CUIStatic::H);
+		//pWnd->SetTextColor(color,CUIStatic::H);
 		ASSERT = true;
 	}
 

@@ -5,7 +5,7 @@
 class CUIFrameWindow;
 class CUIFrameLineWnd;
 class CUIAnimatedStatic;
-class CUIStatic;
+class CUITextWnd;
 class CUICharacterInfo;
 class CUIScrollView;
 class CUIXml;
@@ -46,8 +46,8 @@ class CUIActorStaticticHeader :public CUIWindow, public CUISelectable
 protected:
 	u32				m_stored_alpha;
 public:
-	CUIStatic*		m_text1;
-	CUIStatic*		m_text2;
+	CUITextWnd*		m_text1;
+	CUITextWnd*		m_text2;
 public:
 					CUIActorStaticticHeader	(CUIActorInfoWnd* w);
 	void			Init					(CUIXml* xml, LPCSTR path, int idx_in_xml);
@@ -61,10 +61,10 @@ class CUIActorStaticticDetail :public CUIWindow
 {
 protected:
 public:
-	CUIStatic*		m_text0;
-	CUIStatic*		m_text1;
-	CUIStatic*		m_text2;
-	CUIStatic*		m_text3;
+	CUITextWnd*		m_text0;
+	CUITextWnd*		m_text1;
+	CUITextWnd*		m_text2;
+	CUITextWnd*		m_text3;
 public:
 	void			Init					(CUIXml* xml, LPCSTR path, int xml_idx);
 };

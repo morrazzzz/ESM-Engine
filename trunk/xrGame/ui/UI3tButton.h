@@ -11,11 +11,10 @@ public:
 					CUI3tButton					();
 	virtual			~CUI3tButton				();
 	// appearance
-	using CUIButton::Init;
 
 	virtual	void 	InitButton					(Fvector2 pos, Fvector2 size);
 	virtual void 	InitTexture					(LPCSTR tex_name);
-	virtual void 	InitTexture					(LPCSTR tex_enabled, LPCSTR tex_disabled, LPCSTR tex_touched, LPCSTR tex_highlighted);	
+	virtual void 	InitTexture					(LPCSTR tex_enabled, LPCSTR tex_disabled, LPCSTR tex_touched, LPCSTR tex_highlighted);
 
 //.			void 	SetTextColor				(u32 color);
 	virtual void 	SetTextureOffset			(float x, float y);	

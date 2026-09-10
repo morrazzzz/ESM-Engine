@@ -25,7 +25,6 @@ struct lanim_cont_xf :public lanim_cont{
 class CUIStatic : public CUIWindow, public ITextureOwner, public CUILightAnimColorConrollerImpl, public IUITextControl
 {
 	friend class CUIXmlInit;
-	friend class CUI3tButton;
 private:
 	typedef CUIWindow inherited;
 	lanim_cont_xf			m_lanim_xform;
@@ -66,14 +65,14 @@ public:
 	u32					GetColor					() const					{ return m_UIStaticItem.GetTextureColor();		}
 
 	// own
-			void			SetXformLightAnim(LPCSTR lanim, bool bCyclic);
-			void			ResetXformAnimation();
+			void			SetXformLightAnim		(LPCSTR lanim, bool bCyclic);
+			void			ResetXformAnimation		();
 
-			virtual void		DrawTexture();
-			virtual void		DrawText();
+	virtual void			DrawTexture				();
+	virtual void			DrawText				();
 
-			void AdjustHeightToText();
-			void AdjustWidthToText();
+			void 			AdjustHeightToText		();
+			void 			AdjustWidthToText		();
 
 	virtual void		Init						(LPCSTR tex_name, float x, float y, float width, float height);	
 			void		InitEx						(LPCSTR tex_name, LPCSTR sh_name, float x, float y, float width, float height);
@@ -87,10 +86,10 @@ public:
 	virtual LPCSTR			GetText					();
 	virtual void			SetTextColor			(u32 color);
 	virtual u32				GetTextColor			();
-	virtual void			SetFont					(CGameFont* pFont);
-	virtual CGameFont*		GetFont					();
-	virtual void			SetTextAlignment		(ETextAlignment alignment);
-	virtual ETextAlignment	GetTextAlignment		();
+//	virtual void			SetFont					(CGameFont* pFont);
+//	virtual CGameFont*		GetFont					();
+//	virtual void			SetTextAlignment		(ETextAlignment alignment);
+//	virtual ETextAlignment	GetTextAlignment		();
 
 	// text additional
 			void	SetTextComplexMode			(bool md);
@@ -112,35 +111,22 @@ public:
 	bool			Heading() { return m_bHeading; }
 	void			EnableHeading(bool b) { m_bHeading = b; }
 
+	void			SetConstHeading			(bool b)				{m_bConstHeading = b;};
+	bool			GetConstHeading			()						{return m_bConstHeading;}
+
 	virtual void			ColorAnimationSetTextureColor(u32 color, bool only_alpha);
 	virtual void			ColorAnimationSetTextColor(u32 color, bool only_alpha);
-
-	// will be need by CUI3tButton
-	// Don't change order!!!!!
-	typedef enum {
-		E, // enabled
-		D, // disabled
-		T, // touched
-		H  // highlighted
-	} E4States;
-
-	void SetTextColor(u32 color, E4States state);
 protected:
 	CUILines* m_pTextControl;
-
-	// this array of color will be useful in CUI3tButton class
-	// but we really need to declare it directly there because it must be initialized in CUIXmlInit::InitStatic
-	u32  m_dwTextColor[4];
-	bool m_bUseTextColor[4]; // note: 0 index will be ignored
 
 	bool m_bStretchTexture;
 	bool m_bTextureEnable;
 	CUIStaticItem m_UIStaticItem;
 
-	float			m_fHeading;
 	bool			m_bHeading;
+	bool			m_bConstHeading;
+	float			m_fHeading;
 
-    // Для вывода текстуры с обрезанием по маске используем CUIFrameWindow
 	Fvector2		m_TextureOffset;
 public:
 	CUILines* TextItemControl();

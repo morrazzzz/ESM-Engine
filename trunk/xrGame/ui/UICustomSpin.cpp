@@ -47,17 +47,22 @@ CUICustomSpin::~CUICustomSpin()
 	xr_delete					(m_pLines);
 }
 
-void CUICustomSpin::Init(float x, float y, float width, float height){
-	CUIWindow::Init				(x,y,width,SPIN_HEIGHT);
-	m_pFrameLine->Init			(0,0,width, SPIN_HEIGHT);
-	m_pFrameLine->InitTexture	("ui_spiner");
-	m_pBtnUp->Init				(width - BTN_SIZE - 1, 0, BTN_SIZE, BTN_SIZE);
+void CUICustomSpin::InitSpin(Fvector2 pos, Fvector2 size)
+{
+	CUIWindow::SetWndPos(pos);
+	CUIWindow::SetWndSize(Fvector2().set(size.x, SPIN_HEIGHT));
+
+	m_pFrameLine->SetWndPos(Fvector2().set(0, 0));
+	m_pFrameLine->SetWndSize(Fvector2().set(size.x, SPIN_HEIGHT));
+	m_pFrameLine->InitTexture("ui_spiner", "hud\\default");
+
+	m_pBtnUp->InitButton(Fvector2().set(size.x - BTN_SIZE - 1.0f, 0.0f), Fvector2().set(BTN_SIZE, BTN_SIZE));
 	m_pBtnUp->InitTexture		("ui_spiner_button_t");
-	m_pBtnDown->Init			(width - BTN_SIZE - 1, BTN_SIZE + 1, BTN_SIZE, BTN_SIZE);
+	m_pBtnDown->InitButton(Fvector2().set(size.x - BTN_SIZE - 1.0f, BTN_SIZE + 1.0f), Fvector2().set(BTN_SIZE, BTN_SIZE));
 	m_pBtnDown->InitTexture		("ui_spiner_button_b");
 
 	m_pLines->m_wndPos.set		(Fvector2().set(0,0));
-	m_pLines->m_wndSize.set		(Fvector2().set(width-BTN_SIZE-10.0f, SPIN_HEIGHT));
+	m_pLines->m_wndSize.set		(Fvector2().set(size.x-BTN_SIZE-10.0f, SPIN_HEIGHT));
 }
 
 void CUICustomSpin::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)

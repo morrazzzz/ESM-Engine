@@ -19,5 +19,5 @@ public:
 	//информация о персонаже
 	CUIStatic			UIIcon;
 	CUIStatic			UIName;
-	CUIStatic			UIMsgText;
+	CUITextWnd			UIMsgText;
 };

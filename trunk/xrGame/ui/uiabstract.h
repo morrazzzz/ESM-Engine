@@ -12,10 +12,10 @@ public:
 	virtual ~IUIFontControl()											 {};
 	virtual void			SetTextColor(u32 color)						= 0;
 	virtual u32				GetTextColor()								= 0;
-	virtual void			SetFont(CGameFont* pFont)					= 0;
-	virtual CGameFont*		GetFont()									= 0;
-	virtual void			SetTextAlignment(ETextAlignment alignment)	= 0;
-	virtual ETextAlignment	GetTextAlignment()							= 0;
+//	virtual void			SetFont(CGameFont* pFont)					= 0;
+//	virtual CGameFont*		GetFont()									= 0;
+//	virtual void			SetTextAlignment(ETextAlignment alignment)	= 0;
+//	virtual ETextAlignment	GetTextAlignment()							= 0;
 };
 
 typedef enum {

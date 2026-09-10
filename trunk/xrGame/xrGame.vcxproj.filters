@@ -1975,9 +1975,6 @@
     <Filter Include="UI\UIWindows\DragDrop2">
       <UniqueIdentifier>{5131f114-969c-4854-a93e-9c8de6d8471c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="UI\UIWindows\Label">
-      <UniqueIdentifier>{3c3bcf62-38cc-4588-a924-3c03646308eb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="UI\UIWindows\ScrollBar">
       <UniqueIdentifier>{1c6ff3f8-b583-4e2d-b233-2ecb58d68370}</UniqueIdentifier>
     </Filter>
@@ -5664,9 +5661,6 @@
     <ClInclude Include="ui\UIDragDropListEx.h">
       <Filter>UI\UIWindows\DragDrop2</Filter>
     </ClInclude>
-    <ClInclude Include="ui\UILabel.h">
-      <Filter>UI\UIWindows\Label</Filter>
-    </ClInclude>
     <ClInclude Include="ui\UIScrollBar.h">
       <Filter>UI\UIWindows\ScrollBar</Filter>
     </ClInclude>
@@ -8300,9 +8294,6 @@
     <ClCompile Include="ui\UIDragDropListEx.cpp">
       <Filter>UI\UIWindows\DragDrop2</Filter>
     </ClCompile>
-    <ClCompile Include="ui\UILabel.cpp">
-      <Filter>UI\UIWindows\Label</Filter>
-    </ClCompile>
     <ClCompile Include="ui\UIScrollBar.cpp">
       <Filter>UI\UIWindows\ScrollBar</Filter>
     </ClCompile>
@@ -8548,6 +8539,9 @@
     </ClCompile>
     <ClCompile Include="ui\UIHelper.cpp">
       <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\UIListBox_script.cpp">
+      <Filter>UI\UIWindows\ListBox</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -42,8 +42,9 @@ void CUIPdaMsgListItem::Init(float x, float y, float width, float height)
 		UIName.Show			(false);
 		UIName.Enable		(false);
 	}
-	AttachChild				(&UIMsgText);
-	xml_init.InitStatic		(uiXml, "text_static", 0, &UIMsgText);	
+
+	AttachChild(&UIMsgText);
+	xml_init.InitTextWnd(uiXml, "text_static", 0, &UIMsgText);
 }
 
 void CUIPdaMsgListItem::SetTextColor(u32 color){

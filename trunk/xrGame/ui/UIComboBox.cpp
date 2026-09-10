@@ -5,8 +5,7 @@
 #include "uilistboxitem.h"
 #include "../string_table.h"
 
-#define CB_HEIGHT 23.0f
-#define BTN_SIZE  23.0f
+#define CB_HEIGHT 20.0f
 
 CUIComboBox::CUIComboBox()
 {
@@ -33,7 +32,7 @@ void CUIComboBox::SetListLength(int length)
 
 void CUIComboBox::InitComboBox(Fvector2 pos, float width)
 {
-	float lb_text_offset = 0.0f;//5.0f;
+	float lb_text_offset				= 5.0f;
 
 	m_bInited = true;
 	if (0 == m_iListHeight)
@@ -74,7 +73,6 @@ void CUIComboBox::InitComboBox(Fvector2 pos, float width)
 	m_list_box.SetMessageTarget			(this);
 }
 
-#include "uilistboxitem.h"
 CUIListBoxItem* CUIComboBox::AddItem_(LPCSTR str, int _data)
 {
     R_ASSERT2			(m_bInited, "Can't add item to ComboBox before Initialization");

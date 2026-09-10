@@ -12,12 +12,12 @@
 #include "UIScrollView.h"
 #include "UICharacterInfo.h"
 #include "UI3tButton.h"
-#include "UIInventoryUtilities.h"
 #include "../actor_statistic_mgr.h"
 #include "../character_community.h"
 #include "../character_reputation.h"
 #include "../relation_registry.h"
 #include "../string_table.h"
+#include "UIHelper.h"
 
 #define				ACTOR_STATISTIC_XML		"actor_statistic.xml"
 #define				ACTOR_CHARACTER_XML		"pda_dialog_character.xml"
@@ -298,13 +298,8 @@ void CUIActorStaticticHeader::Init	(CUIXml* xml, LPCSTR path, int idx_in_xml)
 
 	xml->SetLocalRoot					(xml->NavigateToNode(path,idx_in_xml));
 
-	m_text1								= xr_new<CUIStatic>(); m_text1->SetAutoDelete(true);
-	AttachChild							(m_text1);
-	xml_init.InitStatic					(*xml, "text_1", 0, m_text1);
-
-	m_text2								= xr_new<CUIStatic>(); m_text2->SetAutoDelete(true);
-	AttachChild							(m_text2);
-	xml_init.InitStatic					(*xml, "text_2", 0, m_text2);
+	m_text1 = UIHelper::CreateTextWnd(*xml, "text_1", this);
+	m_text2 = UIHelper::CreateTextWnd(*xml, "text_2", this);
 
 	xml_init.InitAutoStaticGroup		(*xml, "auto", 0, this);
 
@@ -347,21 +342,10 @@ void CUIActorStaticticDetail::Init		(CUIXml* xml, LPCSTR path, int idx)
 
 	xml->SetLocalRoot					(xml->NavigateToNode(path,idx));
 
-	m_text0								= xr_new<CUIStatic>(); m_text0->SetAutoDelete(true);
-	AttachChild							(m_text0);
-	xml_init.InitStatic					(*xml, "text_0", 0, m_text0);
-
-	m_text1								= xr_new<CUIStatic>(); m_text1->SetAutoDelete(true);
-	AttachChild							(m_text1);
-	xml_init.InitStatic					(*xml, "text_1", 0, m_text1);
-
-	m_text2								= xr_new<CUIStatic>(); m_text2->SetAutoDelete(true);
-	AttachChild							(m_text2);
-	xml_init.InitStatic					(*xml, "text_2", 0, m_text2);
-	
-	m_text3								= xr_new<CUIStatic>(); m_text3->SetAutoDelete(true);
-	AttachChild							(m_text3);
-	xml_init.InitStatic					(*xml, "text_3", 0, m_text3);
+	m_text0 = UIHelper::CreateTextWnd(*xml, "text_0", this);
+	m_text1 = UIHelper::CreateTextWnd(*xml, "text_1", this);
+	m_text2 = UIHelper::CreateTextWnd(*xml, "text_2", this);
+	m_text3 = UIHelper::CreateTextWnd(*xml, "text_3", this);
 
 	xml_init.InitAutoStaticGroup		(*xml, "auto", 0, this);
 

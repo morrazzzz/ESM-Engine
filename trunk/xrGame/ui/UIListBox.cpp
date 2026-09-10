@@ -6,6 +6,7 @@
 
 CUIListBox::CUIListBox()
 {
+	m_pFont					= NULL;
 	m_flags.set				(eItemsSelectabe, TRUE);
 
 	m_def_item_height		 = 20;
@@ -75,9 +76,10 @@ void CUIListBox::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 	{
 		switch (msg){
 			case LIST_ITEM_SELECT:	
+				GetMessageTarget()->SendMessage(this, LIST_ITEM_SELECT, pData);
+				break;
 			case LIST_ITEM_CLICKED:
-			case LIST_ITEM_DB_CLICKED:
-				GetMessageTarget()->SendMessage(this, msg, pData);
+				GetMessageTarget()->SendMessage(this, LIST_ITEM_CLICKED, pData);
 				break;
 			case LIST_ITEM_FOCUS_RECEIVED:
 				if (m_bImmediateSelection)

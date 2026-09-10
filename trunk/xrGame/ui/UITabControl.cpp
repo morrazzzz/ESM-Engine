@@ -1,5 +1,3 @@
-// Реализация окна с закладками.
-
 #include "StdAfx.h"
 #include "UITabControl.h"
 #include "UITabButton.h"
@@ -58,9 +56,13 @@ bool CUITabControl::IsChangedOptValue() const
 // добавление кнопки-закладки в список закладок контрола
 bool CUITabControl::AddItem(const char *pItemName, const char *pTexName, float x, float y, float width, float height)
 {
+	Fvector2 pos{ x,y };
+	Fvector2 size{ width, height };
+
 	CUITabButton *pNewButton = xr_new<CUITabButton>();
 	pNewButton->SetAutoDelete	(true);
-	pNewButton->Init			(pTexName, x, y, width, height);
+	pNewButton->InitButton		(pos, size);
+	pNewButton->InitTexture		(pTexName);
 	pNewButton->TextItemControl()->SetText(pItemName);
 	pNewButton->TextItemControl()->SetTextColor	(m_cGlobalTextColor);
 	pNewButton->SetTextureColor	(m_cGlobalButtonColor);
@@ -81,7 +83,6 @@ bool CUITabControl::AddItem(CUITabButton *pButton)
 	return						true;
 }
 
-// Удаление всех элементов
 void CUITabControl::RemoveAll()
 {
 	TABS_VECTOR_it it = m_TabsArr.begin();
@@ -111,18 +112,17 @@ void CUITabControl::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 		}
 	}
 
-	else if (STATIC_FOCUS_RECEIVED	== msg	||
-			 STATIC_FOCUS_LOST		== msg)
+	else if (WINDOW_FOCUS_RECEIVED	== msg	||
+			 WINDOW_FOCUS_LOST		== msg)
 	{
 		for (u8 i = 0; i < m_TabsArr.size(); ++i)
 		{
 			if (pWnd == m_TabsArr[i])
 			{				
-				if (msg == STATIC_FOCUS_RECEIVED)
+				if (msg == WINDOW_FOCUS_RECEIVED)
                     OnStaticFocusReceive(pWnd);
 				else
 					OnStaticFocusLost(pWnd);
-
 			}
 		}
 	}
@@ -132,12 +132,14 @@ void CUITabControl::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 	}
 }
 
-void CUITabControl::OnStaticFocusReceive(CUIWindow* pWnd){
-	GetMessageTarget()->SendMessage			(this, STATIC_FOCUS_RECEIVED, static_cast<void*>(pWnd));
+void CUITabControl::OnStaticFocusReceive(CUIWindow* pWnd)
+{
+	GetMessageTarget()->SendMessage			(this, WINDOW_FOCUS_RECEIVED, static_cast<void*>(pWnd));
 }
 
-void CUITabControl::OnStaticFocusLost(CUIWindow* pWnd){
-	GetMessageTarget()->SendMessage			(this, STATIC_FOCUS_LOST, static_cast<void*>(pWnd));
+void CUITabControl::OnStaticFocusLost(CUIWindow* pWnd)
+{
+	GetMessageTarget()->SendMessage			(this, WINDOW_FOCUS_LOST, static_cast<void*>(pWnd));
 }
 
 void CUITabControl::OnTabChange(const shared_str& sCur, const shared_str& sPrev)

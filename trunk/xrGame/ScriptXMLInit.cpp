@@ -9,7 +9,6 @@
 #include "ui/UIListWnd.h"
 #include "ui/UITabControl.h"
 #include "ui/UIFrameWindow.h"
-#include "ui/UILabel.h"
 #include "ui/UIKeyBinding.h"
 #include "ui/UIEditBox.h"
 #include "ui/UIAnimatedStatic.h"
@@ -51,7 +50,8 @@ void CScriptXmlInit::InitWindow(LPCSTR path, int index, CUIWindow* pWnd){
 }
 
 
-CUIFrameWindow*	CScriptXmlInit::InitFrame(LPCSTR path, CUIWindow* parent){
+CUIFrameWindow*	CScriptXmlInit::InitFrame(LPCSTR path, CUIWindow* parent)
+{
 	CUIFrameWindow* pWnd = xr_new<CUIFrameWindow>();
 	CUIXmlInit::InitFrameWindow(m_xml, path, 0, pWnd);
 	pWnd->SetAutoDelete(true);
@@ -61,7 +61,8 @@ CUIFrameWindow*	CScriptXmlInit::InitFrame(LPCSTR path, CUIWindow* parent){
 }
 
 
-CUIFrameLineWnd* CScriptXmlInit::InitFrameLine(LPCSTR path, CUIWindow* parent){
+CUIFrameLineWnd* CScriptXmlInit::InitFrameLine(LPCSTR path, CUIWindow* parent)
+{
 	CUIFrameLineWnd* pWnd = xr_new<CUIFrameLineWnd>();
 	CUIXmlInit::InitFrameLine(m_xml, path, 0, pWnd);
 	pWnd->SetAutoDelete(true);
@@ -70,7 +71,9 @@ CUIFrameLineWnd* CScriptXmlInit::InitFrameLine(LPCSTR path, CUIWindow* parent){
 	return pWnd;
 }
 
-CUIEditBox* CScriptXmlInit::InitEditBox(LPCSTR path, CUIWindow* parent){
+
+CUIEditBox* CScriptXmlInit::InitEditBox(LPCSTR path, CUIWindow* parent)
+{
 	CUIEditBox* pWnd = xr_new<CUIEditBox>();
 	CUIXmlInit::InitEditBox(m_xml, path, 0, pWnd);
 	pWnd->SetAutoDelete(true);
@@ -79,7 +82,8 @@ CUIEditBox* CScriptXmlInit::InitEditBox(LPCSTR path, CUIWindow* parent){
 	return pWnd;
 }
 
-CUIStatic* CScriptXmlInit::InitStatic(LPCSTR path, CUIWindow* parent){
+CUIStatic* CScriptXmlInit::InitStatic(LPCSTR path, CUIWindow* parent)
+{
 	CUIStatic* pWnd = xr_new<CUIStatic>();
 	CUIXmlInit::InitStatic(m_xml, path, 0, pWnd);
 	pWnd->SetAutoDelete(true);
@@ -119,9 +123,16 @@ CUIScrollView* CScriptXmlInit::InitScrollView(LPCSTR path, CUIWindow* parent){
 	return pWnd;
 }
 
+CUIListBox*	CScriptXmlInit::InitListBox(LPCSTR path, CUIWindow* parent)
+{
+	CUIListBox* pWnd = xr_new<CUIListBox>();
+	CUIXmlInit::InitListBox(m_xml, path, 0, pWnd);
+	_attach_child(pWnd, parent);
+	return pWnd;
+}
 
-
-CUICheckButton* CScriptXmlInit::InitCheck(LPCSTR path, CUIWindow* parent){
+CUICheckButton* CScriptXmlInit::InitCheck(LPCSTR path, CUIWindow* parent)
+{
 	CUICheckButton* pWnd = xr_new<CUICheckButton>();
 	CUIXmlInit::InitCheck(m_xml, path, 0, pWnd);
 	pWnd->SetAutoDelete(true);
@@ -206,7 +217,7 @@ CUITabControl* CScriptXmlInit::InitTab(LPCSTR path, CUIWindow* parent){
 
 CUIMMShniaga* CScriptXmlInit::InitMMShniaga(LPCSTR path, CUIWindow* parent){
 	CUIMMShniaga* pWnd = xr_new<CUIMMShniaga>();
-	pWnd->Init(m_xml, path);
+	pWnd->InitShniaga(m_xml, path);
 	pWnd->SetAutoDelete(true);
 	_attach_child(pWnd, parent);
 //.	if(parent) parent->AttachChild(pWnd);
@@ -266,6 +277,7 @@ void CScriptXmlInit::script_register(lua_State *L){
 		.def("InitMMShniaga",			&CScriptXmlInit::InitMMShniaga)
 		.def("InitScrollView",			&CScriptXmlInit::InitScrollView)
 		.def("InitAutoStaticGroup",		&CScriptXmlInit::InitAutoStaticGroup)
+		.def("InitListBox",				&CScriptXmlInit::InitListBox)
 		.def("InitProgressBar",			&CScriptXmlInit::InitProgressBar)
 	];
 

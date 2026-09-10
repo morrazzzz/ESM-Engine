@@ -141,7 +141,8 @@ void CUIScrollBar::Enable(bool b)
 
 void CUIScrollBar::UpdateScrollBar()
 {
-	if (IsShown()){
+	if (IsShown())
+	{
 		//уcтановить размер и положение каретки
 		if(m_iMaxPos==m_iMinPos)	m_iMaxPos++;
 		float box_sz				= float(m_ScrollWorkArea)*float(m_iPageSize ? m_iPageSize : 1)/float(m_iMaxPos-m_iMinPos);

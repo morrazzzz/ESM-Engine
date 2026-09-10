@@ -50,7 +50,8 @@ void CUIScrollView::SendMessage	(CUIWindow* pWnd, s16 msg, void* pData)
 		m_flags.set			(eNeedRecalc,TRUE);
 }
 
-void CUIScrollView::ForceUpdate(){
+void CUIScrollView::ForceUpdate()
+{
 	m_flags.set			(eNeedRecalc,TRUE);
 }
 

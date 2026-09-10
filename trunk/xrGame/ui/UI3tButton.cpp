@@ -188,7 +188,7 @@ void CUI3tButton::DrawTexture()
 
 void CUI3tButton::Update()
 {
-	CUIButton::Update();
+	inherited::Update();
 
 	if(m_bTextureEnable)
 	{

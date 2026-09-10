@@ -371,20 +371,21 @@ void RearrangeTabButtons(CUITabControl* pTab, xr_vector<Fvector2>& vec_sign_plac
 	sign_sz.set					(9.0f+3.0f, 11.0f);
 	u32 idx						= 0;
 	float	btn_text_len		= 0.0f;
-	CUIStatic* st				= NULL;
 
 	for(;it!=it_e;++it,++idx)
 	{
 		if(idx!=0)
 		{
-			st = xr_new<CUIStatic>(); st->SetAutoDelete(true);pTab->AttachChild(st);
-			st->SetFont((*it)->GetFont());
-			st->SetTextColor	(color_rgba(90,90,90,255));
-			st->SetText("//");
-			st->SetWndSize		((*it)->GetWndSize());
-			st->AdjustWidthToText();
-			st->SetWndPos		(pos);
-			pos.x				+= st->GetWndSize().x;
+			CUITextWnd* textWnd = xr_new<CUITextWnd>(); 
+			textWnd->SetAutoDelete(true);
+			pTab->AttachChild(textWnd);
+			textWnd->SetFont((*it)->TextItemControl()->GetFont());
+			textWnd->SetTextColor	(color_rgba(90,90,90,255));
+			textWnd->SetText("//");
+			textWnd->SetWndSize		((*it)->GetWndSize());
+			textWnd->AdjustWidthToText();
+			textWnd->SetWndPos		(pos);
+			pos.x += textWnd->GetWndSize().x;
 		}
 
 		vec_sign_places[idx].set(pos);

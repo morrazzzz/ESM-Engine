@@ -21,7 +21,7 @@ CUIListItem::CUIListItem(void)
 	m_bHighlightText = false;
 	m_iGroupID = -1;
 	SetAutoDelete(true);
-	SetTextAlignment(CGameFont::alLeft);
+//	SetTextAlignment(CGameFont::alLeft);
 }
 
 CUIListItem::~CUIListItem(void)

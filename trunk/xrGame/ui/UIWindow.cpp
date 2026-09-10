@@ -99,7 +99,6 @@ void CUIWindow::ResetPPMode()
 CUIWindow::CUIWindow()
 {
 //.	m_dbg_flag.zero			();
-	m_pFont					= nullptr;
 	m_pParentWnd			= nullptr;
 	m_pMouseCapturer        = nullptr;
 	m_pOrignMouseCapturer	= nullptr;
@@ -421,8 +420,8 @@ void CUIWindow::OnFocusReceive()
 	m_dwFocusReceiveTime	= Device.dwTimeGlobal;
 	m_bCursorOverWindow		= true;	
 
-//	if (GetMessageTarget())
-//        GetMessageTarget()->SendMessage(this, WINDOW_FOCUS_RECEIVED, NULL);
+	if (GetMessageTarget())
+        GetMessageTarget()->SendMessage(this, WINDOW_FOCUS_RECEIVED, NULL);
 }
 
 void CUIWindow::OnFocusLost()
@@ -430,8 +429,8 @@ void CUIWindow::OnFocusLost()
 	m_dwFocusReceiveTime	= 0;
 	m_bCursorOverWindow		= false;	
 
-//	if (GetMessageTarget())
-//        GetMessageTarget()->SendMessage(this, WINDOW_FOCUS_LOST, NULL);
+	if (GetMessageTarget())
+        GetMessageTarget()->SendMessage(this, WINDOW_FOCUS_LOST, NULL);
 }
 
 

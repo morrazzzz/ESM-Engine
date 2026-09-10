@@ -260,7 +260,7 @@ void CUITreeViewItem::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 			MarkArticleAsRead(true);
 		}
 	}
-	else if (pWnd == this && STATIC_FOCUS_RECEIVED == msg)
+	else if (pWnd == this && WINDOW_FOCUS_RECEIVED == msg)
 	{
 		UIBkg.TextureOn();
 
@@ -270,7 +270,7 @@ void CUITreeViewItem::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 		}
 		pPrevFocusedItem = this;
 	}
-	else if (pWnd == this && STATIC_FOCUS_LOST == msg)
+	else if (pWnd == this && WINDOW_FOCUS_LOST == msg)
 	{
 		UIBkg.TextureOff();
 		pPrevFocusedItem = NULL;
@@ -458,7 +458,7 @@ void CreateTreeBranch(shared_str nesting, shared_str leafName, CUIListWnd *pList
 			{
 				pNewItem = xr_new<CUITreeViewItem>();
 				pItemToIns->AddItem(pNewItem);
-				pNewItem->SetFont(pRootFnt);
+				pNewItem->TextItemControl()->SetFont(pRootFnt);
 				pNewItem->SetText(*(*it2));
 				pNewItem->SetReadedColor(rootItemColor);
 				pNewItem->SetRoot(true);
@@ -545,7 +545,7 @@ void CreateTreeBranch(shared_str nesting, shared_str leafName, CUIListWnd *pList
 	if (!pTVItemChilds)
 	{
 		pTVItemChilds = xr_new<CUITreeViewItem>();
-		pTVItemChilds->SetFont(pRootFont);
+		pTVItemChilds->TextItemControl()->SetFont(pRootFont);
 		pTVItemChilds->SetText(*groupTree.front());
 		pTVItemChilds->SetReadedColor(rootColor);
 		pTVItemChilds->SetRoot(true);
@@ -563,7 +563,7 @@ void CreateTreeBranch(shared_str nesting, shared_str leafName, CUIListWnd *pList
 	//	if (!pTVItemChilds->Find(*name))
 	//	{
 	pTVItem		= xr_new<CUITreeViewItem>();
-	pTVItem->SetFont(pLeafFont);
+	pTVItem->TextItemControl()->SetFont(pLeafFont);
 	pTVItem->SetReadedColor(leafColor);
 	pTVItem->SetText(*CStringTable().translate(*leafName));
 	pTVItem->SetValue(leafProperty);

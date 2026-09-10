@@ -127,7 +127,7 @@ bool CUIGameSP::IR_UIOnKeyboardPress(int dik)
 		{
 		    m_game_objective = AddCustomStatic("main_task", true);
 			SGameTaskObjective* o	= pActor->GameTaskManager().ActiveObjective();
-			m_game_objective->m_static->SetTextST(o ? *o->description : "st_no_active_task");
+			m_game_objective->m_static->TextItemControl()->SetTextST(o ? *o->description : "st_no_active_task");
 		}break;
 	}
 	return false;

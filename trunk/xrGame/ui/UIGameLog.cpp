@@ -36,11 +36,6 @@ u32 CUIGameLog::GetTextColor(){
 	return txt_color;
 }
 
-void CUIGameLog::SetTextAtrib(CGameFont* pFont, u32 color){
-	SetFont(pFont);
-	txt_color = color;
-}
-
 void CUIGameLog::Update()
 {
 	CUIScrollView::Update();

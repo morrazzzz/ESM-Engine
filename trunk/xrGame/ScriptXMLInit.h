@@ -26,6 +26,7 @@ class CUIArtefactPanel;
 class CUITrackBar;
 class CUIMMShniaga;
 class CUIScrollView;
+class CUIListBox;
 class CUIProgressBar;
 
 class CScriptXmlInit {
@@ -59,6 +60,7 @@ public:
 	CUIMMShniaga*		InitMMShniaga(LPCSTR path, CUIWindow* parent);
 	CUIWindow*			InitKeyBinding(LPCSTR path, CUIWindow* parent);
 	CUIScrollView*		InitScrollView(LPCSTR path, CUIWindow* parent);
+	CUIListBox*			InitListBox(LPCSTR path, CUIWindow* parent);
 	CUIProgressBar*		InitProgressBar(LPCSTR path, CUIWindow* parent);
 	void				InitAutoStaticGroup(LPCSTR path, CUIWindow* pWnd);
 protected:

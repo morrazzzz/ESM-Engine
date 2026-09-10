@@ -10,6 +10,7 @@ class SGameTaskObjective;
 class CUIEventsWnd;
 class CUIEditBoxEx;
 class CUIEditBox;
+class CUI3tButton;
 
 class CUITaskItem :public CUIListItem, public CUIWndCallback
 {

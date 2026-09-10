@@ -214,17 +214,8 @@ void CUIStatic::Update()
 	}
 }
 
-void CUIStatic::SetFont(CGameFont* pFont){
-	CUIWindow::SetFont(pFont);
-	TextItemControl()->SetFont(pFont);
-}
-
 void CUIStatic::SetTextComplexMode(bool md){
 	TextItemControl()->SetTextComplexMode(md);
-}
-
-CGameFont* CUIStatic::GetFont(){
-	return TextItemControl()->GetFont();
 }
 
 void CUIStatic::ResetXformAnimation()
@@ -298,28 +289,14 @@ void CUIStatic::ColorAnimationSetTextColor(u32 color, bool only_alpha)
 	TextItemControl()->SetTextColor((only_alpha) ? subst_alpha(TextItemControl()->GetTextColor(), color) : color);
 }
 
-void CUIStatic::SetTextColor(u32 color, E4States state){
-	m_dwTextColor[state] = color;
-	m_bUseTextColor[state] = true;
-}
-
 //CGameFont::EAligment CUIStatic::GetTextAlign(){
 //	return m_pLines->GetTextAlignment();
 //}
-
-CGameFont::EAligment CUIStatic::GetTextAlignment(){
-	return m_pTextControl->GetTextAlignment();
-}
 
 //void CUIStatic::SetTextAlign(CGameFont::EAligment align){
 //	CREATE_LINES;
 //	m_pLines->SetTextAlignment(align);
 //}
-
-void CUIStatic::SetTextAlignment(CGameFont::EAligment align){
-	TextItemControl()->SetTextAlignment(align);
-	TextItemControl()->GetFont()->SetAligment((CGameFont::EAligment)align);
-}
 
 void CUIStatic::SetVTextAlignment(EVTextAlignment al){
 	TextItemControl()->SetVTextAlignment(al);
@@ -339,15 +316,11 @@ u32 CUIStatic::GetTextAlign_script()
 void CUIStatic::OnFocusReceive()
 {
 	inherited::OnFocusReceive();
-	if (GetMessageTarget())
-        GetMessageTarget()->SendMessage(this, STATIC_FOCUS_RECEIVED, NULL);
 }
 
 void CUIStatic::OnFocusLost(){
 
 	inherited::OnFocusLost();
-	if (GetMessageTarget())
-		GetMessageTarget()->SendMessage(this, STATIC_FOCUS_LOST, NULL);
 }
 
 void CUIStatic::SetTextST				(LPCSTR str_id)

@@ -4,6 +4,7 @@
 
 class CUIAnimatedStatic;
 class CUIStatic;
+class CUITextWnd;
 class CUIXml;
 class CUIScrollView;
 class CMMSound;
@@ -12,12 +13,11 @@ class CUIMMShniaga :	public CUIWindow,
 						public CDeviceResetNotifier
 {
 public:
-	using CUIWindow::Init;
 
 						CUIMMShniaga			();
 	virtual				~CUIMMShniaga			();
 
-			void 		Init					(CUIXml& xml_doc, LPCSTR path);
+			void 		InitShniaga				(CUIXml& xml_doc, LPCSTR path);
 	virtual void 		Update					();
 	virtual void 		Draw					();
 
@@ -26,6 +26,14 @@ public:
 	virtual void 		SendMessage				(CUIWindow* pWnd, s16 msg, void* pData = 0);
 			void 		SetVisibleMagnifier		(bool f);
 	virtual void		OnDeviceReset			();
+	enum	enum_page_id
+	{
+		epi_main		= 0x00,
+		epi_new_game,
+		epi_none
+	};//enum	enum_page_id
+			void		SetPage					(enum_page_id page_id, LPCSTR xml_file, LPCSTR xml_path);
+			void		ShowPage				(enum_page_id page_id);
 protected:
 	typedef enum {
 		E_Begin = 0,
@@ -42,7 +50,7 @@ protected:
 	void 				ProcessEvent			(EVENT ev);
 
 	bool 				IsButton				(CUIWindow* st);
-	void 				CreateList				(xr_vector<CUIStatic*>& lst, CUIXml& xml_doc, LPCSTR path);
+	void 				CreateList				(xr_vector<CUITextWnd*>& lst, CUIXml& xml_doc, LPCSTR path);
 	void 				ShowMain				();
 	void 				ShowNewGame				();
 	float				pos						(float x1, float x2, u32 t);
@@ -60,10 +68,10 @@ protected:
 	float				m_mag_pos;
 	float				m_offset;
 
-	xr_vector<CUIStatic*>	m_buttons;
-	xr_vector<CUIStatic*>	m_buttons_new;
+	xr_vector<CUITextWnd*>	m_buttons;
+	xr_vector<CUITextWnd*>	m_buttons_new;
 	int						m_selected_btn;
-	int						m_page;
+	enum_page_id			m_page;
     CUIWindow*				m_selected;
 	CMMSound*				m_sound;
 	Fvector2				m_wheel_size[2];

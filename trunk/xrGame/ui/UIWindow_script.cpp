@@ -5,7 +5,6 @@
 #include "UIDialogWnd.h"
 #include "../UIDialogHolder.h"
 #include "../GamePersistent.h"
-#include "UILabel.h"
 #include "UIMMShniaga.h"
 #include "UITextureMaster.h"
 #include "UIScrollView.h"
@@ -123,8 +122,6 @@ void CUIWindow::script_register(lua_State *L)
 		.def("IsEnabled",				&CUIWindow::IsEnabled)
 		.def("Show",					&CUIWindow::Show)
 		.def("IsShown",					&CUIWindow::IsShown)
-		.def("SetFont",					&CUIWindow::SetFont)
-		.def("GetFont",					&CUIWindow::GetFont)
 
 		.def("WindowName",				&CUIWindow::WindowName_script)
 		.def("SetWindowName",			&CUIWindow::SetWindowName)
@@ -154,11 +151,6 @@ void CUIWindow::script_register(lua_State *L)
 		.def("SetWidth",						&CUIFrameLineWnd::SetWidth)
 		.def("SetHeight",						&CUIFrameLineWnd::SetHeight),
 //		.def("Init",							(void(CUIFrameLineWnd::*)(LPCSTR,float,float,float,float,bool))&CUIFrameLineWnd::Init),
-
-		class_<CUILabel, CUIFrameLineWnd>("CUILabel")
-		.def(					constructor<>())
-		.def("SetText",						&CUILabel::SetText)
-		.def("GetText",						&CUILabel::GetText),
 
 		class_<CUIMMShniaga, CUIWindow>("CUIMMShniaga")
 		.def("SetVisibleMagnifier",			&CUIMMShniaga::SetVisibleMagnifier),
@@ -195,10 +187,6 @@ void CUIWindow::script_register(lua_State *L)
 				value("WINDOW_MOUSE_CAPTURE_LOST ",		int(WINDOW_MOUSE_CAPTURE_LOST )),
 				value("WINDOW_KEYBOARD_CAPTURE_LOST",	int(WINDOW_KEYBOARD_CAPTURE_LOST)),
 
-
-	// CUIStatic
-				value("STATIC_FOCUS_RECEIVED",			int(STATIC_FOCUS_RECEIVED)),
-				value("STATIC_FOCUS_LOST",				int(STATIC_FOCUS_LOST)),
 
 	// CUIButton
 				value("BUTTON_CLICKED",					int(BUTTON_CLICKED)),

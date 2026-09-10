@@ -20,7 +20,6 @@ CUISubLine& operator=(const CUISubLine& other);
 	
 const CUISubLine*	Cut2Pos(int i);
 	void			Draw(CGameFont* pFont, float x, float y)	const;
-	void			FreeBuffer();
 
 	xr_string	m_text;
 	u32			m_color;

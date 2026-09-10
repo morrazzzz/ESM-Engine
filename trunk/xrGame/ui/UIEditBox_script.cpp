@@ -12,11 +12,9 @@ void CUIEditBox::script_register(lua_State *L)
 		class_<CUICustomEdit, CUIWindow>("CUICustomEdit")
 		.def("SetText",				&CUICustomEdit::SetText)
 		.def("GetText",				&CUICustomEdit::GetText)
-		.def("GetTextColor",		&CUICustomEdit::GetTextColor)
-		.def("SetFont",				&CUICustomEdit::SetFont)
-		.def("GetFont",				&CUICustomEdit::GetFont)
-		.def("SetTextAlignment",	&CUICustomEdit::SetTextAlignment)
-		.def("GetTextAlignment",	&CUICustomEdit::GetTextAlignment),
+		.def("GetTextColor",		&CUICustomEdit::GetTextColor),
+//		.def("SetTextAlignment",	&CUICustomEdit::SetTextAlignment)
+//		.def("GetTextAlignment",	&CUICustomEdit::GetTextAlignment),
 
 		class_<CUIEditBox, CUICustomEdit>("CUIEditBox")
 		.def(						constructor<>())

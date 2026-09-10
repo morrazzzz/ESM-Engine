@@ -1662,7 +1662,6 @@
     <ClInclude Include="ui\UICellItem.h" />
     <ClInclude Include="ui\UICellItemFactory.h" />
     <ClInclude Include="ui\UIDragDropListEx.h" />
-    <ClInclude Include="ui\UILabel.h" />
     <ClInclude Include="ui\UIScrollBar.h" />
     <ClInclude Include="ui\UIScrollBox.h" />
     <ClInclude Include="ui\UICustomSpin.h" />
@@ -2053,6 +2052,9 @@
     <ClCompile Include="ui\UIHelper.cpp" />
     <ClCompile Include="ui\UIHudStatesWnd.cpp" />
     <ClCompile Include="ui\UILanimController.cpp" />
+    <ClCompile Include="ui\UIListBox_script.cpp">
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
     <ClCompile Include="ui\UIWeaponScope.cpp" />
     <ClCompile Include="visual_memory_manager.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
@@ -6075,7 +6077,6 @@
     <ClCompile Include="ui\UICellItem.cpp" />
     <ClCompile Include="ui\UICellItemFactory.cpp" />
     <ClCompile Include="ui\UIDragDropListEx.cpp" />
-    <ClCompile Include="ui\UILabel.cpp" />
     <ClCompile Include="ui\UIScrollBar.cpp" />
     <ClCompile Include="ui\UIScrollBox.cpp" />
     <ClCompile Include="ui\UICustomSpin.cpp" />

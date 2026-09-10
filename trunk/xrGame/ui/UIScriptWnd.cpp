@@ -12,11 +12,7 @@ CUIDialogWndEx::CUIDialogWndEx():inherited()
 
 CUIDialogWndEx::~CUIDialogWndEx()
 {
-	try {
-		delete_data(m_callbacks);
-	}
-	catch(...) {
-	}
+	delete_data(m_callbacks);
 }
 void CUIDialogWndEx::Register			(CUIWindow* pChild)
 {

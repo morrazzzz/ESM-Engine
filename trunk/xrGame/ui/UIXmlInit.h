@@ -18,7 +18,6 @@ class CUIProgressShape;
 class CUIListWnd;
 class CUITabControl;
 class CUIFrameLineWnd;
-class CUILabel;
 class CUIEditBoxEx;
 class CUIEditBox;
 class CUICustomEdit;

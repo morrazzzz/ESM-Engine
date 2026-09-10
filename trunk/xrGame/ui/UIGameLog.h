@@ -12,7 +12,6 @@ public:
 	CUIPdaMsgListItem*		AddPdaMessage	(LPCSTR msg, float delay);
 	virtual void			Update			();
 
-	void					SetTextAtrib	(CGameFont* pFont, u32 color);
 	u32						GetTextColor	();
 
 private:
