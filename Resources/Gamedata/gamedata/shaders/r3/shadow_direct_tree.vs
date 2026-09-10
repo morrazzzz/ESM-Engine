@@ -46,9 +46,6 @@ v2p_shadow_direct main ( v_shadow_direct I )
 #ifdef	USE_AREF
 	O.tc0 	= (I.tc * consts).xy;		//	+ result;
 #endif	//	USE_AREF
-#ifndef USE_HWSMAP
-	O.depth = O.hpos.z;
-#endif
  	return	O;
 }
 FXVS;

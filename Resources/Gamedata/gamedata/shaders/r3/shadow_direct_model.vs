@@ -9,9 +9,6 @@ v2p_shadow_direct _main( v_model	I )
 	float4 	hpos 	= mul( m_WVP, I.P );
 
 	O.hpos 			= hpos;
-#ifndef USE_HWSMAP
-	O.depth 		= O.hpos.z;
-#endif
  	return			O ;
 }
 
